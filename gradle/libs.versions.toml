@@ -1,0 +1,16 @@
+[versions]
+junit = "6.0.3"
+assertj = "3.27.3"
+jqwik = "1.9.3"
+compile-testing = "0.23.0"
+vanniktech-maven-publish = "0.33.0"
+spotless = "8.8.0"
+
+[libraries]
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+jqwik = { module = "net.jqwik:jqwik", version.ref = "jqwik" }
+compile-testing = { module = "com.google.testing.compile:compile-testing", version.ref = "compile-testing" }
+
+[plugins]
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

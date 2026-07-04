@@ -1,0 +1,281 @@
+package me.supcheg.javafile.code;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class CodeBuilderTest {
+
+    @Test
+    void returnOfAFieldGetterCall() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.return_(cb.call(cb.field("bundle"), "getString", cb.literal("greeting")));
+
+        CodeBody body = cb.build();
+
+        Expr expectedCall = new MethodCallExpr(
+                Optional.of(new FieldAccessExpr(Optional.empty(), "bundle")),
+                "getString",
+                java.util.List.of(new StringLiteral("greeting")));
+        assertThat(body.statements()).containsExactly(new ReturnStmt(Optional.of(expectedCall)));
+    }
+
+    @Test
+    void voidReturnProducesEmptyReturnStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.return_();
+
+        assertThat(cb.build().statements()).containsExactly(new ReturnStmt(Optional.empty()));
+    }
+
+    @Test
+    void assignAddsAssignStmtWithTargetAndValue() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assign(cb.field(cb.field("this"), "bundle"), cb.field("bundle"));
+
+        Expr expectedTarget = new FieldAccessExpr(Optional.of(new FieldAccessExpr(Optional.empty(), "this")), "bundle");
+        Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
+        assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
+    }
+
+    @Test
+    void literalsCoverEachSupportedType() {
+        CodeBuilder cb = new CodeBuilder();
+
+        assertThat(cb.literal("s")).isEqualTo(new StringLiteral("s"));
+        assertThat(cb.literal(1)).isEqualTo(new IntLiteral(1));
+        assertThat(cb.literal(1L)).isEqualTo(new LongLiteral(1L));
+        assertThat(cb.literal(1.5)).isEqualTo(new DoubleLiteral(1.5));
+        assertThat(cb.literal(true)).isEqualTo(new BooleanLiteral(true));
+        assertThat(cb.literalNull()).isEqualTo(new NullLiteral());
+        assertThat(cb.textBlock("line")).isEqualTo(new TextBlockExpr("line"));
+    }
+
+    @Test
+    void emptyBodyEqualsCodeBodyEmpty() {
+        CodeBuilder cb = new CodeBuilder();
+
+        assertThat(cb.build()).isEqualTo(CodeBody.EMPTY);
+    }
+
+    @Test
+    void binaryOperatorHelpersProduceBinaryExpr() {
+        CodeBuilder cb = new CodeBuilder();
+
+        assertThat(cb.lt(cb.field("i"), cb.literal(10)))
+                .isEqualTo(new BinaryExpr(new FieldAccessExpr(Optional.empty(), "i"), BinaryOp.LT, new IntLiteral(10)));
+        assertThat(cb.and(cb.literal(true), cb.literal(false)))
+                .isEqualTo(new BinaryExpr(new BooleanLiteral(true), BinaryOp.AND, new BooleanLiteral(false)));
+    }
+
+    @Test
+    void unaryOperatorHelpersProduceUnaryExpr() {
+        CodeBuilder cb = new CodeBuilder();
+
+        assertThat(cb.postIncrement(cb.field("i")))
+                .isEqualTo(new UnaryExpr(UnaryOp.POST_INC, new FieldAccessExpr(Optional.empty(), "i")));
+        assertThat(cb.not(cb.literal(true))).isEqualTo(new UnaryExpr(UnaryOp.NOT, new BooleanLiteral(true)));
+    }
+
+    @Test
+    void instanceOfWithoutBindingProducesInstanceOfExprWithEmptyBinding() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        Expr expr = cb.instanceOf(cb.field("obj"), stringType);
+
+        assertThat(expr)
+                .isEqualTo(
+                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.empty()));
+    }
+
+    @Test
+    void instanceOfWithBindingProducesInstanceOfExprWithBindingName() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        Expr expr = cb.instanceOf(cb.field("obj"), stringType, "s");
+
+        assertThat(expr)
+                .isEqualTo(
+                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.of("s")));
+    }
+
+    @Test
+    void newExprCarriesTypeAndArguments() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
+                java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));
+
+        Expr expr = cb.new_(exceptionType, cb.literal("bad state"));
+
+        assertThat(expr).isEqualTo(new NewExpr(exceptionType, java.util.List.of(new StringLiteral("bad state"))));
+    }
+
+    @Test
+    void localVarWithExplicitTypeAddsATypedDeclaration() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(0));
+
+        assertThat(cb.build().statements())
+                .containsExactly(new LocalVarDeclStmt(
+                        Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", new IntLiteral(0)));
+    }
+
+    @Test
+    void localVarWithoutTypeInfersVar() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.localVar("name", cb.literal("x"));
+
+        assertThat(cb.build().statements())
+                .containsExactly(new LocalVarDeclStmt(Optional.empty(), "name", new StringLiteral("x")));
+    }
+
+    @Test
+    void ifWithoutElseProducesIfStmtWithEmptyElseAndNoElseIfClauses() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.if_(cb.eq(cb.field("x"), cb.literalNull()), ib -> ib.then(b -> b.return_()));
+
+        assertThat(cb.build().statements())
+                .containsExactly(new IfStmt(
+                        new BinaryExpr(new FieldAccessExpr(Optional.empty(), "x"), BinaryOp.EQ, new NullLiteral()),
+                        new CodeBody(java.util.List.of(new ReturnStmt(Optional.empty()))),
+                        java.util.List.of(),
+                        Optional.empty()));
+    }
+
+    @Test
+    void ifWithElseIfAndElseProducesAllClauses() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.if_(cb.lt(cb.field("x"), cb.literal(0)), ib -> ib.then(b -> b.return_(b.literal("negative")))
+                .elseIf(cb.eq(cb.field("x"), cb.literal(0)), b -> b.return_(b.literal("zero")))
+                .else_(b -> b.return_(b.literal("positive"))));
+
+        IfStmt stmt = (IfStmt) cb.build().statements().get(0);
+        assertThat(stmt.elseIfClauses()).hasSize(1);
+        assertThat(stmt.elseBody()).isPresent();
+    }
+
+    @Test
+    void whileAddsAWhileStmtWithConditionAndBody() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.while_(cb.lt(cb.field("i"), cb.literal(10)), b -> b.exprStatement(b.postIncrement(b.field("i"))));
+
+        WhileStmt stmt = (WhileStmt) cb.build().statements().get(0);
+        assertThat(stmt.condition())
+                .isEqualTo(new BinaryExpr(new FieldAccessExpr(Optional.empty(), "i"), BinaryOp.LT, new IntLiteral(10)));
+        assertThat(stmt.body().statements()).hasSize(1);
+    }
+
+    @Test
+    void doWhileAddsADoWhileStmtWithBodyAndCondition() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.doWhile_(cb.lt(cb.field("i"), cb.literal(10)), b -> b.exprStatement(b.postIncrement(b.field("i"))));
+
+        DoWhileStmt stmt = (DoWhileStmt) cb.build().statements().get(0);
+        assertThat(stmt.body().statements()).hasSize(1);
+    }
+
+    @Test
+    void forAddsAForStmtWithInitConditionAndUpdate() {
+        CodeBuilder cb = new CodeBuilder();
+        LocalVarDeclStmt init =
+                new LocalVarDeclStmt(Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
+        ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
+
+        cb.for_(init, cb.lt(cb.field("i"), cb.literal(10)), update, b -> b.exprStatement(b.field("i")));
+
+        ForStmt stmt = (ForStmt) cb.build().statements().get(0);
+        assertThat(stmt.init()).contains(init);
+        assertThat(stmt.update()).contains(update);
+    }
+
+    @Test
+    void forEachAddsAnEnhancedForStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        cb.forEach(stringType, "item", cb.field("items"), b -> b.exprStatement(b.field("item")));
+
+        EnhancedForStmt stmt = (EnhancedForStmt) cb.build().statements().get(0);
+        assertThat(stmt.varName()).isEqualTo("item");
+        assertThat(stmt.iterable()).isEqualTo(new FieldAccessExpr(Optional.empty(), "items"));
+    }
+
+    @Test
+    void switchAddsASwitchStmtWithConstantCasesAndDefault() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.switch_(cb.field("day"), sb -> sb.case_(cb.literal("MON"), b -> b.return_(cb.literal(1)))
+                .default_(b -> b.return_(cb.literal(0))));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        assertThat(stmt.cases()).hasSize(2);
+        assertThat(stmt.cases().get(0).labels()).containsExactly(new ConstantLabel(new StringLiteral("MON")));
+        assertThat(stmt.cases().get(1).labels()).containsExactly(new DefaultLabel());
+    }
+
+    @Test
+    void switchExprReturnsASwitchExprUsableAsAValue() {
+        CodeBuilder cb = new CodeBuilder();
+
+        Expr expr = cb.switchExpr(cb.field("day"), sb -> sb.caseValue(cb.literal("MON"), cb.literal(1))
+                .defaultValue(cb.literal(0)));
+
+        assertThat(expr).isInstanceOf(SwitchExpr.class);
+        SwitchExpr switchExpr = (SwitchExpr) expr;
+        assertThat(switchExpr.cases().get(0).body()).isEqualTo(new ExprCaseBody(new IntLiteral(1)));
+    }
+
+    @Test
+    void switchSupportsTypePatternCasesWithAnOptionalGuard() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        cb.switch_(cb.field("obj"), sb -> sb.caseTypeWithGuard(
+                        stringType,
+                        "s",
+                        cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)),
+                        b -> b.return_(cb.field("s")))
+                .default_(b -> b.return_(cb.literalNull())));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().get(0);
+        assertThat(label.bindingName()).isEqualTo("s");
+        assertThat(label.guard()).isPresent();
+    }
+
+    @Test
+    void yieldAddsAYieldStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.yield_(cb.literal(1));
+
+        assertThat(cb.build().statements()).containsExactly(new YieldStmt(new IntLiteral(1)));
+    }
+
+    @Test
+    void throwAddsAThrowStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.throw_(cb.new_(
+                me.supcheg.javafile.type.Types.of(
+                        java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException")),
+                cb.literal("bad")));
+
+        assertThat(cb.build().statements()).hasSize(1);
+        assertThat(cb.build().statements().get(0)).isInstanceOf(ThrowStmt.class);
+    }
+
+    @Test
+    void breakAndContinueAddTheirRespectiveStmts() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.break_();
+        cb.continue_();
+
+        assertThat(cb.build().statements()).containsExactly(new BreakStmt(), new ContinueStmt());
+    }
+}

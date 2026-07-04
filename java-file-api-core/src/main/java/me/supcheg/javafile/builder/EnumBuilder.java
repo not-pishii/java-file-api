@@ -1,0 +1,181 @@
+package me.supcheg.javafile.builder;
+
+import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.ClassMember;
+import me.supcheg.javafile.model.EnumConstant;
+import me.supcheg.javafile.model.EnumDecl;
+import me.supcheg.javafile.model.MethodDecl;
+import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.TypeRef;
+
+import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+/// A mutable builder for a top-level enum declaration.
+///
+/// Always declares with the `public` modifier; there is no way to add
+/// further modifiers. Builder methods return `this` for chaining;
+/// [#build()] snapshots the accumulated state into an immutable
+/// [EnumDecl], so a builder may be reused after building.
+///
+/// Implements `Consumer<ClassMember>` so that transforms and other producers
+/// can feed pre-built members directly via [#accept(ClassMember)].
+///
+/// Instances are not thread-safe.
+public final class EnumBuilder implements Consumer<ClassMember> {
+
+    private final ClassDesc desc;
+    private final List<EnumConstant> constants = new ArrayList<>();
+    private final List<ClassDesc> interfaces = new ArrayList<>();
+    private final List<ClassMember> members = new ArrayList<>();
+
+    /// Creates a builder for an enum with the given descriptor.
+    ///
+    /// @param desc the enum to declare; its package and simple name determine the file location
+    public EnumBuilder(ClassDesc desc) {
+        this.desc = desc;
+    }
+
+    /// Adds a constant with no constructor arguments and no constant-specific body.
+    ///
+    /// @param name the constant name
+    /// @return this builder
+    public EnumBuilder withConstant(String name) {
+        return withConstant(name, spec -> {});
+    }
+
+    /// Adds a constant with constructor arguments and no constant-specific body.
+    ///
+    /// @param name the constant name
+    /// @param args the constructor arguments, in order
+    /// @return this builder
+    public EnumBuilder withConstant(String name, Expr... args) {
+        return withConstant(name, spec -> spec.withArgs(args));
+    }
+
+    /// Adds a constant, populated via an [EnumConstantBuilder].
+    ///
+    /// @param name the constant name
+    /// @param spec receives the builder to populate the constant's arguments and body
+    /// @return this builder
+    public EnumBuilder withConstant(String name, Consumer<EnumConstantBuilder> spec) {
+        EnumConstantBuilder ecb = new EnumConstantBuilder();
+        spec.accept(ecb);
+        constants.add(ecb.build(name));
+        return this;
+    }
+
+    /// Adds a pre-built constant.
+    ///
+    /// @param constant the constant to add
+    /// @return this builder
+    public EnumBuilder withConstant(EnumConstant constant) {
+        constants.add(constant);
+        return this;
+    }
+
+    /// Adds an interface to the enum's `implements` clause.
+    ///
+    /// @param iface the implemented interface
+    /// @return this builder
+    public EnumBuilder withInterface(ClassDesc iface) {
+        interfaces.add(iface);
+        return this;
+    }
+
+    /// Adds a constructor.
+    ///
+    /// @param spec receives the builder to populate the constructor
+    /// @return this builder
+    public EnumBuilder withConstructor(Consumer<ConstructorBuilder> spec) {
+        ConstructorBuilder cb = new ConstructorBuilder();
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a field.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param spec receives the builder to populate the field
+    /// @return this builder
+    public EnumBuilder withField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+        FieldBuilder fb = new FieldBuilder(name, type);
+        spec.accept(fb);
+        members.add(fb.build());
+        return this;
+    }
+
+    /// Adds a method with a return type.
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public EnumBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+        MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
+        spec.accept(mb);
+        members.add(
+                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        return this;
+    }
+
+    /// Adds a `void` method.
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public EnumBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+        MethodBuilder mb = new MethodBuilder(name, Optional.empty());
+        spec.accept(mb);
+        members.add(
+                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        return this;
+    }
+
+    /// Adds an abstract method with a return type, implemented per-constant.
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param params the method's parameters, in order
+    /// @return this builder
+    public EnumBuilder withAbstractMethod(String name, TypeRef returnType, Param... params) {
+        members.add(new AbstractMethodDecl(
+                name, Optional.of(returnType), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+        return this;
+    }
+
+    /// Adds a `void` abstract method, implemented per-constant.
+    ///
+    /// @param name the method name
+    /// @param params the method's parameters, in order
+    /// @return this builder
+    public EnumBuilder withVoidAbstractMethod(String name, Param... params) {
+        members.add(new AbstractMethodDecl(
+                name, Optional.empty(), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+        return this;
+    }
+
+    /// Appends the given pre-built member to the enum body.
+    ///
+    /// @param member the member to append
+    @Override
+    public void accept(ClassMember member) {
+        members.add(member);
+    }
+
+    /// Snapshots the accumulated state into an immutable [EnumDecl].
+    ///
+    /// @return the finished enum declaration
+    public EnumDecl build() {
+        return new EnumDecl(
+                desc, Set.of(Modifier.PUBLIC), List.copyOf(constants), List.copyOf(interfaces), List.copyOf(members));
+    }
+}
