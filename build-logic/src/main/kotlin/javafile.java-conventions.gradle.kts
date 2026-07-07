@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "me.supcheg"
-version = "0.1.0"
+version = providers.gradleProperty("releaseVersion").getOrElse("0.0.0")
 
 java {
     toolchain {
