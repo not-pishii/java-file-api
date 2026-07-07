@@ -4,7 +4,6 @@ plugins {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
 
     coordinates("me.supcheg", project.name, version.toString())
 
