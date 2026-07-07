@@ -1,6 +1,37 @@
 # java-file-api
 
+[![Maven Central](https://img.shields.io/maven-central/v/me.supcheg/java-file-api-core)](https://central.sonatype.com/artifact/me.supcheg/java-file-api-core)
+[![Javadoc](https://javadoc.io/badge2/me.supcheg/java-file-api-core/javadoc.svg)](https://javadoc.io/doc/me.supcheg/java-file-api-core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build](https://github.com/not-pishii/java-file-api/actions/workflows/build.yml/badge.svg)](https://github.com/not-pishii/java-file-api/actions/workflows/build.yml)
+
 A Java source generation library with an API that mirrors the design of the JDK ClassFile API (`java.lang.classfile`).
+
+## Installation
+
+```kotlin
+// core
+implementation("me.supcheg:java-file-api-core:1.0.0")
+
+// annotation processor integration
+implementation("me.supcheg:java-file-api-lang-model:1.0.0")
+```
+
+```xml
+<!--> core <-->
+<dependency>
+    <groupId>me.supcheg</groupId>
+    <artifactId>java-file-api-core</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
+<!--> annotation processor integration <-->
+<dependency>
+    <groupId>me.supcheg</groupId>
+    <artifactId>java-file-api-lang-model</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ## Design
 
