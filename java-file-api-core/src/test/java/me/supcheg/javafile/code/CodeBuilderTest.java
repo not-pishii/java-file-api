@@ -113,7 +113,9 @@ class CodeBuilderTest {
 
         Expr expr = cb.new_(exceptionType, cb.literal("bad state"));
 
-        assertThat(expr).isEqualTo(new NewExpr(exceptionType, java.util.List.of(new StringLiteral("bad state"))));
+        assertThat(expr)
+                .isEqualTo(new NewExpr(
+                        new TypedNewTarget(exceptionType), java.util.List.of(new StringLiteral("bad state"))));
     }
 
     @Test
