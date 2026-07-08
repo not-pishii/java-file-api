@@ -16,7 +16,7 @@ public final class Types {
     ///
     /// @param desc the referenced class or interface
     /// @return a type reference wrapping `desc`
-    public static TypeRef of(ClassDesc desc) {
+    public static ClassTypeRef of(ClassDesc desc) {
         return new ClassTypeRef(desc);
     }
 
@@ -24,7 +24,7 @@ public final class Types {
     ///
     /// @param component the type of the array's elements
     /// @return a type reference to an array of `component`
-    public static TypeRef array(TypeRef component) {
+    public static ArrayTypeRef array(TypeRef component) {
         return new ArrayTypeRef(component);
     }
 
@@ -33,8 +33,17 @@ public final class Types {
     /// @param raw the generic type's raw class or interface
     /// @param args the type arguments applied to `raw`, in order
     /// @return a parameterized type reference
-    public static TypeRef parameterized(ClassDesc raw, TypeArg... args) {
+    public static ParameterizedTypeRef parameterized(ClassDesc raw, TypeArg... args) {
         return new ParameterizedTypeRef(raw, List.of(args));
+    }
+
+    /// Creates a reference to a type variable declared by an enclosing
+    /// generic declaration, e.g. `T`.
+    ///
+    /// @param name the type variable's name
+    /// @return a type reference to the variable
+    public static TypeVarRef typeVar(String name) {
+        return new TypeVarRef(name);
     }
 
     /// Creates a type argument that is a concrete type with no wildcard.

@@ -8,7 +8,7 @@ import java.util.List;
 /// @param raw the generic type's raw class or interface
 /// @param args the type arguments applied to `raw`; defensively copied into an
 ///             unmodifiable list
-public record ParameterizedTypeRef(ClassDesc raw, List<TypeArg> args) implements TypeRef {
+public record ParameterizedTypeRef(ClassDesc raw, List<TypeArg> args) implements ClassOrInterfaceTypeRef {
     public ParameterizedTypeRef {
         args = List.copyOf(args);
     }

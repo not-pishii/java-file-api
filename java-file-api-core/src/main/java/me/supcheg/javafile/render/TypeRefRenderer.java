@@ -11,6 +11,7 @@ import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.util.Comparator;
@@ -33,6 +34,7 @@ final class TypeRefRenderer {
                         args.stream().map(a -> renderTypeArg(a, imports)).collect(Collectors.joining(", "));
                 yield rawName + "<" + argsStr + ">";
             }
+            case TypeVarRef(var name) -> name;
             case ArrayTypeRef(var component) -> renderType(component, imports) + "[]";
             case PrimitiveTypeRef p -> p.sourceName();
         };

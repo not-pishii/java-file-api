@@ -92,4 +92,21 @@ class TypeRefRendererTest {
 
         assertThat(rendered).isEqualTo("non-sealed ");
     }
+
+    @Test
+    void typeVarRendersAsBareNameWithoutImport() {
+        ImportManager imports = new ImportManager("p");
+
+        assertThat(TypeRefRenderer.renderType(Types.typeVar("T"), imports)).isEqualTo("T");
+        assertThat(imports.sortedImports()).isEmpty();
+    }
+
+    @Test
+    void typeVarInsideParameterizedTypeRendersAsArgument() {
+        ImportManager imports = new ImportManager("p");
+        var listOfT = Types.parameterized(ClassDesc.of("java.util", "List"), Types.exact(Types.typeVar("T")));
+
+        assertThat(TypeRefRenderer.renderType(listOfT, imports)).isEqualTo("List<T>");
+        assertThat(imports.sortedImports()).containsExactly("java.util.List");
+    }
 }
