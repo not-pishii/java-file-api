@@ -1,5 +1,6 @@
 package me.supcheg.javafile.code;
 
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.lang.constant.ClassDesc;
@@ -472,6 +473,50 @@ public final class CodeBuilder implements Consumer<Stmt> {
         SwitchBuilder sb = new SwitchBuilder();
         spec.accept(sb);
         return new SwitchExpr(selector, sb.build());
+    }
+
+    /// Creates a lambda expression with inferred parameter types and a
+    /// single-expression body, e.g. `(name) -> result`.
+    ///
+    /// @param params the parameter names, in order
+    /// @param result the expression the lambda evaluates to
+    /// @return a lambda expression
+    public Expr lambda(List<String> params, Expr result) {
+        return new LambdaExpr(new InferredLambdaParams(params), new ExprLambdaBody(result));
+    }
+
+    /// Creates a lambda expression with inferred parameter types and a block
+    /// body, e.g. `(name) -> { ... }`.
+    ///
+    /// @param params the parameter names, in order
+    /// @param spec receives the builder to populate the lambda body
+    /// @return a lambda expression
+    public Expr lambda(List<String> params, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        return new LambdaExpr(new InferredLambdaParams(params), new BlockLambdaBody(cb.build()));
+    }
+
+    /// Creates a lambda expression with explicitly typed parameters and a
+    /// single-expression body, e.g. `(String name) -> result`.
+    ///
+    /// @param params the parameters, in order
+    /// @param result the expression the lambda evaluates to
+    /// @return a lambda expression
+    public Expr typedLambda(List<Param> params, Expr result) {
+        return new LambdaExpr(new TypedLambdaParams(params), new ExprLambdaBody(result));
+    }
+
+    /// Creates a lambda expression with explicitly typed parameters and a
+    /// block body, e.g. `(String name) -> { ... }`.
+    ///
+    /// @param params the parameters, in order
+    /// @param spec receives the builder to populate the lambda body
+    /// @return a lambda expression
+    public Expr typedLambda(List<Param> params, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        return new LambdaExpr(new TypedLambdaParams(params), new BlockLambdaBody(cb.build()));
     }
 
     /// Appends a `yield` statement, for use inside a `switch` expression's block case.

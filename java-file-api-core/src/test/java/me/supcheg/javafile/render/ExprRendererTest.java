@@ -335,4 +335,40 @@ class ExprRendererTest {
         assertThat(ExprRenderer.renderStmt(new me.supcheg.javafile.code.ContinueStmt(), new ImportManager("p"), 1))
                 .isEqualTo("    continue;");
     }
+
+    @Test
+    void lambdaWithExpressionBodyRendersParenthesizedParams() {
+        Expr lambda = cb.lambda(java.util.List.of("name"), cb.call(cb.field("name"), "toUpperCase"));
+
+        assertThat(ExprRenderer.renderExpr(lambda, new ImportManager("p"), 0))
+                .isEqualTo("(name) -> name.toUpperCase()");
+    }
+
+    @Test
+    void lambdaWithBlockBodyRendersBracedBlock() {
+        Expr lambda =
+                cb.lambda(java.util.List.of("a", "b"), body -> body.return_(cb.add(cb.field("a"), cb.field("b"))));
+
+        assertThat(ExprRenderer.renderExpr(lambda, new ImportManager("p"), 1))
+                .isEqualTo("(a, b) -> {\n        return a + b;\n    }");
+    }
+
+    @Test
+    void lambdaWithNoParamsRendersEmptyParens() {
+        Expr lambda = cb.lambda(java.util.List.of(), cb.literal(1));
+
+        assertThat(ExprRenderer.renderExpr(lambda, new ImportManager("p"), 0)).isEqualTo("() -> 1");
+    }
+
+    @Test
+    void typedLambdaRendersParameterTypes() {
+        ImportManager imports = new ImportManager("p");
+        Expr lambda = cb.typedLambda(
+                java.util.List.of(new me.supcheg.javafile.model.Param(
+                        "name",
+                        me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String")))),
+                cb.call(cb.field("name"), "length"));
+
+        assertThat(ExprRenderer.renderExpr(lambda, imports, 0)).isEqualTo("(String name) -> name.length()");
+    }
 }
