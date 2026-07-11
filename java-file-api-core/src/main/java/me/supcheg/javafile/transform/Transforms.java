@@ -15,6 +15,7 @@ import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.lang.constant.ClassDesc;
 
@@ -39,6 +40,8 @@ public final class Transforms {
         // built without PUBLIC (only reachable by constructing ClassDecl directly, bypassing ClassBuilder)
         // cannot lose PUBLIC through this round-trip. This matches ClassBuilder's existing behavior.
         builder.withModifiers(decl.modifiers().toArray(new Modifier[0]));
+        decl.typeParams()
+                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
         decl.superclass().ifPresent(builder::withSuperclass);
         decl.interfaces().forEach(builder::withInterface);
         builder.permits(decl.permits().toArray(new ClassDesc[0]));
@@ -70,6 +73,8 @@ public final class Transforms {
     /// @return a new interface declaration
     public static InterfaceDecl transform(InterfaceDecl decl, InterfaceTransform transform) {
         InterfaceBuilder builder = new InterfaceBuilder(decl.desc());
+        decl.typeParams()
+                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
         decl.extendsInterfaces().forEach(builder::withExtends);
         builder.permits(decl.permits().toArray(new ClassDesc[0]));
         for (InterfaceMember member : decl.members()) {
@@ -85,6 +90,8 @@ public final class Transforms {
     /// @return a new record declaration
     public static RecordDecl transform(RecordDecl decl, RecordTransform transform) {
         RecordBuilder builder = new RecordBuilder(decl.desc());
+        decl.typeParams()
+                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
         decl.components().forEach(c -> builder.withComponent(c.name(), c.type()));
         decl.interfaces().forEach(builder::withInterface);
         for (RecordMember member : decl.members()) {

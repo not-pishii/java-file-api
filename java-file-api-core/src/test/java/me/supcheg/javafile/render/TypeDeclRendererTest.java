@@ -145,6 +145,7 @@ class TypeDeclRendererTest {
         var classDecl = new me.supcheg.javafile.model.ClassDecl(
                 ClassDesc.of("p", "Outer"),
                 java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(),
                 java.util.Optional.empty(),
                 java.util.List.of(),
                 java.util.List.of(),
@@ -204,6 +205,52 @@ class TypeDeclRendererTest {
         assertThat(renderedInterface).isEqualTo("""
                         public interface Source {
                             String read() throws IOException;
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAGenericClassWithBoundAndParameterizedSuperInterface() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Box"));
+        ClassDesc comparable = ClassDesc.of("java.lang", "Comparable");
+        builder.withTypeParam("T", Types.parameterized(comparable, Types.exact(Types.typeVar("T"))))
+                .withInterface(Types.parameterized(
+                        ClassDesc.of("java.util.function", "Supplier"), Types.exact(Types.typeVar("T"))));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+
+        assertThat(rendered).isEqualTo("""
+                        public class Box<T extends Comparable<T>> implements Supplier<T> {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAGenericRecordImplementingParameterizedInterface() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("me.supcheg.example", "Impl"));
+        builder.withTypeParam("T")
+                .withComponent("value", Types.typeVar("T"))
+                .withInterface(Types.parameterized(
+                        ClassDesc.of("me.supcheg.example", "Contract"), Types.exact(Types.typeVar("T"))));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+
+        assertThat(rendered).isEqualTo("""
+                        public record Impl<T>(T value) implements Contract<T> {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAGenericInterface() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Contract"));
+        builder.withTypeParam("T").withAbstractMethod("render", Types.typeVar("T"));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Contract<T> {
+                            T render();
                         }
                         """);
     }

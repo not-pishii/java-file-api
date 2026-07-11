@@ -8,7 +8,9 @@ import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public final class EnumBuilder implements Consumer<ClassMember> {
 
     private final ClassDesc desc;
     private final List<EnumConstant> constants = new ArrayList<>();
-    private final List<ClassDesc> interfaces = new ArrayList<>();
+    private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private final List<ClassMember> members = new ArrayList<>();
 
     /// Creates a builder for an enum with the given descriptor.
@@ -80,11 +82,15 @@ public final class EnumBuilder implements Consumer<ClassMember> {
         return this;
     }
 
-    /// Adds an interface to the enum's `implements` clause.
+    public EnumBuilder withInterface(ClassDesc iface) {
+        return withInterface(Types.of(iface));
+    }
+
+    /// Adds an interface, possibly parameterized, to the enum's `implements` clause.
     ///
     /// @param iface the implemented interface
     /// @return this builder
-    public EnumBuilder withInterface(ClassDesc iface) {
+    public EnumBuilder withInterface(ClassOrInterfaceTypeRef iface) {
         interfaces.add(iface);
         return this;
     }

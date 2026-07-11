@@ -31,6 +31,7 @@ class SealedModelTest {
         ClassDecl decl = new ClassDecl(
                 ClassDesc.of("me.supcheg.example", "Messages"),
                 Set.of(Modifier.PUBLIC, Modifier.FINAL),
+                List.of(),
                 Optional.empty(),
                 List.of(),
                 List.of(),
@@ -59,6 +60,7 @@ class SealedModelTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(),
                 List.of(),
+                List.of(),
                 List.of(abstractMethod, defaultMethod, staticMethod, constant));
 
         assertThat(decl.members()).hasSize(4);
@@ -74,7 +76,7 @@ class SealedModelTest {
     void recordDeclHoldsComponentsAndMembers() {
         RecordComponent x = new RecordComponent("x", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
         RecordDecl decl = new RecordDecl(
-                ClassDesc.of("geom", "Point"), Set.of(Modifier.PUBLIC), List.of(x), List.of(), List.of());
+                ClassDesc.of("geom", "Point"), Set.of(Modifier.PUBLIC), List.of(), List.of(x), List.of(), List.of());
 
         assertThat(decl.components()).containsExactly(x);
     }
@@ -96,11 +98,17 @@ class SealedModelTest {
     @Test
     void allTypeDeclVariantsImplementTheSealedInterface() {
         TypeDecl classDecl = new ClassDecl(
-                ClassDesc.of("p", "C"), Set.of(Modifier.PUBLIC), Optional.empty(), List.of(), List.of(), List.of());
-        TypeDecl interfaceDecl =
-                new InterfaceDecl(ClassDesc.of("p", "I"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of());
-        TypeDecl recordDecl =
-                new RecordDecl(ClassDesc.of("p", "R"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of());
+                ClassDesc.of("p", "C"),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of());
+        TypeDecl interfaceDecl = new InterfaceDecl(
+                ClassDesc.of("p", "I"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
+        TypeDecl recordDecl = new RecordDecl(
+                ClassDesc.of("p", "R"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
         TypeDecl enumDecl = new EnumDecl(
                 ClassDesc.of("p", "E"), Set.of(Modifier.PUBLIC), List.<EnumConstant>of(), List.of(), List.of());
 

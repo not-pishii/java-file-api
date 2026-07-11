@@ -46,10 +46,13 @@ final class TypeDeclRenderer {
             sb.append("sealed ");
         }
         sb.append("class ").append(decl.desc().displayName());
-        decl.superclass().ifPresent(sc -> sb.append(" extends ").append(imports.reference(sc)));
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
+        decl.superclass().ifPresent(sc -> sb.append(" extends ").append(TypeRefRenderer.renderType(sc, imports)));
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
-                    .append(decl.interfaces().stream().map(imports::reference).collect(Collectors.joining(", ")));
+                    .append(decl.interfaces().stream()
+                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .collect(Collectors.joining(", ")));
         }
         if (!decl.permits().isEmpty()) {
             sb.append(" permits ")
@@ -167,10 +170,11 @@ final class TypeDeclRenderer {
             sb.append("sealed ");
         }
         sb.append("interface ").append(decl.desc().displayName());
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
         if (!decl.extendsInterfaces().isEmpty()) {
             sb.append(" extends ")
                     .append(decl.extendsInterfaces().stream()
-                            .map(imports::reference)
+                            .map(i -> TypeRefRenderer.renderType(i, imports))
                             .collect(Collectors.joining(", ")));
         }
         if (!decl.permits().isEmpty()) {
@@ -279,6 +283,7 @@ final class TypeDeclRenderer {
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("record ")
                 .append(decl.desc().displayName());
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
         sb.append('(')
                 .append(decl.components().stream()
                         .map(c -> TypeRefRenderer.renderType(c.type(), imports) + " " + c.name())
@@ -286,7 +291,9 @@ final class TypeDeclRenderer {
                 .append(')');
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
-                    .append(decl.interfaces().stream().map(imports::reference).collect(Collectors.joining(", ")));
+                    .append(decl.interfaces().stream()
+                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .collect(Collectors.joining(", ")));
         }
         sb.append(" {\n");
         sb.append(renderRecordMembers(
@@ -342,7 +349,9 @@ final class TypeDeclRenderer {
                 .append(decl.desc().displayName());
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
-                    .append(decl.interfaces().stream().map(imports::reference).collect(Collectors.joining(", ")));
+                    .append(decl.interfaces().stream()
+                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .collect(Collectors.joining(", ")));
         }
         sb.append(" {\n");
         String pad1 = "    ".repeat(indent + 1);
