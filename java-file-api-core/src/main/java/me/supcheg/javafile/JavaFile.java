@@ -12,6 +12,7 @@ import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.render.SourceRenderer;
 import me.supcheg.javafile.render.StandardRenderer;
 import me.supcheg.javafile.transform.ClassTransform;
+import me.supcheg.javafile.transform.EnumTransform;
 import me.supcheg.javafile.transform.InterfaceTransform;
 import me.supcheg.javafile.transform.RecordTransform;
 import me.supcheg.javafile.transform.Transforms;
@@ -173,7 +174,7 @@ public final class JavaFile {
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed enum declaration
     /// @throws IllegalStateException if this file does not wrap an enum declaration
-    public JavaFile transformEnum(ClassTransform transform) {
+    public JavaFile transformEnum(EnumTransform transform) {
         if (typeDecl instanceof EnumDecl e) {
             return new JavaFile(packageName, simpleName, Transforms.transform(e, transform));
         }

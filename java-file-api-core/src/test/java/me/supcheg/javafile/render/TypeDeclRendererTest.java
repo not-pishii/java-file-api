@@ -167,6 +167,28 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersAnEnumConstructorWithThrowsClause() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Currency"));
+        ClassDesc parseException = ClassDesc.of("java.text", "ParseException");
+        builder.withConstructor(cb -> cb.withParam("code", Types.of(ClassDesc.of("java.lang", "String")))
+                        .withThrows(parseException)
+                        .withBody(b -> {}))
+                .withConstant("USD", new me.supcheg.javafile.code.StringLiteral("USD"));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Currency {
+                            USD("USD");
+
+                            Currency(String code) throws ParseException {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void nestedTypeDeclarationsAreNotSupportedInMvp() {
         var classDecl = new me.supcheg.javafile.model.ClassDecl(
                 ClassDesc.of("p", "Outer"),

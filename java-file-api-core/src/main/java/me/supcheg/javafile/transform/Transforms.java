@@ -10,6 +10,7 @@ import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.EnumDecl;
+import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.Modifier;
@@ -56,11 +57,11 @@ public final class Transforms {
     /// @param decl the source enum declaration
     /// @param transform the transform applied to each member
     /// @return a new enum declaration
-    public static EnumDecl transform(EnumDecl decl, ClassTransform transform) {
+    public static EnumDecl transform(EnumDecl decl, EnumTransform transform) {
         EnumBuilder builder = new EnumBuilder(decl.desc());
         decl.constants().forEach(builder::withConstant);
         decl.interfaces().forEach(builder::withInterface);
-        for (ClassMember member : decl.members()) {
+        for (EnumMember member : decl.members()) {
             transform.accept(builder, member);
         }
         return builder.build();

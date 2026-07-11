@@ -1,6 +1,7 @@
 /// Member-level transforms for rebuilding declarations and code bodies.
 ///
 /// A transform ([me.supcheg.javafile.transform.ClassTransform],
+/// [me.supcheg.javafile.transform.EnumTransform],
 /// [me.supcheg.javafile.transform.InterfaceTransform],
 /// [me.supcheg.javafile.transform.RecordTransform],
 /// [me.supcheg.javafile.transform.CodeTransform]) is invoked once per

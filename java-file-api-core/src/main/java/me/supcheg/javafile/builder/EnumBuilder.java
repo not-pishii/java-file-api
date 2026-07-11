@@ -2,9 +2,9 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.AbstractMethodDecl;
-import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumDecl;
+import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -26,16 +26,16 @@ import java.util.function.Consumer;
 /// [#build()] snapshots the accumulated state into an immutable
 /// [EnumDecl], so a builder may be reused after building.
 ///
-/// Implements `Consumer<ClassMember>` so that transforms and other producers
-/// can feed pre-built members directly via [#accept(ClassMember)].
+/// Implements `Consumer<EnumMember>` so that transforms and other producers
+/// can feed pre-built members directly via [#accept(EnumMember)].
 ///
 /// Instances are not thread-safe.
-public final class EnumBuilder implements Consumer<ClassMember> {
+public final class EnumBuilder implements Consumer<EnumMember> {
 
     private final ClassDesc desc;
     private final List<EnumConstant> constants = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
-    private final List<ClassMember> members = new ArrayList<>();
+    private final List<EnumMember> members = new ArrayList<>();
 
     /// Creates a builder for an enum with the given descriptor.
     ///
@@ -99,8 +99,8 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     ///
     /// @param spec receives the builder to populate the constructor
     /// @return this builder
-    public EnumBuilder withConstructor(Consumer<ConstructorBuilder> spec) {
-        ConstructorBuilder cb = new ConstructorBuilder();
+    public EnumBuilder withConstructor(Consumer<EnumConstructorBuilder> spec) {
+        EnumConstructorBuilder cb = new EnumConstructorBuilder();
         spec.accept(cb);
         members.add(cb.build());
         return this;
@@ -183,7 +183,7 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     ///
     /// @param member the member to append
     @Override
-    public void accept(ClassMember member) {
+    public void accept(EnumMember member) {
         members.add(member);
     }
 

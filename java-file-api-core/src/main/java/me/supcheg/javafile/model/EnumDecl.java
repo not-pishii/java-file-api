@@ -22,7 +22,7 @@ public record EnumDecl(
         Set<Modifier> modifiers,
         List<EnumConstant> constants,
         List<ClassOrInterfaceTypeRef> interfaces,
-        List<ClassMember> members)
+        List<EnumMember> members)
         implements TypeDecl {
     public EnumDecl {
         modifiers = Set.copyOf(modifiers);

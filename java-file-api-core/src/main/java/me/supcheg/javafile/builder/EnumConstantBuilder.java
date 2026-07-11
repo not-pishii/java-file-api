@@ -1,8 +1,8 @@
 package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.Expr;
-import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.EnumConstant;
+import me.supcheg.javafile.model.EnumConstantMember;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public final class EnumConstantBuilder {
 
     private final List<Expr> args = new ArrayList<>();
-    private final List<ClassMember> body = new ArrayList<>();
+    private final List<EnumConstantMember> body = new ArrayList<>();
 
     EnumConstantBuilder() {}
 

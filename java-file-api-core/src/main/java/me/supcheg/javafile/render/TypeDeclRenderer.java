@@ -8,7 +8,10 @@ import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.DefaultMethodDecl;
 import me.supcheg.javafile.model.EnumConstant;
+import me.supcheg.javafile.model.EnumConstantMember;
+import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.EnumDecl;
+import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
@@ -60,21 +63,31 @@ final class TypeDeclRenderer {
         }
         sb.append(" {").append(ctx.newline());
         sb.append(renderClassMembers(
-                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName(), false));
+                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName()));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderClassMembers(
-            List<ClassMember> members, Context ctx, String ownerSimpleName, boolean insideEnum) {
+    private static String renderEnumMembers(List<EnumMember> members, Context ctx, String ownerSimpleName) {
         return members.stream()
                 .map(member -> switch (member) {
                     case FieldDecl f -> renderField(f, ctx);
                     case MethodDecl m -> renderMethod(m, ctx);
-                    case ConstructorDecl c ->
-                        insideEnum
-                                ? renderEnumConstructor(c, ctx, ownerSimpleName)
-                                : renderConstructor(c, ctx, ownerSimpleName);
+                    case EnumConstructorDecl c -> renderEnumConstructor(c, ctx, ownerSimpleName);
+                    case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
+                    case TypeDecl ignored ->
+                        throw new UnsupportedOperationException(
+                                "nested type declarations are not supported in this MVP");
+                })
+                .collect(Collectors.joining(ctx.newline()));
+    }
+
+    private static String renderClassMembers(List<ClassMember> members, Context ctx, String ownerSimpleName) {
+        return members.stream()
+                .map(member -> switch (member) {
+                    case FieldDecl f -> renderField(f, ctx);
+                    case MethodDecl m -> renderMethod(m, ctx);
+                    case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl ignored ->
                         throw new UnsupportedOperationException(
@@ -140,7 +153,7 @@ final class TypeDeclRenderer {
                 + "}" + ctx.newline();
     }
 
-    private static String renderEnumConstructor(ConstructorDecl c, Context ctx, String ownerSimpleName) {
+    private static String renderEnumConstructor(EnumConstructorDecl c, Context ctx, String ownerSimpleName) {
         return ctx.pad() + ownerSimpleName + '('
                 + TypeRefRenderer.renderParams(c.params(), ctx)
                 + ')'
@@ -353,7 +366,7 @@ final class TypeDeclRenderer {
         }
         if (!decl.members().isEmpty()) {
             sb.append(ctx.newline());
-            sb.append(renderClassMembers(decl.members(), inner, decl.desc().displayName(), true));
+            sb.append(renderEnumMembers(decl.members(), inner, decl.desc().displayName()));
         }
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
@@ -369,10 +382,22 @@ final class TypeDeclRenderer {
         }
         if (!constant.body().isEmpty()) {
             sb.append(" {").append(ctx.newline());
-            sb.append(renderClassMembers(constant.body(), ctx.withIncreasedPad(), constant.name(), false));
+            sb.append(renderEnumConstantMembers(constant.body(), ctx.withIncreasedPad()));
             sb.append(ctx.pad()).append('}');
         }
         return sb.toString();
+    }
+
+    private static String renderEnumConstantMembers(List<EnumConstantMember> members, Context ctx) {
+        return members.stream()
+                .map(member -> switch (member) {
+                    case FieldDecl f -> renderField(f, ctx);
+                    case MethodDecl m -> renderMethod(m, ctx);
+                    case TypeDecl ignored ->
+                        throw new UnsupportedOperationException(
+                                "nested type declarations are not supported in this MVP");
+                })
+                .collect(Collectors.joining(ctx.newline()));
     }
 
     private static String renderStatements(List<me.supcheg.javafile.code.Stmt> statements, Context ctx) {

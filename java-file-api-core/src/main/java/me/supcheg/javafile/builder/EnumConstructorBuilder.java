@@ -2,8 +2,7 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
-import me.supcheg.javafile.model.ConstructorDecl;
-import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
@@ -11,45 +10,30 @@ import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [ConstructorDecl].
+/// A mutable builder for an [EnumConstructorDecl].
 ///
-/// Instances are created by [ClassBuilder#withConstructor(Consumer)] and are
-/// not meant to be instantiated directly. Enum constructors use the
-/// dedicated [EnumConstructorBuilder] instead, since they are always
-/// implicitly private and never carry modifiers. If
-/// [#withModifiers(Modifier...)] is never called, the built constructor
-/// defaults to the `public` modifier.
+/// Instances are created by [EnumBuilder#withConstructor(Consumer)] and are
+/// not meant to be instantiated directly. Unlike [ConstructorBuilder], there
+/// is no `withModifiers`: enum constructors are always implicitly private.
 ///
 /// Instances are not thread-safe.
-public final class ConstructorBuilder {
+public final class EnumConstructorBuilder {
 
-    private final Set<Modifier> modifiers = new LinkedHashSet<>();
     private final List<Param> params = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
     private CodeBody body = CodeBody.EMPTY;
 
-    ConstructorBuilder() {}
-
-    /// Adds the given modifiers to the constructor declaration.
-    ///
-    /// @param mods the modifiers to add
-    /// @return this builder
-    public ConstructorBuilder withModifiers(Modifier... mods) {
-        modifiers.addAll(List.of(mods));
-        return this;
-    }
+    EnumConstructorBuilder() {}
 
     /// Adds a parameter to the constructor's parameter list.
     ///
     /// @param name the parameter name
     /// @param type the declared parameter type
     /// @return this builder
-    public ConstructorBuilder withParam(String name, TypeRef type) {
+    public EnumConstructorBuilder withParam(String name, TypeRef type) {
         params.add(new Param(name, type));
         return this;
     }
@@ -58,7 +42,7 @@ public final class ConstructorBuilder {
     ///
     /// @param types the thrown exception types
     /// @return this builder
-    public ConstructorBuilder withThrows(ClassDesc... types) {
+    public EnumConstructorBuilder withThrows(ClassDesc... types) {
         for (ClassDesc type : types) {
             throwsTypes.add(Types.of(type));
         }
@@ -70,7 +54,7 @@ public final class ConstructorBuilder {
     ///
     /// @param types the thrown exception types
     /// @return this builder
-    public ConstructorBuilder withThrows(ClassOrInterfaceTypeRef... types) {
+    public EnumConstructorBuilder withThrows(ClassOrInterfaceTypeRef... types) {
         throwsTypes.addAll(List.of(types));
         return this;
     }
@@ -79,15 +63,14 @@ public final class ConstructorBuilder {
     ///
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
-    public ConstructorBuilder withBody(Consumer<CodeBuilder> spec) {
+    public EnumConstructorBuilder withBody(Consumer<CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.body = cb.build();
         return this;
     }
 
-    ConstructorDecl build() {
-        Set<Modifier> effectiveModifiers = modifiers.isEmpty() ? Set.of(Modifier.PUBLIC) : Set.copyOf(modifiers);
-        return new ConstructorDecl(effectiveModifiers, List.copyOf(params), body, List.copyOf(throwsTypes));
+    EnumConstructorDecl build() {
+        return new EnumConstructorDecl(List.copyOf(params), body, List.copyOf(throwsTypes));
     }
 }

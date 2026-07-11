@@ -15,7 +15,7 @@ import java.util.Set;
 /// @param modifiers the modifiers on the field declaration
 /// @param initializer the field's initializer expression, if any
 public record FieldDecl(String name, TypeRef type, Set<Modifier> modifiers, Optional<Expr> initializer)
-        implements ClassMember {
+        implements ClassMember, EnumMember, EnumConstantMember {
     public FieldDecl {
         modifiers = Set.copyOf(modifiers);
     }

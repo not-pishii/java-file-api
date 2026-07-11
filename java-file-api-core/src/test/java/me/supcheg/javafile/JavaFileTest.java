@@ -80,6 +80,24 @@ class JavaFileTest {
     }
 
     @Test
+    void transformEnumRewritesTheWrappedEnumDecl() {
+        JavaFile file = JavaFile.enum_(ClassDesc.of("me.supcheg.example", "Suit"), eb -> eb.withConstant("HEARTS")
+                .withConstant("SPADES"));
+
+        JavaFile transformed = file.transformEnum((builder, member) -> builder.accept(member));
+
+        assertThat(transformed.render()).contains("HEARTS, SPADES;");
+    }
+
+    @Test
+    void transformEnumOnAClassShapedFileThrows() {
+        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformEnum((builder, member) -> {}))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     void transformInterfaceOnAClassShapedFileThrows() {
         JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 

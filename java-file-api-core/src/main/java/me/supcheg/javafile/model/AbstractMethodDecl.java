@@ -28,7 +28,7 @@ public record AbstractMethodDecl(
         List<Param> params,
         Set<Modifier> modifiers,
         List<ClassOrInterfaceTypeRef> throwsTypes)
-        implements InterfaceMember, ClassMember {
+        implements InterfaceMember, ClassMember, EnumMember {
     public AbstractMethodDecl {
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);
