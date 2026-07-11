@@ -80,6 +80,31 @@ class CodeBuilderTest {
     }
 
     @Test
+    void remainingBinaryOperatorHelpersProduceBinaryExpr() {
+        CodeBuilder cb = new CodeBuilder();
+        Expr left = cb.field("a");
+        Expr right = cb.field("b");
+
+        assertThat(cb.sub(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.SUB, right));
+        assertThat(cb.mul(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.MUL, right));
+        assertThat(cb.div(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.DIV, right));
+        assertThat(cb.mod(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.MOD, right));
+        assertThat(cb.neq(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.NEQ, right));
+        assertThat(cb.ge(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.GE, right));
+        assertThat(cb.or(left, right)).isEqualTo(new BinaryExpr(left, BinaryOp.OR, right));
+    }
+
+    @Test
+    void remainingUnaryOperatorHelpersProduceUnaryExpr() {
+        CodeBuilder cb = new CodeBuilder();
+        Expr operand = cb.field("i");
+
+        assertThat(cb.preIncrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.PRE_INC, operand));
+        assertThat(cb.preDecrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.PRE_DEC, operand));
+        assertThat(cb.postDecrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.POST_DEC, operand));
+    }
+
+    @Test
     void instanceOfWithoutBindingProducesInstanceOfExprWithEmptyBinding() {
         CodeBuilder cb = new CodeBuilder();
         me.supcheg.javafile.type.TypeRef stringType =

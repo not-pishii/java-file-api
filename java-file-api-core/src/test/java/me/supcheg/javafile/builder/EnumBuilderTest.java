@@ -1,7 +1,11 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.EnumConstant;
+import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.FieldDecl;
+import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -65,6 +69,94 @@ class EnumBuilderTest {
         EnumDecl decl = builder.build();
 
         assertThat(decl.constants().get(0).body()).hasSize(1);
+    }
+
+    @Test
+    void preBuiltConstantIsAddedDirectly() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+        EnumConstant constant = new EnumConstant("CLUBS", java.util.List.of(), java.util.List.of());
+
+        builder.withConstant(constant);
+
+        assertThat(builder.build().constants()).containsExactly(constant);
+    }
+
+    @Test
+    void interfaceIsAddedViaClassDescOrTypeRef() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+        ClassDesc iface = ClassDesc.of("me.supcheg.example", "Describable");
+
+        builder.withInterface(iface);
+
+        assertThat(builder.build().interfaces()).containsExactly(Types.of(iface));
+    }
+
+    @Test
+    void enumCanDeclareAMethodAndAVoidMethod() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+
+        builder.withMethod(
+                        "label",
+                        Types.of(ClassDesc.of("java.lang", "String")),
+                        mb -> mb.withBody(b -> b.return_(b.literal("suit"))))
+                .withVoidMethod("reset", mb -> mb.withBody(b -> b.return_()));
+
+        EnumDecl decl = builder.build();
+
+        MethodDecl method = (MethodDecl) decl.members().get(0);
+        assertThat(method.name()).isEqualTo("label");
+        assertThat(method.returnType()).isPresent();
+
+        MethodDecl voidMethod = (MethodDecl) decl.members().get(1);
+        assertThat(voidMethod.name()).isEqualTo("reset");
+        assertThat(voidMethod.returnType()).isEmpty();
+    }
+
+    @Test
+    void enumCanDeclareAbstractMethodsImplementedPerConstant() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Op"));
+
+        builder.withAbstractMethod(
+                        "apply",
+                        Types.of(ClassDesc.of("java.lang", "Integer")),
+                        new me.supcheg.javafile.model.Param("x", Types.of(ClassDesc.of("java.lang", "Integer"))))
+                .withVoidAbstractMethod("reset");
+
+        EnumDecl decl = builder.build();
+
+        AbstractMethodDecl apply = (AbstractMethodDecl) decl.members().get(0);
+        assertThat(apply.name()).isEqualTo("apply");
+        assertThat(apply.returnType()).isPresent();
+        assertThat(apply.params()).hasSize(1);
+
+        AbstractMethodDecl reset = (AbstractMethodDecl) decl.members().get(1);
+        assertThat(reset.name()).isEqualTo("reset");
+        assertThat(reset.returnType()).isEmpty();
+    }
+
+    @Test
+    void acceptAppendsAPreBuiltMember() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+        EnumConstructorDecl member = new EnumConstructorDecl(
+                java.util.List.of(), me.supcheg.javafile.code.CodeBody.EMPTY, java.util.List.of());
+
+        builder.accept(member);
+
+        assertThat(builder.build().members()).containsExactly(member);
+    }
+
+    @Test
+    void enumConstructorThrowsClauseIsCarriedOver() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Planet"));
+        ClassDesc ioException = ClassDesc.of("java.io", "IOException");
+
+        builder.withConstructor(
+                cb -> cb.withThrows(ioException).withThrows(Types.of(ClassDesc.of("java.lang", "Double"))));
+
+        EnumConstructorDecl ctor =
+                (EnumConstructorDecl) builder.build().members().get(0);
+        assertThat(ctor.throwsTypes())
+                .containsExactly(Types.of(ioException), Types.of(ClassDesc.of("java.lang", "Double")));
     }
 
     private static final class CodeBuilderExprHolder {

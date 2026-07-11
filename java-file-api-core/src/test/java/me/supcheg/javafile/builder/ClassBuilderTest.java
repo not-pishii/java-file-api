@@ -2,7 +2,9 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
+import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
@@ -110,5 +112,68 @@ class ClassBuilderTest {
                 (me.supcheg.javafile.model.AbstractMethodDecl) decl.members().get(0);
         assertThat(method.name()).isEqualTo("area");
         assertThat(method.modifiers()).containsExactlyInAnyOrder(Modifier.PUBLIC, Modifier.ABSTRACT);
+    }
+
+    @Test
+    void classCanDeclareAVoidAbstractMethod() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Shape"));
+        builder.withVoidAbstractMethod("reset", new me.supcheg.javafile.model.Param("x", Types.of(STRING)));
+
+        ClassDecl decl = builder.build();
+
+        AbstractMethodDecl method = (AbstractMethodDecl) decl.members().get(0);
+        assertThat(method.name()).isEqualTo("reset");
+        assertThat(method.returnType()).isEmpty();
+        assertThat(method.params()).hasSize(1);
+    }
+
+    @Test
+    void typeParamIsCarriedOver() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Box"));
+        ClassOrInterfaceTypeRefHolder boundHolder = new ClassOrInterfaceTypeRefHolder();
+        builder.withTypeParam("T", boundHolder.ref());
+
+        ClassDecl decl = builder.build();
+
+        assertThat(decl.typeParams()).hasSize(1);
+        assertThat(decl.typeParams().get(0).name()).isEqualTo("T");
+        assertThat(decl.typeParams().get(0).bounds()).containsExactly(boundHolder.ref());
+    }
+
+    @Test
+    void acceptAppendsAPreBuiltMember() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Sink"));
+        AbstractMethodDecl member = new AbstractMethodDecl(
+                "op",
+                java.util.Optional.empty(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                java.util.List.of());
+
+        builder.accept(member);
+
+        ClassDecl decl = builder.build();
+        assertThat(decl.members()).containsExactly(member);
+    }
+
+    @Test
+    void constructorThrowsClauseIsCarriedOver() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Risky"));
+        ClassDesc ioException = ClassDesc.of("java.io", "IOException");
+        builder.withConstructor(cb -> cb.withThrows(ioException).withThrows(Types.of(BUNDLE)));
+
+        ClassDecl decl = builder.build();
+
+        ConstructorDecl ctor = (ConstructorDecl) decl.members().get(0);
+        assertThat(ctor.throwsTypes()).containsExactly(Types.of(ioException), Types.of(BUNDLE));
+    }
+
+    private static final class ClassOrInterfaceTypeRefHolder {
+        private final me.supcheg.javafile.type.ClassOrInterfaceTypeRef ref = Types.of(STRING);
+
+        me.supcheg.javafile.type.ClassOrInterfaceTypeRef ref() {
+            return ref;
+        }
     }
 }

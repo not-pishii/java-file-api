@@ -104,4 +104,59 @@ class JavaFileTest {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformInterface((builder, member) -> {}))
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void transformInterfaceRewritesTheWrappedInterfaceDecl() {
+        JavaFile file = JavaFile.interface_(
+                ClassDesc.of("me.supcheg.example", "Greeter"), ib -> ib.withAbstractMethod("greet", Types.of(STRING)));
+
+        JavaFile transformed = file.transformInterface((builder, member) -> builder.accept(member));
+
+        assertThat(transformed.render()).contains("String greet();");
+    }
+
+    @Test
+    void transformClassOnAnInterfaceShapedFileThrows() {
+        JavaFile file = JavaFile.interface_(ClassDesc.of("me.supcheg.example", "Greeter"), ib -> {});
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformClass((builder, member) -> {}))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void transformRecordRewritesTheWrappedRecordDecl() {
+        JavaFile file = JavaFile.record(
+                ClassDesc.of("me.supcheg.example", "Point"),
+                rb -> rb.withComponent("x", me.supcheg.javafile.type.PrimitiveTypeRef.INT));
+
+        JavaFile transformed = file.transformRecord((builder, member) -> builder.accept(member));
+
+        assertThat(transformed.render()).contains("record Point(int x)");
+    }
+
+    @Test
+    void transformRecordOnAClassShapedFileThrows() {
+        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformRecord((builder, member) -> {}))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void qualifiedNameOmitsTheDotForTheUnnamedPackage() {
+        JavaFile file = JavaFile.of(ClassDesc.of("Empty"), cb -> {});
+
+        assertThat(file.qualifiedName()).isEqualTo("Empty");
+    }
+
+    @Test
+    void writeToWritesDirectlyIntoTheOutputDirForTheUnnamedPackage(@TempDir Path tempDir) throws IOException {
+        JavaFile file = JavaFile.of(ClassDesc.of("Empty"), cb -> {});
+
+        file.writeTo(tempDir);
+
+        Path expected = tempDir.resolve("Empty.java");
+        assertThat(Files.exists(expected)).isTrue();
+        assertThat(Files.readString(expected)).isEqualTo(file.render());
+    }
 }

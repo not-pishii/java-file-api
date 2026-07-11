@@ -72,6 +72,8 @@ class ExprRendererTest {
                 .isEqualTo("1.5");
         assertThat(ExprRenderer.renderExpr(cb.literal(true), Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("true");
+        assertThat(ExprRenderer.renderExpr(cb.literal(false), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("false");
         assertThat(ExprRenderer.renderExpr(cb.literalNull(), Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("null");
     }
@@ -130,6 +132,19 @@ class ExprRendererTest {
                 .isEqualTo("!done");
         assertThat(ExprRenderer.renderExpr(cb.neg(cb.field("x")), Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("-x");
+    }
+
+    @Test
+    void unaryExprRendersPreIncrementPreDecrementAndPostDecrement() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.preIncrement(cb.field("i")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("++i");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.preDecrement(cb.field("i")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("--i");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.postDecrement(cb.field("i")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("i--");
     }
 
     @Test
@@ -356,6 +371,54 @@ class ExprRendererTest {
                     switch (obj) {
                         case String s when s.length() > 0 -> s;
                     }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void switchCaseWithMultipleLabelsIncludingDefaultRendersEachLabel() {
+        Stmt stmt = new SwitchStmt(
+                cb.field("day"),
+                java.util.List.of(new SwitchCase(
+                        java.util.List.of(new ConstantLabel(cb.literal("MON")), new DefaultLabel()),
+                        new ExprCaseBody(cb.literal(1)))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                    switch (day) {
+                        case "MON", default -> 1;
+                    }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void switchCaseWithAThrowBodyRendersThrowKeywordAndException() {
+        me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
+                java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));
+        Stmt stmt = new SwitchStmt(
+                cb.field("day"),
+                java.util.List.of(new SwitchCase(
+                        java.util.List.of(new DefaultLabel()),
+                        new me.supcheg.javafile.code.ThrowCaseBody(cb.new_(exceptionType, cb.literal("bad day"))))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                    switch (day) {
+                        default -> throw new IllegalStateException("bad day");
+                    }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void forStmtUpdateNotEndingInSemicolonIsNotStripped() {
+        Stmt update = new WhileStmt(cb.literal(true), new CodeBody(java.util.List.of()));
+        Stmt stmt = new me.supcheg.javafile.code.ForStmt(
+                Optional.empty(), Optional.empty(), Optional.of(update), new CodeBody(java.util.List.of()));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    for (; ; while (true) {\n}) {\n    }");
     }
 
     @Test
