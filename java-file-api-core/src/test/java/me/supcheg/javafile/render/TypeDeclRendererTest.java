@@ -7,6 +7,7 @@ import me.supcheg.javafile.builder.RecordBuilder;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -223,6 +224,50 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersAGenericAbstractMethodInAClassBody() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Container"));
+        var abstractMethod = new me.supcheg.javafile.model.AbstractMethodDecl(
+                "convert",
+                java.util.Optional.of(Types.typeVar("T")),
+                java.util.List.of(new TypeParam("T", java.util.List.of())),
+                java.util.List.of(),
+                java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                java.util.List.of());
+        builder.withModifiers(Modifier.ABSTRACT).accept(abstractMethod);
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public abstract class Container {
+                            public abstract <T> T convert();
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAGenericAbstractMethodInAnInterfaceBody() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Converter"));
+        var abstractMethod = new me.supcheg.javafile.model.AbstractMethodDecl(
+                "convert",
+                java.util.Optional.of(Types.typeVar("T")),
+                java.util.List.of(new TypeParam("T", java.util.List.of())),
+                java.util.List.of(),
+                java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                java.util.List.of());
+        builder.accept(abstractMethod);
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Converter {
+                            <T> T convert();
+                        }
+                        """);
+    }
+
+    @Test
     void rendersThrowsClauseOnAMethodAConstructorAndAnInterfaceMethod() {
         ClassDesc ioException = ClassDesc.of("java.io", "IOException");
         ClassBuilder classBuilder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Reader"));
@@ -346,5 +391,191 @@ class TypeDeclRendererTest {
                             }
                         }
                         """);
+    }
+
+    @Test
+    void rendersAnEnumWithARegularMethodMember() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Mode"));
+        builder.withConstant("ON")
+                .withMethod(
+                        "label",
+                        Types.of(ClassDesc.of("java.lang", "String")),
+                        mb -> mb.withBody(b -> b.return_(b.literal("on"))));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Mode {
+                            ON;
+
+                            public String label() {
+                                return "on";
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnInterfaceExtendingOtherInterfaces() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Combined"));
+        builder.withExtends(ClassDesc.of("java.lang", "AutoCloseable"))
+                .withExtends(ClassDesc.of("java.lang", "Runnable"));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Combined extends AutoCloseable, Runnable {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersDefaultAndStaticInterfaceMethodsAndAConstant() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Ops"));
+        ClassDesc string = ClassDesc.of("java.lang", "String");
+        builder.withConstant("NAME", Types.of(string), new me.supcheg.javafile.code.StringLiteral("ops"))
+                .withDefaultMethod("describe", Types.of(string), mb -> mb.withTypeParam("T")
+                        .withBody(b -> b.return_(b.literal("d"))))
+                .withStaticMethod("create", Types.of(string), mb -> mb.withBody(b -> b.return_(b.literal("c"))));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Ops {
+                            String NAME = "ops";
+
+                            default <T> String describe() {
+                                return "d";
+                            }
+
+                            static String create() {
+                                return "c";
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnEnumImplementingAnInterface() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Status"));
+        builder.withInterface(ClassDesc.of("java.io", "Serializable")).withConstant("OK");
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Status implements Serializable {
+                            OK;
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnEnumWithMembersOnlyAndNoConstants() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Utility"));
+        builder.withVoidMethod("noop", mb -> mb.withBody(b -> {}));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Utility {
+                            ;
+
+                            public void noop() {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnEnumConstantBodyContainingAFieldMember() {
+        var fieldMember = new me.supcheg.javafile.model.FieldDecl(
+                "cached",
+                PrimitiveTypeRef.INT,
+                java.util.Set.of(Modifier.PRIVATE),
+                java.util.Optional.of(new me.supcheg.javafile.code.IntLiteral(0)));
+        var constant =
+                new me.supcheg.javafile.model.EnumConstant("A", java.util.List.of(), java.util.List.of(fieldMember));
+        var enumDecl = new me.supcheg.javafile.model.EnumDecl(
+                ClassDesc.of("me.supcheg.example", "WithField"),
+                java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(constant),
+                java.util.List.of(),
+                java.util.List.of());
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                enumDecl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum WithField {
+                            A() {
+                                private int cached = 0;
+                            };
+                        }
+                        """);
+    }
+
+    @Test
+    void nestedTypeDeclarationInEnumMembersIsNotSupported() {
+        var enumDecl = new me.supcheg.javafile.model.EnumDecl(
+                ClassDesc.of("p", "E"),
+                java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
+
+        assertThatThrownBy(() ->
+                        TypeDeclRenderer.renderTypeDecl(enumDecl, Context.of(standardFormat(), new ImportManager("p"))))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void nestedTypeDeclarationInInterfaceMembersIsNotSupported() {
+        var interfaceDecl = new me.supcheg.javafile.model.InterfaceDecl(
+                ClassDesc.of("p", "I"),
+                java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
+
+        assertThatThrownBy(() -> TypeDeclRenderer.renderTypeDecl(
+                        interfaceDecl, Context.of(standardFormat(), new ImportManager("p"))))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void nestedTypeDeclarationInRecordMembersIsNotSupported() {
+        var recordDecl = new me.supcheg.javafile.model.RecordDecl(
+                ClassDesc.of("p", "R"),
+                java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
+
+        assertThatThrownBy(() -> TypeDeclRenderer.renderTypeDecl(
+                        recordDecl, Context.of(standardFormat(), new ImportManager("p"))))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void nestedTypeDeclarationInEnumConstantBodyIsNotSupported() {
+        var constant = new me.supcheg.javafile.model.EnumConstant(
+                "A", java.util.List.of(), java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
+        var enumDecl = new me.supcheg.javafile.model.EnumDecl(
+                ClassDesc.of("p", "E"),
+                java.util.Set.of(Modifier.PUBLIC),
+                java.util.List.of(constant),
+                java.util.List.of(),
+                java.util.List.of());
+
+        assertThatThrownBy(() ->
+                        TypeDeclRenderer.renderTypeDecl(enumDecl, Context.of(standardFormat(), new ImportManager("p"))))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 }
