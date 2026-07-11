@@ -3,7 +3,7 @@ plugins {
 }
 
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(automaticRelease = true)
 
     coordinates("me.supcheg", project.name, version.toString())
 
