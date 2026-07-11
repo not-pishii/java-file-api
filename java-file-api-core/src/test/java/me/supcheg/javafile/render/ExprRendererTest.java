@@ -371,4 +371,17 @@ class ExprRendererTest {
 
         assertThat(ExprRenderer.renderExpr(lambda, imports, 0)).isEqualTo("(String name) -> name.length()");
     }
+
+    @Test
+    void typedLambdaWithBlockBodyRendersBracedBlock() {
+        ImportManager imports = new ImportManager("p");
+        Expr lambda = cb.typedLambda(
+                java.util.List.of(new me.supcheg.javafile.model.Param(
+                        "name",
+                        me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String")))),
+                body -> body.return_(cb.call(cb.field("name"), "length")));
+
+        assertThat(ExprRenderer.renderExpr(lambda, imports, 1))
+                .isEqualTo("(String name) -> {\n        return name.length();\n    }");
+    }
 }
