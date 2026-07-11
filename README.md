@@ -69,6 +69,12 @@ through which every member of an existing declaration is passed. It decides whet
 replace it, drop it, or insert new members alongside it. The original model is not mutated — the result is a new
 declaration assembled by a fresh builder.
 
+### Lambdas
+
+Expressions cover lambdas with inferred (`(name) -> ...`) or explicitly typed (`(String name) -> ...`) parameters and
+expression or block bodies. The two parameter forms are separate sealed cases, so a lambda mixing typed and untyped
+parameters cannot be constructed.
+
 ### Imports
 
 The renderer resolves types through an import manager that returns a simple name when it is not yet claimed by another

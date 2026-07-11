@@ -3,6 +3,7 @@ package me.supcheg.javafile.render;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
 import me.supcheg.javafile.code.BlockCaseBody;
+import me.supcheg.javafile.code.BlockLambdaBody;
 import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
@@ -18,12 +19,15 @@ import me.supcheg.javafile.code.ElseIfClause;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
+import me.supcheg.javafile.code.ExprLambdaBody;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
+import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LambdaExpr;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
@@ -39,6 +43,7 @@ import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
@@ -104,6 +109,22 @@ final class ExprRenderer {
                         + renderSwitchCases(cases, imports, indent + 1)
                         + pad
                         + "}";
+            }
+            case LambdaExpr(var params, var body) -> {
+                String header =
+                        switch (params) {
+                                    case InferredLambdaParams(var names) -> "(" + String.join(", ", names) + ")";
+                                    case TypedLambdaParams(var typed) ->
+                                        "(" + TypeRefRenderer.renderParams(typed, imports) + ")";
+                                }
+                                + " -> ";
+                yield switch (body) {
+                    case ExprLambdaBody(var result) -> header + renderExpr(result, imports, indent);
+                    case BlockLambdaBody(var block) -> {
+                        String pad = "    ".repeat(indent);
+                        yield header + "{\n" + renderBlock(block, imports, indent + 1) + pad + "}";
+                    }
+                };
             }
         };
     }
