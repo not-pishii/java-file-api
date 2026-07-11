@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,7 +29,7 @@ class TypeDeclRendererTest {
                         .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting")))));
 
         ImportManager imports = new ImportManager("me.supcheg.example");
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), imports, 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), Context.of(standardFormat(), imports));
 
         assertThat(rendered).isEqualTo("""
                         public final class Messages {
@@ -48,11 +49,31 @@ class TypeDeclRendererTest {
         ClassDesc leaf = ClassDesc.of("ast", "Leaf");
         builder.permits(leaf).withAbstractMethod("kind", Types.of(ClassDesc.of("java.lang", "String")));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("ast"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("ast")));
 
         assertThat(rendered).isEqualTo("""
                         public sealed interface Node permits Leaf {
                             String kind();
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersARecordWithACompactConstructorClosingBraceIndentedNotContextToString() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
+        builder.withComponent("x", PrimitiveTypeRef.INT)
+                .withComponent("y", PrimitiveTypeRef.INT)
+                .withCompactConstructor(b -> b.exprStatement(b.call("requireValid")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        public record Point(int x, int y) {
+                            public Point {
+                                requireValid();
+                            }
                         }
                         """);
     }
@@ -64,7 +85,8 @@ class TypeDeclRendererTest {
                 .withComponent("y", PrimitiveTypeRef.INT)
                 .withStaticField("ORIGIN", PrimitiveTypeRef.INT, new me.supcheg.javafile.code.IntLiteral(0));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("geom"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
 
         assertThat(rendered).isEqualTo("""
                         public record Point(int x, int y) {
@@ -78,7 +100,8 @@ class TypeDeclRendererTest {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
         builder.withConstant("HEARTS").withConstant("SPADES");
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public enum Suit {
@@ -91,7 +114,8 @@ class TypeDeclRendererTest {
     void rendersAFullyEmptyEnumWithoutStraySemicolon() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Empty"));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public enum Empty {
@@ -107,7 +131,8 @@ class TypeDeclRendererTest {
                 .withConstant("MERCURY", new me.supcheg.javafile.code.DoubleLiteral(3.3e23))
                 .withConstant("VENUS", new me.supcheg.javafile.code.DoubleLiteral(4.8e24));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public enum Planet {
@@ -125,7 +150,8 @@ class TypeDeclRendererTest {
         builder.withVoidAbstractMethod("describe")
                 .withConstant("PLUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_())));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public enum Op {
@@ -151,7 +177,8 @@ class TypeDeclRendererTest {
                 java.util.List.of(),
                 java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
 
-        assertThatThrownBy(() -> TypeDeclRenderer.renderTypeDecl(classDecl, new ImportManager("p"), 0))
+        assertThatThrownBy(() -> TypeDeclRenderer.renderTypeDecl(
+                        classDecl, Context.of(standardFormat(), new ImportManager("p"))))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -163,7 +190,8 @@ class TypeDeclRendererTest {
                 .permits(circle)
                 .withAbstractMethod("area", Types.of(ClassDesc.of("java.lang", "Double")));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public abstract sealed class Shape permits Circle {
@@ -181,8 +209,8 @@ class TypeDeclRendererTest {
                 .withMethod("read", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withThrows(ioException)
                         .withBody(b -> b.return_(b.literalNull())));
 
-        String renderedClass =
-                TypeDeclRenderer.renderTypeDecl(classBuilder.build(), new ImportManager("me.supcheg.example"), 0);
+        String renderedClass = TypeDeclRenderer.renderTypeDecl(
+                classBuilder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(renderedClass).isEqualTo("""
                         public class Reader {
@@ -199,8 +227,8 @@ class TypeDeclRendererTest {
         interfaceBuilder.withAbstractMethod(
                 "read", Types.of(ClassDesc.of("java.lang", "String")), new Param[0], ioException);
 
-        String renderedInterface =
-                TypeDeclRenderer.renderTypeDecl(interfaceBuilder.build(), new ImportManager("me.supcheg.example"), 0);
+        String renderedInterface = TypeDeclRenderer.renderTypeDecl(
+                interfaceBuilder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(renderedInterface).isEqualTo("""
                         public interface Source {
@@ -217,7 +245,8 @@ class TypeDeclRendererTest {
                 .withInterface(Types.parameterized(
                         ClassDesc.of("java.util.function", "Supplier"), Types.exact(Types.typeVar("T"))));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public class Box<T extends Comparable<T>> implements Supplier<T> {
@@ -233,7 +262,8 @@ class TypeDeclRendererTest {
                 .withInterface(Types.parameterized(
                         ClassDesc.of("me.supcheg.example", "Contract"), Types.exact(Types.typeVar("T"))));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public record Impl<T>(T value) implements Contract<T> {
@@ -246,7 +276,8 @@ class TypeDeclRendererTest {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Contract"));
         builder.withTypeParam("T").withAbstractMethod("render", Types.typeVar("T"));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public interface Contract<T> {
@@ -265,7 +296,8 @@ class TypeDeclRendererTest {
                 .withParam("value", Types.typeVar("T"))
                 .withBody(b -> b.return_(b.literalNull())));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public class Factories {
@@ -283,7 +315,8 @@ class TypeDeclRendererTest {
                 .withThrows(Types.typeVar("X"))
                 .withBody(b -> {}));
 
-        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
 
         assertThat(rendered).isEqualTo("""
                         public class Thrower {

@@ -10,6 +10,7 @@ import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.render.SourceRenderer;
+import me.supcheg.javafile.render.StandardRenderer;
 import me.supcheg.javafile.transform.ClassTransform;
 import me.supcheg.javafile.transform.InterfaceTransform;
 import me.supcheg.javafile.transform.RecordTransform;
@@ -116,7 +117,7 @@ public final class JavaFile {
     ///
     /// @return the complete source text
     public String render() {
-        return SourceRenderer.render(packageName, typeDecl);
+        return StandardRenderer.instance().render(packageName, typeDecl, SourceRenderer.standardFormat());
     }
 
     /// Writes this file's rendered source text under `outputDir`, creating the

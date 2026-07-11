@@ -57,15 +57,13 @@ final class ExprRenderer {
 
     private ExprRenderer() {}
 
-    static String renderExpr(Expr expr, ImportManager imports, int indent) {
+    static String renderExpr(Expr expr, Context ctx) {
         return switch (expr) {
             case FieldAccessExpr(var target, var name) ->
-                target.map(t -> renderExpr(t, imports, indent) + "." + name).orElse(name);
+                target.map(t -> renderExpr(t, ctx) + "." + name).orElse(name);
             case MethodCallExpr(var target, var method, var args) -> {
-                String prefix =
-                        target.map(t -> renderExpr(t, imports, indent) + ".").orElse("");
-                String argsStr =
-                        args.stream().map(a -> renderExpr(a, imports, indent)).collect(Collectors.joining(", "));
+                String prefix = target.map(t -> renderExpr(t, ctx) + ".").orElse("");
+                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 yield prefix + method + "(" + argsStr + ")";
             }
             case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
@@ -74,215 +72,203 @@ final class ExprRenderer {
             case DoubleLiteral(var value) -> Double.toString(value);
             case BooleanLiteral(var value) -> Boolean.toString(value);
             case NullLiteral ignored -> "null";
-            case TextBlockExpr(var value) -> renderTextBlock(value, indent);
+            case TextBlockExpr(var value) -> renderTextBlock(value, ctx);
             case BinaryExpr(var left, var op, var right) ->
-                renderExpr(left, imports, indent) + " " + op.symbol() + " " + renderExpr(right, imports, indent);
+                renderExpr(left, ctx) + " " + op.symbol() + " " + renderExpr(right, ctx);
             case UnaryExpr(var op, var operand) ->
                 switch (op) {
-                    case NOT -> "!" + renderExpr(operand, imports, indent);
-                    case NEG -> "-" + renderExpr(operand, imports, indent);
-                    case PRE_INC -> "++" + renderExpr(operand, imports, indent);
-                    case PRE_DEC -> "--" + renderExpr(operand, imports, indent);
-                    case POST_INC -> renderExpr(operand, imports, indent) + "++";
-                    case POST_DEC -> renderExpr(operand, imports, indent) + "--";
+                    case NOT -> "!" + renderExpr(operand, ctx);
+                    case NEG -> "-" + renderExpr(operand, ctx);
+                    case PRE_INC -> "++" + renderExpr(operand, ctx);
+                    case PRE_DEC -> "--" + renderExpr(operand, ctx);
+                    case POST_INC -> renderExpr(operand, ctx) + "++";
+                    case POST_DEC -> renderExpr(operand, ctx) + "--";
                 };
             case InstanceOfExpr(var target, var type, var bindingName) ->
-                renderExpr(target, imports, indent)
+                renderExpr(target, ctx)
                         + " instanceof "
-                        + TypeRefRenderer.renderType(type, imports)
+                        + TypeRefRenderer.renderType(type, ctx)
                         + bindingName.map(n -> " " + n).orElse("");
             case NewExpr(var target, var args) -> {
-                String argsStr =
-                        args.stream().map(a -> renderExpr(a, imports, indent)).collect(Collectors.joining(", "));
+                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 String targetStr =
                         switch (target) {
-                            case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, imports);
-                            case DiamondNewTarget(var raw) -> imports.reference(raw) + "<>";
+                            case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
+                            case DiamondNewTarget(var raw) -> ctx.reference(raw) + "<>";
                         };
                 yield "new " + targetStr + "(" + argsStr + ")";
             }
-            case SwitchExpr(var selector, var cases) -> {
-                String pad = "    ".repeat(indent);
-                yield "switch ("
-                        + renderExpr(selector, imports, indent)
-                        + ") {\n"
-                        + renderSwitchCases(cases, imports, indent + 1)
-                        + pad
+            case SwitchExpr(var selector, var cases) ->
+                "switch ("
+                        + renderExpr(selector, ctx)
+                        + ") {" + ctx.newline()
+                        + renderSwitchCases(cases, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "}";
-            }
             case LambdaExpr(var params, var body) -> {
                 String header =
                         switch (params) {
                                     case InferredLambdaParams(var names) -> "(" + String.join(", ", names) + ")";
                                     case TypedLambdaParams(var typed) ->
-                                        "(" + TypeRefRenderer.renderParams(typed, imports) + ")";
+                                        "(" + TypeRefRenderer.renderParams(typed, ctx) + ")";
                                 }
                                 + " -> ";
                 yield switch (body) {
-                    case ExprLambdaBody(var result) -> header + renderExpr(result, imports, indent);
-                    case BlockLambdaBody(var block) -> {
-                        String pad = "    ".repeat(indent);
-                        yield header + "{\n" + renderBlock(block, imports, indent + 1) + pad + "}";
-                    }
+                    case ExprLambdaBody(var result) -> header + renderExpr(result, ctx);
+                    case BlockLambdaBody(var block) ->
+                        header + "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad() + "}";
                 };
             }
         };
     }
 
-    static String renderStmt(Stmt stmt, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
+    static String renderStmt(Stmt stmt, Context ctx) {
         return switch (stmt) {
             case ReturnStmt(var value) ->
-                pad + "return"
-                        + value.map(v -> " " + renderExpr(v, imports, indent)).orElse("") + ";";
-            case ExprStmt(var expr) -> pad + renderExpr(expr, imports, indent) + ";";
+                ctx.pad() + "return" + value.map(v -> " " + renderExpr(v, ctx)).orElse("") + ";";
+            case ExprStmt(var expr) -> ctx.pad() + renderExpr(expr, ctx) + ";";
             case AssignStmt(var target, var value) ->
-                pad + renderExpr(target, imports, indent) + " = " + renderExpr(value, imports, indent) + ";";
+                ctx.pad() + renderExpr(target, ctx) + " = " + renderExpr(value, ctx) + ";";
             case LocalVarDeclStmt(var type, var name, var initializer) ->
-                pad
-                        + type.map(t -> TypeRefRenderer.renderType(t, imports)).orElse("var")
+                ctx.pad()
+                        + type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
                         + " "
                         + name
                         + " = "
-                        + renderExpr(initializer, imports, indent)
+                        + renderExpr(initializer, ctx)
                         + ";";
             case IfStmt(var condition, var thenBody, var elseIfClauses, var elseBody) -> {
-                StringBuilder sb = new StringBuilder(pad)
+                StringBuilder sb = new StringBuilder(ctx.pad())
                         .append("if (")
-                        .append(renderExpr(condition, imports, indent))
-                        .append(") {\n")
-                        .append(renderBlock(thenBody, imports, indent + 1))
-                        .append(pad)
+                        .append(renderExpr(condition, ctx))
+                        .append(") {")
+                        .append(ctx.newline())
+                        .append(renderBlock(thenBody, ctx.withIncreasedPad()))
+                        .append(ctx.pad())
                         .append("}");
                 for (ElseIfClause clause : elseIfClauses) {
                     sb.append(" else if (")
-                            .append(renderExpr(clause.condition(), imports, indent))
-                            .append(") {\n")
-                            .append(renderBlock(clause.body(), imports, indent + 1))
-                            .append(pad)
+                            .append(renderExpr(clause.condition(), ctx))
+                            .append(") {")
+                            .append(ctx.newline())
+                            .append(renderBlock(clause.body(), ctx.withIncreasedPad()))
+                            .append(ctx.pad())
                             .append("}");
                 }
-                elseBody.ifPresent(b -> sb.append(" else {\n")
-                        .append(renderBlock(b, imports, indent + 1))
-                        .append(pad)
+                elseBody.ifPresent(b -> sb.append(" else {")
+                        .append(ctx.newline())
+                        .append(renderBlock(b, ctx.withIncreasedPad()))
+                        .append(ctx.pad())
                         .append("}"));
                 yield sb.toString();
             }
             case WhileStmt(var condition, var body) ->
-                pad
+                ctx.pad()
                         + "while ("
-                        + renderExpr(condition, imports, indent)
-                        + ") {\n"
-                        + renderBlock(body, imports, indent + 1)
-                        + pad
+                        + renderExpr(condition, ctx)
+                        + ") {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "}";
             case DoWhileStmt(var body, var condition) ->
-                pad
-                        + "do {\n"
-                        + renderBlock(body, imports, indent + 1)
-                        + pad
+                ctx.pad()
+                        + "do {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "} while ("
-                        + renderExpr(condition, imports, indent)
+                        + renderExpr(condition, ctx)
                         + ");";
             case ForStmt(var init, var condition, var update, var body) -> {
-                String initStr = init.map(i -> stripTrailingSemicolon(renderStmt(i, imports, 0)))
+                String initStr = init.map(i -> stripTrailingSemicolon(renderStmt(i, ctx.withoutPad())))
                         .orElse("");
-                String conditionStr =
-                        condition.map(c -> renderExpr(c, imports, indent)).orElse("");
-                String updateStr = update.map(u -> stripTrailingSemicolon(renderStmt(u, imports, 0)))
+                String conditionStr = condition.map(c -> renderExpr(c, ctx)).orElse("");
+                String updateStr = update.map(u -> stripTrailingSemicolon(renderStmt(u, ctx.withoutPad())))
                         .orElse("");
-                yield pad
+                yield ctx.pad()
                         + "for ("
                         + initStr
                         + "; "
                         + conditionStr
                         + "; "
                         + updateStr
-                        + ") {\n"
-                        + renderBlock(body, imports, indent + 1)
-                        + pad
+                        + ") {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "}";
             }
             case EnhancedForStmt(var elementType, var varName, var iterable, var body) ->
-                pad
+                ctx.pad()
                         + "for ("
-                        + TypeRefRenderer.renderType(elementType, imports)
+                        + TypeRefRenderer.renderType(elementType, ctx)
                         + " "
                         + varName
                         + " : "
-                        + renderExpr(iterable, imports, indent)
-                        + ") {\n"
-                        + renderBlock(body, imports, indent + 1)
-                        + pad
+                        + renderExpr(iterable, ctx)
+                        + ") {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "}";
             case SwitchStmt(var selector, var cases) ->
-                pad
+                ctx.pad()
                         + "switch ("
-                        + renderExpr(selector, imports, indent)
-                        + ") {\n"
-                        + renderSwitchCases(cases, imports, indent + 1)
-                        + pad
+                        + renderExpr(selector, ctx)
+                        + ") {" + ctx.newline()
+                        + renderSwitchCases(cases, ctx.withIncreasedPad())
+                        + ctx.pad()
                         + "}";
-            case YieldStmt(var value) -> pad + "yield " + renderExpr(value, imports, indent) + ";";
-            case ThrowStmt(var exception) -> pad + "throw " + renderExpr(exception, imports, indent) + ";";
-            case BreakStmt ignored -> pad + "break;";
-            case ContinueStmt ignored -> pad + "continue;";
+            case YieldStmt(var value) -> ctx.pad() + "yield " + renderExpr(value, ctx) + ";";
+            case ThrowStmt(var exception) -> ctx.pad() + "throw " + renderExpr(exception, ctx) + ";";
+            case BreakStmt ignored -> ctx.pad() + "break;";
+            case ContinueStmt ignored -> ctx.pad() + "continue;";
         };
     }
 
-    static String renderBlock(CodeBody body, ImportManager imports, int indent) {
+    static String renderBlock(CodeBody body, Context ctx) {
         return body.statements().stream()
-                .map(s -> renderStmt(s, imports, indent) + "\n")
+                .map(s -> renderStmt(s, ctx) + ctx.newline())
                 .collect(Collectors.joining());
     }
 
-    private static String renderSwitchCase(SwitchCase c, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
+    private static String renderSwitchCase(SwitchCase c, Context ctx) {
         boolean isDefault = c.labels().size() == 1 && c.labels().get(0) instanceof DefaultLabel;
         String header = isDefault
                 ? "default"
                 : "case "
-                        + c.labels().stream()
-                                .map(l -> renderCaseLabel(l, imports, indent))
-                                .collect(Collectors.joining(", "));
-        return pad + header + " -> " + renderCaseBody(c.body(), imports, indent);
+                        + c.labels().stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));
+        return ctx.pad() + header + " -> " + renderCaseBody(c.body(), ctx);
     }
 
-    private static String renderCaseLabel(CaseLabel label, ImportManager imports, int indent) {
+    private static String renderCaseLabel(CaseLabel label, Context ctx) {
         return switch (label) {
-            case ConstantLabel(var value) -> renderExpr(value, imports, indent);
+            case ConstantLabel(var value) -> renderExpr(value, ctx);
             case TypePatternLabel(var type, var bindingName, var guard) ->
-                TypeRefRenderer.renderType(type, imports)
+                TypeRefRenderer.renderType(type, ctx)
                         + " "
                         + bindingName
-                        + guard.map(g -> " when " + renderExpr(g, imports, indent))
-                                .orElse("");
+                        + guard.map(g -> " when " + renderExpr(g, ctx)).orElse("");
             case DefaultLabel ignored -> "default";
         };
     }
 
-    private static String renderCaseBody(CaseBody body, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
+    private static String renderCaseBody(CaseBody body, Context ctx) {
         return switch (body) {
-            case ExprCaseBody(var expr) -> renderExpr(expr, imports, indent) + ";";
-            case ThrowCaseBody(var exception) -> "throw " + renderExpr(exception, imports, indent) + ";";
-            case BlockCaseBody(var block) -> "{\n" + renderBlock(block, imports, indent + 1) + pad + "}";
+            case ExprCaseBody(var expr) -> renderExpr(expr, ctx) + ";";
+            case ThrowCaseBody(var exception) -> "throw " + renderExpr(exception, ctx) + ";";
+            case BlockCaseBody(var block) ->
+                "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad() + "}";
         };
     }
 
-    private static String renderSwitchCases(List<SwitchCase> cases, ImportManager imports, int indent) {
-        return cases.stream()
-                .map(c -> renderSwitchCase(c, imports, indent) + "\n")
-                .collect(Collectors.joining());
+    private static String renderSwitchCases(List<SwitchCase> cases, Context ctx) {
+        return cases.stream().map(c -> renderSwitchCase(c, ctx) + ctx.newline()).collect(Collectors.joining());
     }
 
-    private static String renderTextBlock(String value, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder("\"\"\"\n");
+    private static String renderTextBlock(String value, Context ctx) {
+        StringBuilder sb = new StringBuilder("\"\"\"" + ctx.newline());
         for (String line : value.split("\n", -1)) {
-            sb.append(pad).append(line).append("\n");
+            sb.append(ctx.pad()).append(line).append(ctx.newline());
         }
-        sb.append(pad).append("\"\"\"");
+        sb.append(ctx.pad()).append("\"\"\"");
         return sb.toString();
     }
 

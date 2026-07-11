@@ -11,7 +11,7 @@ import java.util.Map;
 /// same simple name from a different package are rendered fully qualified
 /// instead. Types in `java.lang` or the file's own package are never
 /// imported.
-final class ImportManager {
+final class ImportManager implements TypeContext {
 
     private final String currentPackage;
     private final Map<String, ClassDesc> claims = new LinkedHashMap<>();
@@ -20,7 +20,8 @@ final class ImportManager {
         this.currentPackage = currentPackage;
     }
 
-    String reference(ClassDesc desc) {
+    @Override
+    public String reference(ClassDesc desc) {
         String simpleName = desc.displayName();
         String packageName = desc.packageName();
 
