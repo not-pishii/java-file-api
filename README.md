@@ -58,7 +58,9 @@ String source = file.render();
 Builders assemble a model from records organized into sealed hierarchies: type declarations, members, statements,
 expressions, and type references. The allowed members for each kind of declaration are enforced by the type system — for
 example, an interface only accepts `InterfaceMember`, and a record only accepts `RecordMember`. Method bodies are built
-from the same expressions and statements as an AST, without string concatenation.
+from the same expressions and statements as an AST, without string concatenation. Diamond instantiation
+(`new Impl<>(...)`) is modelled as a separate sealed new-target holding only the raw class, so explicit type arguments
+cannot be combined with the diamond.
 
 ### Transformations
 
