@@ -119,6 +119,17 @@ class CodeBuilderTest {
     }
 
     @Test
+    void newDiamondCarriesRawClassAndArguments() {
+        CodeBuilder cb = new CodeBuilder();
+        java.lang.constant.ClassDesc rawType = java.lang.constant.ClassDesc.of("java.util", "ArrayList");
+
+        Expr expr = cb.newDiamond(rawType, cb.literal("seed"));
+
+        assertThat(expr)
+                .isEqualTo(new NewExpr(new DiamondNewTarget(rawType), java.util.List.of(new StringLiteral("seed"))));
+    }
+
+    @Test
     void localVarWithExplicitTypeAddsATypedDeclaration() {
         CodeBuilder cb = new CodeBuilder();
         cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(0));
