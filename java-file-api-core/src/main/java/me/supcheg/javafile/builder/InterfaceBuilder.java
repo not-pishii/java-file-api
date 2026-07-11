@@ -103,9 +103,10 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.of(returnType),
+                List.of(),
                 List.of(params),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of(throwsTypes)));
+                normalizeThrows(throwsTypes)));
         return this;
     }
 
@@ -129,9 +130,10 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.empty(),
+                List.of(),
                 List.of(params),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of(throwsTypes)));
+                normalizeThrows(throwsTypes)));
         return this;
     }
 
@@ -144,7 +146,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceBuilder withDefaultMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new DefaultMethodDecl(mb.name(), mb.returnType(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new DefaultMethodDecl(
+                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -157,7 +160,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceBuilder withStaticMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new StaticMethodDecl(mb.name(), mb.returnType(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new StaticMethodDecl(
+                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -191,5 +195,13 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.copyOf(extendsInterfaces),
                 List.copyOf(permittedSubtypes),
                 List.copyOf(members));
+    }
+
+    private static List<ClassOrInterfaceTypeRef> normalizeThrows(ClassDesc[] types) {
+        List<ClassOrInterfaceTypeRef> normalized = new ArrayList<>(types.length);
+        for (ClassDesc type : types) {
+            normalized.add(Types.of(type));
+        }
+        return normalized;
     }
 }

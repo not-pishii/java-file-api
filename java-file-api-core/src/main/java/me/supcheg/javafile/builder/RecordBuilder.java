@@ -100,7 +100,11 @@ public final class RecordBuilder implements Consumer<RecordMember> {
             Set<Modifier> modifiers, List<ClassDesc> throwsTypes, Consumer<CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        members.add(new CompactConstructorDecl(modifiers, cb.build(), throwsTypes));
+        List<ClassOrInterfaceTypeRef> normalizedThrows = new ArrayList<>(throwsTypes.size());
+        for (ClassDesc type : throwsTypes) {
+            normalizedThrows.add(Types.of(type));
+        }
+        members.add(new CompactConstructorDecl(modifiers, cb.build(), normalizedThrows));
         return this;
     }
 
@@ -113,8 +117,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -126,8 +130,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 

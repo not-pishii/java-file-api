@@ -128,8 +128,8 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     public EnumBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -141,8 +141,8 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     public EnumBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -154,7 +154,12 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public EnumBuilder withAbstractMethod(String name, TypeRef returnType, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.of(returnType), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.of(returnType),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 
@@ -165,7 +170,12 @@ public final class EnumBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public EnumBuilder withVoidAbstractMethod(String name, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.empty(), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.empty(),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 

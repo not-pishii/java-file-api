@@ -111,7 +111,12 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public ClassBuilder withAbstractMethod(String name, TypeRef returnType, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.of(returnType), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.of(returnType),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 
@@ -122,7 +127,12 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public ClassBuilder withVoidAbstractMethod(String name, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.empty(), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.empty(),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 

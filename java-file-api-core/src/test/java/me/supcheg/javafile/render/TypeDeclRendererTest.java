@@ -254,4 +254,42 @@ class TypeDeclRendererTest {
                         }
                         """);
     }
+
+    @Test
+    void rendersAStaticGenericMethodWithTypeParamAfterModifiers() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Factories"));
+        ClassDesc contract = ClassDesc.of("me.supcheg.example", "Contract");
+        builder.withMethod("of", Types.parameterized(contract, Types.exact(Types.typeVar("T"))), mb -> mb.withModifiers(
+                        Modifier.PUBLIC, Modifier.STATIC)
+                .withTypeParam("T")
+                .withParam("value", Types.typeVar("T"))
+                .withBody(b -> b.return_(b.literalNull())));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+
+        assertThat(rendered).isEqualTo("""
+                        public class Factories {
+                            public static <T> Contract<T> of(T value) {
+                                return null;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAMethodThrowingATypeVariable() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Thrower"));
+        builder.withVoidMethod("rethrow", mb -> mb.withTypeParam("X", Types.of(ClassDesc.of("java.lang", "Exception")))
+                .withThrows(Types.typeVar("X"))
+                .withBody(b -> {}));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), new ImportManager("me.supcheg.example"), 0);
+
+        assertThat(rendered).isEqualTo("""
+                        public class Thrower {
+                            public <X extends Exception> void rethrow() throws X {
+                            }
+                        }
+                        """);
+    }
 }

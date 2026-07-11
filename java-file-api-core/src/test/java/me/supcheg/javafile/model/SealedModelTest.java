@@ -25,6 +25,7 @@ class SealedModelTest {
                 Optional.of(Types.of(STRING)),
                 Set.of(Modifier.PUBLIC),
                 List.of(),
+                List.of(),
                 CodeBody.EMPTY,
                 List.of());
 
@@ -46,12 +47,13 @@ class SealedModelTest {
                 "kind",
                 Optional.of(Types.of(STRING)),
                 List.of(),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of());
-        DefaultMethodDecl defaultMethod =
-                new DefaultMethodDecl("describe", Optional.of(Types.of(STRING)), List.of(), CodeBody.EMPTY, List.of());
-        StaticMethodDecl staticMethod =
-                new StaticMethodDecl("create", Optional.of(Types.of(STRING)), List.of(), CodeBody.EMPTY, List.of());
+        DefaultMethodDecl defaultMethod = new DefaultMethodDecl(
+                "describe", Optional.of(Types.of(STRING)), List.of(), List.of(), CodeBody.EMPTY, List.of());
+        StaticMethodDecl staticMethod = new StaticMethodDecl(
+                "create", Optional.of(Types.of(STRING)), List.of(), List.of(), CodeBody.EMPTY, List.of());
         ConstantDecl constant =
                 new ConstantDecl("MAX", Types.of(STRING), new me.supcheg.javafile.code.StringLiteral("x"));
 

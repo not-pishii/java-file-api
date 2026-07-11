@@ -19,8 +19,9 @@ import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 
-import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,8 +93,10 @@ final class TypeDeclRenderer {
         String pad = "    ".repeat(indent);
         String returnType =
                 m.returnType().map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void");
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
         return pad
                 + TypeRefRenderer.renderModifiers(m.modifiers())
+                + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
                 + " "
                 + m.name()
@@ -116,6 +119,10 @@ final class TypeDeclRenderer {
         String pad = "    ".repeat(indent);
         StringBuilder sb = new StringBuilder(pad);
         sb.append(TypeRefRenderer.renderModifiers(m.modifiers()));
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
+        if (!typeParams.isEmpty()) {
+            sb.append(typeParams).append(' ');
+        }
         sb.append(m.returnType()
                         .map(t -> TypeRefRenderer.renderType(t, imports))
                         .orElse("void"))
@@ -195,6 +202,7 @@ final class TypeDeclRenderer {
                         renderDefaultOrStaticMethod(
                                 d.name(),
                                 d.returnType(),
+                                d.typeParams(),
                                 d.params(),
                                 d.body(),
                                 d.throwsTypes(),
@@ -205,6 +213,7 @@ final class TypeDeclRenderer {
                         renderDefaultOrStaticMethod(
                                 s.name(),
                                 s.returnType(),
+                                s.typeParams(),
                                 s.params(),
                                 s.body(),
                                 s.throwsTypes(),
@@ -221,9 +230,11 @@ final class TypeDeclRenderer {
 
     private static String renderAbstractMethod(AbstractMethodDecl m, ImportManager imports, int indent) {
         String pad = "    ".repeat(indent);
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
         String returnType =
                 m.returnType().map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void");
         return pad
+                + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
                 + " "
                 + m.name()
@@ -237,15 +248,20 @@ final class TypeDeclRenderer {
     private static String renderDefaultOrStaticMethod(
             String name,
             java.util.Optional<me.supcheg.javafile.type.TypeRef> returnType,
+            List<TypeParam> typeParams,
             List<Param> params,
             me.supcheg.javafile.code.CodeBody body,
-            List<ClassDesc> throwsTypes,
+            List<ClassOrInterfaceTypeRef> throwsTypes,
             String keyword,
             ImportManager imports,
             int indent) {
         String pad = "    ".repeat(indent);
         StringBuilder sb = new StringBuilder(pad);
         sb.append(keyword).append(' ');
+        String renderedTypeParams = TypeRefRenderer.renderTypeParams(typeParams, imports);
+        if (!renderedTypeParams.isEmpty()) {
+            sb.append(renderedTypeParams).append(' ');
+        }
         sb.append(returnType.map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void"))
                 .append(' ');
         sb.append(name)
@@ -259,11 +275,14 @@ final class TypeDeclRenderer {
         return sb.toString();
     }
 
-    private static String renderThrows(List<ClassDesc> throwsTypes, ImportManager imports) {
+    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, ImportManager imports) {
         if (throwsTypes.isEmpty()) {
             return "";
         }
-        return " throws " + throwsTypes.stream().map(imports::reference).collect(Collectors.joining(", "));
+        return " throws "
+                + throwsTypes.stream()
+                        .map(t -> TypeRefRenderer.renderType(t, imports))
+                        .collect(Collectors.joining(", "));
     }
 
     private static String renderConstant(ConstantDecl c, ImportManager imports, int indent) {

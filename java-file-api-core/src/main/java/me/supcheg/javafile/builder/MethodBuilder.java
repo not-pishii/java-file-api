@@ -5,7 +5,10 @@ import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -33,8 +36,9 @@ public final class MethodBuilder {
     private final String name;
     private final Optional<TypeRef> returnType;
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
+    private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<Param> params = new ArrayList<>();
-    private final List<ClassDesc> throwsTypes = new ArrayList<>();
+    private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
     private CodeBody body = CodeBody.EMPTY;
 
     MethodBuilder(String name, Optional<TypeRef> returnType) {
@@ -48,6 +52,16 @@ public final class MethodBuilder {
     /// @return this builder
     public MethodBuilder withModifiers(Modifier... mods) {
         modifiers.addAll(List.of(mods));
+        return this;
+    }
+
+    /// Adds a type parameter to the method declaration, e.g. `<T>`.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds the parameter's upper bounds, or none for an unbounded parameter
+    /// @return this builder
+    public MethodBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
+        typeParams.add(new TypeParam(name, List.of(bounds)));
         return this;
     }
 
@@ -66,6 +80,18 @@ public final class MethodBuilder {
     /// @param types the thrown exception types
     /// @return this builder
     public MethodBuilder withThrows(ClassDesc... types) {
+        for (ClassDesc type : types) {
+            throwsTypes.add(Types.of(type));
+        }
+        return this;
+    }
+
+    /// Adds types, possibly parameterized or type variables, to the method's
+    /// `throws` clause.
+    ///
+    /// @param types the thrown exception types
+    /// @return this builder
+    public MethodBuilder withThrows(ClassOrInterfaceTypeRef... types) {
         throwsTypes.addAll(List.of(types));
         return this;
     }
@@ -93,6 +119,10 @@ public final class MethodBuilder {
         return modifiers.isEmpty() ? Set.of(Modifier.PUBLIC) : Set.copyOf(modifiers);
     }
 
+    List<TypeParam> typeParams() {
+        return List.copyOf(typeParams);
+    }
+
     List<Param> params() {
         return List.copyOf(params);
     }
@@ -101,11 +131,18 @@ public final class MethodBuilder {
         return body;
     }
 
-    List<ClassDesc> throwsTypes() {
+    List<ClassOrInterfaceTypeRef> throwsTypes() {
         return List.copyOf(throwsTypes);
     }
 
     MethodDecl build() {
-        return new MethodDecl(name, returnType, modifiers(), List.copyOf(params), body, List.copyOf(throwsTypes));
+        return new MethodDecl(
+                name,
+                returnType,
+                modifiers(),
+                List.copyOf(typeParams),
+                List.copyOf(params),
+                body,
+                List.copyOf(throwsTypes));
     }
 }
