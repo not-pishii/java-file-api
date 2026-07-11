@@ -5,7 +5,9 @@ import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public final class ConstructorBuilder {
 
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
     private final List<Param> params = new ArrayList<>();
-    private final List<ClassDesc> throwsTypes = new ArrayList<>();
+    private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
     private CodeBody body = CodeBody.EMPTY;
 
     ConstructorBuilder() {}
@@ -55,6 +57,18 @@ public final class ConstructorBuilder {
     /// @param types the thrown exception types
     /// @return this builder
     public ConstructorBuilder withThrows(ClassDesc... types) {
+        for (ClassDesc type : types) {
+            throwsTypes.add(Types.of(type));
+        }
+        return this;
+    }
+
+    /// Adds types, possibly parameterized or type variables, to the
+    /// constructor's `throws` clause.
+    ///
+    /// @param types the thrown exception types
+    /// @return this builder
+    public ConstructorBuilder withThrows(ClassOrInterfaceTypeRef... types) {
         throwsTypes.addAll(List.of(types));
         return this;
     }

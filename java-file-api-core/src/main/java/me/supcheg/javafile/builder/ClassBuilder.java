@@ -5,7 +5,10 @@ import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -29,8 +32,9 @@ public final class ClassBuilder implements Consumer<ClassMember> {
 
     private final ClassDesc desc;
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
-    private ClassDesc superclass;
-    private final List<ClassDesc> interfaces = new ArrayList<>();
+    private final List<TypeParam> typeParams = new ArrayList<>();
+    private ClassOrInterfaceTypeRef superclass;
+    private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private final List<ClassDesc> permits = new ArrayList<>();
     private final List<ClassMember> members = new ArrayList<>();
 
@@ -53,20 +57,39 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
-    /// Sets the class's `extends` superclass.
+    /// Adds a type parameter to the class declaration, e.g. `T` or
+    /// `T extends Comparable<T>`.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds the parameter's upper bounds, or none for an unbounded parameter
+    /// @return this builder
+    public ClassBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
+        typeParams.add(new TypeParam(name, List.of(bounds)));
+        return this;
+    }
+
+    public ClassBuilder withSuperclass(ClassDesc superclass) {
+        return withSuperclass(Types.of(superclass));
+    }
+
+    /// Sets the class's `extends` superclass, possibly parameterized.
     ///
     /// @param superclass the superclass to extend
     /// @return this builder
-    public ClassBuilder withSuperclass(ClassDesc superclass) {
+    public ClassBuilder withSuperclass(ClassOrInterfaceTypeRef superclass) {
         this.superclass = superclass;
         return this;
     }
 
-    /// Adds an interface to the class's `implements` clause.
+    public ClassBuilder withInterface(ClassDesc iface) {
+        return withInterface(Types.of(iface));
+    }
+
+    /// Adds an interface, possibly parameterized, to the class's `implements` clause.
     ///
     /// @param iface the implemented interface
     /// @return this builder
-    public ClassBuilder withInterface(ClassDesc iface) {
+    public ClassBuilder withInterface(ClassOrInterfaceTypeRef iface) {
         interfaces.add(iface);
         return this;
     }
@@ -88,7 +111,12 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public ClassBuilder withAbstractMethod(String name, TypeRef returnType, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.of(returnType), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.of(returnType),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 
@@ -99,7 +127,12 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public ClassBuilder withVoidAbstractMethod(String name, Param... params) {
         members.add(new AbstractMethodDecl(
-                name, Optional.empty(), List.of(params), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of()));
+                name,
+                Optional.empty(),
+                List.of(),
+                List.of(params),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of()));
         return this;
     }
 
@@ -167,6 +200,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return new ClassDecl(
                 desc,
                 Set.copyOf(modifiers),
+                List.copyOf(typeParams),
                 Optional.ofNullable(superclass),
                 List.copyOf(interfaces),
                 List.copyOf(permits),

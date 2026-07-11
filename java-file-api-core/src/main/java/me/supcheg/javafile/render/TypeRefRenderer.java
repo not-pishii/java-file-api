@@ -10,7 +10,9 @@ import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeArg;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.util.Comparator;
@@ -33,6 +35,7 @@ final class TypeRefRenderer {
                         args.stream().map(a -> renderTypeArg(a, imports)).collect(Collectors.joining(", "));
                 yield rawName + "<" + argsStr + ">";
             }
+            case TypeVarRef(var name) -> name;
             case ArrayTypeRef(var component) -> renderType(component, imports) + "[]";
             case PrimitiveTypeRef p -> p.sourceName();
         };
@@ -68,5 +71,20 @@ final class TypeRefRenderer {
         return params.stream()
                 .map(p -> renderType(p.type(), imports) + " " + p.name())
                 .collect(Collectors.joining(", "));
+    }
+
+    static String renderTypeParams(List<TypeParam> typeParams, ImportManager imports) {
+        if (typeParams.isEmpty()) {
+            return "";
+        }
+        return typeParams.stream().map(p -> renderTypeParam(p, imports)).collect(Collectors.joining(", ", "<", ">"));
+    }
+
+    private static String renderTypeParam(TypeParam param, ImportManager imports) {
+        if (param.bounds().isEmpty()) {
+            return param.name();
+        }
+        return param.name() + " extends "
+                + param.bounds().stream().map(b -> renderType(b, imports)).collect(Collectors.joining(" & "));
     }
 }

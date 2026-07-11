@@ -9,7 +9,10 @@ import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -33,8 +36,9 @@ import java.util.function.Consumer;
 public final class RecordBuilder implements Consumer<RecordMember> {
 
     private final ClassDesc desc;
+    private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<RecordComponent> components = new ArrayList<>();
-    private final List<ClassDesc> interfaces = new ArrayList<>();
+    private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private final List<RecordMember> members = new ArrayList<>();
 
     /// Creates a builder for a record with the given descriptor.
@@ -42,6 +46,17 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the record to declare; its package and simple name determine the file location
     public RecordBuilder(ClassDesc desc) {
         this.desc = desc;
+    }
+
+    /// Adds a type parameter to the record declaration, e.g. `T` or
+    /// `T extends Comparable<T>`.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds the parameter's upper bounds, or none for an unbounded parameter
+    /// @return this builder
+    public RecordBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
+        typeParams.add(new TypeParam(name, List.of(bounds)));
+        return this;
     }
 
     /// Adds a record component, in declaration order.
@@ -54,11 +69,15 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
-    /// Adds an interface to the record's `implements` clause.
+    public RecordBuilder withInterface(ClassDesc iface) {
+        return withInterface(Types.of(iface));
+    }
+
+    /// Adds an interface, possibly parameterized, to the record's `implements` clause.
     ///
     /// @param iface the implemented interface
     /// @return this builder
-    public RecordBuilder withInterface(ClassDesc iface) {
+    public RecordBuilder withInterface(ClassOrInterfaceTypeRef iface) {
         interfaces.add(iface);
         return this;
     }
@@ -81,7 +100,11 @@ public final class RecordBuilder implements Consumer<RecordMember> {
             Set<Modifier> modifiers, List<ClassDesc> throwsTypes, Consumer<CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        members.add(new CompactConstructorDecl(modifiers, cb.build(), throwsTypes));
+        List<ClassOrInterfaceTypeRef> normalizedThrows = new ArrayList<>(throwsTypes.size());
+        for (ClassDesc type : throwsTypes) {
+            normalizedThrows.add(Types.of(type));
+        }
+        members.add(new CompactConstructorDecl(modifiers, cb.build(), normalizedThrows));
         return this;
     }
 
@@ -94,8 +117,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -107,8 +130,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(
-                new MethodDecl(mb.name(), mb.returnType(), mb.modifiers(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new MethodDecl(
+                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -136,6 +159,11 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @return the finished record declaration
     public RecordDecl build() {
         return new RecordDecl(
-                desc, Set.of(Modifier.PUBLIC), List.copyOf(components), List.copyOf(interfaces), List.copyOf(members));
+                desc,
+                Set.of(Modifier.PUBLIC),
+                List.copyOf(typeParams),
+                List.copyOf(components),
+                List.copyOf(interfaces),
+                List.copyOf(members));
     }
 }

@@ -1,8 +1,8 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
-import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +18,8 @@ import java.util.Set;
 /// @param body the constructor's body
 /// @param throwsTypes the checked exception types declared in the
 ///                     constructor's `throws` clause
-public record ConstructorDecl(Set<Modifier> modifiers, List<Param> params, CodeBody body, List<ClassDesc> throwsTypes)
+public record ConstructorDecl(
+        Set<Modifier> modifiers, List<Param> params, CodeBody body, List<ClassOrInterfaceTypeRef> throwsTypes)
         implements ClassMember {
     public ConstructorDecl {
         modifiers = Set.copyOf(modifiers);

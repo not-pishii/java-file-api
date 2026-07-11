@@ -8,7 +8,10 @@ import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.StaticMethodDecl;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -32,7 +35,8 @@ import java.util.function.Consumer;
 public final class InterfaceBuilder implements Consumer<InterfaceMember> {
 
     private final ClassDesc desc;
-    private final List<ClassDesc> extendsInterfaces = new ArrayList<>();
+    private final List<TypeParam> typeParams = new ArrayList<>();
+    private final List<ClassOrInterfaceTypeRef> extendsInterfaces = new ArrayList<>();
     private final List<ClassDesc> permittedSubtypes = new ArrayList<>();
     private final List<InterfaceMember> members = new ArrayList<>();
 
@@ -43,11 +47,26 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         this.desc = desc;
     }
 
-    /// Adds an interface to the declaration's `extends` clause.
+    /// Adds a type parameter to the interface declaration, e.g. `T` or
+    /// `T extends Comparable<T>`.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds the parameter's upper bounds, or none for an unbounded parameter
+    /// @return this builder
+    public InterfaceBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
+        typeParams.add(new TypeParam(name, List.of(bounds)));
+        return this;
+    }
+
+    public InterfaceBuilder withExtends(ClassDesc iface) {
+        return withExtends(Types.of(iface));
+    }
+
+    /// Adds an interface, possibly parameterized, to the declaration's `extends` clause.
     ///
     /// @param iface the extended interface
     /// @return this builder
-    public InterfaceBuilder withExtends(ClassDesc iface) {
+    public InterfaceBuilder withExtends(ClassOrInterfaceTypeRef iface) {
         extendsInterfaces.add(iface);
         return this;
     }
@@ -84,9 +103,10 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.of(returnType),
+                List.of(),
                 List.of(params),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of(throwsTypes)));
+                normalizeThrows(throwsTypes)));
         return this;
     }
 
@@ -110,9 +130,10 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.empty(),
+                List.of(),
                 List.of(params),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of(throwsTypes)));
+                normalizeThrows(throwsTypes)));
         return this;
     }
 
@@ -125,7 +146,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceBuilder withDefaultMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new DefaultMethodDecl(mb.name(), mb.returnType(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new DefaultMethodDecl(
+                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -138,7 +160,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceBuilder withStaticMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new StaticMethodDecl(mb.name(), mb.returnType(), mb.params(), mb.body(), mb.throwsTypes()));
+        members.add(new StaticMethodDecl(
+                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
         return this;
     }
 
@@ -168,8 +191,17 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         return new InterfaceDecl(
                 desc,
                 Set.of(Modifier.PUBLIC),
+                List.copyOf(typeParams),
                 List.copyOf(extendsInterfaces),
                 List.copyOf(permittedSubtypes),
                 List.copyOf(members));
+    }
+
+    private static List<ClassOrInterfaceTypeRef> normalizeThrows(ClassDesc[] types) {
+        List<ClassOrInterfaceTypeRef> normalized = new ArrayList<>(types.length);
+        for (ClassDesc type : types) {
+            normalized.add(Types.of(type));
+        }
+        return normalized;
     }
 }

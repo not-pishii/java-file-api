@@ -84,8 +84,8 @@ class ClassBuilderTest {
 
         ClassDecl decl = builder.build();
 
-        assertThat(decl.superclass()).contains(ClassDesc.of("java.lang", "Object"));
-        assertThat(decl.interfaces()).containsExactly(iface);
+        assertThat(decl.superclass()).contains(Types.of(ClassDesc.of("java.lang", "Object")));
+        assertThat(decl.interfaces()).containsExactly(Types.of(iface));
     }
 
     @Test

@@ -92,4 +92,44 @@ class TypeRefRendererTest {
 
         assertThat(rendered).isEqualTo("non-sealed ");
     }
+
+    @Test
+    void typeVarRendersAsBareNameWithoutImport() {
+        ImportManager imports = new ImportManager("p");
+
+        assertThat(TypeRefRenderer.renderType(Types.typeVar("T"), imports)).isEqualTo("T");
+        assertThat(imports.sortedImports()).isEmpty();
+    }
+
+    @Test
+    void typeVarInsideParameterizedTypeRendersAsArgument() {
+        ImportManager imports = new ImportManager("p");
+        var listOfT = Types.parameterized(ClassDesc.of("java.util", "List"), Types.exact(Types.typeVar("T")));
+
+        assertThat(TypeRefRenderer.renderType(listOfT, imports)).isEqualTo("List<T>");
+        assertThat(imports.sortedImports()).containsExactly("java.util.List");
+    }
+
+    @Test
+    void typeParamsRenderEmptyForNoParams() {
+        assertThat(TypeRefRenderer.renderTypeParams(java.util.List.of(), new ImportManager("p")))
+                .isEmpty();
+    }
+
+    @Test
+    void typeParamsRenderNamesAndBounds() {
+        ImportManager imports = new ImportManager("p");
+        var params = java.util.List.of(
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of()),
+                new me.supcheg.javafile.type.TypeParam(
+                        "U",
+                        java.util.List.of(
+                                Types.of(ClassDesc.of("java.io", "Serializable")),
+                                Types.parameterized(
+                                        ClassDesc.of("java.lang", "Comparable"), Types.exact(Types.typeVar("U"))))));
+
+        assertThat(TypeRefRenderer.renderTypeParams(params, imports))
+                .isEqualTo("<T, U extends Serializable & Comparable<U>>");
+        assertThat(imports.sortedImports()).containsExactly("java.io.Serializable");
+    }
 }
