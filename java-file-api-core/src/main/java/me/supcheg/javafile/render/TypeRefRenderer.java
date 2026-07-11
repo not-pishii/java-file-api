@@ -26,26 +26,25 @@ final class TypeRefRenderer {
 
     private TypeRefRenderer() {}
 
-    static String renderType(TypeRef ref, ImportManager imports) {
+    static String renderType(TypeRef ref, TypeContext ctx) {
         return switch (ref) {
-            case ClassTypeRef(var desc) -> imports.reference(desc);
+            case ClassTypeRef(var desc) -> ctx.reference(desc);
             case ParameterizedTypeRef(var raw, var args) -> {
-                String rawName = imports.reference(raw);
-                String argsStr =
-                        args.stream().map(a -> renderTypeArg(a, imports)).collect(Collectors.joining(", "));
+                String rawName = ctx.reference(raw);
+                String argsStr = args.stream().map(a -> renderTypeArg(a, ctx)).collect(Collectors.joining(", "));
                 yield rawName + "<" + argsStr + ">";
             }
             case TypeVarRef(var name) -> name;
-            case ArrayTypeRef(var component) -> renderType(component, imports) + "[]";
+            case ArrayTypeRef(var component) -> renderType(component, ctx) + "[]";
             case PrimitiveTypeRef p -> p.sourceName();
         };
     }
 
-    static String renderTypeArg(TypeArg arg, ImportManager imports) {
+    static String renderTypeArg(TypeArg arg, TypeContext ctx) {
         return switch (arg) {
-            case ExactTypeArg(var type) -> renderType(type, imports);
-            case ExtendsTypeArg(var bound) -> "? extends " + renderType(bound, imports);
-            case SuperTypeArg(var bound) -> "? super " + renderType(bound, imports);
+            case ExactTypeArg(var type) -> renderType(type, ctx);
+            case ExtendsTypeArg(var bound) -> "? extends " + renderType(bound, ctx);
+            case SuperTypeArg(var bound) -> "? super " + renderType(bound, ctx);
             case UnboundedTypeArg ignored -> "?";
         };
     }
@@ -67,24 +66,24 @@ final class TypeRefRenderer {
         return modifier.name().toLowerCase(Locale.ROOT);
     }
 
-    static String renderParams(List<Param> params, ImportManager imports) {
+    static String renderParams(List<Param> params, TypeContext ctx) {
         return params.stream()
-                .map(p -> renderType(p.type(), imports) + " " + p.name())
+                .map(p -> renderType(p.type(), ctx) + " " + p.name())
                 .collect(Collectors.joining(", "));
     }
 
-    static String renderTypeParams(List<TypeParam> typeParams, ImportManager imports) {
+    static String renderTypeParams(List<TypeParam> typeParams, TypeContext ctx) {
         if (typeParams.isEmpty()) {
             return "";
         }
-        return typeParams.stream().map(p -> renderTypeParam(p, imports)).collect(Collectors.joining(", ", "<", ">"));
+        return typeParams.stream().map(p -> renderTypeParam(p, ctx)).collect(Collectors.joining(", ", "<", ">"));
     }
 
-    private static String renderTypeParam(TypeParam param, ImportManager imports) {
+    private static String renderTypeParam(TypeParam param, TypeContext ctx) {
         if (param.bounds().isEmpty()) {
             return param.name();
         }
         return param.name() + " extends "
-                + param.bounds().stream().map(b -> renderType(b, imports)).collect(Collectors.joining(" & "));
+                + param.bounds().stream().map(b -> renderType(b, ctx)).collect(Collectors.joining(" & "));
     }
 }

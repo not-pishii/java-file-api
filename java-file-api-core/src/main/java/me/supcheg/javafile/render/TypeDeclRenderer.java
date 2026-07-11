@@ -30,174 +30,155 @@ final class TypeDeclRenderer {
 
     private TypeDeclRenderer() {}
 
-    static String renderTypeDecl(TypeDecl decl, ImportManager imports, int indent) {
+    static String renderTypeDecl(TypeDecl decl, Context ctx) {
         return switch (decl) {
-            case ClassDecl c -> renderClass(c, imports, indent);
-            case InterfaceDecl i -> renderInterface(i, imports, indent);
-            case RecordDecl r -> renderRecord(r, imports, indent);
-            case EnumDecl e -> renderEnum(e, imports, indent);
+            case ClassDecl c -> renderClass(c, ctx);
+            case InterfaceDecl i -> renderInterface(i, ctx);
+            case RecordDecl r -> renderRecord(r, ctx);
+            case EnumDecl e -> renderEnum(e, ctx);
         };
     }
 
-    private static String renderClass(ClassDecl decl, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderClass(ClassDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
         }
         sb.append("class ").append(decl.desc().displayName());
-        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
-        decl.superclass().ifPresent(sc -> sb.append(" extends ").append(TypeRefRenderer.renderType(sc, imports)));
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
+        decl.superclass().ifPresent(sc -> sb.append(" extends ").append(TypeRefRenderer.renderType(sc, ctx)));
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
                     .append(decl.interfaces().stream()
-                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .map(i -> TypeRefRenderer.renderType(i, ctx))
                             .collect(Collectors.joining(", ")));
         }
         if (!decl.permits().isEmpty()) {
             sb.append(" permits ")
-                    .append(decl.permits().stream().map(imports::reference).collect(Collectors.joining(", ")));
+                    .append(decl.permits().stream().map(ctx::reference).collect(Collectors.joining(", ")));
         }
-        sb.append(" {\n");
+        sb.append(" {").append(ctx.newline());
         sb.append(renderClassMembers(
-                decl.members(), imports, indent + 1, decl.desc().displayName(), false));
-        sb.append(pad).append("}\n");
+                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName(), false));
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
     private static String renderClassMembers(
-            List<ClassMember> members, ImportManager imports, int indent, String ownerSimpleName) {
-        return renderClassMembers(members, imports, indent, ownerSimpleName, false);
-    }
-
-    private static String renderClassMembers(
-            List<ClassMember> members, ImportManager imports, int indent, String ownerSimpleName, boolean insideEnum) {
+            List<ClassMember> members, Context ctx, String ownerSimpleName, boolean insideEnum) {
         return members.stream()
                 .map(member -> switch (member) {
-                    case FieldDecl f -> renderField(f, imports, indent);
-                    case MethodDecl m -> renderMethod(m, imports, indent);
+                    case FieldDecl f -> renderField(f, ctx);
+                    case MethodDecl m -> renderMethod(m, ctx);
                     case ConstructorDecl c ->
                         insideEnum
-                                ? renderEnumConstructor(c, imports, indent, ownerSimpleName)
-                                : renderConstructor(c, imports, indent, ownerSimpleName);
-                    case AbstractMethodDecl a -> renderAbstractMethodInClass(a, imports, indent);
+                                ? renderEnumConstructor(c, ctx, ownerSimpleName)
+                                : renderConstructor(c, ctx, ownerSimpleName);
+                    case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl ignored ->
                         throw new UnsupportedOperationException(
                                 "nested type declarations are not supported in this MVP");
                 })
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(ctx.newline()));
     }
 
-    private static String renderAbstractMethodInClass(AbstractMethodDecl m, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
+    private static String renderAbstractMethodInClass(AbstractMethodDecl m, Context ctx) {
         String returnType =
-                m.returnType().map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void");
-        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
-        return pad
+                m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
+        return ctx.pad()
                 + TypeRefRenderer.renderModifiers(m.modifiers())
                 + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
                 + " "
                 + m.name()
                 + "("
-                + TypeRefRenderer.renderParams(m.params(), imports)
-                + ");\n";
+                + TypeRefRenderer.renderParams(m.params(), ctx)
+                + ");" + ctx.newline();
     }
 
-    private static String renderField(FieldDecl f, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderField(FieldDecl f, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(f.modifiers()));
-        sb.append(TypeRefRenderer.renderType(f.type(), imports)).append(' ').append(f.name());
-        f.initializer().ifPresent(init -> sb.append(" = ").append(ExprRenderer.renderExpr(init, imports, indent)));
-        sb.append(";\n");
+        sb.append(TypeRefRenderer.renderType(f.type(), ctx)).append(' ').append(f.name());
+        f.initializer().ifPresent(init -> sb.append(" = ").append(ExprRenderer.renderExpr(init, ctx)));
+        sb.append(";").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderMethod(MethodDecl m, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderMethod(MethodDecl m, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(m.modifiers()));
-        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
         if (!typeParams.isEmpty()) {
             sb.append(typeParams).append(' ');
         }
-        sb.append(m.returnType()
-                        .map(t -> TypeRefRenderer.renderType(t, imports))
-                        .orElse("void"))
+        sb.append(m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void"))
                 .append(' ');
         sb.append(m.name())
                 .append('(')
-                .append(TypeRefRenderer.renderParams(m.params(), imports))
+                .append(TypeRefRenderer.renderParams(m.params(), ctx))
                 .append(')')
-                .append(renderThrows(m.throwsTypes(), imports))
-                .append(" {\n");
-        sb.append(renderStatements(m.body().statements(), imports, indent + 1));
-        sb.append(pad).append("}\n");
+                .append(renderThrows(m.throwsTypes(), ctx))
+                .append(" {")
+                .append(ctx.newline());
+        sb.append(renderStatements(m.body().statements(), ctx.withIncreasedPad()));
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderConstructor(
-            ConstructorDecl c, ImportManager imports, int indent, String ownerSimpleName) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
-        sb.append(TypeRefRenderer.renderModifiers(c.modifiers()));
-        sb.append(ownerSimpleName)
-                .append('(')
-                .append(TypeRefRenderer.renderParams(c.params(), imports))
-                .append(')')
-                .append(renderThrows(c.throwsTypes(), imports))
-                .append(" {\n");
-        sb.append(renderStatements(c.body().statements(), imports, indent + 1));
-        sb.append(pad).append("}\n");
-        return sb.toString();
+    private static String renderConstructor(ConstructorDecl c, Context ctx, String ownerSimpleName) {
+        return ctx.pad() + TypeRefRenderer.renderModifiers(c.modifiers()) + ownerSimpleName
+                + '('
+                + TypeRefRenderer.renderParams(c.params(), ctx)
+                + ')'
+                + renderThrows(c.throwsTypes(), ctx)
+                + " {" + ctx.newline()
+                + renderStatements(c.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
     }
 
-    private static String renderEnumConstructor(
-            ConstructorDecl c, ImportManager imports, int indent, String ownerSimpleName) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
-        sb.append(ownerSimpleName)
-                .append('(')
-                .append(TypeRefRenderer.renderParams(c.params(), imports))
-                .append(')')
-                .append(renderThrows(c.throwsTypes(), imports))
-                .append(" {\n");
-        sb.append(renderStatements(c.body().statements(), imports, indent + 1));
-        sb.append(pad).append("}\n");
-        return sb.toString();
+    private static String renderEnumConstructor(ConstructorDecl c, Context ctx, String ownerSimpleName) {
+        return ctx.pad() + ownerSimpleName + '('
+                + TypeRefRenderer.renderParams(c.params(), ctx)
+                + ')'
+                + renderThrows(c.throwsTypes(), ctx)
+                + " {" + ctx.newline()
+                + renderStatements(c.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
     }
 
-    private static String renderInterface(InterfaceDecl decl, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderInterface(InterfaceDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
         }
         sb.append("interface ").append(decl.desc().displayName());
-        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         if (!decl.extendsInterfaces().isEmpty()) {
             sb.append(" extends ")
                     .append(decl.extendsInterfaces().stream()
-                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .map(i -> TypeRefRenderer.renderType(i, ctx))
                             .collect(Collectors.joining(", ")));
         }
         if (!decl.permits().isEmpty()) {
             sb.append(" permits ")
-                    .append(decl.permits().stream().map(imports::reference).collect(Collectors.joining(", ")));
+                    .append(decl.permits().stream().map(ctx::reference).collect(Collectors.joining(", ")));
         }
-        sb.append(" {\n");
-        sb.append(renderInterfaceMembers(decl.members(), imports, indent + 1));
-        sb.append(pad).append("}\n");
+        sb.append(" {").append(ctx.newline());
+        sb.append(renderInterfaceMembers(decl.members(), ctx.withIncreasedPad()));
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderInterfaceMembers(List<InterfaceMember> members, ImportManager imports, int indent) {
+    private static String renderInterfaceMembers(List<InterfaceMember> members, Context ctx) {
         return members.stream()
                 .map(member -> switch (member) {
-                    case AbstractMethodDecl a -> renderAbstractMethod(a, imports, indent);
+                    case AbstractMethodDecl a -> renderAbstractMethod(a, ctx);
                     case DefaultMethodDecl d ->
                         renderDefaultOrStaticMethod(
                                 d.name(),
@@ -207,8 +188,7 @@ final class TypeDeclRenderer {
                                 d.body(),
                                 d.throwsTypes(),
                                 "default",
-                                imports,
-                                indent);
+                                ctx);
                     case StaticMethodDecl s ->
                         renderDefaultOrStaticMethod(
                                 s.name(),
@@ -218,31 +198,29 @@ final class TypeDeclRenderer {
                                 s.body(),
                                 s.throwsTypes(),
                                 "static",
-                                imports,
-                                indent);
-                    case ConstantDecl c -> renderConstant(c, imports, indent);
+                                ctx);
+                    case ConstantDecl c -> renderConstant(c, ctx);
                     case TypeDecl ignored ->
                         throw new UnsupportedOperationException(
                                 "nested type declarations are not supported in this MVP");
                 })
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(ctx.newline()));
     }
 
-    private static String renderAbstractMethod(AbstractMethodDecl m, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), imports);
+    private static String renderAbstractMethod(AbstractMethodDecl m, Context ctx) {
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
         String returnType =
-                m.returnType().map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void");
-        return pad
+                m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
+        return ctx.pad()
                 + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
                 + " "
                 + m.name()
                 + "("
-                + TypeRefRenderer.renderParams(m.params(), imports)
+                + TypeRefRenderer.renderParams(m.params(), ctx)
                 + ")"
-                + renderThrows(m.throwsTypes(), imports)
-                + ";\n";
+                + renderThrows(m.throwsTypes(), ctx)
+                + ";" + ctx.newline();
     }
 
     private static String renderDefaultOrStaticMethod(
@@ -253,162 +231,151 @@ final class TypeDeclRenderer {
             me.supcheg.javafile.code.CodeBody body,
             List<ClassOrInterfaceTypeRef> throwsTypes,
             String keyword,
-            ImportManager imports,
-            int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+            Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(keyword).append(' ');
-        String renderedTypeParams = TypeRefRenderer.renderTypeParams(typeParams, imports);
+        String renderedTypeParams = TypeRefRenderer.renderTypeParams(typeParams, ctx);
         if (!renderedTypeParams.isEmpty()) {
             sb.append(renderedTypeParams).append(' ');
         }
-        sb.append(returnType.map(t -> TypeRefRenderer.renderType(t, imports)).orElse("void"))
+        sb.append(returnType.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void"))
                 .append(' ');
         sb.append(name)
                 .append('(')
-                .append(TypeRefRenderer.renderParams(params, imports))
+                .append(TypeRefRenderer.renderParams(params, ctx))
                 .append(')')
-                .append(renderThrows(throwsTypes, imports))
-                .append(" {\n");
-        sb.append(renderStatements(body.statements(), imports, indent + 1));
-        sb.append(pad).append("}\n");
+                .append(renderThrows(throwsTypes, ctx))
+                .append(" {")
+                .append(ctx.newline());
+        sb.append(renderStatements(body.statements(), ctx.withIncreasedPad()));
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, ImportManager imports) {
+    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, TypeContext ctx) {
         if (throwsTypes.isEmpty()) {
             return "";
         }
         return " throws "
                 + throwsTypes.stream()
-                        .map(t -> TypeRefRenderer.renderType(t, imports))
+                        .map(t -> TypeRefRenderer.renderType(t, ctx))
                         .collect(Collectors.joining(", "));
     }
 
-    private static String renderConstant(ConstantDecl c, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        return pad
-                + TypeRefRenderer.renderType(c.type(), imports)
+    private static String renderConstant(ConstantDecl c, Context ctx) {
+        return ctx.pad()
+                + TypeRefRenderer.renderType(c.type(), ctx)
                 + " "
                 + c.name()
                 + " = "
-                + ExprRenderer.renderExpr(c.initializer(), imports, indent)
-                + ";\n";
+                + ExprRenderer.renderExpr(c.initializer(), ctx)
+                + ";" + ctx.newline();
     }
 
-    private static String renderRecord(RecordDecl decl, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderRecord(RecordDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("record ")
                 .append(decl.desc().displayName());
-        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), imports));
+        sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         sb.append('(')
                 .append(decl.components().stream()
-                        .map(c -> TypeRefRenderer.renderType(c.type(), imports) + " " + c.name())
+                        .map(c -> TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name())
                         .collect(Collectors.joining(", ")))
                 .append(')');
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
                     .append(decl.interfaces().stream()
-                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .map(i -> TypeRefRenderer.renderType(i, ctx))
                             .collect(Collectors.joining(", ")));
         }
-        sb.append(" {\n");
+        sb.append(" {").append(ctx.newline());
         sb.append(renderRecordMembers(
-                decl.members(), imports, indent + 1, decl.desc().displayName()));
-        sb.append(pad).append("}\n");
+                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName()));
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderRecordMembers(
-            List<RecordMember> members, ImportManager imports, int indent, String ownerSimpleName) {
+    private static String renderRecordMembers(List<RecordMember> members, Context ctx, String ownerSimpleName) {
         return members.stream()
                 .map(member -> switch (member) {
-                    case CompactConstructorDecl cc -> renderCompactConstructor(cc, imports, indent, ownerSimpleName);
-                    case MethodDecl m -> renderMethod(m, imports, indent);
-                    case StaticFieldDecl sf -> renderStaticField(sf, imports, indent);
+                    case CompactConstructorDecl cc -> renderCompactConstructor(cc, ctx, ownerSimpleName);
+                    case MethodDecl m -> renderMethod(m, ctx);
+                    case StaticFieldDecl sf -> renderStaticField(sf, ctx);
                     case TypeDecl ignored ->
                         throw new UnsupportedOperationException(
                                 "nested type declarations are not supported in this MVP");
                 })
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(ctx.newline()));
     }
 
-    private static String renderCompactConstructor(
-            CompactConstructorDecl cc, ImportManager imports, int indent, String ownerSimpleName) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
-        sb.append(TypeRefRenderer.renderModifiers(cc.modifiers()))
-                .append(ownerSimpleName)
-                .append(renderThrows(cc.throwsTypes(), imports))
-                .append(" {\n");
-        sb.append(renderStatements(cc.body().statements(), imports, indent + 1));
-        sb.append(pad).append("}\n");
-        return sb.toString();
+    private static String renderCompactConstructor(CompactConstructorDecl cc, Context ctx, String ownerSimpleName) {
+        return ctx.pad() + TypeRefRenderer.renderModifiers(cc.modifiers()) + ownerSimpleName
+                + renderThrows(cc.throwsTypes(), ctx)
+                + " {"
+                + ctx.newline()
+                + renderStatements(cc.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
     }
 
-    private static String renderStaticField(StaticFieldDecl sf, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        return pad
+    private static String renderStaticField(StaticFieldDecl sf, Context ctx) {
+        return ctx.pad()
                 + "public static final "
-                + TypeRefRenderer.renderType(sf.type(), imports)
+                + TypeRefRenderer.renderType(sf.type(), ctx)
                 + " "
                 + sf.name()
                 + " = "
-                + ExprRenderer.renderExpr(sf.initializer(), imports, indent)
-                + ";\n";
+                + ExprRenderer.renderExpr(sf.initializer(), ctx)
+                + ";" + ctx.newline();
     }
 
-    private static String renderEnum(EnumDecl decl, ImportManager imports, int indent) {
-        String pad = "    ".repeat(indent);
-        StringBuilder sb = new StringBuilder(pad);
+    private static String renderEnum(EnumDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("enum ")
                 .append(decl.desc().displayName());
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
                     .append(decl.interfaces().stream()
-                            .map(i -> TypeRefRenderer.renderType(i, imports))
+                            .map(i -> TypeRefRenderer.renderType(i, ctx))
                             .collect(Collectors.joining(", ")));
         }
-        sb.append(" {\n");
-        String pad1 = "    ".repeat(indent + 1);
+        sb.append(" {").append(ctx.newline());
+        Context inner = ctx.withIncreasedPad();
         if (!decl.constants().isEmpty() || !decl.members().isEmpty()) {
-            sb.append(pad1)
+            sb.append(inner.pad())
                     .append(decl.constants().stream()
-                            .map(c -> renderEnumConstant(c, imports, indent + 1))
+                            .map(c -> renderEnumConstant(c, inner))
                             .collect(Collectors.joining(", ")))
-                    .append(";\n");
+                    .append(";")
+                    .append(ctx.newline());
         }
         if (!decl.members().isEmpty()) {
-            sb.append("\n");
-            sb.append(renderClassMembers(
-                    decl.members(), imports, indent + 1, decl.desc().displayName(), true));
+            sb.append(ctx.newline());
+            sb.append(renderClassMembers(decl.members(), inner, decl.desc().displayName(), true));
         }
-        sb.append(pad).append("}\n");
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderEnumConstant(EnumConstant constant, ImportManager imports, int indent) {
+    private static String renderEnumConstant(EnumConstant constant, Context ctx) {
         StringBuilder sb = new StringBuilder(constant.name());
         if (!constant.args().isEmpty() || !constant.body().isEmpty()) {
             String argsStr = constant.args().stream()
-                    .map(a -> ExprRenderer.renderExpr(a, imports, indent))
+                    .map(a -> ExprRenderer.renderExpr(a, ctx))
                     .collect(Collectors.joining(", "));
             sb.append('(').append(argsStr).append(')');
         }
         if (!constant.body().isEmpty()) {
-            String pad = "    ".repeat(indent);
-            sb.append(" {\n");
-            sb.append(renderClassMembers(constant.body(), imports, indent + 1, constant.name(), false));
-            sb.append(pad).append('}');
+            sb.append(" {").append(ctx.newline());
+            sb.append(renderClassMembers(constant.body(), ctx.withIncreasedPad(), constant.name(), false));
+            sb.append(ctx.pad()).append('}');
         }
         return sb.toString();
     }
 
-    private static String renderStatements(
-            List<me.supcheg.javafile.code.Stmt> statements, ImportManager imports, int indent) {
-        return ExprRenderer.renderBlock(new me.supcheg.javafile.code.CodeBody(statements), imports, indent);
+    private static String renderStatements(List<me.supcheg.javafile.code.Stmt> statements, Context ctx) {
+        return ExprRenderer.renderBlock(new me.supcheg.javafile.code.CodeBody(statements), ctx);
     }
 }
