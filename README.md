@@ -69,6 +69,13 @@ through which every member of an existing declaration is passed. It decides whet
 replace it, drop it, or insert new members alongside it. The original model is not mutated — the result is a new
 declaration assembled by a fresh builder.
 
+### Generics
+
+Declarations may declare type parameters (`class Box<T extends Comparable<T>>`), reference type variables
+(`Types.typeVar("T")`), and extend or implement parameterized supertypes. Positions that Java restricts to class or
+interface types — supertypes, type-parameter bounds, `throws` clauses — accept only `ClassOrInterfaceTypeRef`, so a
+primitive or array there does not compile.
+
 ### Lambdas
 
 Expressions cover lambdas with inferred (`(name) -> ...`) or explicitly typed (`(String name) -> ...`) parameters and
@@ -92,8 +99,8 @@ Two modules connect the library to `javax.annotation.processing`:
 ### Compilation Verification
 
 In addition to unit tests for rendering, generated sources are run through javac (compile-testing): classes with fields
-and constructors, sealed hierarchies, enums with constant bodies, control flow, and transformation results. Import
-manager invariants and string escaping are verified by property-based tests (jqwik).
+and constructors, sealed hierarchies, enums with constant bodies, control flow, generics with type variables, and
+transformation results. Import manager invariants and string escaping are verified by property-based tests (jqwik).
 
 ## Structure
 
