@@ -54,6 +54,25 @@ class TransformsTest {
     }
 
     @Test
+    void enumTransformAndThenInvokesBothTransformsInOrder() {
+        EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Suit"))
+                .withField("symbol", PrimitiveTypeRef.INT, fb -> {})
+                .build();
+
+        java.util.List<String> callOrder = new java.util.ArrayList<>();
+        EnumTransform first = (builder, member) -> {
+            callOrder.add("first");
+            builder.accept(member);
+        };
+        EnumTransform second = (builder, member) -> callOrder.add("second");
+
+        EnumDecl result = Transforms.transform(original, first.andThen(second));
+
+        assertThat(callOrder).containsExactly("first", "second");
+        assertThat(result.members()).hasSize(1);
+    }
+
+    @Test
     void codeTransformCanDropAStatement() {
         CodeBody original = new CodeBody(java.util.List.of(
                 new ExprStmt(new me.supcheg.javafile.code.IntLiteral(1)), new ReturnStmt(java.util.Optional.empty())));

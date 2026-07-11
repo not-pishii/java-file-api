@@ -31,7 +31,7 @@ public record MethodDecl(
         List<Param> params,
         CodeBody body,
         List<ClassOrInterfaceTypeRef> throwsTypes)
-        implements ClassMember, RecordMember {
+        implements ClassMember, RecordMember, EnumMember, EnumConstantMember {
     public MethodDecl {
         modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
