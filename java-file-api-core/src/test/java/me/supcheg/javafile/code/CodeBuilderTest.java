@@ -113,7 +113,20 @@ class CodeBuilderTest {
 
         Expr expr = cb.new_(exceptionType, cb.literal("bad state"));
 
-        assertThat(expr).isEqualTo(new NewExpr(exceptionType, java.util.List.of(new StringLiteral("bad state"))));
+        assertThat(expr)
+                .isEqualTo(new NewExpr(
+                        new TypedNewTarget(exceptionType), java.util.List.of(new StringLiteral("bad state"))));
+    }
+
+    @Test
+    void newDiamondCarriesRawClassAndArguments() {
+        CodeBuilder cb = new CodeBuilder();
+        java.lang.constant.ClassDesc rawType = java.lang.constant.ClassDesc.of("java.util", "ArrayList");
+
+        Expr expr = cb.newDiamond(rawType, cb.literal("seed"));
+
+        assertThat(expr)
+                .isEqualTo(new NewExpr(new DiamondNewTarget(rawType), java.util.List.of(new StringLiteral("seed"))));
     }
 
     @Test

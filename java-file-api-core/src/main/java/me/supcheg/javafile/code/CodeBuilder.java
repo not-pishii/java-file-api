@@ -2,6 +2,7 @@ package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.type.TypeRef;
 
+import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -350,7 +351,17 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
     public Expr new_(TypeRef type, Expr... args) {
-        return new NewExpr(type, List.of(args));
+        return new NewExpr(new TypedNewTarget(type), List.of(args));
+    }
+
+    /// Creates a diamond object creation expression, `new rawType<>(args)`,
+    /// leaving the type arguments to be inferred.
+    ///
+    /// @param rawType the instantiated generic class, without type arguments
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public Expr newDiamond(ClassDesc rawType, Expr... args) {
+        return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 
     /// Appends a typed local variable declaration.

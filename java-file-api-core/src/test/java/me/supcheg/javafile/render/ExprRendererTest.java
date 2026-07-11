@@ -140,6 +140,14 @@ class ExprRendererTest {
     }
 
     @Test
+    void newDiamondRendersEmptyTypeArgumentList() {
+        Expr expr = cb.newDiamond(java.lang.constant.ClassDesc.of("me.supcheg.example", "Impl"), cb.field("renderer"));
+
+        assertThat(ExprRenderer.renderExpr(expr, new ImportManager("me.supcheg.example"), 0))
+                .isEqualTo("new Impl<>(renderer)");
+    }
+
+    @Test
     void typedLocalVarDeclRendersTheDeclaredType() {
         me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt(
                 Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", cb.literal(0));

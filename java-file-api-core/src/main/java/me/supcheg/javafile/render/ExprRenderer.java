@@ -11,6 +11,7 @@ import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstantLabel;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
+import me.supcheg.javafile.code.DiamondNewTarget;
 import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.ElseIfClause;
@@ -38,6 +39,7 @@ import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
@@ -84,10 +86,15 @@ final class ExprRenderer {
                         + " instanceof "
                         + TypeRefRenderer.renderType(type, imports)
                         + bindingName.map(n -> " " + n).orElse("");
-            case NewExpr(var type, var args) -> {
+            case NewExpr(var target, var args) -> {
                 String argsStr =
                         args.stream().map(a -> renderExpr(a, imports, indent)).collect(Collectors.joining(", "));
-                yield "new " + TypeRefRenderer.renderType(type, imports) + "(" + argsStr + ")";
+                String targetStr =
+                        switch (target) {
+                            case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, imports);
+                            case DiamondNewTarget(var raw) -> imports.reference(raw) + "<>";
+                        };
+                yield "new " + targetStr + "(" + argsStr + ")";
             }
             case SwitchExpr(var selector, var cases) -> {
                 String pad = "    ".repeat(indent);
