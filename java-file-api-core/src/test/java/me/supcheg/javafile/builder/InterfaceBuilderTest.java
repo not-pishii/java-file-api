@@ -112,11 +112,32 @@ class InterfaceBuilderTest {
     @Test
     void acceptAppendsAPreBuiltMember() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Node"));
-        ConstantDecl member =
-                new ConstantDecl("MAX", PrimitiveTypeRef.INT, new me.supcheg.javafile.code.IntLiteral(10));
+        ConstantDecl member = new ConstantDecl(
+                "MAX", PrimitiveTypeRef.INT, java.util.List.of(), new me.supcheg.javafile.code.IntLiteral(10));
 
         builder.accept(member);
 
         assertThat(builder.build().members()).containsExactly(member);
+    }
+
+    @Test
+    void annotationsAreCarriedAllThreeWays() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Documented"));
+        ClassDesc deprecated = ClassDesc.of("java.lang", "Deprecated");
+        ClassDesc since = ClassDesc.of("me.supcheg.example", "Since");
+        ClassDesc preBuilt = ClassDesc.of("me.supcheg.example", "PreBuilt");
+
+        builder.withAnnotation(deprecated)
+                .withAnnotation(
+                        since,
+                        ab -> ab.withMember("value", me.supcheg.javafile.annotation.AnnotationValues.literal("1.0")))
+                .withAnnotation(new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, java.util.List.of()));
+
+        InterfaceDecl decl = builder.build();
+
+        assertThat(decl.annotations()).hasSize(3);
+        assertThat(decl.annotations().get(0).type()).isEqualTo(deprecated);
+        assertThat(decl.annotations().get(1).type()).isEqualTo(since);
+        assertThat(decl.annotations().get(2).type()).isEqualTo(preBuilt);
     }
 }

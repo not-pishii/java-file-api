@@ -66,9 +66,12 @@ final class TypeRefRenderer {
         return modifier.name().toLowerCase(Locale.ROOT);
     }
 
-    static String renderParams(List<Param> params, TypeContext ctx) {
+    static String renderParams(List<Param> params, Context ctx) {
         return params.stream()
-                .map(p -> renderType(p.type(), ctx) + " " + p.name())
+                .map(p -> AnnotationRenderer.renderInlineAnnotations(p.annotations(), ctx)
+                        + renderType(p.type(), ctx)
+                        + " "
+                        + p.name())
                 .collect(Collectors.joining(", "));
     }
 

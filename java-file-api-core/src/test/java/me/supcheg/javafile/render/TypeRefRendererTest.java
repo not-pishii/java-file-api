@@ -12,6 +12,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
 
+import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TypeRefRendererTest {
@@ -72,10 +73,22 @@ class TypeRefRendererTest {
 
     @Test
     void paramsAreJoinedWithTypeBeforeName() {
-        ImportManager imports = new ImportManager("me.supcheg.example");
+        Context ctx = Context.of(standardFormat(), new ImportManager("me.supcheg.example"));
         List<Param> params = List.of(new Param("name", Types.of(ClassDesc.of("java.lang", "String"))));
 
-        assertThat(TypeRefRenderer.renderParams(params, imports)).isEqualTo("String name");
+        assertThat(TypeRefRenderer.renderParams(params, ctx)).isEqualTo("String name");
+    }
+
+    @Test
+    void annotatedParamRendersInlineAnnotationBeforeType() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("me.supcheg.example"));
+        ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");
+        List<Param> params = List.of(new Param(
+                "name",
+                Types.of(ClassDesc.of("java.lang", "String")),
+                List.of(new me.supcheg.javafile.annotation.AnnotationUse(nullable, List.of()))));
+
+        assertThat(TypeRefRenderer.renderParams(params, ctx)).isEqualTo("@Nullable String name");
     }
 
     @Test

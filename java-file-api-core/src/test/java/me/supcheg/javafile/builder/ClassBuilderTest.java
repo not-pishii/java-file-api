@@ -148,6 +148,7 @@ class ClassBuilderTest {
                 java.util.Optional.empty(),
                 java.util.List.of(),
                 java.util.List.of(),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 java.util.List.of());
 
@@ -167,6 +168,63 @@ class ClassBuilderTest {
 
         ConstructorDecl ctor = (ConstructorDecl) decl.members().get(0);
         assertThat(ctor.throwsTypes()).containsExactly(Types.of(ioException), Types.of(BUNDLE));
+    }
+
+    @Test
+    void annotationsAreCarriedAllThreeWays() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Documented"));
+        ClassDesc deprecated = ClassDesc.of("java.lang", "Deprecated");
+        ClassDesc since = ClassDesc.of("me.supcheg.example", "Since");
+        ClassDesc preBuilt = ClassDesc.of("me.supcheg.example", "PreBuilt");
+
+        builder.withAnnotation(deprecated)
+                .withAnnotation(
+                        since,
+                        ab -> ab.withMember("value", me.supcheg.javafile.annotation.AnnotationValues.literal("1.0")))
+                .withAnnotation(new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, java.util.List.of()));
+
+        ClassDecl decl = builder.build();
+
+        assertThat(decl.annotations()).hasSize(3);
+        assertThat(decl.annotations().get(0).type()).isEqualTo(deprecated);
+        assertThat(decl.annotations().get(1).type()).isEqualTo(since);
+        assertThat(decl.annotations().get(2).type()).isEqualTo(preBuilt);
+    }
+
+    @Test
+    void fieldMethodAndConstructorBuildersCarryAnnotationsAllThreeWays() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Annotated"));
+        ClassDesc marker = ClassDesc.of("me.supcheg.example", "Marker");
+        ClassDesc withSpec = ClassDesc.of("me.supcheg.example", "WithSpec");
+        ClassDesc preBuilt = ClassDesc.of("me.supcheg.example", "PreBuilt");
+        me.supcheg.javafile.annotation.AnnotationUse preBuiltUse =
+                new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, java.util.List.of());
+
+        builder.withField("bundle", Types.of(BUNDLE), fb -> fb.withAnnotation(marker)
+                        .withAnnotation(withSpec, ab -> {})
+                        .withAnnotation(preBuiltUse))
+                .withMethod("greeting", Types.of(STRING), mb -> mb.withAnnotation(marker)
+                        .withAnnotation(withSpec, ab -> {})
+                        .withAnnotation(preBuiltUse)
+                        .withParam(new me.supcheg.javafile.model.Param("name", Types.of(STRING)))
+                        .withBody(b -> b.return_(b.literal("hi"))))
+                .withConstructor(cb -> cb.withAnnotation(marker)
+                        .withAnnotation(withSpec, ab -> {})
+                        .withAnnotation(preBuiltUse)
+                        .withParam(new me.supcheg.javafile.model.Param("name", Types.of(STRING))));
+
+        ClassDecl decl = builder.build();
+
+        FieldDecl field = (FieldDecl) decl.members().get(0);
+        assertThat(field.annotations()).hasSize(3);
+
+        MethodDecl method = (MethodDecl) decl.members().get(1);
+        assertThat(method.annotations()).hasSize(3);
+        assertThat(method.params()).hasSize(1);
+
+        ConstructorDecl ctor = (ConstructorDecl) decl.members().get(2);
+        assertThat(ctor.annotations()).hasSize(3);
+        assertThat(ctor.params()).hasSize(1);
     }
 
     private static final class ClassOrInterfaceTypeRefHolder {

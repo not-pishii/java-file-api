@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -43,7 +44,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderClass(ClassDecl decl, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
@@ -100,7 +102,8 @@ final class TypeDeclRenderer {
         String returnType =
                 m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
         String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
-        return ctx.pad()
+        return AnnotationRenderer.renderAnnotations(m.annotations(), ctx)
+                + ctx.pad()
                 + TypeRefRenderer.renderModifiers(m.modifiers())
                 + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
@@ -112,7 +115,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderField(FieldDecl f, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(f.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(f.modifiers()));
         sb.append(TypeRefRenderer.renderType(f.type(), ctx)).append(' ').append(f.name());
         f.initializer().ifPresent(init -> sb.append(" = ").append(ExprRenderer.renderExpr(init, ctx)));
@@ -121,7 +125,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderMethod(MethodDecl m, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(m.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(m.modifiers()));
         String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
         if (!typeParams.isEmpty()) {
@@ -142,7 +147,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderConstructor(ConstructorDecl c, Context ctx, String ownerSimpleName) {
-        return ctx.pad() + TypeRefRenderer.renderModifiers(c.modifiers()) + ownerSimpleName
+        return AnnotationRenderer.renderAnnotations(c.annotations(), ctx)
+                + ctx.pad() + TypeRefRenderer.renderModifiers(c.modifiers()) + ownerSimpleName
                 + '('
                 + TypeRefRenderer.renderParams(c.params(), ctx)
                 + ')'
@@ -154,7 +160,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderEnumConstructor(EnumConstructorDecl c, Context ctx, String ownerSimpleName) {
-        return ctx.pad() + ownerSimpleName + '('
+        return AnnotationRenderer.renderAnnotations(c.annotations(), ctx)
+                + ctx.pad() + ownerSimpleName + '('
                 + TypeRefRenderer.renderParams(c.params(), ctx)
                 + ')'
                 + renderThrows(c.throwsTypes(), ctx)
@@ -165,7 +172,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderInterface(InterfaceDecl decl, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
@@ -196,6 +204,7 @@ final class TypeDeclRenderer {
                         renderDefaultOrStaticMethod(
                                 d.name(),
                                 d.returnType(),
+                                d.annotations(),
                                 d.typeParams(),
                                 d.params(),
                                 d.body(),
@@ -206,6 +215,7 @@ final class TypeDeclRenderer {
                         renderDefaultOrStaticMethod(
                                 s.name(),
                                 s.returnType(),
+                                s.annotations(),
                                 s.typeParams(),
                                 s.params(),
                                 s.body(),
@@ -224,7 +234,8 @@ final class TypeDeclRenderer {
         String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
         String returnType =
                 m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
-        return ctx.pad()
+        return AnnotationRenderer.renderAnnotations(m.annotations(), ctx)
+                + ctx.pad()
                 + (typeParams.isEmpty() ? "" : typeParams + " ")
                 + returnType
                 + " "
@@ -239,13 +250,15 @@ final class TypeDeclRenderer {
     private static String renderDefaultOrStaticMethod(
             String name,
             java.util.Optional<me.supcheg.javafile.type.TypeRef> returnType,
+            List<AnnotationUse> annotations,
             List<TypeParam> typeParams,
             List<Param> params,
             me.supcheg.javafile.code.CodeBody body,
             List<ClassOrInterfaceTypeRef> throwsTypes,
             String keyword,
             Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(annotations, ctx));
+        sb.append(ctx.pad());
         sb.append(keyword).append(' ');
         String renderedTypeParams = TypeRefRenderer.renderTypeParams(typeParams, ctx);
         if (!renderedTypeParams.isEmpty()) {
@@ -276,7 +289,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderConstant(ConstantDecl c, Context ctx) {
-        return ctx.pad()
+        return AnnotationRenderer.renderAnnotations(c.annotations(), ctx)
+                + ctx.pad()
                 + TypeRefRenderer.renderType(c.type(), ctx)
                 + " "
                 + c.name()
@@ -286,14 +300,16 @@ final class TypeDeclRenderer {
     }
 
     private static String renderRecord(RecordDecl decl, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("record ")
                 .append(decl.desc().displayName());
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         sb.append('(')
                 .append(decl.components().stream()
-                        .map(c -> TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name())
+                        .map(c -> AnnotationRenderer.renderInlineAnnotations(c.annotations(), ctx)
+                                + TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name())
                         .collect(Collectors.joining(", ")))
                 .append(')');
         if (!decl.interfaces().isEmpty()) {
@@ -323,7 +339,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderCompactConstructor(CompactConstructorDecl cc, Context ctx, String ownerSimpleName) {
-        return ctx.pad() + TypeRefRenderer.renderModifiers(cc.modifiers()) + ownerSimpleName
+        return AnnotationRenderer.renderAnnotations(cc.annotations(), ctx)
+                + ctx.pad() + TypeRefRenderer.renderModifiers(cc.modifiers()) + ownerSimpleName
                 + renderThrows(cc.throwsTypes(), ctx)
                 + " {"
                 + ctx.newline()
@@ -333,7 +350,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderStaticField(StaticFieldDecl sf, Context ctx) {
-        return ctx.pad()
+        return AnnotationRenderer.renderAnnotations(sf.annotations(), ctx)
+                + ctx.pad()
                 + "public static final "
                 + TypeRefRenderer.renderType(sf.type(), ctx)
                 + " "
@@ -344,7 +362,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderEnum(EnumDecl decl, Context ctx) {
-        StringBuilder sb = new StringBuilder(ctx.pad());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("enum ")
                 .append(decl.desc().displayName());
@@ -373,7 +392,8 @@ final class TypeDeclRenderer {
     }
 
     private static String renderEnumConstant(EnumConstant constant, Context ctx) {
-        StringBuilder sb = new StringBuilder(constant.name());
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderInlineAnnotations(constant.annotations(), ctx));
+        sb.append(constant.name());
         if (!constant.args().isEmpty() || !constant.body().isEmpty()) {
             String argsStr = constant.args().stream()
                     .map(a -> ExprRenderer.renderExpr(a, ctx))

@@ -18,7 +18,7 @@ class InterfaceTransformTest {
     @Test
     void acceptCanPassAMemberThroughToTheBuilder() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("p", "I"));
-        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, new IntLiteral(1));
+        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
 
         InterfaceTransform passThrough = (b, member) -> b.accept(member);
         passThrough.accept(builder, constant);
@@ -30,7 +30,7 @@ class InterfaceTransformTest {
     void andThenInvokesBothTransformsInOrderAgainstTheSameMember() {
         List<String> callOrder = new ArrayList<>();
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("p", "I"));
-        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, new IntLiteral(1));
+        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
 
         InterfaceTransform first = (b, member) -> {
             callOrder.add("first");

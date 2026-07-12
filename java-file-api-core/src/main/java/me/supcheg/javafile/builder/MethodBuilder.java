@@ -1,5 +1,7 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationBuilder;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.model.MethodDecl;
@@ -35,6 +37,7 @@ public final class MethodBuilder {
 
     private final String name;
     private final Optional<TypeRef> returnType;
+    private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
     private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<Param> params = new ArrayList<>();
@@ -44,6 +47,36 @@ public final class MethodBuilder {
     MethodBuilder(String name, Optional<TypeRef> returnType) {
         this.name = name;
         this.returnType = returnType;
+    }
+
+    /// Adds a marker annotation, e.g. `@Deprecated`.
+    ///
+    /// @param type the annotation type
+    /// @return this builder
+    public MethodBuilder withAnnotation(ClassDesc type) {
+        annotations.add(new AnnotationUse(type, List.of()));
+        return this;
+    }
+
+    /// Adds an annotation, populated via an [AnnotationBuilder].
+    ///
+    /// @param type the annotation type
+    /// @param spec receives the builder to populate the annotation's members
+    /// @return this builder
+    public MethodBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+        AnnotationBuilder ab = new AnnotationBuilder(type);
+        spec.accept(ab);
+        annotations.add(ab.build());
+        return this;
+    }
+
+    /// Adds a pre-built annotation.
+    ///
+    /// @param annotation the annotation to add
+    /// @return this builder
+    public MethodBuilder withAnnotation(AnnotationUse annotation) {
+        annotations.add(annotation);
+        return this;
     }
 
     /// Adds the given modifiers to the method declaration.
@@ -72,6 +105,15 @@ public final class MethodBuilder {
     /// @return this builder
     public MethodBuilder withParam(String name, TypeRef type) {
         params.add(new Param(name, type));
+        return this;
+    }
+
+    /// Adds a pre-built parameter to the method's parameter list.
+    ///
+    /// @param param the parameter to add
+    /// @return this builder
+    public MethodBuilder withParam(Param param) {
+        params.add(param);
         return this;
     }
 
@@ -115,6 +157,10 @@ public final class MethodBuilder {
         return returnType;
     }
 
+    List<AnnotationUse> annotations() {
+        return List.copyOf(annotations);
+    }
+
     Set<Modifier> modifiers() {
         return modifiers.isEmpty() ? Set.of(Modifier.PUBLIC) : Set.copyOf(modifiers);
     }
@@ -139,6 +185,7 @@ public final class MethodBuilder {
         return new MethodDecl(
                 name,
                 returnType,
+                List.copyOf(annotations),
                 modifiers(),
                 List.copyOf(typeParams),
                 List.copyOf(params),

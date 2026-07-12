@@ -74,7 +74,8 @@ class EnumBuilderTest {
     @Test
     void preBuiltConstantIsAddedDirectly() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
-        EnumConstant constant = new EnumConstant("CLUBS", java.util.List.of(), java.util.List.of());
+        EnumConstant constant =
+                new EnumConstant("CLUBS", java.util.List.of(), java.util.List.of(), java.util.List.of());
 
         builder.withConstant(constant);
 
@@ -138,7 +139,7 @@ class EnumBuilderTest {
     void acceptAppendsAPreBuiltMember() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
         EnumConstructorDecl member = new EnumConstructorDecl(
-                java.util.List.of(), me.supcheg.javafile.code.CodeBody.EMPTY, java.util.List.of());
+                java.util.List.of(), java.util.List.of(), me.supcheg.javafile.code.CodeBody.EMPTY, java.util.List.of());
 
         builder.accept(member);
 
@@ -157,6 +158,38 @@ class EnumBuilderTest {
                 (EnumConstructorDecl) builder.build().members().get(0);
         assertThat(ctor.throwsTypes())
                 .containsExactly(Types.of(ioException), Types.of(ClassDesc.of("java.lang", "Double")));
+    }
+
+    @Test
+    void annotationsAreCarriedAllThreeWaysOnTheEnumConstructorAndConstant() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Documented"));
+        ClassDesc deprecated = ClassDesc.of("java.lang", "Deprecated");
+        ClassDesc since = ClassDesc.of("me.supcheg.example", "Since");
+        ClassDesc preBuilt = ClassDesc.of("me.supcheg.example", "PreBuilt");
+        me.supcheg.javafile.annotation.AnnotationUse preBuiltUse =
+                new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, java.util.List.of());
+
+        builder.withAnnotation(deprecated)
+                .withAnnotation(
+                        since,
+                        ab -> ab.withMember("value", me.supcheg.javafile.annotation.AnnotationValues.literal("1.0")))
+                .withAnnotation(preBuiltUse)
+                .withConstant("HEARTS", ecb -> ecb.withAnnotation(deprecated)
+                        .withAnnotation(since, ab -> {})
+                        .withAnnotation(preBuiltUse))
+                .withConstructor(cb -> cb.withAnnotation(deprecated)
+                        .withAnnotation(since, ab -> {})
+                        .withAnnotation(preBuiltUse)
+                        .withParam(new me.supcheg.javafile.model.Param(
+                                "x", Types.of(ClassDesc.of("java.lang", "String")))));
+
+        EnumDecl decl = builder.build();
+
+        assertThat(decl.annotations()).hasSize(3);
+        assertThat(decl.constants().get(0).annotations()).hasSize(3);
+        EnumConstructorDecl ctor = (EnumConstructorDecl) decl.members().get(0);
+        assertThat(ctor.annotations()).hasSize(3);
+        assertThat(ctor.params()).hasSize(1);
     }
 
     private static final class CodeBuilderExprHolder {
