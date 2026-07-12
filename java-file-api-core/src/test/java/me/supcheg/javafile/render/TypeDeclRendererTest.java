@@ -193,6 +193,7 @@ class TypeDeclRendererTest {
     void nestedTypeDeclarationsAreNotSupportedInMvp() {
         var classDecl = new me.supcheg.javafile.model.ClassDecl(
                 ClassDesc.of("p", "Outer"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(),
                 java.util.Optional.empty(),
@@ -231,6 +232,7 @@ class TypeDeclRendererTest {
                 java.util.Optional.of(Types.typeVar("T")),
                 java.util.List.of(new TypeParam("T", java.util.List.of())),
                 java.util.List.of(),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 java.util.List.of());
         builder.withModifiers(Modifier.ABSTRACT).accept(abstractMethod);
@@ -252,6 +254,7 @@ class TypeDeclRendererTest {
                 "convert",
                 java.util.Optional.of(Types.typeVar("T")),
                 java.util.List.of(new TypeParam("T", java.util.List.of())),
+                java.util.List.of(),
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 java.util.List.of());
@@ -496,12 +499,14 @@ class TypeDeclRendererTest {
         var fieldMember = new me.supcheg.javafile.model.FieldDecl(
                 "cached",
                 PrimitiveTypeRef.INT,
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PRIVATE),
                 java.util.Optional.of(new me.supcheg.javafile.code.IntLiteral(0)));
-        var constant =
-                new me.supcheg.javafile.model.EnumConstant("A", java.util.List.of(), java.util.List.of(fieldMember));
+        var constant = new me.supcheg.javafile.model.EnumConstant(
+                "A", java.util.List.of(), java.util.List.of(), java.util.List.of(fieldMember));
         var enumDecl = new me.supcheg.javafile.model.EnumDecl(
                 ClassDesc.of("me.supcheg.example", "WithField"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(constant),
                 java.util.List.of(),
@@ -523,6 +528,7 @@ class TypeDeclRendererTest {
     void nestedTypeDeclarationInEnumMembersIsNotSupported() {
         var enumDecl = new me.supcheg.javafile.model.EnumDecl(
                 ClassDesc.of("p", "E"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(),
                 java.util.List.of(),
@@ -537,6 +543,7 @@ class TypeDeclRendererTest {
     void nestedTypeDeclarationInInterfaceMembersIsNotSupported() {
         var interfaceDecl = new me.supcheg.javafile.model.InterfaceDecl(
                 ClassDesc.of("p", "I"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(),
                 java.util.List.of(),
@@ -552,6 +559,7 @@ class TypeDeclRendererTest {
     void nestedTypeDeclarationInRecordMembersIsNotSupported() {
         var recordDecl = new me.supcheg.javafile.model.RecordDecl(
                 ClassDesc.of("p", "R"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(),
                 java.util.List.of(),
@@ -566,9 +574,13 @@ class TypeDeclRendererTest {
     @Test
     void nestedTypeDeclarationInEnumConstantBodyIsNotSupported() {
         var constant = new me.supcheg.javafile.model.EnumConstant(
-                "A", java.util.List.of(), java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
+                "A",
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(new ClassBuilder(ClassDesc.of("p", "Inner")).build()));
         var enumDecl = new me.supcheg.javafile.model.EnumDecl(
                 ClassDesc.of("p", "E"),
+                java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(constant),
                 java.util.List.of(),
@@ -577,5 +589,117 @@ class TypeDeclRendererTest {
         assertThatThrownBy(() ->
                         TypeDeclRenderer.renderTypeDecl(enumDecl, Context.of(standardFormat(), new ImportManager("p"))))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void rendersAnAnnotatedClassWithAnnotatedFieldMethodAndConstructor() {
+        ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");
+        ClassDesc deprecated = ClassDesc.of("java.lang", "Deprecated");
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Widget"));
+        builder.withAnnotation(deprecated)
+                .withField("name", Types.of(ClassDesc.of("java.lang", "String")), fb -> fb.withAnnotation(nullable))
+                .withMethod("label", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withAnnotation(deprecated)
+                        .withParam(new Param(
+                                "suffix",
+                                Types.of(ClassDesc.of("java.lang", "String")),
+                                java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(
+                                        nullable, java.util.List.of()))))
+                        .withBody(b -> b.return_(b.literal("x"))))
+                .withConstructor(cb -> cb.withAnnotation(deprecated));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        @Deprecated
+                        public class Widget {
+                            @Nullable
+                            public String name;
+
+                            @Deprecated
+                            public String label(@Nullable String suffix) {
+                                return "x";
+                            }
+
+                            @Deprecated
+                            public Widget() {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAnnotatedInterfaceWithAnAnnotatedConstant() {
+        ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Bounds"));
+        builder.withAnnotation(nullable)
+                .accept(new me.supcheg.javafile.model.ConstantDecl(
+                        "MAX",
+                        PrimitiveTypeRef.INT,
+                        java.util.List.of(
+                                new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
+                        new me.supcheg.javafile.code.IntLiteral(10)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        @Nullable
+                        public interface Bounds {
+                            @Nullable
+                            int MAX = 10;
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAnnotatedRecordWithAnAnnotatedComponentAndStaticField() {
+        ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("me.supcheg.example", "Point"));
+        builder.withAnnotation(nullable)
+                .withComponent(new me.supcheg.javafile.model.RecordComponent(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        java.util.List.of(
+                                new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of()))));
+        builder.accept(new me.supcheg.javafile.model.StaticFieldDecl(
+                "ORIGIN",
+                PrimitiveTypeRef.INT,
+                java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
+                new me.supcheg.javafile.code.IntLiteral(0)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        @Nullable
+                        public record Point(@Nullable int x) {
+                            @Nullable
+                            public static final int ORIGIN = 0;
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAnnotatedEnumWithAnAnnotatedConstant() {
+        ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+        builder.withAnnotation(nullable)
+                .withConstant(new me.supcheg.javafile.model.EnumConstant(
+                        "HEARTS",
+                        java.util.List.of(
+                                new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
+                        java.util.List.of(),
+                        java.util.List.of()));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        @Nullable
+                        public enum Suit {
+                            @Nullable HEARTS;
+                        }
+                        """);
     }
 }

@@ -28,8 +28,8 @@ class ClassTransformTest {
         ClassTransform second = (b, member) -> callOrder.add("second");
 
         ClassTransform combined = first.andThen(second);
-        FieldDecl field =
-                new FieldDecl("count", PrimitiveTypeRef.INT, Set.of(Modifier.FINAL), java.util.Optional.empty());
+        FieldDecl field = new FieldDecl(
+                "count", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.FINAL), java.util.Optional.empty());
         combined.accept(builder, field);
 
         assertThat(callOrder).containsExactly("first", "second");

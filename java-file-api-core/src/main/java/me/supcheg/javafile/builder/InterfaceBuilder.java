@@ -1,5 +1,7 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationBuilder;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ConstantDecl;
@@ -35,6 +37,7 @@ import java.util.function.Consumer;
 public final class InterfaceBuilder implements Consumer<InterfaceMember> {
 
     private final ClassDesc desc;
+    private final List<AnnotationUse> annotations = new ArrayList<>();
     private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> extendsInterfaces = new ArrayList<>();
     private final List<ClassDesc> permittedSubtypes = new ArrayList<>();
@@ -45,6 +48,36 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the interface to declare; its package and simple name determine the file location
     public InterfaceBuilder(ClassDesc desc) {
         this.desc = desc;
+    }
+
+    /// Adds a marker annotation, e.g. `@Deprecated`.
+    ///
+    /// @param type the annotation type
+    /// @return this builder
+    public InterfaceBuilder withAnnotation(ClassDesc type) {
+        annotations.add(new AnnotationUse(type, List.of()));
+        return this;
+    }
+
+    /// Adds an annotation, populated via an [AnnotationBuilder].
+    ///
+    /// @param type the annotation type
+    /// @param spec receives the builder to populate the annotation's members
+    /// @return this builder
+    public InterfaceBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+        AnnotationBuilder ab = new AnnotationBuilder(type);
+        spec.accept(ab);
+        annotations.add(ab.build());
+        return this;
+    }
+
+    /// Adds a pre-built annotation.
+    ///
+    /// @param annotation the annotation to add
+    /// @return this builder
+    public InterfaceBuilder withAnnotation(AnnotationUse annotation) {
+        annotations.add(annotation);
+        return this;
     }
 
     /// Adds a type parameter to the interface declaration, e.g. `T` or
@@ -105,6 +138,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 Optional.of(returnType),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 normalizeThrows(throwsTypes)));
         return this;
@@ -132,6 +166,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 Optional.empty(),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 normalizeThrows(throwsTypes)));
         return this;
@@ -147,7 +182,13 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(new DefaultMethodDecl(
-                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
+                mb.name(),
+                mb.returnType(),
+                mb.annotations(),
+                mb.typeParams(),
+                mb.params(),
+                mb.body(),
+                mb.throwsTypes()));
         return this;
     }
 
@@ -161,7 +202,13 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(new StaticMethodDecl(
-                mb.name(), mb.returnType(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
+                mb.name(),
+                mb.returnType(),
+                mb.annotations(),
+                mb.typeParams(),
+                mb.params(),
+                mb.body(),
+                mb.throwsTypes()));
         return this;
     }
 
@@ -172,7 +219,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param initializer the initializer expression
     /// @return this builder
     public InterfaceBuilder withConstant(String name, TypeRef type, Expr initializer) {
-        members.add(new ConstantDecl(name, type, initializer));
+        members.add(new ConstantDecl(name, type, List.of(), initializer));
         return this;
     }
 
@@ -190,6 +237,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceDecl build() {
         return new InterfaceDecl(
                 desc,
+                List.copyOf(annotations),
                 Set.of(Modifier.PUBLIC),
                 List.copyOf(typeParams),
                 List.copyOf(extendsInterfaces),

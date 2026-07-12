@@ -1,5 +1,7 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationBuilder;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.EnumConstant;
@@ -33,6 +35,7 @@ import java.util.function.Consumer;
 public final class EnumBuilder implements Consumer<EnumMember> {
 
     private final ClassDesc desc;
+    private final List<AnnotationUse> annotations = new ArrayList<>();
     private final List<EnumConstant> constants = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private final List<EnumMember> members = new ArrayList<>();
@@ -42,6 +45,36 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the enum to declare; its package and simple name determine the file location
     public EnumBuilder(ClassDesc desc) {
         this.desc = desc;
+    }
+
+    /// Adds a marker annotation, e.g. `@Deprecated`.
+    ///
+    /// @param type the annotation type
+    /// @return this builder
+    public EnumBuilder withAnnotation(ClassDesc type) {
+        annotations.add(new AnnotationUse(type, List.of()));
+        return this;
+    }
+
+    /// Adds an annotation, populated via an [AnnotationBuilder].
+    ///
+    /// @param type the annotation type
+    /// @param spec receives the builder to populate the annotation's members
+    /// @return this builder
+    public EnumBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+        AnnotationBuilder ab = new AnnotationBuilder(type);
+        spec.accept(ab);
+        annotations.add(ab.build());
+        return this;
+    }
+
+    /// Adds a pre-built annotation.
+    ///
+    /// @param annotation the annotation to add
+    /// @return this builder
+    public EnumBuilder withAnnotation(AnnotationUse annotation) {
+        annotations.add(annotation);
+        return this;
     }
 
     /// Adds a constant with no constructor arguments and no constant-specific body.
@@ -129,7 +162,14 @@ public final class EnumBuilder implements Consumer<EnumMember> {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(new MethodDecl(
-                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
+                mb.name(),
+                mb.returnType(),
+                mb.annotations(),
+                mb.modifiers(),
+                mb.typeParams(),
+                mb.params(),
+                mb.body(),
+                mb.throwsTypes()));
         return this;
     }
 
@@ -142,7 +182,14 @@ public final class EnumBuilder implements Consumer<EnumMember> {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         members.add(new MethodDecl(
-                mb.name(), mb.returnType(), mb.modifiers(), mb.typeParams(), mb.params(), mb.body(), mb.throwsTypes()));
+                mb.name(),
+                mb.returnType(),
+                mb.annotations(),
+                mb.modifiers(),
+                mb.typeParams(),
+                mb.params(),
+                mb.body(),
+                mb.throwsTypes()));
         return this;
     }
 
@@ -158,6 +205,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
                 Optional.of(returnType),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
@@ -174,6 +222,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
                 Optional.empty(),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
@@ -192,6 +241,11 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @return the finished enum declaration
     public EnumDecl build() {
         return new EnumDecl(
-                desc, Set.of(Modifier.PUBLIC), List.copyOf(constants), List.copyOf(interfaces), List.copyOf(members));
+                desc,
+                List.copyOf(annotations),
+                Set.of(Modifier.PUBLIC),
+                List.copyOf(constants),
+                List.copyOf(interfaces),
+                List.copyOf(members));
     }
 }

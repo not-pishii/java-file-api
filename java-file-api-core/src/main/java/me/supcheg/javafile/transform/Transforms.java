@@ -37,6 +37,7 @@ public final class Transforms {
     /// @return a new class declaration
     public static ClassDecl transform(ClassDecl decl, ClassTransform transform) {
         ClassBuilder builder = new ClassBuilder(decl.desc());
+        decl.annotations().forEach(builder::withAnnotation);
         // ClassBuilder always seeds PUBLIC by default and withModifiers only adds to that set; a decl
         // built without PUBLIC (only reachable by constructing ClassDecl directly, bypassing ClassBuilder)
         // cannot lose PUBLIC through this round-trip. This matches ClassBuilder's existing behavior.
@@ -59,6 +60,7 @@ public final class Transforms {
     /// @return a new enum declaration
     public static EnumDecl transform(EnumDecl decl, EnumTransform transform) {
         EnumBuilder builder = new EnumBuilder(decl.desc());
+        decl.annotations().forEach(builder::withAnnotation);
         decl.constants().forEach(builder::withConstant);
         decl.interfaces().forEach(builder::withInterface);
         for (EnumMember member : decl.members()) {
@@ -74,6 +76,7 @@ public final class Transforms {
     /// @return a new interface declaration
     public static InterfaceDecl transform(InterfaceDecl decl, InterfaceTransform transform) {
         InterfaceBuilder builder = new InterfaceBuilder(decl.desc());
+        decl.annotations().forEach(builder::withAnnotation);
         decl.typeParams()
                 .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
         decl.extendsInterfaces().forEach(builder::withExtends);
@@ -91,9 +94,10 @@ public final class Transforms {
     /// @return a new record declaration
     public static RecordDecl transform(RecordDecl decl, RecordTransform transform) {
         RecordBuilder builder = new RecordBuilder(decl.desc());
+        decl.annotations().forEach(builder::withAnnotation);
         decl.typeParams()
                 .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
-        decl.components().forEach(c -> builder.withComponent(c.name(), c.type()));
+        decl.components().forEach(builder::withComponent);
         decl.interfaces().forEach(builder::withInterface);
         for (RecordMember member : decl.members()) {
             transform.accept(builder, member);

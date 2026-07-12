@@ -70,7 +70,8 @@ class JavaFileTest {
             if (member instanceof me.supcheg.javafile.model.FieldDecl f) {
                 java.util.Set<Modifier> mods = new java.util.LinkedHashSet<>(f.modifiers());
                 mods.add(Modifier.FINAL);
-                builder.accept(new me.supcheg.javafile.model.FieldDecl(f.name(), f.type(), mods, f.initializer()));
+                builder.accept(new me.supcheg.javafile.model.FieldDecl(
+                        f.name(), f.type(), f.annotations(), mods, f.initializer()));
             } else {
                 builder.accept(member);
             }

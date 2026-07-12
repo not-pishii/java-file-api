@@ -1,5 +1,7 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationBuilder;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -31,6 +33,7 @@ import java.util.function.Consumer;
 public final class ClassBuilder implements Consumer<ClassMember> {
 
     private final ClassDesc desc;
+    private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<TypeParam> typeParams = new ArrayList<>();
     private ClassOrInterfaceTypeRef superclass;
@@ -43,6 +46,36 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the class to declare; its package and simple name determine the file location
     public ClassBuilder(ClassDesc desc) {
         this.desc = desc;
+    }
+
+    /// Adds a marker annotation, e.g. `@Deprecated`.
+    ///
+    /// @param type the annotation type
+    /// @return this builder
+    public ClassBuilder withAnnotation(ClassDesc type) {
+        annotations.add(new AnnotationUse(type, List.of()));
+        return this;
+    }
+
+    /// Adds an annotation, populated via an [AnnotationBuilder].
+    ///
+    /// @param type the annotation type
+    /// @param spec receives the builder to populate the annotation's members
+    /// @return this builder
+    public ClassBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+        AnnotationBuilder ab = new AnnotationBuilder(type);
+        spec.accept(ab);
+        annotations.add(ab.build());
+        return this;
+    }
+
+    /// Adds a pre-built annotation.
+    ///
+    /// @param annotation the annotation to add
+    /// @return this builder
+    public ClassBuilder withAnnotation(AnnotationUse annotation) {
+        annotations.add(annotation);
+        return this;
     }
 
     /// Adds the given modifiers to the declaration.
@@ -115,6 +148,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 Optional.of(returnType),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
@@ -131,6 +165,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 Optional.empty(),
                 List.of(),
                 List.of(params),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
@@ -199,6 +234,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     public ClassDecl build() {
         return new ClassDecl(
                 desc,
+                List.copyOf(annotations),
                 Set.copyOf(modifiers),
                 List.copyOf(typeParams),
                 Optional.ofNullable(superclass),

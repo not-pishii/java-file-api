@@ -89,10 +89,32 @@ class RecordBuilderTest {
     @Test
     void acceptAppendsAPreBuiltMember() {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
-        StaticFieldDecl member = new StaticFieldDecl("ORIGIN", PrimitiveTypeRef.INT, new IntLiteral(0));
+        StaticFieldDecl member =
+                new StaticFieldDecl("ORIGIN", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(0));
 
         builder.accept(member);
 
         assertThat(builder.build().members()).containsExactly(member);
+    }
+
+    @Test
+    void annotationsAreCarriedAllThreeWays() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("me.supcheg.example", "Documented"));
+        ClassDesc deprecated = ClassDesc.of("java.lang", "Deprecated");
+        ClassDesc since = ClassDesc.of("me.supcheg.example", "Since");
+        ClassDesc preBuilt = ClassDesc.of("me.supcheg.example", "PreBuilt");
+
+        builder.withAnnotation(deprecated)
+                .withAnnotation(
+                        since,
+                        ab -> ab.withMember("value", me.supcheg.javafile.annotation.AnnotationValues.literal("1.0")))
+                .withAnnotation(new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, List.of()));
+
+        RecordDecl decl = builder.build();
+
+        assertThat(decl.annotations()).hasSize(3);
+        assertThat(decl.annotations().get(0).type()).isEqualTo(deprecated);
+        assertThat(decl.annotations().get(1).type()).isEqualTo(since);
+        assertThat(decl.annotations().get(2).type()).isEqualTo(preBuilt);
     }
 }

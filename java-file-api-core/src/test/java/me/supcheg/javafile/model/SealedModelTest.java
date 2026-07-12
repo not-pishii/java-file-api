@@ -18,11 +18,12 @@ class SealedModelTest {
 
     @Test
     void classDeclHoldsItsMembersInInsertionOrder() {
-        FieldDecl field =
-                new FieldDecl("bundle", Types.of(STRING), Set.of(Modifier.PRIVATE, Modifier.FINAL), Optional.empty());
+        FieldDecl field = new FieldDecl(
+                "bundle", Types.of(STRING), List.of(), Set.of(Modifier.PRIVATE, Modifier.FINAL), Optional.empty());
         MethodDecl method = new MethodDecl(
                 "greeting",
                 Optional.of(Types.of(STRING)),
+                List.of(),
                 Set.of(Modifier.PUBLIC),
                 List.of(),
                 List.of(),
@@ -31,6 +32,7 @@ class SealedModelTest {
 
         ClassDecl decl = new ClassDecl(
                 ClassDesc.of("me.supcheg.example", "Messages"),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.FINAL),
                 List.of(),
                 Optional.empty(),
@@ -48,17 +50,19 @@ class SealedModelTest {
                 Optional.of(Types.of(STRING)),
                 List.of(),
                 List.of(),
+                List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of());
         DefaultMethodDecl defaultMethod = new DefaultMethodDecl(
-                "describe", Optional.of(Types.of(STRING)), List.of(), List.of(), CodeBody.EMPTY, List.of());
+                "describe", Optional.of(Types.of(STRING)), List.of(), List.of(), List.of(), CodeBody.EMPTY, List.of());
         StaticMethodDecl staticMethod = new StaticMethodDecl(
-                "create", Optional.of(Types.of(STRING)), List.of(), List.of(), CodeBody.EMPTY, List.of());
+                "create", Optional.of(Types.of(STRING)), List.of(), List.of(), List.of(), CodeBody.EMPTY, List.of());
         ConstantDecl constant =
-                new ConstantDecl("MAX", Types.of(STRING), new me.supcheg.javafile.code.StringLiteral("x"));
+                new ConstantDecl("MAX", Types.of(STRING), List.of(), new me.supcheg.javafile.code.StringLiteral("x"));
 
         InterfaceDecl decl = new InterfaceDecl(
                 ClassDesc.of("me.supcheg.example", "Node"),
+                List.of(),
                 Set.of(Modifier.PUBLIC),
                 List.of(),
                 List.of(),
@@ -70,7 +74,7 @@ class SealedModelTest {
 
     @Test
     void constantDeclRejectsNullInitializer() {
-        assertThatThrownBy(() -> new ConstantDecl("MAX", Types.of(STRING), null))
+        assertThatThrownBy(() -> new ConstantDecl("MAX", Types.of(STRING), List.of(), null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -78,7 +82,13 @@ class SealedModelTest {
     void recordDeclHoldsComponentsAndMembers() {
         RecordComponent x = new RecordComponent("x", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
         RecordDecl decl = new RecordDecl(
-                ClassDesc.of("geom", "Point"), Set.of(Modifier.PUBLIC), List.of(), List.of(x), List.of(), List.of());
+                ClassDesc.of("geom", "Point"),
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(x),
+                List.of(),
+                List.of());
 
         assertThat(decl.components()).containsExactly(x);
     }
@@ -87,10 +97,11 @@ class SealedModelTest {
     void enumDeclHoldsConstantsInOrder() {
         EnumDecl decl = new EnumDecl(
                 ClassDesc.of("me.supcheg.example", "Suit"),
+                List.of(),
                 Set.of(Modifier.PUBLIC),
                 List.of(
-                        new EnumConstant("HEARTS", List.of(), List.of()),
-                        new EnumConstant("SPADES", List.of(), List.of())),
+                        new EnumConstant("HEARTS", List.of(), List.of(), List.of()),
+                        new EnumConstant("SPADES", List.of(), List.of(), List.of())),
                 List.of(),
                 List.of());
 
@@ -101,6 +112,7 @@ class SealedModelTest {
     void allTypeDeclVariantsImplementTheSealedInterface() {
         TypeDecl classDecl = new ClassDecl(
                 ClassDesc.of("p", "C"),
+                List.of(),
                 Set.of(Modifier.PUBLIC),
                 List.of(),
                 Optional.empty(),
@@ -108,11 +120,16 @@ class SealedModelTest {
                 List.of(),
                 List.of());
         TypeDecl interfaceDecl = new InterfaceDecl(
-                ClassDesc.of("p", "I"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
+                ClassDesc.of("p", "I"), List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
         TypeDecl recordDecl = new RecordDecl(
-                ClassDesc.of("p", "R"), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
+                ClassDesc.of("p", "R"), List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of());
         TypeDecl enumDecl = new EnumDecl(
-                ClassDesc.of("p", "E"), Set.of(Modifier.PUBLIC), List.<EnumConstant>of(), List.of(), List.of());
+                ClassDesc.of("p", "E"),
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.<EnumConstant>of(),
+                List.of(),
+                List.of());
 
         assertThat(List.of(classDecl, interfaceDecl, recordDecl, enumDecl)).allMatch(JavaFileElement.class::isInstance);
     }

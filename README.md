@@ -69,6 +69,17 @@ through which every member of an existing declaration is passed. It decides whet
 replace it, drop it, or insert new members alongside it. The original model is not mutated — the result is a new
 declaration assembled by a fresh builder.
 
+### Annotations
+
+Use-site annotations attach to every declaration, member, parameter, and record component; the library never declares
+`@interface`s itself. The annotation value model is sealed to match what the `@interface` shape of an annotation type
+actually allows: `SingleAnnotationValue` (a literal, `.class`, an enum constant, or a nested annotation) excludes
+arrays, since Java forbids an array of arrays as an annotation value, and its `LiteralValue` case holds a
+`ConstantLiteral` — the subset of literal expressions with `null` carved out, since `null` is not a legal annotation
+value. A single `value` member renders using the shorthand form (`@Meta("x")` instead of `@Meta(value = "x")`).
+`AnnotationBuilder` is public, not merely an internal builder detail, because nested annotation values
+(`@Outer(@Inner(...))`) need a standalone `AnnotationUse` built outside any declaration builder.
+
 ### Generics
 
 Declarations may declare type parameters (`class Box<T extends Comparable<T>>`), reference type variables
@@ -99,8 +110,9 @@ Two modules connect the library to `javax.annotation.processing`:
 ### Compilation Verification
 
 In addition to unit tests for rendering, generated sources are run through javac (compile-testing): classes with fields
-and constructors, sealed hierarchies, enums with constant bodies, control flow, generics with type variables, and
-transformation results. Import manager invariants and string escaping are verified by property-based tests (jqwik).
+and constructors, sealed hierarchies, enums with constant bodies, control flow, generics with type variables,
+transformation results, and use-site annotations — including a nested annotation array — checked against real
+`@interface` fixtures. Import manager invariants and string escaping are verified by property-based tests (jqwik).
 
 ## Structure
 

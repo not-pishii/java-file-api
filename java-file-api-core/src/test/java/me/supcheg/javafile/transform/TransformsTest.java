@@ -39,7 +39,7 @@ class TransformsTest {
             if (member instanceof FieldDecl f && !f.modifiers().contains(Modifier.FINAL)) {
                 Set<Modifier> mods = new LinkedHashSet<>(f.modifiers());
                 mods.add(Modifier.FINAL);
-                builder.accept(new FieldDecl(f.name(), f.type(), mods, f.initializer()));
+                builder.accept(new FieldDecl(f.name(), f.type(), f.annotations(), mods, f.initializer()));
             } else {
                 builder.accept(member);
             }
@@ -117,7 +117,8 @@ class TransformsTest {
         assertThat(result.extendsInterfaces()).isEqualTo(original.extendsInterfaces());
         assertThat(result.permits()).isEqualTo(original.permits());
         assertThat(result.members()).isEqualTo(original.members());
-        assertThat(result.members()).containsExactly(new ConstantDecl("MAX", PrimitiveTypeRef.INT, new IntLiteral(1)));
+        assertThat(result.members())
+                .containsExactly(new ConstantDecl("MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1)));
     }
 
     @Test
@@ -156,7 +157,8 @@ class TransformsTest {
         assertThat(result.interfaces()).isEqualTo(original.interfaces());
         assertThat(result.members()).isEqualTo(original.members());
         assertThat(result.members())
-                .containsExactly(new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, new IntLiteral(1)));
+                .containsExactly(
+                        new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1)));
     }
 
     @Test

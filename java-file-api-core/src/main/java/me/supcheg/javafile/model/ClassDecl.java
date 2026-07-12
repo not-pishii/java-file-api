@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -10,11 +11,12 @@ import java.util.Set;
 
 /// A `class` declaration.
 ///
-/// The class is rendered as `sealed` when [#permits] is non-empty. Modifiers,
-/// type parameters, interfaces, permitted subtypes, and members are
-/// defensively copied into unmodifiable collections.
+/// The class is rendered as `sealed` when [#permits] is non-empty.
+/// Annotations, modifiers, type parameters, interfaces, permitted subtypes,
+/// and members are defensively copied into unmodifiable collections.
 ///
 /// @param desc the class's name and package
+/// @param annotations the annotations declared on the class
 /// @param modifiers the modifiers on the class declaration
 /// @param typeParams the declaration's type parameters, in order
 /// @param superclass the superclass, if the class extends one other than
@@ -25,6 +27,7 @@ import java.util.Set;
 /// @param members the members of the class body
 public record ClassDecl(
         ClassDesc desc,
+        List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
         List<TypeParam> typeParams,
         Optional<ClassOrInterfaceTypeRef> superclass,
@@ -33,6 +36,7 @@ public record ClassDecl(
         List<ClassMember> members)
         implements TypeDecl {
     public ClassDecl {
+        annotations = List.copyOf(annotations);
         modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         interfaces = List.copyOf(interfaces);

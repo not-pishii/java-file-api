@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
@@ -10,13 +11,14 @@ import java.util.Optional;
 
 /// A `default` method declaration inside an interface body.
 ///
-/// Type parameters, parameters, and thrown types are defensively copied into
-/// unmodifiable lists. The method always renders with the `default`
-/// modifier; it carries no explicit [Modifier] set because that is the only
-/// form Java allows for a default method.
+/// Annotations, type parameters, parameters, and thrown types are
+/// defensively copied into unmodifiable lists. The method always renders
+/// with the `default` modifier; it carries no explicit [Modifier] set
+/// because that is the only form Java allows for a default method.
 ///
 /// @param name the method name
 /// @param returnType the declared return type, or empty for `void`
+/// @param annotations the annotations declared on the method
 /// @param typeParams the method's type parameters, in declaration order
 /// @param params the method's parameters, in declaration order
 /// @param body the method's body
@@ -25,12 +27,14 @@ import java.util.Optional;
 public record DefaultMethodDecl(
         String name,
         Optional<TypeRef> returnType,
+        List<AnnotationUse> annotations,
         List<TypeParam> typeParams,
         List<Param> params,
         CodeBody body,
         List<ClassOrInterfaceTypeRef> throwsTypes)
         implements InterfaceMember {
     public DefaultMethodDecl {
+        annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);
         throwsTypes = List.copyOf(throwsTypes);
