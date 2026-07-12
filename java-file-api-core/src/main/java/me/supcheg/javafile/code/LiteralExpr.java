@@ -2,7 +2,7 @@ package me.supcheg.javafile.code;
 
 /// A constant-valued expression.
 ///
-/// The permitted implementations cover string, integer, long, double,
-/// boolean, and `null` literals.
-public sealed interface LiteralExpr extends Expr
-        permits StringLiteral, IntLiteral, LongLiteral, DoubleLiteral, BooleanLiteral, NullLiteral {}
+/// The permitted implementations cover the compile-time constants
+/// ([ConstantLiteral]: string, integer, long, double, and boolean literals)
+/// and the `null` literal.
+public sealed interface LiteralExpr extends Expr permits ConstantLiteral, NullLiteral {}

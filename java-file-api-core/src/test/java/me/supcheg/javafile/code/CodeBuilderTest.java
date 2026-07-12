@@ -54,6 +54,18 @@ class CodeBuilderTest {
     }
 
     @Test
+    void everyLiteralExceptNullIsAConstantLiteral() {
+        CodeBuilder cb = new CodeBuilder();
+
+        assertThat(cb.literal("s")).isInstanceOf(ConstantLiteral.class);
+        assertThat(cb.literal(1)).isInstanceOf(ConstantLiteral.class);
+        assertThat(cb.literal(1L)).isInstanceOf(ConstantLiteral.class);
+        assertThat(cb.literal(1.5)).isInstanceOf(ConstantLiteral.class);
+        assertThat(cb.literal(true)).isInstanceOf(ConstantLiteral.class);
+        assertThat(cb.literalNull()).isNotInstanceOf(ConstantLiteral.class);
+    }
+
+    @Test
     void emptyBodyEqualsCodeBodyEmpty() {
         CodeBuilder cb = new CodeBuilder();
 
