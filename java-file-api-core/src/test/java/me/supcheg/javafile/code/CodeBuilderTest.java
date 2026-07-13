@@ -1,10 +1,15 @@
 package me.supcheg.javafile.code;
 
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
+import java.lang.constant.ClassDesc;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CodeBuilderTest {
 
@@ -315,5 +320,105 @@ class CodeBuilderTest {
         cb.continue_();
 
         assertThat(cb.build().statements()).containsExactly(new BreakStmt(), new ContinueStmt());
+    }
+
+    @Test
+    void tryWithSingleCatchProducesCatchOnlyTryStmt() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        CodeBuilder cb2 = new CodeBuilder();
+
+        cb2.try_(
+                b -> b.exprStatement(b.call("risky")),
+                tb -> tb.catch_(
+                        List.of(ioException), "e", b -> b.exprStatement(b.call(b.field("e"), "printStackTrace"))));
+
+        assertThat(cb2.build().statements())
+                .containsExactly(new TryStmt.CatchOnly(
+                        List.of(),
+                        new CodeBody(List.of(new ExprStmt(new MethodCallExpr(Optional.empty(), "risky", List.of())))),
+                        NonEmptyList.copyOf(List.of(new CatchClause(
+                                NonEmptyList.copyOf(List.of(ioException)),
+                                "e",
+                                new CodeBody(List.of(new ExprStmt(new MethodCallExpr(
+                                        Optional.of(new FieldAccessExpr(Optional.empty(), "e")),
+                                        "printStackTrace",
+                                        List.of())))))))));
+    }
+
+    @Test
+    void tryWithMultiCatchAccumulatesAllExceptionTypes() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        ClassOrInterfaceTypeRef sqlException = Types.of(ClassDesc.of("java.sql", "SQLException"));
+        CodeBuilder cb2 = new CodeBuilder();
+
+        cb2.try_(b -> {}, tb -> tb.catch_(List.of(ioException, sqlException), "e", b -> {}));
+
+        TryStmt.CatchOnly stmt = (TryStmt.CatchOnly) cb2.build().statements().get(0);
+        assertThat(stmt.catches().head().exceptionTypes().toList()).containsExactly(ioException, sqlException);
+    }
+
+    @Test
+    void tryWithFinallyAndNoCatchProducesWithFinallyWithEmptyCatches() {
+        CodeBuilder cb2 = new CodeBuilder();
+
+        cb2.try_(b -> {}, tb -> tb.finally_(b -> b.exprStatement(b.call("cleanup"))));
+
+        assertThat(cb2.build().statements())
+                .containsExactly(new TryStmt.WithFinally(
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        new CodeBody(
+                                List.of(new ExprStmt(new MethodCallExpr(Optional.empty(), "cleanup", List.of()))))));
+    }
+
+    @Test
+    void tryWithCatchAndFinallyProducesWithFinallyWithNonEmptyCatches() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        CodeBuilder cb2 = new CodeBuilder();
+
+        cb2.try_(b -> {}, tb -> tb.catch_(List.of(ioException), "e", b -> {}).finally_(b -> {}));
+
+        TryStmt.WithFinally stmt =
+                (TryStmt.WithFinally) cb2.build().statements().get(0);
+        assertThat(stmt.catches()).hasSize(1);
+        assertThat(stmt.finallyBody()).isEqualTo(CodeBody.EMPTY);
+    }
+
+    @Test
+    void tryWithResourcesAcceptsDeclaredInferredAndExistingForms() {
+        CodeBuilder cb2 = new CodeBuilder();
+
+        cb2.try_(b -> {}, tb -> tb.resource_("r1", Types.of(ClassDesc.of("java.io", "Reader")), cb2.call("openReader"))
+                .resource_("r2", cb2.call("openWriter"))
+                .resource_("r3")
+                .finally_(b -> {}));
+
+        TryStmt.WithFinally stmt =
+                (TryStmt.WithFinally) cb2.build().statements().get(0);
+        assertThat(stmt.resources())
+                .containsExactly(
+                        new Resource.Declared(
+                                Optional.of(Types.of(ClassDesc.of("java.io", "Reader"))),
+                                "r1",
+                                new MethodCallExpr(Optional.empty(), "openReader", List.of())),
+                        new Resource.Declared(
+                                Optional.empty(), "r2", new MethodCallExpr(Optional.empty(), "openWriter", List.of())),
+                        new Resource.Existing("r3"));
+    }
+
+    @Test
+    void tryWithNeitherCatchNorFinallyThrows() {
+        CodeBuilder cb2 = new CodeBuilder();
+
+        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> {})).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void tryWithCatchOfEmptyExceptionTypesThrows() {
+        CodeBuilder cb2 = new CodeBuilder();
+
+        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> tb.catch_(List.of(), "e", b -> {})))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

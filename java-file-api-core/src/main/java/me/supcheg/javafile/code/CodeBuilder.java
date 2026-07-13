@@ -464,6 +464,23 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends a `try` statement — `try`-`catch`, `try`-`finally`,
+    /// `try`-`catch`-`finally`, or a try-with-resources variant of any of
+    /// those.
+    ///
+    /// @param block receives the builder to populate the try block's body
+    /// @param spec receives the builder to populate resources, `catch` clauses, and the `finally` block
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` calls neither `catch_` nor `finally_`
+    public CodeBuilder try_(Consumer<CodeBuilder> block, Consumer<TryBuilder> spec) {
+        CodeBuilder blockBuilder = new CodeBuilder();
+        block.accept(blockBuilder);
+        TryBuilder tb = new TryBuilder();
+        spec.accept(tb);
+        statements.add(tb.build(blockBuilder.build()));
+        return this;
+    }
+
     /// Creates a `switch` expression.
     ///
     /// @param selector the switch selector expression
