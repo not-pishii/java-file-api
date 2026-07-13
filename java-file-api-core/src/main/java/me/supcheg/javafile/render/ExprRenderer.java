@@ -8,6 +8,7 @@ import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
 import me.supcheg.javafile.code.CaseLabel;
+import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstantLabel;
 import me.supcheg.javafile.code.ContinueStmt;
@@ -33,6 +34,7 @@ import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
+import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
@@ -42,6 +44,7 @@ import me.supcheg.javafile.code.SwitchStmt;
 import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
+import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
@@ -208,6 +211,39 @@ final class ExprRenderer {
                         + renderBlock(body, ctx.withIncreasedPad())
                         + ctx.pad()
                         + "}";
+            case TryStmt.WithFinally(var resources, var block, var catches, var finallyBody) -> {
+                StringBuilder sb = new StringBuilder(ctx.pad())
+                        .append("try ")
+                        .append(renderResources(resources, ctx))
+                        .append("{")
+                        .append(ctx.newline())
+                        .append(renderBlock(block, ctx.withIncreasedPad()))
+                        .append(ctx.pad())
+                        .append("}");
+                for (CatchClause clause : catches) {
+                    sb.append(renderCatchClause(clause, ctx));
+                }
+                sb.append(" finally {")
+                        .append(ctx.newline())
+                        .append(renderBlock(finallyBody, ctx.withIncreasedPad()))
+                        .append(ctx.pad())
+                        .append("}");
+                yield sb.toString();
+            }
+            case TryStmt.CatchOnly(var resources, var block, var catches) -> {
+                StringBuilder sb = new StringBuilder(ctx.pad())
+                        .append("try ")
+                        .append(renderResources(resources, ctx))
+                        .append("{")
+                        .append(ctx.newline())
+                        .append(renderBlock(block, ctx.withIncreasedPad()))
+                        .append(ctx.pad())
+                        .append("}");
+                for (CatchClause clause : catches.toList()) {
+                    sb.append(renderCatchClause(clause, ctx));
+                }
+                yield sb.toString();
+            }
             case SwitchStmt(var selector, var cases) ->
                 ctx.pad()
                         + "switch ("
@@ -227,6 +263,40 @@ final class ExprRenderer {
         return body.statements().stream()
                 .map(s -> renderStmt(s, ctx) + ctx.newline())
                 .collect(Collectors.joining());
+    }
+
+    private static String renderResources(List<Resource> resources, Context ctx) {
+        if (resources.isEmpty()) {
+            return "";
+        }
+        String joined = resources.stream().map(r -> renderResource(r, ctx)).collect(Collectors.joining("; "));
+        return "(" + joined + ") ";
+    }
+
+    private static String renderResource(Resource resource, Context ctx) {
+        return switch (resource) {
+            case Resource.Declared(var type, var name, var initializer) ->
+                type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
+                        + " "
+                        + name
+                        + " = "
+                        + renderExpr(initializer, ctx);
+            case Resource.Existing(var name) -> name;
+        };
+    }
+
+    private static String renderCatchClause(CatchClause clause, Context ctx) {
+        String types = clause.exceptionTypes().toList().stream()
+                .map(t -> TypeRefRenderer.renderType(t, ctx))
+                .collect(Collectors.joining(" | "));
+        return " catch ("
+                + types
+                + " "
+                + clause.paramName()
+                + ") {" + ctx.newline()
+                + renderBlock(clause.body(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}";
     }
 
     private static String renderSwitchCase(SwitchCase c, Context ctx) {
