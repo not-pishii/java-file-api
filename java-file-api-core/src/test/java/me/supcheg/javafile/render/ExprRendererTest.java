@@ -2,6 +2,7 @@ package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BlockCaseBody;
+import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.ConstantLabel;
@@ -10,16 +11,23 @@ import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
+import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
+import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
+import java.lang.constant.ClassDesc;
+import java.util.List;
 import java.util.Optional;
 
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
@@ -497,5 +505,102 @@ class ExprRendererTest {
         assertThat(ExprRenderer.renderExpr(
                         lambda, Context.of(standardFormat(), imports).withIncreasedPad()))
                 .isEqualTo("(String name) -> {\n        return name.length();\n    }");
+    }
+
+    @Test
+    void tryFinallyRendersWithEmptyCatchesAndFinallyBlock() {
+        TryStmt stmt = new TryStmt.WithFinally(
+                List.of(),
+                new CodeBody(List.of(new ExprStmt(cb.call(cb.field("resource"), "use")))),
+                List.of(),
+                new CodeBody(List.of(new ExprStmt(cb.call(cb.field("resource"), "close")))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try {
+                            resource.use();
+                        } finally {
+                            resource.close();
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void tryCatchRendersSingleCatchClauseWithoutFinally() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        TryStmt stmt = new TryStmt.CatchOnly(
+                List.of(),
+                new CodeBody(List.of(new ExprStmt(cb.call("risky")))),
+                NonEmptyList.copyOf(List.of(new CatchClause(
+                        NonEmptyList.copyOf(List.of(ioException)),
+                        "e",
+                        new CodeBody(List.of(new ExprStmt(cb.call(cb.field("e"), "printStackTrace"))))))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try {
+                            risky();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void multiCatchJoinsExceptionTypesWithPipe() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        ClassOrInterfaceTypeRef sqlException = Types.of(ClassDesc.of("java.sql", "SQLException"));
+        TryStmt stmt = new TryStmt.CatchOnly(
+                List.of(),
+                CodeBody.EMPTY,
+                NonEmptyList.copyOf(List.of(new CatchClause(
+                        NonEmptyList.copyOf(List.of(ioException, sqlException)), "e", CodeBody.EMPTY))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try {
+                        } catch (IOException | SQLException e) {
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void tryCatchFinallyRendersBothCatchAndFinally() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        TryStmt stmt = new TryStmt.WithFinally(
+                List.of(),
+                CodeBody.EMPTY,
+                List.of(new CatchClause(NonEmptyList.copyOf(List.of(ioException)), "e", CodeBody.EMPTY)),
+                CodeBody.EMPTY);
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try {
+                        } catch (IOException e) {
+                        } finally {
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void tryWithResourcesRendersDeclaredAndExistingForms() {
+        ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
+        TryStmt stmt = new TryStmt.CatchOnly(
+                List.of(new Resource.Declared(Optional.empty(), "r1", cb.call("open")), new Resource.Existing("r2")),
+                CodeBody.EMPTY,
+                NonEmptyList.copyOf(
+                        List.of(new CatchClause(NonEmptyList.copyOf(List.of(ioException)), "e", CodeBody.EMPTY))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try (var r1 = open(); r2) {
+                        } catch (IOException e) {
+                        }""".indent(4).stripTrailing());
     }
 }
