@@ -36,7 +36,7 @@ class Stage2And3FeaturesCompileTest {
                 .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
                 .withField("radius", PrimitiveTypeRef.DOUBLE, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                 .withConstructor(ctor -> ctor.withParam("radius", PrimitiveTypeRef.DOUBLE)
-                        .withBody(b -> b.assign(b.field(b.field("this"), "radius"), b.field("radius"))))
+                        .withBody(b -> b.assign(b.field(b.this_(), "radius"), b.field("radius"))))
                 .withMethod("area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(b.field("radius")))));
 
         Compilation compilation = javac().compile(
@@ -98,7 +98,7 @@ class Stage2And3FeaturesCompileTest {
         JavaFile planet = JavaFile.enum_(ClassDesc.of("me.supcheg.example", "Planet"), eb -> eb.withField(
                         "mass", Types.of(DOUBLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                 .withConstructor(cb -> cb.withParam("mass", Types.of(DOUBLE))
-                        .withBody(b -> b.assign(b.field(b.field("this"), "mass"), b.field("mass"))))
+                        .withBody(b -> b.assign(b.field(b.this_(), "mass"), b.field("mass"))))
                 .withConstant("MERCURY", b -> b.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
 
         Compilation compilation =

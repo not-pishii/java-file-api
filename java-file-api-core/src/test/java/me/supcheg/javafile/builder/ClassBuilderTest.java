@@ -70,8 +70,7 @@ class ClassBuilderTest {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Greeter"));
         builder.withField("bundle", Types.of(BUNDLE), fb -> {}).withConstructor(cb -> cb.withModifiers(Modifier.PUBLIC)
                 .withParam("bundle", Types.of(BUNDLE))
-                .withBody(
-                        b -> b.exprStatement(b.call(b.field(b.field("this"), "bundle"), "equals", b.field("bundle")))));
+                .withBody(b -> b.exprStatement(b.call(b.field(b.this_(), "bundle"), "equals", b.field("bundle")))));
 
         ClassDecl decl = builder.build();
 

@@ -106,6 +106,22 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new MethodCallExpr(Optional.of(target), method, List.of(args));
     }
 
+    /// Creates the `this` expression, e.g. as the target of `field`/`call` to
+    /// express `this.name`/`this.method(args)`.
+    ///
+    /// @return a `this` expression
+    public ThisExpr this_() {
+        return new ThisExpr();
+    }
+
+    /// Creates the `super` expression, e.g. as the target of `field`/`call` to
+    /// express `super.name`/`super.method(args)`.
+    ///
+    /// @return a `super` expression
+    public SuperExpr super_() {
+        return new SuperExpr();
+    }
+
     /// Creates a string literal.
     ///
     /// @param value the literal value

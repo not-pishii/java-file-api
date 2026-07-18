@@ -39,10 +39,12 @@ import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
+import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
 import me.supcheg.javafile.code.TextBlockExpr;
+import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
@@ -126,6 +128,8 @@ final class ExprRenderer {
                         header + "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad() + "}";
                 };
             }
+            case ThisExpr ignored -> "this";
+            case SuperExpr ignored -> "super";
         };
     }
 

@@ -46,7 +46,7 @@ class ExprRendererTest {
 
     @Test
     void fieldAccessWithTargetRendersDottedPath() {
-        Expr expr = cb.field(cb.field("this"), "bundle");
+        Expr expr = cb.field(cb.this_(), "bundle");
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("this.bundle");
     }
@@ -116,7 +116,7 @@ class ExprRendererTest {
 
     @Test
     void assignStatementRendersTargetEqualsValue() {
-        FieldAccessExpr target = cb.field(cb.field("this"), "bundle");
+        FieldAccessExpr target = cb.field(cb.this_(), "bundle");
         Expr value = cb.field("bundle");
         String rendered = ExprRenderer.renderStmt(
                 new AssignStmt(target, value),

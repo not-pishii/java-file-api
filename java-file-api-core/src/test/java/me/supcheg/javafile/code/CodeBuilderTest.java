@@ -38,10 +38,9 @@ class CodeBuilderTest {
     @Test
     void assignAddsAssignStmtWithTargetAndValue() {
         CodeBuilder cb = new CodeBuilder();
-        cb.assign(cb.field(cb.field("this"), "bundle"), cb.field("bundle"));
+        cb.assign(cb.field(cb.this_(), "bundle"), cb.field("bundle"));
 
-        FieldAccessExpr expectedTarget =
-                new FieldAccessExpr(Optional.of(new FieldAccessExpr(Optional.empty(), "this")), "bundle");
+        FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.of(new ThisExpr()), "bundle");
         Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
         assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
     }
