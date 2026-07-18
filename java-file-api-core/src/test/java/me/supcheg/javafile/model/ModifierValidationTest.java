@@ -201,6 +201,19 @@ class ModifierValidationTest {
     }
 
     @Test
+    void compactConstructorRejectsStatic() {
+        assertThatThrownBy(() -> new CompactConstructorDecl(
+                        List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), CodeBody.EMPTY, List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void compactConstructorAllowsPublic() {
+        assertThatCode(() -> new CompactConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), CodeBody.EMPTY, List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     void abstractMethodRejectsAbstractAndPrivateTogether() {
         assertThatThrownBy(() -> new AbstractMethodDecl(
                         "m",
