@@ -6,7 +6,6 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
-import java.util.Objects;
 
 /// A `public static final` field declaration inside a record body.
 ///
@@ -20,10 +19,8 @@ import java.util.Objects;
 /// @param initializer the field's initializer expression; must not be `null`
 public record StaticFieldDecl(String name, TypeRef type, List<AnnotationUse> annotations, Expr initializer)
         implements RecordMember {
-    /// @throws NullPointerException if `initializer` is `null`
     public StaticFieldDecl {
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
-        Objects.requireNonNull(initializer, "a static record field must be initialized");
     }
 }

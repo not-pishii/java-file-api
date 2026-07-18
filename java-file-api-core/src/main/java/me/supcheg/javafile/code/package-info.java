@@ -11,4 +11,7 @@
 /// cb.return_(cb.field("sum"));
 /// CodeBody body = cb.build();
 /// ```
+@NullMarked
 package me.supcheg.javafile.code;
+
+import org.jspecify.annotations.NullMarked;

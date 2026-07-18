@@ -12,4 +12,7 @@
 ///         ClassDesc.of("java.util", "List"),
 ///         Types.exact(Types.of(ClassDesc.of("java.lang", "String"))));
 /// ```
+@NullMarked
 package me.supcheg.javafile.type;
+
+import org.jspecify.annotations.NullMarked;

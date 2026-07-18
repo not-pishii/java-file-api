@@ -4,4 +4,7 @@
 /// a file and writes it via `javax.annotation.processing.Filer`, passing
 /// originating elements through so the annotation processing environment can
 /// track the generated file for incremental compilation.
+@NullMarked
 package me.supcheg.javafile.filer;
+
+import org.jspecify.annotations.NullMarked;

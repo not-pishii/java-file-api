@@ -11,6 +11,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<TypeParam> typeParams = new ArrayList<>();
-    private ClassOrInterfaceTypeRef superclass;
+    private @Nullable ClassOrInterfaceTypeRef superclass;
     private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private final List<ClassDesc> permits = new ArrayList<>();
     private final List<ClassMember> members = new ArrayList<>();

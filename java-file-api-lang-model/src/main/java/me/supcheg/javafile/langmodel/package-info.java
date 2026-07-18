@@ -6,4 +6,7 @@
 /// `java.lang.constant.ClassDesc`. The bridge only covers top-level types
 /// and the type mirror kinds this library can represent; unsupported input
 /// is rejected rather than approximated.
+@NullMarked
 package me.supcheg.javafile.langmodel;
+
+import org.jspecify.annotations.NullMarked;

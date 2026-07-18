@@ -2,6 +2,7 @@ package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.TypeRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -446,7 +447,11 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param update the per-iteration update statement, or `null` to omit it
     /// @param spec receives the builder to populate the loop body
     /// @return this builder
-    public CodeBuilder for_(LocalVarDeclStmt init, Expr condition, Stmt update, Consumer<CodeBuilder> spec) {
+    public CodeBuilder for_(
+            @Nullable LocalVarDeclStmt init,
+            @Nullable Expr condition,
+            @Nullable Stmt update,
+            Consumer<CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new ForStmt(

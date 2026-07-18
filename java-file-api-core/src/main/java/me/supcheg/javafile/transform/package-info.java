@@ -12,4 +12,7 @@
 /// source declaration or body and returns a new one; the source is never
 /// modified. [me.supcheg.javafile.JavaFile#transformClass(ClassTransform)]
 /// and its siblings are the usual entry point.
+@NullMarked
 package me.supcheg.javafile.transform;
+
+import org.jspecify.annotations.NullMarked;

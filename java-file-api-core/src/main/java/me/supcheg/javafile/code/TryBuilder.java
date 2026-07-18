@@ -2,6 +2,7 @@ package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public final class TryBuilder {
 
     private final List<Resource> resources = new ArrayList<>();
     private final List<CatchClause> catches = new ArrayList<>();
-    private CodeBody finallyBody;
+    private @Nullable CodeBody finallyBody;
 
     TryBuilder() {}
 
