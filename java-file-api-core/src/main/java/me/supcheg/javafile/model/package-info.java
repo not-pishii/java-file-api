@@ -12,4 +12,7 @@
 /// rejected at runtime. All types in this package are immutable records and
 /// sealed interfaces; the mutable [me.supcheg.javafile.builder] types
 /// produce them.
+@NullMarked
 package me.supcheg.javafile.model;
+
+import org.jspecify.annotations.NullMarked;

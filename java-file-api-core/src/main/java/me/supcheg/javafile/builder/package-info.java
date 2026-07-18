@@ -18,4 +18,7 @@
 ///
 /// [me.supcheg.javafile.JavaFile]'s static factories are the usual entry
 /// point for creating a top-level builder.
+@NullMarked
 package me.supcheg.javafile.builder;
+
+import org.jspecify.annotations.NullMarked;

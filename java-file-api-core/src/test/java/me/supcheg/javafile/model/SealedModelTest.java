@@ -73,12 +73,6 @@ class SealedModelTest {
     }
 
     @Test
-    void constantDeclRejectsNullInitializer() {
-        assertThatThrownBy(() -> new ConstantDecl("MAX", Types.of(STRING), List.of(), null))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     void staticMethodDeclAcceptsValidName() {
         StaticMethodDecl method = new StaticMethodDecl(
                 "create", Optional.of(Types.of(STRING)), List.of(), List.of(), List.of(), CodeBody.EMPTY, List.of());

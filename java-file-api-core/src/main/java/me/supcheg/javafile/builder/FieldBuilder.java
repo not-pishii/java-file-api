@@ -6,6 +6,7 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.type.TypeRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public final class FieldBuilder {
     private final TypeRef type;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
-    private Expr initializer;
+    private @Nullable Expr initializer;
 
     FieldBuilder(String name, TypeRef type) {
         this.name = name;

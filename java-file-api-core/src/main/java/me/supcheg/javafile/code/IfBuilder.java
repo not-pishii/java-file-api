@@ -1,5 +1,7 @@
 package me.supcheg.javafile.code;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +19,7 @@ public final class IfBuilder {
     private final Expr condition;
     private CodeBody thenBody = CodeBody.EMPTY;
     private final List<ElseIfClause> elseIfClauses = new ArrayList<>();
-    private CodeBody elseBody;
+    private @Nullable CodeBody elseBody;
 
     IfBuilder(Expr condition) {
         this.condition = condition;

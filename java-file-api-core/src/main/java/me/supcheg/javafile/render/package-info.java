@@ -7,4 +7,7 @@
 /// are package-private renderer internals split by concern (type
 /// references, expressions and statements, type declarations) plus an
 /// import-claiming helper.
+@NullMarked
 package me.supcheg.javafile.render;
+
+import org.jspecify.annotations.NullMarked;

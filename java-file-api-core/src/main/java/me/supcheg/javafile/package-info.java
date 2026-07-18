@@ -13,4 +13,7 @@
 ///                 mb -> mb.withBody(b -> b.return_(b.literal("hi")))));
 /// file.writeTo(Path.of("build/generated"));
 /// ```
+@NullMarked
 package me.supcheg.javafile;
+
+import org.jspecify.annotations.NullMarked;
