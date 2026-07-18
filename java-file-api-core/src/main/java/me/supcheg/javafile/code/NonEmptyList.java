@@ -7,7 +7,8 @@ import java.util.List;
 ///
 /// Used where Java's grammar requires cardinality `>= 1` but a plain
 /// `List` would make the empty case representable: multi-catch exception
-/// types, and the `catch` clauses of a `try` with no `finally`.
+/// types, the `catch` clauses of a `try` with no `finally`, and the labels
+/// of a [SwitchCase].
 ///
 /// @param head the first element
 /// @param tail the remaining elements, in order; copied defensively
