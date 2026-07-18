@@ -44,6 +44,7 @@ import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
+import me.supcheg.javafile.code.SynchronizedStmt;
 import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
@@ -274,6 +275,14 @@ final class ExprRenderer {
                 ctx.pad() + "continue" + label.map(l -> " " + l).orElse("") + ";";
             case LabeledStmt(var label, var statement) ->
                 ctx.pad() + label + ": " + renderStmt(statement, ctx).stripLeading();
+            case SynchronizedStmt(var lock, var body) ->
+                ctx.pad()
+                        + "synchronized ("
+                        + renderExpr(lock, ctx)
+                        + ") {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
+                        + "}";
         };
     }
 

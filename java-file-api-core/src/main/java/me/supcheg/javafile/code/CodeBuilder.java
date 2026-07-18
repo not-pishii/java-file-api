@@ -628,6 +628,18 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends a `synchronized (lock) { ... }` block.
+    ///
+    /// @param lock the monitor expression
+    /// @param spec receives the builder to populate the synchronized block's body
+    /// @return this builder
+    public CodeBuilder synchronized_(Expr lock, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        statements.add(new SynchronizedStmt(lock, cb.build()));
+        return this;
+    }
+
     /// Snapshots the accumulated statements into an immutable [CodeBody].
     ///
     /// @return the finished body

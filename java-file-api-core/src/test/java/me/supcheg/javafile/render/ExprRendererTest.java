@@ -500,6 +500,20 @@ class ExprRendererTest {
     }
 
     @Test
+    void synchronizedStmtRendersLockExpressionAndBracedBody() {
+        Stmt stmt = new me.supcheg.javafile.code.SynchronizedStmt(
+                cb.this_(), new CodeBody(java.util.List.of(new ExprStmt(cb.call("notifyAll")))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        synchronized (this) {
+                            notifyAll();
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
     void lambdaWithExpressionBodyRendersParenthesizedParams() {
         Expr lambda = cb.lambda(java.util.List.of("name"), cb.call(cb.field("name"), "toUpperCase"));
 
