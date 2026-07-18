@@ -79,6 +79,48 @@ class SealedModelTest {
     }
 
     @Test
+    void staticMethodDeclAcceptsValidName() {
+        StaticMethodDecl method = new StaticMethodDecl(
+                "create", Optional.of(Types.of(STRING)), List.of(), List.of(), List.of(), CodeBody.EMPTY, List.of());
+
+        assertThat(method.name()).isEqualTo("create");
+    }
+
+    @Test
+    void staticMethodDeclRejectsInvalidName() {
+        assertThatThrownBy(() -> new StaticMethodDecl(
+                        "1create",
+                        Optional.of(Types.of(STRING)),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void defaultMethodDeclAcceptsValidName() {
+        DefaultMethodDecl method = new DefaultMethodDecl(
+                "describe", Optional.of(Types.of(STRING)), List.of(), List.of(), List.of(), CodeBody.EMPTY, List.of());
+
+        assertThat(method.name()).isEqualTo("describe");
+    }
+
+    @Test
+    void defaultMethodDeclRejectsInvalidName() {
+        assertThatThrownBy(() -> new DefaultMethodDecl(
+                        "class",
+                        Optional.of(Types.of(STRING)),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void recordDeclHoldsComponentsAndMembers() {
         RecordComponent x = new RecordComponent("x", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
         RecordDecl decl = new RecordDecl(

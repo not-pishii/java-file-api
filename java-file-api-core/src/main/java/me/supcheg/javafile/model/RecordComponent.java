@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.TypeRef;
 
@@ -16,6 +17,7 @@ import java.util.List;
 /// @param annotations the annotations declared on the component
 public record RecordComponent(String name, TypeRef type, List<AnnotationUse> annotations) {
     public RecordComponent {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
     }
 

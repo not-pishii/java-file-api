@@ -4,4 +4,4 @@ package me.supcheg.javafile.code;
 ///
 /// @param target the assignment target
 /// @param value the assigned expression
-public record AssignStmt(Expr target, Expr value) implements Stmt {}
+public record AssignStmt(AssignTarget target, Expr value) implements Stmt {}

@@ -24,7 +24,7 @@ class GeneratedMessagesCompileTest {
                 .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                 .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
                         .withParam("bundle", Types.of(BUNDLE))
-                        .withBody(b -> b.assign(b.field(b.field("this"), "bundle"), b.field("bundle"))))
+                        .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
                 .withMethod("greeting", Types.of(STRING), mb -> mb.withParam("name", Types.of(STRING))
                         .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
 

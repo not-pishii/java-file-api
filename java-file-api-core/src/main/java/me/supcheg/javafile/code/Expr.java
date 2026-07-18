@@ -4,7 +4,8 @@ package me.supcheg.javafile.code;
 ///
 /// The permitted implementations cover field access, method calls, literals,
 /// text blocks, binary and unary operators, `instanceof` pattern matching,
-/// object creation, `switch` expressions, and lambda expressions. Statements
+/// object creation, `switch` expressions, lambda expressions, and the `this`
+/// and `super` keyword expressions. Statements
 /// ([Stmt]) form a separate hierarchy, so an expression cannot appear where a
 /// statement is expected without an explicit wrapper such as [ExprStmt].
 public sealed interface Expr
@@ -14,7 +15,12 @@ public sealed interface Expr
                 TextBlockExpr,
                 BinaryExpr,
                 UnaryExpr,
+                IncDecExpr,
                 InstanceOfExpr,
                 NewExpr,
                 SwitchExpr,
-                LambdaExpr {}
+                LambdaExpr,
+                StatementExpr,
+                ConstantExpr,
+                ThisExpr,
+                SuperExpr {}

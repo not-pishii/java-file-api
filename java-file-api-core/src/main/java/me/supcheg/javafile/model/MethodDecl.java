@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -36,6 +37,7 @@ public record MethodDecl(
         List<ClassOrInterfaceTypeRef> throwsTypes)
         implements ClassMember, RecordMember, EnumMember, EnumConstantMember {
     public MethodDecl {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);

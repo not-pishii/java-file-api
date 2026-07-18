@@ -1,5 +1,7 @@
 package me.supcheg.javafile.type;
 
+import me.supcheg.javafile.Identifiers;
+
 import java.util.List;
 
 /// A type parameter declaration on a class, interface, record, or method,
@@ -13,6 +15,7 @@ import java.util.List;
 /// @param bounds the parameter's upper bounds, rendered joined with `&`
 public record TypeParam(String name, List<ClassOrInterfaceTypeRef> bounds) {
     public TypeParam {
+        name = Identifiers.requireValid(name);
         bounds = List.copyOf(bounds);
     }
 }

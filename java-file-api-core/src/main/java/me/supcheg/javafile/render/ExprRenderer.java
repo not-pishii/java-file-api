@@ -25,6 +25,7 @@ import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
+import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
@@ -38,10 +39,12 @@ import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
+import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
 import me.supcheg.javafile.code.TextBlockExpr;
+import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
@@ -82,6 +85,9 @@ final class ExprRenderer {
                 switch (op) {
                     case NOT -> "!" + renderExpr(operand, ctx);
                     case NEG -> "-" + renderExpr(operand, ctx);
+                };
+            case IncDecExpr(var op, var operand) ->
+                switch (op) {
                     case PRE_INC -> "++" + renderExpr(operand, ctx);
                     case PRE_DEC -> "--" + renderExpr(operand, ctx);
                     case POST_INC -> renderExpr(operand, ctx) + "++";
@@ -122,6 +128,8 @@ final class ExprRenderer {
                         header + "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad() + "}";
                 };
             }
+            case ThisExpr ignored -> "this";
+            case SuperExpr ignored -> "super";
         };
     }
 
@@ -130,8 +138,13 @@ final class ExprRenderer {
             case ReturnStmt(var value) ->
                 ctx.pad() + "return" + value.map(v -> " " + renderExpr(v, ctx)).orElse("") + ";";
             case ExprStmt(var expr) -> ctx.pad() + renderExpr(expr, ctx) + ";";
-            case AssignStmt(var target, var value) ->
-                ctx.pad() + renderExpr(target, ctx) + " = " + renderExpr(value, ctx) + ";";
+            case AssignStmt(var target, var value) -> {
+                String targetStr =
+                        switch (target) {
+                            case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
+                        };
+                yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
+            }
             case LocalVarDeclStmt(var type, var name, var initializer) ->
                 ctx.pad()
                         + type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
@@ -300,11 +313,11 @@ final class ExprRenderer {
     }
 
     private static String renderSwitchCase(SwitchCase c, Context ctx) {
-        boolean isDefault = c.labels().size() == 1 && c.labels().get(0) instanceof DefaultLabel;
+        List<CaseLabel> labels = c.labels().toList();
+        boolean isDefault = labels.size() == 1 && labels.get(0) instanceof DefaultLabel;
         String header = isDefault
                 ? "default"
-                : "case "
-                        + c.labels().stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));
+                : "case " + labels.stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));
         return ctx.pad() + header + " -> " + renderCaseBody(c.body(), ctx);
     }
 

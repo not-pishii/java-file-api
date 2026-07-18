@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public record EnumConstant(
         String name, List<AnnotationUse> annotations, List<Expr> args, List<EnumConstantMember> body) {
     public EnumConstant {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         args = List.copyOf(args);
         body = List.copyOf(body);

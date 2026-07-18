@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
@@ -33,6 +34,7 @@ public record AbstractMethodDecl(
         List<ClassOrInterfaceTypeRef> throwsTypes)
         implements InterfaceMember, ClassMember, EnumMember {
     public AbstractMethodDecl {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);

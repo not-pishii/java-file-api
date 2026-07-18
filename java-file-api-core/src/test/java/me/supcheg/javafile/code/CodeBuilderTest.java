@@ -38,9 +38,9 @@ class CodeBuilderTest {
     @Test
     void assignAddsAssignStmtWithTargetAndValue() {
         CodeBuilder cb = new CodeBuilder();
-        cb.assign(cb.field(cb.field("this"), "bundle"), cb.field("bundle"));
+        cb.assign(cb.field(cb.this_(), "bundle"), cb.field("bundle"));
 
-        Expr expectedTarget = new FieldAccessExpr(Optional.of(new FieldAccessExpr(Optional.empty(), "this")), "bundle");
+        FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.of(new ThisExpr()), "bundle");
         Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
         assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
     }
@@ -92,7 +92,7 @@ class CodeBuilderTest {
         CodeBuilder cb = new CodeBuilder();
 
         assertThat(cb.postIncrement(cb.field("i")))
-                .isEqualTo(new UnaryExpr(UnaryOp.POST_INC, new FieldAccessExpr(Optional.empty(), "i")));
+                .isEqualTo(new IncDecExpr(IncDecOp.POST_INC, new FieldAccessExpr(Optional.empty(), "i")));
         assertThat(cb.not(cb.literal(true))).isEqualTo(new UnaryExpr(UnaryOp.NOT, new BooleanLiteral(true)));
     }
 
@@ -116,9 +116,9 @@ class CodeBuilderTest {
         CodeBuilder cb = new CodeBuilder();
         Expr operand = cb.field("i");
 
-        assertThat(cb.preIncrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.PRE_INC, operand));
-        assertThat(cb.preDecrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.PRE_DEC, operand));
-        assertThat(cb.postDecrement(operand)).isEqualTo(new UnaryExpr(UnaryOp.POST_DEC, operand));
+        assertThat(cb.preIncrement(operand)).isEqualTo(new IncDecExpr(IncDecOp.PRE_INC, operand));
+        assertThat(cb.preDecrement(operand)).isEqualTo(new IncDecExpr(IncDecOp.PRE_DEC, operand));
+        assertThat(cb.postDecrement(operand)).isEqualTo(new IncDecExpr(IncDecOp.POST_DEC, operand));
     }
 
     @Test
@@ -242,7 +242,7 @@ class CodeBuilderTest {
                 new LocalVarDeclStmt(Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
         ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
 
-        cb.for_(init, cb.lt(cb.field("i"), cb.literal(10)), update, b -> b.exprStatement(b.field("i")));
+        cb.for_(init, cb.lt(cb.field("i"), cb.literal(10)), update, b -> b.exprStatement(b.call("use")));
 
         ForStmt stmt = (ForStmt) cb.build().statements().get(0);
         assertThat(stmt.init()).contains(init);
@@ -255,7 +255,7 @@ class CodeBuilderTest {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
 
-        cb.forEach(stringType, "item", cb.field("items"), b -> b.exprStatement(b.field("item")));
+        cb.forEach(stringType, "item", cb.field("items"), b -> b.exprStatement(b.call("use")));
 
         EnhancedForStmt stmt = (EnhancedForStmt) cb.build().statements().get(0);
         assertThat(stmt.varName()).isEqualTo("item");
@@ -270,8 +270,8 @@ class CodeBuilderTest {
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
         assertThat(stmt.cases()).hasSize(2);
-        assertThat(stmt.cases().get(0).labels()).containsExactly(new ConstantLabel(new StringLiteral("MON")));
-        assertThat(stmt.cases().get(1).labels()).containsExactly(new DefaultLabel());
+        assertThat(stmt.cases().get(0).labels().toList()).containsExactly(new ConstantLabel(new StringLiteral("MON")));
+        assertThat(stmt.cases().get(1).labels().toList()).containsExactly(new DefaultLabel());
     }
 
     @Test
@@ -300,7 +300,7 @@ class CodeBuilderTest {
                 .default_(b -> b.return_(cb.literalNull())));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
-        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().get(0);
+        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().head();
         assertThat(label.bindingName()).isEqualTo("s");
         assertThat(label.guard()).isPresent();
     }

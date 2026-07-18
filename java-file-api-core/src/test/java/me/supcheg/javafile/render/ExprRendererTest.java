@@ -11,6 +11,7 @@ import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
+import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
@@ -45,7 +46,7 @@ class ExprRendererTest {
 
     @Test
     void fieldAccessWithTargetRendersDottedPath() {
-        Expr expr = cb.field(cb.field("this"), "bundle");
+        Expr expr = cb.field(cb.this_(), "bundle");
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("this.bundle");
     }
@@ -115,7 +116,7 @@ class ExprRendererTest {
 
     @Test
     void assignStatementRendersTargetEqualsValue() {
-        Expr target = cb.field(cb.field("this"), "bundle");
+        FieldAccessExpr target = cb.field(cb.this_(), "bundle");
         Expr value = cb.field("bundle");
         String rendered = ExprRenderer.renderStmt(
                 new AssignStmt(target, value),
@@ -273,14 +274,14 @@ class ExprRendererTest {
                 Optional.of(init),
                 Optional.of(cb.lt(cb.field("i"), cb.literal(10))),
                 Optional.of(update),
-                new CodeBody(java.util.List.of(new ExprStmt(cb.field("i")))));
+                new CodeBody(java.util.List.of(new ExprStmt(cb.call("use")))));
 
         String rendered = ExprRenderer.renderStmt(
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("""
                         for (int i = 0; i < 10; i++) {
-                            i;
+                            use();
                         }""".indent(4).stripTrailing());
     }
 
@@ -289,14 +290,14 @@ class ExprRendererTest {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
         Stmt stmt = new me.supcheg.javafile.code.EnhancedForStmt(
-                stringType, "item", cb.field("items"), new CodeBody(java.util.List.of(new ExprStmt(cb.field("item")))));
+                stringType, "item", cb.field("items"), new CodeBody(java.util.List.of(new ExprStmt(cb.call("use")))));
 
         String rendered = ExprRenderer.renderStmt(
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("""
                         for (String item : items) {
-                            item;
+                            use();
                         }""".indent(4).stripTrailing());
     }
 
@@ -306,9 +307,11 @@ class ExprRendererTest {
                 cb.field("day"),
                 java.util.List.of(
                         new SwitchCase(
-                                java.util.List.of(new ConstantLabel(cb.literal("MON"))),
+                                new NonEmptyList<>(new ConstantLabel(cb.literal("MON")), java.util.List.of()),
                                 new ExprCaseBody(cb.literal(1))),
-                        new SwitchCase(java.util.List.of(new DefaultLabel()), new ExprCaseBody(cb.literal(0)))));
+                        new SwitchCase(
+                                new NonEmptyList<>(new DefaultLabel(), java.util.List.of()),
+                                new ExprCaseBody(cb.literal(0)))));
 
         String rendered = ExprRenderer.renderStmt(
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
@@ -326,9 +329,11 @@ class ExprRendererTest {
                 cb.field("day"),
                 java.util.List.of(
                         new SwitchCase(
-                                java.util.List.of(new ConstantLabel(cb.literal("MON"))),
+                                new NonEmptyList<>(new ConstantLabel(cb.literal("MON")), java.util.List.of()),
                                 new ExprCaseBody(cb.literal(1))),
-                        new SwitchCase(java.util.List.of(new DefaultLabel()), new ExprCaseBody(cb.literal(0)))));
+                        new SwitchCase(
+                                new NonEmptyList<>(new DefaultLabel(), java.util.List.of()),
+                                new ExprCaseBody(cb.literal(0)))));
 
         String rendered = ExprRenderer.renderStmt(
                 new ReturnStmt(Optional.of(expr)),
@@ -346,7 +351,7 @@ class ExprRendererTest {
         Expr expr = new SwitchExpr(
                 cb.field("day"),
                 java.util.List.of(new SwitchCase(
-                        java.util.List.of(new ConstantLabel(cb.literal("MON"))),
+                        new NonEmptyList<>(new ConstantLabel(cb.literal("MON")), java.util.List.of()),
                         new BlockCaseBody(new CodeBody(java.util.List.of(new YieldStmt(cb.literal(1))))))));
 
         String rendered = ExprRenderer.renderStmt(
@@ -368,8 +373,12 @@ class ExprRendererTest {
         Stmt stmt = new SwitchStmt(
                 cb.field("obj"),
                 java.util.List.of(new SwitchCase(
-                        java.util.List.of(new TypePatternLabel(
-                                stringType, "s", Optional.of(cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0))))),
+                        new NonEmptyList<>(
+                                new TypePatternLabel(
+                                        stringType,
+                                        "s",
+                                        Optional.of(cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)))),
+                                java.util.List.of()),
                         new ExprCaseBody(cb.field("s")))));
 
         String rendered = ExprRenderer.renderStmt(
@@ -386,7 +395,7 @@ class ExprRendererTest {
         Stmt stmt = new SwitchStmt(
                 cb.field("day"),
                 java.util.List.of(new SwitchCase(
-                        java.util.List.of(new ConstantLabel(cb.literal("MON")), new DefaultLabel()),
+                        new NonEmptyList<>(new ConstantLabel(cb.literal("MON")), java.util.List.of(new DefaultLabel())),
                         new ExprCaseBody(cb.literal(1)))));
 
         String rendered = ExprRenderer.renderStmt(
@@ -405,7 +414,7 @@ class ExprRendererTest {
         Stmt stmt = new SwitchStmt(
                 cb.field("day"),
                 java.util.List.of(new SwitchCase(
-                        java.util.List.of(new DefaultLabel()),
+                        new NonEmptyList<>(new DefaultLabel(), java.util.List.of()),
                         new me.supcheg.javafile.code.ThrowCaseBody(cb.new_(exceptionType, cb.literal("bad day"))))));
 
         String rendered = ExprRenderer.renderStmt(

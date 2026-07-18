@@ -77,9 +77,7 @@ final class TypeDeclRenderer {
                     case MethodDecl m -> renderMethod(m, ctx);
                     case EnumConstructorDecl c -> renderEnumConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
-                    case TypeDecl ignored ->
-                        throw new UnsupportedOperationException(
-                                "nested type declarations are not supported in this MVP");
+                    case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -91,9 +89,7 @@ final class TypeDeclRenderer {
                     case MethodDecl m -> renderMethod(m, ctx);
                     case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
-                    case TypeDecl ignored ->
-                        throw new UnsupportedOperationException(
-                                "nested type declarations are not supported in this MVP");
+                    case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -223,9 +219,7 @@ final class TypeDeclRenderer {
                                 "static",
                                 ctx);
                     case ConstantDecl c -> renderConstant(c, ctx);
-                    case TypeDecl ignored ->
-                        throw new UnsupportedOperationException(
-                                "nested type declarations are not supported in this MVP");
+                    case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -331,9 +325,7 @@ final class TypeDeclRenderer {
                     case CompactConstructorDecl cc -> renderCompactConstructor(cc, ctx, ownerSimpleName);
                     case MethodDecl m -> renderMethod(m, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
-                    case TypeDecl ignored ->
-                        throw new UnsupportedOperationException(
-                                "nested type declarations are not supported in this MVP");
+                    case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -413,9 +405,7 @@ final class TypeDeclRenderer {
                 .map(member -> switch (member) {
                     case FieldDecl f -> renderField(f, ctx);
                     case MethodDecl m -> renderMethod(m, ctx);
-                    case TypeDecl ignored ->
-                        throw new UnsupportedOperationException(
-                                "nested type declarations are not supported in this MVP");
+                    case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }

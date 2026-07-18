@@ -1,5 +1,6 @@
 package me.supcheg.javafile.code;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.type.TypeRef;
 
 /// An enhanced `for` loop, e.g. `for (elementType varName : iterable)`.
@@ -8,4 +9,8 @@ import me.supcheg.javafile.type.TypeRef;
 /// @param varName the loop variable name
 /// @param iterable the iterated expression
 /// @param body the loop body
-public record EnhancedForStmt(TypeRef elementType, String varName, Expr iterable, CodeBody body) implements Stmt {}
+public record EnhancedForStmt(TypeRef elementType, String varName, Expr iterable, CodeBody body) implements Stmt {
+    public EnhancedForStmt {
+        varName = Identifiers.requireValid(varName);
+    }
+}
