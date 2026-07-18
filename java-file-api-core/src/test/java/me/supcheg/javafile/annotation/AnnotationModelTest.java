@@ -85,4 +85,21 @@ class AnnotationModelTest {
         assertThatThrownBy(() -> new AnnotationMember("1value", AnnotationValues.literal(1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void enumValueAcceptsValidConstantName() {
+        EnumValue value = new EnumValue(LEVEL, "HIGH");
+
+        assertThat(value.constant()).isEqualTo("HIGH");
+    }
+
+    @Test
+    void enumValueRejectsReservedKeywordAsConstantName() {
+        assertThatThrownBy(() -> new EnumValue(LEVEL, "class")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void enumValueRejectsLeadingDigitInConstantName() {
+        assertThatThrownBy(() -> new EnumValue(LEVEL, "1HIGH")).isInstanceOf(IllegalArgumentException.class);
+    }
 }

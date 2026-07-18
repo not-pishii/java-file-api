@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -34,6 +35,7 @@ public record StaticMethodDecl(
         List<ClassOrInterfaceTypeRef> throwsTypes)
         implements InterfaceMember {
     public StaticMethodDecl {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);
