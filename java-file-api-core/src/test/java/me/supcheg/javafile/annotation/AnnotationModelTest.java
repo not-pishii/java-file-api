@@ -11,6 +11,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AnnotationModelTest {
 
@@ -64,5 +65,24 @@ class AnnotationModelTest {
 
         assertThat(array.elements()).hasSize(1);
         assertThat(use.members()).hasSize(1);
+    }
+
+    @Test
+    void memberAcceptsValidName() {
+        AnnotationMember member = new AnnotationMember("value", AnnotationValues.literal(1));
+
+        assertThat(member.name()).isEqualTo("value");
+    }
+
+    @Test
+    void memberRejectsReservedKeywordAsName() {
+        assertThatThrownBy(() -> new AnnotationMember("class", AnnotationValues.literal(1)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void memberRejectsLeadingDigitInName() {
+        assertThatThrownBy(() -> new AnnotationMember("1value", AnnotationValues.literal(1)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
