@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.PrimitiveTypeRef;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,6 +44,21 @@ class ModifierValidationTest {
                         List.of(),
                         List.of()))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void classRejectsMultipleAccessModifiers() {
+        assertThatThrownBy(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.PROTECTED),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("more than one access modifier");
     }
 
     @Test
@@ -310,5 +326,25 @@ class ModifierValidationTest {
                         Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                         List.of()))
                 .doesNotThrowAnyException();
+    }
+
+    // No shipped record's allowed-set currently combines ABSTRACT with FINAL/STATIC/PRIVATE
+    // (each excludes the others at the allowed-set level instead), so this branch of
+    // requireValidMember is unreachable through any real declaration constructor; exercised
+    // directly here since it's still part of the method's documented contract.
+    @Test
+    void requireValidMemberRejectsAbstractCombinedWithFinalStaticOrPrivate() {
+        Set<Modifier> allowed = EnumSet.of(Modifier.ABSTRACT, Modifier.FINAL, Modifier.STATIC, Modifier.PRIVATE);
+
+        assertThatThrownBy(() -> ModifierValidation.requireValidMember(
+                        Set.of(Modifier.ABSTRACT, Modifier.FINAL), allowed, "member"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("abstract with final, static, or private");
+        assertThatThrownBy(() -> ModifierValidation.requireValidMember(
+                        Set.of(Modifier.ABSTRACT, Modifier.STATIC), allowed, "member"))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> ModifierValidation.requireValidMember(
+                        Set.of(Modifier.ABSTRACT, Modifier.PRIVATE), allowed, "member"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
