@@ -27,7 +27,7 @@ public final class SwitchBuilder {
     /// @param spec receives the builder to populate the case body
     /// @return this builder
     public SwitchBuilder case_(Expr value, Consumer<CodeBuilder> spec) {
-        cases.add(new SwitchCase(List.of(new ConstantLabel(value)), blockBody(spec)));
+        cases.add(new SwitchCase(new NonEmptyList<>(new ConstantLabel(value), List.of()), blockBody(spec)));
         return this;
     }
 
@@ -37,7 +37,7 @@ public final class SwitchBuilder {
     /// @param result the case's result expression
     /// @return this builder
     public SwitchBuilder caseValue(Expr value, Expr result) {
-        cases.add(new SwitchCase(List.of(new ConstantLabel(value)), new ExprCaseBody(result)));
+        cases.add(new SwitchCase(new NonEmptyList<>(new ConstantLabel(value), List.of()), new ExprCaseBody(result)));
         return this;
     }
 
@@ -48,7 +48,8 @@ public final class SwitchBuilder {
     /// @param spec receives the builder to populate the case body
     /// @return this builder
     public SwitchBuilder caseType(TypeRef type, String bindingName, Consumer<CodeBuilder> spec) {
-        cases.add(new SwitchCase(List.of(new TypePatternLabel(type, bindingName, Optional.empty())), blockBody(spec)));
+        cases.add(new SwitchCase(
+                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.empty()), List.of()), blockBody(spec)));
         return this;
     }
 
@@ -61,8 +62,9 @@ public final class SwitchBuilder {
     /// @param spec receives the builder to populate the case body
     /// @return this builder
     public SwitchBuilder caseTypeWithGuard(TypeRef type, String bindingName, Expr guard, Consumer<CodeBuilder> spec) {
-        cases.add(
-                new SwitchCase(List.of(new TypePatternLabel(type, bindingName, Optional.of(guard))), blockBody(spec)));
+        cases.add(new SwitchCase(
+                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.of(guard)), List.of()),
+                blockBody(spec)));
         return this;
     }
 
@@ -71,7 +73,7 @@ public final class SwitchBuilder {
     /// @param spec receives the builder to populate the case body
     /// @return this builder
     public SwitchBuilder default_(Consumer<CodeBuilder> spec) {
-        cases.add(new SwitchCase(List.of(new DefaultLabel()), blockBody(spec)));
+        cases.add(new SwitchCase(new NonEmptyList<>(new DefaultLabel(), List.of()), blockBody(spec)));
         return this;
     }
 
@@ -80,7 +82,7 @@ public final class SwitchBuilder {
     /// @param result the case's result expression
     /// @return this builder
     public SwitchBuilder defaultValue(Expr result) {
-        cases.add(new SwitchCase(List.of(new DefaultLabel()), new ExprCaseBody(result)));
+        cases.add(new SwitchCase(new NonEmptyList<>(new DefaultLabel(), List.of()), new ExprCaseBody(result)));
         return this;
     }
 

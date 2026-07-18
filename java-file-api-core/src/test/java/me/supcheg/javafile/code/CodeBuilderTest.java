@@ -270,8 +270,8 @@ class CodeBuilderTest {
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
         assertThat(stmt.cases()).hasSize(2);
-        assertThat(stmt.cases().get(0).labels()).containsExactly(new ConstantLabel(new StringLiteral("MON")));
-        assertThat(stmt.cases().get(1).labels()).containsExactly(new DefaultLabel());
+        assertThat(stmt.cases().get(0).labels().toList()).containsExactly(new ConstantLabel(new StringLiteral("MON")));
+        assertThat(stmt.cases().get(1).labels().toList()).containsExactly(new DefaultLabel());
     }
 
     @Test
@@ -300,7 +300,7 @@ class CodeBuilderTest {
                 .default_(b -> b.return_(cb.literalNull())));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
-        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().get(0);
+        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().head();
         assertThat(label.bindingName()).isEqualTo("s");
         assertThat(label.guard()).isPresent();
     }

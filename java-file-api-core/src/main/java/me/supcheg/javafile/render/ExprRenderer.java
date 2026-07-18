@@ -300,11 +300,11 @@ final class ExprRenderer {
     }
 
     private static String renderSwitchCase(SwitchCase c, Context ctx) {
-        boolean isDefault = c.labels().size() == 1 && c.labels().get(0) instanceof DefaultLabel;
+        List<CaseLabel> labels = c.labels().toList();
+        boolean isDefault = labels.size() == 1 && labels.get(0) instanceof DefaultLabel;
         String header = isDefault
                 ? "default"
-                : "case "
-                        + c.labels().stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));
+                : "case " + labels.stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));
         return ctx.pad() + header + " -> " + renderCaseBody(c.body(), ctx);
     }
 
