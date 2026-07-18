@@ -177,8 +177,18 @@ class CodeBuilderTest {
         cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(0));
 
         assertThat(cb.build().statements())
-                .containsExactly(new LocalVarDeclStmt(
-                        Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", new IntLiteral(0)));
+                .containsExactly(new LocalVarDeclStmt.Typed(
+                        me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.of(new IntLiteral(0))));
+    }
+
+    @Test
+    void localVarWithExplicitTypeAndNoInitializerOmitsIt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
+
+        assertThat(cb.build().statements())
+                .containsExactly(new LocalVarDeclStmt.Typed(
+                        me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.empty()));
     }
 
     @Test
@@ -187,7 +197,7 @@ class CodeBuilderTest {
         cb.localVar("name", cb.literal("x"));
 
         assertThat(cb.build().statements())
-                .containsExactly(new LocalVarDeclStmt(Optional.empty(), "name", new StringLiteral("x")));
+                .containsExactly(new LocalVarDeclStmt.Inferred("name", new StringLiteral("x")));
     }
 
     @Test
@@ -240,8 +250,8 @@ class CodeBuilderTest {
     @Test
     void forAddsAForStmtWithInitConditionAndUpdate() {
         CodeBuilder cb = new CodeBuilder();
-        LocalVarDeclStmt init =
-                new LocalVarDeclStmt(Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
+        LocalVarDeclStmt init = new LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "i", Optional.of(cb.literal(0)));
         ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
 
         cb.for_(init, cb.lt(cb.field("i"), cb.literal(10)), update, b -> b.exprStatement(b.call("use")));

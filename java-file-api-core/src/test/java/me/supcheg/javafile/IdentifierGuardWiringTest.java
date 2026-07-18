@@ -121,8 +121,10 @@ class IdentifierGuardWiringTest {
                         () -> new EnumConstant(BAD_NAME, List.of(), List.of(), List.of())),
                 Arguments.of("CatchClause", (ThrowingCallable) () ->
                         new CatchClause(NonEmptyList.copyOf(List.of(IO_EXCEPTION_TYPE)), BAD_NAME, CodeBody.EMPTY)),
-                Arguments.of("LocalVarDeclStmt", (ThrowingCallable)
-                        () -> new LocalVarDeclStmt(Optional.empty(), BAD_NAME, new IntLiteral(0))),
+                Arguments.of("LocalVarDeclStmt.Typed", (ThrowingCallable)
+                        () -> new LocalVarDeclStmt.Typed(PrimitiveTypeRef.INT, BAD_NAME, Optional.empty())),
+                Arguments.of("LocalVarDeclStmt.Inferred", (ThrowingCallable)
+                        () -> new LocalVarDeclStmt.Inferred(BAD_NAME, new IntLiteral(0))),
                 Arguments.of("EnhancedForStmt", (ThrowingCallable) () -> new EnhancedForStmt(
                         STRING_TYPE, BAD_NAME, new FieldAccessExpr(Optional.empty(), "items"), CodeBody.EMPTY)),
                 Arguments.of("TypePatternLabel", (ThrowingCallable)

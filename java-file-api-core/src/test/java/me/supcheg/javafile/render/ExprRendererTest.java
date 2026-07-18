@@ -196,8 +196,8 @@ class ExprRendererTest {
 
     @Test
     void typedLocalVarDeclRendersTheDeclaredType() {
-        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt(
-                Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", cb.literal(0));
+        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.of(cb.literal(0)));
         assertThat(ExprRenderer.renderStmt(
                         stmt,
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
@@ -205,9 +205,19 @@ class ExprRendererTest {
     }
 
     @Test
+    void typedLocalVarDeclWithoutInitializerOmitsAssignment() {
+        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.empty());
+        assertThat(ExprRenderer.renderStmt(
+                        stmt,
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    int count;");
+    }
+
+    @Test
     void untypedLocalVarDeclRendersVar() {
         me.supcheg.javafile.code.Stmt stmt =
-                new me.supcheg.javafile.code.LocalVarDeclStmt(Optional.empty(), "name", cb.literal("x"));
+                new me.supcheg.javafile.code.LocalVarDeclStmt.Inferred("name", cb.literal("x"));
         assertThat(ExprRenderer.renderStmt(
                         stmt,
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
@@ -269,8 +279,8 @@ class ExprRendererTest {
 
     @Test
     void classicForStmtRendersInitConditionUpdateAndBody() {
-        me.supcheg.javafile.code.LocalVarDeclStmt init = new me.supcheg.javafile.code.LocalVarDeclStmt(
-                Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
+        me.supcheg.javafile.code.LocalVarDeclStmt init = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "i", Optional.of(cb.literal(0)));
         ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
         Stmt stmt = new me.supcheg.javafile.code.ForStmt(
                 Optional.of(init),

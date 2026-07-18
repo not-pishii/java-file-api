@@ -382,14 +382,24 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 
-    /// Appends a typed local variable declaration.
+    /// Appends a typed local variable declaration with an initializer.
     ///
     /// @param name the variable name
     /// @param type the declared variable type
     /// @param initializer the initializer expression
     /// @return this builder
     public CodeBuilder localVar(String name, TypeRef type, Expr initializer) {
-        statements.add(new LocalVarDeclStmt(Optional.of(type), name, initializer));
+        statements.add(new LocalVarDeclStmt.Typed(type, name, Optional.of(initializer)));
+        return this;
+    }
+
+    /// Appends a typed local variable declaration with no initializer.
+    ///
+    /// @param name the variable name
+    /// @param type the declared variable type
+    /// @return this builder
+    public CodeBuilder localVar(String name, TypeRef type) {
+        statements.add(new LocalVarDeclStmt.Typed(type, name, Optional.empty()));
         return this;
     }
 
@@ -399,7 +409,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param initializer the initializer expression
     /// @return this builder
     public CodeBuilder localVar(String name, Expr initializer) {
-        statements.add(new LocalVarDeclStmt(Optional.empty(), name, initializer));
+        statements.add(new LocalVarDeclStmt.Inferred(name, initializer));
         return this;
     }
 

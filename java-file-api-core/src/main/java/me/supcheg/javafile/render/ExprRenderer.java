@@ -148,14 +148,15 @@ final class ExprRenderer {
                         };
                 yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
             }
-            case LocalVarDeclStmt(var type, var name, var initializer) ->
+            case LocalVarDeclStmt.Typed(var type, var name, var initializer) ->
                 ctx.pad()
-                        + type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
+                        + TypeRefRenderer.renderType(type, ctx)
                         + " "
                         + name
-                        + " = "
-                        + renderExpr(initializer, ctx)
+                        + initializer.map(i -> " = " + renderExpr(i, ctx)).orElse("")
                         + ";";
+            case LocalVarDeclStmt.Inferred(var name, var initializer) ->
+                ctx.pad() + "var " + name + " = " + renderExpr(initializer, ctx) + ";";
             case IfStmt(var condition, var thenBody, var elseIfClauses, var elseBody) -> {
                 StringBuilder sb = new StringBuilder(ctx.pad())
                         .append("if (")
