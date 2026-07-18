@@ -18,7 +18,8 @@ import java.util.Set;
 ///
 /// @param desc the class's name and package
 /// @param annotations the annotations declared on the class
-/// @param modifiers the modifiers on the class declaration
+/// @param modifiers the modifiers on the class declaration; `static` is accepted because
+///                   `ClassDecl` also models a nested member class
 /// @param typeParams the declaration's type parameters, in order
 /// @param superclass the superclass, if the class extends one other than
 ///                    `Object`

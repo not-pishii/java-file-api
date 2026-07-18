@@ -15,7 +15,8 @@ import java.util.Set;
 ///
 /// @param desc the enum's name and package
 /// @param annotations the annotations declared on the enum
-/// @param modifiers the modifiers on the enum declaration
+/// @param modifiers the modifiers on the enum declaration; `static` is accepted because
+///                   `EnumDecl` also models a nested member enum
 /// @param constants the enum constants, in declaration order
 /// @param interfaces the interfaces the enum implements
 /// @param members the members of the enum body, rendered after the constant
@@ -30,7 +31,7 @@ public record EnumDecl(
         implements TypeDecl {
     public EnumDecl {
         modifiers = ModifierValidation.requireValidTopLevel(
-                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), "enum");
+                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), "enum");
         annotations = List.copyOf(annotations);
         constants = List.copyOf(constants);
         interfaces = List.copyOf(interfaces);

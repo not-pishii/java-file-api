@@ -16,7 +16,8 @@ import java.util.Set;
 ///
 /// @param desc the record's name and package
 /// @param annotations the annotations declared on the record
-/// @param modifiers the modifiers on the record declaration
+/// @param modifiers the modifiers on the record declaration; `static` is accepted because
+///                   `RecordDecl` also models a nested member record
 /// @param typeParams the declaration's type parameters, in order
 /// @param components the record's components, determining its canonical
 ///                    constructor parameters and accessors
@@ -32,8 +33,8 @@ public record RecordDecl(
         List<RecordMember> members)
         implements TypeDecl {
     public RecordDecl {
-        modifiers =
-                ModifierValidation.requireValidTopLevel(Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC), "record");
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), "record");
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         components = List.copyOf(components);
