@@ -635,7 +635,14 @@ class TypeDeclRendererTest {
                 List.of(),
                 List.of());
         ClassDecl decl = new ClassDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), Optional.empty(), List.of(), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of(nested));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));

@@ -49,7 +49,8 @@ public final class SwitchBuilder {
     /// @return this builder
     public SwitchBuilder caseType(TypeRef type, String bindingName, Consumer<CodeBuilder> spec) {
         cases.add(new SwitchCase(
-                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.empty()), List.of()), blockBody(spec)));
+                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.empty()), List.of()),
+                blockBody(spec)));
         return this;
     }
 
