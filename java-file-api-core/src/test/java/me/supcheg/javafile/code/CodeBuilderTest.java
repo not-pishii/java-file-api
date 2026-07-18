@@ -40,7 +40,8 @@ class CodeBuilderTest {
         CodeBuilder cb = new CodeBuilder();
         cb.assign(cb.field(cb.field("this"), "bundle"), cb.field("bundle"));
 
-        Expr expectedTarget = new FieldAccessExpr(Optional.of(new FieldAccessExpr(Optional.empty(), "this")), "bundle");
+        FieldAccessExpr expectedTarget =
+                new FieldAccessExpr(Optional.of(new FieldAccessExpr(Optional.empty(), "this")), "bundle");
         Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
         assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
     }

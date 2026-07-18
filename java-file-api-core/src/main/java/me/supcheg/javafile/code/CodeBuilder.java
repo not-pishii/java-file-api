@@ -65,7 +65,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param target the assignment target
     /// @param value the assigned expression
     /// @return this builder
-    public CodeBuilder assign(Expr target, Expr value) {
+    public CodeBuilder assign(AssignTarget target, Expr value) {
         statements.add(new AssignStmt(target, value));
         return this;
     }
@@ -74,7 +74,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param name the field name
     /// @return a field access expression
-    public Expr field(String name) {
+    public FieldAccessExpr field(String name) {
         return new FieldAccessExpr(Optional.empty(), name);
     }
 
@@ -83,7 +83,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param target the expression owning the field
     /// @param name the field name
     /// @return a field access expression
-    public Expr field(Expr target, String name) {
+    public FieldAccessExpr field(Expr target, String name) {
         return new FieldAccessExpr(Optional.of(target), name);
     }
 

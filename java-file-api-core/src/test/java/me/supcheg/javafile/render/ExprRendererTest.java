@@ -11,6 +11,7 @@ import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
+import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
@@ -115,7 +116,7 @@ class ExprRendererTest {
 
     @Test
     void assignStatementRendersTargetEqualsValue() {
-        Expr target = cb.field(cb.field("this"), "bundle");
+        FieldAccessExpr target = cb.field(cb.field("this"), "bundle");
         Expr value = cb.field("bundle");
         String rendered = ExprRenderer.renderStmt(
                 new AssignStmt(target, value),
