@@ -6,3 +6,4 @@ out/
 _reference/
 *.zip
 .jqwik-database
+.worktrees/
