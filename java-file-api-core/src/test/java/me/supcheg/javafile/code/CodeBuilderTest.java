@@ -343,6 +343,27 @@ class CodeBuilderTest {
     }
 
     @Test
+    void labeledWrapsExactlyTheOneStatementAppendedBySpec() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.labeled("outer", b -> b.break_());
+
+        assertThat(cb.build().statements()).containsExactly(new LabeledStmt("outer", new BreakStmt(Optional.empty())));
+    }
+
+    @Test
+    void labeledThrowsWhenSpecAppendsZeroOrMoreThanOneStatement() {
+        CodeBuilder cb1 = new CodeBuilder();
+        assertThatThrownBy(() -> cb1.labeled("outer", b -> {})).isInstanceOf(IllegalArgumentException.class);
+
+        CodeBuilder cb2 = new CodeBuilder();
+        assertThatThrownBy(() -> cb2.labeled("outer", b -> {
+                    b.break_();
+                    b.continue_();
+                }))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void tryWithSingleCatchProducesCatchOnlyTryStmt() {
         ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
         CodeBuilder cb2 = new CodeBuilder();

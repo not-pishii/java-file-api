@@ -465,6 +465,41 @@ class ExprRendererTest {
     }
 
     @Test
+    void labeledStmtWrappingASimpleStatementRendersLabelColonStatement() {
+        Stmt stmt = new me.supcheg.javafile.code.LabeledStmt(
+                "outer", new me.supcheg.javafile.code.BreakStmt(Optional.empty()));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    outer: break;");
+    }
+
+    @Test
+    void labeledStmtWrappingANestedBlockKeepsTheOriginalIndentation() {
+        Stmt inner = new me.supcheg.javafile.code.EnhancedForStmt(
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer")),
+                "i",
+                cb.field("items"),
+                new CodeBody(java.util.List.of(new me.supcheg.javafile.code.IfStmt(
+                        cb.eq(cb.field("i"), cb.literal(1)),
+                        new CodeBody(java.util.List.of(new me.supcheg.javafile.code.BreakStmt(Optional.of("outer")))),
+                        java.util.List.of(),
+                        Optional.empty()))));
+        Stmt stmt = new me.supcheg.javafile.code.LabeledStmt("outer", inner);
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        outer: for (Integer i : items) {
+                            if (i == 1) {
+                                break outer;
+                            }
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
     void lambdaWithExpressionBodyRendersParenthesizedParams() {
         Expr lambda = cb.lambda(java.util.List.of("name"), cb.call(cb.field("name"), "toUpperCase"));
 

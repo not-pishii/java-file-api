@@ -273,8 +273,7 @@ final class ExprRenderer {
             case ContinueStmt(var label) ->
                 ctx.pad() + "continue" + label.map(l -> " " + l).orElse("") + ";";
             case LabeledStmt(var label, var statement) ->
-                ctx.pad() + label + ": "
-                        + renderStmt(statement, ctx.withoutPad()).stripLeading();
+                ctx.pad() + label + ": " + renderStmt(statement, ctx).stripLeading();
         };
     }
 
