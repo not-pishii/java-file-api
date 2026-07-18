@@ -32,8 +32,8 @@ class ModifierValidationTest {
     }
 
     @Test
-    void classRejectsProtectedAtTopLevel() {
-        assertThatThrownBy(() -> new ClassDecl(
+    void classAllowsProtectedForNestedMember() {
+        assertThatCode(() -> new ClassDecl(
                         DESC,
                         List.of(),
                         Set.of(Modifier.PROTECTED),
@@ -42,7 +42,21 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void classAllowsPrivateForNestedMember() {
+        assertThatCode(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of()))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -99,6 +113,19 @@ class ModifierValidationTest {
     }
 
     @Test
+    void interfaceAllowsPrivateForNestedMember() {
+        assertThatCode(() -> new InterfaceDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     void recordAllowsStaticForNestedMember() {
         assertThatCode(() -> new RecordDecl(
                         DESC,
@@ -112,9 +139,29 @@ class ModifierValidationTest {
     }
 
     @Test
+    void recordAllowsPrivateForNestedMember() {
+        assertThatCode(() -> new RecordDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     void enumAllowsStaticForNestedMember() {
         assertThatCode(() -> new EnumDecl(
                         DESC, List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of(), List.of(), List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void enumAllowsPrivateForNestedMember() {
+        assertThatCode(() -> new EnumDecl(
+                        DESC, List.of(), Set.of(Modifier.PRIVATE, Modifier.STATIC), List.of(), List.of(), List.of()))
                 .doesNotThrowAnyException();
     }
 

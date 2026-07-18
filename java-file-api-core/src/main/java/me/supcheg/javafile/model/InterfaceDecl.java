@@ -18,8 +18,9 @@ import java.util.Set;
 ///
 /// @param desc the interface's name and package
 /// @param annotations the annotations declared on the interface
-/// @param modifiers the modifiers on the interface declaration; `static` is accepted because
-///                   `InterfaceDecl` also models a nested member interface
+/// @param modifiers the modifiers on the interface declaration; `static`, `private`, and
+///                   `protected` are accepted because `InterfaceDecl` also models a nested
+///                   member interface
 /// @param typeParams the declaration's type parameters, in order
 /// @param extendsInterfaces the interfaces this interface extends
 /// @param permits the subtypes named in a `permits` clause; a non-empty list
@@ -36,7 +37,9 @@ public record InterfaceDecl(
         implements TypeDecl {
     public InterfaceDecl {
         modifiers = ModifierValidation.requireValidTopLevel(
-                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.NON_SEALED, Modifier.STATIC), "interface");
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.NON_SEALED, Modifier.STATIC),
+                "interface");
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         extendsInterfaces = List.copyOf(extendsInterfaces);

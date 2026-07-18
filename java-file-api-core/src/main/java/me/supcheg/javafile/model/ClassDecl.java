@@ -18,8 +18,8 @@ import java.util.Set;
 ///
 /// @param desc the class's name and package
 /// @param annotations the annotations declared on the class
-/// @param modifiers the modifiers on the class declaration; `static` is accepted because
-///                   `ClassDecl` also models a nested member class
+/// @param modifiers the modifiers on the class declaration; `static`, `private`, and `protected`
+///                   are accepted because `ClassDecl` also models a nested member class
 /// @param typeParams the declaration's type parameters, in order
 /// @param superclass the superclass, if the class extends one other than
 ///                    `Object`
@@ -38,12 +38,20 @@ public record ClassDecl(
         List<ClassMember> members)
         implements TypeDecl {
     public ClassDecl {
-        // STATIC is not legal on an actual top-level class, but ClassDecl also models a
-        // nested member class (see ClassMember/InterfaceMember/RecordMember/EnumMember),
-        // where it is legal and this compact constructor cannot tell the two apart.
+        // STATIC, PRIVATE, and PROTECTED are not legal on an actual top-level class, but
+        // ClassDecl also models a nested member class (see ClassMember/InterfaceMember/
+        // RecordMember/EnumMember), where they are legal and this compact constructor
+        // cannot tell the two apart.
         modifiers = ModifierValidation.requireValidTopLevel(
                 Set.copyOf(modifiers),
-                EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.FINAL, Modifier.NON_SEALED, Modifier.STATIC),
+                EnumSet.of(
+                        Modifier.PUBLIC,
+                        Modifier.PROTECTED,
+                        Modifier.PRIVATE,
+                        Modifier.ABSTRACT,
+                        Modifier.FINAL,
+                        Modifier.NON_SEALED,
+                        Modifier.STATIC),
                 "class");
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
