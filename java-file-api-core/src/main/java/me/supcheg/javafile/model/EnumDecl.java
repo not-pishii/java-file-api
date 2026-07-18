@@ -4,6 +4,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,8 +29,9 @@ public record EnumDecl(
         List<EnumMember> members)
         implements TypeDecl {
     public EnumDecl {
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.FINAL), "enum");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         constants = List.copyOf(constants);
         interfaces = List.copyOf(interfaces);
         members = List.copyOf(members);

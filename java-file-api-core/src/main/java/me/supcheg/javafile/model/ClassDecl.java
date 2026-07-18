@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,8 +37,14 @@ public record ClassDecl(
         List<ClassMember> members)
         implements TypeDecl {
     public ClassDecl {
+        // STATIC is not legal on an actual top-level class, but ClassDecl also models a
+        // nested member class (see ClassMember/InterfaceMember/RecordMember/EnumMember),
+        // where it is legal and this compact constructor cannot tell the two apart.
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.FINAL, Modifier.NON_SEALED, Modifier.STATIC),
+                "class");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         interfaces = List.copyOf(interfaces);
         permits = List.copyOf(permits);

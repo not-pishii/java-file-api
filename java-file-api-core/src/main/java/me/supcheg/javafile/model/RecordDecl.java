@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,8 +32,9 @@ public record RecordDecl(
         List<RecordMember> members)
         implements TypeDecl {
     public RecordDecl {
+        modifiers =
+                ModifierValidation.requireValidTopLevel(Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC), "record");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         components = List.copyOf(components);
         interfaces = List.copyOf(interfaces);

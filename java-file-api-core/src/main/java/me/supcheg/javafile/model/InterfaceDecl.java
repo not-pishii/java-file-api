@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +34,9 @@ public record InterfaceDecl(
         List<InterfaceMember> members)
         implements TypeDecl {
     public InterfaceDecl {
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers), EnumSet.of(Modifier.PUBLIC, Modifier.NON_SEALED), "interface");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         extendsInterfaces = List.copyOf(extendsInterfaces);
         permits = List.copyOf(permits);
