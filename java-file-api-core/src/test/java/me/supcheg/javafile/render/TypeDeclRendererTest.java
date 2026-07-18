@@ -642,4 +642,114 @@ class TypeDeclRendererTest {
 
         assertThat(rendered).contains("public static class Nested {");
     }
+
+    @Test
+    void rendersStaticNestedClassInsideInterface() {
+        ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
+        ClassDecl nested = new ClassDecl(
+                ClassDesc.of("me.supcheg.example", "Nested"),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of());
+        var decl = new me.supcheg.javafile.model.InterfaceDecl(
+                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Outer {
+                            public static class Nested {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersStaticNestedClassInsideRecord() {
+        ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
+        ClassDecl nested = new ClassDecl(
+                ClassDesc.of("me.supcheg.example", "Nested"),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of());
+        var decl = new me.supcheg.javafile.model.RecordDecl(
+                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public record Outer() {
+                            public static class Nested {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersStaticNestedClassInsideEnumOwnBody() {
+        ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
+        ClassDecl nested = new ClassDecl(
+                ClassDesc.of("me.supcheg.example", "Nested"),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of());
+        var constant = new me.supcheg.javafile.model.EnumConstant("A", List.of(), List.of(), List.of());
+        var decl = new me.supcheg.javafile.model.EnumDecl(
+                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(constant), List.of(), List.of(nested));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Outer {
+                            A;
+
+                            public static class Nested {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersStaticNestedClassInsideEnumConstantBody() {
+        ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
+        ClassDecl nested = new ClassDecl(
+                ClassDesc.of("me.supcheg.example", "Nested"),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of());
+        var constant = new me.supcheg.javafile.model.EnumConstant("A", List.of(), List.of(), List.of(nested));
+        var decl = new me.supcheg.javafile.model.EnumDecl(
+                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(constant), List.of(), List.of());
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Outer {
+                            A() {
+                                public static class Nested {
+                                }
+                            };
+                        }
+                        """);
+    }
 }
