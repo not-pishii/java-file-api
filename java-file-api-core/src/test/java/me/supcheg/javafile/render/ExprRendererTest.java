@@ -455,11 +455,11 @@ class ExprRendererTest {
     @Test
     void breakAndContinueRenderAsBareKeywords() {
         assertThat(ExprRenderer.renderStmt(
-                        new me.supcheg.javafile.code.BreakStmt(),
+                        new me.supcheg.javafile.code.BreakStmt(java.util.Optional.empty()),
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
                 .isEqualTo("    break;");
         assertThat(ExprRenderer.renderStmt(
-                        new me.supcheg.javafile.code.ContinueStmt(),
+                        new me.supcheg.javafile.code.ContinueStmt(java.util.Optional.empty()),
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
                 .isEqualTo("    continue;");
     }

@@ -338,7 +338,8 @@ class CodeBuilderTest {
         cb.break_();
         cb.continue_();
 
-        assertThat(cb.build().statements()).containsExactly(new BreakStmt(), new ContinueStmt());
+        assertThat(cb.build().statements())
+                .containsExactly(new BreakStmt(Optional.empty()), new ContinueStmt(Optional.empty()));
     }
 
     @Test

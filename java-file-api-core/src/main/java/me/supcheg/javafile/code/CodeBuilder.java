@@ -579,7 +579,16 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @return this builder
     public CodeBuilder break_() {
-        statements.add(new BreakStmt());
+        statements.add(new BreakStmt(Optional.empty()));
+        return this;
+    }
+
+    /// Appends a `break` statement targeting an enclosing [LabeledStmt].
+    ///
+    /// @param label the targeted label
+    /// @return this builder
+    public CodeBuilder break_(String label) {
+        statements.add(new BreakStmt(Optional.of(label)));
         return this;
     }
 
@@ -587,7 +596,35 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @return this builder
     public CodeBuilder continue_() {
-        statements.add(new ContinueStmt());
+        statements.add(new ContinueStmt(Optional.empty()));
+        return this;
+    }
+
+    /// Appends a `continue` statement targeting an enclosing [LabeledStmt].
+    ///
+    /// @param label the targeted label
+    /// @return this builder
+    public CodeBuilder continue_(String label) {
+        statements.add(new ContinueStmt(Optional.of(label)));
+        return this;
+    }
+
+    /// Appends a labeled statement, `label: statement`, wrapping exactly the
+    /// single statement `spec` appends.
+    ///
+    /// @param label the statement's label
+    /// @param spec receives the builder to append exactly one statement to label
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` appends zero or more than one statement
+    public CodeBuilder labeled(String label, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        List<Stmt> built = cb.build().statements();
+        if (built.size() != 1) {
+            throw new IllegalArgumentException(
+                    "labeled statement must wrap exactly one statement, got " + built.size());
+        }
+        statements.add(new LabeledStmt(label, built.get(0)));
         return this;
     }
 

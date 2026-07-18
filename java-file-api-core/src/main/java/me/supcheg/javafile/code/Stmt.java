@@ -22,4 +22,5 @@ public sealed interface Stmt
                 ThrowStmt,
                 BreakStmt,
                 ContinueStmt,
-                TryStmt {}
+                TryStmt,
+                LabeledStmt {}

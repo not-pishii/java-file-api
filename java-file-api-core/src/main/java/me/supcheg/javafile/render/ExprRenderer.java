@@ -29,6 +29,7 @@ import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LambdaExpr;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
@@ -267,8 +268,13 @@ final class ExprRenderer {
                         + "}";
             case YieldStmt(var value) -> ctx.pad() + "yield " + renderExpr(value, ctx) + ";";
             case ThrowStmt(var exception) -> ctx.pad() + "throw " + renderExpr(exception, ctx) + ";";
-            case BreakStmt ignored -> ctx.pad() + "break;";
-            case ContinueStmt ignored -> ctx.pad() + "continue;";
+            case BreakStmt(var label) ->
+                ctx.pad() + "break" + label.map(l -> " " + l).orElse("") + ";";
+            case ContinueStmt(var label) ->
+                ctx.pad() + "continue" + label.map(l -> " " + l).orElse("") + ";";
+            case LabeledStmt(var label, var statement) ->
+                ctx.pad() + label + ": "
+                        + renderStmt(statement, ctx.withoutPad()).stripLeading();
         };
     }
 
