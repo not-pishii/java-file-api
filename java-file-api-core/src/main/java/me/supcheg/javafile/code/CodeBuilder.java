@@ -110,7 +110,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param value the literal value
     /// @return a literal expression
-    public Expr literal(String value) {
+    public LiteralExpr literal(String value) {
         return new StringLiteral(value);
     }
 
@@ -118,7 +118,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param value the literal value
     /// @return a literal expression
-    public Expr literal(int value) {
+    public LiteralExpr literal(int value) {
         return new IntLiteral(value);
     }
 
@@ -126,7 +126,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param value the literal value
     /// @return a literal expression
-    public Expr literal(long value) {
+    public LiteralExpr literal(long value) {
         return new LongLiteral(value);
     }
 
@@ -134,7 +134,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param value the literal value
     /// @return a literal expression
-    public Expr literal(double value) {
+    public LiteralExpr literal(double value) {
         return new DoubleLiteral(value);
     }
 
@@ -142,14 +142,14 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param value the literal value
     /// @return a literal expression
-    public Expr literal(boolean value) {
+    public LiteralExpr literal(boolean value) {
         return new BooleanLiteral(value);
     }
 
     /// Creates the `null` literal.
     ///
     /// @return a literal expression
-    public Expr literalNull() {
+    public LiteralExpr literalNull() {
         return new NullLiteral();
     }
 

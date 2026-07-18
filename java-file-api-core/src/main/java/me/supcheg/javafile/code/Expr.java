@@ -19,4 +19,5 @@ public sealed interface Expr
                 NewExpr,
                 SwitchExpr,
                 LambdaExpr,
-                StatementExpr {}
+                StatementExpr,
+                ConstantExpr {}

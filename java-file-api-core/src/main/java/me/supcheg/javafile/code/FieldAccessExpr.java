@@ -6,4 +6,4 @@ import java.util.Optional;
 ///
 /// @param target the expression owning the field, or empty for an unqualified access
 /// @param name the field name
-public record FieldAccessExpr(Optional<Expr> target, String name) implements Expr, AssignTarget {}
+public record FieldAccessExpr(Optional<Expr> target, String name) implements Expr, AssignTarget, ConstantExpr {}

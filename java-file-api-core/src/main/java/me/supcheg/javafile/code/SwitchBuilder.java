@@ -26,7 +26,7 @@ public final class SwitchBuilder {
     /// @param value the matched constant expression
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder case_(Expr value, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder case_(ConstantExpr value, Consumer<CodeBuilder> spec) {
         cases.add(new SwitchCase(new NonEmptyList<>(new ConstantLabel(value), List.of()), blockBody(spec)));
         return this;
     }
@@ -36,7 +36,7 @@ public final class SwitchBuilder {
     /// @param value the matched constant expression
     /// @param result the case's result expression
     /// @return this builder
-    public SwitchBuilder caseValue(Expr value, Expr result) {
+    public SwitchBuilder caseValue(ConstantExpr value, Expr result) {
         cases.add(new SwitchCase(new NonEmptyList<>(new ConstantLabel(value), List.of()), new ExprCaseBody(result)));
         return this;
     }
