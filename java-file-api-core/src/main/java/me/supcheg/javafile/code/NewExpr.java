@@ -6,7 +6,7 @@ import java.util.List;
 ///
 /// @param target the instantiated target
 /// @param args the constructor arguments, in order; copied defensively
-public record NewExpr(NewTarget target, List<Expr> args) implements Expr {
+public record NewExpr(NewTarget target, List<Expr> args) implements Expr, StatementExpr {
     public NewExpr {
         args = List.copyOf(args);
     }

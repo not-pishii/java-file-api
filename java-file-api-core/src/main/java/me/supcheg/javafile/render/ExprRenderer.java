@@ -25,6 +25,7 @@ import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
+import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
@@ -82,6 +83,9 @@ final class ExprRenderer {
                 switch (op) {
                     case NOT -> "!" + renderExpr(operand, ctx);
                     case NEG -> "-" + renderExpr(operand, ctx);
+                };
+            case IncDecExpr(var op, var operand) ->
+                switch (op) {
                     case PRE_INC -> "++" + renderExpr(operand, ctx);
                     case PRE_DEC -> "--" + renderExpr(operand, ctx);
                     case POST_INC -> renderExpr(operand, ctx) + "++";

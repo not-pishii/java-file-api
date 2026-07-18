@@ -2,7 +2,7 @@ package me.supcheg.javafile.transform;
 
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.ExprStmt;
-import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ class CodeTransformTest {
     @Test
     void acceptCanPassAStatementThroughToTheBuilder() {
         CodeBuilder builder = new CodeBuilder();
-        ExprStmt stmt = new ExprStmt(new IntLiteral(1));
+        ExprStmt stmt = new ExprStmt(new MethodCallExpr(java.util.Optional.empty(), "run", List.of()));
 
         CodeTransform passThrough = (b, s) -> b.accept(s);
         passThrough.accept(builder, stmt);
@@ -28,7 +28,7 @@ class CodeTransformTest {
     void andThenInvokesBothTransformsInOrderAgainstTheSameStatement() {
         List<String> callOrder = new ArrayList<>();
         CodeBuilder builder = new CodeBuilder();
-        ExprStmt stmt = new ExprStmt(new IntLiteral(1));
+        ExprStmt stmt = new ExprStmt(new MethodCallExpr(java.util.Optional.empty(), "run", List.of()));
 
         CodeTransform first = (b, s) -> {
             callOrder.add("first");

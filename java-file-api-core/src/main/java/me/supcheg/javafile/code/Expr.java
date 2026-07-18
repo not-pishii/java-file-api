@@ -14,7 +14,9 @@ public sealed interface Expr
                 TextBlockExpr,
                 BinaryExpr,
                 UnaryExpr,
+                IncDecExpr,
                 InstanceOfExpr,
                 NewExpr,
                 SwitchExpr,
-                LambdaExpr {}
+                LambdaExpr,
+                StatementExpr {}

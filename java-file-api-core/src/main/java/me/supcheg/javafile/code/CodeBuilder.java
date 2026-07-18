@@ -55,7 +55,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @param expr the expression to evaluate
     /// @return this builder
-    public CodeBuilder exprStatement(Expr expr) {
+    public CodeBuilder exprStatement(StatementExpr expr) {
         statements.add(new ExprStmt(expr));
         return this;
     }
@@ -92,7 +92,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a method call expression
-    public Expr call(String method, Expr... args) {
+    public MethodCallExpr call(String method, Expr... args) {
         return new MethodCallExpr(Optional.empty(), method, List.of(args));
     }
 
@@ -102,7 +102,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a method call expression
-    public Expr call(Expr target, String method, Expr... args) {
+    public MethodCallExpr call(Expr target, String method, Expr... args) {
         return new MethodCallExpr(Optional.of(target), method, List.of(args));
     }
 
@@ -297,33 +297,33 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// Creates a pre-increment expression, `++operand`.
     ///
     /// @param operand the operand
-    /// @return a unary expression
-    public Expr preIncrement(Expr operand) {
-        return new UnaryExpr(UnaryOp.PRE_INC, operand);
+    /// @return an increment/decrement expression
+    public IncDecExpr preIncrement(Expr operand) {
+        return new IncDecExpr(IncDecOp.PRE_INC, operand);
     }
 
     /// Creates a pre-decrement expression, `--operand`.
     ///
     /// @param operand the operand
-    /// @return a unary expression
-    public Expr preDecrement(Expr operand) {
-        return new UnaryExpr(UnaryOp.PRE_DEC, operand);
+    /// @return an increment/decrement expression
+    public IncDecExpr preDecrement(Expr operand) {
+        return new IncDecExpr(IncDecOp.PRE_DEC, operand);
     }
 
     /// Creates a post-increment expression, `operand++`.
     ///
     /// @param operand the operand
-    /// @return a unary expression
-    public Expr postIncrement(Expr operand) {
-        return new UnaryExpr(UnaryOp.POST_INC, operand);
+    /// @return an increment/decrement expression
+    public IncDecExpr postIncrement(Expr operand) {
+        return new IncDecExpr(IncDecOp.POST_INC, operand);
     }
 
     /// Creates a post-decrement expression, `operand--`.
     ///
     /// @param operand the operand
-    /// @return a unary expression
-    public Expr postDecrement(Expr operand) {
-        return new UnaryExpr(UnaryOp.POST_DEC, operand);
+    /// @return an increment/decrement expression
+    public IncDecExpr postDecrement(Expr operand) {
+        return new IncDecExpr(IncDecOp.POST_DEC, operand);
     }
 
     /// Creates an `instanceof` test with no pattern binding, e.g. `target instanceof type`.
@@ -351,7 +351,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param type the instantiated type
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public Expr new_(TypeRef type, Expr... args) {
+    public NewExpr new_(TypeRef type, Expr... args) {
         return new NewExpr(new TypedNewTarget(type), List.of(args));
     }
 
@@ -361,7 +361,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param rawType the instantiated generic class, without type arguments
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public Expr newDiamond(ClassDesc rawType, Expr... args) {
+    public NewExpr newDiamond(ClassDesc rawType, Expr... args) {
         return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 

@@ -273,14 +273,14 @@ class ExprRendererTest {
                 Optional.of(init),
                 Optional.of(cb.lt(cb.field("i"), cb.literal(10))),
                 Optional.of(update),
-                new CodeBody(java.util.List.of(new ExprStmt(cb.field("i")))));
+                new CodeBody(java.util.List.of(new ExprStmt(cb.call("use")))));
 
         String rendered = ExprRenderer.renderStmt(
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("""
                         for (int i = 0; i < 10; i++) {
-                            i;
+                            use();
                         }""".indent(4).stripTrailing());
     }
 
@@ -289,14 +289,14 @@ class ExprRendererTest {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
         Stmt stmt = new me.supcheg.javafile.code.EnhancedForStmt(
-                stringType, "item", cb.field("items"), new CodeBody(java.util.List.of(new ExprStmt(cb.field("item")))));
+                stringType, "item", cb.field("items"), new CodeBody(java.util.List.of(new ExprStmt(cb.call("use")))));
 
         String rendered = ExprRenderer.renderStmt(
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("""
                         for (String item : items) {
-                            item;
+                            use();
                         }""".indent(4).stripTrailing());
     }
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 /// @param target the expression owning the method, or empty for an unqualified call
 /// @param method the method name
 /// @param args the call arguments, in order; copied defensively
-public record MethodCallExpr(Optional<Expr> target, String method, List<Expr> args) implements Expr {
+public record MethodCallExpr(Optional<Expr> target, String method, List<Expr> args) implements Expr, StatementExpr {
     public MethodCallExpr {
         args = List.copyOf(args);
     }

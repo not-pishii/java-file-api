@@ -183,7 +183,9 @@ class TransformsTest {
     @Test
     void codeTransformCanDropAStatement() {
         CodeBody original = new CodeBody(java.util.List.of(
-                new ExprStmt(new me.supcheg.javafile.code.IntLiteral(1)), new ReturnStmt(java.util.Optional.empty())));
+                new ExprStmt(new me.supcheg.javafile.code.MethodCallExpr(
+                        java.util.Optional.empty(), "run", java.util.List.of())),
+                new ReturnStmt(java.util.Optional.empty())));
 
         CodeTransform dropExprStatements = (builder, stmt) -> {
             if (!(stmt instanceof ExprStmt)) {
