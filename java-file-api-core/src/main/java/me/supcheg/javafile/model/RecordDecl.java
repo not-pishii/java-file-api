@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,9 @@ import java.util.Set;
 ///
 /// @param desc the record's name and package
 /// @param annotations the annotations declared on the record
-/// @param modifiers the modifiers on the record declaration
+/// @param modifiers the modifiers on the record declaration; `static`, `private`, and
+///                   `protected` are accepted because `RecordDecl` also models a nested
+///                   member record
 /// @param typeParams the declaration's type parameters, in order
 /// @param components the record's components, determining its canonical
 ///                    constructor parameters and accessors
@@ -31,8 +34,11 @@ public record RecordDecl(
         List<RecordMember> members)
         implements TypeDecl {
     public RecordDecl {
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC),
+                "record");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         components = List.copyOf(components);
         interfaces = List.copyOf(interfaces);

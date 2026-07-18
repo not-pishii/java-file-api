@@ -5,6 +5,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.type.TypeRef;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +26,9 @@ public record FieldDecl(
     public FieldDecl {
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
+        modifiers = ModifierValidation.requireValidMember(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
+                "field");
     }
 }

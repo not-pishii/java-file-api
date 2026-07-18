@@ -5,6 +5,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +18,8 @@ import java.util.Set;
 ///
 /// @param desc the class's name and package
 /// @param annotations the annotations declared on the class
-/// @param modifiers the modifiers on the class declaration
+/// @param modifiers the modifiers on the class declaration; `static`, `private`, and `protected`
+///                   are accepted because `ClassDecl` also models a nested member class
 /// @param typeParams the declaration's type parameters, in order
 /// @param superclass the superclass, if the class extends one other than
 ///                    `Object`
@@ -36,8 +38,22 @@ public record ClassDecl(
         List<ClassMember> members)
         implements TypeDecl {
     public ClassDecl {
+        // STATIC, PRIVATE, and PROTECTED are not legal on an actual top-level class, but
+        // ClassDecl also models a nested member class (see ClassMember/InterfaceMember/
+        // RecordMember/EnumMember), where they are legal and this compact constructor
+        // cannot tell the two apart.
+        modifiers = ModifierValidation.requireValidTopLevel(
+                Set.copyOf(modifiers),
+                EnumSet.of(
+                        Modifier.PUBLIC,
+                        Modifier.PROTECTED,
+                        Modifier.PRIVATE,
+                        Modifier.ABSTRACT,
+                        Modifier.FINAL,
+                        Modifier.NON_SEALED,
+                        Modifier.STATIC),
+                "class");
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
         typeParams = List.copyOf(typeParams);
         interfaces = List.copyOf(interfaces);
         permits = List.copyOf(permits);

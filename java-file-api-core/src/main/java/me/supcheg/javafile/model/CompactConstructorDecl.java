@@ -4,6 +4,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,10 @@ public record CompactConstructorDecl(
         implements RecordMember {
     public CompactConstructorDecl {
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
+        modifiers = ModifierValidation.requireValidMember(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE),
+                "compact constructor");
         throwsTypes = List.copyOf(throwsTypes);
     }
 }
