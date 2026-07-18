@@ -514,6 +514,27 @@ class ExprRendererTest {
     }
 
     @Test
+    void assertStmtWithoutMessageRendersBareCondition() {
+        Stmt stmt = new me.supcheg.javafile.code.AssertStmt(cb.gt(cb.field("value"), cb.literal(0)), Optional.empty());
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    assert value > 0;");
+    }
+
+    @Test
+    void assertStmtWithMessageRendersConditionAndMessage() {
+        Stmt stmt = new me.supcheg.javafile.code.AssertStmt(
+                cb.gt(cb.field("value"), cb.literal(0)), Optional.of(cb.literal("value must be positive")));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    assert value > 0 : \"value must be positive\";");
+    }
+
+    @Test
     void lambdaWithExpressionBodyRendersParenthesizedParams() {
         Expr lambda = cb.lambda(java.util.List.of("name"), cb.call(cb.field("name"), "toUpperCase"));
 

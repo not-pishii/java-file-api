@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
 import me.supcheg.javafile.code.BlockCaseBody;
@@ -283,6 +284,12 @@ final class ExprRenderer {
                         + renderBlock(body, ctx.withIncreasedPad())
                         + ctx.pad()
                         + "}";
+            case AssertStmt(var condition, var message) ->
+                ctx.pad()
+                        + "assert "
+                        + renderExpr(condition, ctx)
+                        + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
+                        + ";";
         };
     }
 

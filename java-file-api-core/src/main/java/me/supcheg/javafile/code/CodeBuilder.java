@@ -640,6 +640,25 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends an `assert` statement with no diagnostic message.
+    ///
+    /// @param condition the asserted condition
+    /// @return this builder
+    public CodeBuilder assert_(Expr condition) {
+        statements.add(new AssertStmt(condition, Optional.empty()));
+        return this;
+    }
+
+    /// Appends an `assert` statement with a diagnostic message.
+    ///
+    /// @param condition the asserted condition
+    /// @param message the diagnostic message expression
+    /// @return this builder
+    public CodeBuilder assert_(Expr condition, Expr message) {
+        statements.add(new AssertStmt(condition, Optional.of(message)));
+        return this;
+    }
+
     /// Snapshots the accumulated statements into an immutable [CodeBody].
     ///
     /// @return the finished body

@@ -24,4 +24,5 @@ public sealed interface Stmt
                 ContinueStmt,
                 TryStmt,
                 LabeledStmt,
-                SynchronizedStmt {}
+                SynchronizedStmt,
+                AssertStmt {}
