@@ -1,5 +1,7 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -113,6 +115,140 @@ class ModifierValidationTest {
     void enumAllowsStaticForNestedMember() {
         assertThatCode(() -> new EnumDecl(
                         DESC, List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of(), List.of(), List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void fieldRejectsAbstract() {
+        assertThatThrownBy(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void fieldRejectsMultipleAccessModifiers() {
+        assertThatThrownBy(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.PRIVATE),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void fieldAllowsStaticFinal() {
+        assertThatCode(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void methodRejectsAbstract() {
+        assertThatThrownBy(() -> new MethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void methodAllowsPrivateFinal() {
+        assertThatCode(() -> new MethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.FINAL),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void constructorRejectsStatic() {
+        assertThatThrownBy(() -> new ConstructorDecl(
+                        List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of(), CodeBody.EMPTY, List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void constructorRejectsAbstract() {
+        assertThatThrownBy(() -> new ConstructorDecl(
+                        List.of(), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of(), CodeBody.EMPTY, List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void constructorAllowsProtected() {
+        assertThatCode(() -> new ConstructorDecl(
+                        List.of(), Set.of(Modifier.PROTECTED), List.of(), CodeBody.EMPTY, List.of()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void abstractMethodRejectsAbstractAndPrivateTogether() {
+        assertThatThrownBy(() -> new AbstractMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void abstractMethodRejectsFinal() {
+        assertThatThrownBy(() -> new AbstractMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.FINAL),
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void abstractMethodRejectsStatic() {
+        assertThatThrownBy(() -> new AbstractMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void abstractMethodAllowsPublicAbstract() {
+        assertThatCode(() -> new AbstractMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                        List.of()))
                 .doesNotThrowAnyException();
     }
 }

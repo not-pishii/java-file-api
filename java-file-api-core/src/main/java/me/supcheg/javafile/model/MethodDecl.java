@@ -7,6 +7,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +40,10 @@ public record MethodDecl(
     public MethodDecl {
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
-        modifiers = Set.copyOf(modifiers);
+        modifiers = ModifierValidation.requireValidMember(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
+                "method");
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);
         throwsTypes = List.copyOf(throwsTypes);

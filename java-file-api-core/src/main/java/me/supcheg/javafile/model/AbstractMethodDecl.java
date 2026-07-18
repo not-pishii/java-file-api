@@ -6,6 +6,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +39,10 @@ public record AbstractMethodDecl(
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         params = List.copyOf(params);
-        modifiers = Set.copyOf(modifiers);
+        modifiers = ModifierValidation.requireValidMember(
+                Set.copyOf(modifiers),
+                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.ABSTRACT),
+                "abstract method");
         throwsTypes = List.copyOf(throwsTypes);
     }
 }

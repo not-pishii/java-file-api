@@ -38,4 +38,32 @@ final class ModifierValidation {
         }
         return modifiers;
     }
+
+    /// Validates a member declaration's modifiers, rejecting combinations
+    /// illegal in every context regardless of the enclosing declaration kind.
+    ///
+    /// @param modifiers the declared modifiers
+    /// @param allowed the modifiers legal for this member kind
+    /// @param declKind a human-readable declaration kind, e.g. `"field"`, for the error message
+    /// @return `modifiers`, unchanged
+    /// @throws IllegalArgumentException if `modifiers` contains a modifier not in `allowed`,
+    ///         more than one access modifier, or `abstract` combined with `final`, `static`, or `private`
+    static Set<Modifier> requireValidMember(Set<Modifier> modifiers, Set<Modifier> allowed, String declKind) {
+        for (Modifier m : modifiers) {
+            if (!allowed.contains(m)) {
+                throw new IllegalArgumentException(declKind + " cannot be '" + m + "'");
+            }
+        }
+        long accessCount = modifiers.stream().filter(ACCESS_MODIFIERS::contains).count();
+        if (accessCount > 1) {
+            throw new IllegalArgumentException(declKind + " cannot combine more than one access modifier");
+        }
+        if (modifiers.contains(Modifier.ABSTRACT)
+                && (modifiers.contains(Modifier.FINAL)
+                        || modifiers.contains(Modifier.STATIC)
+                        || modifiers.contains(Modifier.PRIVATE))) {
+            throw new IllegalArgumentException(declKind + " cannot combine abstract with final, static, or private");
+        }
+        return modifiers;
+    }
 }
