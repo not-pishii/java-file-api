@@ -13,14 +13,29 @@ java {
     }
 }
 
+val mockitoAgent = configurations.create("mockitoAgent") { isTransitive = false }
+
 dependencies {
     compileOnly(libs.jspecify)
+    mockitoAgent(libs.mockito.core)
 }
 
 tasks {
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-parameters", "-Xlint:all,-processing"))
+    }
+    test {
+        abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+            @get:Classpath
+            abstract val path: RegularFileProperty
+
+            override fun asArguments() = listOf("-javaagent:${path.asFile.get().absolutePath}")
+        }
+
+        jvmArgumentProviders.add(objects.newInstance<MockitoAgentProvider>().apply {
+            path = mockitoAgent.asFileTree.singleFile
+        })
     }
 }
 
@@ -30,6 +45,7 @@ testing {
             useJUnitJupiter(libs.versions.junit)
             dependencies {
                 implementation(libs.assertj.core)
+                implementation(libs.mockito.junit.jupiter)
             }
         }
     }

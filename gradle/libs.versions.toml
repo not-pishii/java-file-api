@@ -4,6 +4,7 @@ junit = "6.0.3"
 assertj = "3.27.3"
 jqwik = "1.9.3"
 compile-testing = "0.23.0"
+mockito = "5.23.0"
 vanniktech-maven-publish = "0.33.0"
 spotless = "8.8.0"
 
@@ -11,6 +12,8 @@ spotless = "8.8.0"
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 jqwik = { module = "net.jqwik:jqwik", version.ref = "jqwik" }
 compile-testing = { module = "com.google.testing.compile:compile-testing", version.ref = "compile-testing" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 
 [plugins]
