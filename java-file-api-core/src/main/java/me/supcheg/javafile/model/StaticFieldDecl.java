@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.type.TypeRef;
@@ -21,6 +22,7 @@ public record StaticFieldDecl(String name, TypeRef type, List<AnnotationUse> ann
         implements RecordMember {
     /// @throws NullPointerException if `initializer` is `null`
     public StaticFieldDecl {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         Objects.requireNonNull(initializer, "a static record field must be initialized");
     }

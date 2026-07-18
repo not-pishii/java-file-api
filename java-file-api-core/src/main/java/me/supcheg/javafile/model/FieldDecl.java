@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.type.TypeRef;
@@ -22,6 +23,7 @@ public record FieldDecl(
         String name, TypeRef type, List<AnnotationUse> annotations, Set<Modifier> modifiers, Optional<Expr> initializer)
         implements ClassMember, EnumMember, EnumConstantMember {
     public FieldDecl {
+        name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         modifiers = Set.copyOf(modifiers);
     }
