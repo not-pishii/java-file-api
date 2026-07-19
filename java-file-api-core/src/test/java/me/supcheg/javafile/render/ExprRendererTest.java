@@ -545,6 +545,16 @@ class ExprRendererTest {
     }
 
     @Test
+    void emptyStmtRendersBareSemicolon() {
+        Stmt stmt = new me.supcheg.javafile.code.EmptyStmt();
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    ;");
+    }
+
+    @Test
     void lambdaWithExpressionBodyRendersParenthesizedParams() {
         Expr lambda = cb.lambda(java.util.List.of("name"), cb.call(cb.field("name"), "toUpperCase"));
 

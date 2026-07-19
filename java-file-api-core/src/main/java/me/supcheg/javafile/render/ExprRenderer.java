@@ -18,6 +18,7 @@ import me.supcheg.javafile.code.DiamondNewTarget;
 import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.ElseIfClause;
+import me.supcheg.javafile.code.EmptyStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
@@ -291,6 +292,7 @@ final class ExprRenderer {
                         + renderExpr(condition, ctx)
                         + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
                         + ";";
+            case EmptyStmt ignored -> ctx.pad() + ";";
         };
     }
 

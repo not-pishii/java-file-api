@@ -669,6 +669,14 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends the empty statement, `;`.
+    ///
+    /// @return this builder
+    public CodeBuilder empty() {
+        statements.add(new EmptyStmt());
+        return this;
+    }
+
     /// Snapshots the accumulated statements into an immutable [CodeBody].
     ///
     /// @return the finished body
