@@ -1,6 +1,7 @@
 package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import org.jspecify.annotations.Nullable;
 
@@ -88,6 +89,15 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new FieldAccessExpr(Optional.of(target), name);
     }
 
+    /// Creates a static field access, e.g. `type.name`.
+    ///
+    /// @param type the type declaring the field
+    /// @param name the field name
+    /// @return a static field access expression
+    public StaticFieldAccessExpr staticField(ClassOrInterfaceTypeRef type, String name) {
+        return new StaticFieldAccessExpr(type, name);
+    }
+
     /// Creates an unqualified method call, e.g. `method(args)`.
     ///
     /// @param method the method name
@@ -105,6 +115,16 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @return a method call expression
     public MethodCallExpr call(Expr target, String method, Expr... args) {
         return new MethodCallExpr(Optional.of(target), method, List.of(args));
+    }
+
+    /// Creates a static method call, e.g. `type.method(args)`.
+    ///
+    /// @param type the type declaring the method
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a static method call expression
+    public StaticMethodCallExpr callStatic(ClassOrInterfaceTypeRef type, String method, Expr... args) {
+        return new StaticMethodCallExpr(type, method, List.of(args));
     }
 
     /// Creates the `this` expression, e.g. as the target of `field`/`call` to

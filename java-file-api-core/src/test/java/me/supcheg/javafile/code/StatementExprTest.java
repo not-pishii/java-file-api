@@ -1,7 +1,10 @@
 package me.supcheg.javafile.code;
 
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
+import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +21,13 @@ class StatementExprTest {
     @Test
     void postIncrementIsAValidStatementExpr() {
         IncDecExpr expr = new IncDecExpr(IncDecOp.POST_INC, new FieldAccessExpr(Optional.empty(), "counter"));
+        assertThat(new ExprStmt(expr).expr()).isEqualTo(expr);
+    }
+
+    @Test
+    void staticMethodCallIsAValidStatementExpr() {
+        ClassOrInterfaceTypeRef type = Types.of(ClassDesc.of("java.lang", "System"));
+        StatementExpr expr = new StaticMethodCallExpr(type, "gc", List.of());
         assertThat(new ExprStmt(expr).expr()).isEqualTo(expr);
     }
 

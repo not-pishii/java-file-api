@@ -17,6 +17,8 @@ import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
+import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.model.AbstractMethodDecl;
@@ -138,6 +140,10 @@ class IdentifierGuardWiringTest {
                         "FieldAccessExpr", (ThrowingCallable) () -> new FieldAccessExpr(Optional.empty(), BAD_NAME)),
                 Arguments.of("MethodCallExpr", (ThrowingCallable)
                         () -> new MethodCallExpr(Optional.empty(), BAD_NAME, List.of())),
+                Arguments.of("StaticFieldAccessExpr", (ThrowingCallable)
+                        () -> new StaticFieldAccessExpr(IO_EXCEPTION_TYPE, BAD_NAME)),
+                Arguments.of("StaticMethodCallExpr", (ThrowingCallable)
+                        () -> new StaticMethodCallExpr(IO_EXCEPTION_TYPE, BAD_NAME, List.of())),
                 Arguments.of("TypeVarRef", (ThrowingCallable) () -> new TypeVarRef(BAD_NAME)),
                 Arguments.of("TypeParam", (ThrowingCallable) () -> new TypeParam(BAD_NAME, List.of())),
                 Arguments.of("Resource.Declared", (ThrowingCallable)

@@ -40,6 +40,8 @@ import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
+import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.SuperExpr;
@@ -134,6 +136,12 @@ final class ExprRenderer {
             }
             case ThisExpr ignored -> "this";
             case SuperExpr ignored -> "super";
+            case StaticFieldAccessExpr(var type, var name) -> TypeRefRenderer.renderType(type, ctx) + "." + name;
+            case StaticMethodCallExpr(var type, var method, var args) -> {
+                String prefix = TypeRefRenderer.renderType(type, ctx);
+                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                yield prefix + "." + method + "(" + argsStr + ")";
+            }
         };
     }
 
@@ -146,6 +154,7 @@ final class ExprRenderer {
                 String targetStr =
                         switch (target) {
                             case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
+                            case StaticFieldAccessExpr fieldAccessExpr -> renderExpr(fieldAccessExpr, ctx);
                         };
                 yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
             }

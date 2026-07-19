@@ -15,6 +15,7 @@ import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
@@ -56,6 +57,48 @@ class ExprRendererTest {
         Expr call = cb.call(cb.field("bundle"), "getString", cb.literal("greeting"));
         assertThat(ExprRenderer.renderExpr(call, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("bundle.getString(\"greeting\")");
+    }
+
+    @Test
+    void staticFieldAccessRendersTypeDotName() {
+        ClassOrInterfaceTypeRef integerType = Types.of(ClassDesc.of("java.lang", "Integer"));
+        Expr expr = cb.staticField(integerType, "MAX_VALUE");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Integer.MAX_VALUE");
+    }
+
+    @Test
+    void staticMethodCallRendersArgsCommaSeparated() {
+        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        Expr expr = cb.callStatic(mathType, "max", cb.field("a"), cb.field("b"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Math.max(a, b)");
+    }
+
+    @Test
+    void assignStatementWithStaticFieldAccessTargetRendersTargetEqualsValue() {
+        ClassOrInterfaceTypeRef counterType = Types.of(ClassDesc.of("me.supcheg.example", "Counter"));
+        StaticFieldAccessExpr target = cb.staticField(counterType, "total");
+        Expr value = cb.literal(1);
+
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    Counter.total = 1;");
+    }
+
+    @Test
+    void staticMethodCallAsBareStatementRendersSemicolonTerminated() {
+        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        Stmt stmt = new ExprStmt(cb.callStatic(mathType, "max", cb.literal(1), cb.literal(2)));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    Math.max(1, 2);");
     }
 
     @Test
