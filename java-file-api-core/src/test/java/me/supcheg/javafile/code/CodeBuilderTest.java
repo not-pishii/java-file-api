@@ -353,6 +353,14 @@ class CodeBuilderTest {
     }
 
     @Test
+    void emptyAddsAnEmptyStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.empty();
+
+        assertThat(cb.build().statements()).containsExactly(new EmptyStmt());
+    }
+
+    @Test
     void labeledWrapsExactlyTheOneStatementAppendedBySpec() {
         CodeBuilder cb = new CodeBuilder();
         cb.labeled("outer", b -> b.break_());
