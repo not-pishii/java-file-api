@@ -3,13 +3,16 @@ package me.supcheg.javafile;
 import me.supcheg.javafile.annotation.AnnotationMember;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.annotation.EnumValue;
+import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.NonEmptyList;
@@ -144,6 +147,10 @@ class IdentifierGuardWiringTest {
                         "InferredLambdaParams", (ThrowingCallable) () -> new InferredLambdaParams(List.of(BAD_NAME))),
                 Arguments.of("AnnotationMember", (ThrowingCallable)
                         () -> new AnnotationMember(BAD_NAME, AnnotationValues.literal(1))),
-                Arguments.of("EnumValue", (ThrowingCallable) () -> new EnumValue(LEVEL_DESC, BAD_NAME)));
+                Arguments.of("EnumValue", (ThrowingCallable) () -> new EnumValue(LEVEL_DESC, BAD_NAME)),
+                Arguments.of("LabeledStmt", (ThrowingCallable)
+                        () -> new LabeledStmt(BAD_NAME, new BreakStmt(Optional.empty()))),
+                Arguments.of("BreakStmt", (ThrowingCallable) () -> new BreakStmt(Optional.of(BAD_NAME))),
+                Arguments.of("ContinueStmt", (ThrowingCallable) () -> new ContinueStmt(Optional.of(BAD_NAME))));
     }
 }

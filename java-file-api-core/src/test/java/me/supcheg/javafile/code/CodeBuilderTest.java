@@ -353,6 +353,14 @@ class CodeBuilderTest {
     }
 
     @Test
+    void labeledContinueAddsAContinueStmtTargetingTheLabel() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.continue_("outer");
+
+        assertThat(cb.build().statements()).containsExactly(new ContinueStmt(Optional.of("outer")));
+    }
+
+    @Test
     void emptyAddsAnEmptyStmt() {
         CodeBuilder cb = new CodeBuilder();
         cb.empty();
