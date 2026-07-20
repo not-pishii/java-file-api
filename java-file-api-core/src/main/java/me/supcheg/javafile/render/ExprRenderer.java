@@ -47,6 +47,9 @@ import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
+import me.supcheg.javafile.code.Pattern;
+import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
@@ -64,7 +67,7 @@ import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.TypeMethodRefTarget;
-import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
@@ -111,11 +114,8 @@ final class ExprRenderer {
                     case POST_INC -> renderExpr(operand, ctx) + "++";
                     case POST_DEC -> renderExpr(operand, ctx) + "--";
                 };
-            case InstanceOfExpr(var target, var type, var bindingName) ->
-                renderExpr(target, ctx)
-                        + " instanceof "
-                        + TypeRefRenderer.renderType(type, ctx)
-                        + bindingName.map(n -> " " + n).orElse("");
+            case InstanceOfExpr(var target, var pattern) ->
+                renderExpr(target, ctx) + " instanceof " + renderPattern(pattern, ctx);
             case NewExpr(var target, var args) -> {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 String targetStr =
@@ -392,12 +392,24 @@ final class ExprRenderer {
     private static String renderCaseLabel(CaseLabel label, Context ctx) {
         return switch (label) {
             case ConstantLabel(var value) -> renderExpr(value, ctx);
-            case TypePatternLabel(var type, var bindingName, var guard) ->
-                TypeRefRenderer.renderType(type, ctx)
-                        + " "
-                        + bindingName
+            case PatternLabel(var pattern, var guard) ->
+                renderPattern(pattern, ctx)
                         + guard.map(g -> " when " + renderExpr(g, ctx)).orElse("");
             case DefaultLabel ignored -> "default";
+        };
+    }
+
+    private static String renderPattern(Pattern pattern, Context ctx) {
+        return switch (pattern) {
+            case TypePattern(var type, var bindingName) ->
+                TypeRefRenderer.renderType(type, ctx)
+                        + bindingName.map(n -> " " + n).orElse("");
+            case RecordPattern(var recordType, var componentPatterns) -> {
+                String components = componentPatterns.stream()
+                        .map(p -> renderPattern(p, ctx))
+                        .collect(Collectors.joining(", "));
+                yield TypeRefRenderer.renderType(recordType, ctx) + "(" + components + ")";
+            }
         };
     }
 

@@ -15,6 +15,9 @@ import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.Pattern;
+import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
@@ -23,7 +26,7 @@ import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
 import me.supcheg.javafile.code.TryStmt;
-import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -285,6 +288,44 @@ class ExprRendererTest {
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("obj instanceof String");
+    }
+
+    @Test
+    void instanceOfWithRecordPatternRendersDeconstructedComponents() {
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Point"));
+        Pattern pattern = new RecordPattern(
+                pointType,
+                List.of(
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("x")),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("y"))));
+        Expr expr = cb.instanceOfPattern(cb.field("shape"), pattern);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("shape instanceof Point(int x, int y)");
+    }
+
+    @Test
+    void instanceOfWithNestedRecordPatternRendersRecursively() {
+        me.supcheg.javafile.type.TypeRef innerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Inner"));
+        me.supcheg.javafile.type.TypeRef outerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Outer"));
+        Pattern pattern = new RecordPattern(
+                outerType,
+                List.of(
+                        new RecordPattern(
+                                innerType,
+                                List.of(
+                                        new TypePattern(
+                                                me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("a")),
+                                        new TypePattern(
+                                                me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("b")))),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("c"))));
+        Expr expr = cb.instanceOfPattern(cb.field("shape"), pattern);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("shape instanceof Outer(Inner(int a, int b), int c)");
     }
 
     @Test
@@ -596,9 +637,8 @@ class ExprRendererTest {
                 cb.field("obj"),
                 java.util.List.of(new SwitchCase(
                         new NonEmptyList<>(
-                                new TypePatternLabel(
-                                        stringType,
-                                        "s",
+                                new PatternLabel(
+                                        new TypePattern(stringType, Optional.of("s")),
                                         Optional.of(cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)))),
                                 java.util.List.of()),
                         new ExprCaseBody(cb.field("s")))));
@@ -609,6 +649,30 @@ class ExprRendererTest {
         assertThat(rendered).isEqualTo("""
                     switch (obj) {
                         case String s when s.length() > 0 -> s;
+                    }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void recordPatternCaseLabelRendersDeconstructedComponents() {
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Point"));
+        Pattern pattern = new RecordPattern(
+                pointType,
+                List.of(
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("x")),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("y"))));
+        Stmt stmt = new SwitchStmt(
+                cb.field("shape"),
+                java.util.List.of(new SwitchCase(
+                        new NonEmptyList<>(new PatternLabel(pattern, Optional.empty()), java.util.List.of()),
+                        new ExprCaseBody(cb.add(cb.field("x"), cb.field("y"))))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                    switch (shape) {
+                        case Point(int x, int y) -> x + y;
                     }""".indent(4).stripTrailing());
     }
 

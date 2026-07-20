@@ -153,8 +153,8 @@ class CodeBuilderTest {
         Expr expr = cb.instanceOf(cb.field("obj"), stringType);
 
         assertThat(expr)
-                .isEqualTo(
-                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.empty()));
+                .isEqualTo(new InstanceOfExpr(
+                        new FieldAccessExpr(Optional.empty(), "obj"), new TypePattern(stringType, Optional.empty())));
     }
 
     @Test
@@ -166,8 +166,8 @@ class CodeBuilderTest {
         Expr expr = cb.instanceOf(cb.field("obj"), stringType, "s");
 
         assertThat(expr)
-                .isEqualTo(
-                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.of("s")));
+                .isEqualTo(new InstanceOfExpr(
+                        new FieldAccessExpr(Optional.empty(), "obj"), new TypePattern(stringType, Optional.of("s"))));
     }
 
     @Test
@@ -340,8 +340,9 @@ class CodeBuilderTest {
                         .default_(b -> b.return_(cb.literalNull())));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
-        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().head();
-        assertThat(label.bindingName()).isEqualTo("s");
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        TypePattern pattern = (TypePattern) label.pattern();
+        assertThat(pattern.bindingName()).isEqualTo(Optional.of("s"));
         assertThat(label.guard()).isPresent();
     }
 

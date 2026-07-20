@@ -17,12 +17,13 @@ import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.PatternLabel;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.TypeMethodRefTarget;
-import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.model.DefaultMethodDecl;
@@ -134,10 +135,13 @@ class IdentifierGuardWiringTest {
                         () -> new LocalVarDeclStmt.Inferred(BAD_NAME, new IntLiteral(0))),
                 Arguments.of("EnhancedForStmt", (ThrowingCallable) () -> new EnhancedForStmt(
                         STRING_TYPE, BAD_NAME, new FieldAccessExpr(Optional.empty(), "items"), CodeBody.EMPTY)),
-                Arguments.of("TypePatternLabel", (ThrowingCallable)
-                        () -> new TypePatternLabel(STRING_TYPE, BAD_NAME, Optional.empty())),
+                Arguments.of(
+                        "TypePattern", (ThrowingCallable) () -> new TypePattern(STRING_TYPE, Optional.of(BAD_NAME))),
+                Arguments.of("PatternLabel", (ThrowingCallable)
+                        () -> new PatternLabel(new TypePattern(STRING_TYPE, Optional.of(BAD_NAME)), Optional.empty())),
                 Arguments.of("InstanceOfExpr", (ThrowingCallable) () -> new InstanceOfExpr(
-                        new FieldAccessExpr(Optional.empty(), "obj"), STRING_TYPE, Optional.of(BAD_NAME))),
+                        new FieldAccessExpr(Optional.empty(), "obj"),
+                        new TypePattern(STRING_TYPE, Optional.of(BAD_NAME)))),
                 Arguments.of(
                         "FieldAccessExpr", (ThrowingCallable) () -> new FieldAccessExpr(Optional.empty(), BAD_NAME)),
                 Arguments.of("MethodCallExpr", (ThrowingCallable)

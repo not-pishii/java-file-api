@@ -531,7 +531,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param type the tested type
     /// @return an `instanceof` expression
     public Expr instanceOf(Expr target, TypeRef type) {
-        return new InstanceOfExpr(target, type, Optional.empty());
+        return new InstanceOfExpr(target, new TypePattern(type, Optional.empty()));
     }
 
     /// Creates an `instanceof` pattern match that binds the matched value to a name,
@@ -542,7 +542,35 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param bindingName the name bound to the matched value
     /// @return an `instanceof` expression
     public Expr instanceOf(Expr target, TypeRef type, String bindingName) {
-        return new InstanceOfExpr(target, type, Optional.of(bindingName));
+        return new InstanceOfExpr(target, new TypePattern(type, Optional.of(bindingName)));
+    }
+
+    /// Creates an `instanceof` test against an arbitrary pattern, e.g. a
+    /// [RecordPattern] deconstruction: `target instanceof Type(component, ...)`.
+    ///
+    /// @param target the tested expression
+    /// @param pattern the matched pattern
+    /// @return an `instanceof` expression
+    public Expr instanceOfPattern(Expr target, Pattern pattern) {
+        return new InstanceOfExpr(target, pattern);
+    }
+
+    /// Creates a flat type pattern, e.g. `Type bindingName`.
+    ///
+    /// @param type the matched type
+    /// @param bindingName the name bound to the matched value
+    /// @return a type pattern
+    public Pattern typePattern(TypeRef type, String bindingName) {
+        return new TypePattern(type, Optional.of(bindingName));
+    }
+
+    /// Creates a record deconstruction pattern, e.g. `Point(int x, int y)`.
+    ///
+    /// @param recordType the deconstructed record type
+    /// @param componentPatterns the per-component patterns, in declaration order
+    /// @return a record pattern
+    public Pattern recordPattern(TypeRef recordType, Pattern... componentPatterns) {
+        return new RecordPattern(recordType, List.of(componentPatterns));
     }
 
     /// Creates an object creation expression, `new type(args)`.
