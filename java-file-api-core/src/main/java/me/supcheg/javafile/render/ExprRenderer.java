@@ -1,5 +1,8 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.ArrayAccessExpr;
+import me.supcheg.javafile.code.ArrayCreationExpr;
+import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
@@ -160,6 +163,17 @@ final class ExprRenderer {
                     case ExprMethodRefTarget(var operand) -> renderExpr(operand, ctx) + "::" + method;
                 };
             case ConstructorRefExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + "::new";
+            case ArrayAccessExpr(var array, var index) -> renderExpr(array, ctx) + "[" + renderExpr(index, ctx) + "]";
+            case ArrayCreationExpr(var componentType, var dimensions) -> {
+                String dims = dimensions.toList().stream()
+                        .map(d -> "[" + renderExpr(d, ctx) + "]")
+                        .collect(Collectors.joining());
+                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + dims;
+            }
+            case ArrayInitializerExpr(var componentType, var elements) -> {
+                String elems = elements.stream().map(e -> renderExpr(e, ctx)).collect(Collectors.joining(", "));
+                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] {" + elems + "}";
+            }
         };
     }
 
@@ -173,6 +187,7 @@ final class ExprRenderer {
                         switch (target) {
                             case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
                             case StaticFieldAccessExpr fieldAccessExpr -> renderExpr(fieldAccessExpr, ctx);
+                            case ArrayAccessExpr arrayAccess -> renderExpr(arrayAccess, ctx);
                         };
                 yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
             }

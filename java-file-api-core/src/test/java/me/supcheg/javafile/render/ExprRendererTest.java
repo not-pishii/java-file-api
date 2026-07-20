@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.ArrayAccessExpr;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.CatchClause;
@@ -289,6 +290,51 @@ class ExprRendererTest {
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("me.supcheg.example"))))
                 .isEqualTo("new Impl<>(renderer)");
+    }
+
+    @Test
+    void arrayAccessRendersArrayBracketIndexBracket() {
+        Expr expr = cb.arrayAccess(cb.field("array"), cb.field("index"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("array[index]");
+    }
+
+    @Test
+    void arrayCreationByDimensionRendersNewComponentTypeAndBracketedSize() {
+        Expr expr = cb.newArray(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(3));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[3]");
+    }
+
+    @Test
+    void arrayCreationByMultipleDimensionsRendersEachBracketedSize() {
+        Expr expr = cb.newArray(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(3), cb.literal(4));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[3][4]");
+    }
+
+    @Test
+    void arrayInitializerRendersNewComponentTypeEmptyBracketsAndBracedElements() {
+        Expr expr = cb.newArrayOf(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(1), cb.literal(2), cb.literal(3));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[] {1, 2, 3}");
+    }
+
+    @Test
+    void assignStatementWithArrayAccessTargetRendersTargetEqualsValue() {
+        ArrayAccessExpr target = cb.arrayAccess(cb.field("values"), cb.literal(0));
+        Expr value = cb.literal(1);
+
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    values[0] = 1;");
     }
 
     @Test

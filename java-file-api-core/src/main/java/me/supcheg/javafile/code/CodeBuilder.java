@@ -98,6 +98,34 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new StaticFieldAccessExpr(type, name);
     }
 
+    /// Creates an array access, e.g. `array[index]`.
+    ///
+    /// @param array the accessed array expression
+    /// @param index the index expression
+    /// @return an array access expression
+    public ArrayAccessExpr arrayAccess(Expr array, Expr index) {
+        return new ArrayAccessExpr(array, index);
+    }
+
+    /// Creates an array creation by dimension, e.g. `new componentType[dim1][dim2]...`.
+    ///
+    /// @param componentType the array's component type
+    /// @param firstDimension the outermost dimension's size expression
+    /// @param restDimensions any further dimensions' size expressions, outermost first
+    /// @return an array creation expression
+    public ArrayCreationExpr newArray(TypeRef componentType, Expr firstDimension, Expr... restDimensions) {
+        return new ArrayCreationExpr(componentType, new NonEmptyList<>(firstDimension, List.of(restDimensions)));
+    }
+
+    /// Creates an array creation with an initializer, e.g. `new componentType[]{e1, e2, ...}`.
+    ///
+    /// @param componentType the array's component type
+    /// @param elements the initializer elements, in order
+    /// @return an array initializer expression
+    public ArrayInitializerExpr newArrayOf(TypeRef componentType, Expr... elements) {
+        return new ArrayInitializerExpr(componentType, List.of(elements));
+    }
+
     /// Creates an unqualified method call, e.g. `method(args)`.
     ///
     /// @param method the method name
