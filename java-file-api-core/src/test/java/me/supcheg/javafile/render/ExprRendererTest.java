@@ -518,6 +518,18 @@ class ExprRendererTest {
     }
 
     @Test
+    void breakAndContinueRenderWithLabels() {
+        assertThat(ExprRenderer.renderStmt(
+                        new me.supcheg.javafile.code.BreakStmt(java.util.Optional.of("label")),
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    break label;");
+        assertThat(ExprRenderer.renderStmt(
+                        new me.supcheg.javafile.code.ContinueStmt(java.util.Optional.of("label")),
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    continue label;");
+    }
+
+    @Test
     void labeledStmtWrappingASimpleStatementRendersLabelColonStatement() {
         Stmt stmt = new me.supcheg.javafile.code.LabeledStmt(
                 "outer", new me.supcheg.javafile.code.BreakStmt(Optional.empty()));
