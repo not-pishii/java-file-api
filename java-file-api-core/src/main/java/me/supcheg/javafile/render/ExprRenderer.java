@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
 import me.supcheg.javafile.code.BlockCaseBody;
@@ -17,6 +18,7 @@ import me.supcheg.javafile.code.DiamondNewTarget;
 import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.ElseIfClause;
+import me.supcheg.javafile.code.EmptyStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
@@ -29,6 +31,7 @@ import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LambdaExpr;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
@@ -37,12 +40,15 @@ import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
+import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
+import me.supcheg.javafile.code.SynchronizedStmt;
 import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
@@ -130,6 +136,12 @@ final class ExprRenderer {
             }
             case ThisExpr ignored -> "this";
             case SuperExpr ignored -> "super";
+            case StaticFieldAccessExpr(var type, var name) -> TypeRefRenderer.renderType(type, ctx) + "." + name;
+            case StaticMethodCallExpr(var type, var method, var args) -> {
+                String prefix = TypeRefRenderer.renderType(type, ctx);
+                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                yield prefix + "." + method + "(" + argsStr + ")";
+            }
         };
     }
 
@@ -142,17 +154,19 @@ final class ExprRenderer {
                 String targetStr =
                         switch (target) {
                             case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
+                            case StaticFieldAccessExpr fieldAccessExpr -> renderExpr(fieldAccessExpr, ctx);
                         };
                 yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
             }
-            case LocalVarDeclStmt(var type, var name, var initializer) ->
+            case LocalVarDeclStmt.Typed(var type, var name, var initializer) ->
                 ctx.pad()
-                        + type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
+                        + TypeRefRenderer.renderType(type, ctx)
                         + " "
                         + name
-                        + " = "
-                        + renderExpr(initializer, ctx)
+                        + initializer.map(i -> " = " + renderExpr(i, ctx)).orElse("")
                         + ";";
+            case LocalVarDeclStmt.Inferred(var name, var initializer) ->
+                ctx.pad() + "var " + name + " = " + renderExpr(initializer, ctx) + ";";
             case IfStmt(var condition, var thenBody, var elseIfClauses, var elseBody) -> {
                 StringBuilder sb = new StringBuilder(ctx.pad())
                         .append("if (")
@@ -267,8 +281,27 @@ final class ExprRenderer {
                         + "}";
             case YieldStmt(var value) -> ctx.pad() + "yield " + renderExpr(value, ctx) + ";";
             case ThrowStmt(var exception) -> ctx.pad() + "throw " + renderExpr(exception, ctx) + ";";
-            case BreakStmt ignored -> ctx.pad() + "break;";
-            case ContinueStmt ignored -> ctx.pad() + "continue;";
+            case BreakStmt(var label) ->
+                ctx.pad() + "break" + label.map(l -> " " + l).orElse("") + ";";
+            case ContinueStmt(var label) ->
+                ctx.pad() + "continue" + label.map(l -> " " + l).orElse("") + ";";
+            case LabeledStmt(var label, var statement) ->
+                ctx.pad() + label + ": " + renderStmt(statement, ctx).stripLeading();
+            case SynchronizedStmt(var lock, var body) ->
+                ctx.pad()
+                        + "synchronized ("
+                        + renderExpr(lock, ctx)
+                        + ") {" + ctx.newline()
+                        + renderBlock(body, ctx.withIncreasedPad())
+                        + ctx.pad()
+                        + "}";
+            case AssertStmt(var condition, var message) ->
+                ctx.pad()
+                        + "assert "
+                        + renderExpr(condition, ctx)
+                        + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
+                        + ";";
+            case EmptyStmt ignored -> ctx.pad() + ";";
         };
     }
 

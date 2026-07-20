@@ -6,4 +6,4 @@ package me.supcheg.javafile.code;
 /// Assignment is JLS's fourth statement-expression form, but this model
 /// represents it as the separate statement [AssignStmt] rather than an
 /// [Expr], so it does not appear here.
-public sealed interface StatementExpr extends Expr permits MethodCallExpr, NewExpr, IncDecExpr {}
+public sealed interface StatementExpr extends Expr permits IncDecExpr, MethodCallExpr, NewExpr, StaticMethodCallExpr {}

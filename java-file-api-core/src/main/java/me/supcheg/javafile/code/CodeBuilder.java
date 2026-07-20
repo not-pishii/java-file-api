@@ -1,6 +1,7 @@
 package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import org.jspecify.annotations.Nullable;
 
@@ -88,6 +89,15 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new FieldAccessExpr(Optional.of(target), name);
     }
 
+    /// Creates a static field access, e.g. `type.name`.
+    ///
+    /// @param type the type declaring the field
+    /// @param name the field name
+    /// @return a static field access expression
+    public StaticFieldAccessExpr staticField(ClassOrInterfaceTypeRef type, String name) {
+        return new StaticFieldAccessExpr(type, name);
+    }
+
     /// Creates an unqualified method call, e.g. `method(args)`.
     ///
     /// @param method the method name
@@ -105,6 +115,16 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @return a method call expression
     public MethodCallExpr call(Expr target, String method, Expr... args) {
         return new MethodCallExpr(Optional.of(target), method, List.of(args));
+    }
+
+    /// Creates a static method call, e.g. `type.method(args)`.
+    ///
+    /// @param type the type declaring the method
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a static method call expression
+    public StaticMethodCallExpr callStatic(ClassOrInterfaceTypeRef type, String method, Expr... args) {
+        return new StaticMethodCallExpr(type, method, List.of(args));
     }
 
     /// Creates the `this` expression, e.g. as the target of `field`/`call` to
@@ -382,14 +402,24 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 
-    /// Appends a typed local variable declaration.
+    /// Appends a typed local variable declaration with an initializer.
     ///
     /// @param name the variable name
     /// @param type the declared variable type
     /// @param initializer the initializer expression
     /// @return this builder
     public CodeBuilder localVar(String name, TypeRef type, Expr initializer) {
-        statements.add(new LocalVarDeclStmt(Optional.of(type), name, initializer));
+        statements.add(new LocalVarDeclStmt.Typed(type, name, Optional.of(initializer)));
+        return this;
+    }
+
+    /// Appends a typed local variable declaration with no initializer.
+    ///
+    /// @param name the variable name
+    /// @param type the declared variable type
+    /// @return this builder
+    public CodeBuilder localVar(String name, TypeRef type) {
+        statements.add(new LocalVarDeclStmt.Typed(type, name, Optional.empty()));
         return this;
     }
 
@@ -399,7 +429,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param initializer the initializer expression
     /// @return this builder
     public CodeBuilder localVar(String name, Expr initializer) {
-        statements.add(new LocalVarDeclStmt(Optional.empty(), name, initializer));
+        statements.add(new LocalVarDeclStmt.Inferred(name, initializer));
         return this;
     }
 
@@ -579,7 +609,16 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @return this builder
     public CodeBuilder break_() {
-        statements.add(new BreakStmt());
+        statements.add(new BreakStmt(Optional.empty()));
+        return this;
+    }
+
+    /// Appends a `break` statement targeting an enclosing [LabeledStmt].
+    ///
+    /// @param label the targeted label
+    /// @return this builder
+    public CodeBuilder break_(String label) {
+        statements.add(new BreakStmt(Optional.of(label)));
         return this;
     }
 
@@ -587,7 +626,74 @@ public final class CodeBuilder implements Consumer<Stmt> {
     ///
     /// @return this builder
     public CodeBuilder continue_() {
-        statements.add(new ContinueStmt());
+        statements.add(new ContinueStmt(Optional.empty()));
+        return this;
+    }
+
+    /// Appends a `continue` statement targeting an enclosing [LabeledStmt].
+    ///
+    /// @param label the targeted label
+    /// @return this builder
+    public CodeBuilder continue_(String label) {
+        statements.add(new ContinueStmt(Optional.of(label)));
+        return this;
+    }
+
+    /// Appends a labeled statement, `label: statement`, wrapping exactly the
+    /// single statement `spec` appends.
+    ///
+    /// @param label the statement's label
+    /// @param spec receives the builder to append exactly one statement to label
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` appends zero or more than one statement
+    public CodeBuilder labeled(String label, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        List<Stmt> built = cb.build().statements();
+        if (built.size() != 1) {
+            throw new IllegalArgumentException(
+                    "labeled statement must wrap exactly one statement, got " + built.size());
+        }
+        statements.add(new LabeledStmt(label, built.get(0)));
+        return this;
+    }
+
+    /// Appends a `synchronized (lock) { ... }` block.
+    ///
+    /// @param lock the monitor expression
+    /// @param spec receives the builder to populate the synchronized block's body
+    /// @return this builder
+    public CodeBuilder synchronized_(Expr lock, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        statements.add(new SynchronizedStmt(lock, cb.build()));
+        return this;
+    }
+
+    /// Appends an `assert` statement with no diagnostic message.
+    ///
+    /// @param condition the asserted condition
+    /// @return this builder
+    public CodeBuilder assert_(Expr condition) {
+        statements.add(new AssertStmt(condition, Optional.empty()));
+        return this;
+    }
+
+    /// Appends an `assert` statement with a diagnostic message.
+    ///
+    /// @param condition the asserted condition
+    /// @param message the diagnostic message expression
+    /// @return this builder
+    public CodeBuilder assert_(Expr condition, Expr message) {
+        statements.add(new AssertStmt(condition, Optional.of(message)));
+        return this;
+    }
+
+    /// Appends the empty statement, `;`.
+    ///
+    /// @return this builder
+    public CodeBuilder empty() {
+        statements.add(new EmptyStmt());
         return this;
     }
 

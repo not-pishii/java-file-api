@@ -15,6 +15,7 @@ import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
@@ -56,6 +57,48 @@ class ExprRendererTest {
         Expr call = cb.call(cb.field("bundle"), "getString", cb.literal("greeting"));
         assertThat(ExprRenderer.renderExpr(call, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("bundle.getString(\"greeting\")");
+    }
+
+    @Test
+    void staticFieldAccessRendersTypeDotName() {
+        ClassOrInterfaceTypeRef integerType = Types.of(ClassDesc.of("java.lang", "Integer"));
+        Expr expr = cb.staticField(integerType, "MAX_VALUE");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Integer.MAX_VALUE");
+    }
+
+    @Test
+    void staticMethodCallRendersArgsCommaSeparated() {
+        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        Expr expr = cb.callStatic(mathType, "max", cb.field("a"), cb.field("b"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Math.max(a, b)");
+    }
+
+    @Test
+    void assignStatementWithStaticFieldAccessTargetRendersTargetEqualsValue() {
+        ClassOrInterfaceTypeRef counterType = Types.of(ClassDesc.of("me.supcheg.example", "Counter"));
+        StaticFieldAccessExpr target = cb.staticField(counterType, "total");
+        Expr value = cb.literal(1);
+
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    Counter.total = 1;");
+    }
+
+    @Test
+    void staticMethodCallAsBareStatementRendersSemicolonTerminated() {
+        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        Stmt stmt = new ExprStmt(cb.callStatic(mathType, "max", cb.literal(1), cb.literal(2)));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    Math.max(1, 2);");
     }
 
     @Test
@@ -196,8 +239,8 @@ class ExprRendererTest {
 
     @Test
     void typedLocalVarDeclRendersTheDeclaredType() {
-        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt(
-                Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", cb.literal(0));
+        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.of(cb.literal(0)));
         assertThat(ExprRenderer.renderStmt(
                         stmt,
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
@@ -205,9 +248,19 @@ class ExprRendererTest {
     }
 
     @Test
+    void typedLocalVarDeclWithoutInitializerOmitsAssignment() {
+        me.supcheg.javafile.code.Stmt stmt = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.empty());
+        assertThat(ExprRenderer.renderStmt(
+                        stmt,
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    int count;");
+    }
+
+    @Test
     void untypedLocalVarDeclRendersVar() {
         me.supcheg.javafile.code.Stmt stmt =
-                new me.supcheg.javafile.code.LocalVarDeclStmt(Optional.empty(), "name", cb.literal("x"));
+                new me.supcheg.javafile.code.LocalVarDeclStmt.Inferred("name", cb.literal("x"));
         assertThat(ExprRenderer.renderStmt(
                         stmt,
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
@@ -269,8 +322,8 @@ class ExprRendererTest {
 
     @Test
     void classicForStmtRendersInitConditionUpdateAndBody() {
-        me.supcheg.javafile.code.LocalVarDeclStmt init = new me.supcheg.javafile.code.LocalVarDeclStmt(
-                Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
+        me.supcheg.javafile.code.LocalVarDeclStmt init = new me.supcheg.javafile.code.LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "i", Optional.of(cb.literal(0)));
         ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
         Stmt stmt = new me.supcheg.javafile.code.ForStmt(
                 Optional.of(init),
@@ -455,13 +508,105 @@ class ExprRendererTest {
     @Test
     void breakAndContinueRenderAsBareKeywords() {
         assertThat(ExprRenderer.renderStmt(
-                        new me.supcheg.javafile.code.BreakStmt(),
+                        new me.supcheg.javafile.code.BreakStmt(java.util.Optional.empty()),
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
                 .isEqualTo("    break;");
         assertThat(ExprRenderer.renderStmt(
-                        new me.supcheg.javafile.code.ContinueStmt(),
+                        new me.supcheg.javafile.code.ContinueStmt(java.util.Optional.empty()),
                         Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
                 .isEqualTo("    continue;");
+    }
+
+    @Test
+    void breakAndContinueRenderWithLabels() {
+        assertThat(ExprRenderer.renderStmt(
+                        new me.supcheg.javafile.code.BreakStmt(java.util.Optional.of("label")),
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    break label;");
+        assertThat(ExprRenderer.renderStmt(
+                        new me.supcheg.javafile.code.ContinueStmt(java.util.Optional.of("label")),
+                        Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad()))
+                .isEqualTo("    continue label;");
+    }
+
+    @Test
+    void labeledStmtWrappingASimpleStatementRendersLabelColonStatement() {
+        Stmt stmt = new me.supcheg.javafile.code.LabeledStmt(
+                "outer", new me.supcheg.javafile.code.BreakStmt(Optional.empty()));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    outer: break;");
+    }
+
+    @Test
+    void labeledStmtWrappingANestedBlockKeepsTheOriginalIndentation() {
+        Stmt inner = new me.supcheg.javafile.code.EnhancedForStmt(
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer")),
+                "i",
+                cb.field("items"),
+                new CodeBody(java.util.List.of(new me.supcheg.javafile.code.IfStmt(
+                        cb.eq(cb.field("i"), cb.literal(1)),
+                        new CodeBody(java.util.List.of(new me.supcheg.javafile.code.BreakStmt(Optional.of("outer")))),
+                        java.util.List.of(),
+                        Optional.empty()))));
+        Stmt stmt = new me.supcheg.javafile.code.LabeledStmt("outer", inner);
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        outer: for (Integer i : items) {
+                            if (i == 1) {
+                                break outer;
+                            }
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void synchronizedStmtRendersLockExpressionAndBracedBody() {
+        Stmt stmt = new me.supcheg.javafile.code.SynchronizedStmt(
+                cb.this_(), new CodeBody(java.util.List.of(new ExprStmt(cb.call("notifyAll")))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        synchronized (this) {
+                            notifyAll();
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void assertStmtWithoutMessageRendersBareCondition() {
+        Stmt stmt = new me.supcheg.javafile.code.AssertStmt(cb.gt(cb.field("value"), cb.literal(0)), Optional.empty());
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    assert value > 0;");
+    }
+
+    @Test
+    void assertStmtWithMessageRendersConditionAndMessage() {
+        Stmt stmt = new me.supcheg.javafile.code.AssertStmt(
+                cb.gt(cb.field("value"), cb.literal(0)), Optional.of(cb.literal("value must be positive")));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    assert value > 0 : \"value must be positive\";");
+    }
+
+    @Test
+    void emptyStmtRendersBareSemicolon() {
+        Stmt stmt = new me.supcheg.javafile.code.EmptyStmt();
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    ;");
     }
 
     @Test

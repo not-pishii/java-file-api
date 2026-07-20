@@ -3,17 +3,22 @@ package me.supcheg.javafile;
 import me.supcheg.javafile.annotation.AnnotationMember;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.annotation.EnumValue;
+import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
+import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.model.AbstractMethodDecl;
@@ -121,8 +126,10 @@ class IdentifierGuardWiringTest {
                         () -> new EnumConstant(BAD_NAME, List.of(), List.of(), List.of())),
                 Arguments.of("CatchClause", (ThrowingCallable) () ->
                         new CatchClause(NonEmptyList.copyOf(List.of(IO_EXCEPTION_TYPE)), BAD_NAME, CodeBody.EMPTY)),
-                Arguments.of("LocalVarDeclStmt", (ThrowingCallable)
-                        () -> new LocalVarDeclStmt(Optional.empty(), BAD_NAME, new IntLiteral(0))),
+                Arguments.of("LocalVarDeclStmt.Typed", (ThrowingCallable)
+                        () -> new LocalVarDeclStmt.Typed(PrimitiveTypeRef.INT, BAD_NAME, Optional.empty())),
+                Arguments.of("LocalVarDeclStmt.Inferred", (ThrowingCallable)
+                        () -> new LocalVarDeclStmt.Inferred(BAD_NAME, new IntLiteral(0))),
                 Arguments.of("EnhancedForStmt", (ThrowingCallable) () -> new EnhancedForStmt(
                         STRING_TYPE, BAD_NAME, new FieldAccessExpr(Optional.empty(), "items"), CodeBody.EMPTY)),
                 Arguments.of("TypePatternLabel", (ThrowingCallable)
@@ -133,6 +140,10 @@ class IdentifierGuardWiringTest {
                         "FieldAccessExpr", (ThrowingCallable) () -> new FieldAccessExpr(Optional.empty(), BAD_NAME)),
                 Arguments.of("MethodCallExpr", (ThrowingCallable)
                         () -> new MethodCallExpr(Optional.empty(), BAD_NAME, List.of())),
+                Arguments.of("StaticFieldAccessExpr", (ThrowingCallable)
+                        () -> new StaticFieldAccessExpr(IO_EXCEPTION_TYPE, BAD_NAME)),
+                Arguments.of("StaticMethodCallExpr", (ThrowingCallable)
+                        () -> new StaticMethodCallExpr(IO_EXCEPTION_TYPE, BAD_NAME, List.of())),
                 Arguments.of("TypeVarRef", (ThrowingCallable) () -> new TypeVarRef(BAD_NAME)),
                 Arguments.of("TypeParam", (ThrowingCallable) () -> new TypeParam(BAD_NAME, List.of())),
                 Arguments.of("Resource.Declared", (ThrowingCallable)
@@ -142,6 +153,10 @@ class IdentifierGuardWiringTest {
                         "InferredLambdaParams", (ThrowingCallable) () -> new InferredLambdaParams(List.of(BAD_NAME))),
                 Arguments.of("AnnotationMember", (ThrowingCallable)
                         () -> new AnnotationMember(BAD_NAME, AnnotationValues.literal(1))),
-                Arguments.of("EnumValue", (ThrowingCallable) () -> new EnumValue(LEVEL_DESC, BAD_NAME)));
+                Arguments.of("EnumValue", (ThrowingCallable) () -> new EnumValue(LEVEL_DESC, BAD_NAME)),
+                Arguments.of("LabeledStmt", (ThrowingCallable)
+                        () -> new LabeledStmt(BAD_NAME, new BreakStmt(Optional.empty()))),
+                Arguments.of("BreakStmt", (ThrowingCallable) () -> new BreakStmt(Optional.of(BAD_NAME))),
+                Arguments.of("ContinueStmt", (ThrowingCallable) () -> new ContinueStmt(Optional.of(BAD_NAME))));
     }
 }

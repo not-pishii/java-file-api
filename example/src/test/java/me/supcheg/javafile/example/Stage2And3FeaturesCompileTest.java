@@ -77,7 +77,8 @@ class Stage2And3FeaturesCompileTest {
                                 mb -> mb.withParam("n", PrimitiveTypeRef.INT).withBody(b -> {
                                     b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
                                     b.for_(
-                                            new LocalVarDeclStmt(Optional.of(PrimitiveTypeRef.INT), "i", b.literal(0)),
+                                            new LocalVarDeclStmt.Typed(
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
                                             b.lt(b.field("i"), b.field("n")),
                                             new ExprStmt(b.postIncrement(b.field("i"))),
                                             body -> body.assign(
@@ -146,7 +147,8 @@ class Stage2And3FeaturesCompileTest {
                                             ib -> ib.then(body -> body.throw_(b.new_(
                                                     Types.of(ILLEGAL_ARGUMENT), b.literal("n must be non-negative")))));
                                     b.for_(
-                                            new LocalVarDeclStmt(Optional.of(PrimitiveTypeRef.INT), "i", b.literal(0)),
+                                            new LocalVarDeclStmt.Typed(
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
                                             b.lt(b.field("i"), b.field("n")),
                                             new ExprStmt(b.postIncrement(b.field("i"))),
                                             body -> body.assign(

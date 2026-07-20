@@ -177,8 +177,18 @@ class CodeBuilderTest {
         cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(0));
 
         assertThat(cb.build().statements())
-                .containsExactly(new LocalVarDeclStmt(
-                        Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "count", new IntLiteral(0)));
+                .containsExactly(new LocalVarDeclStmt.Typed(
+                        me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.of(new IntLiteral(0))));
+    }
+
+    @Test
+    void localVarWithExplicitTypeAndNoInitializerOmitsIt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.localVar("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
+
+        assertThat(cb.build().statements())
+                .containsExactly(new LocalVarDeclStmt.Typed(
+                        me.supcheg.javafile.type.PrimitiveTypeRef.INT, "count", Optional.empty()));
     }
 
     @Test
@@ -187,7 +197,7 @@ class CodeBuilderTest {
         cb.localVar("name", cb.literal("x"));
 
         assertThat(cb.build().statements())
-                .containsExactly(new LocalVarDeclStmt(Optional.empty(), "name", new StringLiteral("x")));
+                .containsExactly(new LocalVarDeclStmt.Inferred("name", new StringLiteral("x")));
     }
 
     @Test
@@ -240,8 +250,8 @@ class CodeBuilderTest {
     @Test
     void forAddsAForStmtWithInitConditionAndUpdate() {
         CodeBuilder cb = new CodeBuilder();
-        LocalVarDeclStmt init =
-                new LocalVarDeclStmt(Optional.of(me.supcheg.javafile.type.PrimitiveTypeRef.INT), "i", cb.literal(0));
+        LocalVarDeclStmt init = new LocalVarDeclStmt.Typed(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, "i", Optional.of(cb.literal(0)));
         ExprStmt update = new ExprStmt(cb.postIncrement(cb.field("i")));
 
         cb.for_(init, cb.lt(cb.field("i"), cb.literal(10)), update, b -> b.exprStatement(b.call("use")));
@@ -338,7 +348,66 @@ class CodeBuilderTest {
         cb.break_();
         cb.continue_();
 
-        assertThat(cb.build().statements()).containsExactly(new BreakStmt(), new ContinueStmt());
+        assertThat(cb.build().statements())
+                .containsExactly(new BreakStmt(Optional.empty()), new ContinueStmt(Optional.empty()));
+    }
+
+    @Test
+    void labeledContinueAddsAContinueStmtTargetingTheLabel() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.continue_("outer");
+
+        assertThat(cb.build().statements()).containsExactly(new ContinueStmt(Optional.of("outer")));
+    }
+
+    @Test
+    void assertAddEnAssertStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assert_(cb.call("call"));
+
+        assertThat(cb.build().statements())
+                .containsExactly(
+                        new AssertStmt(new MethodCallExpr(Optional.empty(), "call", List.of()), Optional.empty()));
+    }
+
+    @Test
+    void assertWithMessageAddEnAssertStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assert_(cb.call("call"), new StringLiteral("message"));
+
+        assertThat(cb.build().statements())
+                .containsExactly(new AssertStmt(
+                        new MethodCallExpr(Optional.empty(), "call", List.of()),
+                        Optional.of(new StringLiteral("message"))));
+    }
+
+    @Test
+    void emptyAddsAnEmptyStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.empty();
+
+        assertThat(cb.build().statements()).containsExactly(new EmptyStmt());
+    }
+
+    @Test
+    void labeledWrapsExactlyTheOneStatementAppendedBySpec() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.labeled("outer", b -> b.break_());
+
+        assertThat(cb.build().statements()).containsExactly(new LabeledStmt("outer", new BreakStmt(Optional.empty())));
+    }
+
+    @Test
+    void labeledThrowsWhenSpecAppendsZeroOrMoreThanOneStatement() {
+        CodeBuilder cb1 = new CodeBuilder();
+        assertThatThrownBy(() -> cb1.labeled("outer", b -> {})).isInstanceOf(IllegalArgumentException.class);
+
+        CodeBuilder cb2 = new CodeBuilder();
+        assertThatThrownBy(() -> cb2.labeled("outer", b -> {
+                    b.break_();
+                    b.continue_();
+                }))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
