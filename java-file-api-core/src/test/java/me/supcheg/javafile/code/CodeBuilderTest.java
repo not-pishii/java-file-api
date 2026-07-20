@@ -171,6 +171,32 @@ class CodeBuilderTest {
     }
 
     @Test
+    void typePatternProducesTypePatternWithBindingName() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        Pattern pattern = cb.typePattern(stringType, "s");
+
+        assertThat(pattern).isEqualTo(new TypePattern(stringType, Optional.of("s")));
+    }
+
+    @Test
+    void recordPatternProducesRecordPatternWithComponentPatterns() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern xPattern = cb.typePattern(intType, "x");
+        Pattern yPattern = cb.typePattern(intType, "y");
+
+        Pattern pattern = cb.recordPattern(pointType, xPattern, yPattern);
+
+        assertThat(pattern).isEqualTo(new RecordPattern(pointType, java.util.List.of(xPattern, yPattern)));
+    }
+
+    @Test
     void newExprCarriesTypeAndArguments() {
         CodeBuilder cb = new CodeBuilder();
         me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
@@ -344,6 +370,47 @@ class CodeBuilderTest {
         TypePattern pattern = (TypePattern) label.pattern();
         assertThat(pattern.bindingName()).isEqualTo(Optional.of("s"));
         assertThat(label.guard()).isPresent();
+    }
+
+    @Test
+    void switchSupportsPatternCasesWithoutAGuard() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern pattern = cb.recordPattern(pointType, cb.typePattern(intType, "x"), cb.typePattern(intType, "y"));
+
+        cb.switch_(
+                cb.field("obj"),
+                sb -> sb.casePattern(pattern, b -> b.return_(cb.literal(1)))
+                        .default_(b -> b.return_(cb.literalNull())));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        assertThat(label.pattern()).isEqualTo(pattern);
+        assertThat(label.guard()).isEmpty();
+    }
+
+    @Test
+    void switchSupportsPatternCasesWithAGuard() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern pattern = cb.recordPattern(pointType, cb.typePattern(intType, "x"), cb.typePattern(intType, "y"));
+        Expr guard = cb.gt(cb.field("x"), cb.literal(0));
+
+        cb.switch_(
+                cb.field("obj"),
+                sb -> sb.casePatternWithGuard(pattern, guard, b -> b.return_(cb.literal(1)))
+                        .default_(b -> b.return_(cb.literalNull())));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        assertThat(label.pattern()).isEqualTo(pattern);
+        assertThat(label.guard()).isEqualTo(Optional.of(guard));
     }
 
     @Test
