@@ -16,13 +16,15 @@ class CompoundAssignCompileTest {
 
     @Test
     void addAssignCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Accumulator"), cb -> cb.withMethod(
-                "addAll",
-                PrimitiveTypeRef.INT,
-                mb -> mb.withParam("total", PrimitiveTypeRef.INT)
-                        .withParam("delta", PrimitiveTypeRef.INT)
-                        .withBody(b -> b.assign(b.field("total"), AssignOp.ADD_ASSIGN, b.field("delta"))
-                                .return_(b.field("total")))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Accumulator"),
+                cb -> cb.withMethod(
+                        "addAll",
+                        PrimitiveTypeRef.INT,
+                        mb -> mb.withParam("total", PrimitiveTypeRef.INT)
+                                .withParam("delta", PrimitiveTypeRef.INT)
+                                .withBody(b -> b.assign(b.field("total"), AssignOp.ADD_ASSIGN, b.field("delta"))
+                                        .return_(b.field("total")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

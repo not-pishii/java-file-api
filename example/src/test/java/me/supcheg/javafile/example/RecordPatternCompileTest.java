@@ -25,8 +25,7 @@ class RecordPatternCompileTest {
     @Test
     void recordDeconstructionInInstanceofCompiles() {
         JavaFile pointFile = JavaFile.record(
-                POINT,
-                rb -> rb.withComponent("x", PrimitiveTypeRef.INT).withComponent("y", PrimitiveTypeRef.INT));
+                POINT, rb -> rb.withComponent("x", PrimitiveTypeRef.INT).withComponent("y", PrimitiveTypeRef.INT));
 
         Pattern pattern = new RecordPattern(
                 Types.of(POINT),
@@ -45,8 +44,8 @@ class RecordPatternCompileTest {
                                         .return_(b.literal(0)))));
 
         Compilation compilation = javac().compile(
-                JavaFileObjects.forSourceString(pointFile.qualifiedName(), pointFile.render()),
-                JavaFileObjects.forSourceString(useFile.qualifiedName(), useFile.render()));
+                        JavaFileObjects.forSourceString(pointFile.qualifiedName(), pointFile.render()),
+                        JavaFileObjects.forSourceString(useFile.qualifiedName(), useFile.render()));
 
         assertThat(compilation).succeededWithoutWarnings();
     }

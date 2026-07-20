@@ -19,16 +19,18 @@ class CastConditionalClassLiteralCompileTest {
 
     @Test
     void castConditionalAndClassLiteralCompile() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Describe"), cb -> cb.withMethod(
-                "kind",
-                Types.of(CLASS),
-                mb -> mb.withParam("value", Types.of(OBJECT))
-                        .withBody(b -> b.localVar(
-                                        "n", PrimitiveTypeRef.INT, b.cast(PrimitiveTypeRef.INT, b.literal(1.9)))
-                                .return_(b.cond(
-                                        b.gt(b.field("n"), b.literal(0)),
-                                        b.classLiteral(Types.of(OBJECT)),
-                                        b.classLiteral(PrimitiveTypeRef.INT))))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Describe"),
+                cb -> cb.withMethod(
+                        "kind",
+                        Types.of(CLASS),
+                        mb -> mb.withParam("value", Types.of(OBJECT))
+                                .withBody(b -> b.localVar(
+                                                "n", PrimitiveTypeRef.INT, b.cast(PrimitiveTypeRef.INT, b.literal(1.9)))
+                                        .return_(b.cond(
+                                                b.gt(b.field("n"), b.literal(0)),
+                                                b.classLiteral(Types.of(OBJECT)),
+                                                b.classLiteral(PrimitiveTypeRef.INT))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

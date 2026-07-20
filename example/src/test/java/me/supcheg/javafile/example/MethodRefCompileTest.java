@@ -25,14 +25,16 @@ class MethodRefCompileTest {
 
     @Test
     void staticMethodRefAssignedToFunctionalInterfaceFieldCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Parsers"), cb -> cb.withField(
-                "toInt",
-                new ParameterizedTypeRef(
-                        FUNCTION,
-                        List.of(new ExactTypeArg(Types.of(STRING)), new ExactTypeArg(Types.of(INTEGER)))),
-                fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .withInitializer(
-                                new MethodRefExpr(new TypeMethodRefTarget(Types.of(INTEGER)), "parseInt"))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Parsers"),
+                cb -> cb.withField(
+                        "toInt",
+                        new ParameterizedTypeRef(
+                                FUNCTION,
+                                List.of(new ExactTypeArg(Types.of(STRING)), new ExactTypeArg(Types.of(INTEGER)))),
+                        fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                .withInitializer(
+                                        new MethodRefExpr(new TypeMethodRefTarget(Types.of(INTEGER)), "parseInt"))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
