@@ -62,13 +62,24 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
-    /// Appends an assignment statement.
+    /// Appends a plain assignment statement, a convenient synonym for
+    /// [#assign(AssignTarget,AssignOp,Expr)] with [AssignOp#ASSIGN].
     ///
     /// @param target the assignment target
     /// @param value the assigned expression
     /// @return this builder
     public CodeBuilder assign(AssignTarget target, Expr value) {
-        statements.add(new AssignStmt(target, value));
+        return assign(target, AssignOp.ASSIGN, value);
+    }
+
+    /// Appends an assignment statement using the given operator, e.g. `target += value`.
+    ///
+    /// @param target the assignment target
+    /// @param op the assignment operator
+    /// @param value the assigned expression
+    /// @return this builder
+    public CodeBuilder assign(AssignTarget target, AssignOp op, Expr value) {
+        statements.add(new AssignStmt(target, op, value));
         return this;
     }
 

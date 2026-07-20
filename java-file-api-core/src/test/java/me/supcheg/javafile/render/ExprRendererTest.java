@@ -1,6 +1,7 @@
 package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.code.ArrayAccessExpr;
+import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.CatchClause;
@@ -85,7 +86,7 @@ class ExprRendererTest {
         Expr value = cb.literal(1);
 
         String rendered = ExprRenderer.renderStmt(
-                new AssignStmt(target, value),
+                new AssignStmt(target, AssignOp.ASSIGN, value),
                 Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("    Counter.total = 1;");
@@ -163,9 +164,39 @@ class ExprRendererTest {
         FieldAccessExpr target = cb.field(cb.this_(), "bundle");
         Expr value = cb.field("bundle");
         String rendered = ExprRenderer.renderStmt(
-                new AssignStmt(target, value),
+                new AssignStmt(target, AssignOp.ASSIGN, value),
                 Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
         assertThat(rendered).isEqualTo("    this.bundle = bundle;");
+    }
+
+    @Test
+    void assignStatementWithAddAssignRendersPlusEqualsOperator() {
+        FieldAccessExpr target = cb.field("total");
+        Expr value = cb.field("delta");
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.ADD_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    total += delta;");
+    }
+
+    @Test
+    void assignStatementWithShlAssignRendersShiftLeftEqualsOperator() {
+        FieldAccessExpr target = cb.field("mask");
+        Expr value = cb.literal(1);
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.SHL_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    mask <<= 1;");
+    }
+
+    @Test
+    void assignStatementWithUshrAssignRendersUnsignedShiftRightEqualsOperator() {
+        FieldAccessExpr target = cb.field("bits");
+        Expr value = cb.literal(2);
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.USHR_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    bits >>>= 2;");
     }
 
     @Test
@@ -367,7 +398,7 @@ class ExprRendererTest {
         Expr value = cb.literal(1);
 
         String rendered = ExprRenderer.renderStmt(
-                new AssignStmt(target, value),
+                new AssignStmt(target, AssignOp.ASSIGN, value),
                 Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("    values[0] = 1;");

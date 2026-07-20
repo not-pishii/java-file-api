@@ -42,7 +42,30 @@ class CodeBuilderTest {
 
         FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.of(new ThisExpr()), "bundle");
         Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
-        assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
+        assertThat(cb.build().statements())
+                .containsExactly(new AssignStmt(expectedTarget, AssignOp.ASSIGN, expectedValue));
+    }
+
+    @Test
+    void assignWithOpAddsAssignStmtWithGivenOperator() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assign(cb.field("total"), AssignOp.ADD_ASSIGN, cb.field("delta"));
+
+        FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.empty(), "total");
+        Expr expectedValue = new FieldAccessExpr(Optional.empty(), "delta");
+        assertThat(cb.build().statements())
+                .containsExactly(new AssignStmt(expectedTarget, AssignOp.ADD_ASSIGN, expectedValue));
+    }
+
+    @Test
+    void twoArgAssignIsASynonymForAssignOpAssign() {
+        CodeBuilder cb1 = new CodeBuilder();
+        cb1.assign(cb1.field("x"), cb1.literal(1));
+
+        CodeBuilder cb2 = new CodeBuilder();
+        cb2.assign(cb2.field("x"), AssignOp.ASSIGN, cb2.literal(1));
+
+        assertThat(cb1.build()).isEqualTo(cb2.build());
     }
 
     @Test

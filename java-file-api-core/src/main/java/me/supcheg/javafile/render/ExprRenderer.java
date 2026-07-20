@@ -184,14 +184,14 @@ final class ExprRenderer {
             case ReturnStmt(var value) ->
                 ctx.pad() + "return" + value.map(v -> " " + renderExpr(v, ctx)).orElse("") + ";";
             case ExprStmt(var expr) -> ctx.pad() + renderExpr(expr, ctx) + ";";
-            case AssignStmt(var target, var value) -> {
+            case AssignStmt(var target, var op, var value) -> {
                 String targetStr =
                         switch (target) {
                             case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
                             case StaticFieldAccessExpr fieldAccessExpr -> renderExpr(fieldAccessExpr, ctx);
                             case ArrayAccessExpr arrayAccess -> renderExpr(arrayAccess, ctx);
                         };
-                yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
+                yield ctx.pad() + targetStr + " " + op.symbol() + " " + renderExpr(value, ctx) + ";";
             }
             case LocalVarDeclStmt.Typed(var type, var name, var initializer) ->
                 ctx.pad()

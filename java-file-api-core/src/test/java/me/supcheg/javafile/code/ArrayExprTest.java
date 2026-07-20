@@ -13,7 +13,7 @@ class ArrayExprTest {
     @Test
     void arrayAccessIsAValidAssignTarget() {
         AssignTarget target = new ArrayAccessExpr(new FieldAccessExpr(Optional.empty(), "arr"), new IntLiteral(0));
-        AssignStmt stmt = new AssignStmt(target, new IntLiteral(1));
+        AssignStmt stmt = new AssignStmt(target, AssignOp.ASSIGN, new IntLiteral(1));
         assertThat(stmt.target()).isEqualTo(target);
     }
 
