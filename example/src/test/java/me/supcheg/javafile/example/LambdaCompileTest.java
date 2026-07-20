@@ -23,15 +23,21 @@ class LambdaCompileTest {
     void lambdaWithSwitchExpressionBodyCompiles() {
         JavaFile file = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "ArgsResolver"),
-                cb -> cb.withVoidMethod("resolve", mb -> mb.withParam("x", Types.of(OBJECT))
-                        .withBody(b -> b.localVar(
-                                "args",
-                                Types.parameterized(
-                                        FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.of(OBJECT))),
-                                b.lambda(List.of("name"), b.switchExpr(b.field("name"), sb -> sb.caseValue(
-                                                b.literal("x"), b.field("x"))
-                                        .default_(body ->
-                                                body.throw_(b.new_(Types.of(ILLEGAL_STATE), b.field("name"))))))))));
+                cb -> cb.withVoidMethod(
+                        "resolve",
+                        mb -> mb.withParam("x", Types.of(OBJECT))
+                                .withBody(b -> b.localVar(
+                                        "args",
+                                        Types.parameterized(
+                                                FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.of(OBJECT))),
+                                        b.lambda(
+                                                List.of("name"),
+                                                b.switchExpr(
+                                                        b.field("name"),
+                                                        sb -> sb.caseValue(b.literal("x"), b.field("x"))
+                                                                .default_(body -> body.throw_(b.new_(
+                                                                        Types.of(ILLEGAL_STATE),
+                                                                        b.field("name"))))))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

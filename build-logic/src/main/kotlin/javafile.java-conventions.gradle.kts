@@ -53,7 +53,7 @@ testing {
 
 spotless {
     java {
-        palantirJavaFormat()
+        palantirJavaFormat("2.96.0")
         importOrder("", "javax|java", "\\#")
         forbidWildcardImports()
         targetExclude("build/**")

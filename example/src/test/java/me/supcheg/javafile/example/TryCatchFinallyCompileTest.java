@@ -21,26 +21,28 @@ class TryCatchFinallyCompileTest {
 
     @Test
     void tryWithResourcesMultiCatchAndFinallyCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "ResourceReader"), cb -> cb.withVoidMethod(
-                        "markUsed",
-                        mb -> mb.withThrows(IO_EXCEPTION, SQL_EXCEPTION).withBody(b -> {}))
-                .withVoidMethod("cleanup", mb -> mb.withBody(b -> {}))
-                .withMethod(
-                        "read",
-                        Types.of(STRING),
-                        mb -> mb.withBody(b -> b.try_(
-                                tryBody -> tryBody.exprStatement(tryBody.call("markUsed"))
-                                        .return_(tryBody.literal("ok")),
-                                tb -> tb.resource_(
-                                                "reader",
-                                                Types.of(STRING_READER),
-                                                b.new_(Types.of(STRING_READER), b.literal("x")))
-                                        .catch_(
-                                                List.of(Types.of(IO_EXCEPTION), Types.of(SQL_EXCEPTION)),
-                                                "e",
-                                                catchBody -> catchBody.return_(catchBody.literal("failed")))
-                                        .finally_(finallyBody ->
-                                                finallyBody.exprStatement(finallyBody.call("cleanup")))))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "ResourceReader"),
+                cb -> cb.withVoidMethod(
+                                "markUsed",
+                                mb -> mb.withThrows(IO_EXCEPTION, SQL_EXCEPTION).withBody(b -> {}))
+                        .withVoidMethod("cleanup", mb -> mb.withBody(b -> {}))
+                        .withMethod(
+                                "read",
+                                Types.of(STRING),
+                                mb -> mb.withBody(b -> b.try_(
+                                        tryBody -> tryBody.exprStatement(tryBody.call("markUsed"))
+                                                .return_(tryBody.literal("ok")),
+                                        tb -> tb.resource_(
+                                                        "reader",
+                                                        Types.of(STRING_READER),
+                                                        b.new_(Types.of(STRING_READER), b.literal("x")))
+                                                .catch_(
+                                                        List.of(Types.of(IO_EXCEPTION), Types.of(SQL_EXCEPTION)),
+                                                        "e",
+                                                        catchBody -> catchBody.return_(catchBody.literal("failed")))
+                                                .finally_(finallyBody ->
+                                                        finallyBody.exprStatement(finallyBody.call("cleanup")))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

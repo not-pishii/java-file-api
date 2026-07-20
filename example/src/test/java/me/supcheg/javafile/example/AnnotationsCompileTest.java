@@ -70,10 +70,13 @@ class AnnotationsCompileTest {
                 .withMember("params", AnnotationValues.array(AnnotationValues.nested(paramMeta)))
                 .build();
 
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Greeter"), cb -> cb.withAnnotation(
-                        CONTRACT_META,
-                        ab -> ab.withMember("value", AnnotationValues.array(AnnotationValues.nested(messageMeta))))
-                .withMethod("greeting", Types.of(STRING), mb -> mb.withBody(b -> b.return_(b.literal("hi")))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Greeter"),
+                cb -> cb.withAnnotation(
+                                CONTRACT_META,
+                                ab -> ab.withMember(
+                                        "value", AnnotationValues.array(AnnotationValues.nested(messageMeta))))
+                        .withMethod("greeting", Types.of(STRING), mb -> mb.withBody(b -> b.return_(b.literal("hi")))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("me.supcheg.meta.ContractMeta", CONTRACT_META_SRC),
@@ -90,9 +93,11 @@ class AnnotationsCompileTest {
 
         JavaFile withParam = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "Renamer"),
-                cb -> cb.withMethod("rename", Types.of(STRING), mb -> mb.withParam(
-                                new Param("name", Types.of(STRING), List.of(nullable)))
-                        .withBody(b -> b.return_(b.field("name")))));
+                cb -> cb.withMethod(
+                        "rename",
+                        Types.of(STRING),
+                        mb -> mb.withParam(new Param("name", Types.of(STRING), List.of(nullable)))
+                                .withBody(b -> b.return_(b.field("name")))));
 
         JavaFile withComponent = JavaFile.record(
                 ClassDesc.of("me.supcheg.example", "Box"),

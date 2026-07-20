@@ -29,8 +29,12 @@ class TypeDeclRendererTest {
         ClassDesc string = ClassDesc.of("java.lang", "String");
         builder.withModifiers(Modifier.FINAL)
                 .withField("bundle", Types.of(bundle), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
-                .withMethod("greeting", Types.of(string), mb -> mb.withParam("name", Types.of(string))
-                        .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting")))));
+                .withMethod(
+                        "greeting",
+                        Types.of(string),
+                        mb -> mb.withParam("name", Types.of(string))
+                                .withBody(
+                                        b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting")))));
 
         ImportManager imports = new ImportManager("me.supcheg.example");
         String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), Context.of(standardFormat(), imports));
@@ -262,8 +266,10 @@ class TypeDeclRendererTest {
         ClassBuilder classBuilder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Reader"));
         classBuilder
                 .withConstructor(cb -> cb.withThrows(ioException).withBody(b -> {}))
-                .withMethod("read", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withThrows(ioException)
-                        .withBody(b -> b.return_(b.literalNull())));
+                .withMethod(
+                        "read",
+                        Types.of(ClassDesc.of("java.lang", "String")),
+                        mb -> mb.withThrows(ioException).withBody(b -> b.return_(b.literalNull())));
 
         String renderedClass = TypeDeclRenderer.renderTypeDecl(
                 classBuilder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -346,11 +352,13 @@ class TypeDeclRendererTest {
     void rendersAStaticGenericMethodWithTypeParamAfterModifiers() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Factories"));
         ClassDesc contract = ClassDesc.of("me.supcheg.example", "Contract");
-        builder.withMethod("of", Types.parameterized(contract, Types.exact(Types.typeVar("T"))), mb -> mb.withModifiers(
-                        Modifier.PUBLIC, Modifier.STATIC)
-                .withTypeParam("T")
-                .withParam("value", Types.typeVar("T"))
-                .withBody(b -> b.return_(b.literalNull())));
+        builder.withMethod(
+                "of",
+                Types.parameterized(contract, Types.exact(Types.typeVar("T"))),
+                mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                        .withTypeParam("T")
+                        .withParam("value", Types.typeVar("T"))
+                        .withBody(b -> b.return_(b.literalNull())));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -367,9 +375,11 @@ class TypeDeclRendererTest {
     @Test
     void rendersAMethodThrowingATypeVariable() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Thrower"));
-        builder.withVoidMethod("rethrow", mb -> mb.withTypeParam("X", Types.of(ClassDesc.of("java.lang", "Exception")))
-                .withThrows(Types.typeVar("X"))
-                .withBody(b -> {}));
+        builder.withVoidMethod(
+                "rethrow",
+                mb -> mb.withTypeParam("X", Types.of(ClassDesc.of("java.lang", "Exception")))
+                        .withThrows(Types.typeVar("X"))
+                        .withBody(b -> {}));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -425,8 +435,10 @@ class TypeDeclRendererTest {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Ops"));
         ClassDesc string = ClassDesc.of("java.lang", "String");
         builder.withConstant("NAME", Types.of(string), new me.supcheg.javafile.code.StringLiteral("ops"))
-                .withDefaultMethod("describe", Types.of(string), mb -> mb.withTypeParam("T")
-                        .withBody(b -> b.return_(b.literal("d"))))
+                .withDefaultMethod(
+                        "describe",
+                        Types.of(string),
+                        mb -> mb.withTypeParam("T").withBody(b -> b.return_(b.literal("d"))))
                 .withStaticMethod("create", Types.of(string), mb -> mb.withBody(b -> b.return_(b.literal("c"))));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -517,13 +529,16 @@ class TypeDeclRendererTest {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Widget"));
         builder.withAnnotation(deprecated)
                 .withField("name", Types.of(ClassDesc.of("java.lang", "String")), fb -> fb.withAnnotation(nullable))
-                .withMethod("label", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withAnnotation(deprecated)
-                        .withParam(new Param(
-                                "suffix",
-                                Types.of(ClassDesc.of("java.lang", "String")),
-                                java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(
-                                        nullable, java.util.List.of()))))
-                        .withBody(b -> b.return_(b.literal("x"))))
+                .withMethod(
+                        "label",
+                        Types.of(ClassDesc.of("java.lang", "String")),
+                        mb -> mb.withAnnotation(deprecated)
+                                .withParam(new Param(
+                                        "suffix",
+                                        Types.of(ClassDesc.of("java.lang", "String")),
+                                        java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(
+                                                nullable, java.util.List.of()))))
+                                .withBody(b -> b.return_(b.literal("x"))))
                 .withConstructor(cb -> cb.withAnnotation(deprecated));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(

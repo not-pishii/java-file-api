@@ -206,9 +206,11 @@ class CodeBuilderTest {
     @Test
     void ifWithElseIfAndElseProducesAllClauses() {
         CodeBuilder cb = new CodeBuilder();
-        cb.if_(cb.lt(cb.field("x"), cb.literal(0)), ib -> ib.then(b -> b.return_(b.literal("negative")))
-                .elseIf(cb.eq(cb.field("x"), cb.literal(0)), b -> b.return_(b.literal("zero")))
-                .else_(b -> b.return_(b.literal("positive"))));
+        cb.if_(
+                cb.lt(cb.field("x"), cb.literal(0)),
+                ib -> ib.then(b -> b.return_(b.literal("negative")))
+                        .elseIf(cb.eq(cb.field("x"), cb.literal(0)), b -> b.return_(b.literal("zero")))
+                        .else_(b -> b.return_(b.literal("positive"))));
 
         IfStmt stmt = (IfStmt) cb.build().statements().get(0);
         assertThat(stmt.elseIfClauses()).hasSize(1);
@@ -265,8 +267,10 @@ class CodeBuilderTest {
     @Test
     void switchAddsASwitchStmtWithConstantCasesAndDefault() {
         CodeBuilder cb = new CodeBuilder();
-        cb.switch_(cb.field("day"), sb -> sb.case_(cb.literal("MON"), b -> b.return_(cb.literal(1)))
-                .default_(b -> b.return_(cb.literal(0))));
+        cb.switch_(
+                cb.field("day"),
+                sb -> sb.case_(cb.literal("MON"), b -> b.return_(cb.literal(1)))
+                        .default_(b -> b.return_(cb.literal(0))));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
         assertThat(stmt.cases()).hasSize(2);
@@ -278,8 +282,9 @@ class CodeBuilderTest {
     void switchExprReturnsASwitchExprUsableAsAValue() {
         CodeBuilder cb = new CodeBuilder();
 
-        Expr expr = cb.switchExpr(cb.field("day"), sb -> sb.caseValue(cb.literal("MON"), cb.literal(1))
-                .defaultValue(cb.literal(0)));
+        Expr expr = cb.switchExpr(
+                cb.field("day"),
+                sb -> sb.caseValue(cb.literal("MON"), cb.literal(1)).defaultValue(cb.literal(0)));
 
         assertThat(expr).isInstanceOf(SwitchExpr.class);
         SwitchExpr switchExpr = (SwitchExpr) expr;
@@ -292,12 +297,14 @@ class CodeBuilderTest {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
 
-        cb.switch_(cb.field("obj"), sb -> sb.caseTypeWithGuard(
-                        stringType,
-                        "s",
-                        cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)),
-                        b -> b.return_(cb.field("s")))
-                .default_(b -> b.return_(cb.literalNull())));
+        cb.switch_(
+                cb.field("obj"),
+                sb -> sb.caseTypeWithGuard(
+                                stringType,
+                                "s",
+                                cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)),
+                                b -> b.return_(cb.field("s")))
+                        .default_(b -> b.return_(cb.literalNull())));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
         TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().head();
@@ -401,10 +408,12 @@ class CodeBuilderTest {
     void tryWithResourcesAcceptsDeclaredInferredAndExistingForms() {
         CodeBuilder cb2 = new CodeBuilder();
 
-        cb2.try_(b -> {}, tb -> tb.resource_("r1", Types.of(ClassDesc.of("java.io", "Reader")), cb2.call("openReader"))
-                .resource_("r2", cb2.call("openWriter"))
-                .resource_("r3")
-                .finally_(b -> {}));
+        cb2.try_(
+                b -> {},
+                tb -> tb.resource_("r1", Types.of(ClassDesc.of("java.io", "Reader")), cb2.call("openReader"))
+                        .resource_("r2", cb2.call("openWriter"))
+                        .resource_("r3")
+                        .finally_(b -> {}));
 
         TryStmt.WithFinally stmt =
                 (TryStmt.WithFinally) cb2.build().statements().get(0);

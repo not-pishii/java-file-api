@@ -16,12 +16,15 @@ class StatementExprCompileTest {
 
     @Test
     void postIncrementAndMethodCallAsStatementsCompile() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Counter"), cb -> cb.withField(
-                        "count", PrimitiveTypeRef.INT, fb -> fb.withInitializer(new IntLiteral(0)))
-                .withVoidMethod("tick", mb -> mb.withBody(b -> b.exprStatement(b.postIncrement(b.field("count")))))
-                .withVoidMethod(
-                        "tickTwice",
-                        mb -> mb.withBody(b -> b.exprStatement(b.call("tick")).exprStatement(b.call("tick")))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Counter"),
+                cb -> cb.withField("count", PrimitiveTypeRef.INT, fb -> fb.withInitializer(new IntLiteral(0)))
+                        .withVoidMethod(
+                                "tick", mb -> mb.withBody(b -> b.exprStatement(b.postIncrement(b.field("count")))))
+                        .withVoidMethod(
+                                "tickTwice",
+                                mb -> mb.withBody(
+                                        b -> b.exprStatement(b.call("tick")).exprStatement(b.call("tick")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

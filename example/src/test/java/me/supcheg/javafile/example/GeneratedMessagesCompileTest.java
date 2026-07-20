@@ -19,14 +19,19 @@ class GeneratedMessagesCompileTest {
 
     @Test
     void theGeneratedMessagesClassCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb.withModifiers(
-                        Modifier.FINAL)
-                .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
-                .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
-                        .withParam("bundle", Types.of(BUNDLE))
-                        .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
-                .withMethod("greeting", Types.of(STRING), mb -> mb.withParam("name", Types.of(STRING))
-                        .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Messages"),
+                cb -> cb.withModifiers(Modifier.FINAL)
+                        .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
+                        .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
+                                .withParam("bundle", Types.of(BUNDLE))
+                                .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
+                        .withMethod(
+                                "greeting",
+                                Types.of(STRING),
+                                mb -> mb.withParam("name", Types.of(STRING))
+                                        .withBody(b -> b.return_(
+                                                b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

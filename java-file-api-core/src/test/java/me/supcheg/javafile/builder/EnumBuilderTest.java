@@ -174,9 +174,11 @@ class EnumBuilderTest {
                         since,
                         ab -> ab.withMember("value", me.supcheg.javafile.annotation.AnnotationValues.literal("1.0")))
                 .withAnnotation(preBuiltUse)
-                .withConstant("HEARTS", ecb -> ecb.withAnnotation(deprecated)
-                        .withAnnotation(since, ab -> {})
-                        .withAnnotation(preBuiltUse))
+                .withConstant(
+                        "HEARTS",
+                        ecb -> ecb.withAnnotation(deprecated)
+                                .withAnnotation(since, ab -> {})
+                                .withAnnotation(preBuiltUse))
                 .withConstructor(cb -> cb.withAnnotation(deprecated)
                         .withAnnotation(since, ab -> {})
                         .withAnnotation(preBuiltUse)
