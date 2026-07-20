@@ -5,5 +5,9 @@ public enum UnaryOp {
     /// Logical negation, `!operand`.
     NOT,
     /// Arithmetic negation, `-operand`.
-    NEG
+    NEG,
+    /// Bitwise complement, `~operand`.
+    BIT_NOT,
+    /// Unary plus, `+operand`.
+    UNARY_PLUS
 }

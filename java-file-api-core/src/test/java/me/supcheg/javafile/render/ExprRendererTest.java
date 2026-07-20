@@ -201,6 +201,42 @@ class ExprRendererTest {
     }
 
     @Test
+    void bitwiseBinaryOperatorsRenderInfixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitAnd(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a & b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitOr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a | b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitXor(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a ^ b");
+    }
+
+    @Test
+    void shiftOperatorsRenderInfixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.shl(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a << b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.shr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a >> b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.ushr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a >>> b");
+    }
+
+    @Test
+    void bitwiseNotAndUnaryPlusRenderPrefixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitNot(cb.field("a")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("~a");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.unaryPlus(cb.field("a")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("+a");
+    }
+
+    @Test
     void instanceOfWithBindingRendersTheBindingName() {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));

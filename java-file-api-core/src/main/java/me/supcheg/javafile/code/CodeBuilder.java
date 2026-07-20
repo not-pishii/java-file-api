@@ -343,6 +343,60 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new BinaryExpr(left, BinaryOp.OR, right);
     }
 
+    /// Creates a bitwise/logical AND expression, `left & right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitAnd(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_AND, right);
+    }
+
+    /// Creates a bitwise/logical OR expression, `left | right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitOr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_OR, right);
+    }
+
+    /// Creates a bitwise/logical XOR expression, `left ^ right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitXor(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_XOR, right);
+    }
+
+    /// Creates a left shift expression, `left << right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr shl(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.SHL, right);
+    }
+
+    /// Creates a signed right shift expression, `left >> right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr shr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.SHR, right);
+    }
+
+    /// Creates an unsigned right shift expression, `left >>> right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr ushr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.USHR, right);
+    }
+
     /// Creates a logical negation expression, `!operand`.
     ///
     /// @param operand the operand
@@ -357,6 +411,22 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @return a unary expression
     public Expr neg(Expr operand) {
         return new UnaryExpr(UnaryOp.NEG, operand);
+    }
+
+    /// Creates a bitwise complement expression, `~operand`.
+    ///
+    /// @param operand the operand
+    /// @return a unary expression
+    public Expr bitNot(Expr operand) {
+        return new UnaryExpr(UnaryOp.BIT_NOT, operand);
+    }
+
+    /// Creates a unary plus expression, `+operand`.
+    ///
+    /// @param operand the operand
+    /// @return a unary expression
+    public Expr unaryPlus(Expr operand) {
+        return new UnaryExpr(UnaryOp.UNARY_PLUS, operand);
     }
 
     /// Creates a pre-increment expression, `++operand`.

@@ -101,6 +101,8 @@ final class ExprRenderer {
                 switch (op) {
                     case NOT -> "!" + renderExpr(operand, ctx);
                     case NEG -> "-" + renderExpr(operand, ctx);
+                    case BIT_NOT -> "~" + renderExpr(operand, ctx);
+                    case UNARY_PLUS -> "+" + renderExpr(operand, ctx);
                 };
             case IncDecExpr(var op, var operand) ->
                 switch (op) {
