@@ -15,11 +15,14 @@ class AssertStmtCompileTest {
 
     @Test
     void assertWithMessageCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Guard"), cb -> cb.withVoidMethod(
-                "check",
-                mb -> mb.withParam("value", PrimitiveTypeRef.INT)
-                        .withBody(b -> b.assert_(
-                                b.ge(b.field("value"), b.literal(0)), b.literal("value must be non-negative")))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Guard"),
+                cb -> cb.withVoidMethod(
+                        "check",
+                        mb -> mb.withParam("value", PrimitiveTypeRef.INT)
+                                .withBody(b -> b.assert_(
+                                        b.ge(b.field("value"), b.literal(0)),
+                                        b.literal("value must be non-negative")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

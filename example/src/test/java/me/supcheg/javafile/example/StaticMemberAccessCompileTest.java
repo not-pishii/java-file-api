@@ -32,7 +32,8 @@ class StaticMemberAccessCompileTest {
                                 fb -> fb.withModifiers(Modifier.STATIC).withInitializer(new IntLiteral(0)))
                         .withVoidMethod(
                                 "update",
-                                mb -> mb.withBody(b -> b.localVar("max", PrimitiveTypeRef.INT, b.staticField(integerType, "MAX_VALUE"))
+                                mb -> mb.withBody(b -> b.localVar(
+                                                "max", PrimitiveTypeRef.INT, b.staticField(integerType, "MAX_VALUE"))
                                         .localVar(
                                                 "bounded",
                                                 PrimitiveTypeRef.INT,

@@ -15,14 +15,16 @@ class UninitializedLocalCompileTest {
 
     @Test
     void typedLocalWithoutInitializerCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Loader"), cb -> cb.withMethod(
-                "load",
-                PrimitiveTypeRef.INT,
-                mb -> mb.withBody(b -> {
-                    b.localVar("result", PrimitiveTypeRef.INT);
-                    b.assign(b.field("result"), b.literal(1));
-                    b.return_(b.field("result"));
-                })));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Loader"),
+                cb -> cb.withMethod(
+                        "load",
+                        PrimitiveTypeRef.INT,
+                        mb -> mb.withBody(b -> {
+                            b.localVar("result", PrimitiveTypeRef.INT);
+                            b.assign(b.field("result"), b.literal(1));
+                            b.return_(b.field("result"));
+                        })));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

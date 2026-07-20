@@ -18,16 +18,18 @@ class LabeledStmtCompileTest {
     void labeledLoopWithLabeledBreakCompiles() {
         JavaFile file = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "Search"),
-                cb -> cb.withVoidMethod("scan", mb -> mb.withParam("items", Types.array(PrimitiveTypeRef.INT))
-                        .withBody(b -> b.labeled("outer", outer -> {
-                            outer.forEach(
-                                    PrimitiveTypeRef.INT,
-                                    "i",
-                                    outer.field("items"),
-                                    inner -> inner.if_(
-                                            inner.eq(inner.field("i"), inner.literal(1)),
-                                            ib -> ib.then(t -> t.break_("outer"))));
-                        }))));
+                cb -> cb.withVoidMethod(
+                        "scan",
+                        mb -> mb.withParam("items", Types.array(PrimitiveTypeRef.INT))
+                                .withBody(b -> b.labeled("outer", outer -> {
+                                    outer.forEach(
+                                            PrimitiveTypeRef.INT,
+                                            "i",
+                                            outer.field("items"),
+                                            inner -> inner.if_(
+                                                    inner.eq(inner.field("i"), inner.literal(1)),
+                                                    ib -> ib.then(t -> t.break_("outer"))));
+                                }))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

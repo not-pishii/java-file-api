@@ -18,7 +18,8 @@ class SynchronizedCompileTest {
                 ClassDesc.of("me.supcheg.example", "Counter"),
                 cb -> cb.withVoidMethod(
                         "increment",
-                        mb -> mb.withBody(b -> b.synchronized_(b.this_(), sb -> sb.exprStatement(sb.call("notifyAll"))))));
+                        mb -> mb.withBody(
+                                b -> b.synchronized_(b.this_(), sb -> sb.exprStatement(sb.call("notifyAll"))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

@@ -26,18 +26,24 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void sealedAbstractClassAndItsPermittedSubclassCompileTogether() {
-        JavaFile shape =
-                JavaFile.of(ClassDesc.of("me.supcheg.example", "Shape"), cb -> cb.withModifiers(Modifier.ABSTRACT)
+        JavaFile shape = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Shape"),
+                cb -> cb.withModifiers(Modifier.ABSTRACT)
                         .permits(ClassDesc.of("me.supcheg.example", "Circle"))
                         .withAbstractMethod("area", PrimitiveTypeRef.DOUBLE));
 
-        JavaFile circle = JavaFile.of(ClassDesc.of("me.supcheg.example", "Circle"), cb -> cb.withModifiers(
-                        Modifier.FINAL)
-                .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
-                .withField("radius", PrimitiveTypeRef.DOUBLE, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
-                .withConstructor(ctor -> ctor.withParam("radius", PrimitiveTypeRef.DOUBLE)
-                        .withBody(b -> b.assign(b.field(b.this_(), "radius"), b.field("radius"))))
-                .withMethod("area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(b.field("radius")))));
+        JavaFile circle = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Circle"),
+                cb -> cb.withModifiers(Modifier.FINAL)
+                        .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
+                        .withField(
+                                "radius",
+                                PrimitiveTypeRef.DOUBLE,
+                                fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
+                        .withConstructor(ctor -> ctor.withParam("radius", PrimitiveTypeRef.DOUBLE)
+                                .withBody(b -> b.assign(b.field(b.this_(), "radius"), b.field("radius"))))
+                        .withMethod(
+                                "area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(b.field("radius")))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(shape.qualifiedName(), shape.render()),
@@ -48,10 +54,13 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void enumWithAConstructorAndPerConstantOverridesCompiles() {
-        JavaFile op = JavaFile.enum_(ClassDesc.of("me.supcheg.example", "Op"), eb -> eb.withVoidAbstractMethod(
-                        "describe")
-                .withConstant("PLUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_())))
-                .withConstant("MINUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_()))));
+        JavaFile op = JavaFile.enum_(
+                ClassDesc.of("me.supcheg.example", "Op"),
+                eb -> eb.withVoidAbstractMethod("describe")
+                        .withConstant(
+                                "PLUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_())))
+                        .withConstant(
+                                "MINUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_()))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(op.qualifiedName(), op.render()));
 
@@ -60,32 +69,46 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void controlFlowHeavyMethodsCompile() {
-        JavaFile calculator = JavaFile.of(ClassDesc.of("me.supcheg.example", "Calculator"), cb -> cb.withMethod(
-                        "sum",
-                        PrimitiveTypeRef.INT,
-                        mb -> mb.withParam("n", PrimitiveTypeRef.INT).withBody(b -> {
-                            b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
-                            b.for_(
-                                    new LocalVarDeclStmt.Typed(PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
-                                    b.lt(b.field("i"), b.field("n")),
-                                    new ExprStmt(b.postIncrement(b.field("i"))),
-                                    body -> body.assign(b.field("total"), b.add(b.field("total"), b.field("i"))));
-                            b.return_(b.field("total"));
-                        }))
-                .withMethod("describe", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withParam(
-                                "obj", Types.of(OBJECT))
-                        .withBody(b -> b.return_(b.switchExpr(b.field("obj"), sb -> sb.caseTypeWithGuard(
-                                        Types.of(INTEGER),
-                                        "i",
-                                        b.gt(b.field("i"), b.literal(0)),
-                                        body -> body.yield_(b.literal("positive int")))
-                                .caseType(Types.of(INTEGER), "i", body -> body.yield_(b.literal("non-positive int")))
-                                .defaultValue(b.literal("other"))))))
-                .withVoidMethod("requirePositive", mb -> mb.withParam("n", PrimitiveTypeRef.INT)
-                        .withBody(b -> b.if_(
-                                b.le(b.field("n"), b.literal(0)),
-                                ib -> ib.then(body -> body.throw_(
-                                        b.new_(Types.of(ILLEGAL_ARGUMENT), b.literal("n must be positive"))))))));
+        JavaFile calculator = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Calculator"),
+                cb -> cb.withMethod(
+                                "sum",
+                                PrimitiveTypeRef.INT,
+                                mb -> mb.withParam("n", PrimitiveTypeRef.INT).withBody(b -> {
+                                    b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
+                                    b.for_(
+                                            new LocalVarDeclStmt.Typed(
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
+                                            b.lt(b.field("i"), b.field("n")),
+                                            new ExprStmt(b.postIncrement(b.field("i"))),
+                                            body -> body.assign(
+                                                    b.field("total"), b.add(b.field("total"), b.field("i"))));
+                                    b.return_(b.field("total"));
+                                }))
+                        .withMethod(
+                                "describe",
+                                Types.of(ClassDesc.of("java.lang", "String")),
+                                mb -> mb.withParam("obj", Types.of(OBJECT))
+                                        .withBody(b -> b.return_(b.switchExpr(
+                                                b.field("obj"),
+                                                sb -> sb.caseTypeWithGuard(
+                                                                Types.of(INTEGER),
+                                                                "i",
+                                                                b.gt(b.field("i"), b.literal(0)),
+                                                                body -> body.yield_(b.literal("positive int")))
+                                                        .caseType(
+                                                                Types.of(INTEGER),
+                                                                "i",
+                                                                body -> body.yield_(b.literal("non-positive int")))
+                                                        .defaultValue(b.literal("other"))))))
+                        .withVoidMethod(
+                                "requirePositive",
+                                mb -> mb.withParam("n", PrimitiveTypeRef.INT)
+                                        .withBody(b -> b.if_(
+                                                b.le(b.field("n"), b.literal(0)),
+                                                ib -> ib.then(body -> body.throw_(b.new_(
+                                                        Types.of(ILLEGAL_ARGUMENT),
+                                                        b.literal("n must be positive"))))))));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(calculator.qualifiedName(), calculator.render()));
@@ -95,11 +118,12 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void enumWithAnExplicitConstructorCompiles() {
-        JavaFile planet = JavaFile.enum_(ClassDesc.of("me.supcheg.example", "Planet"), eb -> eb.withField(
-                        "mass", Types.of(DOUBLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
-                .withConstructor(cb -> cb.withParam("mass", Types.of(DOUBLE))
-                        .withBody(b -> b.assign(b.field(b.this_(), "mass"), b.field("mass"))))
-                .withConstant("MERCURY", b -> b.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
+        JavaFile planet = JavaFile.enum_(
+                ClassDesc.of("me.supcheg.example", "Planet"),
+                eb -> eb.withField("mass", Types.of(DOUBLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
+                        .withConstructor(cb -> cb.withParam("mass", Types.of(DOUBLE))
+                                .withBody(b -> b.assign(b.field(b.this_(), "mass"), b.field("mass"))))
+                        .withConstant("MERCURY", b -> b.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(planet.qualifiedName(), planet.render()));
@@ -111,28 +135,38 @@ class Stage2And3FeaturesCompileTest {
     void methodWithThrowsAndControlFlowBodyCompiles() {
         JavaFile validator = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "Validator"),
-                cb -> cb.withMethod("withParam", Types.of(OBJECT), mb -> mb.withParam("n", PrimitiveTypeRef.INT)
-                        .withThrows(IO_EXCEPTION)
-                        .withBody(b -> {
-                            b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
-                            b.if_(
-                                    b.lt(b.field("n"), b.literal(0)),
-                                    ib -> ib.then(body -> body.throw_(
-                                            b.new_(Types.of(ILLEGAL_ARGUMENT), b.literal("n must be non-negative")))));
-                            b.for_(
-                                    new LocalVarDeclStmt.Typed(PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
-                                    b.lt(b.field("i"), b.field("n")),
-                                    new ExprStmt(b.postIncrement(b.field("i"))),
-                                    body -> body.assign(b.field("total"), b.add(b.field("total"), b.field("i"))));
-                            b.localVar("boxedTotal", Types.of(OBJECT), b.field("total"));
-                            b.return_(b.switchExpr(b.field("boxedTotal"), sb -> sb.caseTypeWithGuard(
-                                            Types.of(INTEGER),
-                                            "i",
-                                            b.gt(b.field("i"), b.literal(0)),
-                                            body -> body.yield_(b.literal("positive")))
-                                    .caseType(Types.of(INTEGER), "i", body -> body.yield_(b.literal("non-positive")))
-                                    .defaultValue(b.literal("other"))));
-                        })));
+                cb -> cb.withMethod(
+                        "withParam",
+                        Types.of(OBJECT),
+                        mb -> mb.withParam("n", PrimitiveTypeRef.INT)
+                                .withThrows(IO_EXCEPTION)
+                                .withBody(b -> {
+                                    b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
+                                    b.if_(
+                                            b.lt(b.field("n"), b.literal(0)),
+                                            ib -> ib.then(body -> body.throw_(b.new_(
+                                                    Types.of(ILLEGAL_ARGUMENT), b.literal("n must be non-negative")))));
+                                    b.for_(
+                                            new LocalVarDeclStmt.Typed(
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
+                                            b.lt(b.field("i"), b.field("n")),
+                                            new ExprStmt(b.postIncrement(b.field("i"))),
+                                            body -> body.assign(
+                                                    b.field("total"), b.add(b.field("total"), b.field("i"))));
+                                    b.localVar("boxedTotal", Types.of(OBJECT), b.field("total"));
+                                    b.return_(b.switchExpr(
+                                            b.field("boxedTotal"),
+                                            sb -> sb.caseTypeWithGuard(
+                                                            Types.of(INTEGER),
+                                                            "i",
+                                                            b.gt(b.field("i"), b.literal(0)),
+                                                            body -> body.yield_(b.literal("positive")))
+                                                    .caseType(
+                                                            Types.of(INTEGER),
+                                                            "i",
+                                                            body -> body.yield_(b.literal("non-positive")))
+                                                    .defaultValue(b.literal("other"))));
+                                })));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(validator.qualifiedName(), validator.render()));
