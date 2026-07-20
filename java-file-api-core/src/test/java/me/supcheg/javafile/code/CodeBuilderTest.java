@@ -361,6 +361,27 @@ class CodeBuilderTest {
     }
 
     @Test
+    void assertAddEnAssertStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assert_(cb.call("call"));
+
+        assertThat(cb.build().statements())
+                .containsExactly(
+                        new AssertStmt(new MethodCallExpr(Optional.empty(), "call", List.of()), Optional.empty()));
+    }
+
+    @Test
+    void assertWithMessageAddEnAssertStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assert_(cb.call("call"), new StringLiteral("message"));
+
+        assertThat(cb.build().statements())
+                .containsExactly(new AssertStmt(
+                        new MethodCallExpr(Optional.empty(), "call", List.of()),
+                        Optional.of(new StringLiteral("message"))));
+    }
+
+    @Test
     void emptyAddsAnEmptyStmt() {
         CodeBuilder cb = new CodeBuilder();
         cb.empty();
