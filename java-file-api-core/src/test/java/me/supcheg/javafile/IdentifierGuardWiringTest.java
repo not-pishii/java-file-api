@@ -10,14 +10,12 @@ import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
-import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NonEmptyList;
-import me.supcheg.javafile.code.PatternLabel;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
@@ -59,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 ///
 /// [Identifiers] itself is exhaustively tested elsewhere ([IdentifiersTest],
 /// [IdentifiersProperties]); this class instead exists so that a future edit
-/// which silently drops a `requireValid` call from one of these ~24
+/// which silently drops a `requireValid` call from one of these 30
 /// construction sites is caught by the suite, rather than only being
 /// noticed by manual inspection. Each case below constructs its record with
 /// a single obviously-invalid identifier (a leading digit) and asserts that
@@ -137,11 +135,6 @@ class IdentifierGuardWiringTest {
                         STRING_TYPE, BAD_NAME, new FieldAccessExpr(Optional.empty(), "items"), CodeBody.EMPTY)),
                 Arguments.of(
                         "TypePattern", (ThrowingCallable) () -> new TypePattern(STRING_TYPE, Optional.of(BAD_NAME))),
-                Arguments.of("PatternLabel", (ThrowingCallable)
-                        () -> new PatternLabel(new TypePattern(STRING_TYPE, Optional.of(BAD_NAME)), Optional.empty())),
-                Arguments.of("InstanceOfExpr", (ThrowingCallable) () -> new InstanceOfExpr(
-                        new FieldAccessExpr(Optional.empty(), "obj"),
-                        new TypePattern(STRING_TYPE, Optional.of(BAD_NAME)))),
                 Arguments.of(
                         "FieldAccessExpr", (ThrowingCallable) () -> new FieldAccessExpr(Optional.empty(), BAD_NAME)),
                 Arguments.of("MethodCallExpr", (ThrowingCallable)
