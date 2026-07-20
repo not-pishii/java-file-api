@@ -23,8 +23,9 @@ class SuperExprCompileTest {
                 cb -> cb.withMethod(
                         "describe", Types.of(STRING), mb -> mb.withBody(b -> b.return_(b.literal("Shape")))));
 
-        JavaFile circle =
-                JavaFile.of(ClassDesc.of("me.supcheg.example", "Circle"), cb -> cb.withModifiers(Modifier.FINAL)
+        JavaFile circle = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Circle"),
+                cb -> cb.withModifiers(Modifier.FINAL)
                         .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
                         .withMethod(
                                 "describe",

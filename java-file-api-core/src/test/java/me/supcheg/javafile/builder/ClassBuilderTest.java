@@ -25,9 +25,12 @@ class ClassBuilderTest {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Messages"));
         builder.withModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
-                .withMethod("greeting", Types.of(STRING), mb -> mb.withParam("name", Types.of(STRING))
-                        .withBody(body ->
-                                body.return_(body.call(body.field("bundle"), "getString", body.literal("greeting")))));
+                .withMethod(
+                        "greeting",
+                        Types.of(STRING),
+                        mb -> mb.withParam("name", Types.of(STRING))
+                                .withBody(body -> body.return_(
+                                        body.call(body.field("bundle"), "getString", body.literal("greeting")))));
 
         ClassDecl decl = builder.build();
 
@@ -68,9 +71,11 @@ class ClassBuilderTest {
     @Test
     void constructorIsAddedAsAClassMember() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Greeter"));
-        builder.withField("bundle", Types.of(BUNDLE), fb -> {}).withConstructor(cb -> cb.withModifiers(Modifier.PUBLIC)
-                .withParam("bundle", Types.of(BUNDLE))
-                .withBody(b -> b.exprStatement(b.call(b.field(b.this_(), "bundle"), "equals", b.field("bundle")))));
+        builder.withField("bundle", Types.of(BUNDLE), fb -> {})
+                .withConstructor(cb -> cb.withModifiers(Modifier.PUBLIC)
+                        .withParam("bundle", Types.of(BUNDLE))
+                        .withBody(b ->
+                                b.exprStatement(b.call(b.field(b.this_(), "bundle"), "equals", b.field("bundle")))));
 
         ClassDecl decl = builder.build();
 
@@ -199,14 +204,20 @@ class ClassBuilderTest {
         me.supcheg.javafile.annotation.AnnotationUse preBuiltUse =
                 new me.supcheg.javafile.annotation.AnnotationUse(preBuilt, java.util.List.of());
 
-        builder.withField("bundle", Types.of(BUNDLE), fb -> fb.withAnnotation(marker)
-                        .withAnnotation(withSpec, ab -> {})
-                        .withAnnotation(preBuiltUse))
-                .withMethod("greeting", Types.of(STRING), mb -> mb.withAnnotation(marker)
-                        .withAnnotation(withSpec, ab -> {})
-                        .withAnnotation(preBuiltUse)
-                        .withParam(new me.supcheg.javafile.model.Param("name", Types.of(STRING)))
-                        .withBody(b -> b.return_(b.literal("hi"))))
+        builder.withField(
+                        "bundle",
+                        Types.of(BUNDLE),
+                        fb -> fb.withAnnotation(marker)
+                                .withAnnotation(withSpec, ab -> {})
+                                .withAnnotation(preBuiltUse))
+                .withMethod(
+                        "greeting",
+                        Types.of(STRING),
+                        mb -> mb.withAnnotation(marker)
+                                .withAnnotation(withSpec, ab -> {})
+                                .withAnnotation(preBuiltUse)
+                                .withParam(new me.supcheg.javafile.model.Param("name", Types.of(STRING)))
+                                .withBody(b -> b.return_(b.literal("hi"))))
                 .withConstructor(cb -> cb.withAnnotation(marker)
                         .withAnnotation(withSpec, ab -> {})
                         .withAnnotation(preBuiltUse)

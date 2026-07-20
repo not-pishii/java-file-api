@@ -24,28 +24,33 @@ class GenericsCompileTest {
         JavaFile contract = JavaFile.interface_(
                 CONTRACT, ib -> ib.withTypeParam("T").withAbstractMethod("render", Types.typeVar("T")));
 
-        JavaFile impl = JavaFile.record(IMPL, rb -> rb.withTypeParam("T")
-                .withComponent(
-                        "renderer",
-                        Types.parameterized(FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.typeVar("T"))))
-                .withInterface(Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))))
-                .withMethod(
-                        "render",
-                        Types.typeVar("T"),
-                        mb -> mb.withBody(b -> b.return_(b.call(b.field("renderer"), "apply", b.literal("key")))))
-                .withMethod(
-                        "of", Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))), mb -> mb.withModifiers(
-                                        Modifier.PUBLIC, Modifier.STATIC)
-                                .withTypeParam("T")
-                                .withParam(
-                                        "renderer",
-                                        Types.parameterized(
-                                                FUNCTION,
-                                                Types.exact(Types.of(STRING)),
-                                                Types.exact(Types.typeVar("T"))))
-                                .withBody(b -> b.return_(b.new_(
-                                        Types.parameterized(IMPL, Types.exact(Types.typeVar("T"))),
-                                        b.field("renderer"))))));
+        JavaFile impl = JavaFile.record(
+                IMPL,
+                rb -> rb.withTypeParam("T")
+                        .withComponent(
+                                "renderer",
+                                Types.parameterized(
+                                        FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.typeVar("T"))))
+                        .withInterface(Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))))
+                        .withMethod(
+                                "render",
+                                Types.typeVar("T"),
+                                mb -> mb.withBody(
+                                        b -> b.return_(b.call(b.field("renderer"), "apply", b.literal("key")))))
+                        .withMethod(
+                                "of",
+                                Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))),
+                                mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                        .withTypeParam("T")
+                                        .withParam(
+                                                "renderer",
+                                                Types.parameterized(
+                                                        FUNCTION,
+                                                        Types.exact(Types.of(STRING)),
+                                                        Types.exact(Types.typeVar("T"))))
+                                        .withBody(b -> b.return_(b.new_(
+                                                Types.parameterized(IMPL, Types.exact(Types.typeVar("T"))),
+                                                b.field("renderer"))))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(contract.qualifiedName(), contract.render()),

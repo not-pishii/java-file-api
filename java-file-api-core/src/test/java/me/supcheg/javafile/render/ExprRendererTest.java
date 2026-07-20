@@ -217,9 +217,11 @@ class ExprRendererTest {
     @Test
     void ifStmtRendersBracesAndOptionalElseIfElseChain() {
         CodeBuilder body = new CodeBuilder();
-        body.if_(body.lt(body.field("x"), body.literal(0)), ib -> ib.then(b -> b.return_(b.literal("negative")))
-                .elseIf(body.eq(body.field("x"), body.literal(0)), b -> b.return_(b.literal("zero")))
-                .else_(b -> b.return_(b.literal("positive"))));
+        body.if_(
+                body.lt(body.field("x"), body.literal(0)),
+                ib -> ib.then(b -> b.return_(b.literal("negative")))
+                        .elseIf(body.eq(body.field("x"), body.literal(0)), b -> b.return_(b.literal("zero")))
+                        .else_(b -> b.return_(b.literal("positive"))));
         me.supcheg.javafile.code.Stmt stmt = body.build().statements().get(0);
 
         String rendered = ExprRenderer.renderStmt(
