@@ -246,6 +246,34 @@ class ExprRendererTest {
     }
 
     @Test
+    void typeQualifiedMethodRefRendersTypeColonColonMethod() {
+        me.supcheg.javafile.type.TypeRef integerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Expr expr = cb.methodRef(integerType, "parseInt");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Integer::parseInt");
+    }
+
+    @Test
+    void instanceBoundMethodRefRendersExprColonColonMethod() {
+        Expr expr = cb.methodRef(cb.field("name"), "trim");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("name::trim");
+    }
+
+    @Test
+    void constructorRefRendersTypeColonColonNew() {
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+        Expr expr = cb.constructorRef(stringType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("String::new");
+    }
+
+    @Test
     void newExprRendersTypeAndCommaSeparatedArguments() {
         me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
                 java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));

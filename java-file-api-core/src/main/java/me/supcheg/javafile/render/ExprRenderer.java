@@ -15,6 +15,7 @@ import me.supcheg.javafile.code.ClassLiteralExpr;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConditionalExpr;
 import me.supcheg.javafile.code.ConstantLabel;
+import me.supcheg.javafile.code.ConstructorRefExpr;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DiamondNewTarget;
@@ -26,6 +27,7 @@ import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprLambdaBody;
+import me.supcheg.javafile.code.ExprMethodRefTarget;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
@@ -39,6 +41,7 @@ import me.supcheg.javafile.code.LambdaExpr;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
+import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
 import me.supcheg.javafile.code.Resource;
@@ -57,6 +60,7 @@ import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
+import me.supcheg.javafile.code.TypeMethodRefTarget;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
@@ -150,6 +154,12 @@ final class ExprRenderer {
             case ConditionalExpr(var condition, var whenTrue, var whenFalse) ->
                 renderExpr(condition, ctx) + " ? " + renderExpr(whenTrue, ctx) + " : " + renderExpr(whenFalse, ctx);
             case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
+            case MethodRefExpr(var target, var method) ->
+                switch (target) {
+                    case TypeMethodRefTarget(var type) -> TypeRefRenderer.renderType(type, ctx) + "::" + method;
+                    case ExprMethodRefTarget(var operand) -> renderExpr(operand, ctx) + "::" + method;
+                };
+            case ConstructorRefExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + "::new";
         };
     }
 

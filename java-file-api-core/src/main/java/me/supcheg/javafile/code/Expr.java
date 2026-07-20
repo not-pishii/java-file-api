@@ -6,9 +6,10 @@ package me.supcheg.javafile.code;
 /// method calls, static method calls, literals, text blocks, binary and
 /// unary operators, `instanceof` pattern matching, object creation, `switch`
 /// expressions, lambda expressions, casts, ternary conditionals, class
-/// literals, and the `this` and `super` keyword expressions. Statements
-/// ([Stmt]) form a separate hierarchy, so an expression cannot appear where a
-/// statement is expected without an explicit wrapper such as [ExprStmt].
+/// literals, method references, constructor references, and the `this` and
+/// `super` keyword expressions. Statements ([Stmt]) form a separate
+/// hierarchy, so an expression cannot appear where a statement is expected
+/// without an explicit wrapper such as [ExprStmt].
 public sealed interface Expr
         permits FieldAccessExpr,
                 StaticFieldAccessExpr,
@@ -29,4 +30,6 @@ public sealed interface Expr
                 SuperExpr,
                 CastExpr,
                 ConditionalExpr,
-                ClassLiteralExpr {}
+                ClassLiteralExpr,
+                MethodRefExpr,
+                ConstructorRefExpr {}

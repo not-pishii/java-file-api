@@ -15,11 +15,13 @@ import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
+import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.StringLiteral;
+import me.supcheg.javafile.code.TypeMethodRefTarget;
 import me.supcheg.javafile.code.TypePatternLabel;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ConstantDecl;
@@ -144,6 +146,8 @@ class IdentifierGuardWiringTest {
                         () -> new StaticFieldAccessExpr(IO_EXCEPTION_TYPE, BAD_NAME)),
                 Arguments.of("StaticMethodCallExpr", (ThrowingCallable)
                         () -> new StaticMethodCallExpr(IO_EXCEPTION_TYPE, BAD_NAME, List.of())),
+                Arguments.of("MethodRefExpr", (ThrowingCallable)
+                        () -> new MethodRefExpr(new TypeMethodRefTarget(STRING_TYPE), BAD_NAME)),
                 Arguments.of("TypeVarRef", (ThrowingCallable) () -> new TypeVarRef(BAD_NAME)),
                 Arguments.of("TypeParam", (ThrowingCallable) () -> new TypeParam(BAD_NAME, List.of())),
                 Arguments.of("Resource.Declared", (ThrowingCallable)

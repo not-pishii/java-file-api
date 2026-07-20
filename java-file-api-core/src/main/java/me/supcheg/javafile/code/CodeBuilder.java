@@ -390,6 +390,32 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new ClassLiteralExpr(type);
     }
 
+    /// Creates a type-qualified method reference, e.g. `Type::method`.
+    ///
+    /// @param type the qualifying type
+    /// @param method the referenced method name
+    /// @return a method reference expression
+    public MethodRefExpr methodRef(TypeRef type, String method) {
+        return new MethodRefExpr(new TypeMethodRefTarget(type), method);
+    }
+
+    /// Creates an instance-bound method reference, e.g. `expr::method`.
+    ///
+    /// @param instance the bound instance expression
+    /// @param method the referenced method name
+    /// @return a method reference expression
+    public MethodRefExpr methodRef(Expr instance, String method) {
+        return new MethodRefExpr(new ExprMethodRefTarget(instance), method);
+    }
+
+    /// Creates a constructor reference, e.g. `Type::new`.
+    ///
+    /// @param type the referenced type
+    /// @return a constructor reference expression
+    public ConstructorRefExpr constructorRef(TypeRef type) {
+        return new ConstructorRefExpr(type);
+    }
+
     /// Creates an `instanceof` test with no pattern binding, e.g. `target instanceof type`.
     ///
     /// @param target the tested expression
