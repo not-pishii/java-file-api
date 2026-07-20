@@ -9,8 +9,11 @@ import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
 import me.supcheg.javafile.code.CaseLabel;
+import me.supcheg.javafile.code.CastExpr;
 import me.supcheg.javafile.code.CatchClause;
+import me.supcheg.javafile.code.ClassLiteralExpr;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConditionalExpr;
 import me.supcheg.javafile.code.ConstantLabel;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
@@ -142,6 +145,11 @@ final class ExprRenderer {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 yield prefix + "." + method + "(" + argsStr + ")";
             }
+            case CastExpr(var type, var operand) ->
+                "(" + TypeRefRenderer.renderType(type, ctx) + ") " + renderExpr(operand, ctx);
+            case ConditionalExpr(var condition, var whenTrue, var whenFalse) ->
+                renderExpr(condition, ctx) + " ? " + renderExpr(whenTrue, ctx) + " : " + renderExpr(whenFalse, ctx);
+            case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
         };
     }
 

@@ -363,6 +363,33 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new IncDecExpr(IncDecOp.POST_DEC, operand);
     }
 
+    /// Creates a cast expression, `(type) operand`.
+    ///
+    /// @param type the target type
+    /// @param operand the cast operand
+    /// @return a cast expression
+    public CastExpr cast(TypeRef type, Expr operand) {
+        return new CastExpr(type, operand);
+    }
+
+    /// Creates a ternary conditional expression, `condition ? whenTrue : whenFalse`.
+    ///
+    /// @param condition the tested condition
+    /// @param whenTrue the result when `condition` is true
+    /// @param whenFalse the result when `condition` is false
+    /// @return a conditional expression
+    public ConditionalExpr cond(Expr condition, Expr whenTrue, Expr whenFalse) {
+        return new ConditionalExpr(condition, whenTrue, whenFalse);
+    }
+
+    /// Creates a class literal, `type.class`.
+    ///
+    /// @param type the referenced type
+    /// @return a class literal expression
+    public ClassLiteralExpr classLiteral(TypeRef type) {
+        return new ClassLiteralExpr(type);
+    }
+
     /// Creates an `instanceof` test with no pattern binding, e.g. `target instanceof type`.
     ///
     /// @param target the tested expression

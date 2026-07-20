@@ -220,6 +220,32 @@ class ExprRendererTest {
     }
 
     @Test
+    void castExprRendersParenthesizedTargetTypeBeforeOperand() {
+        Expr expr = cb.cast(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(1.5));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("(int) 1.5");
+    }
+
+    @Test
+    void conditionalExprRendersConditionQuestionMarkWhenTrueColonWhenFalse() {
+        Expr expr = cb.cond(cb.lt(cb.field("x"), cb.literal(0)), cb.literal("negative"), cb.literal("non-negative"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("x < 0 ? \"negative\" : \"non-negative\"");
+    }
+
+    @Test
+    void classLiteralExprRendersTypeDotClass() {
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+        Expr expr = cb.classLiteral(stringType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("String.class");
+    }
+
+    @Test
     void newExprRendersTypeAndCommaSeparatedArguments() {
         me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
                 java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));
