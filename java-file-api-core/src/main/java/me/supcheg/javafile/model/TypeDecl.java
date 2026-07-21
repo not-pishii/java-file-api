@@ -9,4 +9,4 @@ package me.supcheg.javafile.model;
 /// another declaration.
 public sealed interface TypeDecl
         extends JavaFileElement, ClassMember, InterfaceMember, RecordMember, EnumMember, EnumConstantMember
-        permits ClassDecl, InterfaceDecl, RecordDecl, EnumDecl {}
+        permits ClassDecl, InterfaceDecl, RecordDecl, EnumDecl, AnnotationTypeDecl {}

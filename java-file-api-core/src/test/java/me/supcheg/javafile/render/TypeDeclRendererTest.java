@@ -1,9 +1,12 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.LiteralValue;
+import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
 import me.supcheg.javafile.builder.RecordBuilder;
+import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -866,6 +869,23 @@ class TypeDeclRendererTest {
                                 public static class Nested {
                                 }
                             };
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAnnotationTypeWithADefaultAndANonDefaultElement() {
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("me.supcheg.example", "MaxLength"));
+        builder.withElement("value", PrimitiveTypeRef.INT, new LiteralValue(new IntLiteral(255)))
+                .withElement("message", Types.of(ClassDesc.of("java.lang", "String")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public @interface MaxLength {
+                            int value() default 255;
+                            String message();
                         }
                         """);
     }

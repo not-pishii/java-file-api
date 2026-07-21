@@ -2,6 +2,8 @@ package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.AnnotationElementDecl;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -43,6 +45,7 @@ final class TypeDeclRenderer {
             case InterfaceDecl i -> renderInterface(i, ctx);
             case RecordDecl r -> renderRecord(r, ctx);
             case EnumDecl e -> renderEnum(e, ctx);
+            case AnnotationTypeDecl a -> renderAnnotationType(a, ctx);
         };
     }
 
@@ -472,5 +475,25 @@ final class TypeDeclRenderer {
 
     private static String renderStatements(List<me.supcheg.javafile.code.Stmt> statements, Context ctx) {
         return ExprRenderer.renderBlock(new me.supcheg.javafile.code.CodeBody(statements), ctx);
+    }
+
+    private static String renderAnnotationType(AnnotationTypeDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
+        sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
+        sb.append("@interface ").append(decl.desc().displayName()).append(" {").append(ctx.newline());
+        Context inner = ctx.withIncreasedPad();
+        for (AnnotationElementDecl element : decl.elements()) {
+            sb.append(inner.pad())
+                    .append(TypeRefRenderer.renderType(element.type(), inner))
+                    .append(' ')
+                    .append(element.name())
+                    .append("()");
+            element.defaultValue()
+                    .ifPresent(v -> sb.append(" default ").append(AnnotationRenderer.renderValue(v, inner)));
+            sb.append(";").append(inner.newline());
+        }
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
+        return sb.toString();
     }
 }
