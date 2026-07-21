@@ -70,7 +70,7 @@ final class TypeRefRenderer {
         return params.stream()
                 .map(p -> AnnotationRenderer.renderInlineAnnotations(p.annotations(), ctx)
                         + renderType(p.type(), ctx)
-                        + " "
+                        + (p.varargs() ? "... " : " ")
                         + p.name())
                 .collect(Collectors.joining(", "));
     }

@@ -34,7 +34,7 @@ public record ConstructorDecl(
                 Set.copyOf(modifiers),
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE),
                 "constructor");
-        params = List.copyOf(params);
+        params = ModifierValidation.requireVarargsOnlyLast(List.copyOf(params));
         throwsTypes = List.copyOf(throwsTypes);
     }
 }

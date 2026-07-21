@@ -38,7 +38,7 @@ public record AbstractMethodDecl(
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
-        params = List.copyOf(params);
+        params = ModifierValidation.requireVarargsOnlyLast(List.copyOf(params));
         modifiers = ModifierValidation.requireValidMember(
                 Set.copyOf(modifiers),
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.ABSTRACT),

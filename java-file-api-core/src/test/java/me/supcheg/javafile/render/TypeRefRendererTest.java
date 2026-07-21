@@ -80,6 +80,14 @@ class TypeRefRendererTest {
     }
 
     @Test
+    void varargsParamRendersWithEllipsisBeforeName() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("me.supcheg.example"));
+        List<Param> params = List.of(new Param("values", PrimitiveTypeRef.INT, List.of(), true));
+
+        assertThat(TypeRefRenderer.renderParams(params, ctx)).isEqualTo("int... values");
+    }
+
+    @Test
     void annotatedParamRendersInlineAnnotationBeforeType() {
         Context ctx = Context.of(standardFormat(), new ImportManager("me.supcheg.example"));
         ClassDesc nullable = ClassDesc.of("me.supcheg.example", "Nullable");

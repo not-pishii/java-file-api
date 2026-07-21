@@ -66,4 +66,19 @@ final class ModifierValidation {
         }
         return modifiers;
     }
+
+    /// Validates that at most the last parameter is a varargs parameter.
+    ///
+    /// @param params the parameter list to validate
+    /// @return `params`, unchanged
+    /// @throws IllegalArgumentException if a non-last parameter has [Param#varargs()] set
+    static java.util.List<Param> requireVarargsOnlyLast(java.util.List<Param> params) {
+        for (int i = 0; i < params.size() - 1; i++) {
+            if (params.get(i).varargs()) {
+                throw new IllegalArgumentException("only the last parameter may be varargs: "
+                        + params.get(i).name());
+            }
+        }
+        return params;
+    }
 }
