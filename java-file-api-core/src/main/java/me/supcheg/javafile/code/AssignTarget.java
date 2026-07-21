@@ -5,6 +5,6 @@ package me.supcheg.javafile.code;
 ///
 /// [FieldAccessExpr] represents both an unqualified expression name and a
 /// qualified instance field access; [StaticFieldAccessExpr] represents a
-/// qualified static field access. Array access joins this hierarchy once
-/// introduced.
-public sealed interface AssignTarget permits FieldAccessExpr, StaticFieldAccessExpr {}
+/// qualified static field access; [ArrayAccessExpr] represents an array
+/// access.
+public sealed interface AssignTarget permits FieldAccessExpr, StaticFieldAccessExpr, ArrayAccessExpr {}

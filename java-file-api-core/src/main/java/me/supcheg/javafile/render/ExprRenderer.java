@@ -1,5 +1,8 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.ArrayAccessExpr;
+import me.supcheg.javafile.code.ArrayCreationExpr;
+import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
@@ -9,9 +12,13 @@ import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
 import me.supcheg.javafile.code.CaseLabel;
+import me.supcheg.javafile.code.CastExpr;
 import me.supcheg.javafile.code.CatchClause;
+import me.supcheg.javafile.code.ClassLiteralExpr;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConditionalExpr;
 import me.supcheg.javafile.code.ConstantLabel;
+import me.supcheg.javafile.code.ConstructorRefExpr;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DiamondNewTarget;
@@ -23,6 +30,7 @@ import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprLambdaBody;
+import me.supcheg.javafile.code.ExprMethodRefTarget;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
@@ -36,8 +44,12 @@ import me.supcheg.javafile.code.LambdaExpr;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
+import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
+import me.supcheg.javafile.code.Pattern;
+import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
@@ -54,7 +66,8 @@ import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowCaseBody;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
-import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypeMethodRefTarget;
+import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
@@ -91,6 +104,8 @@ final class ExprRenderer {
                 switch (op) {
                     case NOT -> "!" + renderExpr(operand, ctx);
                     case NEG -> "-" + renderExpr(operand, ctx);
+                    case BIT_NOT -> "~" + renderExpr(operand, ctx);
+                    case UNARY_PLUS -> "+" + renderExpr(operand, ctx);
                 };
             case IncDecExpr(var op, var operand) ->
                 switch (op) {
@@ -99,11 +114,8 @@ final class ExprRenderer {
                     case POST_INC -> renderExpr(operand, ctx) + "++";
                     case POST_DEC -> renderExpr(operand, ctx) + "--";
                 };
-            case InstanceOfExpr(var target, var type, var bindingName) ->
-                renderExpr(target, ctx)
-                        + " instanceof "
-                        + TypeRefRenderer.renderType(type, ctx)
-                        + bindingName.map(n -> " " + n).orElse("");
+            case InstanceOfExpr(var target, var pattern) ->
+                renderExpr(target, ctx) + " instanceof " + renderPattern(pattern, ctx);
             case NewExpr(var target, var args) -> {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 String targetStr =
@@ -142,6 +154,28 @@ final class ExprRenderer {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 yield prefix + "." + method + "(" + argsStr + ")";
             }
+            case CastExpr(var type, var operand) ->
+                "(" + TypeRefRenderer.renderType(type, ctx) + ") " + renderExpr(operand, ctx);
+            case ConditionalExpr(var condition, var whenTrue, var whenFalse) ->
+                renderExpr(condition, ctx) + " ? " + renderExpr(whenTrue, ctx) + " : " + renderExpr(whenFalse, ctx);
+            case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
+            case MethodRefExpr(var target, var method) ->
+                switch (target) {
+                    case TypeMethodRefTarget(var type) -> TypeRefRenderer.renderType(type, ctx) + "::" + method;
+                    case ExprMethodRefTarget(var operand) -> renderExpr(operand, ctx) + "::" + method;
+                };
+            case ConstructorRefExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + "::new";
+            case ArrayAccessExpr(var array, var index) -> renderExpr(array, ctx) + "[" + renderExpr(index, ctx) + "]";
+            case ArrayCreationExpr(var componentType, var dimensions) -> {
+                String dims = dimensions.toList().stream()
+                        .map(d -> "[" + renderExpr(d, ctx) + "]")
+                        .collect(Collectors.joining());
+                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + dims;
+            }
+            case ArrayInitializerExpr(var componentType, var elements) -> {
+                String elems = elements.stream().map(e -> renderExpr(e, ctx)).collect(Collectors.joining(", "));
+                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] {" + elems + "}";
+            }
         };
     }
 
@@ -150,13 +184,14 @@ final class ExprRenderer {
             case ReturnStmt(var value) ->
                 ctx.pad() + "return" + value.map(v -> " " + renderExpr(v, ctx)).orElse("") + ";";
             case ExprStmt(var expr) -> ctx.pad() + renderExpr(expr, ctx) + ";";
-            case AssignStmt(var target, var value) -> {
+            case AssignStmt(var target, var op, var value) -> {
                 String targetStr =
                         switch (target) {
                             case FieldAccessExpr fieldAccess -> renderExpr(fieldAccess, ctx);
                             case StaticFieldAccessExpr fieldAccessExpr -> renderExpr(fieldAccessExpr, ctx);
+                            case ArrayAccessExpr arrayAccess -> renderExpr(arrayAccess, ctx);
                         };
-                yield ctx.pad() + targetStr + " = " + renderExpr(value, ctx) + ";";
+                yield ctx.pad() + targetStr + " " + op.symbol() + " " + renderExpr(value, ctx) + ";";
             }
             case LocalVarDeclStmt.Typed(var type, var name, var initializer) ->
                 ctx.pad()
@@ -357,12 +392,24 @@ final class ExprRenderer {
     private static String renderCaseLabel(CaseLabel label, Context ctx) {
         return switch (label) {
             case ConstantLabel(var value) -> renderExpr(value, ctx);
-            case TypePatternLabel(var type, var bindingName, var guard) ->
-                TypeRefRenderer.renderType(type, ctx)
-                        + " "
-                        + bindingName
+            case PatternLabel(var pattern, var guard) ->
+                renderPattern(pattern, ctx)
                         + guard.map(g -> " when " + renderExpr(g, ctx)).orElse("");
             case DefaultLabel ignored -> "default";
+        };
+    }
+
+    private static String renderPattern(Pattern pattern, Context ctx) {
+        return switch (pattern) {
+            case TypePattern(var type, var bindingName) ->
+                TypeRefRenderer.renderType(type, ctx)
+                        + bindingName.map(n -> " " + n).orElse("");
+            case RecordPattern(var recordType, var componentPatterns) -> {
+                String components = componentPatterns.stream()
+                        .map(p -> renderPattern(p, ctx))
+                        .collect(Collectors.joining(", "));
+                yield TypeRefRenderer.renderType(recordType, ctx) + "(" + components + ")";
+            }
         };
     }
 

@@ -14,7 +14,7 @@ class AssignTargetTest {
     @Test
     void fieldAccessIsAValidAssignTarget() {
         AssignTarget target = new FieldAccessExpr(Optional.empty(), "counter");
-        AssignStmt stmt = new AssignStmt(target, new IntLiteral(0));
+        AssignStmt stmt = new AssignStmt(target, AssignOp.ASSIGN, new IntLiteral(0));
 
         assertThat(stmt.target()).isEqualTo(target);
     }
@@ -23,7 +23,7 @@ class AssignTargetTest {
     void staticFieldAccessIsAValidAssignTarget() {
         ClassOrInterfaceTypeRef type = Types.of(ClassDesc.of("java.lang", "Integer"));
         AssignTarget target = new StaticFieldAccessExpr(type, "MAX_VALUE");
-        AssignStmt stmt = new AssignStmt(target, new IntLiteral(0));
+        AssignStmt stmt = new AssignStmt(target, AssignOp.ASSIGN, new IntLiteral(0));
 
         assertThat(stmt.target()).isEqualTo(target);
     }

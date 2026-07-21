@@ -42,7 +42,30 @@ class CodeBuilderTest {
 
         FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.of(new ThisExpr()), "bundle");
         Expr expectedValue = new FieldAccessExpr(Optional.empty(), "bundle");
-        assertThat(cb.build().statements()).containsExactly(new AssignStmt(expectedTarget, expectedValue));
+        assertThat(cb.build().statements())
+                .containsExactly(new AssignStmt(expectedTarget, AssignOp.ASSIGN, expectedValue));
+    }
+
+    @Test
+    void assignWithOpAddsAssignStmtWithGivenOperator() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.assign(cb.field("total"), AssignOp.ADD_ASSIGN, cb.field("delta"));
+
+        FieldAccessExpr expectedTarget = new FieldAccessExpr(Optional.empty(), "total");
+        Expr expectedValue = new FieldAccessExpr(Optional.empty(), "delta");
+        assertThat(cb.build().statements())
+                .containsExactly(new AssignStmt(expectedTarget, AssignOp.ADD_ASSIGN, expectedValue));
+    }
+
+    @Test
+    void twoArgAssignIsASynonymForAssignOpAssign() {
+        CodeBuilder cb1 = new CodeBuilder();
+        cb1.assign(cb1.field("x"), cb1.literal(1));
+
+        CodeBuilder cb2 = new CodeBuilder();
+        cb2.assign(cb2.field("x"), AssignOp.ASSIGN, cb2.literal(1));
+
+        assertThat(cb1.build()).isEqualTo(cb2.build());
     }
 
     @Test
@@ -130,8 +153,8 @@ class CodeBuilderTest {
         Expr expr = cb.instanceOf(cb.field("obj"), stringType);
 
         assertThat(expr)
-                .isEqualTo(
-                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.empty()));
+                .isEqualTo(new InstanceOfExpr(
+                        new FieldAccessExpr(Optional.empty(), "obj"), new TypePattern(stringType, Optional.empty())));
     }
 
     @Test
@@ -143,8 +166,34 @@ class CodeBuilderTest {
         Expr expr = cb.instanceOf(cb.field("obj"), stringType, "s");
 
         assertThat(expr)
-                .isEqualTo(
-                        new InstanceOfExpr(new FieldAccessExpr(Optional.empty(), "obj"), stringType, Optional.of("s")));
+                .isEqualTo(new InstanceOfExpr(
+                        new FieldAccessExpr(Optional.empty(), "obj"), new TypePattern(stringType, Optional.of("s"))));
+    }
+
+    @Test
+    void typePatternProducesTypePatternWithBindingName() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+
+        Pattern pattern = cb.typePattern(stringType, "s");
+
+        assertThat(pattern).isEqualTo(new TypePattern(stringType, Optional.of("s")));
+    }
+
+    @Test
+    void recordPatternProducesRecordPatternWithComponentPatterns() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern xPattern = cb.typePattern(intType, "x");
+        Pattern yPattern = cb.typePattern(intType, "y");
+
+        Pattern pattern = cb.recordPattern(pointType, xPattern, yPattern);
+
+        assertThat(pattern).isEqualTo(new RecordPattern(pointType, java.util.List.of(xPattern, yPattern)));
     }
 
     @Test
@@ -317,9 +366,51 @@ class CodeBuilderTest {
                         .default_(b -> b.return_(cb.literalNull())));
 
         SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
-        TypePatternLabel label = (TypePatternLabel) stmt.cases().get(0).labels().head();
-        assertThat(label.bindingName()).isEqualTo("s");
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        TypePattern pattern = (TypePattern) label.pattern();
+        assertThat(pattern.bindingName()).isEqualTo(Optional.of("s"));
         assertThat(label.guard()).isPresent();
+    }
+
+    @Test
+    void switchSupportsPatternCasesWithoutAGuard() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern pattern = cb.recordPattern(pointType, cb.typePattern(intType, "x"), cb.typePattern(intType, "y"));
+
+        cb.switch_(
+                cb.field("obj"),
+                sb -> sb.casePattern(pattern, b -> b.return_(cb.literal(1)))
+                        .default_(b -> b.return_(cb.literalNull())));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        assertThat(label.pattern()).isEqualTo(pattern);
+        assertThat(label.guard()).isEmpty();
+    }
+
+    @Test
+    void switchSupportsPatternCasesWithAGuard() {
+        CodeBuilder cb = new CodeBuilder();
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("com.example", "Point"));
+        me.supcheg.javafile.type.TypeRef intType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Pattern pattern = cb.recordPattern(pointType, cb.typePattern(intType, "x"), cb.typePattern(intType, "y"));
+        Expr guard = cb.gt(cb.field("x"), cb.literal(0));
+
+        cb.switch_(
+                cb.field("obj"),
+                sb -> sb.casePatternWithGuard(pattern, guard, b -> b.return_(cb.literal(1)))
+                        .default_(b -> b.return_(cb.literalNull())));
+
+        SwitchStmt stmt = (SwitchStmt) cb.build().statements().get(0);
+        PatternLabel label = (PatternLabel) stmt.cases().get(0).labels().head();
+        assertThat(label.pattern()).isEqualTo(pattern);
+        assertThat(label.guard()).isEqualTo(Optional.of(guard));
     }
 
     @Test

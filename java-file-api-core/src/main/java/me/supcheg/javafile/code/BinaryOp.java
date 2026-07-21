@@ -27,7 +27,19 @@ public enum BinaryOp {
     /// Logical AND, `&&`.
     AND("&&"),
     /// Logical OR, `||`.
-    OR("||");
+    OR("||"),
+    /// Bitwise/logical AND, `&`.
+    BIT_AND("&"),
+    /// Bitwise/logical OR, `|`.
+    BIT_OR("|"),
+    /// Bitwise/logical XOR, `^`.
+    BIT_XOR("^"),
+    /// Left shift, `<<`.
+    SHL("<<"),
+    /// Signed right shift, `>>`.
+    SHR(">>"),
+    /// Unsigned right shift, `>>>`.
+    USHR(">>>");
 
     private final String symbol;
 

@@ -62,13 +62,24 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
-    /// Appends an assignment statement.
+    /// Appends a plain assignment statement, a convenient synonym for
+    /// [#assign(AssignTarget,AssignOp,Expr)] with [AssignOp#ASSIGN].
     ///
     /// @param target the assignment target
     /// @param value the assigned expression
     /// @return this builder
     public CodeBuilder assign(AssignTarget target, Expr value) {
-        statements.add(new AssignStmt(target, value));
+        return assign(target, AssignOp.ASSIGN, value);
+    }
+
+    /// Appends an assignment statement using the given operator, e.g. `target += value`.
+    ///
+    /// @param target the assignment target
+    /// @param op the assignment operator
+    /// @param value the assigned expression
+    /// @return this builder
+    public CodeBuilder assign(AssignTarget target, AssignOp op, Expr value) {
+        statements.add(new AssignStmt(target, op, value));
         return this;
     }
 
@@ -96,6 +107,34 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @return a static field access expression
     public StaticFieldAccessExpr staticField(ClassOrInterfaceTypeRef type, String name) {
         return new StaticFieldAccessExpr(type, name);
+    }
+
+    /// Creates an array access, e.g. `array[index]`.
+    ///
+    /// @param array the accessed array expression
+    /// @param index the index expression
+    /// @return an array access expression
+    public ArrayAccessExpr arrayAccess(Expr array, Expr index) {
+        return new ArrayAccessExpr(array, index);
+    }
+
+    /// Creates an array creation by dimension, e.g. `new componentType[dim1][dim2]...`.
+    ///
+    /// @param componentType the array's component type
+    /// @param firstDimension the outermost dimension's size expression
+    /// @param restDimensions any further dimensions' size expressions, outermost first
+    /// @return an array creation expression
+    public ArrayCreationExpr newArray(TypeRef componentType, Expr firstDimension, Expr... restDimensions) {
+        return new ArrayCreationExpr(componentType, new NonEmptyList<>(firstDimension, List.of(restDimensions)));
+    }
+
+    /// Creates an array creation with an initializer, e.g. `new componentType[]{e1, e2, ...}`.
+    ///
+    /// @param componentType the array's component type
+    /// @param elements the initializer elements, in order
+    /// @return an array initializer expression
+    public ArrayInitializerExpr newArrayOf(TypeRef componentType, Expr... elements) {
+        return new ArrayInitializerExpr(componentType, List.of(elements));
     }
 
     /// Creates an unqualified method call, e.g. `method(args)`.
@@ -315,6 +354,60 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new BinaryExpr(left, BinaryOp.OR, right);
     }
 
+    /// Creates a bitwise/logical AND expression, `left & right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitAnd(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_AND, right);
+    }
+
+    /// Creates a bitwise/logical OR expression, `left | right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitOr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_OR, right);
+    }
+
+    /// Creates a bitwise/logical XOR expression, `left ^ right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr bitXor(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.BIT_XOR, right);
+    }
+
+    /// Creates a left shift expression, `left << right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr shl(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.SHL, right);
+    }
+
+    /// Creates a signed right shift expression, `left >> right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr shr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.SHR, right);
+    }
+
+    /// Creates an unsigned right shift expression, `left >>> right`.
+    ///
+    /// @param left the left operand
+    /// @param right the right operand
+    /// @return a binary expression
+    public Expr ushr(Expr left, Expr right) {
+        return new BinaryExpr(left, BinaryOp.USHR, right);
+    }
+
     /// Creates a logical negation expression, `!operand`.
     ///
     /// @param operand the operand
@@ -329,6 +422,22 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @return a unary expression
     public Expr neg(Expr operand) {
         return new UnaryExpr(UnaryOp.NEG, operand);
+    }
+
+    /// Creates a bitwise complement expression, `~operand`.
+    ///
+    /// @param operand the operand
+    /// @return a unary expression
+    public Expr bitNot(Expr operand) {
+        return new UnaryExpr(UnaryOp.BIT_NOT, operand);
+    }
+
+    /// Creates a unary plus expression, `+operand`.
+    ///
+    /// @param operand the operand
+    /// @return a unary expression
+    public Expr unaryPlus(Expr operand) {
+        return new UnaryExpr(UnaryOp.UNARY_PLUS, operand);
     }
 
     /// Creates a pre-increment expression, `++operand`.
@@ -363,13 +472,66 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new IncDecExpr(IncDecOp.POST_DEC, operand);
     }
 
+    /// Creates a cast expression, `(type) operand`.
+    ///
+    /// @param type the target type
+    /// @param operand the cast operand
+    /// @return a cast expression
+    public CastExpr cast(TypeRef type, Expr operand) {
+        return new CastExpr(type, operand);
+    }
+
+    /// Creates a ternary conditional expression, `condition ? whenTrue : whenFalse`.
+    ///
+    /// @param condition the tested condition
+    /// @param whenTrue the result when `condition` is true
+    /// @param whenFalse the result when `condition` is false
+    /// @return a conditional expression
+    public ConditionalExpr cond(Expr condition, Expr whenTrue, Expr whenFalse) {
+        return new ConditionalExpr(condition, whenTrue, whenFalse);
+    }
+
+    /// Creates a class literal, `type.class`.
+    ///
+    /// @param type the referenced type
+    /// @return a class literal expression
+    public ClassLiteralExpr classLiteral(TypeRef type) {
+        return new ClassLiteralExpr(type);
+    }
+
+    /// Creates a type-qualified method reference, e.g. `Type::method`.
+    ///
+    /// @param type the qualifying type
+    /// @param method the referenced method name
+    /// @return a method reference expression
+    public MethodRefExpr methodRef(TypeRef type, String method) {
+        return new MethodRefExpr(new TypeMethodRefTarget(type), method);
+    }
+
+    /// Creates an instance-bound method reference, e.g. `expr::method`.
+    ///
+    /// @param instance the bound instance expression
+    /// @param method the referenced method name
+    /// @return a method reference expression
+    public MethodRefExpr methodRef(Expr instance, String method) {
+        return new MethodRefExpr(new ExprMethodRefTarget(instance), method);
+    }
+
+    /// Creates a constructor reference, e.g. `Type::new`.
+    ///
+    /// @param type the referenced type
+    /// @return a constructor reference expression
+    public ConstructorRefExpr constructorRef(TypeRef type) {
+        return new ConstructorRefExpr(type);
+    }
+
     /// Creates an `instanceof` test with no pattern binding, e.g. `target instanceof type`.
     ///
     /// @param target the tested expression
     /// @param type the tested type
     /// @return an `instanceof` expression
     public Expr instanceOf(Expr target, TypeRef type) {
-        return new InstanceOfExpr(target, type, Optional.empty());
+        return new InstanceOfExpr(target, new TypePattern(type, Optional.empty()));
     }
 
     /// Creates an `instanceof` pattern match that binds the matched value to a name,
@@ -380,7 +542,35 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param bindingName the name bound to the matched value
     /// @return an `instanceof` expression
     public Expr instanceOf(Expr target, TypeRef type, String bindingName) {
-        return new InstanceOfExpr(target, type, Optional.of(bindingName));
+        return new InstanceOfExpr(target, new TypePattern(type, Optional.of(bindingName)));
+    }
+
+    /// Creates an `instanceof` test against an arbitrary pattern, e.g. a
+    /// [RecordPattern] deconstruction: `target instanceof Type(component, ...)`.
+    ///
+    /// @param target the tested expression
+    /// @param pattern the matched pattern
+    /// @return an `instanceof` expression
+    public Expr instanceOfPattern(Expr target, Pattern pattern) {
+        return new InstanceOfExpr(target, pattern);
+    }
+
+    /// Creates a flat type pattern, e.g. `Type bindingName`.
+    ///
+    /// @param type the matched type
+    /// @param bindingName the name bound to the matched value
+    /// @return a type pattern
+    public Pattern typePattern(TypeRef type, String bindingName) {
+        return new TypePattern(type, Optional.of(bindingName));
+    }
+
+    /// Creates a record deconstruction pattern, e.g. `Point(int x, int y)`.
+    ///
+    /// @param recordType the deconstructed record type
+    /// @param componentPatterns the per-component patterns, in declaration order
+    /// @return a record pattern
+    public Pattern recordPattern(TypeRef recordType, Pattern... componentPatterns) {
+        return new RecordPattern(recordType, List.of(componentPatterns));
     }
 
     /// Creates an object creation expression, `new type(args)`.

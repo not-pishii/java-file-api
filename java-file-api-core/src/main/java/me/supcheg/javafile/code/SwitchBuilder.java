@@ -49,7 +49,8 @@ public final class SwitchBuilder {
     /// @return this builder
     public SwitchBuilder caseType(TypeRef type, String bindingName, Consumer<CodeBuilder> spec) {
         cases.add(new SwitchCase(
-                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.empty()), List.of()),
+                new NonEmptyList<>(
+                        new PatternLabel(new TypePattern(type, Optional.of(bindingName)), Optional.empty()), List.of()),
                 blockBody(spec)));
         return this;
     }
@@ -64,8 +65,36 @@ public final class SwitchBuilder {
     /// @return this builder
     public SwitchBuilder caseTypeWithGuard(TypeRef type, String bindingName, Expr guard, Consumer<CodeBuilder> spec) {
         cases.add(new SwitchCase(
-                new NonEmptyList<>(new TypePatternLabel(type, bindingName, Optional.of(guard)), List.of()),
+                new NonEmptyList<>(
+                        new PatternLabel(new TypePattern(type, Optional.of(bindingName)), Optional.of(guard)),
+                        List.of()),
                 blockBody(spec)));
+        return this;
+    }
+
+    /// Appends a pattern case with a block body, e.g. `case pattern -> { ... }`. Unlike
+    /// [#caseType(TypeRef,String,Consumer)], the pattern may be a [RecordPattern] deconstruction.
+    ///
+    /// @param pattern the matched pattern
+    /// @param spec receives the builder to populate the case body
+    /// @return this builder
+    public SwitchBuilder casePattern(Pattern pattern, Consumer<CodeBuilder> spec) {
+        cases.add(new SwitchCase(
+                new NonEmptyList<>(new PatternLabel(pattern, Optional.empty()), List.of()), blockBody(spec)));
+        return this;
+    }
+
+    /// Appends a guarded pattern case with a block body, e.g. `case pattern when guard -> { ... }`.
+    /// Unlike [#caseTypeWithGuard(TypeRef,String,Expr,Consumer)], the pattern may be a
+    /// [RecordPattern] deconstruction.
+    ///
+    /// @param pattern the matched pattern
+    /// @param guard the `when` guard condition
+    /// @param spec receives the builder to populate the case body
+    /// @return this builder
+    public SwitchBuilder casePatternWithGuard(Pattern pattern, Expr guard, Consumer<CodeBuilder> spec) {
+        cases.add(new SwitchCase(
+                new NonEmptyList<>(new PatternLabel(pattern, Optional.of(guard)), List.of()), blockBody(spec)));
         return this;
     }
 

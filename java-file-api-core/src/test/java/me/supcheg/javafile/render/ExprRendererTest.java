@@ -1,5 +1,7 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.code.ArrayAccessExpr;
+import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.CatchClause;
@@ -13,6 +15,9 @@ import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.Pattern;
+import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
@@ -21,7 +26,7 @@ import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
 import me.supcheg.javafile.code.TryStmt;
-import me.supcheg.javafile.code.TypePatternLabel;
+import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -84,7 +89,7 @@ class ExprRendererTest {
         Expr value = cb.literal(1);
 
         String rendered = ExprRenderer.renderStmt(
-                new AssignStmt(target, value),
+                new AssignStmt(target, AssignOp.ASSIGN, value),
                 Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("    Counter.total = 1;");
@@ -162,9 +167,39 @@ class ExprRendererTest {
         FieldAccessExpr target = cb.field(cb.this_(), "bundle");
         Expr value = cb.field("bundle");
         String rendered = ExprRenderer.renderStmt(
-                new AssignStmt(target, value),
+                new AssignStmt(target, AssignOp.ASSIGN, value),
                 Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
         assertThat(rendered).isEqualTo("    this.bundle = bundle;");
+    }
+
+    @Test
+    void assignStatementWithAddAssignRendersPlusEqualsOperator() {
+        FieldAccessExpr target = cb.field("total");
+        Expr value = cb.field("delta");
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.ADD_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    total += delta;");
+    }
+
+    @Test
+    void assignStatementWithShlAssignRendersShiftLeftEqualsOperator() {
+        FieldAccessExpr target = cb.field("mask");
+        Expr value = cb.literal(1);
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.SHL_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    mask <<= 1;");
+    }
+
+    @Test
+    void assignStatementWithUshrAssignRendersUnsignedShiftRightEqualsOperator() {
+        FieldAccessExpr target = cb.field("bits");
+        Expr value = cb.literal(2);
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.USHR_ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+        assertThat(rendered).isEqualTo("    bits >>>= 2;");
     }
 
     @Test
@@ -200,6 +235,42 @@ class ExprRendererTest {
     }
 
     @Test
+    void bitwiseBinaryOperatorsRenderInfixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitAnd(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a & b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitOr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a | b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitXor(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a ^ b");
+    }
+
+    @Test
+    void shiftOperatorsRenderInfixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.shl(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a << b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.shr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a >> b");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.ushr(cb.field("a"), cb.field("b")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("a >>> b");
+    }
+
+    @Test
+    void bitwiseNotAndUnaryPlusRenderPrefixSymbol() {
+        assertThat(ExprRenderer.renderExpr(
+                        cb.bitNot(cb.field("a")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("~a");
+        assertThat(ExprRenderer.renderExpr(
+                        cb.unaryPlus(cb.field("a")), Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("+a");
+    }
+
+    @Test
     void instanceOfWithBindingRendersTheBindingName() {
         me.supcheg.javafile.type.TypeRef stringType =
                 me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
@@ -220,6 +291,98 @@ class ExprRendererTest {
     }
 
     @Test
+    void instanceOfWithRecordPatternRendersDeconstructedComponents() {
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Point"));
+        Pattern pattern = new RecordPattern(
+                pointType,
+                List.of(
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("x")),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("y"))));
+        Expr expr = cb.instanceOfPattern(cb.field("shape"), pattern);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("shape instanceof Point(int x, int y)");
+    }
+
+    @Test
+    void instanceOfWithNestedRecordPatternRendersRecursively() {
+        me.supcheg.javafile.type.TypeRef innerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Inner"));
+        me.supcheg.javafile.type.TypeRef outerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Outer"));
+        Pattern pattern = new RecordPattern(
+                outerType,
+                List.of(
+                        new RecordPattern(
+                                innerType,
+                                List.of(
+                                        new TypePattern(
+                                                me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("a")),
+                                        new TypePattern(
+                                                me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("b")))),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("c"))));
+        Expr expr = cb.instanceOfPattern(cb.field("shape"), pattern);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("shape instanceof Outer(Inner(int a, int b), int c)");
+    }
+
+    @Test
+    void castExprRendersParenthesizedTargetTypeBeforeOperand() {
+        Expr expr = cb.cast(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(1.5));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("(int) 1.5");
+    }
+
+    @Test
+    void conditionalExprRendersConditionQuestionMarkWhenTrueColonWhenFalse() {
+        Expr expr = cb.cond(cb.lt(cb.field("x"), cb.literal(0)), cb.literal("negative"), cb.literal("non-negative"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("x < 0 ? \"negative\" : \"non-negative\"");
+    }
+
+    @Test
+    void classLiteralExprRendersTypeDotClass() {
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+        Expr expr = cb.classLiteral(stringType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("String.class");
+    }
+
+    @Test
+    void typeQualifiedMethodRefRendersTypeColonColonMethod() {
+        me.supcheg.javafile.type.TypeRef integerType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Integer"));
+        Expr expr = cb.methodRef(integerType, "parseInt");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("Integer::parseInt");
+    }
+
+    @Test
+    void instanceBoundMethodRefRendersExprColonColonMethod() {
+        Expr expr = cb.methodRef(cb.field("name"), "trim");
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("name::trim");
+    }
+
+    @Test
+    void constructorRefRendersTypeColonColonNew() {
+        me.supcheg.javafile.type.TypeRef stringType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "String"));
+        Expr expr = cb.constructorRef(stringType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("String::new");
+    }
+
+    @Test
     void newExprRendersTypeAndCommaSeparatedArguments() {
         me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
                 java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));
@@ -235,6 +398,51 @@ class ExprRendererTest {
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("me.supcheg.example"))))
                 .isEqualTo("new Impl<>(renderer)");
+    }
+
+    @Test
+    void arrayAccessRendersArrayBracketIndexBracket() {
+        Expr expr = cb.arrayAccess(cb.field("array"), cb.field("index"));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("array[index]");
+    }
+
+    @Test
+    void arrayCreationByDimensionRendersNewComponentTypeAndBracketedSize() {
+        Expr expr = cb.newArray(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(3));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[3]");
+    }
+
+    @Test
+    void arrayCreationByMultipleDimensionsRendersEachBracketedSize() {
+        Expr expr = cb.newArray(me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(3), cb.literal(4));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[3][4]");
+    }
+
+    @Test
+    void arrayInitializerRendersNewComponentTypeEmptyBracketsAndBracedElements() {
+        Expr expr = cb.newArrayOf(
+                me.supcheg.javafile.type.PrimitiveTypeRef.INT, cb.literal(1), cb.literal(2), cb.literal(3));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new int[] {1, 2, 3}");
+    }
+
+    @Test
+    void assignStatementWithArrayAccessTargetRendersTargetEqualsValue() {
+        ArrayAccessExpr target = cb.arrayAccess(cb.field("values"), cb.literal(0));
+        Expr value = cb.literal(1);
+
+        String rendered = ExprRenderer.renderStmt(
+                new AssignStmt(target, AssignOp.ASSIGN, value),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("    values[0] = 1;");
     }
 
     @Test
@@ -429,9 +637,8 @@ class ExprRendererTest {
                 cb.field("obj"),
                 java.util.List.of(new SwitchCase(
                         new NonEmptyList<>(
-                                new TypePatternLabel(
-                                        stringType,
-                                        "s",
+                                new PatternLabel(
+                                        new TypePattern(stringType, Optional.of("s")),
                                         Optional.of(cb.gt(cb.call(cb.field("s"), "length"), cb.literal(0)))),
                                 java.util.List.of()),
                         new ExprCaseBody(cb.field("s")))));
@@ -442,6 +649,30 @@ class ExprRendererTest {
         assertThat(rendered).isEqualTo("""
                     switch (obj) {
                         case String s when s.length() > 0 -> s;
+                    }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void recordPatternCaseLabelRendersDeconstructedComponents() {
+        me.supcheg.javafile.type.TypeRef pointType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("geom", "Point"));
+        Pattern pattern = new RecordPattern(
+                pointType,
+                List.of(
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("x")),
+                        new TypePattern(me.supcheg.javafile.type.PrimitiveTypeRef.INT, Optional.of("y"))));
+        Stmt stmt = new SwitchStmt(
+                cb.field("shape"),
+                java.util.List.of(new SwitchCase(
+                        new NonEmptyList<>(new PatternLabel(pattern, Optional.empty()), java.util.List.of()),
+                        new ExprCaseBody(cb.add(cb.field("x"), cb.field("y"))))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                    switch (shape) {
+                        case Point(int x, int y) -> x + y;
                     }""".indent(4).stripTrailing());
     }
 
