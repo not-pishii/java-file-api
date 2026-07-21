@@ -887,6 +887,15 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends a local class/interface/record/enum declaration used as a statement.
+    ///
+    /// @param decl the declared local type
+    /// @return this builder
+    public CodeBuilder localType(me.supcheg.javafile.model.TypeDecl decl) {
+        statements.add(new LocalTypeDeclStmt(decl));
+        return this;
+    }
+
     /// Snapshots the accumulated statements into an immutable [CodeBody].
     ///
     /// @return the finished body

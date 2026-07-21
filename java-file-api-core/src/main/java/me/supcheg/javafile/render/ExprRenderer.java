@@ -41,6 +41,7 @@ import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LambdaExpr;
+import me.supcheg.javafile.code.LocalTypeDeclStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
@@ -337,6 +338,8 @@ final class ExprRenderer {
                         + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
                         + ";";
             case EmptyStmt ignored -> ctx.pad() + ";";
+            case LocalTypeDeclStmt(var decl) ->
+                TypeDeclRenderer.renderTypeDecl(decl, ctx).stripTrailing();
         };
     }
 
