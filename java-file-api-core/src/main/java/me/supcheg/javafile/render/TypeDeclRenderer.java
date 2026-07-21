@@ -2,6 +2,7 @@ package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.CompactConstructorDecl;
@@ -19,11 +20,13 @@ import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -326,15 +329,18 @@ final class TypeDeclRenderer {
         }
         sb.append(" {").append(ctx.newline());
         sb.append(renderRecordMembers(
-                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName()));
+                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName(), decl.components()));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderRecordMembers(List<RecordMember> members, Context ctx, String ownerSimpleName) {
+    private static String renderRecordMembers(
+            List<RecordMember> members, Context ctx, String ownerSimpleName, List<RecordComponent> components) {
         return members.stream()
                 .map(member -> switch (member) {
                     case CompactConstructorDecl cc -> renderCompactConstructor(cc, ctx, ownerSimpleName);
+                    case CanonicalConstructorDecl cc ->
+                        renderCanonicalConstructor(cc, ctx, ownerSimpleName, components);
                     case MethodDecl m -> renderMethod(m, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
@@ -351,6 +357,46 @@ final class TypeDeclRenderer {
                 + renderStatements(cc.body().statements(), ctx.withIncreasedPad())
                 + ctx.pad()
                 + "}" + ctx.newline();
+    }
+
+    /// Renders an explicit canonical constructor after checking its
+    /// parameter list against the record's components — the enclosing
+    /// [RecordDecl]'s components and this constructor's params are only ever
+    /// known together here, at render time, so this is where JLS's
+    /// name/type/order match is enforced rather than at construction.
+    private static String renderCanonicalConstructor(
+            CanonicalConstructorDecl cc, Context ctx, String ownerSimpleName, List<RecordComponent> components) {
+        requireMatchesComponents(cc.params(), components);
+        return AnnotationRenderer.renderAnnotations(cc.annotations(), ctx)
+                + ctx.pad() + TypeRefRenderer.renderModifiers(cc.modifiers()) + ownerSimpleName
+                + "(" + TypeRefRenderer.renderParams(cc.params(), ctx) + ")"
+                + renderThrows(cc.throwsTypes(), ctx)
+                + " {" + ctx.newline()
+                + renderStatements(cc.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
+    }
+
+    private static void requireMatchesComponents(List<Param> params, List<RecordComponent> components) {
+        if (params.size() != components.size()) {
+            throw new IllegalArgumentException(
+                    "canonical constructor params must match record components exactly, expected " + components.size()
+                            + " but got " + params.size());
+        }
+        for (int i = 0; i < components.size(); i++) {
+            RecordComponent component = components.get(i);
+            Param param = params.get(i);
+            // Param#type() is the varargs element type, not the array type, so a
+            // varargs param's effective type is an array of it — matching how
+            // JLS allows a canonical constructor's last parameter to spell an
+            // array-typed component with `T...` sugar instead of `T[]`.
+            var paramType = param.varargs() ? new ArrayTypeRef(param.type()) : param.type();
+            if (!component.name().equals(param.name()) || !component.type().equals(paramType)) {
+                throw new IllegalArgumentException("canonical constructor parameter " + i + " must be '"
+                        + component.type() + " " + component.name() + "' but was '" + paramType + " " + param.name()
+                        + "'");
+            }
+        }
     }
 
     private static String renderStaticField(StaticFieldDecl sf, Context ctx) {

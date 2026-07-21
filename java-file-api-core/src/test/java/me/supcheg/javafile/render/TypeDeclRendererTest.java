@@ -87,6 +87,50 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersARecordWithAnExplicitCanonicalConstructor() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Range"));
+        builder.withComponent("low", PrimitiveTypeRef.INT)
+                .withComponent("high", PrimitiveTypeRef.INT)
+                .withCanonicalConstructor(
+                        List.of(new Param("low", PrimitiveTypeRef.INT), new Param("high", PrimitiveTypeRef.INT)),
+                        b -> b.if_(
+                                        b.gt(b.field("low"), b.field("high")),
+                                        ib -> ib.then(t -> t.exprStatement(t.call("fail"))))
+                                .assign(b.field(b.this_(), "low"), b.field("low"))
+                                .assign(b.field(b.this_(), "high"), b.field("high")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        public record Range(int low, int high) {
+                            public Range(int low, int high) {
+                                if (low > high) {
+                                    fail();
+                                }
+                                this.low = low;
+                                this.high = high;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rejectsAnExplicitCanonicalConstructorWhoseParamsDontMatchComponents() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Range"));
+        builder.withComponent("low", PrimitiveTypeRef.INT)
+                .withComponent("high", PrimitiveTypeRef.INT)
+                .withCanonicalConstructor(
+                        List.of(new Param("lo", PrimitiveTypeRef.INT), new Param("hi", PrimitiveTypeRef.INT)), b -> {});
+
+        var decl = builder.build();
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        TypeDeclRenderer.renderTypeDecl(decl, Context.of(standardFormat(), new ImportManager("geom"))))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("low");
+    }
+
+    @Test
     void rendersARecordWithComponentsAndAStaticField() {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
         builder.withComponent("x", PrimitiveTypeRef.INT)

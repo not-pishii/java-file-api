@@ -4,8 +4,9 @@ package me.supcheg.javafile.model;
 ///
 /// The permitted implementations mirror what the Java language allows inside a
 /// `record` declaration in addition to its implicit canonical constructor and
-/// component accessors: a compact constructor, methods, static fields, and
-/// nested type declarations. Class and interface bodies use their own member
-/// hierarchies ([ClassMember], [InterfaceMember]), so an impossible
-/// combination is unrepresentable rather than rejected at runtime.
-public sealed interface RecordMember permits CompactConstructorDecl, MethodDecl, StaticFieldDecl, TypeDecl {}
+/// component accessors: a compact or explicit canonical constructor, methods,
+/// static fields, and nested type declarations. Class and interface bodies
+/// use their own member hierarchies ([ClassMember], [InterfaceMember]), so an
+/// impossible combination is unrepresentable rather than rejected at runtime.
+public sealed interface RecordMember
+        permits CompactConstructorDecl, CanonicalConstructorDecl, MethodDecl, StaticFieldDecl, TypeDecl {}
