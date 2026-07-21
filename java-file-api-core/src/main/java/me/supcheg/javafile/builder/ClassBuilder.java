@@ -2,9 +2,11 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -218,6 +220,28 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         ConstructorBuilder cb = new ConstructorBuilder();
         spec.accept(cb);
         members.add(cb.build());
+        return this;
+    }
+
+    /// Adds an instance initializer block, `{ ... }`.
+    ///
+    /// @param spec receives the builder to populate the block's body
+    /// @return this builder
+    public ClassBuilder withInitializerBlock(Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        members.add(new InitializerBlock(false, cb.build()));
+        return this;
+    }
+
+    /// Adds a static initializer block, `static { ... }`.
+    ///
+    /// @param spec receives the builder to populate the block's body
+    /// @return this builder
+    public ClassBuilder withStaticInitializerBlock(Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        members.add(new InitializerBlock(true, cb.build()));
         return this;
     }
 

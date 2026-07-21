@@ -638,6 +638,57 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersAStaticInitializerBlockFollowedByAnInstanceInitializerBlockInAClass() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Config"));
+        builder.withField("ready", PrimitiveTypeRef.BOOLEAN, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
+                .withStaticInitializerBlock(b -> b.assign(b.field("ready"), b.literal(true)))
+                .withField("id", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE))
+                .withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public class Config {
+                            private static boolean ready;
+
+                            static {
+                                ready = true;
+                            }
+
+                            private int id;
+
+                            {
+                                id = 1;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAStaticInitializerBlockInAnEnum() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Counter"));
+        builder.withConstant("INSTANCE")
+                .withField("count", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
+                .withStaticInitializerBlock(b -> b.assign(b.field("count"), b.literal(0)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Counter {
+                            INSTANCE;
+
+                            private static int count;
+
+                            static {
+                                count = 0;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void rendersStaticNestedClassInsideClass() {
         ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
         ClassDecl nested = new ClassDecl(

@@ -14,6 +14,7 @@ import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.FieldDecl;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.MethodDecl;
@@ -78,6 +79,7 @@ final class TypeDeclRenderer {
                     case EnumConstructorDecl c -> renderEnumConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
+                    case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -90,8 +92,18 @@ final class TypeDeclRenderer {
                     case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
+                    case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
+    }
+
+    private static String renderInitializerBlock(InitializerBlock block, Context ctx) {
+        return ctx.pad()
+                + (block.isStatic() ? "static " : "")
+                + "{" + ctx.newline()
+                + renderStatements(block.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
     }
 
     private static String renderAbstractMethodInClass(AbstractMethodDecl m, Context ctx) {
