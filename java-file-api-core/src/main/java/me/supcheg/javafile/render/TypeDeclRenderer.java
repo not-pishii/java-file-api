@@ -26,7 +26,6 @@ import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
-import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -386,15 +385,18 @@ final class TypeDeclRenderer {
         for (int i = 0; i < components.size(); i++) {
             RecordComponent component = components.get(i);
             Param param = params.get(i);
-            // Param#type() is the varargs element type, not the array type, so a
-            // varargs param's effective type is an array of it — matching how
-            // JLS allows a canonical constructor's last parameter to spell an
-            // array-typed component with `T...` sugar instead of `T[]`.
-            var paramType = param.varargs() ? new ArrayTypeRef(param.type()) : param.type();
-            if (!component.name().equals(param.name()) || !component.type().equals(paramType)) {
+            // A canonical constructor's parameter must match its record component's
+            // declared type exactly — javac rejects varargs sugar here even when the
+            // varargs element type happens to equal the component's type, since
+            // RecordComponent has no varargs-shaped declaration to match against
+            // (confirmed against javac: `record Nums(int[] values) { public
+            // Nums(int... values) {...} }` fails to compile).
+            if (param.varargs()
+                    || !component.name().equals(param.name())
+                    || !component.type().equals(param.type())) {
                 throw new IllegalArgumentException("canonical constructor parameter " + i + " must be '"
-                        + component.type() + " " + component.name() + "' but was '" + paramType + " " + param.name()
-                        + "'");
+                        + component.type() + " " + component.name() + "' but was '"
+                        + (param.varargs() ? param.type() + "..." : param.type()) + " " + param.name() + "'");
             }
         }
     }
