@@ -117,14 +117,21 @@ final class ExprRenderer {
                 };
             case InstanceOfExpr(var target, var pattern) ->
                 renderExpr(target, ctx) + " instanceof " + renderPattern(pattern, ctx);
-            case NewExpr(var target, var args) -> {
+            case NewExpr(var target, var args, var anonymousBody) -> {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 String targetStr =
                         switch (target) {
                             case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
                             case DiamondNewTarget(var raw) -> ctx.reference(raw) + "<>";
                         };
-                yield "new " + targetStr + "(" + argsStr + ")";
+                String bodyStr = anonymousBody
+                        .map(members -> " {"
+                                + ctx.newline()
+                                + TypeDeclRenderer.renderEnumConstantMembers(members, ctx.withIncreasedPad())
+                                + ctx.pad()
+                                + "}")
+                        .orElse("");
+                yield "new " + targetStr + "(" + argsStr + ")" + bodyStr;
             }
             case SwitchExpr(var selector, var cases) ->
                 "switch ("

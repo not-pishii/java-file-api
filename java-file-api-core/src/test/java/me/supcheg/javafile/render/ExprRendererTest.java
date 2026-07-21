@@ -402,6 +402,35 @@ class ExprRendererTest {
     }
 
     @Test
+    void newExprWithoutAnonymousBodyRendersNoTrailingBraces() {
+        me.supcheg.javafile.type.TypeRef objectType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Object"));
+        Expr expr = cb.new_(objectType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new Object()");
+    }
+
+    @Test
+    void newExprWithAnonymousBodyRendersBracesAndIndentedMembers() {
+        me.supcheg.javafile.type.TypeRef runnableType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Runnable"));
+        me.supcheg.javafile.model.MethodDecl runMethod = new me.supcheg.javafile.model.MethodDecl(
+                "run",
+                Optional.empty(),
+                List.of(),
+                Set.of(me.supcheg.javafile.model.Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                CodeBody.EMPTY,
+                List.of());
+        Expr expr = cb.newAnonymous(runnableType, List.of(runMethod));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new Runnable() {\n" + "    public void run() {\n" + "    }\n" + "}");
+    }
+
+    @Test
     void arrayAccessRendersArrayBracketIndexBracket() {
         Expr expr = cb.arrayAccess(cb.field("array"), cb.field("index"));
 

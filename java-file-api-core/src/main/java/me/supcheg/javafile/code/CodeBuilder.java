@@ -592,6 +592,17 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 
+    /// Creates an object creation expression with an anonymous class body,
+    /// `new type(args) { ... }`.
+    ///
+    /// @param type the instantiated type
+    /// @param body the anonymous subclass's body members
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public NewExpr newAnonymous(TypeRef type, List<me.supcheg.javafile.model.EnumConstantMember> body, Expr... args) {
+        return new NewExpr(new TypedNewTarget(type), List.of(args), Optional.of(body));
+    }
+
     /// Appends a typed local variable declaration with an initializer.
     ///
     /// @param name the variable name

@@ -400,7 +400,7 @@ final class TypeDeclRenderer {
         return sb.toString();
     }
 
-    private static String renderEnumConstantMembers(List<EnumConstantMember> members, Context ctx) {
+    static String renderEnumConstantMembers(List<EnumConstantMember> members, Context ctx) {
         return members.stream()
                 .map(member -> switch (member) {
                     case FieldDecl f -> renderField(f, ctx);
