@@ -32,4 +32,60 @@ class VarargsParamTest {
                         List.of()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void defaultMethodDeclRejectsNonLastVarargsParam() {
+        Param varargsFirst = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
+        Param normalSecond = new Param("count", PrimitiveTypeRef.INT);
+
+        assertThatThrownBy(() -> new DefaultMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(varargsFirst, normalSecond),
+                        me.supcheg.javafile.code.CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void staticMethodDeclRejectsNonLastVarargsParam() {
+        Param varargsFirst = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
+        Param normalSecond = new Param("count", PrimitiveTypeRef.INT);
+
+        assertThatThrownBy(() -> new StaticMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(varargsFirst, normalSecond),
+                        me.supcheg.javafile.code.CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void enumConstructorDeclRejectsNonLastVarargsParam() {
+        Param varargsFirst = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
+        Param normalSecond = new Param("count", PrimitiveTypeRef.INT);
+
+        assertThatThrownBy(() -> new EnumConstructorDecl(
+                        List.of(),
+                        List.of(varargsFirst, normalSecond),
+                        me.supcheg.javafile.code.CodeBody.EMPTY,
+                        List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void enumConstructorDeclAcceptsVarargsParamInLastPosition() {
+        Param normalFirst = new Param("count", PrimitiveTypeRef.INT);
+        Param varargsLast = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
+
+        EnumConstructorDecl decl = new EnumConstructorDecl(
+                List.of(), List.of(normalFirst, varargsLast), me.supcheg.javafile.code.CodeBody.EMPTY, List.of());
+
+        assertThat(decl.params()).containsExactly(normalFirst, varargsLast);
+    }
 }
