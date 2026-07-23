@@ -23,6 +23,7 @@ import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.code.TypeMethodRefTarget;
 import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.AnnotationElementDecl;
 import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.model.DefaultMethodDecl;
 import me.supcheg.javafile.model.EnumConstant;
@@ -57,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 ///
 /// [Identifiers] itself is exhaustively tested elsewhere ([IdentifiersTest],
 /// [IdentifiersProperties]); this class instead exists so that a future edit
-/// which silently drops a `requireValid` call from one of these 30
+/// which silently drops a `requireValid` call from one of these 31
 /// construction sites is caught by the suite, rather than only being
 /// noticed by manual inspection. Each case below constructs its record with
 /// a single obviously-invalid identifier (a leading digit) and asserts that
@@ -158,6 +159,8 @@ class IdentifierGuardWiringTest {
                 Arguments.of("LabeledStmt", (ThrowingCallable)
                         () -> new LabeledStmt(BAD_NAME, new BreakStmt(Optional.empty()))),
                 Arguments.of("BreakStmt", (ThrowingCallable) () -> new BreakStmt(Optional.of(BAD_NAME))),
-                Arguments.of("ContinueStmt", (ThrowingCallable) () -> new ContinueStmt(Optional.of(BAD_NAME))));
+                Arguments.of("ContinueStmt", (ThrowingCallable) () -> new ContinueStmt(Optional.of(BAD_NAME))),
+                Arguments.of("AnnotationElementDecl", (ThrowingCallable)
+                        () -> new AnnotationElementDecl(BAD_NAME, PrimitiveTypeRef.INT, Optional.empty())));
     }
 }

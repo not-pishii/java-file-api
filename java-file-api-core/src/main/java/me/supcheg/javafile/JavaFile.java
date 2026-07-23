@@ -1,5 +1,6 @@
 package me.supcheg.javafile;
 
+import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
@@ -26,9 +27,10 @@ import java.util.function.Consumer;
 /// A source file containing a single top-level type declaration.
 ///
 /// A `JavaFile` wraps exactly one of [ClassDecl], [InterfaceDecl],
-/// [RecordDecl], or [EnumDecl], created via the matching static factory
-/// ([#of(ClassDesc,Consumer)], [#interface_(ClassDesc,Consumer)],
-/// [#record(ClassDesc,Consumer)], [#enum_(ClassDesc,Consumer)]). The
+/// [RecordDecl], [EnumDecl], or [me.supcheg.javafile.model.AnnotationTypeDecl],
+/// created via the matching static factory ([#of(ClassDesc,Consumer)],
+/// [#interface_(ClassDesc,Consumer)], [#record(ClassDesc,Consumer)],
+/// [#enum_(ClassDesc,Consumer)], [#annotationType(ClassDesc,Consumer)]). The
 /// `transform*` methods only accept a transform matching the wrapped kind;
 /// calling the wrong one throws.
 ///
@@ -89,6 +91,17 @@ public final class JavaFile {
     /// @return the finished source file
     public static JavaFile enum_(ClassDesc desc, Consumer<EnumBuilder> spec) {
         EnumBuilder builder = new EnumBuilder(desc);
+        spec.accept(builder);
+        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+    }
+
+    /// Builds a source file containing a single top-level annotation type declaration.
+    ///
+    /// @param desc the annotation type to declare; its package and simple name determine the file location
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return the finished source file
+    public static JavaFile annotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
     }

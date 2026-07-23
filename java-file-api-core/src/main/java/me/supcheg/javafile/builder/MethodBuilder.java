@@ -117,6 +117,18 @@ public final class MethodBuilder {
         return this;
     }
 
+    /// Adds a varargs parameter to the method's parameter list, e.g. `int... values`.
+    ///
+    /// Valid only as the last parameter; enforced when the method declaration is built.
+    ///
+    /// @param name the parameter name
+    /// @param componentType the parameter's component type, not an array type
+    /// @return this builder
+    public MethodBuilder withVarargsParam(String name, TypeRef componentType) {
+        params.add(new Param(name, componentType, List.of(), true));
+        return this;
+    }
+
     /// Adds types to the method's `throws` clause.
     ///
     /// @param types the thrown exception types

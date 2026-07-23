@@ -63,7 +63,7 @@ final class AnnotationRenderer {
                 + ")";
     }
 
-    private static String renderValue(AnnotationValue value, Context ctx) {
+    static String renderValue(AnnotationValue value, Context ctx) {
         return switch (value) {
             case LiteralValue(var literal) -> ExprRenderer.renderExpr(literal, ctx);
             case ClassValue(var type) -> ctx.reference(type) + ".class";

@@ -4,9 +4,11 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
@@ -147,6 +149,21 @@ public final class RecordBuilder implements Consumer<RecordMember> {
             normalizedThrows.add(Types.of(type));
         }
         members.add(new CompactConstructorDecl(List.of(), modifiers, cb.build(), normalizedThrows));
+        return this;
+    }
+
+    /// Adds an explicit (non-compact) canonical constructor with the `public`
+    /// modifier and no `throws` clause. The given `params` must match the
+    /// record's components exactly in name, type, and order — enforced when
+    /// the record is rendered.
+    ///
+    /// @param params the constructor's parameters, matching the record's components exactly
+    /// @param spec receives the builder to populate the constructor body
+    /// @return this builder
+    public RecordBuilder withCanonicalConstructor(List<Param> params, Consumer<CodeBuilder> spec) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        members.add(new CanonicalConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), params, cb.build(), List.of()));
         return this;
     }
 

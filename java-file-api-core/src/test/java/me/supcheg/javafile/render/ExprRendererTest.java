@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -398,6 +399,35 @@ class ExprRendererTest {
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("me.supcheg.example"))))
                 .isEqualTo("new Impl<>(renderer)");
+    }
+
+    @Test
+    void newExprWithoutAnonymousBodyRendersNoTrailingBraces() {
+        me.supcheg.javafile.type.TypeRef objectType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Object"));
+        Expr expr = cb.new_(objectType);
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new Object()");
+    }
+
+    @Test
+    void newExprWithAnonymousBodyRendersBracesAndIndentedMembers() {
+        me.supcheg.javafile.type.TypeRef runnableType =
+                me.supcheg.javafile.type.Types.of(java.lang.constant.ClassDesc.of("java.lang", "Runnable"));
+        me.supcheg.javafile.model.MethodDecl runMethod = new me.supcheg.javafile.model.MethodDecl(
+                "run",
+                Optional.empty(),
+                List.of(),
+                Set.of(me.supcheg.javafile.model.Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                CodeBody.EMPTY,
+                List.of());
+        Expr expr = cb.newAnonymous(runnableType, List.of(runMethod));
+
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("new Runnable() {\n" + "    public void run() {\n" + "    }\n" + "}");
     }
 
     @Test
@@ -838,6 +868,33 @@ class ExprRendererTest {
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("    ;");
+    }
+
+    @Test
+    void localTypeDeclStmtRendersTheNestedTypeIndentedRelativeToTheEnclosingMethod() {
+        me.supcheg.javafile.model.ClassDecl localCounter = new me.supcheg.javafile.model.ClassDecl(
+                java.lang.constant.ClassDesc.of("Counter"),
+                List.of(),
+                Set.of(me.supcheg.javafile.model.Modifier.FINAL),
+                List.of(),
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of(new me.supcheg.javafile.model.FieldDecl(
+                        "value",
+                        me.supcheg.javafile.type.PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(),
+                        Optional.of(cb.literal(0)))));
+        Stmt stmt = new me.supcheg.javafile.code.LocalTypeDeclStmt(localCounter);
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        final class Counter {
+                            int value = 0;
+                        }""".indent(4).stripTrailing());
     }
 
     @Test

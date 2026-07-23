@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.TypeDecl;
 
 import java.util.List;
@@ -42,6 +43,32 @@ public final class StandardRenderer implements SourceRenderer {
             out.append(ctx.newline());
         }
         out.append(body);
+        return out.toString();
+    }
+
+    /// Renders a `package-info.java` file: optional package annotations followed
+    /// by the package declaration and its computed imports.
+    ///
+    /// @param packageName the package being annotated
+    /// @param annotations the package annotations, in order
+    /// @param format the indentation and line-separator preferences to render with
+    /// @return the complete source text
+    public String renderPackageInfo(String packageName, List<AnnotationUse> annotations, Format format) {
+        var imports = new ImportManager(packageName);
+        Context ctx = Context.of(format, imports);
+        String annotationsText = AnnotationRenderer.renderAnnotations(annotations, ctx);
+
+        StringBuilder out = new StringBuilder();
+        out.append(annotationsText);
+        out.append("package ").append(packageName).append(";").append(ctx.newline());
+
+        List<String> sortedImports = imports.sortedImports();
+        if (!sortedImports.isEmpty()) {
+            out.append(ctx.newline());
+            for (String imp : sortedImports) {
+                out.append("import ").append(imp).append(";").append(ctx.newline());
+            }
+        }
         return out.toString();
     }
 }

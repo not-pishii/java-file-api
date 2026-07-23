@@ -41,6 +41,7 @@ import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LambdaExpr;
+import me.supcheg.javafile.code.LocalTypeDeclStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.MethodCallExpr;
@@ -116,14 +117,21 @@ final class ExprRenderer {
                 };
             case InstanceOfExpr(var target, var pattern) ->
                 renderExpr(target, ctx) + " instanceof " + renderPattern(pattern, ctx);
-            case NewExpr(var target, var args) -> {
+            case NewExpr(var target, var args, var anonymousBody) -> {
                 String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                 String targetStr =
                         switch (target) {
                             case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
                             case DiamondNewTarget(var raw) -> ctx.reference(raw) + "<>";
                         };
-                yield "new " + targetStr + "(" + argsStr + ")";
+                String bodyStr = anonymousBody
+                        .map(members -> " {"
+                                + ctx.newline()
+                                + TypeDeclRenderer.renderEnumConstantMembers(members, ctx.withIncreasedPad())
+                                + ctx.pad()
+                                + "}")
+                        .orElse("");
+                yield "new " + targetStr + "(" + argsStr + ")" + bodyStr;
             }
             case SwitchExpr(var selector, var cases) ->
                 "switch ("
@@ -337,6 +345,8 @@ final class ExprRenderer {
                         + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
                         + ";";
             case EmptyStmt ignored -> ctx.pad() + ";";
+            case LocalTypeDeclStmt(var decl) ->
+                TypeDeclRenderer.renderTypeDecl(decl, ctx).stripTrailing();
         };
     }
 

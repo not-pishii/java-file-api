@@ -1,6 +1,7 @@
 package me.supcheg.javafile.model;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /// Rejects [Modifier] combinations that JLS never allows for a given
@@ -65,5 +66,20 @@ final class ModifierValidation {
             throw new IllegalArgumentException(declKind + " cannot combine abstract with final, static, or private");
         }
         return modifiers;
+    }
+
+    /// Validates that at most the last parameter is a varargs parameter.
+    ///
+    /// @param params the parameter list to validate
+    /// @return `params`, unchanged
+    /// @throws IllegalArgumentException if a non-last parameter has [Param#varargs()] set
+    static List<Param> requireVarargsOnlyLast(List<Param> params) {
+        for (int i = 0; i < params.size() - 1; i++) {
+            if (params.get(i).varargs()) {
+                throw new IllegalArgumentException("only the last parameter may be varargs: "
+                        + params.get(i).name());
+            }
+        }
+        return params;
     }
 }

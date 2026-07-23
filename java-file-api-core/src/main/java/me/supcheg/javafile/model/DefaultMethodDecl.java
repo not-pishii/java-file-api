@@ -38,7 +38,7 @@ public record DefaultMethodDecl(
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
-        params = List.copyOf(params);
+        params = ModifierValidation.requireVarargsOnlyLast(List.copyOf(params));
         throwsTypes = List.copyOf(throwsTypes);
     }
 }

@@ -45,7 +45,7 @@ public record MethodDecl(
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
                 "method");
         typeParams = List.copyOf(typeParams);
-        params = List.copyOf(params);
+        params = ModifierValidation.requireVarargsOnlyLast(List.copyOf(params));
         throwsTypes = List.copyOf(throwsTypes);
     }
 }

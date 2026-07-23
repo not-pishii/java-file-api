@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
+import java.lang.constant.ClassDesc;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -26,21 +28,56 @@ final class TypeRefRenderer {
 
     private TypeRefRenderer() {}
 
-    static String renderType(TypeRef ref, TypeContext ctx) {
+    static String renderType(TypeRef ref, Context ctx) {
         return switch (ref) {
-            case ClassTypeRef(var desc) -> ctx.reference(desc);
-            case ParameterizedTypeRef(var raw, var args) -> {
-                String rawName = ctx.reference(raw);
+            case ClassTypeRef(var desc, var annotations) -> renderAnnotatedReference(desc, annotations, ctx);
+            case ParameterizedTypeRef(var raw, var args, var annotations) -> {
+                String rawName = renderAnnotatedReference(raw, annotations, ctx);
                 String argsStr = args.stream().map(a -> renderTypeArg(a, ctx)).collect(Collectors.joining(", "));
                 yield rawName + "<" + argsStr + ">";
             }
-            case TypeVarRef(var name) -> name;
-            case ArrayTypeRef(var component) -> renderType(component, ctx) + "[]";
+            case TypeVarRef(var name, var annotations) ->
+                AnnotationRenderer.renderInlineAnnotations(annotations, ctx) + name;
+            case ArrayTypeRef(var component, var annotations) -> {
+                String renderedAnnotations = AnnotationRenderer.renderInlineAnnotations(annotations, ctx);
+                yield renderType(component, ctx) + (renderedAnnotations.isEmpty() ? "" : " " + renderedAnnotations)
+                        + "[]";
+            }
             case PrimitiveTypeRef p -> p.sourceName();
         };
     }
 
-    static String renderTypeArg(TypeArg arg, TypeContext ctx) {
+    /// Renders a resolved reference to `desc`, placing any type-use annotations
+    /// immediately before the final simple-name segment.
+    ///
+    /// When [Context#reference(ClassDesc)] resolves `desc` to a bare simple name
+    /// (the common case), the annotations are simply prepended. But when a
+    /// simple-name collision forces a fully-qualified reference (e.g.
+    /// `pkg.Simple`), a leading annotation is invalid Java — `javac` requires it
+    /// immediately before the simple name (`pkg.@Ann Simple`), so this splits the
+    /// qualifier from the simple name and inserts the annotations in between.
+    ///
+    /// @param desc the type being referenced
+    /// @param annotations the type-use annotations applied to this reference
+    /// @param ctx the render context
+    /// @return the rendered, correctly-annotated reference
+    private static String renderAnnotatedReference(ClassDesc desc, List<AnnotationUse> annotations, Context ctx) {
+        String reference = ctx.reference(desc);
+        String renderedAnnotations = AnnotationRenderer.renderInlineAnnotations(annotations, ctx);
+        if (renderedAnnotations.isEmpty()) {
+            return reference;
+        }
+
+        String simpleName = desc.displayName();
+        if (reference.equals(simpleName)) {
+            return renderedAnnotations + reference;
+        }
+
+        String qualifier = reference.substring(0, reference.length() - simpleName.length());
+        return qualifier + renderedAnnotations + simpleName;
+    }
+
+    static String renderTypeArg(TypeArg arg, Context ctx) {
         return switch (arg) {
             case ExactTypeArg(var type) -> renderType(type, ctx);
             case ExtendsTypeArg(var bound) -> "? extends " + renderType(bound, ctx);
@@ -70,23 +107,24 @@ final class TypeRefRenderer {
         return params.stream()
                 .map(p -> AnnotationRenderer.renderInlineAnnotations(p.annotations(), ctx)
                         + renderType(p.type(), ctx)
-                        + " "
+                        + (p.varargs() ? "... " : " ")
                         + p.name())
                 .collect(Collectors.joining(", "));
     }
 
-    static String renderTypeParams(List<TypeParam> typeParams, TypeContext ctx) {
+    static String renderTypeParams(List<TypeParam> typeParams, Context ctx) {
         if (typeParams.isEmpty()) {
             return "";
         }
         return typeParams.stream().map(p -> renderTypeParam(p, ctx)).collect(Collectors.joining(", ", "<", ">"));
     }
 
-    private static String renderTypeParam(TypeParam param, TypeContext ctx) {
+    private static String renderTypeParam(TypeParam param, Context ctx) {
+        String annotations = AnnotationRenderer.renderInlineAnnotations(param.annotations(), ctx);
         if (param.bounds().isEmpty()) {
-            return param.name();
+            return annotations + param.name();
         }
-        return param.name() + " extends "
+        return annotations + param.name() + " extends "
                 + param.bounds().stream().map(b -> renderType(b, ctx)).collect(Collectors.joining(" & "));
     }
 }

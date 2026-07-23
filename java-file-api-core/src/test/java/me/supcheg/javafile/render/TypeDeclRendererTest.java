@@ -1,9 +1,12 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.LiteralValue;
+import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
 import me.supcheg.javafile.builder.RecordBuilder;
+import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -84,6 +87,50 @@ class TypeDeclRendererTest {
                             }
                         }
                         """);
+    }
+
+    @Test
+    void rendersARecordWithAnExplicitCanonicalConstructor() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Range"));
+        builder.withComponent("low", PrimitiveTypeRef.INT)
+                .withComponent("high", PrimitiveTypeRef.INT)
+                .withCanonicalConstructor(
+                        List.of(new Param("low", PrimitiveTypeRef.INT), new Param("high", PrimitiveTypeRef.INT)),
+                        b -> b.if_(
+                                        b.gt(b.field("low"), b.field("high")),
+                                        ib -> ib.then(t -> t.exprStatement(t.call("fail"))))
+                                .assign(b.field(b.this_(), "low"), b.field("low"))
+                                .assign(b.field(b.this_(), "high"), b.field("high")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        public record Range(int low, int high) {
+                            public Range(int low, int high) {
+                                if (low > high) {
+                                    fail();
+                                }
+                                this.low = low;
+                                this.high = high;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rejectsAnExplicitCanonicalConstructorWhoseParamsDontMatchComponents() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Range"));
+        builder.withComponent("low", PrimitiveTypeRef.INT)
+                .withComponent("high", PrimitiveTypeRef.INT)
+                .withCanonicalConstructor(
+                        List.of(new Param("lo", PrimitiveTypeRef.INT), new Param("hi", PrimitiveTypeRef.INT)), b -> {});
+
+        var decl = builder.build();
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        TypeDeclRenderer.renderTypeDecl(decl, Context.of(standardFormat(), new ImportManager("geom"))))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("low");
     }
 
     @Test
@@ -638,6 +685,57 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersAStaticInitializerBlockFollowedByAnInstanceInitializerBlockInAClass() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Config"));
+        builder.withField("ready", PrimitiveTypeRef.BOOLEAN, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
+                .withStaticInitializerBlock(b -> b.assign(b.field("ready"), b.literal(true)))
+                .withField("id", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE))
+                .withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public class Config {
+                            private static boolean ready;
+
+                            static {
+                                ready = true;
+                            }
+
+                            private int id;
+
+                            {
+                                id = 1;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAStaticInitializerBlockInAnEnum() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Counter"));
+        builder.withConstant("INSTANCE")
+                .withField("count", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
+                .withStaticInitializerBlock(b -> b.assign(b.field("count"), b.literal(0)));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Counter {
+                            INSTANCE;
+
+                            private static int count;
+
+                            static {
+                                count = 0;
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void rendersStaticNestedClassInsideClass() {
         ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
         ClassDecl nested = new ClassDecl(
@@ -771,6 +869,23 @@ class TypeDeclRendererTest {
                                 public static class Nested {
                                 }
                             };
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAnnotationTypeWithADefaultAndANonDefaultElement() {
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("me.supcheg.example", "MaxLength"));
+        builder.withElement("value", PrimitiveTypeRef.INT, new LiteralValue(new IntLiteral(255)))
+                .withElement("message", Types.of(ClassDesc.of("java.lang", "String")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public @interface MaxLength {
+                            int value() default 255;
+                            String message();
                         }
                         """);
     }

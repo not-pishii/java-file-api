@@ -2,6 +2,9 @@ package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
+import me.supcheg.javafile.model.AnnotationElementDecl;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
+import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.CompactConstructorDecl;
@@ -14,10 +17,12 @@ import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.FieldDecl;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
@@ -40,6 +45,7 @@ final class TypeDeclRenderer {
             case InterfaceDecl i -> renderInterface(i, ctx);
             case RecordDecl r -> renderRecord(r, ctx);
             case EnumDecl e -> renderEnum(e, ctx);
+            case AnnotationTypeDecl a -> renderAnnotationType(a, ctx);
         };
     }
 
@@ -78,6 +84,7 @@ final class TypeDeclRenderer {
                     case EnumConstructorDecl c -> renderEnumConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
+                    case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
     }
@@ -90,8 +97,18 @@ final class TypeDeclRenderer {
                     case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
+                    case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));
+    }
+
+    private static String renderInitializerBlock(InitializerBlock block, Context ctx) {
+        return ctx.pad()
+                + (block.isStatic() ? "static " : "")
+                + "{" + ctx.newline()
+                + renderStatements(block.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
     }
 
     private static String renderAbstractMethodInClass(AbstractMethodDecl m, Context ctx) {
@@ -272,7 +289,7 @@ final class TypeDeclRenderer {
         return sb.toString();
     }
 
-    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, TypeContext ctx) {
+    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, Context ctx) {
         if (throwsTypes.isEmpty()) {
             return "";
         }
@@ -314,15 +331,18 @@ final class TypeDeclRenderer {
         }
         sb.append(" {").append(ctx.newline());
         sb.append(renderRecordMembers(
-                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName()));
+                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName(), decl.components()));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
 
-    private static String renderRecordMembers(List<RecordMember> members, Context ctx, String ownerSimpleName) {
+    private static String renderRecordMembers(
+            List<RecordMember> members, Context ctx, String ownerSimpleName, List<RecordComponent> components) {
         return members.stream()
                 .map(member -> switch (member) {
                     case CompactConstructorDecl cc -> renderCompactConstructor(cc, ctx, ownerSimpleName);
+                    case CanonicalConstructorDecl cc ->
+                        renderCanonicalConstructor(cc, ctx, ownerSimpleName, components);
                     case MethodDecl m -> renderMethod(m, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
@@ -339,6 +359,49 @@ final class TypeDeclRenderer {
                 + renderStatements(cc.body().statements(), ctx.withIncreasedPad())
                 + ctx.pad()
                 + "}" + ctx.newline();
+    }
+
+    /// Renders an explicit canonical constructor after checking its
+    /// parameter list against the record's components — the enclosing
+    /// [RecordDecl]'s components and this constructor's params are only ever
+    /// known together here, at render time, so this is where JLS's
+    /// name/type/order match is enforced rather than at construction.
+    private static String renderCanonicalConstructor(
+            CanonicalConstructorDecl cc, Context ctx, String ownerSimpleName, List<RecordComponent> components) {
+        requireMatchesComponents(cc.params(), components);
+        return AnnotationRenderer.renderAnnotations(cc.annotations(), ctx)
+                + ctx.pad() + TypeRefRenderer.renderModifiers(cc.modifiers()) + ownerSimpleName
+                + "(" + TypeRefRenderer.renderParams(cc.params(), ctx) + ")"
+                + renderThrows(cc.throwsTypes(), ctx)
+                + " {" + ctx.newline()
+                + renderStatements(cc.body().statements(), ctx.withIncreasedPad())
+                + ctx.pad()
+                + "}" + ctx.newline();
+    }
+
+    private static void requireMatchesComponents(List<Param> params, List<RecordComponent> components) {
+        if (params.size() != components.size()) {
+            throw new IllegalArgumentException(
+                    "canonical constructor params must match record components exactly, expected " + components.size()
+                            + " but got " + params.size());
+        }
+        for (int i = 0; i < components.size(); i++) {
+            RecordComponent component = components.get(i);
+            Param param = params.get(i);
+            // A canonical constructor's parameter must match its record component's
+            // declared type exactly — javac rejects varargs sugar here even when the
+            // varargs element type happens to equal the component's type, since
+            // RecordComponent has no varargs-shaped declaration to match against
+            // (confirmed against javac: `record Nums(int[] values) { public
+            // Nums(int... values) {...} }` fails to compile).
+            if (param.varargs()
+                    || !component.name().equals(param.name())
+                    || !component.type().equals(param.type())) {
+                throw new IllegalArgumentException("canonical constructor parameter " + i + " must be '"
+                        + component.type() + " " + component.name() + "' but was '"
+                        + (param.varargs() ? param.type() + "..." : param.type()) + " " + param.name() + "'");
+            }
+        }
     }
 
     private static String renderStaticField(StaticFieldDecl sf, Context ctx) {
@@ -400,7 +463,7 @@ final class TypeDeclRenderer {
         return sb.toString();
     }
 
-    private static String renderEnumConstantMembers(List<EnumConstantMember> members, Context ctx) {
+    static String renderEnumConstantMembers(List<EnumConstantMember> members, Context ctx) {
         return members.stream()
                 .map(member -> switch (member) {
                     case FieldDecl f -> renderField(f, ctx);
@@ -412,5 +475,25 @@ final class TypeDeclRenderer {
 
     private static String renderStatements(List<me.supcheg.javafile.code.Stmt> statements, Context ctx) {
         return ExprRenderer.renderBlock(new me.supcheg.javafile.code.CodeBody(statements), ctx);
+    }
+
+    private static String renderAnnotationType(AnnotationTypeDecl decl, Context ctx) {
+        StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
+        sb.append(ctx.pad());
+        sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
+        sb.append("@interface ").append(decl.desc().displayName()).append(" {").append(ctx.newline());
+        Context inner = ctx.withIncreasedPad();
+        for (AnnotationElementDecl element : decl.elements()) {
+            sb.append(inner.pad())
+                    .append(TypeRefRenderer.renderType(element.type(), inner))
+                    .append(' ')
+                    .append(element.name())
+                    .append("()");
+            element.defaultValue()
+                    .ifPresent(v -> sb.append(" default ").append(AnnotationRenderer.renderValue(v, inner)));
+            sb.append(";").append(inner.newline());
+        }
+        sb.append(ctx.pad()).append("}").append(ctx.newline());
+        return sb.toString();
     }
 }
