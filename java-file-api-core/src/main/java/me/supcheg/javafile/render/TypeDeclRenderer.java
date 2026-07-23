@@ -289,7 +289,7 @@ final class TypeDeclRenderer {
         return sb.toString();
     }
 
-    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, TypeContext ctx) {
+    private static String renderThrows(List<ClassOrInterfaceTypeRef> throwsTypes, Context ctx) {
         if (throwsTypes.isEmpty()) {
             return "";
         }

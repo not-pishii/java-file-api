@@ -47,7 +47,7 @@ final class AnnotationRenderer {
         return sb.toString();
     }
 
-    private static String renderUse(AnnotationUse use, Context ctx) {
+    static String renderUse(AnnotationUse use, Context ctx) {
         String name = "@" + ctx.reference(use.type());
         List<AnnotationMember> members = use.members();
         if (members.isEmpty()) {

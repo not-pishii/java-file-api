@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -26,21 +27,37 @@ final class TypeRefRenderer {
 
     private TypeRefRenderer() {}
 
-    static String renderType(TypeRef ref, TypeContext ctx) {
+    static String renderType(TypeRef ref, Context ctx) {
         return switch (ref) {
-            case ClassTypeRef(var desc) -> ctx.reference(desc);
-            case ParameterizedTypeRef(var raw, var args) -> {
+            case ClassTypeRef(var desc, var annotations) ->
+                renderTypeAnnotations(annotations, ctx) + ctx.reference(desc);
+            case ParameterizedTypeRef(var raw, var args, var annotations) -> {
                 String rawName = ctx.reference(raw);
                 String argsStr = args.stream().map(a -> renderTypeArg(a, ctx)).collect(Collectors.joining(", "));
-                yield rawName + "<" + argsStr + ">";
+                yield renderTypeAnnotations(annotations, ctx) + rawName + "<" + argsStr + ">";
             }
-            case TypeVarRef(var name) -> name;
-            case ArrayTypeRef(var component) -> renderType(component, ctx) + "[]";
+            case TypeVarRef(var name, var annotations) -> renderTypeAnnotations(annotations, ctx) + name;
+            case ArrayTypeRef(var component, var annotations) -> {
+                String renderedAnnotations = renderTypeAnnotations(annotations, ctx);
+                yield renderType(component, ctx) + (renderedAnnotations.isEmpty() ? "" : " " + renderedAnnotations)
+                        + "[]";
+            }
             case PrimitiveTypeRef p -> p.sourceName();
         };
     }
 
-    static String renderTypeArg(TypeArg arg, TypeContext ctx) {
+    /// Renders type-use annotations (JLS 9.7.4) preceding the type they qualify,
+    /// each followed by a trailing space; renders to an empty string when there
+    /// are none, so callers never need a conditional.
+    private static String renderTypeAnnotations(List<AnnotationUse> annotations, Context ctx) {
+        StringBuilder sb = new StringBuilder();
+        for (AnnotationUse use : annotations) {
+            sb.append(AnnotationRenderer.renderUse(use, ctx)).append(' ');
+        }
+        return sb.toString();
+    }
+
+    static String renderTypeArg(TypeArg arg, Context ctx) {
         return switch (arg) {
             case ExactTypeArg(var type) -> renderType(type, ctx);
             case ExtendsTypeArg(var bound) -> "? extends " + renderType(bound, ctx);
@@ -75,18 +92,19 @@ final class TypeRefRenderer {
                 .collect(Collectors.joining(", "));
     }
 
-    static String renderTypeParams(List<TypeParam> typeParams, TypeContext ctx) {
+    static String renderTypeParams(List<TypeParam> typeParams, Context ctx) {
         if (typeParams.isEmpty()) {
             return "";
         }
         return typeParams.stream().map(p -> renderTypeParam(p, ctx)).collect(Collectors.joining(", ", "<", ">"));
     }
 
-    private static String renderTypeParam(TypeParam param, TypeContext ctx) {
+    private static String renderTypeParam(TypeParam param, Context ctx) {
+        String annotations = renderTypeAnnotations(param.annotations(), ctx);
         if (param.bounds().isEmpty()) {
-            return param.name();
+            return annotations + param.name();
         }
-        return param.name() + " extends "
+        return annotations + param.name() + " extends "
                 + param.bounds().stream().map(b -> renderType(b, ctx)).collect(Collectors.joining(" & "));
     }
 }

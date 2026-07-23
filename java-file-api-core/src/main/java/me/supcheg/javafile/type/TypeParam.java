@@ -1,6 +1,7 @@
 package me.supcheg.javafile.type;
 
 import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.annotation.AnnotationUse;
 
 import java.util.List;
 
@@ -13,9 +14,20 @@ import java.util.List;
 ///
 /// @param name the type parameter's name
 /// @param bounds the parameter's upper bounds, rendered joined with `&`
-public record TypeParam(String name, List<ClassOrInterfaceTypeRef> bounds) {
+/// @param annotations the annotations on the type parameter declaration itself,
+///                     e.g. `<@Foo T>`; defensively copied into an unmodifiable list
+public record TypeParam(String name, List<ClassOrInterfaceTypeRef> bounds, List<AnnotationUse> annotations) {
     public TypeParam {
         name = Identifiers.requireValid(name);
         bounds = List.copyOf(bounds);
+        annotations = List.copyOf(annotations);
+    }
+
+    /// Creates a type parameter with no annotations.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds the parameter's upper bounds, rendered joined with `&`
+    public TypeParam(String name, List<ClassOrInterfaceTypeRef> bounds) {
+        this(name, bounds, List.of());
     }
 }
