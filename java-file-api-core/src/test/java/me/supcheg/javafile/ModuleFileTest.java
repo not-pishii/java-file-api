@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ModuleFileTest {
 
@@ -76,6 +77,31 @@ class ModuleFileTest {
                             provides me.supcheg.example.api.Plugin with me.supcheg.example.impl.DefaultPlugin, me.supcheg.example.impl.OtherPlugin;
                         }
                         """);
+    }
+
+    @Test
+    void rejectsOpensDirectiveInOpenModule() {
+        assertThatThrownBy(() ->
+                        ModuleFile.of("me.supcheg.example", mb -> mb.open().opens("me.supcheg.example.internal")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("open")
+                .hasMessageContaining("opens");
+    }
+
+    @Test
+    void rejectsDuplicateRequiresForSameModuleName() {
+        assertThatThrownBy(() -> ModuleFile.of(
+                        "me.supcheg.example", mb -> mb.requires("java.sql").requires("java.sql")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("java.sql");
+    }
+
+    @Test
+    void rejectsDuplicateRequiresAcrossDifferentModifierFlavors() {
+        assertThatThrownBy(() -> ModuleFile.of(
+                        "me.supcheg.example", mb -> mb.requires("java.sql").requiresTransitive("java.sql")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("java.sql");
     }
 
     @Test

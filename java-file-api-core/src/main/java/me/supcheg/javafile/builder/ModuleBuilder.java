@@ -10,7 +10,9 @@ import me.supcheg.javafile.model.UsesDirective;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /// A mutable builder for a `module-info.java` declaration's directives.
 ///
@@ -130,7 +132,39 @@ public final class ModuleBuilder {
     /// Snapshots the accumulated directives.
     ///
     /// @return the finished directive list
+    /// @throws IllegalArgumentException if the module is [#open()] and declares
+    ///         an explicit `opens` directive, or if two directives `requires`
+    ///         the same module name
     public List<ModuleDirective> build() {
+        requireNoOpensInOpenModule();
+        requireNoDuplicateRequires();
         return List.copyOf(directives);
+    }
+
+    /// Rejects explicit `opens` directives on an `open` module: an `open
+    /// module` already implicitly opens every package, so real `javac`
+    /// rejects the redundant, explicit directive.
+    private void requireNoOpensInOpenModule() {
+        if (!open) {
+            return;
+        }
+        for (ModuleDirective directive : directives) {
+            if (directive instanceof OpensDirective) {
+                throw new IllegalArgumentException("an open module cannot declare explicit 'opens' directives");
+            }
+        }
+    }
+
+    /// Rejects two `requires` directives for the same module name,
+    /// regardless of their `transitive`/`static` modifiers — `javac` rejects
+    /// the duplicate purely by module name.
+    private void requireNoDuplicateRequires() {
+        Set<String> seen = new HashSet<>();
+        for (ModuleDirective directive : directives) {
+            if (directive instanceof RequiresDirective requires && !seen.add(requires.moduleName())) {
+                throw new IllegalArgumentException(
+                        "duplicate 'requires' directive for module: " + requires.moduleName());
+            }
+        }
     }
 }
