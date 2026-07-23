@@ -58,6 +58,56 @@ class CanonicalConstructorDeclTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void arityMismatchIsRejectedAtRender() {
+        RecordComponent x = new RecordComponent("x", PrimitiveTypeRef.INT);
+        CanonicalConstructorDecl ctor = new CanonicalConstructorDecl(
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(new Param("x", PrimitiveTypeRef.INT), new Param("y", PrimitiveTypeRef.INT)),
+                CodeBody.EMPTY,
+                List.of());
+        RecordDecl decl = new RecordDecl(
+                ClassDesc.of("geom", "Point"),
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(x),
+                List.of(),
+                List.of(ctor));
+
+        assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
+                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("expected 1")
+                .hasMessageContaining("but got 2");
+    }
+
+    @Test
+    void pureTypeMismatchIsRejectedAtRenderEvenWhenNameMatchesAndParamIsNotVarargs() {
+        RecordComponent x = new RecordComponent("x", PrimitiveTypeRef.INT);
+        CanonicalConstructorDecl ctor = new CanonicalConstructorDecl(
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(new Param("x", PrimitiveTypeRef.LONG)),
+                CodeBody.EMPTY,
+                List.of());
+        RecordDecl decl = new RecordDecl(
+                ClassDesc.of("geom", "Point"),
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(x),
+                List.of(),
+                List.of(ctor));
+
+        assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
+                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("must be 'INT x'")
+                .hasMessageContaining("but was 'LONG x'");
+    }
+
     /// A varargs canonical constructor parameter must always be rejected, even
     /// when its element type happens to equal the component's declared type
     /// directly (not merely when wrapped in an extra array dimension) — javac

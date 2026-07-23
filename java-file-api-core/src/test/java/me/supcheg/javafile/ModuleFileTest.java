@@ -105,6 +105,32 @@ class ModuleFileTest {
     }
 
     @Test
+    void usesAndProvidesRenderUnqualifiedClassNamesWithNoLeadingDot() {
+        ModuleFile file = ModuleFile.of(
+                "me.supcheg.example", mb -> mb.uses("TopLevelService").provides("TopLevelService", "TopLevelImpl"));
+
+        assertThat(file.render()).isEqualTo("""
+                        module me.supcheg.example {
+                            uses TopLevelService;
+                            provides TopLevelService with TopLevelImpl;
+                        }
+                        """);
+    }
+
+    @Test
+    void openModuleWithNonOpensDirectivesBuildsAndRendersSuccessfully() {
+        ModuleFile file = ModuleFile.of(
+                "me.supcheg.example", mb -> mb.open().requires("java.base").exports("me.supcheg.example.api"));
+
+        assertThat(file.render()).isEqualTo("""
+                        open module me.supcheg.example {
+                            requires java.base;
+                            exports me.supcheg.example.api;
+                        }
+                        """);
+    }
+
+    @Test
     void writeToWritesModuleInfoJavaDirectlyUnderOutputDir(@TempDir Path tempDir) throws IOException {
         ModuleFile file = ModuleFile.of("me.supcheg.example", mb -> mb.requires("java.base"));
 

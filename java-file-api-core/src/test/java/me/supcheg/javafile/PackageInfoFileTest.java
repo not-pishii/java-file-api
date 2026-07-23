@@ -47,4 +47,16 @@ class PackageInfoFileTest {
         assertThat(Files.exists(expected)).isTrue();
         assertThat(Files.readString(expected)).isEqualTo(file.render());
     }
+
+    @Test
+    void writeToWritesDirectlyUnderOutputDirWhenPackageNameIsEmpty(@TempDir Path tempDir) throws IOException {
+        PackageInfoFile file = PackageInfoFile.of("");
+
+        file.writeTo(tempDir);
+
+        Path expected = tempDir.resolve("package-info.java");
+        assertThat(Files.exists(expected)).isTrue();
+        assertThat(Files.readString(expected)).isEqualTo(file.render());
+        assertThat(Files.list(tempDir).toList()).containsExactly(expected);
+    }
 }

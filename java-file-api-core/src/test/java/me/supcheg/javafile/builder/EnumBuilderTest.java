@@ -5,6 +5,7 @@ import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.FieldDecl;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -133,6 +134,19 @@ class EnumBuilderTest {
         AbstractMethodDecl reset = (AbstractMethodDecl) decl.members().get(1);
         assertThat(reset.name()).isEqualTo("reset");
         assertThat(reset.returnType()).isEmpty();
+    }
+
+    @Test
+    void enumCanDeclareAnInstanceInitializerBlock() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Counter"));
+
+        builder.withConstant("INSTANCE").withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1)));
+
+        EnumDecl decl = builder.build();
+
+        InitializerBlock block = (InitializerBlock) decl.members().get(0);
+        assertThat(block.isStatic()).isFalse();
+        assertThat(block.body().statements()).hasSize(1);
     }
 
     @Test
