@@ -208,6 +208,20 @@ class TypeRefRendererTest {
     }
 
     @Test
+    void typeParamOwnAnnotationRendersBeforeTheParamName() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+        Context ctx = Context.of(standardFormat(), imports);
+        ClassDesc nonnull = ClassDesc.of("javax.annotation", "Nonnull");
+        var param = new me.supcheg.javafile.type.TypeParam(
+                "T",
+                java.util.List.of(),
+                List.of(new me.supcheg.javafile.annotation.AnnotationUse(nonnull, List.of())));
+
+        assertThat(TypeRefRenderer.renderTypeParams(java.util.List.of(param), ctx))
+                .isEqualTo("<@Nonnull T>");
+    }
+
+    @Test
     void plainClassTypeStillRendersIdenticallyToBeforeTypeUseAnnotationSupport() {
         ImportManager imports = new ImportManager("me.supcheg.example");
         Context ctx = Context.of(standardFormat(), imports);
