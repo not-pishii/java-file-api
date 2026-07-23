@@ -1,6 +1,7 @@
 package me.supcheg.javafile.model;
 
-/// A top-level type declaration: a class, interface, record, or enum.
+/// A top-level type declaration: a class, interface, record, enum, or
+/// annotation type.
 ///
 /// A [TypeDecl] is itself a [JavaFileElement], a [ClassMember], an
 /// [InterfaceMember], a [RecordMember], an [EnumMember], and an
