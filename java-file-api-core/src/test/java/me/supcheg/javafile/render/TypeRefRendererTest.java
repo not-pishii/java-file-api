@@ -229,4 +229,21 @@ class TypeRefRendererTest {
         assertThat(TypeRefRenderer.renderType(Types.of(ClassDesc.of("java.util", "List")), ctx))
                 .isEqualTo("List");
     }
+
+    @Test
+    void classTypeUseAnnotationOnAQualifiedNameCollisionRendersBeforeTheSimpleNameNotTheQualifier() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+        Context ctx = Context.of(standardFormat(), imports);
+        ClassDesc nonnull = ClassDesc.of("javax.annotation", "Nonnull");
+
+        // First claim of the simple name "Date" wins the bare import.
+        imports.reference(ClassDesc.of("pkg1", "Date"));
+
+        // The second, colliding "Date" (different package) must fall back to a
+        // fully-qualified reference, per ImportManager's disambiguation rule.
+        var annotated = Types.of(
+                ClassDesc.of("pkg2", "Date"), new me.supcheg.javafile.annotation.AnnotationUse(nonnull, List.of()));
+
+        assertThat(TypeRefRenderer.renderType(annotated, ctx)).isEqualTo("pkg2.@Nonnull Date");
+    }
 }

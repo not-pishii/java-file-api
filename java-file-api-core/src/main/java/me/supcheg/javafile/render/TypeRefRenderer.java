@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
+import java.lang.constant.ClassDesc;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -28,12 +30,11 @@ final class TypeRefRenderer {
 
     static String renderType(TypeRef ref, Context ctx) {
         return switch (ref) {
-            case ClassTypeRef(var desc, var annotations) ->
-                AnnotationRenderer.renderInlineAnnotations(annotations, ctx) + ctx.reference(desc);
+            case ClassTypeRef(var desc, var annotations) -> renderAnnotatedReference(desc, annotations, ctx);
             case ParameterizedTypeRef(var raw, var args, var annotations) -> {
-                String rawName = ctx.reference(raw);
+                String rawName = renderAnnotatedReference(raw, annotations, ctx);
                 String argsStr = args.stream().map(a -> renderTypeArg(a, ctx)).collect(Collectors.joining(", "));
-                yield AnnotationRenderer.renderInlineAnnotations(annotations, ctx) + rawName + "<" + argsStr + ">";
+                yield rawName + "<" + argsStr + ">";
             }
             case TypeVarRef(var name, var annotations) ->
                 AnnotationRenderer.renderInlineAnnotations(annotations, ctx) + name;
@@ -44,6 +45,36 @@ final class TypeRefRenderer {
             }
             case PrimitiveTypeRef p -> p.sourceName();
         };
+    }
+
+    /// Renders a resolved reference to `desc`, placing any type-use annotations
+    /// immediately before the final simple-name segment.
+    ///
+    /// When [Context#reference(ClassDesc)] resolves `desc` to a bare simple name
+    /// (the common case), the annotations are simply prepended. But when a
+    /// simple-name collision forces a fully-qualified reference (e.g.
+    /// `pkg.Simple`), a leading annotation is invalid Java — `javac` requires it
+    /// immediately before the simple name (`pkg.@Ann Simple`), so this splits the
+    /// qualifier from the simple name and inserts the annotations in between.
+    ///
+    /// @param desc the type being referenced
+    /// @param annotations the type-use annotations applied to this reference
+    /// @param ctx the render context
+    /// @return the rendered, correctly-annotated reference
+    private static String renderAnnotatedReference(ClassDesc desc, List<AnnotationUse> annotations, Context ctx) {
+        String reference = ctx.reference(desc);
+        String renderedAnnotations = AnnotationRenderer.renderInlineAnnotations(annotations, ctx);
+        if (renderedAnnotations.isEmpty()) {
+            return reference;
+        }
+
+        String simpleName = desc.displayName();
+        if (reference.equals(simpleName)) {
+            return renderedAnnotations + reference;
+        }
+
+        String qualifier = reference.substring(0, reference.length() - simpleName.length());
+        return qualifier + renderedAnnotations + simpleName;
     }
 
     static String renderTypeArg(TypeArg arg, Context ctx) {
