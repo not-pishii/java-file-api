@@ -32,11 +32,12 @@ class AnonymousClassCompileTest {
                 me.supcheg.javafile.code.CodeBody.EMPTY,
                 List.of());
 
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Tasks"), cb -> cb.withMethod(
-                "task",
-                Types.of(RUNNABLE),
-                mb -> mb.withBody(b -> b.return_(
-                        b.newAnonymous(Types.of(RUNNABLE), List.of(runMethod))))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Tasks"),
+                cb -> cb.withMethod(
+                        "task",
+                        Types.of(RUNNABLE),
+                        mb -> mb.withBody(b -> b.return_(b.newAnonymous(Types.of(RUNNABLE), List.of(runMethod))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

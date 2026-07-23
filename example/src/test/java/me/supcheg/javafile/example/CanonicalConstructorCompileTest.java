@@ -23,11 +23,13 @@ class CanonicalConstructorCompileTest {
                 rb -> rb.withComponent("low", PrimitiveTypeRef.INT)
                         .withComponent("high", PrimitiveTypeRef.INT)
                         .withCanonicalConstructor(
-                                List.of(new Param("low", PrimitiveTypeRef.INT), new Param("high", PrimitiveTypeRef.INT)),
+                                List.of(
+                                        new Param("low", PrimitiveTypeRef.INT),
+                                        new Param("high", PrimitiveTypeRef.INT)),
                                 b -> b.if_(
                                                 b.gt(b.field("low"), b.field("high")),
-                                                ib -> ib.then(t -> t.throw_(t.new_(
-                                                        Types.of(ClassDesc.of("java.lang", "IllegalArgumentException"))))))
+                                                ib -> ib.then(t -> t.throw_(t.new_(Types.of(
+                                                        ClassDesc.of("java.lang", "IllegalArgumentException"))))))
                                         .assign(b.field(b.this_(), "low"), b.field("low"))
                                         .assign(b.field(b.this_(), "high"), b.field("high"))));
 

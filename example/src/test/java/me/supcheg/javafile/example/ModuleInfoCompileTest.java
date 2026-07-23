@@ -5,16 +5,16 @@ import me.supcheg.javafile.ModuleFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.lang.constant.ClassDesc;
-import java.nio.file.Path;
-import java.util.List;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+import java.io.IOException;
+import java.lang.constant.ClassDesc;
+import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,8 +28,8 @@ class ModuleInfoCompileTest {
 
     @Test
     void moduleWithRequiresAndExportsCompiles(@TempDir Path sourceDir, @TempDir Path outputDir) throws IOException {
-        ModuleFile moduleFile =
-                ModuleFile.of("me.supcheg.example", mb -> mb.requires("java.base").exports("me.supcheg.example"));
+        ModuleFile moduleFile = ModuleFile.of(
+                "me.supcheg.example", mb -> mb.requires("java.base").exports("me.supcheg.example"));
         moduleFile.writeTo(sourceDir);
 
         // `exports` of a package with no types is a compile error, so the
@@ -43,12 +43,7 @@ class ModuleInfoCompileTest {
                     sourceDir.resolve("module-info.java"), sourceDir.resolve("me/supcheg/example/Marker.java")));
 
             boolean succeeded = compiler.getTask(
-                            null,
-                            fileManager,
-                            diagnostics,
-                            List.of("-d", outputDir.toString()),
-                            null,
-                            compilationUnits)
+                            null, fileManager, diagnostics, List.of("-d", outputDir.toString()), null, compilationUnits)
                     .call();
 
             List<Diagnostic<? extends JavaFileObject>> errors = diagnostics.getDiagnostics().stream()

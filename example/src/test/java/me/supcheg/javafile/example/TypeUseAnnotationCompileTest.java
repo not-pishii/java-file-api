@@ -26,8 +26,7 @@ class TypeUseAnnotationCompileTest {
     private static final ClassDesc STRING = ClassDesc.of("java.lang", "String");
     private static final ClassDesc NON_NULL = ClassDesc.of("me.supcheg.meta", "NonNull");
 
-    private static final String NON_NULL_SRC =
-            """
+    private static final String NON_NULL_SRC = """
             package me.supcheg.meta;
 
             import java.lang.annotation.ElementType;
@@ -44,8 +43,7 @@ class TypeUseAnnotationCompileTest {
 
         JavaFile file = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "Holder"),
-                cb -> cb.withField(
-                        "value", Types.of(STRING, nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
+                cb -> cb.withField("value", Types.of(STRING, nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),
@@ -61,9 +59,7 @@ class TypeUseAnnotationCompileTest {
         JavaFile file = JavaFile.of(
                 ClassDesc.of("me.supcheg.example", "ArrayHolder"),
                 cb -> cb.withField(
-                        "values",
-                        Types.array(Types.of(STRING), nonNull),
-                        fb -> fb.withModifiers(Modifier.PRIVATE)));
+                        "values", Types.array(Types.of(STRING), nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),

@@ -15,11 +15,13 @@ class VarargsCompileTest {
 
     @Test
     void varargsParamAsLastParameterCompiles() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Summer"), cb -> cb.withMethod(
-                "sum",
-                PrimitiveTypeRef.INT,
-                mb -> mb.withVarargsParam("values", PrimitiveTypeRef.INT)
-                        .withBody(b -> b.return_(b.literal(0)))));
+        JavaFile file = JavaFile.of(
+                ClassDesc.of("me.supcheg.example", "Summer"),
+                cb -> cb.withMethod(
+                        "sum",
+                        PrimitiveTypeRef.INT,
+                        mb -> mb.withVarargsParam("values", PrimitiveTypeRef.INT)
+                                .withBody(b -> b.return_(b.literal(0)))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
