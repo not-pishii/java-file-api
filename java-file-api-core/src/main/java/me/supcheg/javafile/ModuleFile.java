@@ -7,6 +7,7 @@ import me.supcheg.javafile.model.OpensDirective;
 import me.supcheg.javafile.model.ProvidesDirective;
 import me.supcheg.javafile.model.RequiresDirective;
 import me.supcheg.javafile.model.UsesDirective;
+import me.supcheg.javafile.type.ClassDescNames;
 
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
@@ -72,20 +73,21 @@ public final class ModuleFile {
                 "exports " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
             case OpensDirective(var packageName, var to) ->
                 "opens " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
-            case UsesDirective(var service) -> "uses " + binaryName(service) + ";";
+            case UsesDirective(var service) -> "uses " + qualifiedName(service) + ";";
             case ProvidesDirective(var service, var implementations) ->
                 "provides "
-                        + binaryName(service)
+                        + qualifiedName(service)
                         + " with "
                         + implementations.toList().stream()
-                                .map(ModuleFile::binaryName)
+                                .map(ModuleFile::qualifiedName)
                                 .collect(Collectors.joining(", "))
                         + ";";
         };
     }
 
-    private static String binaryName(ClassDesc desc) {
-        return desc.packageName().isEmpty() ? desc.displayName() : desc.packageName() + "." + desc.displayName();
+    private static String qualifiedName(ClassDesc desc) {
+        String dotted = ClassDescNames.qualifiedByDots(desc);
+        return desc.packageName().isEmpty() ? dotted : desc.packageName() + "." + dotted;
     }
 
     /// Writes this file's rendered source text as `module-info.java` directly

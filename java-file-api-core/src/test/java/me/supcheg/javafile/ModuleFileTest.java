@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.lang.constant.ClassDesc;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -113,6 +114,22 @@ class ModuleFileTest {
                         module me.supcheg.example {
                             uses TopLevelService;
                             provides TopLevelService with TopLevelImpl;
+                        }
+                        """);
+    }
+
+    @Test
+    void usesAndProvidesRenderNestedServiceAndImplementationTypesWithDotsNotDollarSigns() {
+        ClassDesc service = ClassDesc.of("me.supcheg.example.api", "Registry").nested("Plugin");
+        ClassDesc impl = ClassDesc.of("me.supcheg.example.impl", "Registry").nested("DefaultPlugin");
+
+        ModuleFile file =
+                ModuleFile.of("me.supcheg.example", mb -> mb.uses(service).provides(service, impl));
+
+        assertThat(file.render()).isEqualTo("""
+                        module me.supcheg.example {
+                            uses me.supcheg.example.api.Registry.Plugin;
+                            provides me.supcheg.example.api.Registry.Plugin with me.supcheg.example.impl.Registry.DefaultPlugin;
                         }
                         """);
     }
