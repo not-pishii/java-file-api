@@ -1,21 +1,11 @@
 package me.supcheg.javafile;
 
 import me.supcheg.javafile.builder.ModuleBuilder;
-import me.supcheg.javafile.model.ExportsDirective;
 import me.supcheg.javafile.model.ModuleDirective;
-import me.supcheg.javafile.model.OpensDirective;
-import me.supcheg.javafile.model.ProvidesDirective;
-import me.supcheg.javafile.model.RequiresDirective;
-import me.supcheg.javafile.model.UsesDirective;
-import me.supcheg.javafile.type.ClassDescNames;
 
-import java.io.IOException;
-import java.lang.constant.ClassDesc;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /// A `module-info.java` source file: a module declaration and its directives,
 /// with no package or type declaration.
@@ -26,7 +16,8 @@ import java.util.stream.Collectors;
 /// qualified binary names directly, matching how real-world
 /// `module-info.java` files are written (imports are almost never used
 /// there).
-public final class ModuleFile {
+public final class ModuleFile implements RenderableFile {
+    private static final Path MODULE_INFO_JAVA = Path.of("module-info.java");
 
     private final String moduleName;
     private final boolean open;
@@ -49,54 +40,21 @@ public final class ModuleFile {
         return new ModuleFile(moduleName, builder.isOpen(), builder.build());
     }
 
-    /// Renders this file's module declaration to source text.
+    @Override
+    public Meta renderMeta() {
+        return new Meta(open, moduleName, directives);
+    }
+
+    /// The render metadata for a [ModuleFile]: its module declaration and directives.
     ///
-    /// @return the complete source text
-    public String render() {
-        StringBuilder sb = new StringBuilder();
-        if (open) {
-            sb.append("open ");
-        }
-        sb.append("module ").append(moduleName).append(" {\n");
-        for (ModuleDirective directive : directives) {
-            sb.append("    ").append(renderDirective(directive)).append("\n");
-        }
-        sb.append("}\n");
-        return sb.toString();
-    }
+    /// @param open whether `open` is present on the module declaration
+    /// @param moduleName the declared module's name, dot-separated
+    /// @param directives the module's directives, in order
+    public record Meta(boolean open, String moduleName, List<ModuleDirective> directives)
+            implements RenderableFile.Meta {}
 
-    private static String renderDirective(ModuleDirective directive) {
-        return switch (directive) {
-            case RequiresDirective(var name, var transitive, var isStatic) ->
-                "requires " + (transitive ? "transitive " : "") + (isStatic ? "static " : "") + name + ";";
-            case ExportsDirective(var packageName, var to) ->
-                "exports " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
-            case OpensDirective(var packageName, var to) ->
-                "opens " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
-            case UsesDirective(var service) -> "uses " + qualifiedName(service) + ";";
-            case ProvidesDirective(var service, var implementations) ->
-                "provides "
-                        + qualifiedName(service)
-                        + " with "
-                        + implementations.toList().stream()
-                                .map(ModuleFile::qualifiedName)
-                                .collect(Collectors.joining(", "))
-                        + ";";
-        };
-    }
-
-    private static String qualifiedName(ClassDesc desc) {
-        String dotted = ClassDescNames.qualifiedByDots(desc);
-        return desc.packageName().isEmpty() ? dotted : desc.packageName() + "." + dotted;
-    }
-
-    /// Writes this file's rendered source text as `module-info.java` directly
-    /// under `outputDir` — a module descriptor lives at a module's source
-    /// root, not inside a package directory.
-    ///
-    /// @param outputDir the source root to write into
-    /// @throws IOException if the file cannot be written
-    public void writeTo(Path outputDir) throws IOException {
-        Files.writeString(outputDir.resolve("module-info.java"), render());
+    @Override
+    public Path pathSuffix() {
+        return MODULE_INFO_JAVA;
     }
 }

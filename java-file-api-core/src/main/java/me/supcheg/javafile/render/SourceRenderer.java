@@ -1,6 +1,6 @@
 package me.supcheg.javafile.render;
 
-import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.RenderableFile;
 
 /// Renders a package declaration, computed imports, and a top-level type
 /// declaration into Java source text.
@@ -12,13 +12,12 @@ import me.supcheg.javafile.model.TypeDecl;
 /// incorrectly or not at all.
 public interface SourceRenderer {
 
-    /// Renders `decl` as a complete source file in package `packageName`.
+    /// Renders `meta` as a complete source file.
     ///
-    /// @param packageName the file's package
-    /// @param decl the top-level type declaration to render
+    /// @param meta the type-specific data describing the file to render
     /// @param format the indentation and line-separator preferences to render with
     /// @return the complete source text
-    String render(String packageName, TypeDecl decl, Format format);
+    String render(RenderableFile.Meta meta, Format format);
 
     /// The caller-controlled formatting preferences for a render call:
     /// indentation unit and line separator. Carries no type-resolution

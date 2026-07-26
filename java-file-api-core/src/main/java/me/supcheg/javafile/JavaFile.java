@@ -10,19 +10,16 @@ import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.TypeDecl;
-import me.supcheg.javafile.render.SourceRenderer;
-import me.supcheg.javafile.render.StandardRenderer;
 import me.supcheg.javafile.transform.ClassTransform;
 import me.supcheg.javafile.transform.EnumTransform;
 import me.supcheg.javafile.transform.InterfaceTransform;
 import me.supcheg.javafile.transform.RecordTransform;
 import me.supcheg.javafile.transform.Transforms;
 
-import java.io.IOException;
 import java.lang.constant.ClassDesc;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /// A source file containing a single top-level type declaration.
 ///
@@ -36,7 +33,7 @@ import java.util.function.Consumer;
 ///
 /// Instances are immutable; every method that produces a modified file
 /// returns a new instance.
-public final class JavaFile {
+public final class JavaFile implements RenderableFile {
 
     private final String packageName;
     private final String simpleName;
@@ -127,23 +124,25 @@ public final class JavaFile {
         return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
     }
 
-    /// Renders this file's package declaration, computed imports, and type declaration to source text.
-    ///
-    /// @return the complete source text
-    public String render() {
-        return StandardRenderer.instance().render(packageName, typeDecl, SourceRenderer.standardFormat());
+    @Override
+    public Meta renderMeta() {
+        return new Meta(packageName, typeDecl);
     }
 
-    /// Writes this file's rendered source text under `outputDir`, creating the
-    /// package's directories inside it as needed.
+    /// The render metadata for a [JavaFile]: its package and wrapped type declaration.
     ///
-    /// @param outputDir the source root to write into
-    /// @throws IOException if the directories or file cannot be created or written
-    public void writeTo(Path outputDir) throws IOException {
-        Path packageDir = packageName.isEmpty() ? outputDir : outputDir.resolve(packageName.replace('.', '/'));
-        Files.createDirectories(packageDir);
-        Path file = packageDir.resolve(simpleName + ".java");
-        Files.writeString(file, render());
+    /// @param packageName the file's package
+    /// @param typeDecl the top-level type declaration to render
+    public record Meta(String packageName, TypeDecl typeDecl) implements RenderableFile.Meta {}
+
+    @Override
+    public Path pathSuffix() {
+        var filename = Path.of(simpleName + ".java");
+        return Stream.of(packageName.split("\\."))
+                .map(Path::of)
+                .reduce(Path::resolve)
+                .map(package_ -> package_.resolve(filename))
+                .orElse(filename);
     }
 
     /// Rebuilds this file's class declaration by applying `transform` to each member.
