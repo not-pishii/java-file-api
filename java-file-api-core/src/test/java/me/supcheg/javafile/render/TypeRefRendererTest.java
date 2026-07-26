@@ -246,4 +246,34 @@ class TypeRefRendererTest {
 
         assertThat(TypeRefRenderer.renderType(annotated, ctx)).isEqualTo("pkg2.@Nonnull Date");
     }
+
+    @Test
+    void classTypeUseAnnotationOnADirectlyImportedNestedTypeRendersBeforeTheLeafSimpleName() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+        Context ctx = Context.of(standardFormat(), imports);
+        ClassDesc nonnull = ClassDesc.of("javax.annotation", "Nonnull");
+        ClassDesc mapEntry = ClassDesc.of("java.util", "Map").nested("Entry");
+
+        var annotated = Types.of(mapEntry, new me.supcheg.javafile.annotation.AnnotationUse(nonnull, List.of()));
+
+        assertThat(TypeRefRenderer.renderType(annotated, ctx)).isEqualTo("@Nonnull Entry");
+        assertThat(imports.sortedImports()).containsExactly("java.util.Map.Entry", "javax.annotation.Nonnull");
+    }
+
+    @Test
+    void classTypeUseAnnotationOnACollidingNestedTypeRendersBeforeTheLeafSimpleNameNotTheWholeChain() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+        Context ctx = Context.of(standardFormat(), imports);
+        ClassDesc nonnull = ClassDesc.of("javax.annotation", "Nonnull");
+
+        // First claim of the leaf name "Entry" wins the bare import.
+        imports.reference(ClassDesc.of("other.pkg", "Entry"));
+
+        // The second, colliding nested "Map.Entry" falls back to a
+        // fully-qualified reference, with the annotation right before "Entry".
+        ClassDesc mapEntry = ClassDesc.of("java.util", "Map").nested("Entry");
+        var annotated = Types.of(mapEntry, new me.supcheg.javafile.annotation.AnnotationUse(nonnull, List.of()));
+
+        assertThat(TypeRefRenderer.renderType(annotated, ctx)).isEqualTo("java.util.Map.@Nonnull Entry");
+    }
 }

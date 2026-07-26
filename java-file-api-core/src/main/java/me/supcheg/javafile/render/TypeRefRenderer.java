@@ -4,6 +4,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
+import me.supcheg.javafile.type.ClassDescNames;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ExtendsTypeArg;
@@ -68,7 +69,7 @@ final class TypeRefRenderer {
             return reference;
         }
 
-        String simpleName = desc.displayName();
+        String simpleName = ClassDescNames.leafSimpleName(desc);
         if (reference.equals(simpleName)) {
             return renderedAnnotations + reference;
         }
