@@ -1,7 +1,10 @@
 package me.supcheg.javafile.render;
 
-import me.supcheg.javafile.annotation.AnnotationUse;
-import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.ModuleFile;
+import me.supcheg.javafile.PackageInfoFile;
+import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.model.ModuleDirective;
 
 import java.util.List;
 
@@ -16,21 +19,23 @@ public final class StandardRenderer implements SourceRenderer {
         return INSTANCE;
     }
 
-    /// Renders a package declaration, its computed imports, and the given type
-    /// declaration into a single Java source file's text.
-    ///
-    /// @param packageName the file's package
-    /// @param decl the top-level type declaration to render
-    /// @return the complete source text
     @Override
-    public String render(String packageName, TypeDecl decl, Format format) {
-        var imports = new ImportManager(packageName);
+    public String render(RenderableFile.Meta meta, Format format) {
+        return switch (meta) {
+            case JavaFile.Meta javaFile -> renderClassFile(javaFile, format);
+            case ModuleFile.Meta moduleFile -> renderModuleInfo(moduleFile, format);
+            case PackageInfoFile.Meta packageFile -> renderPackageInfo(packageFile, format);
+        };
+    }
+
+    private String renderClassFile(JavaFile.Meta meta, Format format) {
+        var imports = new ImportManager(meta.packageName());
         Context ctx = Context.of(format, imports);
-        String body = TypeDeclRenderer.renderTypeDecl(decl, ctx);
+        String body = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
 
         StringBuilder out = new StringBuilder();
         out.append("package ")
-                .append(packageName)
+                .append(meta.packageName())
                 .append(";")
                 .append(ctx.newline())
                 .append(ctx.newline());
@@ -46,21 +51,14 @@ public final class StandardRenderer implements SourceRenderer {
         return out.toString();
     }
 
-    /// Renders a `package-info.java` file: optional package annotations followed
-    /// by the package declaration and its computed imports.
-    ///
-    /// @param packageName the package being annotated
-    /// @param annotations the package annotations, in order
-    /// @param format the indentation and line-separator preferences to render with
-    /// @return the complete source text
-    public String renderPackageInfo(String packageName, List<AnnotationUse> annotations, Format format) {
-        var imports = new ImportManager(packageName);
+    private String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {
+        var imports = new ImportManager(meta.packageName());
         Context ctx = Context.of(format, imports);
-        String annotationsText = AnnotationRenderer.renderAnnotations(annotations, ctx);
+        String annotationsText = AnnotationRenderer.renderAnnotations(meta.annotations(), ctx);
 
         StringBuilder out = new StringBuilder();
         out.append(annotationsText);
-        out.append("package ").append(packageName).append(";").append(ctx.newline());
+        out.append("package ").append(meta.packageName()).append(";").append(ctx.newline());
 
         List<String> sortedImports = imports.sortedImports();
         if (!sortedImports.isEmpty()) {
@@ -70,5 +68,21 @@ public final class StandardRenderer implements SourceRenderer {
             }
         }
         return out.toString();
+    }
+
+    private String renderModuleInfo(ModuleFile.Meta meta, Format format) {
+        StringBuilder sb = new StringBuilder();
+        if (meta.open()) {
+            sb.append("open ");
+        }
+        sb.append("module ").append(meta.moduleName()).append(" {").append(format.newline());
+        var innerCtx = format.withIncreasedPad();
+        for (ModuleDirective directive : meta.directives()) {
+            sb.append(innerCtx.pad())
+                    .append(ModuleDirectiveRenderer.renderDirective(directive))
+                    .append(innerCtx.newline());
+        }
+        sb.append("}").append(format.newline());
+        return sb.toString();
     }
 }

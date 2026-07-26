@@ -1,5 +1,6 @@
 package me.supcheg.javafile.model;
 
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
@@ -9,6 +10,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
 
+import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -54,7 +56,7 @@ class CanonicalConstructorDeclTest {
                 List.of(ctor));
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -77,7 +79,7 @@ class CanonicalConstructorDeclTest {
                 List.of(ctor));
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("expected 1")
                 .hasMessageContaining("but got 2");
@@ -102,7 +104,7 @@ class CanonicalConstructorDeclTest {
                 List.of(ctor));
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("must be 'INT x'")
                 .hasMessageContaining("but was 'LONG x'");
@@ -136,7 +138,7 @@ class CanonicalConstructorDeclTest {
                 List.of(ctor));
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render("geom", decl, me.supcheg.javafile.render.SourceRenderer.standardFormat()))
+                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -1,17 +1,15 @@
 package me.supcheg.javafile;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
-import me.supcheg.javafile.render.SourceRenderer;
-import me.supcheg.javafile.render.StandardRenderer;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 /// A `package-info.java` source file: package-level annotations and the
 /// package declaration, with no type declaration.
-public final class PackageInfoFile {
+public final class PackageInfoFile implements RenderableFile {
+    private static final Path PACKAGE_INFO_JAVA = Path.of("package-info.java");
 
     private final String packageName;
     private final List<AnnotationUse> annotations;
@@ -30,20 +28,23 @@ public final class PackageInfoFile {
         return new PackageInfoFile(packageName, List.of(annotations));
     }
 
-    /// Renders this file's annotations, package declaration, and computed imports to source text.
-    ///
-    /// @return the complete source text
-    public String render() {
-        return StandardRenderer.instance().renderPackageInfo(packageName, annotations, SourceRenderer.standardFormat());
+    @Override
+    public Meta renderMeta() {
+        return new Meta(packageName, annotations);
     }
 
-    /// Writes this file's rendered source text as `package-info.java` under `outputDir`.
+    /// The render metadata for a [PackageInfoFile]: its package and annotations.
     ///
-    /// @param outputDir the source root to write into
-    /// @throws IOException if the directories or file cannot be created or written
-    public void writeTo(Path outputDir) throws IOException {
-        Path packageDir = packageName.isEmpty() ? outputDir : outputDir.resolve(packageName.replace('.', '/'));
-        Files.createDirectories(packageDir);
-        Files.writeString(packageDir.resolve("package-info.java"), render());
+    /// @param packageName the package being annotated
+    /// @param annotations the package annotations, in order
+    public record Meta(String packageName, List<AnnotationUse> annotations) implements RenderableFile.Meta {}
+
+    @Override
+    public Path pathSuffix() {
+        return Stream.of(packageName.split("\\."))
+                .map(Path::of)
+                .reduce(Path::resolve)
+                .map(package_ -> package_.resolve(PACKAGE_INFO_JAVA))
+                .orElse(PACKAGE_INFO_JAVA);
     }
 }
