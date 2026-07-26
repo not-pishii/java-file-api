@@ -141,4 +141,16 @@ class ImportManagerTest {
 
         assertThat(nested).isEqualTo("Outer.Inner");
     }
+
+    @Test
+    void topLevelTypeCollidingWithANestedTypeOfTheSameLeafNameFallsBackToItsOwnQualifiedName() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+
+        String nested = imports.reference(ClassDesc.of("java.util", "Map").nested("Entry"));
+        String topLevel = imports.reference(ClassDesc.of("other.pkg", "Entry"));
+
+        assertThat(nested).isEqualTo("Entry");
+        assertThat(topLevel).isEqualTo("other.pkg.Entry");
+        assertThat(imports.sortedImports()).containsExactly("java.util.Map.Entry");
+    }
 }
