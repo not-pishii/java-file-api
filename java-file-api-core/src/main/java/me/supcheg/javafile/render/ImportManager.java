@@ -1,5 +1,7 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.type.ClassDescNames;
+
 import java.lang.constant.ClassDesc;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +12,10 @@ import java.util.Map;
 /// The first type to claim a simple name is imported; later types with the
 /// same simple name from a different package are rendered fully qualified
 /// instead. Types in `java.lang` or the file's own package are never
-/// imported.
+/// imported — but only top-level types: a nested type is never visible by
+/// its bare simple name just because its enclosing type's package matches,
+/// so it always goes through the same claim/import bookkeeping as any
+/// other type.
 final class ImportManager implements TypeContext {
 
     private final String currentPackage;
@@ -22,27 +27,31 @@ final class ImportManager implements TypeContext {
 
     @Override
     public String reference(ClassDesc desc) {
-        String simpleName = desc.displayName();
+        List<String> chain = ClassDescNames.nestingChain(desc);
         String packageName = desc.packageName();
+        boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
 
-        if (packageName.equals(currentPackage) || packageName.equals("java.lang")) {
-            return simpleName;
+        if (chain.size() == 1 && sameScopeAsCurrentFile) {
+            return chain.getFirst();
         }
 
-        ClassDesc existing = claims.get(simpleName);
+        String leafSimpleName = chain.getLast();
+        ClassDesc existing = claims.get(leafSimpleName);
         if (existing == null) {
-            claims.put(simpleName, desc);
-            return simpleName;
+            claims.put(leafSimpleName, desc);
+            return leafSimpleName;
         }
         if (existing.equals(desc)) {
-            return simpleName;
+            return leafSimpleName;
         }
-        return packageName + "." + simpleName;
+
+        String dotted = ClassDescNames.qualifiedByDots(desc);
+        return sameScopeAsCurrentFile ? dotted : packageName + "." + dotted;
     }
 
     List<String> sortedImports() {
         return claims.values().stream()
-                .map(desc -> desc.packageName() + "." + desc.displayName())
+                .map(desc -> desc.packageName() + "." + ClassDescNames.qualifiedByDots(desc))
                 .sorted()
                 .toList();
     }

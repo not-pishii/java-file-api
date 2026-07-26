@@ -28,6 +28,7 @@ import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.type.ClassDescNames;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -56,7 +57,7 @@ final class TypeDeclRenderer {
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
         }
-        sb.append("class ").append(decl.desc().displayName());
+        sb.append("class ").append(ClassDescNames.leafSimpleName(decl.desc()));
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         decl.superclass().ifPresent(sc -> sb.append(" extends ").append(TypeRefRenderer.renderType(sc, ctx)));
         if (!decl.interfaces().isEmpty()) {
@@ -70,8 +71,8 @@ final class TypeDeclRenderer {
                     .append(decl.permits().stream().map(ctx::reference).collect(Collectors.joining(", ")));
         }
         sb.append(" {").append(ctx.newline());
-        sb.append(renderClassMembers(
-                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName()));
+        sb.append(
+                renderClassMembers(decl.members(), ctx.withIncreasedPad(), ClassDescNames.leafSimpleName(decl.desc())));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
@@ -191,7 +192,7 @@ final class TypeDeclRenderer {
         if (!decl.permits().isEmpty()) {
             sb.append("sealed ");
         }
-        sb.append("interface ").append(decl.desc().displayName());
+        sb.append("interface ").append(ClassDescNames.leafSimpleName(decl.desc()));
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         if (!decl.extendsInterfaces().isEmpty()) {
             sb.append(" extends ")
@@ -315,7 +316,7 @@ final class TypeDeclRenderer {
         sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("record ")
-                .append(decl.desc().displayName());
+                .append(ClassDescNames.leafSimpleName(decl.desc()));
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         sb.append('(')
                 .append(decl.components().stream()
@@ -331,7 +332,7 @@ final class TypeDeclRenderer {
         }
         sb.append(" {").append(ctx.newline());
         sb.append(renderRecordMembers(
-                decl.members(), ctx.withIncreasedPad(), decl.desc().displayName(), decl.components()));
+                decl.members(), ctx.withIncreasedPad(), ClassDescNames.leafSimpleName(decl.desc()), decl.components()));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }
@@ -421,7 +422,7 @@ final class TypeDeclRenderer {
         sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
                 .append("enum ")
-                .append(decl.desc().displayName());
+                .append(ClassDescNames.leafSimpleName(decl.desc()));
         if (!decl.interfaces().isEmpty()) {
             sb.append(" implements ")
                     .append(decl.interfaces().stream()
@@ -440,7 +441,7 @@ final class TypeDeclRenderer {
         }
         if (!decl.members().isEmpty()) {
             sb.append(ctx.newline());
-            sb.append(renderEnumMembers(decl.members(), inner, decl.desc().displayName()));
+            sb.append(renderEnumMembers(decl.members(), inner, ClassDescNames.leafSimpleName(decl.desc())));
         }
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
@@ -481,7 +482,10 @@ final class TypeDeclRenderer {
         StringBuilder sb = new StringBuilder(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
         sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()));
-        sb.append("@interface ").append(decl.desc().displayName()).append(" {").append(ctx.newline());
+        sb.append("@interface ")
+                .append(ClassDescNames.leafSimpleName(decl.desc()))
+                .append(" {")
+                .append(ctx.newline());
         Context inner = ctx.withIncreasedPad();
         for (AnnotationElementDecl element : decl.elements()) {
             sb.append(inner.pad())

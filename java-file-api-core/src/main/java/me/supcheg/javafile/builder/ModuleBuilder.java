@@ -107,6 +107,17 @@ public final class ModuleBuilder {
         return this;
     }
 
+    /// Adds a `uses` directive from an already-constructed descriptor —
+    /// the only way to declare a `uses` on a nested type, since
+    /// [#uses(String)] cannot represent nesting (see [ModuleFile]).
+    ///
+    /// @param service the consumed service type
+    /// @return this builder
+    public ModuleBuilder uses(ClassDesc service) {
+        directives.add(new UsesDirective(service));
+        return this;
+    }
+
     /// Adds a `provides ... with ...` directive.
     ///
     /// @param service the provided service type's binary name
@@ -119,6 +130,20 @@ public final class ModuleBuilder {
             impls.add(ClassDesc.of(impl));
         }
         directives.add(new ProvidesDirective(ClassDesc.of(service), NonEmptyList.copyOf(impls)));
+        return this;
+    }
+
+    /// Adds a `provides ... with ...` directive from already-constructed
+    /// descriptors — the only way to declare a `provides` involving a
+    /// nested type, since [#provides(String,String...)] cannot represent
+    /// nesting (see [ModuleFile]).
+    ///
+    /// @param service the provided service type
+    /// @param implementations the implementation types, in order; at least one
+    /// @return this builder
+    /// @throws IllegalArgumentException if `implementations` is empty
+    public ModuleBuilder provides(ClassDesc service, ClassDesc... implementations) {
+        directives.add(new ProvidesDirective(service, NonEmptyList.copyOf(List.of(implementations))));
         return this;
     }
 
