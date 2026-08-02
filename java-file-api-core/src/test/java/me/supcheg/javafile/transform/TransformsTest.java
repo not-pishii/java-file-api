@@ -52,7 +52,7 @@ class TransformsTest {
     }
 
     @Test
-    void enumTransformCarriesConstantsOverVerbatim() {
+    void enumTransformCarriesABodylessConstantOverVerbatim() {
         EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Suit"))
                 .withConstant("HEARTS")
                 .build();
@@ -79,6 +79,70 @@ class TransformsTest {
 
         assertThat(callOrder).containsExactly("first", "second");
         assertThat(result.members()).hasSize(1);
+    }
+
+    @Test
+    void enumTransformPreservesNonPublicModifiers() {
+        EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Nested"))
+                .withExactModifiers(Set.of(Modifier.PRIVATE))
+                .build();
+
+        EnumDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.modifiers()).containsExactly(Modifier.PRIVATE);
+    }
+
+    @Test
+    void enumTransformAppliesTheTransformToEnumConstantBodyMembers() {
+        EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Op"))
+                .withVoidAbstractMethod("apply")
+                .withConstant("PLUS", ecb -> ecb.withVoidMethod("apply", mb -> mb.withBody(b -> b.return_())))
+                .build();
+
+        java.util.List<String> seenMemberKinds = new java.util.ArrayList<>();
+        EnumTransform recordKinds = (sink, member) -> {
+            seenMemberKinds.add(member.getClass().getSimpleName());
+            sink.accept(member);
+        };
+
+        EnumDecl result = Transforms.transform(original, recordKinds);
+
+        assertThat(seenMemberKinds).containsExactly("MethodDecl", "AbstractMethodDecl");
+        assertThat(result.constants().get(0).body())
+                .isEqualTo(original.constants().get(0).body());
+    }
+
+    @Test
+    void enumTransformCanRewriteAConstantBodyMember() {
+        EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Op"))
+                .withConstant("PLUS", ecb -> ecb.withVoidMethod("apply", mb -> mb.withBody(b -> b.return_())))
+                .build();
+
+        EnumTransform dropVoidMethods = (sink, member) -> {
+            if (!(member instanceof me.supcheg.javafile.model.MethodDecl m
+                    && m.returnType().isEmpty())) {
+                sink.accept(member);
+            }
+        };
+
+        EnumDecl result = Transforms.transform(original, dropVoidMethods);
+
+        assertThat(result.constants().get(0).body()).isEmpty();
+    }
+
+    @Test
+    void enumTransformRejectsAConstantBodyMemberTheTransformReplacesWithAnIllegalKind() {
+        EnumDecl original = new EnumBuilder(ClassDesc.of("p", "Op"))
+                .withConstant("PLUS", ecb -> ecb.withVoidMethod("apply", mb -> mb.withBody(b -> b.return_())))
+                .build();
+
+        EnumTransform replaceWithInitializerBlock = (sink, member) -> sink.accept(
+                new me.supcheg.javafile.model.InitializerBlock(false, me.supcheg.javafile.code.CodeBody.EMPTY));
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> Transforms.transform(original, replaceWithInitializerBlock))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("InitializerBlock");
     }
 
     @Test
@@ -196,5 +260,94 @@ class TransformsTest {
         CodeBody result = Transforms.transform(original, dropExprStatements);
 
         assertThat(result.statements()).containsExactly(new ReturnStmt(java.util.Optional.empty()));
+    }
+
+    @Test
+    void classTransformPreservesNonPublicModifiersInsteadOfCrashingOrWideningVisibility() {
+        ClassDecl original = new ClassBuilder(ClassDesc.of("p", "Nested"))
+                .withExactModifiers(Set.of(Modifier.PRIVATE, Modifier.STATIC))
+                .build();
+
+        ClassDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.modifiers()).containsExactlyInAnyOrder(Modifier.PRIVATE, Modifier.STATIC);
+    }
+
+    @Test
+    void classTransformPreservesAPackagePrivateClassInsteadOfWideningToPublic() {
+        ClassDecl original = new ClassBuilder(ClassDesc.of("p", "PackagePrivate"))
+                .withExactModifiers(Set.of())
+                .build();
+
+        ClassDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.modifiers()).isEmpty();
+    }
+
+    @Test
+    void classTransformPreservesTypeParamAnnotations() {
+        me.supcheg.javafile.annotation.AnnotationUse nullable =
+                new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("p", "Nullable"), java.util.List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of(), java.util.List.of(nullable));
+        ClassDecl original = new ClassBuilder(ClassDesc.of("p", "Box"))
+                .withTypeParam(typeParam)
+                .build();
+
+        ClassDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.typeParams()).containsExactly(typeParam);
+    }
+
+    @Test
+    void interfaceTransformPreservesNonSealedModifier() {
+        InterfaceDecl original = new InterfaceBuilder(ClassDesc.of("p", "Impl"))
+                .withExactModifiers(Set.of(Modifier.NON_SEALED))
+                .build();
+
+        InterfaceDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.modifiers()).containsExactly(Modifier.NON_SEALED);
+    }
+
+    @Test
+    void interfaceTransformPreservesTypeParamAnnotations() {
+        me.supcheg.javafile.annotation.AnnotationUse nullable =
+                new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("p", "Nullable"), java.util.List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of(), java.util.List.of(nullable));
+        InterfaceDecl original = new InterfaceBuilder(ClassDesc.of("p", "I"))
+                .withTypeParam(typeParam)
+                .build();
+
+        InterfaceDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.typeParams()).containsExactly(typeParam);
+    }
+
+    @Test
+    void recordTransformPreservesProtectedModifier() {
+        RecordDecl original = new RecordBuilder(ClassDesc.of("p", "Nested"))
+                .withExactModifiers(Set.of(Modifier.PROTECTED))
+                .build();
+
+        RecordDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.modifiers()).containsExactly(Modifier.PROTECTED);
+    }
+
+    @Test
+    void recordTransformPreservesTypeParamAnnotations() {
+        me.supcheg.javafile.annotation.AnnotationUse nullable =
+                new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("p", "Nullable"), java.util.List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of(), java.util.List.of(nullable));
+        RecordDecl original = new RecordBuilder(ClassDesc.of("p", "R"))
+                .withTypeParam(typeParam)
+                .build();
+
+        RecordDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
+
+        assertThat(result.typeParams()).containsExactly(typeParam);
     }
 }

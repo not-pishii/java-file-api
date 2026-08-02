@@ -186,6 +186,8 @@ public final class JavaFile implements RenderableFile {
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed enum declaration
     /// @throws IllegalStateException if this file does not wrap an enum declaration
+    /// @throws IllegalArgumentException if `transform` passes a member kind an enum constant body cannot contain
+    ///         (e.g. a constructor) while processing a constant's body
     public JavaFile transformEnum(EnumTransform transform) {
         if (typeDecl instanceof EnumDecl e) {
             return new JavaFile(packageName, simpleName, Transforms.transform(e, transform));
