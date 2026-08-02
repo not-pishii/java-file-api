@@ -28,6 +28,10 @@ public final class PackageInfoFile implements RenderableFile {
         return new PackageInfoFile(packageName, List.of(annotations));
     }
 
+    public String packageName() {
+        return packageName;
+    }
+
     @Override
     public Meta renderMeta() {
         return new Meta(packageName, annotations);
