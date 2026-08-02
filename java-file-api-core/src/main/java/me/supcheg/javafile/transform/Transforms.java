@@ -9,16 +9,19 @@ import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
+import me.supcheg.javafile.model.EnumConstant;
+import me.supcheg.javafile.model.EnumConstantMember;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
-import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /// Entry point for applying a member-level transform to a declaration or code body.
 ///
@@ -38,12 +41,8 @@ public final class Transforms {
     public static ClassDecl transform(ClassDecl decl, ClassTransform transform) {
         ClassBuilder builder = new ClassBuilder(decl.desc());
         decl.annotations().forEach(builder::withAnnotation);
-        // ClassBuilder always seeds PUBLIC by default and withModifiers only adds to that set; a decl
-        // built without PUBLIC (only reachable by constructing ClassDecl directly, bypassing ClassBuilder)
-        // cannot lose PUBLIC through this round-trip. This matches ClassBuilder's existing behavior.
-        builder.withModifiers(decl.modifiers().toArray(new Modifier[0]));
-        decl.typeParams()
-                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
+        builder.withExactModifiers(decl.modifiers());
+        decl.typeParams().forEach(builder::withTypeParam);
         decl.superclass().ifPresent(builder::withSuperclass);
         decl.interfaces().forEach(builder::withInterface);
         builder.permits(decl.permits().toArray(new ClassDesc[0]));
@@ -58,15 +57,46 @@ public final class Transforms {
     /// @param decl the source enum declaration
     /// @param transform the transform applied to each member
     /// @return a new enum declaration
+    /// @throws IllegalArgumentException if `transform` passes a member kind an enum constant body cannot contain
+    ///         (e.g. a constructor) while processing a constant's body
     public static EnumDecl transform(EnumDecl decl, EnumTransform transform) {
         EnumBuilder builder = new EnumBuilder(decl.desc());
         decl.annotations().forEach(builder::withAnnotation);
-        decl.constants().forEach(builder::withConstant);
+        builder.withExactModifiers(decl.modifiers());
+        for (EnumConstant constant : decl.constants()) {
+            builder.withConstant(transformConstantBody(constant, transform));
+        }
         decl.interfaces().forEach(builder::withInterface);
         for (EnumMember member : decl.members()) {
             transform.accept(builder, member);
         }
         return builder.build();
+    }
+
+    /// Rebuilds a constant's constant-specific body, passing each existing
+    /// body member through `transform`. `FieldDecl`, `MethodDecl`, and
+    /// `TypeDecl` — the only kinds [EnumConstantMember] permits — all
+    /// implement [EnumMember] too, so the same transform applied to the
+    /// enum's own members applies here without a dedicated transform type.
+    ///
+    /// @throws IllegalArgumentException if `transform` passes a member kind
+    ///         an enum constant body cannot contain (e.g. a constructor)
+    private static EnumConstant transformConstantBody(EnumConstant constant, EnumTransform transform) {
+        if (constant.body().isEmpty()) {
+            return constant;
+        }
+        List<EnumConstantMember> newBody = new ArrayList<>();
+        Consumer<EnumMember> sink = member -> {
+            if (!(member instanceof EnumConstantMember constantMember)) {
+                throw new IllegalArgumentException(
+                        "enum constant body cannot contain " + member.getClass().getSimpleName());
+            }
+            newBody.add(constantMember);
+        };
+        for (EnumConstantMember member : constant.body()) {
+            transform.accept(sink, (EnumMember) member);
+        }
+        return new EnumConstant(constant.name(), constant.annotations(), constant.args(), newBody);
     }
 
     /// Rebuilds an interface declaration, passing each member through `transform`.
@@ -77,8 +107,8 @@ public final class Transforms {
     public static InterfaceDecl transform(InterfaceDecl decl, InterfaceTransform transform) {
         InterfaceBuilder builder = new InterfaceBuilder(decl.desc());
         decl.annotations().forEach(builder::withAnnotation);
-        decl.typeParams()
-                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
+        builder.withExactModifiers(decl.modifiers());
+        decl.typeParams().forEach(builder::withTypeParam);
         decl.extendsInterfaces().forEach(builder::withExtends);
         builder.permits(decl.permits().toArray(new ClassDesc[0]));
         for (InterfaceMember member : decl.members()) {
@@ -95,8 +125,8 @@ public final class Transforms {
     public static RecordDecl transform(RecordDecl decl, RecordTransform transform) {
         RecordBuilder builder = new RecordBuilder(decl.desc());
         decl.annotations().forEach(builder::withAnnotation);
-        decl.typeParams()
-                .forEach(p -> builder.withTypeParam(p.name(), p.bounds().toArray(new ClassOrInterfaceTypeRef[0])));
+        builder.withExactModifiers(decl.modifiers());
+        decl.typeParams().forEach(builder::withTypeParam);
         decl.components().forEach(builder::withComponent);
         decl.interfaces().forEach(builder::withInterface);
         for (RecordMember member : decl.members()) {

@@ -237,6 +237,41 @@ class ClassBuilderTest {
         assertThat(ctor.params()).hasSize(1);
     }
 
+    @Test
+    void withExactModifiersReplacesTheDefaultPublicSeed() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Nested"));
+        builder.withExactModifiers(java.util.Set.of(Modifier.PRIVATE, Modifier.STATIC));
+
+        ClassDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).containsExactlyInAnyOrder(Modifier.PRIVATE, Modifier.STATIC);
+    }
+
+    @Test
+    void withExactModifiersCanProduceNoAccessModifierAtAll() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "PackagePrivate"));
+        builder.withExactModifiers(java.util.Set.of());
+
+        ClassDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).isEmpty();
+    }
+
+    @Test
+    void withTypeParamAcceptsAPreBuiltTypeParamWithAnnotations() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Box"));
+        me.supcheg.javafile.annotation.AnnotationUse nullable = new me.supcheg.javafile.annotation.AnnotationUse(
+                ClassDesc.of("me.supcheg.example", "Nullable"), java.util.List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of(), java.util.List.of(nullable));
+
+        builder.withTypeParam(typeParam);
+
+        ClassDecl decl = builder.build();
+        assertThat(decl.typeParams()).containsExactly(typeParam);
+        assertThat(decl.typeParams().get(0).annotations()).containsExactly(nullable);
+    }
+
     private static final class ClassOrInterfaceTypeRefHolder {
         private final me.supcheg.javafile.type.ClassOrInterfaceTypeRef ref = Types.of(STRING);
 

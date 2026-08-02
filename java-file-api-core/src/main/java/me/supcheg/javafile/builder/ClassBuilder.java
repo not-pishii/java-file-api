@@ -84,12 +84,29 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// Adds the given modifiers to the declaration.
     ///
     /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed.
+    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
     public ClassBuilder withModifiers(Modifier... mods) {
         modifiers.addAll(List.of(mods));
+        return this;
+    }
+
+    /// Replaces the accumulated modifiers with exactly the given set, bypassing
+    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
+    /// to. Intended for producers — like
+    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
+    /// existing declaration's modifiers exactly, including one with no access
+    /// modifier or with `private`/`protected`; ordinary hand-authored
+    /// declarations should use [#withModifiers(Modifier...)]. A later
+    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    ///
+    /// @param mods the exact modifier set to use
+    /// @return this builder
+    public ClassBuilder withExactModifiers(Set<Modifier> mods) {
+        modifiers.clear();
+        modifiers.addAll(mods);
         return this;
     }
 
@@ -101,6 +118,15 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @return this builder
     public ClassBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
         typeParams.add(new TypeParam(name, List.of(bounds)));
+        return this;
+    }
+
+    /// Adds a pre-built type parameter to the class declaration.
+    ///
+    /// @param typeParam the type parameter to add
+    /// @return this builder
+    public ClassBuilder withTypeParam(TypeParam typeParam) {
+        typeParams.add(typeParam);
         return this;
     }
 

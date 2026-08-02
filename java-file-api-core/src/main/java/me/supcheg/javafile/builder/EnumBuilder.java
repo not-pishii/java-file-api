@@ -18,6 +18,7 @@ import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,8 +26,8 @@ import java.util.function.Consumer;
 
 /// A mutable builder for a top-level enum declaration.
 ///
-/// Always declares with the `public` modifier; there is no way to add
-/// further modifiers. Builder methods return `this` for chaining;
+/// Starts with the `public` modifier already applied. Builder methods
+/// return `this` for chaining;
 /// [#build()] snapshots the accumulated state into an immutable
 /// [EnumDecl], so a builder may be reused after building.
 ///
@@ -37,6 +38,7 @@ import java.util.function.Consumer;
 public final class EnumBuilder implements Consumer<EnumMember> {
 
     private final ClassDesc desc;
+    private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final List<EnumConstant> constants = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
@@ -76,6 +78,34 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @return this builder
     public EnumBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
+        return this;
+    }
+
+    /// Adds the given modifiers to the declaration.
+    ///
+    /// Modifiers accumulate across calls and duplicates are ignored; the initial
+    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    ///
+    /// @param mods the modifiers to add
+    /// @return this builder
+    public EnumBuilder withModifiers(Modifier... mods) {
+        modifiers.addAll(List.of(mods));
+        return this;
+    }
+
+    /// Replaces the accumulated modifiers with exactly the given set, bypassing
+    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
+    /// to. Intended for producers — like
+    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
+    /// existing declaration's modifiers exactly; ordinary hand-authored
+    /// declarations should use [#withModifiers(Modifier...)]. A later
+    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    ///
+    /// @param mods the exact modifier set to use
+    /// @return this builder
+    public EnumBuilder withExactModifiers(Set<Modifier> mods) {
+        modifiers.clear();
+        modifiers.addAll(mods);
         return this;
     }
 
@@ -267,7 +297,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
         return new EnumDecl(
                 desc,
                 List.copyOf(annotations),
-                Set.of(Modifier.PUBLIC),
+                Set.copyOf(modifiers),
                 List.copyOf(constants),
                 List.copyOf(interfaces),
                 List.copyOf(members));

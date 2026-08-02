@@ -117,4 +117,48 @@ class RecordBuilderTest {
         assertThat(decl.annotations().get(1).type()).isEqualTo(since);
         assertThat(decl.annotations().get(2).type()).isEqualTo(preBuilt);
     }
+
+    @Test
+    void modifiersDefaultToPublicEvenWithoutExplicitWithModifiers() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Empty"));
+
+        RecordDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).contains(Modifier.PUBLIC);
+    }
+
+    @Test
+    void withExactModifiersReplacesTheDefaultPublicSeed() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Nested"));
+        builder.withExactModifiers(Set.of(Modifier.PROTECTED));
+
+        RecordDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).containsExactly(Modifier.PROTECTED);
+    }
+
+    @Test
+    void withModifiersAddsToThePublicSeed() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "R"));
+        builder.withModifiers(Modifier.STATIC);
+
+        RecordDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).containsExactlyInAnyOrder(Modifier.PUBLIC, Modifier.STATIC);
+    }
+
+    @Test
+    void withTypeParamAcceptsAPreBuiltTypeParamWithAnnotations() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Box"));
+        me.supcheg.javafile.annotation.AnnotationUse nullable =
+                new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("geom", "Nullable"), List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", List.of(), List.of(nullable));
+
+        builder.withTypeParam(typeParam);
+
+        RecordDecl decl = builder.build();
+        assertThat(decl.typeParams()).containsExactly(typeParam);
+        assertThat(decl.typeParams().get(0).annotations()).containsExactly(nullable);
+    }
 }
