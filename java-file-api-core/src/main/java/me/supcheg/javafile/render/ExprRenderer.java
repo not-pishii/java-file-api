@@ -74,6 +74,9 @@ import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
+import me.supcheg.javafile.type.ArrayTypeRef;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,107 +87,150 @@ final class ExprRenderer {
     private ExprRenderer() {}
 
     static String renderExpr(Expr expr, Context ctx) {
-        return switch (expr) {
-            case FieldAccessExpr(var target, var name) ->
-                target.map(t -> renderExpr(t, ctx) + "." + name).orElse(name);
-            case MethodCallExpr(var target, var method, var args) -> {
-                String prefix = target.map(t -> renderExpr(t, ctx) + ".").orElse("");
-                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
-                yield prefix + method + "(" + argsStr + ")";
-            }
-            case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
-            case IntLiteral(var value) -> Integer.toString(value);
-            case LongLiteral(var value) -> value + "L";
-            case DoubleLiteral(var value) -> Double.toString(value);
-            case BooleanLiteral(var value) -> Boolean.toString(value);
-            case NullLiteral ignored -> "null";
-            case TextBlockExpr(var value) -> renderTextBlock(value, ctx);
-            case BinaryExpr(var left, var op, var right) ->
-                renderExpr(left, ctx) + " " + op.symbol() + " " + renderExpr(right, ctx);
-            case UnaryExpr(var op, var operand) ->
-                switch (op) {
-                    case NOT -> "!" + renderExpr(operand, ctx);
-                    case NEG -> "-" + renderExpr(operand, ctx);
-                    case BIT_NOT -> "~" + renderExpr(operand, ctx);
-                    case UNARY_PLUS -> "+" + renderExpr(operand, ctx);
-                };
-            case IncDecExpr(var op, var operand) ->
-                switch (op) {
-                    case PRE_INC -> "++" + renderExpr(operand, ctx);
-                    case PRE_DEC -> "--" + renderExpr(operand, ctx);
-                    case POST_INC -> renderExpr(operand, ctx) + "++";
-                    case POST_DEC -> renderExpr(operand, ctx) + "--";
-                };
-            case InstanceOfExpr(var target, var pattern) ->
-                renderExpr(target, ctx) + " instanceof " + renderPattern(pattern, ctx);
-            case NewExpr(var target, var args, var anonymousBody) -> {
-                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
-                String targetStr =
-                        switch (target) {
-                            case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
-                            case DiamondNewTarget(var raw) -> ctx.reference(raw) + "<>";
+        return renderExpr(expr, ctx, Precedence.NO_PARENS_REQUIRED);
+    }
+
+    private static String renderExpr(Expr expr, Context ctx, int minPrecedence) {
+        int level = Precedence.level(expr);
+        String rendered =
+                switch (expr) {
+                    case FieldAccessExpr(var target, var name) ->
+                        target.map(t -> renderExpr(t, ctx, Precedence.PRIMARY_LEVEL) + "." + name)
+                                .orElse(name);
+                    case MethodCallExpr(var target, var method, var args) -> {
+                        String prefix = target.map(t -> renderExpr(t, ctx, Precedence.PRIMARY_LEVEL) + ".")
+                                .orElse("");
+                        String argsStr =
+                                args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                        yield prefix + method + "(" + argsStr + ")";
+                    }
+                    case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
+                    case IntLiteral(var value) -> Integer.toString(value);
+                    case LongLiteral(var value) -> value + "L";
+                    case DoubleLiteral(var value) -> Double.toString(value);
+                    case BooleanLiteral(var value) -> Boolean.toString(value);
+                    case NullLiteral ignored -> "null";
+                    case TextBlockExpr(var value) -> renderTextBlock(value, ctx);
+                    case BinaryExpr(var left, var op, var right) ->
+                        renderExpr(left, ctx, level) + " " + op.symbol() + " " + renderExpr(right, ctx, level + 1);
+                    case UnaryExpr(var op, var operand) -> {
+                        String symbol =
+                                switch (op) {
+                                    case NOT -> "!";
+                                    case NEG -> "-";
+                                    case BIT_NOT -> "~";
+                                    case UNARY_PLUS -> "+";
+                                };
+                        yield symbol + renderUnaryOperand(symbol, operand, ctx);
+                    }
+                    case IncDecExpr(var op, var operand) ->
+                        switch (op) {
+                            case PRE_INC -> "++" + renderUnaryOperand("++", operand, ctx);
+                            case PRE_DEC -> "--" + renderUnaryOperand("--", operand, ctx);
+                            case POST_INC -> renderExpr(operand, ctx, Precedence.INC_DEC_LEVEL) + "++";
+                            case POST_DEC -> renderExpr(operand, ctx, Precedence.INC_DEC_LEVEL) + "--";
                         };
-                String bodyStr = anonymousBody
-                        .map(members -> " {"
-                                + ctx.newline()
-                                + TypeDeclRenderer.renderEnumConstantMembers(members, ctx.withIncreasedPad())
+                    case InstanceOfExpr(var target, var pattern) ->
+                        renderExpr(target, ctx, level) + " instanceof " + renderPattern(pattern, ctx);
+                    case NewExpr(var target, var args, var anonymousBody) -> {
+                        String argsStr =
+                                args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                        String targetStr =
+                                switch (target) {
+                                    case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
+                                    case DiamondNewTarget(var raw) -> ctx.reference(raw) + "<>";
+                                };
+                        String bodyStr = anonymousBody
+                                .map(members -> " {"
+                                        + ctx.newline()
+                                        + TypeDeclRenderer.renderEnumConstantMembers(members, ctx.withIncreasedPad())
+                                        + ctx.pad()
+                                        + "}")
+                                .orElse("");
+                        yield "new " + targetStr + "(" + argsStr + ")" + bodyStr;
+                    }
+                    case SwitchExpr(var selector, var cases) ->
+                        "switch ("
+                                + renderExpr(selector, ctx)
+                                + ") {" + ctx.newline()
+                                + renderSwitchCases(cases, ctx.withIncreasedPad())
                                 + ctx.pad()
-                                + "}")
-                        .orElse("");
-                yield "new " + targetStr + "(" + argsStr + ")" + bodyStr;
-            }
-            case SwitchExpr(var selector, var cases) ->
-                "switch ("
-                        + renderExpr(selector, ctx)
-                        + ") {" + ctx.newline()
-                        + renderSwitchCases(cases, ctx.withIncreasedPad())
-                        + ctx.pad()
-                        + "}";
-            case LambdaExpr(var params, var body) -> {
-                String header =
-                        switch (params) {
-                                    case InferredLambdaParams(var names) -> "(" + String.join(", ", names) + ")";
-                                    case TypedLambdaParams(var typed) ->
-                                        "(" + TypeRefRenderer.renderParams(typed, ctx) + ")";
-                                }
-                                + " -> ";
-                yield switch (body) {
-                    case ExprLambdaBody(var result) -> header + renderExpr(result, ctx);
-                    case BlockLambdaBody(var block) ->
-                        header + "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad() + "}";
+                                + "}";
+                    case LambdaExpr(var params, var body) -> {
+                        String header =
+                                switch (params) {
+                                            case InferredLambdaParams(var names) ->
+                                                "(" + String.join(", ", names) + ")";
+                                            case TypedLambdaParams(var typed) ->
+                                                "(" + TypeRefRenderer.renderParams(typed, ctx) + ")";
+                                        }
+                                        + " -> ";
+                        yield switch (body) {
+                            case ExprLambdaBody(var result) -> header + renderExpr(result, ctx);
+                            case BlockLambdaBody(var block) ->
+                                header + "{" + ctx.newline() + renderBlock(block, ctx.withIncreasedPad()) + ctx.pad()
+                                        + "}";
+                        };
+                    }
+                    case ThisExpr ignored -> "this";
+                    case SuperExpr ignored -> "super";
+                    case StaticFieldAccessExpr(var type, var name) ->
+                        TypeRefRenderer.renderType(type, ctx) + "." + name;
+                    case StaticMethodCallExpr(var type, var method, var args) -> {
+                        String prefix = TypeRefRenderer.renderType(type, ctx);
+                        String argsStr =
+                                args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                        yield prefix + "." + method + "(" + argsStr + ")";
+                    }
+                    case CastExpr(var type, var operand) -> {
+                        String renderedOperand = renderExpr(operand, ctx, Precedence.UNARY_LEVEL);
+                        boolean isReferenceTypeCast =
+                                switch (type) {
+                                    case PrimitiveTypeRef ignored -> false;
+                                    case ClassOrInterfaceTypeRef ignored -> true;
+                                    case ArrayTypeRef ignored -> true;
+                                };
+                        boolean needsExtraParens =
+                                isReferenceTypeCast && Precedence.needsParensAsReferenceTypeCastOperand(operand);
+                        yield "(" + TypeRefRenderer.renderType(type, ctx) + ") "
+                                + (needsExtraParens ? "(" + renderedOperand + ")" : renderedOperand);
+                    }
+                    case ConditionalExpr(var condition, var whenTrue, var whenFalse) ->
+                        renderExpr(condition, ctx, level + 1) + " ? " + renderExpr(whenTrue, ctx, level) + " : "
+                                + renderExpr(whenFalse, ctx, level);
+                    case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
+                    case MethodRefExpr(var target, var method) ->
+                        switch (target) {
+                            case TypeMethodRefTarget(var type) -> TypeRefRenderer.renderType(type, ctx) + "::" + method;
+                            case ExprMethodRefTarget(var operand) ->
+                                renderExpr(operand, ctx, Precedence.PRIMARY_LEVEL) + "::" + method;
+                        };
+                    case ConstructorRefExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + "::new";
+                    case ArrayAccessExpr(var array, var index) -> {
+                        String renderedArray = renderExpr(array, ctx, Precedence.PRIMARY_LEVEL);
+                        yield (Precedence.needsParensAsArrayAccessTarget(array)
+                                        ? "(" + renderedArray + ")"
+                                        : renderedArray)
+                                + "[" + renderExpr(index, ctx) + "]";
+                    }
+                    case ArrayCreationExpr(var componentType, var dimensions) -> {
+                        String dims = dimensions.toList().stream()
+                                .map(d -> "[" + renderExpr(d, ctx) + "]")
+                                .collect(Collectors.joining());
+                        yield "new " + TypeRefRenderer.renderType(componentType, ctx) + dims;
+                    }
+                    case ArrayInitializerExpr(var componentType, var elements) -> {
+                        String elems =
+                                elements.stream().map(e -> renderExpr(e, ctx)).collect(Collectors.joining(", "));
+                        yield "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] {" + elems + "}";
+                    }
                 };
-            }
-            case ThisExpr ignored -> "this";
-            case SuperExpr ignored -> "super";
-            case StaticFieldAccessExpr(var type, var name) -> TypeRefRenderer.renderType(type, ctx) + "." + name;
-            case StaticMethodCallExpr(var type, var method, var args) -> {
-                String prefix = TypeRefRenderer.renderType(type, ctx);
-                String argsStr = args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
-                yield prefix + "." + method + "(" + argsStr + ")";
-            }
-            case CastExpr(var type, var operand) ->
-                "(" + TypeRefRenderer.renderType(type, ctx) + ") " + renderExpr(operand, ctx);
-            case ConditionalExpr(var condition, var whenTrue, var whenFalse) ->
-                renderExpr(condition, ctx) + " ? " + renderExpr(whenTrue, ctx) + " : " + renderExpr(whenFalse, ctx);
-            case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
-            case MethodRefExpr(var target, var method) ->
-                switch (target) {
-                    case TypeMethodRefTarget(var type) -> TypeRefRenderer.renderType(type, ctx) + "::" + method;
-                    case ExprMethodRefTarget(var operand) -> renderExpr(operand, ctx) + "::" + method;
-                };
-            case ConstructorRefExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + "::new";
-            case ArrayAccessExpr(var array, var index) -> renderExpr(array, ctx) + "[" + renderExpr(index, ctx) + "]";
-            case ArrayCreationExpr(var componentType, var dimensions) -> {
-                String dims = dimensions.toList().stream()
-                        .map(d -> "[" + renderExpr(d, ctx) + "]")
-                        .collect(Collectors.joining());
-                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + dims;
-            }
-            case ArrayInitializerExpr(var componentType, var elements) -> {
-                String elems = elements.stream().map(e -> renderExpr(e, ctx)).collect(Collectors.joining(", "));
-                yield "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] {" + elems + "}";
-            }
-        };
+        return level < minPrecedence ? "(" + rendered + ")" : rendered;
+    }
+
+    private static String renderUnaryOperand(String symbol, Expr operand, Context ctx) {
+        String rendered = renderExpr(operand, ctx, Precedence.UNARY_LEVEL);
+        return Precedence.needsParensAroundUnaryOperand(symbol, rendered) ? "(" + rendered + ")" : rendered;
     }
 
     static String renderStmt(Stmt stmt, Context ctx) {
