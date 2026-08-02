@@ -208,6 +208,37 @@ class EnumBuilderTest {
         assertThat(ctor.params()).hasSize(1);
     }
 
+    @Test
+    void modifiersDefaultToPublicEvenWithoutExplicitWithModifiers() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Empty"));
+
+        EnumDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).contains(me.supcheg.javafile.model.Modifier.PUBLIC);
+    }
+
+    @Test
+    void withModifiersAddsToThePublicSeed() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
+        builder.withModifiers(me.supcheg.javafile.model.Modifier.STATIC);
+
+        EnumDecl decl = builder.build();
+
+        assertThat(decl.modifiers())
+                .containsExactlyInAnyOrder(
+                        me.supcheg.javafile.model.Modifier.PUBLIC, me.supcheg.javafile.model.Modifier.STATIC);
+    }
+
+    @Test
+    void withExactModifiersReplacesTheDefaultPublicSeed() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Nested"));
+        builder.withExactModifiers(java.util.Set.of(me.supcheg.javafile.model.Modifier.PRIVATE));
+
+        EnumDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).containsExactly(me.supcheg.javafile.model.Modifier.PRIVATE);
+    }
+
     private static final class CodeBuilderExprHolder {
         private final me.supcheg.javafile.code.Expr expr = new me.supcheg.javafile.code.IntLiteral(1);
 

@@ -43,13 +43,6 @@ class InterfaceBuilderTest {
     }
 
     @Test
-    void interfaceIsAlwaysPublic() {
-        InterfaceDecl decl = new InterfaceBuilder(ClassDesc.of("ast", "Empty")).build();
-
-        assertThat(decl.modifiers()).containsExactly(me.supcheg.javafile.model.Modifier.PUBLIC);
-    }
-
-    @Test
     void typeParamIsCarriedOver() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Container"));
         me.supcheg.javafile.type.ClassOrInterfaceTypeRef bound =
@@ -139,5 +132,51 @@ class InterfaceBuilderTest {
         assertThat(decl.annotations().get(0).type()).isEqualTo(deprecated);
         assertThat(decl.annotations().get(1).type()).isEqualTo(since);
         assertThat(decl.annotations().get(2).type()).isEqualTo(preBuilt);
+    }
+
+    @Test
+    void modifiersDefaultToPublicEvenWithoutExplicitWithModifiers() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Empty"));
+
+        InterfaceDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).contains(me.supcheg.javafile.model.Modifier.PUBLIC);
+    }
+
+    @Test
+    void withExactModifiersReplacesTheDefaultPublicSeed() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Nested"));
+        builder.withExactModifiers(java.util.Set.of(me.supcheg.javafile.model.Modifier.NON_SEALED));
+
+        InterfaceDecl decl = builder.build();
+
+        assertThat(decl.modifiers()).containsExactly(me.supcheg.javafile.model.Modifier.NON_SEALED);
+    }
+
+    @Test
+    void withModifiersAddsToThePublicSeed() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "I"));
+        builder.withModifiers(me.supcheg.javafile.model.Modifier.STATIC);
+
+        InterfaceDecl decl = builder.build();
+
+        assertThat(decl.modifiers())
+                .containsExactlyInAnyOrder(
+                        me.supcheg.javafile.model.Modifier.PUBLIC, me.supcheg.javafile.model.Modifier.STATIC);
+    }
+
+    @Test
+    void withTypeParamAcceptsAPreBuiltTypeParamWithAnnotations() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Box"));
+        me.supcheg.javafile.annotation.AnnotationUse nullable =
+                new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("ast", "Nullable"), java.util.List.of());
+        me.supcheg.javafile.type.TypeParam typeParam =
+                new me.supcheg.javafile.type.TypeParam("T", java.util.List.of(), java.util.List.of(nullable));
+
+        builder.withTypeParam(typeParam);
+
+        InterfaceDecl decl = builder.build();
+        assertThat(decl.typeParams()).containsExactly(typeParam);
+        assertThat(decl.typeParams().get(0).annotations()).containsExactly(nullable);
     }
 }
