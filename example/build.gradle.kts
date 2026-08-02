@@ -5,4 +5,5 @@ plugins {
 dependencies {
     implementation(project(":java-file-api-core"))
     testImplementation(libs.compile.testing)
+    testImplementation(libs.jqwik)
 }
