@@ -14,6 +14,8 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
 
+import static me.supcheg.javafile.code.Exprs.call;
+import static me.supcheg.javafile.code.Exprs.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RecordBuilderTest {
@@ -24,8 +26,8 @@ class RecordBuilderTest {
 
         builder.withComponent("x", PrimitiveTypeRef.INT)
                 .withComponent("y", PrimitiveTypeRef.INT)
-                .withCompactConstructor(b -> b.exprStatement(b.call("requireValid")))
-                .withMethod("magnitude", PrimitiveTypeRef.INT, mb -> mb.withBody(b -> b.return_(b.literal(0))))
+                .withCompactConstructor(b -> b.exprStatement(call("requireValid")))
+                .withMethod("magnitude", PrimitiveTypeRef.INT, mb -> mb.withBody(b -> b.return_(literal(0))))
                 .withStaticField("ORIGIN", PrimitiveTypeRef.INT, new IntLiteral(0));
 
         RecordDecl decl = builder.build();
@@ -66,7 +68,7 @@ class RecordBuilderTest {
         ClassDesc ioException = ClassDesc.of("java.io", "IOException");
 
         builder.withCompactConstructor(
-                Set.of(Modifier.PUBLIC), List.of(ioException), b -> b.exprStatement(b.call("requireValid")));
+                Set.of(Modifier.PUBLIC), List.of(ioException), b -> b.exprStatement(call("requireValid")));
 
         RecordDecl decl = builder.build();
         CompactConstructorDecl ctor = (CompactConstructorDecl) decl.members().get(0);

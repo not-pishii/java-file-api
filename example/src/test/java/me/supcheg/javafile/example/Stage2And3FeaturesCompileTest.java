@@ -15,6 +15,16 @@ import java.util.Optional;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.add;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.gt;
+import static me.supcheg.javafile.code.Exprs.le;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.lt;
+import static me.supcheg.javafile.code.Exprs.new_;
+import static me.supcheg.javafile.code.Exprs.postIncrement;
+import static me.supcheg.javafile.code.Exprs.switchExpr;
+import static me.supcheg.javafile.code.Exprs.this_;
 
 class Stage2And3FeaturesCompileTest {
 
@@ -41,9 +51,9 @@ class Stage2And3FeaturesCompileTest {
                                 PrimitiveTypeRef.DOUBLE,
                                 fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                         .withConstructor(ctor -> ctor.withParam("radius", PrimitiveTypeRef.DOUBLE)
-                                .withBody(b -> b.assign(b.field(b.this_(), "radius"), b.field("radius"))))
+                                .withBody(b -> b.assign(this_().field("radius"), field("radius"))))
                         .withMethod(
-                                "area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(b.field("radius")))));
+                                "area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(field("radius")))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(shape.qualifiedName(), shape.render()),
@@ -75,40 +85,39 @@ class Stage2And3FeaturesCompileTest {
                                 "sum",
                                 PrimitiveTypeRef.INT,
                                 mb -> mb.withParam("n", PrimitiveTypeRef.INT).withBody(b -> {
-                                    b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
+                                    b.localVar("total", PrimitiveTypeRef.INT, literal(0));
                                     b.for_(
                                             new LocalVarDeclStmt.Typed(
-                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
-                                            b.lt(b.field("i"), b.field("n")),
-                                            new ExprStmt(b.postIncrement(b.field("i"))),
-                                            body -> body.assign(
-                                                    b.field("total"), b.add(b.field("total"), b.field("i"))));
-                                    b.return_(b.field("total"));
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(literal(0))),
+                                            lt(field("i"), field("n")),
+                                            new ExprStmt(postIncrement(field("i"))),
+                                            body -> body.assign(field("total"), add(field("total"), field("i"))));
+                                    b.return_(field("total"));
                                 }))
                         .withMethod(
                                 "describe",
                                 Types.of(ClassDesc.of("java.lang", "String")),
                                 mb -> mb.withParam("obj", Types.of(OBJECT))
-                                        .withBody(b -> b.return_(b.switchExpr(
-                                                b.field("obj"),
+                                        .withBody(b -> b.return_(switchExpr(
+                                                field("obj"),
                                                 sb -> sb.caseTypeWithGuard(
                                                                 Types.of(INTEGER),
                                                                 "i",
-                                                                b.gt(b.field("i"), b.literal(0)),
-                                                                body -> body.yield_(b.literal("positive int")))
+                                                                gt(field("i"), literal(0)),
+                                                                body -> body.yield_(literal("positive int")))
                                                         .caseType(
                                                                 Types.of(INTEGER),
                                                                 "i",
-                                                                body -> body.yield_(b.literal("non-positive int")))
-                                                        .defaultValue(b.literal("other"))))))
+                                                                body -> body.yield_(literal("non-positive int")))
+                                                        .defaultValue(literal("other"))))))
                         .withVoidMethod(
                                 "requirePositive",
                                 mb -> mb.withParam("n", PrimitiveTypeRef.INT)
                                         .withBody(b -> b.if_(
-                                                b.le(b.field("n"), b.literal(0)),
-                                                ib -> ib.then(body -> body.throw_(b.new_(
+                                                le(field("n"), literal(0)),
+                                                ib -> ib.then(body -> body.throw_(new_(
                                                         Types.of(ILLEGAL_ARGUMENT),
-                                                        b.literal("n must be positive"))))))));
+                                                        literal("n must be positive"))))))));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(calculator.qualifiedName(), calculator.render()));
@@ -122,8 +131,9 @@ class Stage2And3FeaturesCompileTest {
                 ClassDesc.of("me.supcheg.example", "Planet"),
                 eb -> eb.withField("mass", Types.of(DOUBLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                         .withConstructor(cb -> cb.withParam("mass", Types.of(DOUBLE))
-                                .withBody(b -> b.assign(b.field(b.this_(), "mass"), b.field("mass"))))
-                        .withConstant("MERCURY", b -> b.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
+                                .withBody(b -> b.assign(this_().field("mass"), field("mass"))))
+                        .withConstant(
+                                "MERCURY", ecb -> ecb.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(planet.qualifiedName(), planet.render()));
@@ -141,31 +151,30 @@ class Stage2And3FeaturesCompileTest {
                         mb -> mb.withParam("n", PrimitiveTypeRef.INT)
                                 .withThrows(IO_EXCEPTION)
                                 .withBody(b -> {
-                                    b.localVar("total", PrimitiveTypeRef.INT, b.literal(0));
+                                    b.localVar("total", PrimitiveTypeRef.INT, literal(0));
                                     b.if_(
-                                            b.lt(b.field("n"), b.literal(0)),
-                                            ib -> ib.then(body -> body.throw_(b.new_(
-                                                    Types.of(ILLEGAL_ARGUMENT), b.literal("n must be non-negative")))));
+                                            lt(field("n"), literal(0)),
+                                            ib -> ib.then(body -> body.throw_(new_(
+                                                    Types.of(ILLEGAL_ARGUMENT), literal("n must be non-negative")))));
                                     b.for_(
                                             new LocalVarDeclStmt.Typed(
-                                                    PrimitiveTypeRef.INT, "i", Optional.of(b.literal(0))),
-                                            b.lt(b.field("i"), b.field("n")),
-                                            new ExprStmt(b.postIncrement(b.field("i"))),
-                                            body -> body.assign(
-                                                    b.field("total"), b.add(b.field("total"), b.field("i"))));
-                                    b.localVar("boxedTotal", Types.of(OBJECT), b.field("total"));
-                                    b.return_(b.switchExpr(
-                                            b.field("boxedTotal"),
+                                                    PrimitiveTypeRef.INT, "i", Optional.of(literal(0))),
+                                            lt(field("i"), field("n")),
+                                            new ExprStmt(postIncrement(field("i"))),
+                                            body -> body.assign(field("total"), add(field("total"), field("i"))));
+                                    b.localVar("boxedTotal", Types.of(OBJECT), field("total"));
+                                    b.return_(switchExpr(
+                                            field("boxedTotal"),
                                             sb -> sb.caseTypeWithGuard(
                                                             Types.of(INTEGER),
                                                             "i",
-                                                            b.gt(b.field("i"), b.literal(0)),
-                                                            body -> body.yield_(b.literal("positive")))
+                                                            gt(field("i"), literal(0)),
+                                                            body -> body.yield_(literal("positive")))
                                                     .caseType(
                                                             Types.of(INTEGER),
                                                             "i",
-                                                            body -> body.yield_(b.literal("non-positive")))
-                                                    .defaultValue(b.literal("other"))));
+                                                            body -> body.yield_(literal("non-positive")))
+                                                    .defaultValue(literal("other"))));
                                 })));
 
         Compilation compilation =

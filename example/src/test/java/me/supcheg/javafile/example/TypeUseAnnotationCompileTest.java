@@ -13,6 +13,7 @@ import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
 
 /// Compiles a JLS 9.7.4 type-use annotation against a real `@interface` fixture
 /// targeted `ElementType.TYPE_USE` with `javac`, proving the emitted source
@@ -81,7 +82,7 @@ class TypeUseAnnotationCompileTest {
                         mb -> mb.withModifiers(Modifier.PUBLIC)
                                 .withTypeParam("T", Types.of(number, nonNull))
                                 .withParam("value", Types.typeVar("T"))
-                                .withBody(b -> b.return_(b.field("value")))));
+                                .withBody(b -> b.return_(field("value")))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),

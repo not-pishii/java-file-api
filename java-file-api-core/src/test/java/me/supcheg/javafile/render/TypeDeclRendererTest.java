@@ -20,6 +20,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static me.supcheg.javafile.code.Exprs.call;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.gt;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.literalNull;
+import static me.supcheg.javafile.code.Exprs.this_;
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,8 +42,7 @@ class TypeDeclRendererTest {
                         "greeting",
                         Types.of(string),
                         mb -> mb.withParam("name", Types.of(string))
-                                .withBody(
-                                        b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting")))));
+                                .withBody(b -> b.return_(field("bundle").call("getString", literal("greeting")))));
 
         ImportManager imports = new ImportManager("me.supcheg.example");
         String rendered = TypeDeclRenderer.renderTypeDecl(builder.build(), Context.of(standardFormat(), imports));
@@ -75,7 +80,7 @@ class TypeDeclRendererTest {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
         builder.withComponent("x", PrimitiveTypeRef.INT)
                 .withComponent("y", PrimitiveTypeRef.INT)
-                .withCompactConstructor(b -> b.exprStatement(b.call("requireValid")));
+                .withCompactConstructor(b -> b.exprStatement(call("requireValid")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
@@ -96,11 +101,9 @@ class TypeDeclRendererTest {
                 .withComponent("high", PrimitiveTypeRef.INT)
                 .withCanonicalConstructor(
                         List.of(new Param("low", PrimitiveTypeRef.INT), new Param("high", PrimitiveTypeRef.INT)),
-                        b -> b.if_(
-                                        b.gt(b.field("low"), b.field("high")),
-                                        ib -> ib.then(t -> t.exprStatement(t.call("fail"))))
-                                .assign(b.field(b.this_(), "low"), b.field("low"))
-                                .assign(b.field(b.this_(), "high"), b.field("high")));
+                        b -> b.if_(gt(field("low"), field("high")), ib -> ib.then(t -> t.exprStatement(call("fail"))))
+                                .assign(this_().field("low"), field("low"))
+                                .assign(this_().field("high"), field("high")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
@@ -316,7 +319,7 @@ class TypeDeclRendererTest {
                 .withMethod(
                         "read",
                         Types.of(ClassDesc.of("java.lang", "String")),
-                        mb -> mb.withThrows(ioException).withBody(b -> b.return_(b.literalNull())));
+                        mb -> mb.withThrows(ioException).withBody(b -> b.return_(literalNull())));
 
         String renderedClass = TypeDeclRenderer.renderTypeDecl(
                 classBuilder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -405,7 +408,7 @@ class TypeDeclRendererTest {
                 mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
                         .withTypeParam("T")
                         .withParam("value", Types.typeVar("T"))
-                        .withBody(b -> b.return_(b.literalNull())));
+                        .withBody(b -> b.return_(literalNull())));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -446,7 +449,7 @@ class TypeDeclRendererTest {
                 .withMethod(
                         "label",
                         Types.of(ClassDesc.of("java.lang", "String")),
-                        mb -> mb.withBody(b -> b.return_(b.literal("on"))));
+                        mb -> mb.withBody(b -> b.return_(literal("on"))));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -485,8 +488,8 @@ class TypeDeclRendererTest {
                 .withDefaultMethod(
                         "describe",
                         Types.of(string),
-                        mb -> mb.withTypeParam("T").withBody(b -> b.return_(b.literal("d"))))
-                .withStaticMethod("create", Types.of(string), mb -> mb.withBody(b -> b.return_(b.literal("c"))));
+                        mb -> mb.withTypeParam("T").withBody(b -> b.return_(literal("d"))))
+                .withStaticMethod("create", Types.of(string), mb -> mb.withBody(b -> b.return_(literal("c"))));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -585,7 +588,7 @@ class TypeDeclRendererTest {
                                         Types.of(ClassDesc.of("java.lang", "String")),
                                         java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(
                                                 nullable, java.util.List.of()))))
-                                .withBody(b -> b.return_(b.literal("x"))))
+                                .withBody(b -> b.return_(literal("x"))))
                 .withConstructor(cb -> cb.withAnnotation(deprecated));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -688,9 +691,9 @@ class TypeDeclRendererTest {
     void rendersAStaticInitializerBlockFollowedByAnInstanceInitializerBlockInAClass() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Config"));
         builder.withField("ready", PrimitiveTypeRef.BOOLEAN, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
-                .withStaticInitializerBlock(b -> b.assign(b.field("ready"), b.literal(true)))
+                .withStaticInitializerBlock(b -> b.assign(field("ready"), literal(true)))
                 .withField("id", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE))
-                .withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1)));
+                .withInitializerBlock(b -> b.assign(field("id"), literal(1)));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -717,7 +720,7 @@ class TypeDeclRendererTest {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Counter"));
         builder.withConstant("INSTANCE")
                 .withField("count", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
-                .withStaticInitializerBlock(b -> b.assign(b.field("count"), b.literal(0)));
+                .withStaticInitializerBlock(b -> b.assign(field("count"), literal(0)));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));

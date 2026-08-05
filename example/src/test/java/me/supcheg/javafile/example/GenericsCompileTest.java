@@ -11,6 +11,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.new_;
 
 class GenericsCompileTest {
 
@@ -36,7 +39,7 @@ class GenericsCompileTest {
                                 "render",
                                 Types.typeVar("T"),
                                 mb -> mb.withBody(
-                                        b -> b.return_(b.call(b.field("renderer"), "apply", b.literal("key")))))
+                                        b -> b.return_(field("renderer").call("apply", literal("key")))))
                         .withMethod(
                                 "of",
                                 Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))),
@@ -48,9 +51,9 @@ class GenericsCompileTest {
                                                         FUNCTION,
                                                         Types.exact(Types.of(STRING)),
                                                         Types.exact(Types.typeVar("T"))))
-                                        .withBody(b -> b.return_(b.new_(
+                                        .withBody(b -> b.return_(new_(
                                                 Types.parameterized(IMPL, Types.exact(Types.typeVar("T"))),
-                                                b.field("renderer"))))));
+                                                field("renderer"))))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(contract.qualifiedName(), contract.render()),

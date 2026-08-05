@@ -11,6 +11,10 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.newArray;
+import static me.supcheg.javafile.code.Exprs.newArrayOf;
 
 class ArrayExprCompileTest {
 
@@ -25,15 +29,15 @@ class ArrayExprCompileTest {
                             b.localVar(
                                     "values",
                                     new ArrayTypeRef(PrimitiveTypeRef.INT),
-                                    b.newArrayOf(PrimitiveTypeRef.INT, b.literal(1), b.literal(2), b.literal(3)));
+                                    newArrayOf(PrimitiveTypeRef.INT, literal(1), literal(2), literal(3)));
                             b.localVar(
                                     "scratch",
                                     new ArrayTypeRef(PrimitiveTypeRef.INT),
-                                    b.newArray(PrimitiveTypeRef.INT, b.literal(3)));
+                                    newArray(PrimitiveTypeRef.INT, literal(3)));
                             b.assign(
-                                    b.arrayAccess(b.field("scratch"), b.literal(0)),
-                                    b.arrayAccess(b.field("values"), b.literal(0)));
-                            b.return_(b.arrayAccess(b.field("scratch"), b.literal(0)));
+                                    field("scratch").arrayAccess(literal(0)),
+                                    field("values").arrayAccess(literal(0)));
+                            b.return_(field("scratch").arrayAccess(literal(0)));
                         })));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));

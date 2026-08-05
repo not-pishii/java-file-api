@@ -10,6 +10,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.ge;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class AssertStmtCompileTest {
 
@@ -21,8 +24,7 @@ class AssertStmtCompileTest {
                         "check",
                         mb -> mb.withParam("value", PrimitiveTypeRef.INT)
                                 .withBody(b -> b.assert_(
-                                        b.ge(b.field("value"), b.literal(0)),
-                                        b.literal("value must be non-negative")))));
+                                        ge(field("value"), literal(0)), literal("value must be non-negative")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

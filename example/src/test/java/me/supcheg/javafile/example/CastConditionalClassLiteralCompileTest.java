@@ -11,6 +11,12 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.cast;
+import static me.supcheg.javafile.code.Exprs.classLiteral;
+import static me.supcheg.javafile.code.Exprs.cond;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.gt;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class CastConditionalClassLiteralCompileTest {
 
@@ -26,11 +32,11 @@ class CastConditionalClassLiteralCompileTest {
                         Types.of(CLASS),
                         mb -> mb.withParam("value", Types.of(OBJECT))
                                 .withBody(b -> b.localVar(
-                                                "n", PrimitiveTypeRef.INT, b.cast(PrimitiveTypeRef.INT, b.literal(1.9)))
-                                        .return_(b.cond(
-                                                b.gt(b.field("n"), b.literal(0)),
-                                                b.classLiteral(Types.of(OBJECT)),
-                                                b.classLiteral(PrimitiveTypeRef.INT))))));
+                                                "n", PrimitiveTypeRef.INT, cast(PrimitiveTypeRef.INT, literal(1.9)))
+                                        .return_(cond(
+                                                gt(field("n"), literal(0)),
+                                                classLiteral(Types.of(OBJECT)),
+                                                classLiteral(PrimitiveTypeRef.INT))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

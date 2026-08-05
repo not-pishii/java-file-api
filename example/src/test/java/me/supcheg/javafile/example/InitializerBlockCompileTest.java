@@ -11,6 +11,8 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class InitializerBlockCompileTest {
 
@@ -22,9 +24,9 @@ class InitializerBlockCompileTest {
                                 "ready",
                                 PrimitiveTypeRef.BOOLEAN,
                                 fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC))
-                        .withStaticInitializerBlock(b -> b.assign(b.field("ready"), b.literal(true)))
+                        .withStaticInitializerBlock(b -> b.assign(field("ready"), literal(true)))
                         .withField("id", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE))
-                        .withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1))));
+                        .withInitializerBlock(b -> b.assign(field("id"), literal(1))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

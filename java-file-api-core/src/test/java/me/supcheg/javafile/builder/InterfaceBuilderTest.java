@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.literalNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InterfaceBuilderTest {
@@ -25,11 +27,11 @@ class InterfaceBuilderTest {
                 .withDefaultMethod(
                         "describe",
                         me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")),
-                        mb -> mb.withBody(b -> b.return_(b.literal("node"))))
+                        mb -> mb.withBody(b -> b.return_(literal("node"))))
                 .withStaticMethod(
                         "empty",
                         me.supcheg.javafile.type.Types.of(leaf),
-                        mb -> mb.withBody(b -> b.return_(b.literalNull())))
+                        mb -> mb.withBody(b -> b.return_(literalNull())))
                 .withConstant("MAX", PrimitiveTypeRef.INT, new me.supcheg.javafile.code.IntLiteral(10));
 
         InterfaceDecl decl = builder.build();

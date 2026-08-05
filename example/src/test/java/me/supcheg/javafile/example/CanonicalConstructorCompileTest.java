@@ -13,6 +13,10 @@ import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.gt;
+import static me.supcheg.javafile.code.Exprs.new_;
+import static me.supcheg.javafile.code.Exprs.this_;
 
 class CanonicalConstructorCompileTest {
 
@@ -27,11 +31,11 @@ class CanonicalConstructorCompileTest {
                                         new Param("low", PrimitiveTypeRef.INT),
                                         new Param("high", PrimitiveTypeRef.INT)),
                                 b -> b.if_(
-                                                b.gt(b.field("low"), b.field("high")),
-                                                ib -> ib.then(t -> t.throw_(t.new_(Types.of(
+                                                gt(field("low"), field("high")),
+                                                ib -> ib.then(t -> t.throw_(new_(Types.of(
                                                         ClassDesc.of("java.lang", "IllegalArgumentException"))))))
-                                        .assign(b.field(b.this_(), "low"), b.field("low"))
-                                        .assign(b.field(b.this_(), "high"), b.field("high"))));
+                                        .assign(this_().field("low"), field("low"))
+                                        .assign(this_().field("high"), field("high"))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

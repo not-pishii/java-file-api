@@ -11,6 +11,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.eq;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class LabeledStmtCompileTest {
 
@@ -25,10 +28,9 @@ class LabeledStmtCompileTest {
                                     outer.forEach(
                                             PrimitiveTypeRef.INT,
                                             "i",
-                                            outer.field("items"),
+                                            field("items"),
                                             inner -> inner.if_(
-                                                    inner.eq(inner.field("i"), inner.literal(1)),
-                                                    ib -> ib.then(t -> t.break_("outer"))));
+                                                    eq(field("i"), literal(1)), ib -> ib.then(t -> t.break_("outer"))));
                                 }))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));

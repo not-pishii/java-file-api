@@ -41,14 +41,15 @@ Types are addressed via `java.lang.constant.ClassDesc`, and file structure is de
 same pattern as `ClassFile.build`:
 
 ```java
+// import static me.supcheg.javafile.code.Exprs.*;
 JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb
         .withModifiers(Modifier.FINAL)
         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
         .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
                 .withParam("bundle", Types.of(BUNDLE))
-                .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
+                .withBody(b -> b.assign(this_().field("bundle"), field("bundle"))))
         .withMethod("greeting", Types.of(STRING), mb -> mb.withParam("name", Types.of(STRING))
-                .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
+                .withBody(b -> b.return_(field("bundle").call("getString", literal("greeting"))))));
 
 String source = file.render();
 ```

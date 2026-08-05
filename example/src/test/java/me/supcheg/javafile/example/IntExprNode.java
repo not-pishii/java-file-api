@@ -1,17 +1,23 @@
 package me.supcheg.javafile.example;
 
-import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
+
+import static me.supcheg.javafile.code.Exprs.add;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.mul;
+import static me.supcheg.javafile.code.Exprs.neg;
+import static me.supcheg.javafile.code.Exprs.sub;
 
 /// A tiny arithmetic expression tree used only to property-test
 /// {@code ExprRenderer}'s parenthesization: it can both evaluate itself in
-/// plain Java and render itself through {@link CodeBuilder}, so the two
-/// results can be compared after compiling and running the rendered form.
+/// plain Java and render itself through {@link me.supcheg.javafile.code.Exprs},
+/// so the two results can be compared after compiling and running the
+/// rendered form.
 sealed interface IntExprNode {
 
     int evaluate();
 
-    Expr toExpr(CodeBuilder cb);
+    Expr toExpr();
 
     record Lit(int value) implements IntExprNode {
         @Override
@@ -20,8 +26,8 @@ sealed interface IntExprNode {
         }
 
         @Override
-        public Expr toExpr(CodeBuilder cb) {
-            return cb.literal(value);
+        public Expr toExpr() {
+            return literal(value);
         }
     }
 
@@ -32,8 +38,8 @@ sealed interface IntExprNode {
         }
 
         @Override
-        public Expr toExpr(CodeBuilder cb) {
-            return cb.neg(operand.toExpr(cb));
+        public Expr toExpr() {
+            return neg(operand.toExpr());
         }
     }
 
@@ -51,13 +57,13 @@ sealed interface IntExprNode {
         }
 
         @Override
-        public Expr toExpr(CodeBuilder cb) {
-            Expr l = left.toExpr(cb);
-            Expr r = right.toExpr(cb);
+        public Expr toExpr() {
+            Expr l = left.toExpr();
+            Expr r = right.toExpr();
             return switch (op) {
-                case '+' -> cb.add(l, r);
-                case '-' -> cb.sub(l, r);
-                case '*' -> cb.mul(l, r);
+                case '+' -> add(l, r);
+                case '-' -> sub(l, r);
+                case '*' -> mul(l, r);
                 default -> throw new IllegalStateException("Unknown op: " + op);
             };
         }

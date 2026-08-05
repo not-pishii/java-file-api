@@ -10,6 +10,8 @@ import java.lang.constant.ClassDesc;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaFileTest {
@@ -36,8 +38,8 @@ class JavaFileTest {
                                 "greeting",
                                 Types.of(STRING),
                                 mb -> mb.withParam("name", Types.of(STRING))
-                                        .withBody(b -> b.return_(
-                                                b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
+                                        .withBody(b ->
+                                                b.return_(field("bundle").call("getString", literal("greeting"))))));
 
         assertThat(file.render()).isEqualTo("""
                         package me.supcheg.example;

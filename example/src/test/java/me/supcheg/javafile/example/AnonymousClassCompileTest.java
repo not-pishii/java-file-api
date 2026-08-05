@@ -15,6 +15,7 @@ import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.newAnonymous;
 
 class AnonymousClassCompileTest {
 
@@ -37,7 +38,7 @@ class AnonymousClassCompileTest {
                 cb -> cb.withMethod(
                         "task",
                         Types.of(RUNNABLE),
-                        mb -> mb.withBody(b -> b.return_(b.newAnonymous(Types.of(RUNNABLE), List.of(runMethod))))));
+                        mb -> mb.withBody(b -> b.return_(newAnonymous(Types.of(RUNNABLE), List.of(runMethod))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

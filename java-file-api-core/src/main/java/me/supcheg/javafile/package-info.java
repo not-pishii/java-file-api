@@ -8,9 +8,11 @@
 /// [me.supcheg.javafile.transform].
 ///
 /// ```java
+/// import static me.supcheg.javafile.code.Exprs.literal;
+///
 /// JavaFile file = JavaFile.of(ClassDesc.of("com.example", "Greeter"),
 ///         cb -> cb.withMethod("greet", Types.of(STRING),
-///                 mb -> mb.withBody(b -> b.return_(b.literal("hi")))));
+///                 mb -> mb.withBody(b -> b.return_(literal("hi")))));
 /// file.writeTo(Path.of("build/generated"));
 /// ```
 @NullMarked

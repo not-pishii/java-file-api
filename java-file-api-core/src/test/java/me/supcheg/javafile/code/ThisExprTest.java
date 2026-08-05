@@ -10,16 +10,14 @@ class ThisExprTest {
 
     @Test
     void thisDotFieldNoLongerNeedsAStringHack() {
-        CodeBuilder cb = new CodeBuilder();
-        Expr expr = cb.field(cb.this_(), "bundle");
+        Expr expr = Exprs.this_().field("bundle");
 
         assertThat(expr).isEqualTo(new FieldAccessExpr(Optional.of(new ThisExpr()), "bundle"));
     }
 
     @Test
     void superDotMethodCall() {
-        CodeBuilder cb = new CodeBuilder();
-        Expr expr = cb.call(cb.super_(), "toString");
+        Expr expr = Exprs.super_().call("toString");
 
         assertThat(expr).isEqualTo(new MethodCallExpr(Optional.of(new SuperExpr()), "toString", java.util.List.of()));
     }

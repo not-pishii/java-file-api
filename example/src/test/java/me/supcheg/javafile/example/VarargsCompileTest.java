@@ -10,6 +10,7 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class VarargsCompileTest {
 
@@ -21,7 +22,7 @@ class VarargsCompileTest {
                         "sum",
                         PrimitiveTypeRef.INT,
                         mb -> mb.withVarargsParam("values", PrimitiveTypeRef.INT)
-                                .withBody(b -> b.return_(b.literal(0)))));
+                                .withBody(b -> b.return_(literal(0)))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
