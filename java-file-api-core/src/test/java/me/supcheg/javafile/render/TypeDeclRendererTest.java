@@ -337,7 +337,7 @@ class TypeDeclRendererTest {
 
         InterfaceBuilder interfaceBuilder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Source"));
         interfaceBuilder.withAbstractMethod(
-                "read", Types.of(ClassDesc.of("java.lang", "String")), new Param[0], ioException);
+                "read", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withThrows(ioException));
 
         String renderedInterface = TypeDeclRenderer.renderTypeDecl(
                 interfaceBuilder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));

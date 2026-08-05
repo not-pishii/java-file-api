@@ -180,6 +180,25 @@ public final class EnumBuilder implements Consumer<EnumMember> {
         return this;
     }
 
+    /// Adds a field with no initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @return this builder
+    public EnumBuilder withField(String name, TypeRef type) {
+        return withField(name, type, fb -> {});
+    }
+
+    /// Adds a field with an initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param initializer the initializer expression
+    /// @return this builder
+    public EnumBuilder withField(String name, TypeRef type, Expr initializer) {
+        return withField(name, type, fb -> fb.withInitializer(initializer));
+    }
+
     /// Adds a field.
     ///
     /// @param name the field name
@@ -266,6 +285,33 @@ public final class EnumBuilder implements Consumer<EnumMember> {
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
+        return this;
+    }
+
+    /// Adds an abstract method with a return type, implemented per-constant,
+    /// populated via an [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public EnumBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a `void` abstract method, implemented per-constant, populated via
+    /// an [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public EnumBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
+        spec.accept(amb);
+        members.add(amb.build());
         return this;
     }
 

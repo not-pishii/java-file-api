@@ -3,6 +3,7 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -198,6 +199,51 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
+    }
+
+    /// Adds an abstract method with a return type, populated via an
+    /// [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public ClassBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a `void` abstract method, populated via an [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public ClassBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a field with no initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @return this builder
+    public ClassBuilder withField(String name, TypeRef type) {
+        return withField(name, type, fb -> {});
+    }
+
+    /// Adds a field with an initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param initializer the initializer expression
+    /// @return this builder
+    public ClassBuilder withField(String name, TypeRef type, Expr initializer) {
+        return withField(name, type, fb -> fb.withInitializer(initializer));
     }
 
     /// Adds a field.

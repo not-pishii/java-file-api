@@ -77,8 +77,7 @@ class InterfaceBuilderTest {
         builder.withAbstractMethod(
                 "kind",
                 me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")),
-                new me.supcheg.javafile.model.Param[0],
-                ioException);
+                mb -> mb.withThrows(ioException));
 
         AbstractMethodDecl method =
                 (AbstractMethodDecl) builder.build().members().get(0);
@@ -91,7 +90,7 @@ class InterfaceBuilderTest {
         ClassDesc ioException = ClassDesc.of("java.io", "IOException");
 
         builder.withVoidAbstractMethod("visit")
-                .withVoidAbstractMethod("visitChecked", new me.supcheg.javafile.model.Param[0], ioException);
+                .withVoidAbstractMethod("visitChecked", mb -> mb.withThrows(ioException));
 
         InterfaceDecl decl = builder.build();
 

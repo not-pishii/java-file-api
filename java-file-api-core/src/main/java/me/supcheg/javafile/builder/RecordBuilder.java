@@ -6,6 +6,7 @@ import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
+import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -272,6 +273,26 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @return this builder
     public RecordBuilder withStaticField(String name, TypeRef type, Expr initializer) {
         members.add(new StaticFieldDecl(name, type, List.of(), initializer));
+        return this;
+    }
+
+    /// Adds a `static` field, populated via a [FieldBuilder].
+    ///
+    /// Modifiers set via [FieldBuilder#withModifiers(Modifier...)] have no effect;
+    /// a record's static field always renders as `public static final`.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param spec receives the builder to populate the field
+    /// @return this builder
+    /// @throws IllegalStateException if `spec` never sets an initializer
+    public RecordBuilder withStaticField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+        FieldBuilder fb = new FieldBuilder(name, type);
+        spec.accept(fb);
+        FieldDecl fd = fb.build();
+        Expr initializer = fd.initializer()
+                .orElseThrow(() -> new IllegalStateException("static field " + name + " requires an initializer"));
+        members.add(new StaticFieldDecl(fd.name(), fd.type(), fd.annotations(), initializer));
         return this;
     }
 

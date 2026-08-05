@@ -1,5 +1,6 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.EnumConstantMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.type.TypeRef;
@@ -27,6 +28,25 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
 
     /// Creates an empty anonymous class body builder.
     public AnonymousClassBuilder() {}
+
+    /// Adds a field with no initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @return this builder
+    public AnonymousClassBuilder withField(String name, TypeRef type) {
+        return withField(name, type, fb -> {});
+    }
+
+    /// Adds a field with an initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param initializer the initializer expression
+    /// @return this builder
+    public AnonymousClassBuilder withField(String name, TypeRef type, Expr initializer) {
+        return withField(name, type, fb -> fb.withInitializer(initializer));
+    }
 
     /// Adds a field.
     ///
