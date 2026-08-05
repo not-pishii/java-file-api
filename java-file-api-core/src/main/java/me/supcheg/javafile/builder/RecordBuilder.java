@@ -7,7 +7,6 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
-import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordComponent;
@@ -207,23 +206,6 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
-    /// Adds an explicit (non-compact) canonical constructor with the `public`
-    /// modifier and no `throws` clause. The given `params` must match the
-    /// record's components exactly in name, type, and order — enforced when
-    /// the record is rendered.
-    ///
-    /// Declared as `Param[]` rather than `Param...`: paired with
-    /// [#withCanonicalConstructor(List,Consumer)], a `Param...` form would
-    /// make a call with an empty parameter list ambiguous between the two
-    /// overloads.
-    ///
-    /// @param params the constructor's parameters, matching the record's components exactly
-    /// @param spec receives the builder to populate the constructor body
-    /// @return this builder
-    public RecordBuilder withCanonicalConstructor(Param[] params, Consumer<CodeBuilder> spec) {
-        return withCanonicalConstructor(List.of(params), spec);
-    }
-
     /// Adds a method with a return type.
     ///
     /// @param name the method name
@@ -233,15 +215,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 
@@ -253,15 +227,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 

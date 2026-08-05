@@ -211,7 +211,7 @@ class CodeBuilderTest {
 
     @Test
     void newExprCarriesTypeAndArguments() {
-        me.supcheg.javafile.type.TypeRef exceptionType = me.supcheg.javafile.type.Types.of(
+        me.supcheg.javafile.type.ClassOrInterfaceTypeRef exceptionType = me.supcheg.javafile.type.Types.of(
                 java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"));
 
         Expr expr = new_(exceptionType, literal("bad state"));
@@ -427,10 +427,7 @@ class CodeBuilderTest {
     @Test
     void throwAddsAThrowStmt() {
         CodeBuilder cb = new CodeBuilder();
-        cb.throw_(new_(
-                me.supcheg.javafile.type.Types.of(
-                        java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException")),
-                literal("bad")));
+        cb.throw_(new_(java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"), literal("bad")));
 
         assertThat(cb.build().statements()).hasSize(1);
         assertThat(cb.build().statements().get(0)).isInstanceOf(ThrowStmt.class);

@@ -125,7 +125,9 @@ final class TypeDeclRenderer {
                 + m.name()
                 + "("
                 + TypeRefRenderer.renderParams(m.params(), ctx)
-                + ");" + ctx.newline();
+                + ")"
+                + renderThrows(m.throwsTypes(), ctx)
+                + ";" + ctx.newline();
     }
 
     private static String renderField(FieldDecl f, Context ctx) {

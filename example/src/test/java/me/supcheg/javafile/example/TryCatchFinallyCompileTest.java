@@ -39,7 +39,7 @@ class TryCatchFinallyCompileTest {
                                         tb -> tb.resource_(
                                                         "reader",
                                                         Types.of(STRING_READER),
-                                                        new_(Types.of(STRING_READER), literal("x")))
+                                                        new_(STRING_READER, literal("x")))
                                                 .catch_(
                                                         List.of(Types.of(IO_EXCEPTION), Types.of(SQL_EXCEPTION)),
                                                         "e",

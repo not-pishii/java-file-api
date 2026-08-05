@@ -265,6 +265,43 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersThrowsClauseOnAnAbstractMethodInAClassBody() {
+        ClassDesc ioException = ClassDesc.of("java.io", "IOException");
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Reader"));
+        builder.withModifiers(Modifier.ABSTRACT)
+                .withAbstractMethod(
+                        "read", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withThrows(ioException));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public abstract class Reader {
+                            public abstract String read() throws IOException;
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersThrowsClauseOnAnAbstractMethodInAnEnumBody() {
+        ClassDesc ioException = ClassDesc.of("java.io", "IOException");
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Op"));
+        builder.withAbstractMethod(
+                "apply", Types.of(ClassDesc.of("java.lang", "String")), mb -> mb.withThrows(ioException));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public enum Op {
+                            ;
+
+                            public abstract String apply() throws IOException;
+                        }
+                        """);
+    }
+
+    @Test
     void rendersAGenericAbstractMethodInAClassBody() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Container"));
         var abstractMethod = new me.supcheg.javafile.model.AbstractMethodDecl(

@@ -2,7 +2,6 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.EnumConstantMember;
-import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.lang.constant.ClassDesc;
@@ -70,7 +69,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     public AnonymousClassBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(toMethodDecl(mb));
+        members.add(mb.build());
         return this;
     }
 
@@ -82,7 +81,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     public AnonymousClassBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(toMethodDecl(mb));
+        members.add(mb.build());
         return this;
     }
 
@@ -159,17 +158,5 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @return the finished member list
     public List<EnumConstantMember> build() {
         return List.copyOf(members);
-    }
-
-    private static MethodDecl toMethodDecl(MethodBuilder mb) {
-        return new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes());
     }
 }

@@ -9,7 +9,6 @@ import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.InitializerBlock;
-import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -221,15 +220,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     public EnumBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 
@@ -241,15 +232,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     public EnumBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 

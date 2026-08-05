@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 ///
 /// Instances are created by the `withAbstractMethod`/`withVoidAbstractMethod`
 /// methods of [ClassBuilder], [InterfaceBuilder], and [EnumBuilder], and are
-/// not meant to be instantiated directly. If [#withModifiers(Modifier...)]
-/// is never called, the declaration defaults to `public abstract`.
+/// not meant to be instantiated directly. Starts with the `public abstract`
+/// modifiers already applied.
 ///
 /// Instances are not thread-safe.
 public final class AbstractMethodBuilder {
@@ -31,7 +31,7 @@ public final class AbstractMethodBuilder {
     private final String name;
     private final Optional<TypeRef> returnType;
     private final List<AnnotationUse> annotations = new ArrayList<>();
-    private final Set<Modifier> modifiers = new LinkedHashSet<>();
+    private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC, Modifier.ABSTRACT));
     private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<Param> params = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
@@ -73,10 +73,32 @@ public final class AbstractMethodBuilder {
 
     /// Adds the given modifiers to the method declaration.
     ///
+    /// Modifiers accumulate across calls and duplicates are ignored; the initial
+    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    ///
     /// @param mods the modifiers to add
     /// @return this builder
     public AbstractMethodBuilder withModifiers(Modifier... mods) {
         modifiers.addAll(List.of(mods));
+        return this;
+    }
+
+    /// Replaces the accumulated modifiers with exactly the given set, bypassing
+    /// the initial `public abstract` seed that [#withModifiers(Modifier...)] can
+    /// only add to. Intended for producers — like
+    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
+    /// existing declaration's modifiers exactly, including one with no access
+    /// modifier or with `private`/`protected`; ordinary hand-authored
+    /// declarations should use [#withModifiers(Modifier...)]. A later
+    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    /// The built declaration always carries `abstract` regardless of what is
+    /// passed here.
+    ///
+    /// @param mods the exact modifier set to use
+    /// @return this builder
+    public AbstractMethodBuilder withExactModifiers(Set<Modifier> mods) {
+        modifiers.clear();
+        modifiers.addAll(mods);
         return this;
     }
 
@@ -152,13 +174,15 @@ public final class AbstractMethodBuilder {
     }
 
     AbstractMethodDecl build() {
+        Set<Modifier> builtModifiers = new LinkedHashSet<>(modifiers);
+        builtModifiers.add(Modifier.ABSTRACT);
         return new AbstractMethodDecl(
                 name,
                 returnType,
                 List.copyOf(typeParams),
                 List.copyOf(params),
                 List.copyOf(annotations),
-                modifiers.isEmpty() ? Set.of(Modifier.PUBLIC, Modifier.ABSTRACT) : Set.copyOf(modifiers),
+                Set.copyOf(builtModifiers),
                 List.copyOf(throwsTypes));
     }
 }

@@ -124,7 +124,7 @@ class ExprRendererTest {
 
     @Test
     void staticFieldAccessRendersTypeDotName() {
-        ClassOrInterfaceTypeRef integerType = Types.of(ClassDesc.of("java.lang", "Integer"));
+        ClassDesc integerType = ClassDesc.of("java.lang", "Integer");
         Expr expr = staticField(integerType, "MAX_VALUE");
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -133,7 +133,7 @@ class ExprRendererTest {
 
     @Test
     void staticMethodCallRendersArgsCommaSeparated() {
-        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        ClassDesc mathType = ClassDesc.of("java.lang", "Math");
         Expr expr = Exprs.staticCall(mathType, "max", field("a"), field("b"));
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -142,7 +142,7 @@ class ExprRendererTest {
 
     @Test
     void assignStatementWithStaticFieldAccessTargetRendersTargetEqualsValue() {
-        ClassOrInterfaceTypeRef counterType = Types.of(ClassDesc.of("me.supcheg.example", "Counter"));
+        ClassDesc counterType = ClassDesc.of("me.supcheg.example", "Counter");
         StaticFieldAccessExpr target = staticField(counterType, "total");
         Expr value = literal(1);
 
@@ -155,7 +155,7 @@ class ExprRendererTest {
 
     @Test
     void staticMethodCallAsBareStatementRendersSemicolonTerminated() {
-        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
+        ClassDesc mathType = ClassDesc.of("java.lang", "Math");
         Stmt stmt = new ExprStmt(Exprs.staticCall(mathType, "max", literal(1), literal(2)));
 
         String rendered = ExprRenderer.renderStmt(
@@ -394,7 +394,7 @@ class ExprRendererTest {
 
     @Test
     void classLiteralExprRendersTypeDotClass() {
-        TypeRef stringType = Types.of(ClassDesc.of("java.lang", "String"));
+        ClassDesc stringType = ClassDesc.of("java.lang", "String");
         Expr expr = classLiteral(stringType);
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -403,7 +403,7 @@ class ExprRendererTest {
 
     @Test
     void typeQualifiedMethodRefRendersTypeColonColonMethod() {
-        TypeRef integerType = Types.of(ClassDesc.of("java.lang", "Integer"));
+        ClassDesc integerType = ClassDesc.of("java.lang", "Integer");
         Expr expr = Exprs.methodRef(integerType, "parseInt");
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -420,7 +420,7 @@ class ExprRendererTest {
 
     @Test
     void constructorRefRendersTypeColonColonNew() {
-        TypeRef stringType = Types.of(ClassDesc.of("java.lang", "String"));
+        ClassDesc stringType = ClassDesc.of("java.lang", "String");
         Expr expr = constructorRef(stringType);
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -429,7 +429,7 @@ class ExprRendererTest {
 
     @Test
     void newExprRendersTypeAndCommaSeparatedArguments() {
-        TypeRef exceptionType = Types.of(ClassDesc.of("java.lang", "IllegalStateException"));
+        ClassDesc exceptionType = ClassDesc.of("java.lang", "IllegalStateException");
         Expr expr = new_(exceptionType, literal("bad state"));
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -446,7 +446,7 @@ class ExprRendererTest {
 
     @Test
     void newExprWithoutAnonymousBodyRendersNoTrailingBraces() {
-        TypeRef objectType = Types.of(ClassDesc.of("java.lang", "Object"));
+        ClassDesc objectType = ClassDesc.of("java.lang", "Object");
         Expr expr = new_(objectType);
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -455,7 +455,7 @@ class ExprRendererTest {
 
     @Test
     void newExprWithAnonymousBodyRendersBracesAndIndentedMembers() {
-        TypeRef runnableType = Types.of(ClassDesc.of("java.lang", "Runnable"));
+        ClassOrInterfaceTypeRef runnableType = Types.of(ClassDesc.of("java.lang", "Runnable"));
         Expr expr = newAnonymous(runnableType, List.of(), b -> b.withVoidMethod("run", mb -> {}));
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
@@ -745,7 +745,7 @@ class ExprRendererTest {
 
     @Test
     void switchCaseWithAThrowBodyRendersThrowKeywordAndException() {
-        TypeRef exceptionType = Types.of(ClassDesc.of("java.lang", "IllegalStateException"));
+        ClassDesc exceptionType = ClassDesc.of("java.lang", "IllegalStateException");
         Stmt stmt = new SwitchStmt(
                 field("day"),
                 List.of(new SwitchCase(
@@ -774,7 +774,7 @@ class ExprRendererTest {
 
     @Test
     void throwStmtRendersThrowKeywordAndException() {
-        TypeRef exceptionType = Types.of(ClassDesc.of("java.lang", "IllegalStateException"));
+        ClassDesc exceptionType = ClassDesc.of("java.lang", "IllegalStateException");
         Stmt stmt = new ThrowStmt(new_(exceptionType, literal("bad")));
 
         assertThat(ExprRenderer.renderStmt(

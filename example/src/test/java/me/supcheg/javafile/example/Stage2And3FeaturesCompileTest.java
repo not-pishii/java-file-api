@@ -115,9 +115,8 @@ class Stage2And3FeaturesCompileTest {
                                 mb -> mb.withParam("n", PrimitiveTypeRef.INT)
                                         .withBody(b -> b.if_(
                                                 le(field("n"), literal(0)),
-                                                ib -> ib.then(body -> body.throw_(new_(
-                                                        Types.of(ILLEGAL_ARGUMENT),
-                                                        literal("n must be positive"))))))));
+                                                ib -> ib.then(body -> body.throw_(
+                                                        new_(ILLEGAL_ARGUMENT, literal("n must be positive"))))))));
 
         Compilation compilation =
                 javac().compile(JavaFileObjects.forSourceString(calculator.qualifiedName(), calculator.render()));
@@ -154,8 +153,8 @@ class Stage2And3FeaturesCompileTest {
                                     b.localVar("total", PrimitiveTypeRef.INT, literal(0));
                                     b.if_(
                                             lt(field("n"), literal(0)),
-                                            ib -> ib.then(body -> body.throw_(new_(
-                                                    Types.of(ILLEGAL_ARGUMENT), literal("n must be non-negative")))));
+                                            ib -> ib.then(body -> body.throw_(
+                                                    new_(ILLEGAL_ARGUMENT, literal("n must be non-negative")))));
                                     b.for_(
                                             new LocalVarDeclStmt.Typed(
                                                     PrimitiveTypeRef.INT, "i", Optional.of(literal(0))),

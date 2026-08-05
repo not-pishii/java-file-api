@@ -64,18 +64,18 @@ class PrecedenceTest {
     void primaryFormsAllRenderAtThePrimaryLevel() {
         Expr[] primaries = {
             field("x"),
-            staticField(Types.of(ClassDesc.of("java.lang", "Integer")), "MAX_VALUE"),
+            staticField(ClassDesc.of("java.lang", "Integer"), "MAX_VALUE"),
             call("use"),
-            Exprs.staticCall(Types.of(ClassDesc.of("java.lang", "Math")), "abs", literal(1)),
+            Exprs.staticCall(ClassDesc.of("java.lang", "Math"), "abs", literal(1)),
             literal(1),
             textBlock("x"),
             new NewExpr(new TypedNewTarget(Types.of(ClassDesc.of("java.lang", "Object"))), List.of(), Optional.empty()),
             new SwitchExpr(field("x"), List.of()),
             new ThisExpr(),
             new SuperExpr(),
-            classLiteral(Types.of(ClassDesc.of("java.lang", "String"))),
-            Exprs.methodRef(Types.of(ClassDesc.of("java.lang", "Integer")), "parseInt"),
-            constructorRef(Types.of(ClassDesc.of("java.lang", "String"))),
+            classLiteral(ClassDesc.of("java.lang", "String")),
+            Exprs.methodRef(ClassDesc.of("java.lang", "Integer"), "parseInt"),
+            constructorRef(ClassDesc.of("java.lang", "String")),
             field("array").arrayAccess(literal(0)),
             newArray(PrimitiveTypeRef.INT, literal(1)),
             newArrayOf(PrimitiveTypeRef.INT, literal(1))

@@ -41,6 +41,14 @@ class ExprsTest {
     }
 
     @Test
+    void staticCallClassDescOverloadsDelegateToTheTypeRefForm() {
+        assertThat(Exprs.staticCall(STRING, "valueOf", Exprs.literal(1)))
+                .isEqualTo(Exprs.staticCall(Types.of(STRING), "valueOf", Exprs.literal(1)));
+        assertThat(Exprs.staticCall(STRING, "valueOf", List.of(Exprs.literal(1))))
+                .isEqualTo(Exprs.staticCall(Types.of(STRING), "valueOf", List.of(Exprs.literal(1))));
+    }
+
+    @Test
     void binaryAndUnaryOperatorsWrapTheirOperands() {
         assertThat(Exprs.add(Exprs.literal(1), Exprs.literal(2)))
                 .isEqualTo(new BinaryExpr(new IntLiteral(1), BinaryOp.ADD, new IntLiteral(2)));
@@ -75,9 +83,28 @@ class ExprsTest {
     }
 
     @Test
+    void staticFieldClassDescOverloadDelegatesToTheTypeRefForm() {
+        assertThat(Exprs.staticField(STRING, "CASE_INSENSITIVE_ORDER"))
+                .isEqualTo(Exprs.staticField(Types.of(STRING), "CASE_INSENSITIVE_ORDER"));
+    }
+
+    @Test
     void newExprCarriesTypeAndArguments() {
         assertThat(Exprs.new_(Types.of(STRING), Exprs.literal("a")))
                 .isEqualTo(new NewExpr(new TypedNewTarget(Types.of(STRING)), List.of(new StringLiteral("a"))));
+    }
+
+    // намеренно НЕ компилируется и служит документацией сужения (не запускается, используется в code review):
+    // Exprs.new_(Types.array(Types.of(STRING)), Exprs.literal("a")); // ArrayTypeRef is not a
+    // ClassOrInterfaceTypeRef, `new String[](...)` is not valid Java
+    // Exprs.new_(PrimitiveTypeRef.INT, Exprs.literal("a")); // PrimitiveTypeRef is not a
+    // ClassOrInterfaceTypeRef, `new int(...)` is not valid Java
+
+    @Test
+    void newClassDescOverloadsDelegateToTheTypeRefForm() {
+        assertThat(Exprs.new_(STRING, Exprs.literal("a"))).isEqualTo(Exprs.new_(Types.of(STRING), Exprs.literal("a")));
+        assertThat(Exprs.new_(STRING, List.of(Exprs.literal("a"))))
+                .isEqualTo(Exprs.new_(Types.of(STRING), List.of(Exprs.literal("a"))));
     }
 
     @Test
@@ -105,6 +132,13 @@ class ExprsTest {
         assertThat(Exprs.methodRef(Types.of(STRING), "valueOf"))
                 .isEqualTo(new MethodRefExpr(new TypeMethodRefTarget(Types.of(STRING)), "valueOf"));
         assertThat(Exprs.constructorRef(Types.of(STRING))).isEqualTo(new ConstructorRefExpr(Types.of(STRING)));
+    }
+
+    @Test
+    void classLiteralMethodRefAndConstructorRefClassDescOverloadsDelegateToTheTypeRefForm() {
+        assertThat(Exprs.classLiteral(STRING)).isEqualTo(Exprs.classLiteral(Types.of(STRING)));
+        assertThat(Exprs.methodRef(STRING, "valueOf")).isEqualTo(Exprs.methodRef(Types.of(STRING), "valueOf"));
+        assertThat(Exprs.constructorRef(STRING)).isEqualTo(Exprs.constructorRef(Types.of(STRING)));
     }
 
     @Test

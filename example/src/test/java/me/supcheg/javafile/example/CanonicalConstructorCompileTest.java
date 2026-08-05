@@ -5,7 +5,6 @@ import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -32,8 +31,8 @@ class CanonicalConstructorCompileTest {
                                         new Param("high", PrimitiveTypeRef.INT)),
                                 b -> b.if_(
                                                 gt(field("low"), field("high")),
-                                                ib -> ib.then(t -> t.throw_(new_(Types.of(
-                                                        ClassDesc.of("java.lang", "IllegalArgumentException"))))))
+                                                ib -> ib.then(t -> t.throw_(
+                                                        new_(ClassDesc.of("java.lang", "IllegalArgumentException")))))
                                         .assign(this_().field("low"), field("low"))
                                         .assign(this_().field("high"), field("high"))));
 

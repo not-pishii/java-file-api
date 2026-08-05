@@ -4,6 +4,7 @@ import me.supcheg.javafile.builder.AnonymousClassBuilder;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -112,6 +113,15 @@ public final class Exprs {
         return new StaticFieldAccessExpr(type, name);
     }
 
+    /// Creates a static field access, e.g. `type.name`.
+    ///
+    /// @param type the type declaring the field
+    /// @param name the field name
+    /// @return a static field access expression
+    public static StaticFieldAccessExpr staticField(ClassDesc type, String name) {
+        return staticField(Types.of(type), name);
+    }
+
     /// Creates an unqualified method call, e.g. `method(args)`.
     ///
     /// @param method the method name
@@ -150,12 +160,32 @@ public final class Exprs {
         return new StaticMethodCallExpr(type, method, List.copyOf(args));
     }
 
+    /// Creates a static method call, e.g. `type.method(args)`.
+    ///
+    /// @param type the type declaring the method
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a static method call expression
+    public static StaticMethodCallExpr staticCall(ClassDesc type, String method, Expr... args) {
+        return staticCall(Types.of(type), method, args);
+    }
+
+    /// Creates a static method call, e.g. `type.method(args)`.
+    ///
+    /// @param type the type declaring the method
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a static method call expression
+    public static StaticMethodCallExpr staticCall(ClassDesc type, String method, List<Expr> args) {
+        return staticCall(Types.of(type), method, args);
+    }
+
     /// Creates an object creation expression, `new type(args)`.
     ///
     /// @param type the instantiated type
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public static NewExpr new_(TypeRef type, Expr... args) {
+    public static NewExpr new_(ClassOrInterfaceTypeRef type, Expr... args) {
         return new NewExpr(new TypedNewTarget(type), List.of(args));
     }
 
@@ -164,8 +194,26 @@ public final class Exprs {
     /// @param type the instantiated type
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public static NewExpr new_(TypeRef type, List<Expr> args) {
+    public static NewExpr new_(ClassOrInterfaceTypeRef type, List<Expr> args) {
         return new NewExpr(new TypedNewTarget(type), List.copyOf(args));
+    }
+
+    /// Creates an object creation expression, `new type(args)`.
+    ///
+    /// @param type the instantiated type
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public static NewExpr new_(ClassDesc type, Expr... args) {
+        return new_(Types.of(type), args);
+    }
+
+    /// Creates an object creation expression, `new type(args)`.
+    ///
+    /// @param type the instantiated type
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public static NewExpr new_(ClassDesc type, List<Expr> args) {
+        return new_(Types.of(type), args);
     }
 
     /// Creates a diamond object creation expression, `new rawType<>(args)`,
@@ -195,7 +243,8 @@ public final class Exprs {
     /// @param args the constructor arguments, in order
     /// @param spec receives the builder to populate the anonymous class body
     /// @return a `new` expression
-    public static NewExpr newAnonymous(TypeRef type, List<Expr> args, Consumer<AnonymousClassBuilder> spec) {
+    public static NewExpr newAnonymous(
+            ClassOrInterfaceTypeRef type, List<Expr> args, Consumer<AnonymousClassBuilder> spec) {
         AnonymousClassBuilder acb = new AnonymousClassBuilder();
         spec.accept(acb);
         return new NewExpr(new TypedNewTarget(type), List.copyOf(args), Optional.of(acb.build()));
@@ -237,6 +286,14 @@ public final class Exprs {
         return new ClassLiteralExpr(type);
     }
 
+    /// Creates a class literal, `type.class`.
+    ///
+    /// @param type the referenced type
+    /// @return a class literal expression
+    public static ClassLiteralExpr classLiteral(ClassDesc type) {
+        return classLiteral(Types.of(type));
+    }
+
     /// Creates a type-qualified method reference, e.g. `Type::method`.
     ///
     /// @param type the qualifying type
@@ -246,12 +303,29 @@ public final class Exprs {
         return new MethodRefExpr(new TypeMethodRefTarget(type), method);
     }
 
+    /// Creates a type-qualified method reference, e.g. `Type::method`.
+    ///
+    /// @param type the qualifying type
+    /// @param method the referenced method name
+    /// @return a method reference expression
+    public static MethodRefExpr methodRef(ClassDesc type, String method) {
+        return methodRef(Types.of(type), method);
+    }
+
     /// Creates a constructor reference, e.g. `Type::new`.
     ///
     /// @param type the referenced type
     /// @return a constructor reference expression
     public static ConstructorRefExpr constructorRef(TypeRef type) {
         return new ConstructorRefExpr(type);
+    }
+
+    /// Creates a constructor reference, e.g. `Type::new`.
+    ///
+    /// @param type the referenced type
+    /// @return a constructor reference expression
+    public static ConstructorRefExpr constructorRef(ClassDesc type) {
+        return constructorRef(Types.of(type));
     }
 
     /// Creates a cast expression, `(type) operand`.
@@ -529,20 +603,6 @@ public final class Exprs {
         return new LambdaExpr(new InferredLambdaParams(params), new ExprLambdaBody(result));
     }
 
-    /// Creates a lambda expression with inferred parameter types and a
-    /// single-expression body, e.g. `(name) -> result`.
-    ///
-    /// Declared as `String[]` rather than `String...`: paired with
-    /// [#lambda(List,Expr)], a `String...` form would make a call with an
-    /// empty parameter list ambiguous between the two overloads.
-    ///
-    /// @param params the parameter names, in order
-    /// @param result the expression the lambda evaluates to
-    /// @return a lambda expression
-    public static Expr lambda(String[] params, Expr result) {
-        return lambda(List.of(params), result);
-    }
-
     /// Creates a lambda expression with inferred parameter types and a block
     /// body, e.g. `(name) -> { ... }`.
     ///
@@ -553,20 +613,6 @@ public final class Exprs {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         return new LambdaExpr(new InferredLambdaParams(params), new BlockLambdaBody(cb.build()));
-    }
-
-    /// Creates a lambda expression with inferred parameter types and a block
-    /// body, e.g. `(name) -> { ... }`.
-    ///
-    /// Declared as `String[]` rather than `String...`: paired with
-    /// [#lambda(List,Consumer)], a `String...` form would make a call with an
-    /// empty parameter list ambiguous between the two overloads.
-    ///
-    /// @param params the parameter names, in order
-    /// @param spec receives the builder to populate the lambda body
-    /// @return a lambda expression
-    public static Expr lambda(String[] params, Consumer<CodeBuilder> spec) {
-        return lambda(List.of(params), spec);
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
@@ -580,20 +626,6 @@ public final class Exprs {
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
-    /// single-expression body, e.g. `(String name) -> result`.
-    ///
-    /// Declared as `Param[]` rather than `Param...`: paired with
-    /// [#typedLambda(List,Expr)], a `Param...` form would make a call with an
-    /// empty parameter list ambiguous between the two overloads.
-    ///
-    /// @param params the parameters, in order
-    /// @param result the expression the lambda evaluates to
-    /// @return a lambda expression
-    public static Expr typedLambda(Param[] params, Expr result) {
-        return typedLambda(List.of(params), result);
-    }
-
-    /// Creates a lambda expression with explicitly typed parameters and a
     /// block body, e.g. `(String name) -> { ... }`.
     ///
     /// @param params the parameters, in order
@@ -603,19 +635,5 @@ public final class Exprs {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         return new LambdaExpr(new TypedLambdaParams(params), new BlockLambdaBody(cb.build()));
-    }
-
-    /// Creates a lambda expression with explicitly typed parameters and a
-    /// block body, e.g. `(String name) -> { ... }`.
-    ///
-    /// Declared as `Param[]` rather than `Param...`: paired with
-    /// [#typedLambda(List,Consumer)], a `Param...` form would make a call
-    /// with an empty parameter list ambiguous between the two overloads.
-    ///
-    /// @param params the parameters, in order
-    /// @param spec receives the builder to populate the lambda body
-    /// @return a lambda expression
-    public static Expr typedLambda(Param[] params, Consumer<CodeBuilder> spec) {
-        return typedLambda(List.of(params), spec);
     }
 }

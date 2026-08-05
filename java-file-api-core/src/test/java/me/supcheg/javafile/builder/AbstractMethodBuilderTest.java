@@ -108,20 +108,88 @@ class AbstractMethodBuilderTest {
     }
 
     @Test
-    void modifiersDefaultToPublicAbstractButCanBeOverridden() {
+    void modifiersDefaultToPublicAbstract() {
         AbstractMethodDecl defaults = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
                 .withAbstractMethod("a", PrimitiveTypeRef.INT, mb -> {})
                 .build()
                 .members()
                 .get(0);
         assertThat(defaults.modifiers()).containsExactlyInAnyOrder(Modifier.PUBLIC, Modifier.ABSTRACT);
+    }
 
-        AbstractMethodDecl overridden = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
-                .withAbstractMethod("b", PrimitiveTypeRef.INT, mb -> mb.withModifiers(Modifier.PROTECTED))
+    @Test
+    void withModifiersAddsToTheDefaultSeedRatherThanReplacingIt() {
+        AbstractMethodDecl decl = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
+                .withAbstractMethod("b", PrimitiveTypeRef.INT, mb -> mb.withModifiers(Modifier.PUBLIC))
                 .build()
                 .members()
                 .get(0);
-        assertThat(overridden.modifiers()).containsExactly(Modifier.PROTECTED);
+
+        // Before the fix, calling withModifiers at all replaced the default seed,
+        // so ABSTRACT would be silently dropped here even though only PUBLIC was
+        // explicitly requested (a no-op modifier that was already present).
+        assertThat(decl.modifiers()).containsExactlyInAnyOrder(Modifier.PUBLIC, Modifier.ABSTRACT);
+    }
+
+    @Test
+    void withModifiersAddingAConflictingAccessModifierFailsAtBuild() {
+        // withModifiers can only add to the public/abstract seed - it cannot remove
+        // public, so combining it with a different access modifier is rejected by
+        // the model, mirroring ClassBuilder's withModifiers/withExactModifiers split.
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> new InterfaceBuilder(HOLDER)
+                        .withAbstractMethod("c", PrimitiveTypeRef.INT, mb -> mb.withModifiers(Modifier.PROTECTED)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void withExactModifiersReplacesTheDefaultSeedButAbstractAlwaysSurvives() {
+        AbstractMethodDecl decl = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
+                .withAbstractMethod(
+                        "d", PrimitiveTypeRef.INT, mb -> mb.withExactModifiers(java.util.Set.of(Modifier.PROTECTED)))
+                .build()
+                .members()
+                .get(0);
+
+        assertThat(decl.modifiers()).containsExactlyInAnyOrder(Modifier.PROTECTED, Modifier.ABSTRACT);
+    }
+
+    @Test
+    void withExactModifiersWithAnEmptySetStillYieldsAbstract() {
+        AbstractMethodDecl decl = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
+                .withAbstractMethod("e", PrimitiveTypeRef.INT, mb -> mb.withExactModifiers(java.util.Set.of()))
+                .build()
+                .members()
+                .get(0);
+
+        assertThat(decl.modifiers()).containsExactly(Modifier.ABSTRACT);
+    }
+
+    @Test
+    void aLaterWithModifiersCallStillAddsToTheSetInstalledByWithExactModifiers() {
+        AbstractMethodDecl decl = (AbstractMethodDecl) new InterfaceBuilder(HOLDER)
+                .withAbstractMethod(
+                        "f",
+                        PrimitiveTypeRef.INT,
+                        mb -> mb.withExactModifiers(java.util.Set.of(Modifier.PROTECTED))
+                                .withModifiers(Modifier.ABSTRACT))
+                .build()
+                .members()
+                .get(0);
+
+        assertThat(decl.modifiers()).containsExactlyInAnyOrder(Modifier.PROTECTED, Modifier.ABSTRACT);
+    }
+
+    @Test
+    void renderedAbstractMethodInAClassBodyKeepsAbstractAfterWithExactModifiers() {
+        me.supcheg.javafile.JavaFile file = me.supcheg.javafile.JavaFile.class_(
+                HOLDER,
+                cb -> cb.withModifiers(Modifier.ABSTRACT)
+                        .withAbstractMethod(
+                                "read",
+                                PrimitiveTypeRef.INT,
+                                mb -> mb.withExactModifiers(java.util.Set.of(Modifier.PROTECTED))));
+
+        assertThat(file.render()).contains("protected abstract int read();");
     }
 
     @Test

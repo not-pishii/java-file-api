@@ -39,8 +39,8 @@ class LambdaCompileTest {
                                                 switchExpr(
                                                         field("name"),
                                                         sb -> sb.caseValue(literal("x"), field("x"))
-                                                                .default_(body -> body.throw_(new_(
-                                                                        Types.of(ILLEGAL_STATE), field("name"))))))))));
+                                                                .default_(body -> body.throw_(
+                                                                        new_(ILLEGAL_STATE, field("name"))))))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

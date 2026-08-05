@@ -54,6 +54,17 @@ JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), 
 String source = file.render();
 ```
 
+### Expressions and Statements
+
+Expressions and statements are built by two different surfaces. `Exprs` is a static facade of factory methods for
+expressions that have no left-hand operand — literals, `this`/`super`, unqualified names and calls, object and array
+creation, operators, casts, lambdas, and `switch` expressions. Operations that continue an existing expression —
+member access, invocation on a target, array indexing, `instanceof`, a bound method reference — are default methods
+on `Expr` itself, so a chain like `this_().field("bundle").call("getString", literal("greeting"))` reads left to
+right instead of nesting from the inside out. `CodeBuilder`, by contrast, only accumulates statements inside a method
+or lambda body (`return_`, `assign`, `if_`, ...); it does not construct expressions itself, so the same `Exprs` calls
+and `Expr` chains are used whether an expression ends up in a statement, a field initializer, or an annotation value.
+
 ### Immutable Model
 
 Builders assemble a model from records organized into sealed hierarchies: type declarations, members, statements,

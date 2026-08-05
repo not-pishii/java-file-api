@@ -35,7 +35,7 @@ class CastConditionalClassLiteralCompileTest {
                                                 "n", PrimitiveTypeRef.INT, cast(PrimitiveTypeRef.INT, literal(1.9)))
                                         .return_(cond(
                                                 gt(field("n"), literal(0)),
-                                                classLiteral(Types.of(OBJECT)),
+                                                classLiteral(OBJECT),
                                                 classLiteral(PrimitiveTypeRef.INT))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));

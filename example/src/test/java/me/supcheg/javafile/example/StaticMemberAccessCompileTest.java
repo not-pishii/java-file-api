@@ -6,9 +6,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.model.Modifier;
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -24,9 +22,8 @@ class StaticMemberAccessCompileTest {
     @Test
     void staticFieldReadStaticMethodCallAndStaticFieldAssignmentCompile() {
         ClassDesc selfDesc = ClassDesc.of("me.supcheg.example", "Registry");
-        ClassOrInterfaceTypeRef integerType = Types.of(ClassDesc.of("java.lang", "Integer"));
-        ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
-        ClassOrInterfaceTypeRef selfType = Types.of(selfDesc);
+        ClassDesc integerType = ClassDesc.of("java.lang", "Integer");
+        ClassDesc mathType = ClassDesc.of("java.lang", "Math");
 
         JavaFile file = JavaFile.class_(
                 selfDesc,
@@ -42,7 +39,7 @@ class StaticMemberAccessCompileTest {
                                                 "bounded",
                                                 PrimitiveTypeRef.INT,
                                                 Exprs.staticCall(mathType, "max", field("max"), literal(1)))
-                                        .assign(staticField(selfType, "total"), field("bounded")))));
+                                        .assign(staticField(selfDesc, "total"), field("bounded")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

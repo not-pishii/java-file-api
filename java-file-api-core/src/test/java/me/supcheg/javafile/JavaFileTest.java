@@ -20,7 +20,7 @@ class JavaFileTest {
     private static final ClassDesc BUNDLE = ClassDesc.of("java.util", "ResourceBundle");
 
     @Test
-    void ofExposesPackageSimpleAndQualifiedName() {
+    void classExposesPackageSimpleAndQualifiedName() {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), cb -> {});
 
         assertThat(file.packageName()).isEqualTo("me.supcheg.example");
