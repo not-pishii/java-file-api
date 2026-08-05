@@ -12,6 +12,10 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.cast;
+import static me.supcheg.javafile.code.Exprs.cond;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.neg;
 
 /// End-to-end javac coverage for the receiver-position and reference-type-cast
 /// parenthesization fixes in `ExprRenderer`/`Precedence`. These prove the
@@ -25,13 +29,14 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void castOfAMethodCallReceiverParenthesizesTheCastSoTheCallTargetsTheCastResult() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "CastReceiver"),
                 cb -> cb.withMethod(
                         "trimmed",
                         Types.of(STRING),
                         mb -> mb.withParam("o", Types.of(OBJECT))
-                                .withBody(b -> b.return_(b.call(b.cast(Types.of(STRING), b.field("o")), "trim")))));
+                                .withBody(b -> b.return_(
+                                        cast(Types.of(STRING), field("o")).call("trim")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
@@ -40,7 +45,7 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void conditionalArrayPickThenFieldAccessParenthesizesTheConditionalSoLengthAppliesToThePickedArray() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ConditionalArrayLength"),
                 cb -> cb.withMethod(
                         "pickLength",
@@ -48,8 +53,8 @@ class PrecedenceParenthesizationCompileTest {
                         mb -> mb.withParam("cond", PrimitiveTypeRef.BOOLEAN)
                                 .withParam("arr1", new ArrayTypeRef(PrimitiveTypeRef.INT))
                                 .withParam("arr2", new ArrayTypeRef(PrimitiveTypeRef.INT))
-                                .withBody(b -> b.return_(b.field(
-                                        b.cond(b.field("cond"), b.field("arr1"), b.field("arr2")), "length")))));
+                                .withBody(b -> b.return_(cond(field("cond"), field("arr1"), field("arr2"))
+                                        .field("length")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
@@ -58,13 +63,13 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void referenceTypeCastOfUnaryMinusParenthesizesTheOperandSoTheCastIsAValidExpression() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "BoxedNegation"),
                 cb -> cb.withMethod(
                         "negate",
                         Types.of(INTEGER),
                         mb -> mb.withParam("x", PrimitiveTypeRef.INT)
-                                .withBody(b -> b.return_(b.cast(Types.of(INTEGER), b.neg(b.field("x")))))));
+                                .withBody(b -> b.return_(cast(Types.of(INTEGER), neg(field("x")))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

@@ -147,7 +147,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     ///
     /// @param types the permitted subtypes
     /// @return this builder
-    public InterfaceBuilder permits(ClassDesc... types) {
+    public InterfaceBuilder withPermits(ClassDesc... types) {
         permittedSubtypes.addAll(List.of(types));
         return this;
     }
@@ -160,18 +160,6 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @return this builder
     public InterfaceBuilder withAbstractMethod(
             String name, TypeRef returnType, me.supcheg.javafile.model.Param... params) {
-        return withAbstractMethod(name, returnType, params, new ClassDesc[0]);
-    }
-
-    /// Adds an abstract method with a return type and a `throws` clause.
-    ///
-    /// @param name the method name
-    /// @param returnType the method's return type
-    /// @param params the method's parameters, in order
-    /// @param throwsTypes the thrown exception types
-    /// @return this builder
-    public InterfaceBuilder withAbstractMethod(
-            String name, TypeRef returnType, me.supcheg.javafile.model.Param[] params, ClassDesc... throwsTypes) {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.of(returnType),
@@ -179,7 +167,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                normalizeThrows(throwsTypes)));
+                List.of()));
         return this;
     }
 
@@ -189,17 +177,6 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param params the method's parameters, in order
     /// @return this builder
     public InterfaceBuilder withVoidAbstractMethod(String name, me.supcheg.javafile.model.Param... params) {
-        return withVoidAbstractMethod(name, params, new ClassDesc[0]);
-    }
-
-    /// Adds a `void` abstract method with a `throws` clause.
-    ///
-    /// @param name the method name
-    /// @param params the method's parameters, in order
-    /// @param throwsTypes the thrown exception types
-    /// @return this builder
-    public InterfaceBuilder withVoidAbstractMethod(
-            String name, me.supcheg.javafile.model.Param[] params, ClassDesc... throwsTypes) {
         members.add(new AbstractMethodDecl(
                 name,
                 Optional.empty(),
@@ -207,7 +184,33 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                normalizeThrows(throwsTypes)));
+                List.of()));
+        return this;
+    }
+
+    /// Adds an abstract method with a return type, populated via an
+    /// [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a `void` abstract method, populated via an [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
+        spec.accept(amb);
+        members.add(amb.build());
         return this;
     }
 
@@ -262,6 +265,81 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         return this;
     }
 
+    /// Adds a constant field, implicitly `public static final`, populated via a
+    /// [ConstantBuilder].
+    ///
+    /// @param name the constant name
+    /// @param type the declared constant type
+    /// @param spec receives the builder to populate the constant
+    /// @return this builder
+    /// @throws IllegalStateException if `spec` never sets an initializer
+    public InterfaceBuilder withConstant(String name, TypeRef type, Consumer<ConstantBuilder> spec) {
+        ConstantBuilder cb = new ConstantBuilder(name, type);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested class declaration.
+    ///
+    /// @param desc the nested class to declare
+    /// @param spec receives the builder to populate the class declaration
+    /// @return this builder
+    public InterfaceBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested interface declaration.
+    ///
+    /// @param desc the nested interface to declare
+    /// @param spec receives the builder to populate the interface declaration
+    /// @return this builder
+    public InterfaceBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc);
+        spec.accept(ib);
+        members.add(ib.build());
+        return this;
+    }
+
+    /// Adds a nested record declaration.
+    ///
+    /// @param desc the nested record to declare
+    /// @param spec receives the builder to populate the record declaration
+    /// @return this builder
+    public InterfaceBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+        RecordBuilder rb = new RecordBuilder(desc);
+        spec.accept(rb);
+        members.add(rb.build());
+        return this;
+    }
+
+    /// Adds a nested enum declaration.
+    ///
+    /// @param desc the nested enum to declare
+    /// @param spec receives the builder to populate the enum declaration
+    /// @return this builder
+    public InterfaceBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+        EnumBuilder eb = new EnumBuilder(desc);
+        spec.accept(eb);
+        members.add(eb.build());
+        return this;
+    }
+
+    /// Adds a nested annotation type declaration.
+    ///
+    /// @param desc the nested annotation type to declare
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return this builder
+    public InterfaceBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
+        spec.accept(ab);
+        members.add(ab.build());
+        return this;
+    }
+
     /// Appends the given pre-built member to the interface body.
     ///
     /// @param member the member to append
@@ -282,13 +360,5 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.copyOf(extendsInterfaces),
                 List.copyOf(permittedSubtypes),
                 List.copyOf(members));
-    }
-
-    private static List<ClassOrInterfaceTypeRef> normalizeThrows(ClassDesc[] types) {
-        List<ClassOrInterfaceTypeRef> normalized = new ArrayList<>(types.length);
-        for (ClassDesc type : types) {
-            normalized.add(Types.of(type));
-        }
-        return normalized;
     }
 }

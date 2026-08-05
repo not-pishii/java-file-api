@@ -16,6 +16,9 @@ import java.util.Optional;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.add;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 class RecordPatternCompileTest {
 
@@ -32,16 +35,16 @@ class RecordPatternCompileTest {
                 List.of(
                         new TypePattern(PrimitiveTypeRef.INT, Optional.of("x")),
                         new TypePattern(PrimitiveTypeRef.INT, Optional.of("y"))));
-        JavaFile useFile = JavaFile.of(
+        JavaFile useFile = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Describe"),
                 cb -> cb.withMethod(
                         "sum",
                         PrimitiveTypeRef.INT,
                         mb -> mb.withParam("value", Types.of(OBJECT))
                                 .withBody(b -> b.if_(
-                                                b.instanceOfPattern(b.field("value"), pattern),
-                                                ib -> ib.then(t -> t.return_(t.add(t.field("x"), t.field("y")))))
-                                        .return_(b.literal(0)))));
+                                                field("value").instanceOfPattern(pattern),
+                                                ib -> ib.then(t -> t.return_(add(field("x"), field("y")))))
+                                        .return_(literal(0)))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(pointFile.qualifiedName(), pointFile.render()),

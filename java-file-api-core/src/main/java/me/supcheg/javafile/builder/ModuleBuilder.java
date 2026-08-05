@@ -28,7 +28,7 @@ public final class ModuleBuilder {
     /// Marks the module as `open`.
     ///
     /// @return this builder
-    public ModuleBuilder open() {
+    public ModuleBuilder withOpen() {
         this.open = true;
         return this;
     }
@@ -37,7 +37,7 @@ public final class ModuleBuilder {
     ///
     /// @param moduleName the required module's name
     /// @return this builder
-    public ModuleBuilder requires(String moduleName) {
+    public ModuleBuilder withRequires(String moduleName) {
         directives.add(new RequiresDirective(moduleName, false, false));
         return this;
     }
@@ -46,7 +46,7 @@ public final class ModuleBuilder {
     ///
     /// @param moduleName the required module's name
     /// @return this builder
-    public ModuleBuilder requiresTransitive(String moduleName) {
+    public ModuleBuilder withRequiresTransitive(String moduleName) {
         directives.add(new RequiresDirective(moduleName, true, false));
         return this;
     }
@@ -55,7 +55,7 @@ public final class ModuleBuilder {
     ///
     /// @param moduleName the required module's name
     /// @return this builder
-    public ModuleBuilder requiresStatic(String moduleName) {
+    public ModuleBuilder withRequiresStatic(String moduleName) {
         directives.add(new RequiresDirective(moduleName, false, true));
         return this;
     }
@@ -64,7 +64,7 @@ public final class ModuleBuilder {
     ///
     /// @param packageName the exported package
     /// @return this builder
-    public ModuleBuilder exports(String packageName) {
+    public ModuleBuilder withExports(String packageName) {
         directives.add(new ExportsDirective(packageName, List.of()));
         return this;
     }
@@ -74,7 +74,7 @@ public final class ModuleBuilder {
     /// @param packageName the exported package
     /// @param to the modules the export is qualified to
     /// @return this builder
-    public ModuleBuilder exportsTo(String packageName, String... to) {
+    public ModuleBuilder withExportsTo(String packageName, String... to) {
         directives.add(new ExportsDirective(packageName, List.of(to)));
         return this;
     }
@@ -83,7 +83,7 @@ public final class ModuleBuilder {
     ///
     /// @param packageName the opened package
     /// @return this builder
-    public ModuleBuilder opens(String packageName) {
+    public ModuleBuilder withOpens(String packageName) {
         directives.add(new OpensDirective(packageName, List.of()));
         return this;
     }
@@ -93,7 +93,7 @@ public final class ModuleBuilder {
     /// @param packageName the opened package
     /// @param to the modules the opening is qualified to
     /// @return this builder
-    public ModuleBuilder opensTo(String packageName, String... to) {
+    public ModuleBuilder withOpensTo(String packageName, String... to) {
         directives.add(new OpensDirective(packageName, List.of(to)));
         return this;
     }
@@ -102,18 +102,18 @@ public final class ModuleBuilder {
     ///
     /// @param service the consumed service type's binary name (e.g. `"com.example.api.Plugin"`)
     /// @return this builder
-    public ModuleBuilder uses(String service) {
+    public ModuleBuilder withUses(String service) {
         directives.add(new UsesDirective(ClassDesc.of(service)));
         return this;
     }
 
     /// Adds a `uses` directive from an already-constructed descriptor —
     /// the only way to declare a `uses` on a nested type, since
-    /// [#uses(String)] cannot represent nesting (see [ModuleFile]).
+    /// [#withUses(String)] cannot represent nesting (see [ModuleFile]).
     ///
     /// @param service the consumed service type
     /// @return this builder
-    public ModuleBuilder uses(ClassDesc service) {
+    public ModuleBuilder withUses(ClassDesc service) {
         directives.add(new UsesDirective(service));
         return this;
     }
@@ -124,7 +124,7 @@ public final class ModuleBuilder {
     /// @param implementations the implementation types' binary names, in order; at least one
     /// @return this builder
     /// @throws IllegalArgumentException if `implementations` is empty
-    public ModuleBuilder provides(String service, String... implementations) {
+    public ModuleBuilder withProvides(String service, String... implementations) {
         List<ClassDesc> impls = new ArrayList<>(implementations.length);
         for (String impl : implementations) {
             impls.add(ClassDesc.of(impl));
@@ -135,19 +135,19 @@ public final class ModuleBuilder {
 
     /// Adds a `provides ... with ...` directive from already-constructed
     /// descriptors — the only way to declare a `provides` involving a
-    /// nested type, since [#provides(String,String...)] cannot represent
+    /// nested type, since [#withProvides(String,String...)] cannot represent
     /// nesting (see [ModuleFile]).
     ///
     /// @param service the provided service type
     /// @param implementations the implementation types, in order; at least one
     /// @return this builder
     /// @throws IllegalArgumentException if `implementations` is empty
-    public ModuleBuilder provides(ClassDesc service, ClassDesc... implementations) {
+    public ModuleBuilder withProvides(ClassDesc service, ClassDesc... implementations) {
         directives.add(new ProvidesDirective(service, NonEmptyList.copyOf(List.of(implementations))));
         return this;
     }
 
-    /// Whether [#open()] was called.
+    /// Whether [#withOpen()] was called.
     ///
     /// @return `true` if the module should render as `open`
     public boolean isOpen() {
@@ -157,7 +157,7 @@ public final class ModuleBuilder {
     /// Snapshots the accumulated directives.
     ///
     /// @return the finished directive list
-    /// @throws IllegalArgumentException if the module is [#open()] and declares
+    /// @throws IllegalArgumentException if the module is [#withOpen()] and declares
     ///         an explicit `opens` directive, or if two directives `requires`
     ///         the same module name
     public List<ModuleDirective> build() {

@@ -16,6 +16,8 @@ import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 
 /// Compiles use-site annotations (this library never declares `@interface`s
 /// itself) against real `@interface` fixtures with `javac`, exercising the
@@ -70,13 +72,13 @@ class AnnotationsCompileTest {
                 .withMember("params", AnnotationValues.array(AnnotationValues.nested(paramMeta)))
                 .build();
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Greeter"),
                 cb -> cb.withAnnotation(
                                 CONTRACT_META,
                                 ab -> ab.withMember(
                                         "value", AnnotationValues.array(AnnotationValues.nested(messageMeta))))
-                        .withMethod("greeting", Types.of(STRING), mb -> mb.withBody(b -> b.return_(b.literal("hi")))));
+                        .withMethod("greeting", Types.of(STRING), mb -> mb.withBody(b -> b.return_(literal("hi")))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("me.supcheg.meta.ContractMeta", CONTRACT_META_SRC),
@@ -91,13 +93,13 @@ class AnnotationsCompileTest {
     void annotatedParameterAndRecordComponentCompile() {
         AnnotationUse nullable = new AnnotationUse(NULLABLE, List.of());
 
-        JavaFile withParam = JavaFile.of(
+        JavaFile withParam = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Renamer"),
                 cb -> cb.withMethod(
                         "rename",
                         Types.of(STRING),
                         mb -> mb.withParam(new Param("name", Types.of(STRING), List.of(nullable)))
-                                .withBody(b -> b.return_(b.field("name")))));
+                                .withBody(b -> b.return_(field("name")))));
 
         JavaFile withComponent = JavaFile.record(
                 ClassDesc.of("me.supcheg.example", "Box"),

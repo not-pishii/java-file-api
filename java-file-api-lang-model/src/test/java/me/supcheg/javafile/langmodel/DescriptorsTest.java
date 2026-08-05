@@ -46,7 +46,7 @@ class DescriptorsTest {
         assertThat(Descriptors.toTypeRef(captured.get("count"))).isEqualTo(PrimitiveTypeRef.INT);
         assertThat(Descriptors.toTypeRef(captured.get("items")))
                 .isEqualTo(Types.parameterized(
-                        ClassDesc.of("java.util", "List"), Types.exact(Types.of(ClassDesc.of("java.lang", "String")))));
+                        ClassDesc.of("java.util", "List"), Types.of(ClassDesc.of("java.lang", "String"))));
         assertThat(Descriptors.toTypeRef(captured.get("tags")))
                 .isEqualTo(Types.array(Types.of(ClassDesc.of("java.lang", "String"))));
     }

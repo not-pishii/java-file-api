@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EnumBuilderTest {
@@ -57,6 +59,26 @@ class EnumBuilderTest {
     }
 
     @Test
+    void constantCanHaveArgumentsPassedAsAList() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Planet"));
+        CodeBuilderExprHolder holder = new CodeBuilderExprHolder();
+
+        builder.withConstant("MERCURY", java.util.List.of(holder.expr()));
+
+        assertThat(builder.build().constants().get(0).args()).containsExactly(holder.expr());
+    }
+
+    @Test
+    void enumConstantBuilderWithArgsAcceptsAList() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Planet"));
+        CodeBuilderExprHolder holder = new CodeBuilderExprHolder();
+
+        builder.withConstant("MERCURY", ecb -> ecb.withArgs(java.util.List.of(holder.expr())));
+
+        assertThat(builder.build().constants().get(0).args()).containsExactly(holder.expr());
+    }
+
+    @Test
     void constantCanOverrideAMethodWithABody() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Op"));
 
@@ -65,7 +87,7 @@ class EnumBuilderTest {
                 ecb -> ecb.withMethod(
                         "apply",
                         Types.of(ClassDesc.of("java.lang", "Integer")),
-                        mb -> mb.withBody(b -> b.return_(b.literal(1)))));
+                        mb -> mb.withBody(b -> b.return_(literal(1)))));
 
         EnumDecl decl = builder.build();
 
@@ -100,7 +122,7 @@ class EnumBuilderTest {
         builder.withMethod(
                         "label",
                         Types.of(ClassDesc.of("java.lang", "String")),
-                        mb -> mb.withBody(b -> b.return_(b.literal("suit"))))
+                        mb -> mb.withBody(b -> b.return_(literal("suit"))))
                 .withVoidMethod("reset", mb -> mb.withBody(b -> b.return_()));
 
         EnumDecl decl = builder.build();
@@ -140,7 +162,7 @@ class EnumBuilderTest {
     void enumCanDeclareAnInstanceInitializerBlock() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Counter"));
 
-        builder.withConstant("INSTANCE").withInitializerBlock(b -> b.assign(b.field("id"), b.literal(1)));
+        builder.withConstant("INSTANCE").withInitializerBlock(b -> b.assign(field("id"), literal(1)));
 
         EnumDecl decl = builder.build();
 

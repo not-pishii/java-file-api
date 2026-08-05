@@ -11,6 +11,9 @@ import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.call;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.new_;
 
 class TryCatchFinallyCompileTest {
 
@@ -21,7 +24,7 @@ class TryCatchFinallyCompileTest {
 
     @Test
     void tryWithResourcesMultiCatchAndFinallyCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ResourceReader"),
                 cb -> cb.withVoidMethod(
                                 "markUsed",
@@ -31,18 +34,18 @@ class TryCatchFinallyCompileTest {
                                 "read",
                                 Types.of(STRING),
                                 mb -> mb.withBody(b -> b.try_(
-                                        tryBody -> tryBody.exprStatement(tryBody.call("markUsed"))
-                                                .return_(tryBody.literal("ok")),
+                                        tryBody -> tryBody.exprStatement(call("markUsed"))
+                                                .return_(literal("ok")),
                                         tb -> tb.resource_(
                                                         "reader",
                                                         Types.of(STRING_READER),
-                                                        b.new_(Types.of(STRING_READER), b.literal("x")))
+                                                        new_(STRING_READER, literal("x")))
                                                 .catch_(
                                                         List.of(Types.of(IO_EXCEPTION), Types.of(SQL_EXCEPTION)),
                                                         "e",
-                                                        catchBody -> catchBody.return_(catchBody.literal("failed")))
-                                                .finally_(finallyBody ->
-                                                        finallyBody.exprStatement(finallyBody.call("cleanup")))))));
+                                                        catchBody -> catchBody.return_(literal("failed")))
+                                                .finally_(
+                                                        finallyBody -> finallyBody.exprStatement(call("cleanup")))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

@@ -20,13 +20,13 @@ class ExprRendererPrecedenceProperties {
     void renderedExpressionEvaluatesToTheSameValueAsTheTreeItRepresents(@ForAll("intExprTrees") IntExprNode tree)
             throws Exception {
         ClassDesc classDesc = ClassDesc.of("me.supcheg.example", "PrecedenceProbe");
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 classDesc,
                 cb -> cb.withMethod(
                         "compute",
                         PrimitiveTypeRef.INT,
                         mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .withBody(b -> b.return_(tree.toExpr(b)))));
+                                .withBody(b -> b.return_(tree.toExpr()))));
 
         Class<?> probeClass = InMemoryCompiler.compileAndLoad(file.qualifiedName(), file.render());
         Method computeMethod = probeClass.getMethod("compute");

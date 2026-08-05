@@ -11,6 +11,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.add;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.super_;
 
 class SuperExprCompileTest {
 
@@ -18,20 +21,19 @@ class SuperExprCompileTest {
 
     @Test
     void subclassMethodCallingSuperMethodCompiles() {
-        JavaFile shape = JavaFile.of(
+        JavaFile shape = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Shape"),
-                cb -> cb.withMethod(
-                        "describe", Types.of(STRING), mb -> mb.withBody(b -> b.return_(b.literal("Shape")))));
+                cb -> cb.withMethod("describe", Types.of(STRING), mb -> mb.withBody(b -> b.return_(literal("Shape")))));
 
-        JavaFile circle = JavaFile.of(
+        JavaFile circle = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Circle"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
                         .withMethod(
                                 "describe",
                                 Types.of(STRING),
-                                mb -> mb.withBody(b ->
-                                        b.return_(b.add(b.call(b.super_(), "describe"), b.literal(" -> Circle"))))));
+                                mb -> mb.withBody(
+                                        b -> b.return_(add(super_().call("describe"), literal(" -> Circle"))))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(shape.qualifiedName(), shape.render()),

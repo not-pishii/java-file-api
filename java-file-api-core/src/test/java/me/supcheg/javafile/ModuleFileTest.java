@@ -18,11 +18,11 @@ class ModuleFileTest {
     void rendersRequiresExportsUsesAndProvides() {
         ModuleFile file = ModuleFile.of(
                 "me.supcheg.example",
-                mb -> mb.requires("java.base")
-                        .requiresTransitive("java.sql")
-                        .exports("me.supcheg.example.api")
-                        .uses("me.supcheg.example.api.Plugin")
-                        .provides("me.supcheg.example.api.Plugin", "me.supcheg.example.impl.DefaultPlugin"));
+                mb -> mb.withRequires("java.base")
+                        .withRequiresTransitive("java.sql")
+                        .withExports("me.supcheg.example.api")
+                        .withUses("me.supcheg.example.api.Plugin")
+                        .withProvides("me.supcheg.example.api.Plugin", "me.supcheg.example.impl.DefaultPlugin"));
 
         assertThat(file.render()).isEqualTo("""
                         module me.supcheg.example {
@@ -37,7 +37,7 @@ class ModuleFileTest {
 
     @Test
     void rendersOpenModuleWithNoDirectives() {
-        ModuleFile file = ModuleFile.of("me.supcheg.example", ModuleBuilder::open);
+        ModuleFile file = ModuleFile.of("me.supcheg.example", ModuleBuilder::withOpen);
 
         assertThat(file.render()).isEqualTo("""
                         open module me.supcheg.example {
@@ -49,10 +49,10 @@ class ModuleFileTest {
     void rendersRequiresStaticAndQualifiedExportsAndOpens() {
         ModuleFile file = ModuleFile.of(
                 "me.supcheg.example",
-                mb -> mb.requiresStatic("java.compiler")
-                        .exportsTo("me.supcheg.example.spi", "me.supcheg.example.impl", "me.supcheg.other")
-                        .opens("me.supcheg.example.internal")
-                        .opensTo("me.supcheg.example.reflect", "me.supcheg.framework"));
+                mb -> mb.withRequiresStatic("java.compiler")
+                        .withExportsTo("me.supcheg.example.spi", "me.supcheg.example.impl", "me.supcheg.other")
+                        .withOpens("me.supcheg.example.internal")
+                        .withOpensTo("me.supcheg.example.reflect", "me.supcheg.framework"));
 
         assertThat(file.render()).isEqualTo("""
                         module me.supcheg.example {
@@ -68,7 +68,7 @@ class ModuleFileTest {
     void providesRendersMultipleImplementationsInOrder() {
         ModuleFile file = ModuleFile.of(
                 "me.supcheg.example",
-                mb -> mb.provides(
+                mb -> mb.withProvides(
                         "me.supcheg.example.api.Plugin",
                         "me.supcheg.example.impl.DefaultPlugin",
                         "me.supcheg.example.impl.OtherPlugin"));
@@ -82,8 +82,8 @@ class ModuleFileTest {
 
     @Test
     void rejectsOpensDirectiveInOpenModule() {
-        assertThatThrownBy(() ->
-                        ModuleFile.of("me.supcheg.example", mb -> mb.open().opens("me.supcheg.example.internal")))
+        assertThatThrownBy(() -> ModuleFile.of(
+                        "me.supcheg.example", mb -> mb.withOpen().withOpens("me.supcheg.example.internal")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("open")
                 .hasMessageContaining("opens");
@@ -92,7 +92,7 @@ class ModuleFileTest {
     @Test
     void rejectsDuplicateRequiresForSameModuleName() {
         assertThatThrownBy(() -> ModuleFile.of(
-                        "me.supcheg.example", mb -> mb.requires("java.sql").requires("java.sql")))
+                        "me.supcheg.example", mb -> mb.withRequires("java.sql").withRequires("java.sql")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("java.sql");
     }
@@ -100,7 +100,7 @@ class ModuleFileTest {
     @Test
     void rejectsDuplicateRequiresAcrossDifferentModifierFlavors() {
         assertThatThrownBy(() -> ModuleFile.of(
-                        "me.supcheg.example", mb -> mb.requires("java.sql").requiresTransitive("java.sql")))
+                        "me.supcheg.example", mb -> mb.withRequires("java.sql").withRequiresTransitive("java.sql")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("java.sql");
     }
@@ -108,7 +108,8 @@ class ModuleFileTest {
     @Test
     void usesAndProvidesRenderUnqualifiedClassNamesWithNoLeadingDot() {
         ModuleFile file = ModuleFile.of(
-                "me.supcheg.example", mb -> mb.uses("TopLevelService").provides("TopLevelService", "TopLevelImpl"));
+                "me.supcheg.example",
+                mb -> mb.withUses("TopLevelService").withProvides("TopLevelService", "TopLevelImpl"));
 
         assertThat(file.render()).isEqualTo("""
                         module me.supcheg.example {
@@ -124,7 +125,7 @@ class ModuleFileTest {
         ClassDesc impl = ClassDesc.of("me.supcheg.example.impl", "Registry").nested("DefaultPlugin");
 
         ModuleFile file =
-                ModuleFile.of("me.supcheg.example", mb -> mb.uses(service).provides(service, impl));
+                ModuleFile.of("me.supcheg.example", mb -> mb.withUses(service).withProvides(service, impl));
 
         assertThat(file.render()).isEqualTo("""
                         module me.supcheg.example {
@@ -137,7 +138,8 @@ class ModuleFileTest {
     @Test
     void openModuleWithNonOpensDirectivesBuildsAndRendersSuccessfully() {
         ModuleFile file = ModuleFile.of(
-                "me.supcheg.example", mb -> mb.open().requires("java.base").exports("me.supcheg.example.api"));
+                "me.supcheg.example",
+                mb -> mb.withOpen().withRequires("java.base").withExports("me.supcheg.example.api"));
 
         assertThat(file.render()).isEqualTo("""
                         open module me.supcheg.example {
@@ -149,7 +151,7 @@ class ModuleFileTest {
 
     @Test
     void writeToWritesModuleInfoJavaDirectlyUnderOutputDir(@TempDir Path tempDir) throws IOException {
-        ModuleFile file = ModuleFile.of("me.supcheg.example", mb -> mb.requires("java.base"));
+        ModuleFile file = ModuleFile.of("me.supcheg.example", mb -> mb.withRequires("java.base"));
 
         file.writeTo(tempDir);
 

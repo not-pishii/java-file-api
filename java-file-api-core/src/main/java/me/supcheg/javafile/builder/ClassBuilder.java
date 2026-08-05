@@ -3,6 +3,7 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -160,7 +161,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param types the permitted subtypes
     /// @return this builder
-    public ClassBuilder permits(ClassDesc... types) {
+    public ClassBuilder withPermits(ClassDesc... types) {
         permits.addAll(List.of(types));
         return this;
     }
@@ -198,6 +199,51 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 List.of()));
         return this;
+    }
+
+    /// Adds an abstract method with a return type, populated via an
+    /// [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public ClassBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a `void` abstract method, populated via an [AbstractMethodBuilder].
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public ClassBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+        AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
+        spec.accept(amb);
+        members.add(amb.build());
+        return this;
+    }
+
+    /// Adds a field with no initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @return this builder
+    public ClassBuilder withField(String name, TypeRef type) {
+        return withField(name, type, fb -> {});
+    }
+
+    /// Adds a field with an initializer and default modifiers.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param initializer the initializer expression
+    /// @return this builder
+    public ClassBuilder withField(String name, TypeRef type, Expr initializer) {
+        return withField(name, type, fb -> fb.withInitializer(initializer));
     }
 
     /// Adds a field.
@@ -268,6 +314,66 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new InitializerBlock(true, cb.build()));
+        return this;
+    }
+
+    /// Adds a nested class declaration.
+    ///
+    /// @param desc the nested class to declare
+    /// @param spec receives the builder to populate the class declaration
+    /// @return this builder
+    public ClassBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested interface declaration.
+    ///
+    /// @param desc the nested interface to declare
+    /// @param spec receives the builder to populate the interface declaration
+    /// @return this builder
+    public ClassBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc);
+        spec.accept(ib);
+        members.add(ib.build());
+        return this;
+    }
+
+    /// Adds a nested record declaration.
+    ///
+    /// @param desc the nested record to declare
+    /// @param spec receives the builder to populate the record declaration
+    /// @return this builder
+    public ClassBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+        RecordBuilder rb = new RecordBuilder(desc);
+        spec.accept(rb);
+        members.add(rb.build());
+        return this;
+    }
+
+    /// Adds a nested enum declaration.
+    ///
+    /// @param desc the nested enum to declare
+    /// @param spec receives the builder to populate the enum declaration
+    /// @return this builder
+    public ClassBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+        EnumBuilder eb = new EnumBuilder(desc);
+        spec.accept(eb);
+        members.add(eb.build());
+        return this;
+    }
+
+    /// Adds a nested annotation type declaration.
+    ///
+    /// @param desc the nested annotation type to declare
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return this builder
+    public ClassBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
+        spec.accept(ab);
+        members.add(ab.build());
         return this;
     }
 

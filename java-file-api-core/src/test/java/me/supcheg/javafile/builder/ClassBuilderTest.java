@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.this_;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ClassBuilderTest {
@@ -29,8 +32,8 @@ class ClassBuilderTest {
                         "greeting",
                         Types.of(STRING),
                         mb -> mb.withParam("name", Types.of(STRING))
-                                .withBody(body -> body.return_(
-                                        body.call(body.field("bundle"), "getString", body.literal("greeting")))));
+                                .withBody(
+                                        body -> body.return_(field("bundle").call("getString", literal("greeting")))));
 
         ClassDecl decl = builder.build();
 
@@ -74,8 +77,7 @@ class ClassBuilderTest {
         builder.withField("bundle", Types.of(BUNDLE), fb -> {})
                 .withConstructor(cb -> cb.withModifiers(Modifier.PUBLIC)
                         .withParam("bundle", Types.of(BUNDLE))
-                        .withBody(b ->
-                                b.exprStatement(b.call(b.field(b.this_(), "bundle"), "equals", b.field("bundle")))));
+                        .withBody(b -> b.exprStatement(this_().field("bundle").call("equals", field("bundle")))));
 
         ClassDecl decl = builder.build();
 
@@ -98,7 +100,7 @@ class ClassBuilderTest {
     void sealedClassRendersPermitsAndSealedKeyword() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Shape"));
         ClassDesc circle = ClassDesc.of("me.supcheg.example", "Circle");
-        builder.permits(circle);
+        builder.withPermits(circle);
 
         ClassDecl decl = builder.build();
 
@@ -217,7 +219,7 @@ class ClassBuilderTest {
                                 .withAnnotation(withSpec, ab -> {})
                                 .withAnnotation(preBuiltUse)
                                 .withParam(new me.supcheg.javafile.model.Param("name", Types.of(STRING)))
-                                .withBody(b -> b.return_(b.literal("hi"))))
+                                .withBody(b -> b.return_(literal("hi"))))
                 .withConstructor(cb -> cb.withAnnotation(marker)
                         .withAnnotation(withSpec, ab -> {})
                         .withAnnotation(preBuiltUse)

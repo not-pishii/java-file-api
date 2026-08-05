@@ -41,17 +41,29 @@ Types are addressed via `java.lang.constant.ClassDesc`, and file structure is de
 same pattern as `ClassFile.build`:
 
 ```java
-JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb
+// import static me.supcheg.javafile.code.Exprs.*;
+JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb
         .withModifiers(Modifier.FINAL)
         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
         .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
                 .withParam("bundle", Types.of(BUNDLE))
-                .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
+                .withBody(b -> b.assign(this_().field("bundle"), field("bundle"))))
         .withMethod("greeting", Types.of(STRING), mb -> mb.withParam("name", Types.of(STRING))
-                .withBody(b -> b.return_(b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
+                .withBody(b -> b.return_(field("bundle").call("getString", literal("greeting"))))));
 
 String source = file.render();
 ```
+
+### Expressions and Statements
+
+Expressions and statements are built by two different surfaces. `Exprs` is a static facade of factory methods for
+expressions that have no left-hand operand — literals, `this`/`super`, unqualified names and calls, object and array
+creation, operators, casts, lambdas, and `switch` expressions. Operations that continue an existing expression —
+member access, invocation on a target, array indexing, `instanceof`, a bound method reference — are default methods
+on `Expr` itself, so a chain like `this_().field("bundle").call("getString", literal("greeting"))` reads left to
+right instead of nesting from the inside out. `CodeBuilder`, by contrast, only accumulates statements inside a method
+or lambda body (`return_`, `assign`, `if_`, ...); it does not construct expressions itself, so the same `Exprs` calls
+and `Expr` chains are used whether an expression ends up in a statement, a field initializer, or an annotation value.
 
 ### Immutable Model
 

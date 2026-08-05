@@ -11,6 +11,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.this_;
 
 class GeneratedMessagesCompileTest {
 
@@ -19,19 +22,19 @@ class GeneratedMessagesCompileTest {
 
     @Test
     void theGeneratedMessagesClassCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Messages"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                         .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)
                                 .withParam("bundle", Types.of(BUNDLE))
-                                .withBody(b -> b.assign(b.field(b.this_(), "bundle"), b.field("bundle"))))
+                                .withBody(b -> b.assign(this_().field("bundle"), field("bundle"))))
                         .withMethod(
                                 "greeting",
                                 Types.of(STRING),
                                 mb -> mb.withParam("name", Types.of(STRING))
-                                        .withBody(b -> b.return_(
-                                                b.call(b.field("bundle"), "getString", b.literal("greeting"))))));
+                                        .withBody(b ->
+                                                b.return_(field("bundle").call("getString", literal("greeting"))))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

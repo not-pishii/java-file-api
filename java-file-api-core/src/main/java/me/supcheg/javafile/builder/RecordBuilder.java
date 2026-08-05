@@ -6,7 +6,7 @@ import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
-import me.supcheg.javafile.model.MethodDecl;
+import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordComponent;
@@ -215,15 +215,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 
@@ -235,15 +227,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
-        members.add(new MethodDecl(
-                mb.name(),
-                mb.returnType(),
-                mb.annotations(),
-                mb.modifiers(),
-                mb.typeParams(),
-                mb.params(),
-                mb.body(),
-                mb.throwsTypes()));
+        members.add(mb.build());
         return this;
     }
 
@@ -255,6 +239,86 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @return this builder
     public RecordBuilder withStaticField(String name, TypeRef type, Expr initializer) {
         members.add(new StaticFieldDecl(name, type, List.of(), initializer));
+        return this;
+    }
+
+    /// Adds a `static` field, populated via a [FieldBuilder].
+    ///
+    /// Modifiers set via [FieldBuilder#withModifiers(Modifier...)] have no effect;
+    /// a record's static field always renders as `public static final`.
+    ///
+    /// @param name the field name
+    /// @param type the declared field type
+    /// @param spec receives the builder to populate the field
+    /// @return this builder
+    /// @throws IllegalStateException if `spec` never sets an initializer
+    public RecordBuilder withStaticField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+        FieldBuilder fb = new FieldBuilder(name, type);
+        spec.accept(fb);
+        FieldDecl fd = fb.build();
+        Expr initializer = fd.initializer()
+                .orElseThrow(() -> new IllegalStateException("static field " + name + " requires an initializer"));
+        members.add(new StaticFieldDecl(fd.name(), fd.type(), fd.annotations(), initializer));
+        return this;
+    }
+
+    /// Adds a nested class declaration.
+    ///
+    /// @param desc the nested class to declare
+    /// @param spec receives the builder to populate the class declaration
+    /// @return this builder
+    public RecordBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested interface declaration.
+    ///
+    /// @param desc the nested interface to declare
+    /// @param spec receives the builder to populate the interface declaration
+    /// @return this builder
+    public RecordBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc);
+        spec.accept(ib);
+        members.add(ib.build());
+        return this;
+    }
+
+    /// Adds a nested record declaration.
+    ///
+    /// @param desc the nested record to declare
+    /// @param spec receives the builder to populate the record declaration
+    /// @return this builder
+    public RecordBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+        RecordBuilder rb = new RecordBuilder(desc);
+        spec.accept(rb);
+        members.add(rb.build());
+        return this;
+    }
+
+    /// Adds a nested enum declaration.
+    ///
+    /// @param desc the nested enum to declare
+    /// @param spec receives the builder to populate the enum declaration
+    /// @return this builder
+    public RecordBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+        EnumBuilder eb = new EnumBuilder(desc);
+        spec.accept(eb);
+        members.add(eb.build());
+        return this;
+    }
+
+    /// Adds a nested annotation type declaration.
+    ///
+    /// @param desc the nested annotation type to declare
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return this builder
+    public RecordBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
+        spec.accept(ab);
+        members.add(ab.build());
         return this;
     }
 

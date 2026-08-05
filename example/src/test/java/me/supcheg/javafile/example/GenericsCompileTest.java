@@ -11,6 +11,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.new_;
 
 class GenericsCompileTest {
 
@@ -27,30 +30,23 @@ class GenericsCompileTest {
         JavaFile impl = JavaFile.record(
                 IMPL,
                 rb -> rb.withTypeParam("T")
-                        .withComponent(
-                                "renderer",
-                                Types.parameterized(
-                                        FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.typeVar("T"))))
-                        .withInterface(Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))))
+                        .withComponent("renderer", Types.parameterized(FUNCTION, Types.of(STRING), Types.typeVar("T")))
+                        .withInterface(Types.parameterized(CONTRACT, Types.typeVar("T")))
                         .withMethod(
                                 "render",
                                 Types.typeVar("T"),
                                 mb -> mb.withBody(
-                                        b -> b.return_(b.call(b.field("renderer"), "apply", b.literal("key")))))
+                                        b -> b.return_(field("renderer").call("apply", literal("key")))))
                         .withMethod(
                                 "of",
-                                Types.parameterized(CONTRACT, Types.exact(Types.typeVar("T"))),
+                                Types.parameterized(CONTRACT, Types.typeVar("T")),
                                 mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
                                         .withTypeParam("T")
                                         .withParam(
                                                 "renderer",
-                                                Types.parameterized(
-                                                        FUNCTION,
-                                                        Types.exact(Types.of(STRING)),
-                                                        Types.exact(Types.typeVar("T"))))
-                                        .withBody(b -> b.return_(b.new_(
-                                                Types.parameterized(IMPL, Types.exact(Types.typeVar("T"))),
-                                                b.field("renderer"))))));
+                                                Types.parameterized(FUNCTION, Types.of(STRING), Types.typeVar("T")))
+                                        .withBody(b -> b.return_(new_(
+                                                Types.parameterized(IMPL, Types.typeVar("T")), field("renderer"))))));
 
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString(contract.qualifiedName(), contract.render()),

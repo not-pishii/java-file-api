@@ -1,5 +1,6 @@
 package me.supcheg.javafile.transform;
 
+import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
@@ -7,6 +8,8 @@ import me.supcheg.javafile.builder.RecordBuilder;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Stmt;
+import me.supcheg.javafile.model.AnnotationElementDecl;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.EnumConstant;
@@ -45,7 +48,7 @@ public final class Transforms {
         decl.typeParams().forEach(builder::withTypeParam);
         decl.superclass().ifPresent(builder::withSuperclass);
         decl.interfaces().forEach(builder::withInterface);
-        builder.permits(decl.permits().toArray(new ClassDesc[0]));
+        builder.withPermits(decl.permits().toArray(new ClassDesc[0]));
         for (ClassMember member : decl.members()) {
             transform.accept(builder, member);
         }
@@ -110,7 +113,7 @@ public final class Transforms {
         builder.withExactModifiers(decl.modifiers());
         decl.typeParams().forEach(builder::withTypeParam);
         decl.extendsInterfaces().forEach(builder::withExtends);
-        builder.permits(decl.permits().toArray(new ClassDesc[0]));
+        builder.withPermits(decl.permits().toArray(new ClassDesc[0]));
         for (InterfaceMember member : decl.members()) {
             transform.accept(builder, member);
         }
@@ -131,6 +134,21 @@ public final class Transforms {
         decl.interfaces().forEach(builder::withInterface);
         for (RecordMember member : decl.members()) {
             transform.accept(builder, member);
+        }
+        return builder.build();
+    }
+
+    /// Rebuilds an annotation type declaration, passing each element through `transform`.
+    ///
+    /// @param decl the source annotation type declaration
+    /// @param transform the transform applied to each element
+    /// @return a new annotation type declaration
+    public static AnnotationTypeDecl transform(AnnotationTypeDecl decl, AnnotationTypeTransform transform) {
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(decl.desc());
+        decl.annotations().forEach(builder::withAnnotation);
+        builder.withExactModifiers(decl.modifiers());
+        for (AnnotationElementDecl element : decl.elements()) {
+            transform.accept(builder, element);
         }
         return builder.build();
     }

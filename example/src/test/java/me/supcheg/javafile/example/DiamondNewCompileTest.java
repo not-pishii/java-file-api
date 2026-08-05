@@ -10,6 +10,7 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.newDiamond;
 
 class DiamondNewCompileTest {
 
@@ -19,14 +20,12 @@ class DiamondNewCompileTest {
 
     @Test
     void diamondInstantiationCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Holder"),
                 cb -> cb.withVoidMethod(
                         "init",
                         mb -> mb.withBody(b -> b.localVar(
-                                "names",
-                                Types.parameterized(LIST, Types.exact(Types.of(STRING))),
-                                b.newDiamond(ARRAY_LIST)))));
+                                "names", Types.parameterized(LIST, Types.of(STRING)), newDiamond(ARRAY_LIST)))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

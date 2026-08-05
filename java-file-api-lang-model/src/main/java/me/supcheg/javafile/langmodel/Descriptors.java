@@ -53,7 +53,7 @@ public final class Descriptors {
         if (args.isEmpty()) {
             return Types.of(raw);
         }
-        TypeArg[] typeArgs = args.stream().map(Descriptors::toTypeArg).toArray(TypeArg[]::new);
+        List<TypeArg> typeArgs = args.stream().map(Descriptors::toTypeArg).toList();
         return Types.parameterized(raw, typeArgs);
     }
 

@@ -29,7 +29,7 @@ class LocalTypeCompileTest {
                 List.of(),
                 List.of());
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Runner"),
                 cb -> cb.withVoidMethod("run", mb -> mb.withBody(b -> b.localType(localCounter))));
 

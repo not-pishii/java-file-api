@@ -29,12 +29,12 @@ class ModuleInfoCompileTest {
     @Test
     void moduleWithRequiresAndExportsCompiles(@TempDir Path sourceDir, @TempDir Path outputDir) throws IOException {
         ModuleFile moduleFile = ModuleFile.of(
-                "me.supcheg.example", mb -> mb.requires("java.base").exports("me.supcheg.example"));
+                "me.supcheg.example", mb -> mb.withRequires("java.base").withExports("me.supcheg.example"));
         moduleFile.writeTo(sourceDir);
 
         // `exports` of a package with no types is a compile error, so the
         // module needs something real to export.
-        JavaFile.of(ClassDesc.of("me.supcheg.example", "Marker"), cb -> {}).writeTo(sourceDir);
+        JavaFile.class_(ClassDesc.of("me.supcheg.example", "Marker"), cb -> {}).writeTo(sourceDir);
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();

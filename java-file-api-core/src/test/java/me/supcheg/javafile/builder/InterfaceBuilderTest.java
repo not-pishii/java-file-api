@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.code.Exprs.literal;
+import static me.supcheg.javafile.code.Exprs.literalNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InterfaceBuilderTest {
@@ -20,16 +22,16 @@ class InterfaceBuilderTest {
         ClassDesc leaf = ClassDesc.of("ast", "Leaf");
         ClassDesc branch = ClassDesc.of("ast", "Branch");
 
-        builder.permits(leaf, branch)
+        builder.withPermits(leaf, branch)
                 .withAbstractMethod("kind", me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")))
                 .withDefaultMethod(
                         "describe",
                         me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")),
-                        mb -> mb.withBody(b -> b.return_(b.literal("node"))))
+                        mb -> mb.withBody(b -> b.return_(literal("node"))))
                 .withStaticMethod(
                         "empty",
                         me.supcheg.javafile.type.Types.of(leaf),
-                        mb -> mb.withBody(b -> b.return_(b.literalNull())))
+                        mb -> mb.withBody(b -> b.return_(literalNull())))
                 .withConstant("MAX", PrimitiveTypeRef.INT, new me.supcheg.javafile.code.IntLiteral(10));
 
         InterfaceDecl decl = builder.build();
@@ -75,8 +77,7 @@ class InterfaceBuilderTest {
         builder.withAbstractMethod(
                 "kind",
                 me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")),
-                new me.supcheg.javafile.model.Param[0],
-                ioException);
+                mb -> mb.withThrows(ioException));
 
         AbstractMethodDecl method =
                 (AbstractMethodDecl) builder.build().members().get(0);
@@ -89,7 +90,7 @@ class InterfaceBuilderTest {
         ClassDesc ioException = ClassDesc.of("java.io", "IOException");
 
         builder.withVoidAbstractMethod("visit")
-                .withVoidAbstractMethod("visitChecked", new me.supcheg.javafile.model.Param[0], ioException);
+                .withVoidAbstractMethod("visitChecked", mb -> mb.withThrows(ioException));
 
         InterfaceDecl decl = builder.build();
 

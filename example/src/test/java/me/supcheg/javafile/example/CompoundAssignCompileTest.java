@@ -11,20 +11,21 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.field;
 
 class CompoundAssignCompileTest {
 
     @Test
     void addAssignCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Accumulator"),
                 cb -> cb.withMethod(
                         "addAll",
                         PrimitiveTypeRef.INT,
                         mb -> mb.withParam("total", PrimitiveTypeRef.INT)
                                 .withParam("delta", PrimitiveTypeRef.INT)
-                                .withBody(b -> b.assign(b.field("total"), AssignOp.ADD_ASSIGN, b.field("delta"))
-                                        .return_(b.field("total")))));
+                                .withBody(b -> b.assign(field("total"), AssignOp.ADD_ASSIGN, field("delta"))
+                                        .return_(field("total")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

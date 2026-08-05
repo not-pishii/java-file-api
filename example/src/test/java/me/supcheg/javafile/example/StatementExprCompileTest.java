@@ -11,20 +11,22 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.code.Exprs.call;
+import static me.supcheg.javafile.code.Exprs.field;
+import static me.supcheg.javafile.code.Exprs.postIncrement;
 
 class StatementExprCompileTest {
 
     @Test
     void postIncrementAndMethodCallAsStatementsCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Counter"),
                 cb -> cb.withField("count", PrimitiveTypeRef.INT, fb -> fb.withInitializer(new IntLiteral(0)))
-                        .withVoidMethod(
-                                "tick", mb -> mb.withBody(b -> b.exprStatement(b.postIncrement(b.field("count")))))
+                        .withVoidMethod("tick", mb -> mb.withBody(b -> b.exprStatement(postIncrement(field("count")))))
                         .withVoidMethod(
                                 "tickTwice",
                                 mb -> mb.withBody(
-                                        b -> b.exprStatement(b.call("tick")).exprStatement(b.call("tick")))));
+                                        b -> b.exprStatement(call("tick")).exprStatement(call("tick")))));
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 
