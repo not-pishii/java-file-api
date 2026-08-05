@@ -129,7 +129,7 @@ class TypeRefRendererTest {
     @Test
     void typeVarInsideParameterizedTypeRendersAsArgument() {
         ImportManager imports = new ImportManager("p");
-        var listOfT = Types.parameterized(ClassDesc.of("java.util", "List"), Types.exact(Types.typeVar("T")));
+        var listOfT = Types.parameterized(ClassDesc.of("java.util", "List"), Types.typeVar("T"));
 
         assertThat(TypeRefRenderer.renderType(listOfT, Context.of(standardFormat(), imports)))
                 .isEqualTo("List<T>");
@@ -152,8 +152,7 @@ class TypeRefRendererTest {
                         "U",
                         java.util.List.of(
                                 Types.of(ClassDesc.of("java.io", "Serializable")),
-                                Types.parameterized(
-                                        ClassDesc.of("java.lang", "Comparable"), Types.exact(Types.typeVar("U"))))));
+                                Types.parameterized(ClassDesc.of("java.lang", "Comparable"), Types.typeVar("U")))));
 
         assertThat(TypeRefRenderer.renderTypeParams(params, Context.of(standardFormat(), imports)))
                 .isEqualTo("<T, U extends Serializable & Comparable<U>>");

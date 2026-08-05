@@ -8,9 +8,7 @@
 /// arguments.
 ///
 /// ```java
-/// TypeRef listOfStrings = Types.parameterized(
-///         ClassDesc.of("java.util", "List"),
-///         Types.exact(Types.of(ClassDesc.of("java.lang", "String"))));
+/// TypeRef listOfStrings = Types.parameterized(ClassDesc.of("java.util", "List"), Types.STRING);
 /// ```
 @NullMarked
 package me.supcheg.javafile.type;

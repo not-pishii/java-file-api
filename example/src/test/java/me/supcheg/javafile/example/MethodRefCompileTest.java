@@ -25,7 +25,7 @@ class MethodRefCompileTest {
 
     @Test
     void staticMethodRefAssignedToFunctionalInterfaceFieldCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Parsers"),
                 cb -> cb.withField(
                         "toInt",

@@ -29,7 +29,7 @@ class JavaFileWriterTest {
         return Stream.of(
                         new File(
                                 "me.supcheg.example.Empty",
-                                JavaFile.of(ClassDesc.of("me.supcheg.example", "Empty"), _ -> {})),
+                                JavaFile.class_(ClassDesc.of("me.supcheg.example", "Empty"), _ -> {})),
                         new File("me.supcheg.example.package-info", PackageInfoFile.of("me.supcheg.example")),
                         new File("module-info", ModuleFile.of("example", _ -> {})))
                 .map(file -> arguments(file.expectedQualifiedName(), file.file()));

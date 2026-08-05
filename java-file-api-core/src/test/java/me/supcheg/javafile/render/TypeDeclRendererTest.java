@@ -63,7 +63,7 @@ class TypeDeclRendererTest {
     void rendersASealedInterfaceWithPermitsAndMixedMembers() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Node"));
         ClassDesc leaf = ClassDesc.of("ast", "Leaf");
-        builder.permits(leaf).withAbstractMethod("kind", Types.of(ClassDesc.of("java.lang", "String")));
+        builder.withPermits(leaf).withAbstractMethod("kind", Types.of(ClassDesc.of("java.lang", "String")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("ast")));
@@ -251,7 +251,7 @@ class TypeDeclRendererTest {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Shape"));
         ClassDesc circle = ClassDesc.of("me.supcheg.example", "Circle");
         builder.withModifiers(Modifier.ABSTRACT)
-                .permits(circle)
+                .withPermits(circle)
                 .withAbstractMethod("area", Types.of(ClassDesc.of("java.lang", "Double")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -353,9 +353,8 @@ class TypeDeclRendererTest {
     void rendersAGenericClassWithBoundAndParameterizedSuperInterface() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Box"));
         ClassDesc comparable = ClassDesc.of("java.lang", "Comparable");
-        builder.withTypeParam("T", Types.parameterized(comparable, Types.exact(Types.typeVar("T"))))
-                .withInterface(Types.parameterized(
-                        ClassDesc.of("java.util.function", "Supplier"), Types.exact(Types.typeVar("T"))));
+        builder.withTypeParam("T", Types.parameterized(comparable, Types.typeVar("T")))
+                .withInterface(Types.parameterized(ClassDesc.of("java.util.function", "Supplier"), Types.typeVar("T")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -371,8 +370,7 @@ class TypeDeclRendererTest {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("me.supcheg.example", "Impl"));
         builder.withTypeParam("T")
                 .withComponent("value", Types.typeVar("T"))
-                .withInterface(Types.parameterized(
-                        ClassDesc.of("me.supcheg.example", "Contract"), Types.exact(Types.typeVar("T"))));
+                .withInterface(Types.parameterized(ClassDesc.of("me.supcheg.example", "Contract"), Types.typeVar("T")));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -404,7 +402,7 @@ class TypeDeclRendererTest {
         ClassDesc contract = ClassDesc.of("me.supcheg.example", "Contract");
         builder.withMethod(
                 "of",
-                Types.parameterized(contract, Types.exact(Types.typeVar("T"))),
+                Types.parameterized(contract, Types.typeVar("T")),
                 mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
                         .withTypeParam("T")
                         .withParam("value", Types.typeVar("T"))

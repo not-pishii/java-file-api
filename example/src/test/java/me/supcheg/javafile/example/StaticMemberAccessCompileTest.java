@@ -28,7 +28,7 @@ class StaticMemberAccessCompileTest {
         ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
         ClassOrInterfaceTypeRef selfType = Types.of(selfDesc);
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 selfDesc,
                 cb -> cb.withField(
                                 "total",

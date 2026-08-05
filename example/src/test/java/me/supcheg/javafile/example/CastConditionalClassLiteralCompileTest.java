@@ -25,7 +25,7 @@ class CastConditionalClassLiteralCompileTest {
 
     @Test
     void castConditionalAndClassLiteralCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Describe"),
                 cb -> cb.withMethod(
                         "kind",

@@ -20,7 +20,7 @@ class ExprRendererPrecedenceProperties {
     void renderedExpressionEvaluatesToTheSameValueAsTheTreeItRepresents(@ForAll("intExprTrees") IntExprNode tree)
             throws Exception {
         ClassDesc classDesc = ClassDesc.of("me.supcheg.example", "PrecedenceProbe");
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 classDesc,
                 cb -> cb.withMethod(
                         "compute",

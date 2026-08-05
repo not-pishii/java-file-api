@@ -36,13 +36,13 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void sealedAbstractClassAndItsPermittedSubclassCompileTogether() {
-        JavaFile shape = JavaFile.of(
+        JavaFile shape = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Shape"),
                 cb -> cb.withModifiers(Modifier.ABSTRACT)
-                        .permits(ClassDesc.of("me.supcheg.example", "Circle"))
+                        .withPermits(ClassDesc.of("me.supcheg.example", "Circle"))
                         .withAbstractMethod("area", PrimitiveTypeRef.DOUBLE));
 
-        JavaFile circle = JavaFile.of(
+        JavaFile circle = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Circle"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))
@@ -79,7 +79,7 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void controlFlowHeavyMethodsCompile() {
-        JavaFile calculator = JavaFile.of(
+        JavaFile calculator = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Calculator"),
                 cb -> cb.withMethod(
                                 "sum",
@@ -143,7 +143,7 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void methodWithThrowsAndControlFlowBodyCompiles() {
-        JavaFile validator = JavaFile.of(
+        JavaFile validator = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Validator"),
                 cb -> cb.withMethod(
                         "withParam",
@@ -185,7 +185,7 @@ class Stage2And3FeaturesCompileTest {
 
     @Test
     void transformClassThenCompileTheResult() {
-        JavaFile original = JavaFile.of(
+        JavaFile original = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Config"),
                 cb -> cb.withField(
                         "count",

@@ -24,7 +24,7 @@ class TryCatchFinallyCompileTest {
 
     @Test
     void tryWithResourcesMultiCatchAndFinallyCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ResourceReader"),
                 cb -> cb.withVoidMethod(
                                 "markUsed",

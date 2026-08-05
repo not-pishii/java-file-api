@@ -1,5 +1,7 @@
 package me.supcheg.javafile.transform;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
@@ -8,6 +10,8 @@ import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.ReturnStmt;
+import me.supcheg.javafile.model.AnnotationElementDecl;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.model.EnumDecl;
@@ -152,7 +156,7 @@ class TransformsTest {
                 .withTypeParam("T", comparable)
                 .withSuperclass(ClassDesc.of("p", "Base"))
                 .withInterface(ClassDesc.of("p", "Iface"))
-                .permits(ClassDesc.of("p", "Sub"))
+                .withPermits(ClassDesc.of("p", "Sub"))
                 .withField("count", PrimitiveTypeRef.INT, fb -> {})
                 .build();
 
@@ -171,7 +175,7 @@ class TransformsTest {
         InterfaceDecl original = new InterfaceBuilder(ClassDesc.of("p", "I"))
                 .withTypeParam("T", comparable)
                 .withExtends(ClassDesc.of("p", "Super"))
-                .permits(ClassDesc.of("p", "Impl"))
+                .withPermits(ClassDesc.of("p", "Impl"))
                 .withConstant("MAX", PrimitiveTypeRef.INT, new IntLiteral(1))
                 .build();
 
@@ -349,5 +353,76 @@ class TransformsTest {
         RecordDecl result = Transforms.transform(original, (builder, member) -> builder.accept(member));
 
         assertThat(result.typeParams()).containsExactly(typeParam);
+    }
+
+    @Test
+    void annotationTypeTransformCarriesAnnotationsModifiersAndElementsThrough() {
+        AnnotationUse nullable = new AnnotationUse(ClassDesc.of("p", "Nullable"), java.util.List.of());
+        AnnotationTypeDecl original = new AnnotationTypeBuilder(ClassDesc.of("p", "Marker"))
+                .withAnnotation(nullable)
+                .withExactModifiers(Set.of(Modifier.PRIVATE, Modifier.STATIC))
+                .withElement("value", PrimitiveTypeRef.INT, me.supcheg.javafile.annotation.AnnotationValues.literal(1))
+                .build();
+
+        AnnotationTypeDecl result = Transforms.transform(original, (builder, element) -> builder.accept(element));
+
+        assertThat(result.annotations()).containsExactly(nullable);
+        assertThat(result.modifiers()).containsExactlyInAnyOrder(Modifier.PRIVATE, Modifier.STATIC);
+        assertThat(result.elements()).isEqualTo(original.elements());
+    }
+
+    @Test
+    void annotationTypeTransformPreservesElementDefaults() {
+        AnnotationTypeDecl original = new AnnotationTypeBuilder(ClassDesc.of("p", "Marker"))
+                .withElement("value", PrimitiveTypeRef.INT, me.supcheg.javafile.annotation.AnnotationValues.literal(42))
+                .withElement("plain", PrimitiveTypeRef.INT)
+                .build();
+
+        AnnotationTypeDecl result = Transforms.transform(original, (builder, element) -> builder.accept(element));
+
+        assertThat(result.elements())
+                .containsExactly(
+                        new AnnotationElementDecl(
+                                "value",
+                                PrimitiveTypeRef.INT,
+                                java.util.Optional.of(me.supcheg.javafile.annotation.AnnotationValues.literal(42))),
+                        new AnnotationElementDecl("plain", PrimitiveTypeRef.INT, java.util.Optional.empty()));
+    }
+
+    @Test
+    void annotationTypeTransformAndThenInvokesBothTransformsInOrder() {
+        AnnotationTypeDecl original = new AnnotationTypeBuilder(ClassDesc.of("p", "Marker"))
+                .withElement("value", PrimitiveTypeRef.INT)
+                .build();
+
+        java.util.List<String> callOrder = new java.util.ArrayList<>();
+        AnnotationTypeTransform first = (builder, element) -> {
+            callOrder.add("first");
+            builder.accept(element);
+        };
+        AnnotationTypeTransform second = (builder, element) -> callOrder.add("second");
+
+        AnnotationTypeDecl result = Transforms.transform(original, first.andThen(second));
+
+        assertThat(callOrder).containsExactly("first", "second");
+        assertThat(result.elements()).hasSize(1);
+    }
+
+    @Test
+    void annotationTypeTransformCanDropAnElement() {
+        AnnotationTypeDecl original = new AnnotationTypeBuilder(ClassDesc.of("p", "Marker"))
+                .withElement("keep", PrimitiveTypeRef.INT)
+                .withElement("drop", PrimitiveTypeRef.INT)
+                .build();
+
+        AnnotationTypeTransform dropByName = (builder, element) -> {
+            if (!element.name().equals("drop")) {
+                builder.accept(element);
+            }
+        };
+
+        AnnotationTypeDecl result = Transforms.transform(original, dropByName);
+
+        assertThat(result.elements()).extracting(AnnotationElementDecl::name).containsExactly("keep");
     }
 }

@@ -19,7 +19,7 @@ class AnonymousClassCompileTest {
 
     @Test
     void anonymousRunnableSubclassCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Tasks"),
                 cb -> cb.withMethod(
                         "task",

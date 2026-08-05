@@ -17,7 +17,7 @@ class UninitializedLocalCompileTest {
 
     @Test
     void typedLocalWithoutInitializerCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Loader"),
                 cb -> cb.withMethod(
                         "load",

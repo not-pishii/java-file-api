@@ -29,7 +29,7 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void castOfAMethodCallReceiverParenthesizesTheCastSoTheCallTargetsTheCastResult() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "CastReceiver"),
                 cb -> cb.withMethod(
                         "trimmed",
@@ -45,7 +45,7 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void conditionalArrayPickThenFieldAccessParenthesizesTheConditionalSoLengthAppliesToThePickedArray() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ConditionalArrayLength"),
                 cb -> cb.withMethod(
                         "pickLength",
@@ -63,7 +63,7 @@ class PrecedenceParenthesizationCompileTest {
 
     @Test
     void referenceTypeCastOfUnaryMinusParenthesizesTheOperandSoTheCastIsAValidExpression() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "BoxedNegation"),
                 cb -> cb.withMethod(
                         "negate",

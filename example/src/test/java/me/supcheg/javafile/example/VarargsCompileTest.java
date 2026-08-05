@@ -16,7 +16,7 @@ class VarargsCompileTest {
 
     @Test
     void varargsParamAsLastParameterCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Summer"),
                 cb -> cb.withMethod(
                         "sum",

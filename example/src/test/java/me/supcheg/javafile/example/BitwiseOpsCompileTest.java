@@ -21,7 +21,7 @@ class BitwiseOpsCompileTest {
 
     @Test
     void bitwiseAndShiftOperatorsCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Bits"),
                 cb -> cb.withMethod(
                         "pack",

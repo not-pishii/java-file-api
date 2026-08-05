@@ -21,11 +21,11 @@ class SuperExprCompileTest {
 
     @Test
     void subclassMethodCallingSuperMethodCompiles() {
-        JavaFile shape = JavaFile.of(
+        JavaFile shape = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Shape"),
                 cb -> cb.withMethod("describe", Types.of(STRING), mb -> mb.withBody(b -> b.return_(literal("Shape")))));
 
-        JavaFile circle = JavaFile.of(
+        JavaFile circle = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Circle"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withSuperclass(ClassDesc.of("me.supcheg.example", "Shape"))

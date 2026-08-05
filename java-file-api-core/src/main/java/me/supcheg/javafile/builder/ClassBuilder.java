@@ -161,7 +161,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param types the permitted subtypes
     /// @return this builder
-    public ClassBuilder permits(ClassDesc... types) {
+    public ClassBuilder withPermits(ClassDesc... types) {
         permits.addAll(List.of(types));
         return this;
     }

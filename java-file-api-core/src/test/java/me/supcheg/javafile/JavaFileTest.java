@@ -21,7 +21,7 @@ class JavaFileTest {
 
     @Test
     void ofExposesPackageSimpleAndQualifiedName() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Messages"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), cb -> {});
 
         assertThat(file.packageName()).isEqualTo("me.supcheg.example");
         assertThat(file.simpleName()).isEqualTo("Messages");
@@ -30,7 +30,7 @@ class JavaFileTest {
 
     @Test
     void renderProducesTheExpectedGreetingClass() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Messages"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
@@ -58,7 +58,7 @@ class JavaFileTest {
 
     @Test
     void writeToCreatesThePackageDirectoryAndTheJavaFile(@TempDir Path tempDir) throws IOException {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Empty"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Empty"), cb -> {});
 
         file.writeTo(tempDir);
 
@@ -69,7 +69,7 @@ class JavaFileTest {
 
     @Test
     void transformClassRewritesTheWrappedClassDecl() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Config"),
                 cb -> cb.withField("count", me.supcheg.javafile.type.PrimitiveTypeRef.INT, fb -> {}));
 
@@ -100,7 +100,7 @@ class JavaFileTest {
 
     @Test
     void transformEnumOnAClassShapedFileThrows() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformEnum((builder, member) -> {}))
                 .isInstanceOf(IllegalStateException.class);
@@ -108,7 +108,7 @@ class JavaFileTest {
 
     @Test
     void transformInterfaceOnAClassShapedFileThrows() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformInterface((builder, member) -> {}))
                 .isInstanceOf(IllegalStateException.class);
@@ -145,7 +145,7 @@ class JavaFileTest {
 
     @Test
     void transformRecordOnAClassShapedFileThrows() {
-        JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformRecord((builder, member) -> {}))
                 .isInstanceOf(IllegalStateException.class);
@@ -153,19 +153,68 @@ class JavaFileTest {
 
     @Test
     void qualifiedNameOmitsTheDotForTheUnnamedPackage() {
-        JavaFile file = JavaFile.of(ClassDesc.of("Empty"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("Empty"), cb -> {});
 
         assertThat(file.qualifiedName()).isEqualTo("Empty");
     }
 
     @Test
     void writeToWritesDirectlyIntoTheOutputDirForTheUnnamedPackage(@TempDir Path tempDir) throws IOException {
-        JavaFile file = JavaFile.of(ClassDesc.of("Empty"), cb -> {});
+        JavaFile file = JavaFile.class_(ClassDesc.of("Empty"), cb -> {});
 
         file.writeTo(tempDir);
 
         Path expected = tempDir.resolve("Empty.java");
         assertThat(Files.exists(expected)).isTrue();
         assertThat(Files.readString(expected)).isEqualTo(file.render());
+    }
+
+    @Test
+    void annotationTypeCanBeTransformed() {
+        ClassDesc anno = ClassDesc.of("com.example", "Marker");
+        ClassDesc string = ClassDesc.of("java.lang", "String");
+
+        JavaFile file = JavaFile.annotationType(anno, ab -> ab.withElement("value", Types.of(string)));
+        JavaFile transformed = file.transformAnnotationType((builder, element) -> builder.accept(element));
+
+        assertThat(transformed.render()).isEqualTo(file.render());
+    }
+
+    @Test
+    void transformAnnotationTypeIdentityTransformPreservesAnnotationsModifiersAndElementDefaults() {
+        ClassDesc marker = ClassDesc.of("com.example", "Marker");
+        ClassDesc documented = ClassDesc.of("com.example", "Documented");
+        ClassDesc string = ClassDesc.of("java.lang", "String");
+
+        JavaFile file = JavaFile.annotationType(
+                marker,
+                ab -> ab.withAnnotation(documented)
+                        .withExactModifiers(java.util.Set.of(Modifier.PUBLIC))
+                        .withElement(
+                                "value",
+                                Types.of(string),
+                                me.supcheg.javafile.annotation.AnnotationValues.literal("default")));
+
+        JavaFile transformed = file.transformAnnotationType((builder, element) -> builder.accept(element));
+
+        String rendered = transformed.render();
+        assertThat(rendered).contains("@Documented");
+        assertThat(rendered).contains("public @interface Marker");
+        assertThat(rendered).contains("String value() default \"default\";");
+        assertThat(rendered).isEqualTo(file.render());
+    }
+
+    @Test
+    void transformAnnotationTypeOnAClassShapedFileThrows() {
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformAnnotationType((builder, element) -> {}))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void classFactoryIsNamedAfterTheDeclarationKind() {
+        ClassDesc holder = ClassDesc.of("com.example", "Holder");
+        assertThat(JavaFile.class_(holder, cb -> {}).qualifiedName()).isEqualTo("com.example.Holder");
     }
 }

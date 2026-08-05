@@ -147,7 +147,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     ///
     /// @param types the permitted subtypes
     /// @return this builder
-    public InterfaceBuilder permits(ClassDesc... types) {
+    public InterfaceBuilder withPermits(ClassDesc... types) {
         permittedSubtypes.addAll(List.of(types));
         return this;
     }

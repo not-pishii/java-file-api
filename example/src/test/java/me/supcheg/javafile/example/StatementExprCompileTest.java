@@ -19,7 +19,7 @@ class StatementExprCompileTest {
 
     @Test
     void postIncrementAndMethodCallAsStatementsCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Counter"),
                 cb -> cb.withField("count", PrimitiveTypeRef.INT, fb -> fb.withInitializer(new IntLiteral(0)))
                         .withVoidMethod("tick", mb -> mb.withBody(b -> b.exprStatement(postIncrement(field("count")))))

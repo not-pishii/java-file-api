@@ -19,7 +19,7 @@ class LabeledStmtCompileTest {
 
     @Test
     void labeledLoopWithLabeledBreakCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Search"),
                 cb -> cb.withVoidMethod(
                         "scan",

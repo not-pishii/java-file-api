@@ -42,7 +42,7 @@ same pattern as `ClassFile.build`:
 
 ```java
 // import static me.supcheg.javafile.code.Exprs.*;
-JavaFile file = JavaFile.of(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb
+JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), cb -> cb
         .withModifiers(Modifier.FINAL)
         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
         .withConstructor(ctor -> ctor.withModifiers(Modifier.PUBLIC)

@@ -16,7 +16,7 @@ class SynchronizedCompileTest {
 
     @Test
     void synchronizedBlockOnThisCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Counter"),
                 cb -> cb.withVoidMethod(
                         "increment",

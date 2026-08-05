@@ -22,7 +22,7 @@ class InterfaceBuilderTest {
         ClassDesc leaf = ClassDesc.of("ast", "Leaf");
         ClassDesc branch = ClassDesc.of("ast", "Branch");
 
-        builder.permits(leaf, branch)
+        builder.withPermits(leaf, branch)
                 .withAbstractMethod("kind", me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "String")))
                 .withDefaultMethod(
                         "describe",

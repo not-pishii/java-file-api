@@ -72,7 +72,7 @@ class AnnotationsCompileTest {
                 .withMember("params", AnnotationValues.array(AnnotationValues.nested(paramMeta)))
                 .build();
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Greeter"),
                 cb -> cb.withAnnotation(
                                 CONTRACT_META,
@@ -93,7 +93,7 @@ class AnnotationsCompileTest {
     void annotatedParameterAndRecordComponentCompile() {
         AnnotationUse nullable = new AnnotationUse(NULLABLE, List.of());
 
-        JavaFile withParam = JavaFile.of(
+        JavaFile withParam = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Renamer"),
                 cb -> cb.withMethod(
                         "rename",

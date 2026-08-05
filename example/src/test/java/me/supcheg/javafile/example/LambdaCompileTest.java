@@ -26,15 +26,14 @@ class LambdaCompileTest {
 
     @Test
     void lambdaWithSwitchExpressionBodyCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ArgsResolver"),
                 cb -> cb.withVoidMethod(
                         "resolve",
                         mb -> mb.withParam("x", Types.of(OBJECT))
                                 .withBody(b -> b.localVar(
                                         "args",
-                                        Types.parameterized(
-                                                FUNCTION, Types.exact(Types.of(STRING)), Types.exact(Types.of(OBJECT))),
+                                        Types.parameterized(FUNCTION, Types.of(STRING), Types.of(OBJECT)),
                                         lambda(
                                                 List.of("name"),
                                                 switchExpr(

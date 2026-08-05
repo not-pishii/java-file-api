@@ -3,6 +3,7 @@ package me.supcheg.javafile.type;
 import me.supcheg.javafile.annotation.AnnotationUse;
 
 import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
 import java.util.List;
 
 /// Factory methods for constructing [TypeRef] and [TypeArg] values.
@@ -12,6 +13,51 @@ import java.util.List;
 /// instantiated directly.
 public final class Types {
 
+    /// The `int` primitive type.
+    public static final PrimitiveTypeRef INT = PrimitiveTypeRef.INT;
+
+    /// The `long` primitive type.
+    public static final PrimitiveTypeRef LONG = PrimitiveTypeRef.LONG;
+
+    /// The `double` primitive type.
+    public static final PrimitiveTypeRef DOUBLE = PrimitiveTypeRef.DOUBLE;
+
+    /// The `float` primitive type.
+    public static final PrimitiveTypeRef FLOAT = PrimitiveTypeRef.FLOAT;
+
+    /// The `boolean` primitive type.
+    public static final PrimitiveTypeRef BOOLEAN = PrimitiveTypeRef.BOOLEAN;
+
+    /// The `byte` primitive type.
+    public static final PrimitiveTypeRef BYTE = PrimitiveTypeRef.BYTE;
+
+    /// The `short` primitive type.
+    public static final PrimitiveTypeRef SHORT = PrimitiveTypeRef.SHORT;
+
+    /// The `char` primitive type.
+    public static final PrimitiveTypeRef CHAR = PrimitiveTypeRef.CHAR;
+
+    /// The `java.lang.String` type.
+    public static final ClassTypeRef STRING = of(ClassDesc.of("java.lang", "String"));
+
+    /// The `java.lang.Object` type.
+    public static final ClassTypeRef OBJECT = of(ClassDesc.of("java.lang", "Object"));
+
+    /// The raw `java.util.List` type.
+    public static final ClassTypeRef LIST = of(ClassDesc.of("java.util", "List"));
+
+    /// The raw `java.util.Set` type.
+    public static final ClassTypeRef SET = of(ClassDesc.of("java.util", "Set"));
+
+    /// The raw `java.util.Map` type.
+    public static final ClassTypeRef MAP = of(ClassDesc.of("java.util", "Map"));
+
+    /// The raw `java.util.Collection` type.
+    public static final ClassTypeRef COLLECTION = of(ClassDesc.of("java.util", "Collection"));
+
+    /// The raw `java.util.Optional` type.
+    public static final ClassTypeRef OPTIONAL = of(ClassDesc.of("java.util", "Optional"));
+
     private Types() {}
 
     /// Creates a reference to a non-generic class or interface type.
@@ -20,6 +66,26 @@ public final class Types {
     /// @return a type reference wrapping `desc`
     public static ClassTypeRef of(ClassDesc desc) {
         return new ClassTypeRef(desc);
+    }
+
+    /// Creates a reference to a non-generic class or interface type from a
+    /// runtime class.
+    ///
+    /// Requires `type` to be present on the generator's classpath — annotation
+    /// processors usually cannot load the classes they are generating code
+    /// for, and should use [#of(ClassDesc)] or the `java-file-api-lang-model`
+    /// bridge instead.
+    ///
+    /// @param type the referenced class or interface; must be neither an
+    ///             array nor a primitive type — use [#array(TypeRef)] or the
+    ///             primitive constants (e.g. [#INT]) for those instead
+    /// @return a type reference wrapping `type`
+    /// @throws IllegalArgumentException if `type` is an array or a primitive type
+    public static ClassTypeRef of(Class<?> type) {
+        if (type.isArray() || type.isPrimitive()) {
+            throw new IllegalArgumentException("expected a class or interface type, got: " + type);
+        }
+        return of(ClassDesc.ofDescriptor(type.descriptorString()));
     }
 
     /// Creates a reference to a non-generic class or interface type carrying
@@ -50,13 +116,34 @@ public final class Types {
         return new ArrayTypeRef(component, List.of(annotations));
     }
 
-    /// Creates a reference to a generic type applied to type arguments.
+    /// Creates a reference to a generic type applied to exact type arguments,
+    /// e.g. `Map<String, Integer>`.
     ///
     /// @param raw the generic type's raw class or interface
-    /// @param args the type arguments applied to `raw`, in order
+    /// @param first the first type argument
+    /// @param rest any further type arguments, in order
     /// @return a parameterized type reference
-    public static ParameterizedTypeRef parameterized(ClassDesc raw, TypeArg... args) {
-        return new ParameterizedTypeRef(raw, List.of(args));
+    public static ParameterizedTypeRef parameterized(ClassDesc raw, TypeRef first, TypeRef... rest) {
+        List<TypeArg> args = new ArrayList<>(rest.length + 1);
+        args.add(exact(first));
+        for (TypeRef ref : rest) {
+            args.add(exact(ref));
+        }
+        return new ParameterizedTypeRef(raw, args);
+    }
+
+    /// Creates a reference to a generic type applied to type arguments,
+    /// e.g. `List<? extends Number>`.
+    ///
+    /// @param raw the generic type's raw class or interface
+    /// @param first the first type argument
+    /// @param rest any further type arguments, in order
+    /// @return a parameterized type reference
+    public static ParameterizedTypeRef parameterized(ClassDesc raw, TypeArg first, TypeArg... rest) {
+        List<TypeArg> args = new ArrayList<>(rest.length + 1);
+        args.add(first);
+        args.addAll(List.of(rest));
+        return new ParameterizedTypeRef(raw, args);
     }
 
     /// Creates a reference to a generic type applied to type arguments,

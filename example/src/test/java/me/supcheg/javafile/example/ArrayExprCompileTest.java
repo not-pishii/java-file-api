@@ -20,7 +20,7 @@ class ArrayExprCompileTest {
 
     @Test
     void arrayCreationAccessAndInitializerCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Arrays_"),
                 cb -> cb.withMethod(
                         "firstOfThree",

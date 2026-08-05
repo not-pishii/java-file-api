@@ -42,7 +42,7 @@ class TypeUseAnnotationCompileTest {
     void typeUseAnnotationOnAFieldTypeCompiles() {
         AnnotationUse nonNull = new AnnotationUse(NON_NULL, List.of());
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Holder"),
                 cb -> cb.withField("value", Types.of(STRING, nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
 
@@ -57,7 +57,7 @@ class TypeUseAnnotationCompileTest {
     void typeUseAnnotationOnAnArrayFieldTypeCompiles() {
         AnnotationUse nonNull = new AnnotationUse(NON_NULL, List.of());
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "ArrayHolder"),
                 cb -> cb.withField(
                         "values", Types.array(Types.of(STRING), nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
@@ -74,7 +74,7 @@ class TypeUseAnnotationCompileTest {
         AnnotationUse nonNull = new AnnotationUse(NON_NULL, List.of());
         ClassDesc number = ClassDesc.of("java.lang", "Number");
 
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Box"),
                 cb -> cb.withMethod(
                         "identity",

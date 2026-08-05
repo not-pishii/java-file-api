@@ -5,11 +5,13 @@ import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
 import me.supcheg.javafile.builder.RecordBuilder;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.transform.AnnotationTypeTransform;
 import me.supcheg.javafile.transform.ClassTransform;
 import me.supcheg.javafile.transform.EnumTransform;
 import me.supcheg.javafile.transform.InterfaceTransform;
@@ -25,7 +27,7 @@ import java.util.stream.Stream;
 ///
 /// A `JavaFile` wraps exactly one of [ClassDecl], [InterfaceDecl],
 /// [RecordDecl], [EnumDecl], or [me.supcheg.javafile.model.AnnotationTypeDecl],
-/// created via the matching static factory ([#of(ClassDesc,Consumer)],
+/// created via the matching static factory ([#class_(ClassDesc,Consumer)],
 /// [#interface_(ClassDesc,Consumer)], [#record(ClassDesc,Consumer)],
 /// [#enum_(ClassDesc,Consumer)], [#annotationType(ClassDesc,Consumer)]). The
 /// `transform*` methods only accept a transform matching the wrapped kind;
@@ -53,7 +55,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the class to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the class declaration
     /// @return the finished source file
-    public static JavaFile of(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public static JavaFile class_(ClassDesc desc, Consumer<ClassBuilder> spec) {
         ClassBuilder builder = new ClassBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
@@ -193,5 +195,18 @@ public final class JavaFile implements RenderableFile {
             return new JavaFile(packageName, simpleName, Transforms.transform(e, transform));
         }
         throw new IllegalStateException("this JavaFile does not wrap an enum declaration");
+    }
+
+    /// Rebuilds this file's annotation type declaration by applying `transform` to
+    /// each element.
+    ///
+    /// @param transform the transform applied to each element
+    /// @return a new file wrapping the transformed annotation type declaration
+    /// @throws IllegalStateException if this file does not wrap an annotation type declaration
+    public JavaFile transformAnnotationType(AnnotationTypeTransform transform) {
+        if (typeDecl instanceof AnnotationTypeDecl a) {
+            return new JavaFile(packageName, simpleName, Transforms.transform(a, transform));
+        }
+        throw new IllegalStateException("this JavaFile does not wrap an annotation type declaration");
     }
 }

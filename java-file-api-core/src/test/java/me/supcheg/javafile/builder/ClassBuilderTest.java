@@ -100,7 +100,7 @@ class ClassBuilderTest {
     void sealedClassRendersPermitsAndSealedKeyword() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Shape"));
         ClassDesc circle = ClassDesc.of("me.supcheg.example", "Circle");
-        builder.permits(circle);
+        builder.withPermits(circle);
 
         ClassDecl decl = builder.build();
 

@@ -35,7 +35,7 @@ class RecordPatternCompileTest {
                 List.of(
                         new TypePattern(PrimitiveTypeRef.INT, Optional.of("x")),
                         new TypePattern(PrimitiveTypeRef.INT, Optional.of("y"))));
-        JavaFile useFile = JavaFile.of(
+        JavaFile useFile = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Describe"),
                 cb -> cb.withMethod(
                         "sum",

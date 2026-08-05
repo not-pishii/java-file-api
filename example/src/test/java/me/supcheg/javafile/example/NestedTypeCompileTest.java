@@ -41,7 +41,7 @@ class NestedTypeCompileTest {
                 List.of(),
                 List.of());
 
-        JavaFile file = JavaFile.of(outer, cb -> {
+        JavaFile file = JavaFile.class_(outer, cb -> {
             cb.accept(nested);
             cb.withField("value", Types.of(inner), fb -> {});
         });

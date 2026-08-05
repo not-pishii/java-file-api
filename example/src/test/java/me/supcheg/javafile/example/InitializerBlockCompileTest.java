@@ -18,7 +18,7 @@ class InitializerBlockCompileTest {
 
     @Test
     void staticAndInstanceInitializerBlocksCompile() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Config"),
                 cb -> cb.withField(
                                 "ready",

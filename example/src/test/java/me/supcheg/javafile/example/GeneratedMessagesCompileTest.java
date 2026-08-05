@@ -22,7 +22,7 @@ class GeneratedMessagesCompileTest {
 
     @Test
     void theGeneratedMessagesClassCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Messages"),
                 cb -> cb.withModifiers(Modifier.FINAL)
                         .withField("bundle", Types.of(BUNDLE), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))

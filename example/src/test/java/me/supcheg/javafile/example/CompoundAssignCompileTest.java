@@ -17,7 +17,7 @@ class CompoundAssignCompileTest {
 
     @Test
     void addAssignCompiles() {
-        JavaFile file = JavaFile.of(
+        JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Accumulator"),
                 cb -> cb.withMethod(
                         "addAll",
