@@ -1,6 +1,6 @@
 package me.supcheg.javafile.code;
 
-import me.supcheg.javafile.model.EnumConstantMember;
+import me.supcheg.javafile.builder.AnonymousClassBuilder;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
@@ -121,6 +121,15 @@ public final class Exprs {
         return new MethodCallExpr(Optional.empty(), method, List.of(args));
     }
 
+    /// Creates an unqualified method call, e.g. `method(args)`.
+    ///
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a method call expression
+    public static MethodCallExpr call(String method, List<Expr> args) {
+        return new MethodCallExpr(Optional.empty(), method, List.copyOf(args));
+    }
+
     /// Creates a static method call, e.g. `type.method(args)`.
     ///
     /// @param type the type declaring the method
@@ -131,6 +140,16 @@ public final class Exprs {
         return new StaticMethodCallExpr(type, method, List.of(args));
     }
 
+    /// Creates a static method call, e.g. `type.method(args)`.
+    ///
+    /// @param type the type declaring the method
+    /// @param method the method name
+    /// @param args the call arguments, in order
+    /// @return a static method call expression
+    public static StaticMethodCallExpr staticCall(ClassOrInterfaceTypeRef type, String method, List<Expr> args) {
+        return new StaticMethodCallExpr(type, method, List.copyOf(args));
+    }
+
     /// Creates an object creation expression, `new type(args)`.
     ///
     /// @param type the instantiated type
@@ -138,6 +157,15 @@ public final class Exprs {
     /// @return a `new` expression
     public static NewExpr new_(TypeRef type, Expr... args) {
         return new NewExpr(new TypedNewTarget(type), List.of(args));
+    }
+
+    /// Creates an object creation expression, `new type(args)`.
+    ///
+    /// @param type the instantiated type
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public static NewExpr new_(TypeRef type, List<Expr> args) {
+        return new NewExpr(new TypedNewTarget(type), List.copyOf(args));
     }
 
     /// Creates a diamond object creation expression, `new rawType<>(args)`,
@@ -150,15 +178,27 @@ public final class Exprs {
         return new NewExpr(new DiamondNewTarget(rawType), List.of(args));
     }
 
+    /// Creates a diamond object creation expression, `new rawType<>(args)`,
+    /// leaving the type arguments to be inferred.
+    ///
+    /// @param rawType the instantiated generic class, without type arguments
+    /// @param args the constructor arguments, in order
+    /// @return a `new` expression
+    public static NewExpr newDiamond(ClassDesc rawType, List<Expr> args) {
+        return new NewExpr(new DiamondNewTarget(rawType), List.copyOf(args));
+    }
+
     /// Creates an object creation expression with an anonymous class body,
     /// `new type(args) { ... }`.
     ///
     /// @param type the instantiated type
-    /// @param body the anonymous subclass's body members
     /// @param args the constructor arguments, in order
+    /// @param spec receives the builder to populate the anonymous class body
     /// @return a `new` expression
-    public static NewExpr newAnonymous(TypeRef type, List<EnumConstantMember> body, Expr... args) {
-        return new NewExpr(new TypedNewTarget(type), List.of(args), Optional.of(body));
+    public static NewExpr newAnonymous(TypeRef type, List<Expr> args, Consumer<AnonymousClassBuilder> spec) {
+        AnonymousClassBuilder acb = new AnonymousClassBuilder();
+        spec.accept(acb);
+        return new NewExpr(new TypedNewTarget(type), List.copyOf(args), Optional.of(acb.build()));
     }
 
     /// Creates an array creation by dimension, e.g. `new componentType[dim1][dim2]...`.
@@ -178,6 +218,15 @@ public final class Exprs {
     /// @return an array initializer expression
     public static ArrayInitializerExpr newArrayOf(TypeRef componentType, Expr... elements) {
         return new ArrayInitializerExpr(componentType, List.of(elements));
+    }
+
+    /// Creates an array creation with an initializer, e.g. `new componentType[]{e1, e2, ...}`.
+    ///
+    /// @param componentType the array's component type
+    /// @param elements the initializer elements, in order
+    /// @return an array initializer expression
+    public static ArrayInitializerExpr newArrayOf(TypeRef componentType, List<Expr> elements) {
+        return new ArrayInitializerExpr(componentType, List.copyOf(elements));
     }
 
     /// Creates a class literal, `type.class`.
@@ -480,6 +529,20 @@ public final class Exprs {
         return new LambdaExpr(new InferredLambdaParams(params), new ExprLambdaBody(result));
     }
 
+    /// Creates a lambda expression with inferred parameter types and a
+    /// single-expression body, e.g. `(name) -> result`.
+    ///
+    /// Declared as `String[]` rather than `String...`: paired with
+    /// [#lambda(List,Expr)], a `String...` form would make a call with an
+    /// empty parameter list ambiguous between the two overloads.
+    ///
+    /// @param params the parameter names, in order
+    /// @param result the expression the lambda evaluates to
+    /// @return a lambda expression
+    public static Expr lambda(String[] params, Expr result) {
+        return lambda(List.of(params), result);
+    }
+
     /// Creates a lambda expression with inferred parameter types and a block
     /// body, e.g. `(name) -> { ... }`.
     ///
@@ -490,6 +553,20 @@ public final class Exprs {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         return new LambdaExpr(new InferredLambdaParams(params), new BlockLambdaBody(cb.build()));
+    }
+
+    /// Creates a lambda expression with inferred parameter types and a block
+    /// body, e.g. `(name) -> { ... }`.
+    ///
+    /// Declared as `String[]` rather than `String...`: paired with
+    /// [#lambda(List,Consumer)], a `String...` form would make a call with an
+    /// empty parameter list ambiguous between the two overloads.
+    ///
+    /// @param params the parameter names, in order
+    /// @param spec receives the builder to populate the lambda body
+    /// @return a lambda expression
+    public static Expr lambda(String[] params, Consumer<CodeBuilder> spec) {
+        return lambda(List.of(params), spec);
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
@@ -503,6 +580,20 @@ public final class Exprs {
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
+    /// single-expression body, e.g. `(String name) -> result`.
+    ///
+    /// Declared as `Param[]` rather than `Param...`: paired with
+    /// [#typedLambda(List,Expr)], a `Param...` form would make a call with an
+    /// empty parameter list ambiguous between the two overloads.
+    ///
+    /// @param params the parameters, in order
+    /// @param result the expression the lambda evaluates to
+    /// @return a lambda expression
+    public static Expr typedLambda(Param[] params, Expr result) {
+        return typedLambda(List.of(params), result);
+    }
+
+    /// Creates a lambda expression with explicitly typed parameters and a
     /// block body, e.g. `(String name) -> { ... }`.
     ///
     /// @param params the parameters, in order
@@ -512,5 +603,19 @@ public final class Exprs {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         return new LambdaExpr(new TypedLambdaParams(params), new BlockLambdaBody(cb.build()));
+    }
+
+    /// Creates a lambda expression with explicitly typed parameters and a
+    /// block body, e.g. `(String name) -> { ... }`.
+    ///
+    /// Declared as `Param[]` rather than `Param...`: paired with
+    /// [#typedLambda(List,Consumer)], a `Param...` form would make a call
+    /// with an empty parameter list ambiguous between the two overloads.
+    ///
+    /// @param params the parameters, in order
+    /// @param spec receives the builder to populate the lambda body
+    /// @return a lambda expression
+    public static Expr typedLambda(Param[] params, Consumer<CodeBuilder> spec) {
+        return typedLambda(List.of(params), spec);
     }
 }

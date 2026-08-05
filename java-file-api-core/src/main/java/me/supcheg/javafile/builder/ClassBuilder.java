@@ -271,6 +271,66 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
+    /// Adds a nested class declaration.
+    ///
+    /// @param desc the nested class to declare
+    /// @param spec receives the builder to populate the class declaration
+    /// @return this builder
+    public ClassBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested interface declaration.
+    ///
+    /// @param desc the nested interface to declare
+    /// @param spec receives the builder to populate the interface declaration
+    /// @return this builder
+    public ClassBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc);
+        spec.accept(ib);
+        members.add(ib.build());
+        return this;
+    }
+
+    /// Adds a nested record declaration.
+    ///
+    /// @param desc the nested record to declare
+    /// @param spec receives the builder to populate the record declaration
+    /// @return this builder
+    public ClassBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+        RecordBuilder rb = new RecordBuilder(desc);
+        spec.accept(rb);
+        members.add(rb.build());
+        return this;
+    }
+
+    /// Adds a nested enum declaration.
+    ///
+    /// @param desc the nested enum to declare
+    /// @param spec receives the builder to populate the enum declaration
+    /// @return this builder
+    public ClassBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+        EnumBuilder eb = new EnumBuilder(desc);
+        spec.accept(eb);
+        members.add(eb.build());
+        return this;
+    }
+
+    /// Adds a nested annotation type declaration.
+    ///
+    /// @param desc the nested annotation type to declare
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return this builder
+    public ClassBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
+        spec.accept(ab);
+        members.add(ab.build());
+        return this;
+    }
+
     /// Appends the given pre-built member to the class body.
     ///
     /// @param member the member to append

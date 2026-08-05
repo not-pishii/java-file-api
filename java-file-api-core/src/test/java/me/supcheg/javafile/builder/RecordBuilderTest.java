@@ -1,9 +1,11 @@
 package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
@@ -74,6 +76,22 @@ class RecordBuilderTest {
         CompactConstructorDecl ctor = (CompactConstructorDecl) decl.members().get(0);
         assertThat(ctor.modifiers()).containsExactly(Modifier.PUBLIC);
         assertThat(ctor.throwsTypes()).containsExactly(Types.of(ioException));
+    }
+
+    @Test
+    void canonicalConstructorAcceptsParamsAsAnArray() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Range"));
+        Param low = new Param("low", PrimitiveTypeRef.INT);
+        Param high = new Param("high", PrimitiveTypeRef.INT);
+
+        builder.withComponent("low", PrimitiveTypeRef.INT)
+                .withComponent("high", PrimitiveTypeRef.INT)
+                .withCanonicalConstructor(new Param[] {low, high}, b -> b.exprStatement(call("requireValid")));
+
+        RecordDecl decl = builder.build();
+        CanonicalConstructorDecl ctor =
+                (CanonicalConstructorDecl) decl.members().get(0);
+        assertThat(ctor.params()).containsExactly(low, high);
     }
 
     @Test

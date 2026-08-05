@@ -68,6 +68,15 @@ public final class EnumConstantBuilder {
         return this;
     }
 
+    /// Sets the arguments passed to the enum's constructor for this constant.
+    ///
+    /// @param args the constructor arguments, in order
+    /// @return this builder
+    public EnumConstantBuilder withArgs(List<Expr> args) {
+        this.args.addAll(args);
+        return this;
+    }
+
     /// Adds a method to this constant's constant-specific class body.
     ///
     /// @param name the method name

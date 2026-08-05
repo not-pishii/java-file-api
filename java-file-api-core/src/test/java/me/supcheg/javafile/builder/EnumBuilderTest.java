@@ -59,6 +59,26 @@ class EnumBuilderTest {
     }
 
     @Test
+    void constantCanHaveArgumentsPassedAsAList() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Planet"));
+        CodeBuilderExprHolder holder = new CodeBuilderExprHolder();
+
+        builder.withConstant("MERCURY", java.util.List.of(holder.expr()));
+
+        assertThat(builder.build().constants().get(0).args()).containsExactly(holder.expr());
+    }
+
+    @Test
+    void enumConstantBuilderWithArgsAcceptsAList() {
+        EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Planet"));
+        CodeBuilderExprHolder holder = new CodeBuilderExprHolder();
+
+        builder.withConstant("MERCURY", ecb -> ecb.withArgs(java.util.List.of(holder.expr())));
+
+        assertThat(builder.build().constants().get(0).args()).containsExactly(holder.expr());
+    }
+
+    @Test
     void constantCanOverrideAMethodWithABody() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Op"));
 

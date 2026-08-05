@@ -206,6 +206,23 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
+    /// Adds an explicit (non-compact) canonical constructor with the `public`
+    /// modifier and no `throws` clause. The given `params` must match the
+    /// record's components exactly in name, type, and order — enforced when
+    /// the record is rendered.
+    ///
+    /// Declared as `Param[]` rather than `Param...`: paired with
+    /// [#withCanonicalConstructor(List,Consumer)], a `Param...` form would
+    /// make a call with an empty parameter list ambiguous between the two
+    /// overloads.
+    ///
+    /// @param params the constructor's parameters, matching the record's components exactly
+    /// @param spec receives the builder to populate the constructor body
+    /// @return this builder
+    public RecordBuilder withCanonicalConstructor(Param[] params, Consumer<CodeBuilder> spec) {
+        return withCanonicalConstructor(List.of(params), spec);
+    }
+
     /// Adds a method with a return type.
     ///
     /// @param name the method name
@@ -255,6 +272,66 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @return this builder
     public RecordBuilder withStaticField(String name, TypeRef type, Expr initializer) {
         members.add(new StaticFieldDecl(name, type, List.of(), initializer));
+        return this;
+    }
+
+    /// Adds a nested class declaration.
+    ///
+    /// @param desc the nested class to declare
+    /// @param spec receives the builder to populate the class declaration
+    /// @return this builder
+    public RecordBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        spec.accept(cb);
+        members.add(cb.build());
+        return this;
+    }
+
+    /// Adds a nested interface declaration.
+    ///
+    /// @param desc the nested interface to declare
+    /// @param spec receives the builder to populate the interface declaration
+    /// @return this builder
+    public RecordBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc);
+        spec.accept(ib);
+        members.add(ib.build());
+        return this;
+    }
+
+    /// Adds a nested record declaration.
+    ///
+    /// @param desc the nested record to declare
+    /// @param spec receives the builder to populate the record declaration
+    /// @return this builder
+    public RecordBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+        RecordBuilder rb = new RecordBuilder(desc);
+        spec.accept(rb);
+        members.add(rb.build());
+        return this;
+    }
+
+    /// Adds a nested enum declaration.
+    ///
+    /// @param desc the nested enum to declare
+    /// @param spec receives the builder to populate the enum declaration
+    /// @return this builder
+    public RecordBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+        EnumBuilder eb = new EnumBuilder(desc);
+        spec.accept(eb);
+        members.add(eb.build());
+        return this;
+    }
+
+    /// Adds a nested annotation type declaration.
+    ///
+    /// @param desc the nested annotation type to declare
+    /// @param spec receives the builder to populate the annotation type declaration
+    /// @return this builder
+    public RecordBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+        AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
+        spec.accept(ab);
+        members.add(ab.build());
         return this;
     }
 

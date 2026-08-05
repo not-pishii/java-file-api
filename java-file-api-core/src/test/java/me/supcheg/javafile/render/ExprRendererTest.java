@@ -45,7 +45,6 @@ import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.FieldDecl;
-import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -457,16 +456,7 @@ class ExprRendererTest {
     @Test
     void newExprWithAnonymousBodyRendersBracesAndIndentedMembers() {
         TypeRef runnableType = Types.of(ClassDesc.of("java.lang", "Runnable"));
-        MethodDecl runMethod = new MethodDecl(
-                "run",
-                Optional.empty(),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of());
-        Expr expr = newAnonymous(runnableType, List.of(runMethod));
+        Expr expr = newAnonymous(runnableType, List.of(), b -> b.withVoidMethod("run", mb -> {}));
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("new Runnable() {\n" + "    public void run() {\n" + "    }\n" + "}");

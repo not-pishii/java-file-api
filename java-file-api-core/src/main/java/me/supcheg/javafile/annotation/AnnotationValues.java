@@ -8,6 +8,7 @@ import me.supcheg.javafile.code.StringLiteral;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.function.Consumer;
 
 /// Factory methods for constructing [AnnotationValue]s.
 ///
@@ -83,11 +84,30 @@ public final class AnnotationValues {
         return new NestedAnnotationValue(annotation);
     }
 
+    /// Creates a nested annotation value, populated via an [AnnotationBuilder].
+    ///
+    /// @param type the nested annotation type
+    /// @param spec receives the builder to populate the nested annotation's members
+    /// @return an annotation value
+    public static SingleAnnotationValue nested(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+        AnnotationBuilder ab = new AnnotationBuilder(type);
+        spec.accept(ab);
+        return new NestedAnnotationValue(ab.build());
+    }
+
     /// Creates an array value, rendered as `{ ... }`.
     ///
     /// @param elements the array's elements, in order
     /// @return an annotation value
     public static AnnotationValue array(SingleAnnotationValue... elements) {
         return new ArrayValue(List.of(elements));
+    }
+
+    /// Creates an array value, rendered as `{ ... }`.
+    ///
+    /// @param elements the array's elements, in order
+    /// @return an annotation value
+    public static AnnotationValue array(List<SingleAnnotationValue> elements) {
+        return new ArrayValue(List.copyOf(elements));
     }
 }
