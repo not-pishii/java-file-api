@@ -21,11 +21,11 @@ public record NonEmptyList<T>(T head, List<T> tail) {
     /// @param <T> the element type
     /// @return a non-empty list holding `list`'s elements in order
     /// @throws IllegalArgumentException if `list` is empty
-    public static <T> NonEmptyList<T> copyOf(List<T> list) {
+    public static <T> NonEmptyList<T> copyOf(List<? extends T> list) {
         if (list.isEmpty()) {
             throw new IllegalArgumentException("list must not be empty");
         }
-        return new NonEmptyList<>(list.get(0), list.subList(1, list.size()));
+        return new NonEmptyList<>(list.getFirst(), List.copyOf(list.subList(1, list.size())));
     }
 
     /// Returns all elements, `head` followed by `tail`, as an immutable list.

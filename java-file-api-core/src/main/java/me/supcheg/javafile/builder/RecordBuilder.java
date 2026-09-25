@@ -69,7 +69,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public RecordBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public RecordBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -105,7 +105,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public RecordBuilder withExactModifiers(Set<Modifier> mods) {
+    public RecordBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;
@@ -171,7 +171,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     ///
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
-    public RecordBuilder withCompactConstructor(Consumer<CodeBuilder> spec) {
+    public RecordBuilder withCompactConstructor(Consumer<? super CodeBuilder> spec) {
         return withCompactConstructor(Set.of(Modifier.PUBLIC), List.of(), spec);
     }
 
@@ -182,14 +182,16 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
     public RecordBuilder withCompactConstructor(
-            Set<Modifier> modifiers, List<ClassDesc> throwsTypes, Consumer<CodeBuilder> spec) {
+            Set<? extends Modifier> modifiers,
+            List<? extends ClassDesc> throwsTypes,
+            Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         List<ClassOrInterfaceTypeRef> normalizedThrows = new ArrayList<>(throwsTypes.size());
         for (ClassDesc type : throwsTypes) {
             normalizedThrows.add(Types.of(type));
         }
-        members.add(new CompactConstructorDecl(List.of(), modifiers, cb.build(), normalizedThrows));
+        members.add(new CompactConstructorDecl(List.of(), Set.copyOf(modifiers), cb.build(), normalizedThrows));
         return this;
     }
 
@@ -203,10 +205,11 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param params the constructor's parameters, matching the record's components exactly
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
-    public RecordBuilder withCanonicalConstructor(List<Param> params, Consumer<CodeBuilder> spec) {
+    public RecordBuilder withCanonicalConstructor(List<? extends Param> params, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        members.add(new CanonicalConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), params, cb.build(), List.of()));
+        members.add(new CanonicalConstructorDecl(
+                List.of(), Set.of(Modifier.PUBLIC), List.copyOf(params), cb.build(), List.of()));
         return this;
     }
 
@@ -216,7 +219,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public RecordBuilder withMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(mb.build());
@@ -228,7 +231,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public RecordBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+    public RecordBuilder withVoidMethod(String name, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         members.add(mb.build());
@@ -256,7 +259,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param spec receives the builder to populate the field
     /// @return this builder
     /// @throws IllegalStateException if `spec` never sets an initializer
-    public RecordBuilder withStaticField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+    public RecordBuilder withStaticField(String name, TypeRef type, Consumer<? super FieldBuilder> spec) {
         FieldBuilder fb = new FieldBuilder(name, type);
         spec.accept(fb);
         FieldDecl fd = fb.build();
@@ -271,7 +274,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the nested class to declare
     /// @param spec receives the builder to populate the class declaration
     /// @return this builder
-    public RecordBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public RecordBuilder withNestedClass(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder cb = new ClassBuilder(desc);
         spec.accept(cb);
         members.add(cb.build());
@@ -283,7 +286,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the nested interface to declare
     /// @param spec receives the builder to populate the interface declaration
     /// @return this builder
-    public RecordBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public RecordBuilder withNestedInterface(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder ib = new InterfaceBuilder(desc);
         spec.accept(ib);
         members.add(ib.build());
@@ -295,7 +298,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the nested record to declare
     /// @param spec receives the builder to populate the record declaration
     /// @return this builder
-    public RecordBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public RecordBuilder withNestedRecord(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder rb = new RecordBuilder(desc);
         spec.accept(rb);
         members.add(rb.build());
@@ -307,7 +310,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the nested enum to declare
     /// @param spec receives the builder to populate the enum declaration
     /// @return this builder
-    public RecordBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public RecordBuilder withNestedEnum(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder eb = new EnumBuilder(desc);
         spec.accept(eb);
         members.add(eb.build());
@@ -319,7 +322,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param desc the nested annotation type to declare
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return this builder
-    public RecordBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public RecordBuilder withNestedAnnotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
         spec.accept(ab);
         members.add(ab.build());

@@ -62,7 +62,8 @@ public final class TryBuilder {
     /// @param spec receives the builder to populate the clause's body
     /// @return this builder
     /// @throws IllegalArgumentException if `types` is empty
-    public TryBuilder catch_(List<ClassOrInterfaceTypeRef> types, String paramName, Consumer<CodeBuilder> spec) {
+    public TryBuilder catch_(
+            List<? extends ClassOrInterfaceTypeRef> types, String paramName, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         catches.add(new CatchClause(NonEmptyList.copyOf(types), paramName, cb.build()));
@@ -73,7 +74,7 @@ public final class TryBuilder {
     ///
     /// @param spec receives the builder to populate the `finally` body
     /// @return this builder
-    public TryBuilder finally_(Consumer<CodeBuilder> spec) {
+    public TryBuilder finally_(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.finallyBody = cb.build();

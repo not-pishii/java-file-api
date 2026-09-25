@@ -54,7 +54,7 @@ public final class AbstractMethodBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public AbstractMethodBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public AbstractMethodBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -91,7 +91,7 @@ public final class AbstractMethodBuilder {
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public AbstractMethodBuilder withExactModifiers(Set<Modifier> mods) {
+    public AbstractMethodBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;

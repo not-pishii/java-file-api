@@ -49,7 +49,7 @@ public final class ConstructorBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public ConstructorBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public ConstructorBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -118,7 +118,7 @@ public final class ConstructorBuilder {
     ///
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
-    public ConstructorBuilder withBody(Consumer<CodeBuilder> spec) {
+    public ConstructorBuilder withBody(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.body = cb.build();

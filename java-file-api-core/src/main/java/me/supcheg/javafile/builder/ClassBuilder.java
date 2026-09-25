@@ -72,7 +72,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public ClassBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public ClassBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -108,7 +108,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public ClassBuilder withExactModifiers(Set<Modifier> mods) {
+    public ClassBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;
@@ -219,7 +219,8 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public ClassBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+    public ClassBuilder withAbstractMethod(
+            String name, TypeRef returnType, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
         spec.accept(amb);
         members.add(amb.build());
@@ -231,7 +232,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public ClassBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+    public ClassBuilder withVoidAbstractMethod(String name, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
         spec.accept(amb);
         members.add(amb.build());
@@ -244,7 +245,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param type the declared field type
     /// @return this builder
     public ClassBuilder withField(String name, TypeRef type) {
-        return withField(name, type, fb -> {});
+        return withField(name, type, _ -> {});
     }
 
     /// Adds a `public` field with an initializer.
@@ -263,7 +264,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param type the declared field type
     /// @param spec receives the builder to populate the field
     /// @return this builder
-    public ClassBuilder withField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+    public ClassBuilder withField(String name, TypeRef type, Consumer<? super FieldBuilder> spec) {
         FieldBuilder fb = new FieldBuilder(name, type);
         spec.accept(fb);
         members.add(fb.build());
@@ -276,7 +277,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public ClassBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public ClassBuilder withMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(mb.build());
@@ -288,7 +289,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public ClassBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+    public ClassBuilder withVoidMethod(String name, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         members.add(mb.build());
@@ -299,7 +300,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param spec receives the builder to populate the constructor
     /// @return this builder
-    public ClassBuilder withConstructor(Consumer<ConstructorBuilder> spec) {
+    public ClassBuilder withConstructor(Consumer<? super ConstructorBuilder> spec) {
         ConstructorBuilder cb = new ConstructorBuilder();
         spec.accept(cb);
         members.add(cb.build());
@@ -310,7 +311,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param spec receives the builder to populate the block's body
     /// @return this builder
-    public ClassBuilder withInitializerBlock(Consumer<CodeBuilder> spec) {
+    public ClassBuilder withInitializerBlock(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new InitializerBlock(false, cb.build()));
@@ -321,7 +322,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     ///
     /// @param spec receives the builder to populate the block's body
     /// @return this builder
-    public ClassBuilder withStaticInitializerBlock(Consumer<CodeBuilder> spec) {
+    public ClassBuilder withStaticInitializerBlock(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new InitializerBlock(true, cb.build()));
@@ -333,7 +334,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the nested class to declare
     /// @param spec receives the builder to populate the class declaration
     /// @return this builder
-    public ClassBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public ClassBuilder withNestedClass(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder cb = new ClassBuilder(desc);
         spec.accept(cb);
         members.add(cb.build());
@@ -345,7 +346,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the nested interface to declare
     /// @param spec receives the builder to populate the interface declaration
     /// @return this builder
-    public ClassBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public ClassBuilder withNestedInterface(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder ib = new InterfaceBuilder(desc);
         spec.accept(ib);
         members.add(ib.build());
@@ -357,7 +358,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the nested record to declare
     /// @param spec receives the builder to populate the record declaration
     /// @return this builder
-    public ClassBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public ClassBuilder withNestedRecord(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder rb = new RecordBuilder(desc);
         spec.accept(rb);
         members.add(rb.build());
@@ -369,7 +370,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the nested enum to declare
     /// @param spec receives the builder to populate the enum declaration
     /// @return this builder
-    public ClassBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public ClassBuilder withNestedEnum(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder eb = new EnumBuilder(desc);
         spec.accept(eb);
         members.add(eb.build());
@@ -381,7 +382,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param desc the nested annotation type to declare
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return this builder
-    public ClassBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public ClassBuilder withNestedAnnotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
         spec.accept(ab);
         members.add(ab.build());

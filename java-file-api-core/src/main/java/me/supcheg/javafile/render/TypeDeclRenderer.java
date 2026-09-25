@@ -1,6 +1,8 @@
 package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.AnnotationElementDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
@@ -31,8 +33,10 @@ import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassDescNames;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
+import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 final class TypeDeclRenderer {
@@ -262,11 +266,11 @@ final class TypeDeclRenderer {
 
     private static String renderDefaultOrStaticMethod(
             String name,
-            java.util.Optional<me.supcheg.javafile.type.TypeRef> returnType,
+            Optional<TypeRef> returnType,
             List<AnnotationUse> annotations,
             List<TypeParam> typeParams,
             List<Param> params,
-            me.supcheg.javafile.code.CodeBody body,
+            CodeBody body,
             List<ClassOrInterfaceTypeRef> throwsTypes,
             String keyword,
             Context ctx) {
@@ -470,8 +474,8 @@ final class TypeDeclRenderer {
                 .collect(Collectors.joining(ctx.newline()));
     }
 
-    private static String renderStatements(List<me.supcheg.javafile.code.Stmt> statements, Context ctx) {
-        return ExprRenderer.renderBlock(new me.supcheg.javafile.code.CodeBody(statements), ctx);
+    private static String renderStatements(List<Stmt> statements, Context ctx) {
+        return ExprRenderer.renderBlock(new CodeBody(statements), ctx);
     }
 
     private static String renderAnnotationType(AnnotationTypeDecl decl, Context ctx) {

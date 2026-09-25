@@ -89,7 +89,7 @@ public final class ArrayValueBuilder {
     /// @param type the nested annotation type
     /// @param spec receives the builder to populate the nested annotation's members
     /// @return this builder
-    public ArrayValueBuilder withNested(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public ArrayValueBuilder withNested(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         elements.add(AnnotationValues.nested(type, spec));
         return this;
     }

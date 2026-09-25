@@ -35,7 +35,7 @@ public final class ModuleFile implements RenderableFile {
     /// @param moduleName the declared module's name, dot-separated
     /// @param spec receives the builder to populate the module's directives
     /// @return the finished file
-    public static ModuleFile of(String moduleName, Consumer<ModuleBuilder> spec) {
+    public static ModuleFile of(String moduleName, Consumer<? super ModuleBuilder> spec) {
         ModuleBuilder builder = new ModuleBuilder();
         spec.accept(builder);
         return new ModuleFile(moduleName, builder.isOpen(), builder.build());

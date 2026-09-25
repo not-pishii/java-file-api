@@ -66,7 +66,7 @@ public sealed interface Expr
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a method call expression
-    default MethodCallExpr call(String method, List<Expr> args) {
+    default MethodCallExpr call(String method, List<? extends Expr> args) {
         return new MethodCallExpr(Optional.of(this), method, List.copyOf(args));
     }
 

@@ -30,7 +30,7 @@ public final class SwitchBuilder {
     /// @param value the matched constant expression
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder case_(ConstantExpr value, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder case_(ConstantExpr value, Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(new NonEmptyList<>(new ConstantLabel(value), List.of()), blockBody(spec)));
         return this;
     }
@@ -51,7 +51,7 @@ public final class SwitchBuilder {
     /// @param bindingName the name bound to the matched value
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder caseType(TypeRef type, String bindingName, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder caseType(TypeRef type, String bindingName, Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(
                 new NonEmptyList<>(
                         new PatternLabel(new TypePattern(type, Optional.of(bindingName)), Optional.empty()), List.of()),
@@ -67,7 +67,8 @@ public final class SwitchBuilder {
     /// @param guard the `when` guard condition
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder caseTypeWithGuard(TypeRef type, String bindingName, Expr guard, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder caseTypeWithGuard(
+            TypeRef type, String bindingName, Expr guard, Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(
                 new NonEmptyList<>(
                         new PatternLabel(new TypePattern(type, Optional.of(bindingName)), Optional.of(guard)),
@@ -82,7 +83,7 @@ public final class SwitchBuilder {
     /// @param pattern the matched pattern
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder casePattern(Pattern pattern, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder casePattern(Pattern pattern, Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(
                 new NonEmptyList<>(new PatternLabel(pattern, Optional.empty()), List.of()), blockBody(spec)));
         return this;
@@ -96,7 +97,7 @@ public final class SwitchBuilder {
     /// @param guard the `when` guard condition
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder casePatternWithGuard(Pattern pattern, Expr guard, Consumer<CodeBuilder> spec) {
+    public SwitchBuilder casePatternWithGuard(Pattern pattern, Expr guard, Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(
                 new NonEmptyList<>(new PatternLabel(pattern, Optional.of(guard)), List.of()), blockBody(spec)));
         return this;
@@ -106,7 +107,7 @@ public final class SwitchBuilder {
     ///
     /// @param spec receives the builder to populate the case body
     /// @return this builder
-    public SwitchBuilder default_(Consumer<CodeBuilder> spec) {
+    public SwitchBuilder default_(Consumer<? super CodeBuilder> spec) {
         cases.add(new SwitchCase(new NonEmptyList<>(new DefaultLabel(), List.of()), blockBody(spec)));
         return this;
     }
@@ -120,7 +121,7 @@ public final class SwitchBuilder {
         return this;
     }
 
-    private static CaseBody blockBody(Consumer<CodeBuilder> spec) {
+    private static CaseBody blockBody(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         return new BlockCaseBody(cb.build());

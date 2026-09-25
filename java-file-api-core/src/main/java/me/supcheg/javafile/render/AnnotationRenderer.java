@@ -1,6 +1,5 @@
 package me.supcheg.javafile.render;
 
-import me.supcheg.javafile.annotation.AnnotationMember;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValue;
 import me.supcheg.javafile.annotation.ArrayValue;
@@ -35,12 +34,12 @@ final class AnnotationRenderer {
 
     private static String renderUse(AnnotationUse use, Context ctx) {
         String name = "@" + ctx.reference(use.type());
-        List<AnnotationMember> members = use.members();
+        var members = use.members();
         if (members.isEmpty()) {
             return name;
         }
-        if (members.size() == 1 && members.get(0).name().equals("value")) {
-            return name + "(" + renderValue(members.get(0).value(), ctx) + ")";
+        if (members.size() == 1 && members.getFirst().name().equals("value")) {
+            return name + "(" + renderValue(members.getFirst().value(), ctx) + ")";
         }
         return name + "("
                 + members.stream()

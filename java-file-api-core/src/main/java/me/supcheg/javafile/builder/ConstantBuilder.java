@@ -44,7 +44,7 @@ public final class ConstantBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public ConstantBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public ConstantBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());

@@ -2,6 +2,9 @@ package me.supcheg.javafile;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -36,5 +39,24 @@ class IdentifiersTest {
         assertThatThrownBy(() -> Identifiers.requireValid("this")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> Identifiers.requireValid("true")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> Identifiers.requireValid("null")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void acceptsListOfValidIdentifiers() {
+        List<String> names = new ArrayList<>(List.of("a", "b"));
+
+        List<String> result = Identifiers.requireValid(names);
+
+        assertThat(result).containsExactly("a", "b");
+        names.add("c");
+        assertThat(result).containsExactly("a", "b");
+    }
+
+    @Test
+    void rejectsListWithInvalidIdentifiersReportingEachAsSuppressed() {
+        assertThatThrownBy(() -> Identifiers.requireValid(List.of("ok", "1bad", "class")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("invalid Java identifier")
+                .satisfies(e -> assertThat(e.getSuppressed()).hasSize(2));
     }
 }

@@ -66,7 +66,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public InterfaceBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public InterfaceBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -102,7 +102,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public InterfaceBuilder withExactModifiers(Set<Modifier> mods) {
+    public InterfaceBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;
@@ -197,7 +197,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public InterfaceBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+    public InterfaceBuilder withAbstractMethod(
+            String name, TypeRef returnType, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
         spec.accept(amb);
         members.add(amb.build());
@@ -209,7 +210,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public InterfaceBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+    public InterfaceBuilder withVoidAbstractMethod(String name, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
         spec.accept(amb);
         members.add(amb.build());
@@ -222,7 +223,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public InterfaceBuilder withDefaultMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public InterfaceBuilder withDefaultMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(new DefaultMethodDecl(
@@ -242,7 +243,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public InterfaceBuilder withStaticMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public InterfaceBuilder withStaticMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(new StaticMethodDecl(
@@ -275,7 +276,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param spec receives the builder to populate the constant
     /// @return this builder
     /// @throws IllegalStateException if `spec` never sets an initializer
-    public InterfaceBuilder withConstant(String name, TypeRef type, Consumer<ConstantBuilder> spec) {
+    public InterfaceBuilder withConstant(String name, TypeRef type, Consumer<? super ConstantBuilder> spec) {
         ConstantBuilder cb = new ConstantBuilder(name, type);
         spec.accept(cb);
         members.add(cb.build());
@@ -287,7 +288,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the nested class to declare
     /// @param spec receives the builder to populate the class declaration
     /// @return this builder
-    public InterfaceBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public InterfaceBuilder withNestedClass(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder cb = new ClassBuilder(desc);
         spec.accept(cb);
         members.add(cb.build());
@@ -299,7 +300,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the nested interface to declare
     /// @param spec receives the builder to populate the interface declaration
     /// @return this builder
-    public InterfaceBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public InterfaceBuilder withNestedInterface(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder ib = new InterfaceBuilder(desc);
         spec.accept(ib);
         members.add(ib.build());
@@ -311,7 +312,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the nested record to declare
     /// @param spec receives the builder to populate the record declaration
     /// @return this builder
-    public InterfaceBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public InterfaceBuilder withNestedRecord(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder rb = new RecordBuilder(desc);
         spec.accept(rb);
         members.add(rb.build());
@@ -323,7 +324,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the nested enum to declare
     /// @param spec receives the builder to populate the enum declaration
     /// @return this builder
-    public InterfaceBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public InterfaceBuilder withNestedEnum(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder eb = new EnumBuilder(desc);
         spec.accept(eb);
         members.add(eb.build());
@@ -335,7 +336,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param desc the nested annotation type to declare
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return this builder
-    public InterfaceBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public InterfaceBuilder withNestedAnnotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
         spec.accept(ab);
         members.add(ab.build());

@@ -148,7 +148,7 @@ public final class Exprs {
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a method call expression
-    public static MethodCallExpr call(String method, List<Expr> args) {
+    public static MethodCallExpr call(String method, List<? extends Expr> args) {
         return new MethodCallExpr(Optional.empty(), method, List.copyOf(args));
     }
 
@@ -168,7 +168,8 @@ public final class Exprs {
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a static method call expression
-    public static StaticMethodCallExpr staticCall(ClassOrInterfaceTypeRef type, String method, List<Expr> args) {
+    public static StaticMethodCallExpr staticCall(
+            ClassOrInterfaceTypeRef type, String method, List<? extends Expr> args) {
         return new StaticMethodCallExpr(type, method, List.copyOf(args));
     }
 
@@ -188,7 +189,7 @@ public final class Exprs {
     /// @param method the method name
     /// @param args the call arguments, in order
     /// @return a static method call expression
-    public static StaticMethodCallExpr staticCall(ClassDesc type, String method, List<Expr> args) {
+    public static StaticMethodCallExpr staticCall(ClassDesc type, String method, List<? extends Expr> args) {
         return staticCall(Types.of(type), method, args);
     }
 
@@ -206,7 +207,7 @@ public final class Exprs {
     /// @param type the instantiated type
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public static NewExpr new_(ClassOrInterfaceTypeRef type, List<Expr> args) {
+    public static NewExpr new_(ClassOrInterfaceTypeRef type, List<? extends Expr> args) {
         return new NewExpr(new TypedNewTarget(type), List.copyOf(args));
     }
 
@@ -224,7 +225,7 @@ public final class Exprs {
     /// @param type the instantiated type
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public static NewExpr new_(ClassDesc type, List<Expr> args) {
+    public static NewExpr new_(ClassDesc type, List<? extends Expr> args) {
         return new_(Types.of(type), args);
     }
 
@@ -244,7 +245,7 @@ public final class Exprs {
     /// @param rawType the instantiated generic class, without type arguments
     /// @param args the constructor arguments, in order
     /// @return a `new` expression
-    public static NewExpr newDiamond(ClassDesc rawType, List<Expr> args) {
+    public static NewExpr newDiamond(ClassDesc rawType, List<? extends Expr> args) {
         return new NewExpr(new DiamondNewTarget(rawType), List.copyOf(args));
     }
 
@@ -256,7 +257,7 @@ public final class Exprs {
     /// @param spec receives the builder to populate the anonymous class body
     /// @return a `new` expression
     public static NewExpr newAnonymous(
-            ClassOrInterfaceTypeRef type, List<Expr> args, Consumer<AnonymousClassBuilder> spec) {
+            ClassOrInterfaceTypeRef type, List<? extends Expr> args, Consumer<? super AnonymousClassBuilder> spec) {
         AnonymousClassBuilder acb = new AnonymousClassBuilder();
         spec.accept(acb);
         return new NewExpr(new TypedNewTarget(type), List.copyOf(args), Optional.of(acb.build()));
@@ -286,7 +287,7 @@ public final class Exprs {
     /// @param componentType the array's component type
     /// @param elements the initializer elements, in order
     /// @return an array initializer expression
-    public static ArrayInitializerExpr newArrayOf(TypeRef componentType, List<Expr> elements) {
+    public static ArrayInitializerExpr newArrayOf(TypeRef componentType, List<? extends Expr> elements) {
         return new ArrayInitializerExpr(componentType, List.copyOf(elements));
     }
 
@@ -599,7 +600,7 @@ public final class Exprs {
     /// @param selector the switch selector expression
     /// @param spec receives the builder to populate the switch cases
     /// @return a switch expression
-    public static Expr switchExpr(Expr selector, Consumer<SwitchBuilder> spec) {
+    public static Expr switchExpr(Expr selector, Consumer<? super SwitchBuilder> spec) {
         SwitchBuilder sb = new SwitchBuilder();
         spec.accept(sb);
         return new SwitchExpr(selector, sb.build());
@@ -611,8 +612,8 @@ public final class Exprs {
     /// @param params the parameter names, in order
     /// @param result the expression the lambda evaluates to
     /// @return a lambda expression
-    public static Expr lambda(List<String> params, Expr result) {
-        return new LambdaExpr(new InferredLambdaParams(params), new ExprLambdaBody(result));
+    public static Expr lambda(List<? extends String> params, Expr result) {
+        return new LambdaExpr(new InferredLambdaParams(List.copyOf(params)), new ExprLambdaBody(result));
     }
 
     /// Creates a lambda expression with inferred parameter types and a block
@@ -621,10 +622,10 @@ public final class Exprs {
     /// @param params the parameter names, in order
     /// @param spec receives the builder to populate the lambda body
     /// @return a lambda expression
-    public static Expr lambda(List<String> params, Consumer<CodeBuilder> spec) {
+    public static Expr lambda(List<? extends String> params, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        return new LambdaExpr(new InferredLambdaParams(params), new BlockLambdaBody(cb.build()));
+        return new LambdaExpr(new InferredLambdaParams(List.copyOf(params)), new BlockLambdaBody(cb.build()));
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
@@ -633,8 +634,8 @@ public final class Exprs {
     /// @param params the parameters, in order
     /// @param result the expression the lambda evaluates to
     /// @return a lambda expression
-    public static Expr typedLambda(List<Param> params, Expr result) {
-        return new LambdaExpr(new TypedLambdaParams(params), new ExprLambdaBody(result));
+    public static Expr typedLambda(List<? extends Param> params, Expr result) {
+        return new LambdaExpr(new TypedLambdaParams(List.copyOf(params)), new ExprLambdaBody(result));
     }
 
     /// Creates a lambda expression with explicitly typed parameters and a
@@ -643,9 +644,9 @@ public final class Exprs {
     /// @param params the parameters, in order
     /// @param spec receives the builder to populate the lambda body
     /// @return a lambda expression
-    public static Expr typedLambda(List<Param> params, Consumer<CodeBuilder> spec) {
+    public static Expr typedLambda(List<? extends Param> params, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        return new LambdaExpr(new TypedLambdaParams(params), new BlockLambdaBody(cb.build()));
+        return new LambdaExpr(new TypedLambdaParams(List.copyOf(params)), new BlockLambdaBody(cb.build()));
     }
 }

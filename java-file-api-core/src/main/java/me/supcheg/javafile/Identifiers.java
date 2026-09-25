@@ -1,5 +1,7 @@
 package me.supcheg.javafile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /// Checks that a name can be used as a Java identifier.
@@ -86,5 +88,27 @@ public final class Identifiers {
             throw new IllegalArgumentException("not a valid Java identifier: '" + name + "'");
         }
         return name;
+    }
+
+    /// Returns `names` if it contains only valid Java identifiers.
+    ///
+    /// @param names collection with candidate identifiers
+    /// @return `names`, copied via [List#copyOf]
+    /// @throws IllegalArgumentException if `names` contains any invalid Java identifier
+    public static List<String> requireValid(List<? extends String> names) {
+        var violations = new ArrayList<IllegalArgumentException>();
+        for (var name : names) {
+            try {
+                requireValid(name);
+            } catch (IllegalArgumentException e) {
+                violations.add(e);
+            }
+        }
+        if (!violations.isEmpty()) {
+            var ex = new IllegalArgumentException(names + " contains invalid Java identifier(s)");
+            violations.forEach(ex::addSuppressed);
+            throw ex;
+        }
+        return List.copyOf(names);
     }
 }

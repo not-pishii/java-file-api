@@ -9,6 +9,6 @@ import java.util.List;
 /// @param names the parameter names, in order
 public record InferredLambdaParams(List<String> names) implements LambdaParams {
     public InferredLambdaParams {
-        names = names.stream().map(Identifiers::requireValid).toList();
+        names = Identifiers.requireValid(names);
     }
 }

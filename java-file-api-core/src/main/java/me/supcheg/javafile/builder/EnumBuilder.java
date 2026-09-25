@@ -65,7 +65,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public EnumBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public EnumBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -101,7 +101,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public EnumBuilder withExactModifiers(Set<Modifier> mods) {
+    public EnumBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;
@@ -129,7 +129,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param name the constant name
     /// @param args the constructor arguments, in order
     /// @return this builder
-    public EnumBuilder withConstant(String name, List<Expr> args) {
+    public EnumBuilder withConstant(String name, List<? extends Expr> args) {
         return withConstant(name, spec -> spec.withArgs(args));
     }
 
@@ -138,7 +138,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param name the constant name
     /// @param spec receives the builder to populate the constant's arguments and body
     /// @return this builder
-    public EnumBuilder withConstant(String name, Consumer<EnumConstantBuilder> spec) {
+    public EnumBuilder withConstant(String name, Consumer<? super EnumConstantBuilder> spec) {
         EnumConstantBuilder ecb = new EnumConstantBuilder();
         spec.accept(ecb);
         constants.add(ecb.build(name));
@@ -175,7 +175,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     ///
     /// @param spec receives the builder to populate the constructor
     /// @return this builder
-    public EnumBuilder withConstructor(Consumer<EnumConstructorBuilder> spec) {
+    public EnumBuilder withConstructor(Consumer<? super EnumConstructorBuilder> spec) {
         EnumConstructorBuilder cb = new EnumConstructorBuilder();
         spec.accept(cb);
         members.add(cb.build());
@@ -207,7 +207,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param type the declared field type
     /// @param spec receives the builder to populate the field
     /// @return this builder
-    public EnumBuilder withField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+    public EnumBuilder withField(String name, TypeRef type, Consumer<? super FieldBuilder> spec) {
         FieldBuilder fb = new FieldBuilder(name, type);
         spec.accept(fb);
         members.add(fb.build());
@@ -220,7 +220,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public EnumBuilder withMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(mb.build());
@@ -232,7 +232,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+    public EnumBuilder withVoidMethod(String name, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         members.add(mb.build());
@@ -281,7 +281,8 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumBuilder withAbstractMethod(String name, TypeRef returnType, Consumer<AbstractMethodBuilder> spec) {
+    public EnumBuilder withAbstractMethod(
+            String name, TypeRef returnType, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.of(returnType));
         spec.accept(amb);
         members.add(amb.build());
@@ -294,7 +295,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumBuilder withVoidAbstractMethod(String name, Consumer<AbstractMethodBuilder> spec) {
+    public EnumBuilder withVoidAbstractMethod(String name, Consumer<? super AbstractMethodBuilder> spec) {
         AbstractMethodBuilder amb = new AbstractMethodBuilder(name, Optional.empty());
         spec.accept(amb);
         members.add(amb.build());
@@ -305,7 +306,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     ///
     /// @param spec receives the builder to populate the block's body
     /// @return this builder
-    public EnumBuilder withInitializerBlock(Consumer<CodeBuilder> spec) {
+    public EnumBuilder withInitializerBlock(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new InitializerBlock(false, cb.build()));
@@ -316,7 +317,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     ///
     /// @param spec receives the builder to populate the block's body
     /// @return this builder
-    public EnumBuilder withStaticInitializerBlock(Consumer<CodeBuilder> spec) {
+    public EnumBuilder withStaticInitializerBlock(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new InitializerBlock(true, cb.build()));
@@ -328,7 +329,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the nested class to declare
     /// @param spec receives the builder to populate the class declaration
     /// @return this builder
-    public EnumBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public EnumBuilder withNestedClass(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder cb = new ClassBuilder(desc);
         spec.accept(cb);
         members.add(cb.build());
@@ -340,7 +341,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the nested interface to declare
     /// @param spec receives the builder to populate the interface declaration
     /// @return this builder
-    public EnumBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public EnumBuilder withNestedInterface(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder ib = new InterfaceBuilder(desc);
         spec.accept(ib);
         members.add(ib.build());
@@ -352,7 +353,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the nested record to declare
     /// @param spec receives the builder to populate the record declaration
     /// @return this builder
-    public EnumBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public EnumBuilder withNestedRecord(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder rb = new RecordBuilder(desc);
         spec.accept(rb);
         members.add(rb.build());
@@ -364,7 +365,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the nested enum to declare
     /// @param spec receives the builder to populate the enum declaration
     /// @return this builder
-    public EnumBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public EnumBuilder withNestedEnum(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder eb = new EnumBuilder(desc);
         spec.accept(eb);
         members.add(eb.build());
@@ -376,7 +377,7 @@ public final class EnumBuilder implements Consumer<EnumMember> {
     /// @param desc the nested annotation type to declare
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return this builder
-    public EnumBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public EnumBuilder withNestedAnnotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
         spec.accept(ab);
         members.add(ab.build());

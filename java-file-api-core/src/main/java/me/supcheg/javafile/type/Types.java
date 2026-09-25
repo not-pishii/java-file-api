@@ -159,8 +159,9 @@ public final class Types {
     /// @param args the type arguments applied to `raw`, in order
     /// @param annotations the type-use annotations on this reference
     /// @return a parameterized type reference
-    public static ParameterizedTypeRef parameterized(ClassDesc raw, List<TypeArg> args, AnnotationUse... annotations) {
-        return new ParameterizedTypeRef(raw, args, List.of(annotations));
+    public static ParameterizedTypeRef parameterized(
+            ClassDesc raw, List<? extends TypeArg> args, AnnotationUse... annotations) {
+        return new ParameterizedTypeRef(raw, List.copyOf(args), List.of(annotations));
     }
 
     /// Creates a reference to a type variable, e.g. `T`.

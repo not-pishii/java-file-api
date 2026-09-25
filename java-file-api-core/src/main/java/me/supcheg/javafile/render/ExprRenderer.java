@@ -436,8 +436,8 @@ final class ExprRenderer {
     }
 
     private static String renderSwitchCase(SwitchCase c, Context ctx) {
-        List<CaseLabel> labels = c.labels().toList();
-        boolean isDefault = labels.size() == 1 && labels.get(0) instanceof DefaultLabel;
+        var labels = c.labels().toList();
+        boolean isDefault = labels.size() == 1 && labels.getFirst() instanceof DefaultLabel;
         String header = isDefault
                 ? "default"
                 : "case " + labels.stream().map(l -> renderCaseLabel(l, ctx)).collect(Collectors.joining(", "));

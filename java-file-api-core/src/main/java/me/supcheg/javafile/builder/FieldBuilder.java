@@ -49,7 +49,7 @@ public final class FieldBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public FieldBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public FieldBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
