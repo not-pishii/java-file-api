@@ -5,13 +5,15 @@ import me.supcheg.javafile.code.Stmt;
 
 import java.util.function.BiConsumer;
 
-/// A transform over [Stmt]s.
+/// Rewrites the statements of a method or constructor body. Called once per
+/// top-level statement; what you pass to `builder.accept(...)` ends up in the
+/// result.
 ///
-/// [Transforms#transform(CodeBody,CodeTransform)] invokes the transform once
-/// per statement of the source body; the transform decides whether to pass
-/// the statement through unchanged, replace it, drop it, or add new
-/// statements, all by calling (or not calling) `accept` on the supplied
-/// builder. The result is a new body; the source body is not modified.
+/// Forward a statement with `builder.accept(statement)` to keep it, pass a different
+/// one to replace it, skip the call to drop it, or call `accept` several times
+/// to add statements. The original body is left unchanged.
+///
+/// Apply it with [Transforms#transform(CodeBody,CodeTransform)].
 @FunctionalInterface
 public interface CodeTransform extends BiConsumer<CodeBuilder, Stmt> {
     /// Returns a transform that applies this transform, then `next`, to each statement.

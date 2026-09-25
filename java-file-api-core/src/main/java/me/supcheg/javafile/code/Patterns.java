@@ -5,11 +5,13 @@ import me.supcheg.javafile.type.TypeRef;
 import java.util.List;
 import java.util.Optional;
 
-/// Factory methods for constructing [Pattern] values used by `instanceof`
-/// tests and `switch` pattern labels.
+/// Creates patterns for `instanceof` and `switch`.
 ///
-/// Patterns are not [Expr]s, so they live in their own entry point rather
-/// than in [Exprs].
+/// ```java
+/// Patterns.recordPattern(Types.of(POINT),
+///         Patterns.typePattern(Types.INT, "x"),
+///         Patterns.typePattern(Types.INT, "y"))   // Point(int x, int y)
+/// ```
 public final class Patterns {
 
     private Patterns() {}

@@ -7,11 +7,8 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 
-/// A constant field declaration inside an interface body.
-///
-/// Interface fields are implicitly `public static final`; this type carries
-/// no explicit [Modifier] set because that is the only form Java allows.
-/// Annotations are defensively copied into an unmodifiable list.
+/// An interface constant, e.g. `int MAX_SIZE = 16;`. It is always
+/// `public static final`, so no modifiers are specified.
 ///
 /// @param name the field name, a valid Java identifier
 /// @param type the declared field type

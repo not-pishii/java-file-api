@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for an [IfStmt]'s `then`, `else if`, and `else` clauses.
+/// Adds the branches of an `if` statement: `then`, `else if`, and `else`.
 ///
-/// Instances are created by [CodeBuilder#if_(Expr,Consumer)] and are not
-/// meant to be instantiated directly; the condition passed to that method is
-/// fixed for the lifetime of the builder.
+/// Obtained from [CodeBuilder#if_(Expr,Consumer)]:
+///
+/// ```java
+/// b.if_(lt(field("x"), literal(0)), ib -> ib
+///         .then(t -> t.return_(literal("negative")))
+///         .else_(e -> e.return_(literal("non-negative"))));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class IfBuilder {

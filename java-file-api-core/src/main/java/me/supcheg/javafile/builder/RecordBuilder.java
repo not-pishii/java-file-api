@@ -26,16 +26,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a top-level record declaration.
+/// Builds a record.
 ///
-/// Starts with the `public` modifier already applied. Builder methods
-/// return `this` for chaining;
-/// [#build()] snapshots the accumulated state into an immutable
-/// [RecordDecl], so a builder may be reused after building.
+/// Obtained from [me.supcheg.javafile.JavaFile#record(ClassDesc,Consumer)] or
+/// a `withNestedRecord` method. The record is `public` by default.
 ///
-/// Implements `Consumer<RecordMember>` so that transforms and other
-/// producers can feed pre-built members directly via
-/// [#accept(RecordMember)].
+/// ```java
+/// JavaFile.record(ClassDesc.of("com.example", "Point"), rb -> rb
+///         .withComponent("x", Types.INT)
+///         .withComponent("y", Types.INT));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class RecordBuilder implements Consumer<RecordMember> {
@@ -87,8 +87,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
 
     /// Adds the given modifiers to the declaration.
     ///
-    /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    /// Adds to the modifiers already set, which start as `public`. To remove
+    /// `public`, use [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
@@ -97,13 +97,11 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
-    /// Replaces the accumulated modifiers with exactly the given set, bypassing
-    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
-    /// to. Intended for producers — like
-    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
-    /// existing declaration's modifiers exactly; ordinary hand-authored
-    /// declarations should use [#withModifiers(Modifier...)]. A later
-    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    /// Replaces all modifiers, including the default `public`.
+    ///
+    /// Use it to declare a package-private type or member, e.g.
+    /// `withExactModifiers(Set.of(Modifier.FINAL))`; [#withModifiers(Modifier...)]
+    /// can only add modifiers.
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
@@ -152,6 +150,10 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
+    /// Adds an interface to the record's `implements` clause.
+    ///
+    /// @param iface the implemented interface
+    /// @return this builder
     public RecordBuilder withInterface(ClassDesc iface) {
         return withInterface(Types.of(iface));
     }
@@ -191,10 +193,12 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
-    /// Adds an explicit (non-compact) canonical constructor with the `public`
-    /// modifier and no `throws` clause. The given `params` must match the
-    /// record's components exactly in name, type, and order — enforced when
-    /// the record is rendered.
+    /// Adds a `public` canonical constructor with an explicit parameter list,
+    /// e.g. `public Point(int x, int y) { ... }`.
+    ///
+    /// `params` must match the components in name, type, and order; otherwise
+    /// rendering throws `IllegalArgumentException`. Usually a compact
+    /// constructor is simpler.
     ///
     /// @param params the constructor's parameters, matching the record's components exactly
     /// @param spec receives the builder to populate the constructor body
@@ -244,8 +248,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
 
     /// Adds a `static` field, populated via a [FieldBuilder].
     ///
-    /// Modifiers set via [FieldBuilder#withModifiers(Modifier...)] have no effect;
-    /// a record's static field always renders as `public static final`.
+    /// The field is always `public static final`; modifiers set on the
+    /// [FieldBuilder] are ignored.
     ///
     /// @param name the field name
     /// @param type the declared field type
@@ -322,7 +326,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
-    /// Appends the given pre-built member to the record body.
+    /// Adds a ready-made member, e.g. one passed to a transform.
     ///
     /// @param member the member to append
     @Override
@@ -330,7 +334,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         members.add(member);
     }
 
-    /// Snapshots the accumulated state into an immutable [RecordDecl].
+    /// Returns the declaration built so far.
     ///
     /// @return the finished record declaration
     public RecordDecl build() {

@@ -1,10 +1,5 @@
 package me.supcheg.javafile.model;
 
-/// A member that may appear in an enum constant's constant-specific body
-/// (an anonymous subclass of the enum).
-///
-/// Narrower than [EnumMember]: an anonymous class body cannot declare a
-/// constructor or an abstract method, so [EnumConstructorDecl] and
-/// [AbstractMethodDecl] are deliberately excluded, making that combination
-/// unrepresentable rather than rejected at runtime.
+/// Anything that can go inside an enum constant's body or an anonymous class:
+/// fields, methods, and nested types.
 public sealed interface EnumConstantMember permits FieldDecl, MethodDecl, TypeDecl {}

@@ -4,10 +4,6 @@ import me.supcheg.javafile.render.SourceRenderer.Format;
 
 import java.lang.constant.ClassDesc;
 
-/// The full render-time context used by the renderer internals: a caller-supplied
-/// [Format] plus the [TypeContext] the renderer itself owns for resolving
-/// [ClassDesc]s. Only constructible with both parts present, so there is no
-/// state in which `reference` is callable without a real type resolver behind it.
 interface Context extends Format, TypeContext {
     @Override
     Context withIncreasedPad();

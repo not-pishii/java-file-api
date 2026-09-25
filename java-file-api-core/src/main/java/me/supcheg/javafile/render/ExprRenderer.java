@@ -81,7 +81,6 @@ import me.supcheg.javafile.type.PrimitiveTypeRef;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/// Renders [Expr]s and [Stmt]s to their Java source-code form.
 final class ExprRenderer {
 
     private ExprRenderer() {}

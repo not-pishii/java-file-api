@@ -1,8 +1,8 @@
 package me.supcheg.javafile.type;
 
-/// A type argument used in a [ParameterizedTypeRef], covering exact types and
-/// the wildcard forms (`? extends`, `? super`, `?`) that Java's generics allow.
+/// A type argument of a [ParameterizedTypeRef]: a type such as `String`, or
+/// a wildcard `? extends T`, `? super T`, `?`.
 ///
-/// Implementations are immutable values. Use [Types] to construct instances
-/// rather than the permitted implementations directly.
+/// Create it with [Types#exact(TypeRef)], [Types#extendsBound(TypeRef)],
+/// [Types#superBound(TypeRef)], or [Types#unbounded()].
 public sealed interface TypeArg permits ExactTypeArg, ExtendsTypeArg, SuperTypeArg, UnboundedTypeArg {}

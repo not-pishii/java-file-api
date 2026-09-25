@@ -7,15 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/// Tracks which simple type names have claimed an import while rendering a single source file.
-///
-/// The first type to claim a simple name is imported; later types with the
-/// same simple name from a different package are rendered fully qualified
-/// instead. Types in `java.lang` or the file's own package are never
-/// imported — but only top-level types: a nested type is never visible by
-/// its bare simple name just because its enclosing type's package matches,
-/// so it always goes through the same claim/import bookkeeping as any
-/// other type.
+// A nested type is not visible by its simple name just because its package
+// matches the file's, so nested types are always imported explicitly.
 final class ImportManager implements TypeContext {
 
     private final String currentPackage;

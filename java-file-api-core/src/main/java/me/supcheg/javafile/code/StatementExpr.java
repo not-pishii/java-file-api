@@ -1,9 +1,7 @@
 package me.supcheg.javafile.code;
 
-/// An expression valid as a bare [ExprStmt], per JLS 14.8: method invocation,
-/// class instance creation, or a pre/post increment or decrement.
+/// An expression that can stand alone as a statement: a method call, `new`,
+/// or `++`/`--`. Pass it to [CodeBuilder#exprStatement(StatementExpr)].
 ///
-/// Assignment is JLS's fourth statement-expression form, but this model
-/// represents it as the separate statement [AssignStmt] rather than an
-/// [Expr], so it does not appear here.
+/// For assignments use [CodeBuilder#assign(AssignTarget,Expr)].
 public sealed interface StatementExpr extends Expr permits IncDecExpr, MethodCallExpr, NewExpr, StaticMethodCallExpr {}

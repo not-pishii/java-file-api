@@ -5,20 +5,18 @@ import me.supcheg.javafile.model.EnumMember;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-/// A transform over [EnumMember]s.
+/// Rewrites the members of an enum. Called once per member; what you pass to
+/// `builder.accept(...)` ends up in the result.
 ///
-/// [Transforms#transform(me.supcheg.javafile.model.EnumDecl,EnumTransform)]
-/// invokes the transform once per member — both the enum's own members and,
-/// per constant, the members of that constant's constant-specific body — the
-/// transform decides whether to pass the member through unchanged, replace
-/// it, drop it, or add new members, all by calling (or not calling) `accept`
-/// on the supplied sink. Each constant's body members are visited before the
-/// enum's own top-level members. The first argument is typed `Consumer<EnumMember>`
-/// rather than the concrete `EnumBuilder` so that a transform can be defined
-/// without depending on the builder's other methods, and so the same
-/// transform value can be reused against the narrower sink backing an enum
-/// constant's body. The result is a new declaration; the source declaration
-/// is not modified.
+/// Forward a member with `builder.accept(member)` to keep it, pass a different
+/// one to replace it, skip the call to drop it, or call `accept` several times
+/// to add members. The original declaration is left unchanged.
+///
+/// Members inside constant bodies (`PLUS { ... }`) are visited too, before the
+/// enum's own members. Passing something a constant body cannot hold, such as
+/// a constructor, there throws `IllegalArgumentException`.
+///
+/// Apply it with [me.supcheg.javafile.JavaFile#transformEnum(EnumTransform)].
 @FunctionalInterface
 public interface EnumTransform extends BiConsumer<Consumer<EnumMember>, EnumMember> {
     /// Returns a transform that applies this transform, then `next`, to each member.

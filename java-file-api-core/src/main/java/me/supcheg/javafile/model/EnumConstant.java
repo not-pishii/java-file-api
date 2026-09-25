@@ -6,13 +6,10 @@ import me.supcheg.javafile.code.Expr;
 
 import java.util.List;
 
-/// A single constant of an [EnumDecl].
+/// An enum constant, e.g. `RED`, `PLUS("+")`, or `PLUS("+") { ... }`.
 ///
-/// The annotation, argument, and body lists are defensively copied into
-/// unmodifiable lists. A non-empty [#body] renders as a constant-specific
-/// class body (an anonymous subclass of the enum), scoped with the narrower
-/// [EnumConstantMember] kinds an anonymous class body actually allows,
-/// which excludes constructors and abstract methods.
+/// A non-empty [#body] becomes the constant's class body; it can hold fields,
+/// methods, and nested types.
 ///
 /// @param name the constant's name, a valid Java identifier
 /// @param annotations the annotations declared on the constant

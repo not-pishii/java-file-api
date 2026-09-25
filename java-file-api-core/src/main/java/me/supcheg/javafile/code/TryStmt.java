@@ -5,17 +5,16 @@ import java.util.List;
 /// A `try` statement: `try`-`catch`, `try`-`finally`, `try`-`catch`-`finally`,
 /// and try-with-resources variants of each.
 ///
-/// Java requires at least one `catch` clause or a `finally` block — a bare
-/// `try { }` is invalid. This is enforced by the two permitted forms: only
-/// [WithFinally] may have zero `catch` clauses; [CatchOnly] requires at least
-/// one via [NonEmptyList]. A `try` with neither is unrepresentable.
+/// Usually created with [CodeBuilder#try_(Consumer,Consumer)]. A `try` with a
+/// `finally` block is [WithFinally]; one with only `catch` clauses is
+/// [CatchOnly].
 public sealed interface TryStmt extends Stmt permits TryStmt.WithFinally, TryStmt.CatchOnly {
 
     /// A `try` with a `finally` block, and zero or more `catch` clauses.
     ///
-    /// @param resources the try-with-resources resources, in declaration order; may be empty; copied defensively
+    /// @param resources the try-with-resources resources, in declaration order; may be empty
     /// @param block the try block's body
-    /// @param catches the `catch` clauses, in order; may be empty (`try { } finally { }`); copied defensively
+    /// @param catches the `catch` clauses, in order; may be empty (`try { } finally { }`)
     /// @param finallyBody the `finally` block's body
     record WithFinally(List<Resource> resources, CodeBody block, List<CatchClause> catches, CodeBody finallyBody)
             implements TryStmt {
@@ -27,7 +26,7 @@ public sealed interface TryStmt extends Stmt permits TryStmt.WithFinally, TryStm
 
     /// A `try` with one or more `catch` clauses and no `finally` block.
     ///
-    /// @param resources the try-with-resources resources, in declaration order; may be empty; copied defensively
+    /// @param resources the try-with-resources resources, in declaration order; may be empty
     /// @param block the try block's body
     /// @param catches the `catch` clauses, in order; at least one
     record CatchOnly(List<Resource> resources, CodeBody block, NonEmptyList<CatchClause> catches) implements TryStmt {

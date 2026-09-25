@@ -9,14 +9,19 @@ import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
 import java.io.IOException;
 
-/// Writes a [JavaFile], [PackageInfoFile] or [ModuleFile] through an annotation processing [Filer].
+/// Writes a [JavaFile], [PackageInfoFile], or [ModuleFile] from an annotation processor.
+///
+/// ```java
+/// JavaFileWriter.writeTo(file, processingEnv.getFiler(), annotatedElement);
+/// ```
 public final class JavaFileWriter {
 
     private JavaFileWriter() {}
 
-    /// Renders `file` and writes it through `filer`, passing `originatingElements`
-    /// so the annotation processing environment can track this generated file for
-    /// incremental compilation.
+    /// Writes `file` through `filer`.
+    ///
+    /// Pass the elements the file was generated from, so that incremental
+    /// builds (e.g. Gradle) regenerate it when they change.
     ///
     /// @param file the source file to write
     /// @param filer the filer to write through

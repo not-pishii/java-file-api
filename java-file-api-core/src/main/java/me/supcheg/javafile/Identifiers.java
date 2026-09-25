@@ -2,10 +2,12 @@ package me.supcheg.javafile;
 
 import java.util.Set;
 
-/// Validates that a name is a syntactically valid Java identifier (JLS 3.8),
-/// excluding the reserved keywords and boolean/null literals (JLS 3.9).
-/// Contextual keywords (`var`, `yield`, `record`, `sealed`, `permits`,
-/// `when`, ...) are not reserved and remain valid identifiers.
+/// Checks that a name can be used as a Java identifier.
+///
+/// The library checks every name you pass (fields, methods, parameters, ...),
+/// so a mistake such as `"class"` or `"my-field"` fails immediately with
+/// `IllegalArgumentException` instead of producing a file that does not
+/// compile. Contextual keywords such as `var`, `record`, or `yield` are allowed.
 public final class Identifiers {
 
     private static final Set<String> RESERVED = Set.of(
@@ -66,7 +68,7 @@ public final class Identifiers {
 
     private Identifiers() {}
 
-    /// Validates that `name` is a syntactically valid Java identifier.
+    /// Returns `name` if it is a valid Java identifier.
     ///
     /// @param name the candidate identifier
     /// @return `name`, unchanged

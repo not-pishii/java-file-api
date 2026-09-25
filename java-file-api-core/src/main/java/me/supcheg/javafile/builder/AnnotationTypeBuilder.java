@@ -16,16 +16,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a top-level annotation type declaration.
+/// Builds an annotation type, e.g. `public @interface Route { String value(); }`.
 ///
-/// Starts with the `public` modifier already applied. Builder methods
-/// return `this` for chaining;
-/// [#build()] snapshots the accumulated state into an immutable
-/// [AnnotationTypeDecl], so a builder may be reused after building.
+/// Obtained from [me.supcheg.javafile.JavaFile#annotationType(ClassDesc,Consumer)]
+/// or a `withNestedAnnotationType` method. The type is `public` by default.
 ///
-/// Implements `Consumer<AnnotationElementDecl>` so that transforms and other
-/// producers can feed pre-built elements directly via
-/// [#accept(AnnotationElementDecl)].
+/// ```java
+/// JavaFile.annotationType(ClassDesc.of("com.example", "Route"), ab -> ab
+///         .withElement("value", Types.STRING)
+///         .withElement("priority", Types.INT, AnnotationValues.literal(0)));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDecl> {
@@ -74,8 +74,8 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
 
     /// Adds the given modifiers to the declaration.
     ///
-    /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    /// Adds to the modifiers already set, which start as `public`. To remove
+    /// `public`, use [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
@@ -84,13 +84,11 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         return this;
     }
 
-    /// Replaces the accumulated modifiers with exactly the given set, bypassing
-    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
-    /// to. Intended for producers — like
-    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
-    /// existing declaration's modifiers exactly; ordinary hand-authored
-    /// declarations should use [#withModifiers(Modifier...)]. A later
-    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    /// Replaces all modifiers, including the default `public`.
+    ///
+    /// Use it to declare a package-private type or member, e.g.
+    /// `withExactModifiers(Set.of(Modifier.FINAL))`; [#withModifiers(Modifier...)]
+    /// can only add modifiers.
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
@@ -121,7 +119,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         return this;
     }
 
-    /// Appends the given pre-built element to the annotation type body.
+    /// Adds a ready-made element, e.g. one passed to a transform.
     ///
     /// @param element the element to append
     @Override
@@ -129,7 +127,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         elements.add(element);
     }
 
-    /// Snapshots the accumulated state into an immutable [AnnotationTypeDecl].
+    /// Returns the declaration built so far.
     ///
     /// @return the finished annotation type declaration
     public AnnotationTypeDecl build() {

@@ -13,12 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for an [EnumConstant]'s constructor arguments and
-/// constant-specific class body.
+/// Configures an enum constant: its constructor arguments and an optional
+/// body, e.g. `PLUS("+") { ... }`.
 ///
-/// Instances are created by
-/// [EnumBuilder#withConstant(String,Consumer)] and are not meant to be
-/// instantiated directly.
+/// Obtained from [EnumBuilder#withConstant(String,Consumer)].
 ///
 /// Instances are not thread-safe.
 public final class EnumConstantBuilder {

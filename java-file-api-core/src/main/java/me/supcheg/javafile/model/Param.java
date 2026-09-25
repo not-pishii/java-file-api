@@ -6,9 +6,7 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 
-/// A method or constructor parameter: a name paired with its declared type.
-///
-/// Annotations are defensively copied into an unmodifiable list.
+/// A method or constructor parameter, e.g. `String name` or `int... values`.
 ///
 /// @param name the parameter name, a valid Java identifier
 /// @param type the declared parameter's component type (the element type, not an array type, when `varargs` is true)

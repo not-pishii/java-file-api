@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// A mutable builder for an [EnumConstructorDecl].
+/// Configures an enum constructor.
 ///
-/// Instances are created by [EnumBuilder#withConstructor(Consumer)] and are
-/// not meant to be instantiated directly. Unlike [ConstructorBuilder], there
-/// is no `withModifiers`: enum constructors are always implicitly private.
+/// Obtained from [EnumBuilder#withConstructor(Consumer)]. Enum constructors
+/// are always implicitly private, so there are no modifiers to set.
 ///
 /// Instances are not thread-safe.
 public final class EnumConstructorBuilder {

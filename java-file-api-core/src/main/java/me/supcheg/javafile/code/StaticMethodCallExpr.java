@@ -9,7 +9,7 @@ import java.util.List;
 ///
 /// @param target the type declaring the method
 /// @param method the method name
-/// @param args the call arguments, in order; copied defensively
+/// @param args the call arguments, in order
 public record StaticMethodCallExpr(ClassOrInterfaceTypeRef target, String method, List<Expr> args)
         implements Expr, StatementExpr {
     public StaticMethodCallExpr {

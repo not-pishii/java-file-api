@@ -35,7 +35,6 @@ import me.supcheg.javafile.type.TypeParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/// Renders a [TypeDecl] and its members to their Java source-code form.
 final class TypeDeclRenderer {
 
     private TypeDeclRenderer() {}
@@ -364,11 +363,6 @@ final class TypeDeclRenderer {
                 + "}" + ctx.newline();
     }
 
-    /// Renders an explicit canonical constructor after checking its
-    /// parameter list against the record's components — the enclosing
-    /// [RecordDecl]'s components and this constructor's params are only ever
-    /// known together here, at render time, so this is where JLS's
-    /// name/type/order match is enforced rather than at construction.
     private static String renderCanonicalConstructor(
             CanonicalConstructorDecl cc, Context ctx, String ownerSimpleName, List<RecordComponent> components) {
         requireMatchesComponents(cc.params(), components);

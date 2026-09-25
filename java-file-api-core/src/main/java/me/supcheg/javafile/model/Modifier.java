@@ -1,12 +1,9 @@
 package me.supcheg.javafile.model;
 
-/// A Java access or class modifier keyword that can be attached to a type or
-/// member declaration.
+/// A modifier of a declaration.
 ///
-/// Declaration order is significant: when a set of modifiers is rendered to
-/// source, they are emitted sorted by this enum's ordinal, matching
-/// conventional Java modifier ordering. [#NON_SEALED] renders as the
-/// hyphenated keyword `non-sealed` rather than its enum constant name.
+/// Modifiers are always written in the conventional order, whatever order you
+/// pass them in.
 public enum Modifier {
     /// The `public` access modifier.
     PUBLIC,

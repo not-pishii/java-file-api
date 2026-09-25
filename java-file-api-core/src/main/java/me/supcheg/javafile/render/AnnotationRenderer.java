@@ -13,17 +13,10 @@ import me.supcheg.javafile.annotation.SingleAnnotationValue;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/// Renders [AnnotationUse]s to their Java source-code form.
 final class AnnotationRenderer {
 
     private AnnotationRenderer() {}
 
-    /// Renders each annotation on its own padded line, e.g. for a declaration.
-    /// Renders to an empty string for an empty list.
-    ///
-    /// @param annotations the annotations to render
-    /// @param ctx the render context
-    /// @return the rendered annotations, one per line
     static String renderAnnotations(List<AnnotationUse> annotations, Context ctx) {
         StringBuilder sb = new StringBuilder();
         for (AnnotationUse use : annotations) {
@@ -32,13 +25,6 @@ final class AnnotationRenderer {
         return sb.toString();
     }
 
-    /// Renders annotations space-separated on a single line, each followed by a
-    /// trailing space, e.g. for a parameter or record component. Renders to an
-    /// empty string for an empty list.
-    ///
-    /// @param annotations the annotations to render
-    /// @param ctx the render context
-    /// @return the rendered annotations, space-separated with a trailing space
     static String renderInlineAnnotations(List<AnnotationUse> annotations, Context ctx) {
         StringBuilder sb = new StringBuilder();
         for (AnnotationUse use : annotations) {

@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/// Renders [TypeRef]s, [TypeArg]s, and [Modifier] sets to their Java source-code form.
 final class TypeRefRenderer {
 
     private TypeRefRenderer() {}
@@ -48,20 +47,8 @@ final class TypeRefRenderer {
         };
     }
 
-    /// Renders a resolved reference to `desc`, placing any type-use annotations
-    /// immediately before the final simple-name segment.
-    ///
-    /// When [Context#reference(ClassDesc)] resolves `desc` to a bare simple name
-    /// (the common case), the annotations are simply prepended. But when a
-    /// simple-name collision forces a fully-qualified reference (e.g.
-    /// `pkg.Simple`), a leading annotation is invalid Java — `javac` requires it
-    /// immediately before the simple name (`pkg.@Ann Simple`), so this splits the
-    /// qualifier from the simple name and inserts the annotations in between.
-    ///
-    /// @param desc the type being referenced
-    /// @param annotations the type-use annotations applied to this reference
-    /// @param ctx the render context
-    /// @return the rendered, correctly-annotated reference
+    // A type-use annotation on a qualified name goes before the simple name:
+    // `pkg.@Ann Simple`, not `@Ann pkg.Simple`.
     private static String renderAnnotatedReference(ClassDesc desc, List<AnnotationUse> annotations, Context ctx) {
         String reference = ctx.reference(desc);
         String renderedAnnotations = AnnotationRenderer.renderInlineAnnotations(annotations, ctx);

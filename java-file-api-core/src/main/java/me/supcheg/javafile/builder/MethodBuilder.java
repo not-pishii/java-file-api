@@ -20,17 +20,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a method declaration.
+/// Configures a method: modifiers, parameters, `throws`, and body.
 ///
-/// Instances are created by the `with*Method` methods of [ClassBuilder],
-/// [InterfaceBuilder], [RecordBuilder], and [EnumBuilder], and are not meant
-/// to be instantiated directly. Depending on which of those callers builds
-/// the final declaration, the accumulated state maps onto a [MethodDecl],
-/// [me.supcheg.javafile.model.DefaultMethodDecl], or
-/// [me.supcheg.javafile.model.StaticMethodDecl]; modifiers added via
-/// [#withModifiers(Modifier...)] apply only where the target declaration has
-/// a modifier set. If [#withModifiers(Modifier...)] is never called, a
-/// [MethodDecl] defaults to the `public` modifier.
+/// Obtained from the `withMethod`, `withVoidMethod`, `withDefaultMethod`, and
+/// `withStaticMethod` methods of the declaration builders. A regular method is
+/// `public` unless you call [#withModifiers(Modifier...)]; for `default` and
+/// `static` interface methods the modifiers are fixed.
+///
+/// ```java
+/// cb.withMethod("greet", Types.STRING, mb -> mb
+///         .withParam("name", Types.STRING)
+///         .withBody(b -> b.return_(add(literal("Hello, "), field("name")))));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class MethodBuilder {
@@ -119,7 +120,8 @@ public final class MethodBuilder {
 
     /// Adds a varargs parameter to the method's parameter list, e.g. `int... values`.
     ///
-    /// Valid only as the last parameter; enforced when the method declaration is built.
+    /// Must be the last parameter; otherwise building the method throws
+    /// `IllegalArgumentException`.
     ///
     /// @param name the parameter name
     /// @param componentType the parameter's component type, not an array type

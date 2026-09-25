@@ -7,27 +7,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/// A source file that can be rendered to Java source text and written to disk.
+/// A generated source file: a [JavaFile], [PackageInfoFile], or [ModuleFile].
 ///
-/// [JavaFile], [ModuleFile], and [PackageInfoFile] are the only kinds of
-/// renderable file — a top-level type declaration, a `module-info.java`
-/// module declaration, and a `package-info.java` package declaration,
-/// respectively. Rendering is delegated to [StandardRenderer], which
-/// dispatches on the concrete [Meta] returned by [#renderMeta()]; [#pathSuffix()]
-/// determines where [#writeTo(Path)] places the rendered file relative to a
-/// source root.
+/// Get the source text with [#render()], or write it into a source directory
+/// with [#writeTo(Path)]. In an annotation processor, use `JavaFileWriter`
+/// from `java-file-api-lang-model` to write through the `Filer`.
 public sealed interface RenderableFile permits JavaFile, PackageInfoFile, ModuleFile {
 
-    /// Renders this file's declaration to source text.
+    /// Returns the file's source code.
     ///
-    /// @return the complete source text
+    /// @return the complete source text, including the package and imports
     default String render() {
         return StandardRenderer.instance().render(renderMeta(), SourceRenderer.standardFormat());
     }
 
-    /// Writes this file's rendered source text under `outputDir`, at the
-    /// location given by [#pathSuffix()], creating any missing directories
-    /// as needed.
+    /// Writes the file into the source directory `outputDir`, e.g.
+    /// `outputDir/com/example/Greeter.java`, creating directories as needed.
+    /// An existing file is overwritten.
     ///
     /// @param outputDir the source root to write into
     /// @throws IOException if the directories or file cannot be created or written
@@ -43,11 +39,11 @@ public sealed interface RenderableFile permits JavaFile, PackageInfoFile, Module
     /// @return the path this file is written to, relative to the source root
     Path pathSuffix();
 
-    /// The type-specific data [StandardRenderer] needs to render this file.
+    /// The file's contents in the form renderers consume; you rarely need it directly.
     ///
     /// @return this file's render metadata
     Meta renderMeta();
 
-    /// The type-specific data a [SourceRenderer] renders a [RenderableFile] from.
+    /// The contents of a [RenderableFile], as passed to a [SourceRenderer].
     sealed interface Meta permits JavaFile.Meta, ModuleFile.Meta, PackageInfoFile.Meta {}
 }

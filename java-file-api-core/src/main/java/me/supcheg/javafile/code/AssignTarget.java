@@ -1,10 +1,8 @@
 package me.supcheg.javafile.code;
 
-/// An expression valid as the left-hand side of an [AssignStmt], per JLS
-/// 15.26: an expression name, a field access, or an array access.
+/// Something that can be assigned to: a variable or field (`x`, `this.x`,
+/// `Config.x`) or an array element (`items[i]`).
 ///
-/// [FieldAccessExpr] represents both an unqualified expression name and a
-/// qualified instance field access; [StaticFieldAccessExpr] represents a
-/// qualified static field access; [ArrayAccessExpr] represents an array
-/// access.
+/// Create it with [Exprs#field(String)], [Expr#field(String)],
+/// [Exprs#staticField(java.lang.constant.ClassDesc,String)], or [Expr#arrayAccess(Expr)].
 public sealed interface AssignTarget permits FieldAccessExpr, StaticFieldAccessExpr, ArrayAccessExpr {}

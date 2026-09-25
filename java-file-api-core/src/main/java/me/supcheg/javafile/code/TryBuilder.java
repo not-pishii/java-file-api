@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [TryStmt]'s resources, `catch` clauses, and
-/// `finally` block.
+/// Adds resources, `catch` clauses, and a `finally` block to a `try`.
 ///
-/// Instances are created by [CodeBuilder#try_(Consumer,Consumer)] and are not
-/// meant to be instantiated directly.
+/// Obtained from [CodeBuilder#try_(Consumer,Consumer)]. At least one `catch`
+/// or a `finally` is required.
 ///
 /// Instances are not thread-safe.
 public final class TryBuilder {
@@ -56,7 +55,7 @@ public final class TryBuilder {
     }
 
     /// Appends a `catch` clause. May be called more than once; multiple
-    /// `types` model a multi-catch (`A | B`).
+    /// `types` produce a multi-catch (`A | B`).
     ///
     /// @param types the caught exception types, in order; at least one
     /// @param paramName the caught exception's parameter name

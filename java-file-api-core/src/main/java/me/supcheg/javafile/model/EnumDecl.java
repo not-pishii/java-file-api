@@ -8,10 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// An `enum` declaration.
-///
-/// Annotations, constants, interfaces, and members are defensively copied
-/// into unmodifiable collections.
+/// An enum declaration.
 ///
 /// @param desc the enum's name and package
 /// @param annotations the annotations declared on the enum

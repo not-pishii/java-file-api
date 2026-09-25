@@ -24,14 +24,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a top-level class declaration.
+/// Builds a class.
 ///
-/// Starts with the `public` modifier already applied. Builder methods return
-/// `this` for chaining; [#build()] snapshots the accumulated state into an
-/// immutable [ClassDecl], so a builder may be reused after building.
+/// Obtained from [me.supcheg.javafile.JavaFile#class_(ClassDesc,Consumer)] or
+/// a `withNestedClass` method. The class is `public` by default; use
+/// [#withModifiers(Modifier...)] to add modifiers such as `final` or
+/// [#withExactModifiers(java.util.Set)] to replace them.
 ///
-/// Implements `Consumer<ClassMember>` so that transforms and other producers
-/// can feed pre-built members directly via [#accept(ClassMember)].
+/// ```java
+/// JavaFile.class_(ClassDesc.of("com.example", "Counter"), cb -> cb
+///         .withModifiers(Modifier.FINAL)
+///         .withField("count", Types.INT, fb -> fb.withModifiers(Modifier.PRIVATE))
+///         .withVoidMethod("increment", mb -> mb
+///                 .withBody(b -> b.exprStatement(postIncrement(field("count"))))));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class ClassBuilder implements Consumer<ClassMember> {
@@ -84,8 +90,8 @@ public final class ClassBuilder implements Consumer<ClassMember> {
 
     /// Adds the given modifiers to the declaration.
     ///
-    /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    /// Adds to the modifiers already set, which start as `public`. To remove
+    /// `public`, use [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
@@ -94,14 +100,11 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
-    /// Replaces the accumulated modifiers with exactly the given set, bypassing
-    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
-    /// to. Intended for producers — like
-    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
-    /// existing declaration's modifiers exactly, including one with no access
-    /// modifier or with `private`/`protected`; ordinary hand-authored
-    /// declarations should use [#withModifiers(Modifier...)]. A later
-    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    /// Replaces all modifiers, including the default `public`.
+    ///
+    /// Use it to declare a package-private type or member, e.g.
+    /// `withExactModifiers(Set.of(Modifier.FINAL))`; [#withModifiers(Modifier...)]
+    /// can only add modifiers.
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
@@ -131,6 +134,10 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
+    /// Sets the class's `extends` superclass.
+    ///
+    /// @param superclass the superclass to extend
+    /// @return this builder
     public ClassBuilder withSuperclass(ClassDesc superclass) {
         return withSuperclass(Types.of(superclass));
     }
@@ -144,6 +151,10 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
+    /// Adds an interface to the class's `implements` clause.
+    ///
+    /// @param iface the implemented interface
+    /// @return this builder
     public ClassBuilder withInterface(ClassDesc iface) {
         return withInterface(Types.of(iface));
     }
@@ -227,7 +238,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
-    /// Adds a field with no initializer and default modifiers.
+    /// Adds a `public` field with no initializer.
     ///
     /// @param name the field name
     /// @param type the declared field type
@@ -236,7 +247,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return withField(name, type, fb -> {});
     }
 
-    /// Adds a field with an initializer and default modifiers.
+    /// Adds a `public` field with an initializer.
     ///
     /// @param name the field name
     /// @param type the declared field type
@@ -377,7 +388,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         return this;
     }
 
-    /// Appends the given pre-built member to the class body.
+    /// Adds a ready-made member, e.g. one passed to a transform.
     ///
     /// @param member the member to append
     @Override
@@ -385,7 +396,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
         members.add(member);
     }
 
-    /// Snapshots the accumulated state into an immutable [ClassDecl].
+    /// Returns the declaration built so far.
     ///
     /// @return the finished class declaration
     public ClassDecl build() {

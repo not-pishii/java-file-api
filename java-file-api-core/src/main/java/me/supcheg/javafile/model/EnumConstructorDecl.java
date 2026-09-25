@@ -6,13 +6,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.util.List;
 
-/// An enum's constructor declaration.
-///
-/// Unlike [ConstructorDecl], there is no `modifiers` field: enum
-/// constructors are always implicitly private, so that state is
-/// unrepresentable rather than accepted and silently ignored at render time.
-/// Annotations, parameters, and thrown types are defensively copied into
-/// unmodifiable lists.
+/// An enum constructor. It is implicitly private, so no modifiers are specified.
 ///
 /// @param annotations the annotations declared on the constructor
 /// @param params the constructor's parameters, in declaration order

@@ -5,17 +5,18 @@ import me.supcheg.javafile.type.TypeRef;
 import java.util.List;
 import java.util.Optional;
 
-/// An expression that produces a value when evaluated.
+/// An expression: a literal, a variable, a call, an operator, a lambda, and so on.
 ///
-/// The permitted implementations cover field access, static field access,
-/// method calls, static method calls, literals, text blocks, binary and
-/// unary operators, `instanceof` pattern matching, object creation, `switch`
-/// expressions, lambda expressions, casts, ternary conditionals, class
-/// literals, method references, constructor references, array access, array
-/// creation, array initializers, and the `this` and `super` keyword
-/// expressions. Statements ([Stmt]) form a separate hierarchy, so an
-/// expression cannot appear where a statement is expected without an
-/// explicit wrapper such as [ExprStmt].
+/// Start an expression with a static method of [Exprs], then continue it with
+/// the methods of this interface, which read left to right like Java:
+///
+/// ```java
+/// this_().field("items").call("get", literal(0))   // this.items.get(0)
+/// field("value").instanceOf(Types.STRING, "s")      // value instanceof String s
+/// ```
+///
+/// To use an expression as a statement, pass it to
+/// [CodeBuilder#exprStatement(StatementExpr)].
 public sealed interface Expr
         permits FieldAccessExpr,
                 StaticFieldAccessExpr,

@@ -49,10 +49,10 @@ public final class Greeter {
 
 ```kotlin
 // core
-implementation("me.supcheg:java-file-api-core:3.0.0")
+implementation("me.supcheg:java-file-api-core:LATEST_VERSION")
 
 // annotation processor integration
-implementation("me.supcheg:java-file-api-lang-model:3.0.0")
+implementation("me.supcheg:java-file-api-lang-model:LATEST_VERSION")
 ```
 
 ```xml
@@ -60,14 +60,14 @@ implementation("me.supcheg:java-file-api-lang-model:3.0.0")
 <dependency>
     <groupId>me.supcheg</groupId>
     <artifactId>java-file-api-core</artifactId>
-    <version>3.0.0</version>
+    <version>LATEST_VERSION</version>
 </dependency>
 
 <!-- annotation processor integration -->
 <dependency>
     <groupId>me.supcheg</groupId>
     <artifactId>java-file-api-lang-model</artifactId>
-    <version>3.0.0</version>
+    <version>LATEST_VERSION</version>
 </dependency>
 ```
 

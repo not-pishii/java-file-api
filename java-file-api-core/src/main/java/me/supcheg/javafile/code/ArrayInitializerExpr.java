@@ -6,13 +6,11 @@ import java.util.List;
 
 /// An array creation with an initializer, `new componentType[]{e1, e2, ...}`.
 ///
-/// A "bare" initializer `{e1, e2, ...}` without the leading `new componentType[]`
-/// is deliberately not modeled: JLS permits it only in a field, local-variable, or
-/// array-element initializer position, which would require render-context tracking
-/// to keep it from becoming representable where it's invalid (see [AssignTarget]).
+/// The short form `{e1, e2, ...}` is not supported; the `new componentType[]`
+/// prefix is always written.
 ///
 /// @param componentType the array's component type
-/// @param elements the initializer elements, in order; copied defensively
+/// @param elements the initializer elements, in order
 public record ArrayInitializerExpr(TypeRef componentType, List<Expr> elements) implements Expr {
     public ArrayInitializerExpr {
         elements = List.copyOf(elements);

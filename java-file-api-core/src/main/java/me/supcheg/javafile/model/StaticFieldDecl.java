@@ -7,11 +7,7 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 
-/// A `public static final` field declaration inside a record body.
-///
-/// Renders unconditionally with `public static final` modifiers, regardless
-/// of how the field is constructed. Annotations are defensively copied into
-/// an unmodifiable list.
+/// A static field in a record. It is always `public static final`.
 ///
 /// @param name the field name, a valid Java identifier
 /// @param type the declared field type

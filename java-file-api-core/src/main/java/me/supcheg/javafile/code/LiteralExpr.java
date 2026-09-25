@@ -1,8 +1,6 @@
 package me.supcheg.javafile.code;
 
-/// A constant-valued expression.
+/// A literal: a string, number, boolean, or `null`.
 ///
-/// The permitted implementations cover the compile-time constants
-/// ([ConstantLiteral]: string, integer, long, double, and boolean literals)
-/// and the `null` literal.
+/// Create it with [Exprs#literal(String)] and its overloads, or [Exprs#literalNull()].
 public sealed interface LiteralExpr extends Expr, ConstantExpr permits ConstantLiteral, NullLiteral {}

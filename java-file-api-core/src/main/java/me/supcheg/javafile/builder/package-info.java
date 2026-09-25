@@ -1,23 +1,16 @@
-/// Mutable builders that assemble the immutable declarations in [me.supcheg.javafile.model].
+/// Builders that describe the contents of a declaration: members, modifiers,
+/// supertypes, annotations.
 ///
-/// One builder exists per top-level declaration kind
-/// ([me.supcheg.javafile.builder.ClassBuilder],
-/// [me.supcheg.javafile.builder.InterfaceBuilder],
-/// [me.supcheg.javafile.builder.RecordBuilder],
-/// [me.supcheg.javafile.builder.EnumBuilder]), plus nested builders for
-/// members that need their own configuration
-/// ([me.supcheg.javafile.builder.MethodBuilder],
-/// [me.supcheg.javafile.builder.FieldBuilder],
-/// [me.supcheg.javafile.builder.ConstructorBuilder],
-/// [me.supcheg.javafile.builder.EnumConstantBuilder]). Each top-level
-/// builder implements the `Consumer` of its member type, so transforms in
-/// [me.supcheg.javafile.transform] can feed pre-built members back through
-/// [me.supcheg.javafile.builder.ClassBuilder#accept(me.supcheg.javafile.model.ClassMember)]
-/// and its siblings. Builders are mutable and not thread-safe; the
-/// declarations they produce are immutable.
+/// You don't create the top-level builders yourself:
+/// [me.supcheg.javafile.JavaFile]'s factories pass one to your lambda, and
+/// its `with*` methods pass nested builders for methods, fields, constructors,
+/// and so on. Builders are not thread-safe.
 ///
-/// [me.supcheg.javafile.JavaFile]'s static factories are the usual entry
-/// point for creating a top-level builder.
+/// ```java
+/// JavaFile.class_(ClassDesc.of("com.example", "Greeter"), cb -> cb
+///         .withMethod("greet", Types.STRING, mb -> mb
+///                 .withBody(b -> b.return_(literal("hi")))));
+/// ```
 @NullMarked
 package me.supcheg.javafile.builder;
 

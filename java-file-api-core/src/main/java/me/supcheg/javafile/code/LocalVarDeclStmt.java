@@ -5,10 +5,8 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.Optional;
 
-/// A local variable declaration: an explicitly typed declaration, whose
-/// initializer is optional, or an inferred (`var`) declaration, whose
-/// initializer Java requires for type inference — `var x;` is invalid and is
-/// unrepresentable here.
+/// A local variable declaration: `int x;`, `int x = 1;`, or `var x = 1;`.
+/// A `var` declaration always has an initializer.
 public sealed interface LocalVarDeclStmt extends Stmt permits LocalVarDeclStmt.Typed, LocalVarDeclStmt.Inferred {
 
     /// An explicitly typed local variable declaration, e.g. `int x;` or `int x = 1;`.

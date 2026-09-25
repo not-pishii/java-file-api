@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// A mutable builder for an array-valued annotation member, rendered as `{ ... }`.
+/// Adds elements to an array annotation member, rendered as `{ ... }`.
 ///
-/// Instances are created by
-/// [AnnotationBuilder#withArrayMember(String,Consumer)] and are not meant to be
-/// instantiated directly. Elements are [SingleAnnotationValue]s, so an array of
-/// arrays — which Java forbids — is unrepresentable.
+/// Obtained from [AnnotationBuilder#withArrayMember(String,Consumer)]:
+///
+/// ```java
+/// ab.withArrayMember("methods", arr -> arr.withLiteral("GET").withLiteral("POST"));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class ArrayValueBuilder {

@@ -3,15 +3,11 @@ package me.supcheg.javafile.code;
 import java.util.ArrayList;
 import java.util.List;
 
-/// A list guaranteed to hold at least one element.
-///
-/// Used where Java's grammar requires cardinality `>= 1` but a plain
-/// `List` would make the empty case representable: multi-catch exception
-/// types, the `catch` clauses of a `try` with no `finally`, and the labels
-/// of a [SwitchCase].
+/// A list with at least one element. Used where Java requires at least one
+/// item, such as the labels of a switch case. Create it with [#copyOf(List)].
 ///
 /// @param head the first element
-/// @param tail the remaining elements, in order; copied defensively
+/// @param tail the remaining elements, in order
 /// @param <T> the element type
 public record NonEmptyList<T>(T head, List<T> tail) {
 

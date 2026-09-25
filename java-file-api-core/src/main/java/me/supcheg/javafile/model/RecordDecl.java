@@ -9,10 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// A `record` declaration.
-///
-/// Annotations, type parameters, components, interfaces, and members are
-/// defensively copied into unmodifiable collections.
+/// A record declaration.
 ///
 /// @param desc the record's name and package
 /// @param annotations the annotations declared on the record

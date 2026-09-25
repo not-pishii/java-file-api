@@ -7,7 +7,7 @@ import java.util.Optional;
 ///
 /// @param condition the `if` condition
 /// @param thenBody the body executed when `condition` is true
-/// @param elseIfClauses the `else if` clauses, in order; copied defensively
+/// @param elseIfClauses the `else if` clauses, in order
 /// @param elseBody the trailing `else` body, or empty if absent
 public record IfStmt(Expr condition, CodeBody thenBody, List<ElseIfClause> elseIfClauses, Optional<CodeBody> elseBody)
         implements Stmt {

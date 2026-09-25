@@ -11,11 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/// An abstract method declaration: no body, usable in both class and
-/// interface bodies.
-///
-/// Type parameters, parameters, annotations, modifiers, and thrown types are
-/// defensively copied into unmodifiable collections.
+/// An abstract method, e.g. `abstract double area();`, in a class, interface,
+/// or enum.
 ///
 /// @param name the method name
 /// @param returnType the declared return type, or empty for `void`

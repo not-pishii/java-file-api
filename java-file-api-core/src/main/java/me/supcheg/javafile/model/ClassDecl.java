@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/// A `class` declaration.
-///
-/// The class is rendered as `sealed` when [#permits] is non-empty.
-/// Annotations, modifiers, type parameters, interfaces, permitted subtypes,
-/// and members are defensively copied into unmodifiable collections.
+/// A class declaration. It is rendered `sealed` when [#permits] is not empty.
 ///
 /// @param desc the class's name and package
 /// @param annotations the annotations declared on the class

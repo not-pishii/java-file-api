@@ -1,21 +1,14 @@
-/// Use-site annotation values attachable to declarations.
+/// Annotations applied to generated code, e.g. `@Deprecated(since = "2.0")`.
 ///
-/// [me.supcheg.javafile.annotation.AnnotationUse] models `@Foo(...)`; its
-/// members are [me.supcheg.javafile.annotation.AnnotationValue]s, split into
-/// [me.supcheg.javafile.annotation.SingleAnnotationValue] (literal, class,
-/// enum, or nested annotation) and
-/// [me.supcheg.javafile.annotation.ArrayValue] — Java forbids nested arrays,
-/// so an array's elements are typed as `SingleAnnotationValue`, making that
-/// invariant unrepresentable rather than runtime-checked.
-/// [me.supcheg.javafile.annotation.AnnotationValues] is the entry point for
-/// building values; [me.supcheg.javafile.annotation.AnnotationBuilder]
-/// assembles an [me.supcheg.javafile.annotation.AnnotationUse], including
-/// standalone nested uses.
+/// Most of the time you add annotations through a declaration builder's
+/// `withAnnotation` methods. Use [me.supcheg.javafile.annotation.AnnotationBuilder]
+/// to build a standalone [me.supcheg.javafile.annotation.AnnotationUse], and
+/// [me.supcheg.javafile.annotation.AnnotationValues] to create member values.
 ///
 /// ```java
-/// AnnotationUse use = new AnnotationBuilder(ClassDesc.of("me.supcheg.meta", "ContractMeta"))
-///         .withMember("value", AnnotationValues.literal("greeting"))
-///         .build();
+/// AnnotationUse use = new AnnotationBuilder(ClassDesc.of("com.example", "Route"))
+///         .withMember("value", AnnotationValues.literal("/users"))
+///         .build();                                  // @Route("/users")
 /// ```
 @NullMarked
 package me.supcheg.javafile.annotation;

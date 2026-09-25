@@ -9,7 +9,7 @@ import java.util.Optional;
 /// optionally with an anonymous class body, `new type(args) { ... }`.
 ///
 /// @param target the instantiated target
-/// @param args the constructor arguments, in order; copied defensively
+/// @param args the constructor arguments, in order
 /// @param anonymousBody the anonymous subclass's body members, or empty for a plain object creation;
 ///                       uses [EnumConstantMember]'s narrower member set, since an anonymous class
 ///                       cannot declare a constructor or an abstract method

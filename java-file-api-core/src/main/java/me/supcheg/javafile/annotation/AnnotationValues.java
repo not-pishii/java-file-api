@@ -10,11 +10,16 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// Factory methods for constructing [AnnotationValue]s.
+/// Creates values for annotation members.
 ///
-/// This is the intended entry point for building annotation values; the
-/// permitted implementations of [AnnotationValue] are not meant to be
-/// instantiated directly.
+/// ```java
+/// ClassDesc retention = ClassDesc.of("java.lang.annotation", "Retention");
+/// ClassDesc policy = ClassDesc.of("java.lang.annotation", "RetentionPolicy");
+///
+/// new AnnotationBuilder(retention)
+///         .withMember("value", AnnotationValues.enumValue(policy, "RUNTIME"))
+///         .build();                                  // @Retention(RetentionPolicy.RUNTIME)
+/// ```
 public final class AnnotationValues {
 
     private AnnotationValues() {}

@@ -5,14 +5,14 @@ import me.supcheg.javafile.model.InterfaceMember;
 
 import java.util.function.BiConsumer;
 
-/// A transform over [InterfaceMember]s.
+/// Rewrites the members of an interface. Called once per member; what you
+/// pass to `builder.accept(...)` ends up in the result.
 ///
-/// [Transforms#transform(me.supcheg.javafile.model.InterfaceDecl,InterfaceTransform)]
-/// invokes the transform once per member of the source declaration; the
-/// transform decides whether to pass the member through unchanged, replace
-/// it, drop it, or add new members, all by calling (or not calling) `accept`
-/// on the supplied builder. The result is a new declaration; the source
-/// declaration is not modified.
+/// Forward a member with `builder.accept(member)` to keep it, pass a different
+/// one to replace it, skip the call to drop it, or call `accept` several times
+/// to add members. The original declaration is left unchanged.
+///
+/// Apply it with [me.supcheg.javafile.JavaFile#transformInterface(InterfaceTransform)].
 @FunctionalInterface
 public interface InterfaceTransform extends BiConsumer<InterfaceBuilder, InterfaceMember> {
     /// Returns a transform that applies this transform, then `next`, to each member.

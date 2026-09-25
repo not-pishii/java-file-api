@@ -1,12 +1,6 @@
 package me.supcheg.javafile.model;
 
-/// A member that may appear in a record body.
-///
-/// The permitted implementations mirror what the Java language allows inside a
-/// `record` declaration in addition to its implicit canonical constructor and
-/// component accessors: a compact or explicit canonical constructor, methods,
-/// static fields, and nested type declarations. Class and interface bodies
-/// use their own member hierarchies ([ClassMember], [InterfaceMember]), so an
-/// impossible combination is unrepresentable rather than rejected at runtime.
+/// Anything that can go inside a record body: compact and canonical
+/// constructors, methods, static fields, and nested types.
 public sealed interface RecordMember
         permits CompactConstructorDecl, CanonicalConstructorDecl, MethodDecl, StaticFieldDecl, TypeDecl {}

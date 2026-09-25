@@ -1,6 +1,5 @@
 package me.supcheg.javafile.render;
 
-/// Escapes string content for use inside a Java string literal.
 final class JavaStrings {
 
     private JavaStrings() {}
