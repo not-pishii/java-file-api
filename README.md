@@ -11,10 +11,10 @@ A Java source generation library with an API that mirrors the design of the JDK 
 
 ```kotlin
 // core
-implementation("me.supcheg:java-file-api-core:1.0.0")
+implementation("me.supcheg:java-file-api-core:3.0.0")
 
 // annotation processor integration
-implementation("me.supcheg:java-file-api-lang-model:1.0.0")
+implementation("me.supcheg:java-file-api-lang-model:3.0.0")
 ```
 
 ```xml
@@ -22,14 +22,14 @@ implementation("me.supcheg:java-file-api-lang-model:1.0.0")
 <dependency>
     <groupId>me.supcheg</groupId>
     <artifactId>java-file-api-core</artifactId>
-    <version>1.0.0</version>
+    <version>3.0.0</version>
 </dependency>
 
 <!--> annotation processor integration <-->
 <dependency>
     <groupId>me.supcheg</groupId>
     <artifactId>java-file-api-lang-model</artifactId>
-    <version>1.0.0</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
