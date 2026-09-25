@@ -5,7 +5,7 @@ import java.util.List;
 /// A `switch` statement.
 ///
 /// @param selector the switch selector expression
-/// @param cases the switch cases, in order; copied defensively
+/// @param cases the switch cases, in order
 public record SwitchStmt(Expr selector, List<SwitchCase> cases) implements Stmt {
     public SwitchStmt {
         cases = List.copyOf(cases);

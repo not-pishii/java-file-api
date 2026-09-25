@@ -2,12 +2,7 @@ package me.supcheg.javafile.code;
 
 /// A statement that may appear in a method or block body.
 ///
-/// The permitted implementations cover control flow (`if`, `while`,
-/// `do`-`while`, `for`, enhanced `for`, `switch`, `try`, and `synchronized`),
-/// local variable declarations, assignments, expression statements, labeled
-/// statements, the empty statement, `assert`, local type declarations, and
-/// the terminal forms `return`, `throw`, `break`, `continue`, and `yield`. A
-/// sequence of statements is assembled into a [CodeBody].
+/// Add statements with the methods of [CodeBuilder].
 public sealed interface Stmt
         permits ReturnStmt,
                 ExprStmt,

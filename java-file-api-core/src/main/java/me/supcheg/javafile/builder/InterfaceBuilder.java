@@ -23,16 +23,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a top-level interface declaration.
+/// Builds an interface.
 ///
-/// Starts with the `public` modifier already applied. Builder methods
-/// return `this` for chaining;
-/// [#build()] snapshots the accumulated state into an immutable
-/// [InterfaceDecl], so a builder may be reused after building.
+/// Obtained from [me.supcheg.javafile.JavaFile#interface_(ClassDesc,Consumer)]
+/// or a `withNestedInterface` method. The interface is `public` by default and
+/// becomes `sealed` once [#withPermits(ClassDesc...)] is called.
 ///
-/// Implements `Consumer<InterfaceMember>` so that transforms and other
-/// producers can feed pre-built members directly via
-/// [#accept(InterfaceMember)].
+/// ```java
+/// JavaFile.interface_(ClassDesc.of("com.example", "Shape"), ib -> ib
+///         .withAbstractMethod("area", Types.DOUBLE));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class InterfaceBuilder implements Consumer<InterfaceMember> {
@@ -84,8 +84,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
 
     /// Adds the given modifiers to the declaration.
     ///
-    /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    /// Adds to the modifiers already set, which start as `public`. To remove
+    /// `public`, use [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
@@ -94,13 +94,11 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         return this;
     }
 
-    /// Replaces the accumulated modifiers with exactly the given set, bypassing
-    /// the initial `public` seed that [#withModifiers(Modifier...)] can only add
-    /// to. Intended for producers — like
-    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
-    /// existing declaration's modifiers exactly; ordinary hand-authored
-    /// declarations should use [#withModifiers(Modifier...)]. A later
-    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
+    /// Replaces all modifiers, including the default `public`.
+    ///
+    /// Use it to declare a package-private type or member, e.g.
+    /// `withExactModifiers(Set.of(Modifier.FINAL))`; [#withModifiers(Modifier...)]
+    /// can only add modifiers.
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
@@ -130,6 +128,10 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         return this;
     }
 
+    /// Adds an interface to the declaration's `extends` clause.
+    ///
+    /// @param iface the extended interface
+    /// @return this builder
     public InterfaceBuilder withExtends(ClassDesc iface) {
         return withExtends(Types.of(iface));
     }
@@ -340,7 +342,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         return this;
     }
 
-    /// Appends the given pre-built member to the interface body.
+    /// Adds a ready-made member, e.g. one passed to a transform.
     ///
     /// @param member the member to append
     @Override
@@ -348,7 +350,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
         members.add(member);
     }
 
-    /// Snapshots the accumulated state into an immutable [InterfaceDecl].
+    /// Returns the declaration built so far.
     ///
     /// @return the finished interface declaration
     public InterfaceDecl build() {

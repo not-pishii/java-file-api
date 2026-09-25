@@ -1,12 +1,8 @@
-/// Renders declarations from [me.supcheg.javafile.model] and
-/// [me.supcheg.javafile.code] into Java source text.
+/// Rendering with custom formatting.
 ///
-/// [me.supcheg.javafile.render.SourceRenderer] is the only public entry
-/// point: it renders a package declaration, computed imports, and a
-/// top-level type declaration into one file's text. The remaining classes
-/// are package-private renderer internals split by concern (type
-/// references, expressions and statements, type declarations) plus an
-/// import-claiming helper.
+/// You only need this package to change indentation or line separators; see
+/// [me.supcheg.javafile.render.SourceRenderer]. Otherwise use
+/// [me.supcheg.javafile.RenderableFile#render()].
 @NullMarked
 package me.supcheg.javafile.render;
 

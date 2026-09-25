@@ -4,15 +4,14 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 
-/// A record deconstruction pattern, e.g. `Point(int x, int y)`. Component
-/// patterns may themselves be [RecordPattern]s, matching JLS's recursive
-/// deconstruction.
+/// A record pattern, e.g. `Point(int x, int y)`. Components can be record
+/// patterns too, e.g. `Line(Point(var x1, var y1), Point p2)`.
+///
+/// Every type pattern component must declare a variable; otherwise the
+/// constructor throws `IllegalArgumentException`.
 ///
 /// @param recordType the deconstructed record type
-/// @param componentPatterns the per-component patterns, in declaration order; copied defensively
-/// @throws IllegalArgumentException if a component is a [TypePattern] with no binding name — JLS
-///         requires every record pattern component to bind a name, unlike the standalone
-///         `instanceof` form, which allows an unnamed type test
+/// @param componentPatterns the per-component patterns, in declaration order
 public record RecordPattern(TypeRef recordType, List<Pattern> componentPatterns) implements Pattern {
     public RecordPattern {
         componentPatterns = List.copyOf(componentPatterns);

@@ -10,15 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for the body of an anonymous class, `new Type() { ... }`.
+/// Builds the body of an anonymous class, `new Type() { ... }`.
 ///
-/// Members are [EnumConstantMember]s: an anonymous class body, like an enum
-/// constant's body, cannot declare a constructor or an abstract method, so
-/// those combinations are unrepresentable rather than rejected at runtime.
-///
-/// Implements `Consumer<EnumConstantMember>` so that transforms and other
-/// producers can feed pre-built members directly via
-/// [#accept(EnumConstantMember)].
+/// It can hold fields, methods, and nested types, but not constructors or
+/// abstract methods, as in Java.
 ///
 /// Instances are not thread-safe.
 public final class AnonymousClassBuilder implements Consumer<EnumConstantMember> {
@@ -28,7 +23,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// Creates an empty anonymous class body builder.
     public AnonymousClassBuilder() {}
 
-    /// Adds a field with no initializer and default modifiers.
+    /// Adds a `public` field with no initializer.
     ///
     /// @param name the field name
     /// @param type the declared field type
@@ -37,7 +32,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
         return withField(name, type, fb -> {});
     }
 
-    /// Adds a field with an initializer and default modifiers.
+    /// Adds a `public` field with an initializer.
     ///
     /// @param name the field name
     /// @param type the declared field type
@@ -145,7 +140,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
         return this;
     }
 
-    /// Appends the given pre-built member to the anonymous class body.
+    /// Adds a ready-made member, e.g. one passed to a transform.
     ///
     /// @param member the member to append
     @Override
@@ -153,7 +148,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
         members.add(member);
     }
 
-    /// Snapshots the accumulated members.
+    /// Returns the members added so far.
     ///
     /// @return the finished member list
     public List<EnumConstantMember> build() {

@@ -7,12 +7,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for the cases of a `switch` statement or expression.
+/// Adds the cases of a `switch`. Cases are rendered in arrow form, `case X -> ...`.
 ///
-/// Instances are created by [CodeBuilder#switch_(Expr,Consumer)] and
-/// [CodeBuilder#switchExpr(Expr,Consumer)] and are not meant to be
-/// instantiated directly. Each `case*`/`default*` method appends exactly one
-/// [SwitchCase] with a single label.
+/// Obtained from [CodeBuilder#switch_(Expr,Consumer)] and
+/// [Exprs#switchExpr(Expr,Consumer)]:
+///
+/// ```java
+/// b.switch_(field("value"), sb -> sb
+///         .caseType(Types.STRING, "s", c -> c.return_(field("s")))
+///         .default_(c -> c.return_(literal("other"))));
+/// ```
 ///
 /// Instances are not thread-safe.
 public final class SwitchBuilder {

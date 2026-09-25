@@ -8,11 +8,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// A compact constructor declaration inside a record body.
-///
-/// Takes no explicit parameter list: its parameters are implicitly the
-/// record's components. Annotations, modifiers, and thrown types are
-/// defensively copied into unmodifiable collections.
+/// A compact record constructor, e.g. `public Point { ... }`. Its parameters
+/// are the record's components.
 ///
 /// @param annotations the annotations declared on the compact constructor
 /// @param modifiers the modifiers on the compact constructor declaration

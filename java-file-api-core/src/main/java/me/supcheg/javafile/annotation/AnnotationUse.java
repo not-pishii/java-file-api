@@ -3,10 +3,11 @@ package me.supcheg.javafile.annotation;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
-/// A use of an annotation on a declaration, e.g. `@ContractMeta(...)`.
+/// An annotation applied to a declaration, e.g. `@Deprecated(since = "2.0")`.
 ///
-/// Members are defensively copied into an unmodifiable list; an empty list
-/// renders as a marker annotation without parentheses.
+/// Usually built with [AnnotationBuilder]. With no members it renders as
+/// `@Deprecated`; with a single member named `value` it renders as
+/// `@Name(value)`.
 ///
 /// @param type the annotation type
 /// @param members the member assignments, in order

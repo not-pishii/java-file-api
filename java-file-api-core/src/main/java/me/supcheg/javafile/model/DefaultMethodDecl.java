@@ -10,12 +10,7 @@ import me.supcheg.javafile.type.TypeRef;
 import java.util.List;
 import java.util.Optional;
 
-/// A `default` method declaration inside an interface body.
-///
-/// Annotations, type parameters, parameters, and thrown types are
-/// defensively copied into unmodifiable lists. The method always renders
-/// with the `default` modifier; it carries no explicit [Modifier] set
-/// because that is the only form Java allows for a default method.
+/// A `default` method in an interface.
 ///
 /// @param name the method name
 /// @param returnType the declared return type, or empty for `void`

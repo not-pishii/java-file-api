@@ -33,8 +33,6 @@ import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.UnaryOp;
 
-/// Operator-precedence levels used by [ExprRenderer] to decide when an
-/// operand needs parentheses. Higher numbers bind tighter, per JLS 15.
 final class Precedence {
 
     static final int LAMBDA_LEVEL = 1;
@@ -53,7 +51,6 @@ final class Precedence {
     static final int INC_DEC_LEVEL = 14;
     static final int PRIMARY_LEVEL = 15;
 
-    /// Below [#LAMBDA_LEVEL]; passing this as `minPrecedence` never wraps its operand in parentheses.
     static final int NO_PARENS_REQUIRED = 0;
 
     private Precedence() {}
@@ -106,12 +103,7 @@ final class Precedence {
         };
     }
 
-    /// Whether concatenating `operatorSymbol` directly before `renderedOperand`
-    /// would let the lexer's maximal-munch rule glue them into a different
-    /// token (e.g. `-` followed by `-x` becoming `--x`, decrement instead of
-    /// double negation). Only `+`/`-` adjacency is ambiguous in Java; `~~x`
-    /// and `!!x` are not real tokens, so they are left unparenthesized to
-    /// keep the minimal-parentheses policy.
+    // `-` before `-x` would lex as `--x`; only `+`/`-` have this problem.
     static boolean needsParensAroundUnaryOperand(String operatorSymbol, String renderedOperand) {
         if (renderedOperand.isEmpty()) {
             return false;
@@ -121,11 +113,7 @@ final class Precedence {
         return (operatorLastChar == '+' || operatorLastChar == '-') && operandFirstChar == operatorLastChar;
     }
 
-    /// Whether `expr`, as a reference-type cast's operand, needs parentheses.
-    /// JLS 15.16 restricts a reference-type cast's operand to
-    /// `UnaryExpressionNotPlusMinus`, which excludes unary `+`/`-` and
-    /// pre-increment/decrement — unlike a primitive-type cast's operand
-    /// (`UnaryExpression`), which allows them directly.
+    // JLS 15.16: `(String) -x` is not valid, unlike `(int) -x`.
     static boolean needsParensAsReferenceTypeCastOperand(Expr expr) {
         return switch (expr) {
             case UnaryExpr(var op, var ignored) -> op == UnaryOp.NEG || op == UnaryOp.UNARY_PLUS;
@@ -134,11 +122,7 @@ final class Precedence {
         };
     }
 
-    /// Whether `expr`, as an array-access expression's array operand, needs
-    /// parentheses. JLS 15.10.3 restricts the array operand to
-    /// `ExpressionName | PrimaryNoNewArray`, which excludes array-creation
-    /// expressions — `new int[3][0]` parses as a 2D array creation, not as
-    /// indexing into `new int[3]`.
+    // `new int[3][0]` is a 2D array creation, not indexing into `new int[3]`.
     static boolean needsParensAsArrayAccessTarget(Expr expr) {
         return expr instanceof ArrayCreationExpr || expr instanceof ArrayInitializerExpr;
     }

@@ -8,16 +8,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// An explicit (non-compact) canonical constructor declaration inside a
-/// record body, spelling out the full parameter list rather than relying on
-/// the record header via [CompactConstructorDecl].
+/// A record constructor with an explicit parameter list,
+/// e.g. `public Point(int x, int y) { ... }`.
 ///
-/// JLS requires the parameter list to match the owning [RecordDecl]'s
-/// components exactly in name, type, and order. That can only be checked
-/// once the enclosing record is rendered — [RecordDecl#components()] and this
-/// constructor's [#params()] are never known together before then — so,
-/// unlike most validation in this codebase, the match is enforced at render
-/// time rather than at construction.
+/// The parameters must match the record's components in name, type, and
+/// order; otherwise rendering throws `IllegalArgumentException`.
 ///
 /// @param annotations the annotations declared on the constructor
 /// @param modifiers the modifiers on the constructor declaration

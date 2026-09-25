@@ -8,13 +8,19 @@ import me.supcheg.javafile.model.ModuleDirective;
 
 import java.util.List;
 
-/// Renders a top-level type declaration to complete Java source code.
+/// The built-in [SourceRenderer]. Adds imports automatically: a type is
+/// imported unless another type with the same simple name already is, in
+/// which case it is written fully qualified. `java.lang` and same-package
+/// types are never imported.
 public final class StandardRenderer implements SourceRenderer {
 
     private static final StandardRenderer INSTANCE = new StandardRenderer();
 
     private StandardRenderer() {}
 
+    /// Returns the renderer.
+    ///
+    /// @return the shared instance
     public static StandardRenderer instance() {
         return INSTANCE;
     }

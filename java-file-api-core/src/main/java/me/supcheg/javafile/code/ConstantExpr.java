@@ -1,12 +1,8 @@
 package me.supcheg.javafile.code;
 
-/// An expression valid as a [ConstantLabel]'s matched value, per JLS 15.29's
-/// `ConstantExpression` production restricted to the forms this model
-/// represents: a literal, or a simple/qualified name (used for an enum
-/// constant, e.g. `case RED ->`).
+/// A value usable in `case`: a literal (`case 1 ->`) or a name
+/// (`case RED ->`, `case Limits.MAX ->`).
 ///
-/// Whether a given [FieldAccessExpr] or [StaticFieldAccessExpr] actually
-/// names a compile-time constant is a semantic property (constant folding)
-/// and is not checked here — this interface narrows the representable
-/// *forms*, not their constant-ness.
+/// Whether a name really refers to a constant is not checked; the compiler
+/// will report it.
 public sealed interface ConstantExpr extends Expr permits FieldAccessExpr, LiteralExpr, StaticFieldAccessExpr {}

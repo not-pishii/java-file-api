@@ -1,19 +1,19 @@
-/// Immutable value types describing method and constructor bodies.
+/// Code inside methods, constructors, and lambdas: statements and expressions.
 ///
-/// [me.supcheg.javafile.code.Stmt] and [me.supcheg.javafile.code.Expr] are
-/// the two sealed roots: statements form a [me.supcheg.javafile.code.CodeBody],
-/// and expressions produce values within them. [me.supcheg.javafile.code.Exprs]
-/// and the chaining methods on [me.supcheg.javafile.code.Expr] build
-/// expressions; [me.supcheg.javafile.code.CodeBuilder] is the intended entry
-/// point for assembling a body out of statements.
+/// - [me.supcheg.javafile.code.CodeBuilder] adds statements; `withBody`
+///   methods of the builders pass you one.
+/// - [me.supcheg.javafile.code.Exprs] creates expressions; import its methods
+///   statically. Continue an expression with the methods of
+///   [me.supcheg.javafile.code.Expr], e.g. `field("list").call("size")`.
+/// - [me.supcheg.javafile.code.Patterns] creates patterns for `instanceof`
+///   and `switch`.
 ///
 /// ```java
 /// import static me.supcheg.javafile.code.Exprs.*;
 ///
-/// CodeBuilder cb = new CodeBuilder();
-/// cb.localVar("sum", add(literal(1), literal(2)));
-/// cb.return_(field("sum"));
-/// CodeBody body = cb.build();
+/// mb.withBody(b -> b
+///         .localVar("sum", Types.INT, add(field("a"), field("b")))
+///         .return_(field("sum")));
 /// ```
 @NullMarked
 package me.supcheg.javafile.code;

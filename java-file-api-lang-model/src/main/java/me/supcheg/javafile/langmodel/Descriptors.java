@@ -15,22 +15,28 @@ import javax.lang.model.type.WildcardType;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
-/// A one-way bridge from `javax.lang.model` types to this library's [TypeRef]/[ClassDesc] model.
+/// Converts the types an annotation processor sees (`TypeMirror`,
+/// `TypeElement`) into types for generated code.
 ///
-/// The bridge only covers top-level types: nested types are not
-/// representable by [ClassDesc] the way this bridge constructs it, and
-/// `TypeMirror` kinds outside primitives, arrays, and declared types (e.g.
-/// type variables, wildcards used outside a type argument) are not
-/// supported.
+/// ```java
+/// ClassDesc target = Descriptors.toClassDesc(typeElement);
+/// TypeRef fieldType = Descriptors.toTypeRef(field.asType());   // e.g. List<? extends Number>
+/// ```
+///
+/// Supported: primitives, arrays, and classes/interfaces with their type
+/// arguments and wildcards. Not supported: nested types and type variables
+/// such as `T`.
 public final class Descriptors {
 
     private Descriptors() {}
 
-    /// Converts a `javax.lang.model` type to a [TypeRef].
+    /// Converts a type, including its type arguments, to a [TypeRef].
     ///
     /// @param mirror the type to convert
     /// @return the equivalent type reference
-    /// @throws IllegalArgumentException if `mirror`'s kind is not a primitive, array, or declared type
+    /// @throws IllegalArgumentException if the type is not a primitive, array, or
+    ///         class/interface type, e.g. a type variable
+    /// @throws UnsupportedOperationException if the type is or contains a nested type
     public static TypeRef toTypeRef(TypeMirror mirror) {
         return switch (mirror.getKind()) {
             case BOOLEAN -> PrimitiveTypeRef.BOOLEAN;

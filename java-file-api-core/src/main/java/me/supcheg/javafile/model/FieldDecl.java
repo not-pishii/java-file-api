@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/// A field declaration inside a class body.
-///
-/// Annotations are defensively copied into an unmodifiable list; modifiers
-/// into an unmodifiable set.
+/// A field in a class or enum, e.g. `private final String name;`.
 ///
 /// @param name the field name, a valid Java identifier
 /// @param type the declared field type

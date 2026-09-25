@@ -1,11 +1,8 @@
-/// References to Java types, independent of loaded classes.
+/// Types used in generated code: `String`, `int[]`, `List<? extends T>`, and so on.
 ///
-/// A [me.supcheg.javafile.type.TypeRef] identifies a type by name via
-/// `java.lang.constant.ClassDesc` rather than `java.lang.Class`, so generated
-/// code may reference types that do not exist yet.
-/// [me.supcheg.javafile.type.Types] is the entry point: factories for class,
-/// array, parameterized, and primitive references, plus wildcard type
-/// arguments.
+/// Create them with [me.supcheg.javafile.type.Types]. Classes are named with
+/// `java.lang.constant.ClassDesc`, so you can refer to types that are not on
+/// the classpath or do not exist yet (e.g. ones generated in the same round).
 ///
 /// ```java
 /// TypeRef listOfStrings = Types.parameterized(ClassDesc.of("java.util", "List"), Types.STRING);

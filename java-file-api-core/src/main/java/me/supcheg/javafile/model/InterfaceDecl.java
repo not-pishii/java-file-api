@@ -9,12 +9,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// An `interface` declaration.
-///
-/// The interface is rendered as `sealed` when [#permits] is non-empty.
-/// Annotations, modifiers, type parameters, extended interfaces, permitted
-/// subtypes, and members are defensively copied into unmodifiable
-/// collections.
+/// An interface declaration. It is rendered `sealed` when [#permits] is not
+/// empty.
 ///
 /// @param desc the interface's name and package
 /// @param annotations the annotations declared on the interface

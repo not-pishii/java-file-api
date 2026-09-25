@@ -12,12 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [ConstantDecl] — an interface constant, implicitly
-/// `public static final`.
+/// Configures an interface constant, which is always `public static final`,
+/// e.g. `int MAX_SIZE = 16;`.
 ///
-/// Instances are created by
-/// [InterfaceBuilder#withConstant(String,TypeRef,Consumer)] and are not meant
-/// to be instantiated directly.
+/// Obtained from [InterfaceBuilder#withConstant(String,TypeRef,Consumer)].
 ///
 /// Instances are not thread-safe.
 public final class ConstantBuilder {

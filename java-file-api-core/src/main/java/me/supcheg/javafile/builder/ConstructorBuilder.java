@@ -18,14 +18,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [ConstructorDecl].
+/// Configures a constructor.
 ///
-/// Instances are created by [ClassBuilder#withConstructor(Consumer)] and are
-/// not meant to be instantiated directly. Enum constructors use the
-/// dedicated [EnumConstructorBuilder] instead, since they are always
-/// implicitly private and never carry modifiers. If
-/// [#withModifiers(Modifier...)] is never called, the built constructor
-/// defaults to the `public` modifier.
+/// Obtained from [ClassBuilder#withConstructor(Consumer)]. The constructor is
+/// `public` unless you call [#withModifiers(Modifier...)]. Enum constructors
+/// use [EnumConstructorBuilder].
 ///
 /// Instances are not thread-safe.
 public final class ConstructorBuilder {

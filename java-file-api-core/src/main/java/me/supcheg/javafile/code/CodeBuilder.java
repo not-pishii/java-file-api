@@ -8,23 +8,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [CodeBody], accumulating statements in call order.
+/// Adds statements to a method, constructor, or lambda body, in call order.
 ///
-/// Expressions are built with [Exprs] and the chaining methods on [Expr];
-/// this builder only appends statements. Each `Stmt`-adding method
-/// (`return_`, `assign`, `if_`, ...) appends to the body being built.
-/// [#build()] snapshots the accumulated statements into an immutable
-/// [CodeBody], so a builder may be reused after building.
+/// Builders' `withBody` methods pass you one. Expressions for the statements
+/// come from [Exprs]:
 ///
-/// Implements `Consumer<Stmt>` so that transforms and other producers can
-/// feed pre-built statements directly via [#accept(Stmt)].
+/// ```java
+/// mb.withBody(b -> b
+///         .localVar("total", Types.INT, literal(0))
+///         .forEach(Types.INT, "x", field("items"), loop -> loop
+///                 .assign(field("total"), AssignOp.ADD_ASSIGN, field("x")))
+///         .return_(field("total")));
+/// ```
+///
+/// The builder can be reused after [#build()].
 ///
 /// Instances are not thread-safe.
 public final class CodeBuilder implements Consumer<Stmt> {
 
     private final List<Stmt> statements = new ArrayList<>();
 
-    /// Appends the given statement to the body being built.
+    /// Adds a ready-made statement, e.g. one passed to a [me.supcheg.javafile.transform.CodeTransform].
     ///
     /// @param stmt the statement to append
     @Override
@@ -329,7 +333,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
-    /// Snapshots the accumulated statements into an immutable [CodeBody].
+    /// Returns the statements added so far.
     ///
     /// @return the finished body
     public CodeBody build() {

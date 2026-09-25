@@ -16,12 +16,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for a [FieldDecl].
+/// Configures a field.
 ///
-/// Instances are created by [ClassBuilder#withField(String,TypeRef,Consumer)]
-/// and [EnumBuilder#withField(String,TypeRef,Consumer)] and are not meant to
-/// be instantiated directly. If [#withModifiers(Modifier...)] is never
-/// called, the built field defaults to the `public` modifier.
+/// Obtained from the `withField` methods of the declaration builders. The
+/// field is `public` unless you call [#withModifiers(Modifier...)].
 ///
 /// Instances are not thread-safe.
 public final class FieldBuilder {

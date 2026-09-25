@@ -11,16 +11,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/// Factory methods for constructing [Expr] values that have no left-hand
-/// operand — literals, `this`/`super`, unqualified names and calls, object and
-/// array creation, operators, casts, lambdas, and `switch` expressions.
+/// Creates expressions: literals, names, calls, `new`, operators, casts,
+/// lambdas, `switch` expressions, and so on.
 ///
-/// Operations that continue an existing expression — member access, invocation
-/// on a target, array indexing, `instanceof`, bound method references — are
-/// methods on [Expr] itself, so each operation has exactly one spelling.
+/// Import the methods statically. Member access, calls on an object,
+/// indexing, and `instanceof` continue an existing expression, so they are
+/// methods of [Expr]:
 ///
-/// This is the intended entry point for building expressions; the permitted
-/// implementations of [Expr] are not meant to be instantiated directly.
+/// ```java
+/// import static me.supcheg.javafile.code.Exprs.*;
+///
+/// literal("hi")                                  // "hi"
+/// field("name")                                  // name
+/// this_().field("name")                          // this.name
+/// call("compute", literal(1))                    // compute(1)
+/// staticCall(MATH, "max", field("a"), field("b"))  // Math.max(a, b)
+/// new_(ARRAY_LIST)                               // new ArrayList()
+/// add(field("a"), literal(1))                    // a + 1
+/// lambda(List.of("x"), mul(field("x"), literal(2)))  // (x) -> x * 2
+/// ```
+///
+/// Parentheses are added automatically where operator precedence requires
+/// them.
 public final class Exprs {
 
     private Exprs() {}

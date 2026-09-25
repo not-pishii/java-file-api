@@ -7,8 +7,7 @@ import java.util.List;
 /// A reference to an array type.
 ///
 /// @param component the type of the array's elements
-/// @param annotations the type-use annotations on this array level (JLS 9.7.4);
-///                     defensively copied into an unmodifiable list
+/// @param annotations the type-use annotations on this array level (JLS 9.7.4)
 public record ArrayTypeRef(TypeRef component, List<AnnotationUse> annotations) implements TypeRef {
     public ArrayTypeRef {
         annotations = List.copyOf(annotations);

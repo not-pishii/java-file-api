@@ -5,14 +5,14 @@ import me.supcheg.javafile.model.AnnotationElementDecl;
 
 import java.util.function.BiConsumer;
 
-/// A transform over an annotation type's [AnnotationElementDecl]s.
+/// Rewrites the elements of an annotation type. Called once per element;
+/// what you pass to `builder.accept(...)` ends up in the result.
 ///
-/// [Transforms#transform(me.supcheg.javafile.model.AnnotationTypeDecl,AnnotationTypeTransform)]
-/// invokes the transform once per element of the source declaration; the
-/// transform decides whether to pass the element through unchanged, replace
-/// it, drop it, or add new elements, all by calling (or not calling) `accept`
-/// on the supplied builder. The result is a new declaration; the source
-/// declaration is not modified.
+/// Forward a element with `builder.accept(element)` to keep it, pass a different
+/// one to replace it, skip the call to drop it, or call `accept` several times
+/// to add elements. The original declaration is left unchanged.
+///
+/// Apply it with [me.supcheg.javafile.JavaFile#transformAnnotationType(AnnotationTypeTransform)].
 @FunctionalInterface
 public interface AnnotationTypeTransform extends BiConsumer<AnnotationTypeBuilder, AnnotationElementDecl> {
     /// Returns a transform that applies this transform, then `next`, to each element.

@@ -6,8 +6,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-/// A `package-info.java` source file: package-level annotations and the
-/// package declaration, with no type declaration.
+/// A `package-info.java` file: a package declaration with its annotations.
+///
+/// ```java
+/// PackageInfoFile info = PackageInfoFile.of("com.example.api",
+///         new AnnotationBuilder(ClassDesc.of("org.jspecify.annotations", "NullMarked")).build());
+/// ```
 public final class PackageInfoFile implements RenderableFile {
     private static final Path PACKAGE_INFO_JAVA = Path.of("package-info.java");
 
@@ -28,6 +32,9 @@ public final class PackageInfoFile implements RenderableFile {
         return new PackageInfoFile(packageName, List.of(annotations));
     }
 
+    /// The annotated package's name.
+    ///
+    /// @return the package name
     public String packageName() {
         return packageName;
     }
@@ -37,7 +44,7 @@ public final class PackageInfoFile implements RenderableFile {
         return new Meta(packageName, annotations);
     }
 
-    /// The render metadata for a [PackageInfoFile]: its package and annotations.
+    /// The package and annotations of a [PackageInfoFile]; you rarely need it directly.
     ///
     /// @param packageName the package being annotated
     /// @param annotations the package annotations, in order

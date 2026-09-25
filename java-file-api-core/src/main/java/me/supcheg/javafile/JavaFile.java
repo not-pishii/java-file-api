@@ -23,18 +23,25 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-/// A source file containing a single top-level type declaration.
+/// A `.java` file with one top-level class, interface, record, enum, or
+/// annotation type.
 ///
-/// A `JavaFile` wraps exactly one of [ClassDecl], [InterfaceDecl],
-/// [RecordDecl], [EnumDecl], or [me.supcheg.javafile.model.AnnotationTypeDecl],
-/// created via the matching static factory ([#class_(ClassDesc,Consumer)],
-/// [#interface_(ClassDesc,Consumer)], [#record(ClassDesc,Consumer)],
-/// [#enum_(ClassDesc,Consumer)], [#annotationType(ClassDesc,Consumer)]). The
-/// `transform*` methods only accept a transform matching the wrapped kind;
-/// calling the wrong one throws.
+/// Create one with [#class_(ClassDesc,Consumer)], [#interface_(ClassDesc,Consumer)],
+/// [#record(ClassDesc,Consumer)], [#enum_(ClassDesc,Consumer)], or
+/// [#annotationType(ClassDesc,Consumer)]; the `ClassDesc` sets the package and
+/// the type name. Imports are added automatically when the file is rendered.
 ///
-/// Instances are immutable; every method that produces a modified file
-/// returns a new instance.
+/// ```java
+/// JavaFile file = JavaFile.record(ClassDesc.of("com.example", "Point"), rb -> rb
+///         .withComponent("x", Types.INT)
+///         .withComponent("y", Types.INT));
+///
+/// String source = file.render();
+/// file.writeTo(Path.of("build/generated"));   // build/generated/com/example/Point.java
+/// ```
+///
+/// Instances are immutable; `transform*` methods return a new file. Use the
+/// `transform*` method that matches the declaration kind — the others throw.
 public final class JavaFile implements RenderableFile {
 
     private final String packageName;
@@ -131,7 +138,7 @@ public final class JavaFile implements RenderableFile {
         return new Meta(packageName, typeDecl);
     }
 
-    /// The render metadata for a [JavaFile]: its package and wrapped type declaration.
+    /// The package and declaration of a [JavaFile]; you rarely need it directly.
     ///
     /// @param packageName the file's package
     /// @param typeDecl the top-level type declaration to render
@@ -147,7 +154,7 @@ public final class JavaFile implements RenderableFile {
                 .orElse(filename);
     }
 
-    /// Rebuilds this file's class declaration by applying `transform` to each member.
+    /// Returns a copy of this file with the class's members passed through `transform`.
     ///
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed class declaration
@@ -159,7 +166,7 @@ public final class JavaFile implements RenderableFile {
         throw new IllegalStateException("this JavaFile does not wrap a class declaration");
     }
 
-    /// Rebuilds this file's interface declaration by applying `transform` to each member.
+    /// Returns a copy of this file with the interface's members passed through `transform`.
     ///
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed interface declaration
@@ -171,7 +178,7 @@ public final class JavaFile implements RenderableFile {
         throw new IllegalStateException("this JavaFile does not wrap an interface declaration");
     }
 
-    /// Rebuilds this file's record declaration by applying `transform` to each member.
+    /// Returns a copy of this file with the record's members passed through `transform`.
     ///
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed record declaration
@@ -183,7 +190,7 @@ public final class JavaFile implements RenderableFile {
         throw new IllegalStateException("this JavaFile does not wrap a record declaration");
     }
 
-    /// Rebuilds this file's enum declaration by applying `transform` to each member.
+    /// Returns a copy of this file with the enum's members passed through `transform`.
     ///
     /// @param transform the transform applied to each member
     /// @return a new file wrapping the transformed enum declaration
@@ -197,8 +204,8 @@ public final class JavaFile implements RenderableFile {
         throw new IllegalStateException("this JavaFile does not wrap an enum declaration");
     }
 
-    /// Rebuilds this file's annotation type declaration by applying `transform` to
-    /// each element.
+    /// Returns a copy of this file with the annotation type's elements passed
+    /// through `transform`.
     ///
     /// @param transform the transform applied to each element
     /// @return a new file wrapping the transformed annotation type declaration

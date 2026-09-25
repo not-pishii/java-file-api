@@ -9,7 +9,7 @@ import java.util.Optional;
 ///
 /// @param target the expression owning the method, or empty for an unqualified call
 /// @param method the method name
-/// @param args the call arguments, in order; copied defensively
+/// @param args the call arguments, in order
 public record MethodCallExpr(Optional<Expr> target, String method, List<Expr> args) implements Expr, StatementExpr {
     public MethodCallExpr {
         method = Identifiers.requireValid(method);

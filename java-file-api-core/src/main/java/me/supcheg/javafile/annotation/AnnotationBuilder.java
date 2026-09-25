@@ -5,14 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// A mutable builder for an [AnnotationUse].
+/// Builds an [AnnotationUse] such as `@Route(value = "/users", methods = {"GET"})`.
 ///
-/// Unlike the declaration builders, instances are created directly: nested
-/// annotation values need standalone [AnnotationUse]s built outside any
-/// declaration builder. [#build()] snapshots the accumulated state, so a
-/// builder may be reused after building.
+/// Declaration builders hand you one through `withAnnotation(type, spec)`.
+/// Create one directly when you need an annotation outside a declaration,
+/// e.g. for [me.supcheg.javafile.PackageInfoFile]:
 ///
-/// Instances are not thread-safe.
+/// ```java
+/// AnnotationUse deprecated = new AnnotationBuilder(ClassDesc.of("java.lang", "Deprecated"))
+///         .withMember("since", AnnotationValues.literal("2.0"))
+///         .build();
+/// ```
+///
+/// The builder can be reused after [#build()]. Instances are not thread-safe.
 public final class AnnotationBuilder {
 
     private final ClassDesc type;
@@ -57,7 +62,7 @@ public final class AnnotationBuilder {
         return withMember(name, avb.build());
     }
 
-    /// Snapshots the accumulated state into an immutable [AnnotationUse].
+    /// Returns the annotation built so far.
     ///
     /// @return the finished annotation use
     public AnnotationUse build() {

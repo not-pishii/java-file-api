@@ -1,19 +1,17 @@
-/// A programmatic Java source file builder using JEP 467 markdown javadoc.
+/// Generates Java source files.
 ///
-/// [me.supcheg.javafile.JavaFile] is the entry point: its static factories
-/// build a source file containing a single top-level class, interface,
-/// record, or enum declaration, using the builders in
-/// [me.supcheg.javafile.builder]. A finished file can be rendered to text,
-/// written to disk, or rebuilt member-by-member with a transform from
-/// [me.supcheg.javafile.transform].
+/// Start with [me.supcheg.javafile.JavaFile] for a class, interface, record,
+/// enum, or annotation type; [me.supcheg.javafile.PackageInfoFile] and
+/// [me.supcheg.javafile.ModuleFile] cover `package-info.java` and
+/// `module-info.java`. Get the result with `render()` or `writeTo(Path)`.
 ///
 /// ```java
 /// import static me.supcheg.javafile.code.Exprs.literal;
 ///
 /// JavaFile file = JavaFile.class_(ClassDesc.of("com.example", "Greeter"),
-///         cb -> cb.withMethod("greet", Types.of(STRING),
+///         cb -> cb.withMethod("greet", Types.STRING,
 ///                 mb -> mb.withBody(b -> b.return_(literal("hi")))));
-/// file.writeTo(Path.of("build/generated"));
+/// file.writeTo(Path.of("build/generated"));   // build/generated/com/example/Greeter.java
 /// ```
 @NullMarked
 package me.supcheg.javafile;

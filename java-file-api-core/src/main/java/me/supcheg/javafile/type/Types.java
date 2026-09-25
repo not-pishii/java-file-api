@@ -6,11 +6,18 @@ import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
 
-/// Factory methods for constructing [TypeRef] and [TypeArg] values.
+/// Creates types for use in generated code.
 ///
-/// This is the intended entry point for building type references; the
-/// permitted implementations of [TypeRef] and [TypeArg] are not meant to be
-/// instantiated directly.
+/// ```java
+/// Types.of(String.class)                                   // String
+/// Types.of(ClassDesc.of("com.example", "User"))            // User
+/// Types.array(Types.INT)                                   // int[]
+/// Types.parameterized(LIST, Types.STRING)                  // List<String>
+/// Types.parameterized(MAP, Types.exact(Types.STRING),
+///         Types.extendsBound(Types.typeVar("T")))          // Map<String, ? extends T>
+/// ```
+///
+/// Here `LIST` and `MAP` are `ClassDesc`s, e.g. `ClassDesc.of("java.util", "List")`.
 public final class Types {
 
     /// The `int` primitive type.
@@ -71,10 +78,9 @@ public final class Types {
     /// Creates a reference to a non-generic class or interface type from a
     /// runtime class.
     ///
-    /// Requires `type` to be present on the generator's classpath — annotation
-    /// processors usually cannot load the classes they are generating code
-    /// for, and should use [#of(ClassDesc)] or the `java-file-api-lang-model`
-    /// bridge instead.
+    /// Convenient for JDK and library types. In an annotation processor, the
+    /// types you process are usually not loadable as `Class`; use
+    /// [#of(ClassDesc)] or `Descriptors` from `java-file-api-lang-model`.
     ///
     /// @param type the referenced class or interface; must be neither an
     ///             array nor a primitive type — use [#array(TypeRef)] or the
@@ -157,8 +163,9 @@ public final class Types {
         return new ParameterizedTypeRef(raw, args, List.of(annotations));
     }
 
-    /// Creates a reference to a type variable declared by an enclosing
-    /// generic declaration, e.g. `T`.
+    /// Creates a reference to a type variable, e.g. `T`.
+    ///
+    /// The variable itself is declared with a builder's `withTypeParam`.
     ///
     /// @param name the type variable's name
     /// @return a type reference to the variable
@@ -166,9 +173,8 @@ public final class Types {
         return new TypeVarRef(name);
     }
 
-    /// Creates a reference to a type variable declared by an enclosing
-    /// generic declaration, carrying type-use annotations (JLS 9.7.4),
-    /// e.g. `@NonNull T`.
+    /// Creates a reference to a type variable carrying type-use annotations
+    /// (JLS 9.7.4), e.g. `@NonNull T`.
     ///
     /// @param name the type variable's name
     /// @param annotations the type-use annotations on this reference
@@ -177,7 +183,7 @@ public final class Types {
         return new TypeVarRef(name, List.of(annotations));
     }
 
-    /// Creates a type argument that is a concrete type with no wildcard.
+    /// Creates a non-wildcard type argument, e.g. the `String` in `List<String>`.
     ///
     /// @param type the exact type argument
     /// @return a type argument wrapping `type`

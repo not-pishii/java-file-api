@@ -4,7 +4,7 @@ import java.util.List;
 
 /// An ordered sequence of statements forming a method, block, or lambda body.
 ///
-/// @param statements the statements in execution order; copied defensively
+/// @param statements the statements in execution order
 public record CodeBody(List<Stmt> statements) {
 
     /// A body with no statements.

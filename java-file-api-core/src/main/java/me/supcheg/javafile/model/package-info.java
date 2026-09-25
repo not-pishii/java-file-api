@@ -1,17 +1,23 @@
-/// Immutable value types describing a Java type declaration and its members.
+/// The declarations a generated file consists of: types, their members,
+/// parameters, and `module-info` directives.
 ///
-/// [me.supcheg.javafile.model.TypeDecl] is the sealed root: a top-level
-/// declaration is exactly one of [me.supcheg.javafile.model.ClassDecl],
-/// [me.supcheg.javafile.model.InterfaceDecl],
-/// [me.supcheg.javafile.model.RecordDecl], or
-/// [me.supcheg.javafile.model.EnumDecl]. Each declaration kind has its own
-/// member hierarchy ([me.supcheg.javafile.model.ClassMember],
-/// [me.supcheg.javafile.model.InterfaceMember],
-/// [me.supcheg.javafile.model.RecordMember]), so an impossible combination —
-/// e.g. a constant inside a class body — is unrepresentable rather than
-/// rejected at runtime. All types in this package are immutable records and
-/// sealed interfaces; the mutable [me.supcheg.javafile.builder] types
-/// produce them.
+/// Builders from [me.supcheg.javafile.builder] create these for you. You meet
+/// them directly when writing a transform, where you inspect members with
+/// pattern matching and pass modified copies on:
+///
+/// ```java
+/// file.transformClass((builder, member) -> {
+///     if (member instanceof FieldDecl f) {
+///         builder.accept(new FieldDecl(f.name(), f.type(), f.annotations(),
+///                 EnumSet.of(Modifier.PRIVATE, Modifier.FINAL), f.initializer()));
+///     } else {
+///         builder.accept(member);
+///     }
+/// });
+/// ```
+///
+/// All types here are immutable. Constructors reject invalid names and
+/// modifier combinations with `IllegalArgumentException`.
 @NullMarked
 package me.supcheg.javafile.model;
 

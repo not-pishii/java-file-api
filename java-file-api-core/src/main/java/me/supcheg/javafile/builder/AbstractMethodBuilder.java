@@ -18,12 +18,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/// A mutable builder for an abstract method declaration.
+/// Configures an abstract method, e.g. `public abstract String name();`.
 ///
-/// Instances are created by the `withAbstractMethod`/`withVoidAbstractMethod`
-/// methods of [ClassBuilder], [InterfaceBuilder], and [EnumBuilder], and are
-/// not meant to be instantiated directly. Starts with the `public abstract`
-/// modifiers already applied.
+/// Obtained from `withAbstractMethod`/`withVoidAbstractMethod` of
+/// [ClassBuilder], [InterfaceBuilder], and [EnumBuilder]. The method is
+/// `public abstract` unless you change the modifiers.
 ///
 /// Instances are not thread-safe.
 public final class AbstractMethodBuilder {
@@ -73,8 +72,8 @@ public final class AbstractMethodBuilder {
 
     /// Adds the given modifiers to the method declaration.
     ///
-    /// Modifiers accumulate across calls and duplicates are ignored; the initial
-    /// `public` modifier cannot be removed by this method — see [#withExactModifiers(Set)].
+    /// Adds to the modifiers already set, which start as `public`. To remove
+    /// `public`, use [#withExactModifiers(Set)].
     ///
     /// @param mods the modifiers to add
     /// @return this builder
@@ -83,16 +82,12 @@ public final class AbstractMethodBuilder {
         return this;
     }
 
-    /// Replaces the accumulated modifiers with exactly the given set, bypassing
-    /// the initial `public abstract` seed that [#withModifiers(Modifier...)] can
-    /// only add to. Intended for producers — like
-    /// [me.supcheg.javafile.transform.Transforms] — that must reproduce an
-    /// existing declaration's modifiers exactly, including one with no access
-    /// modifier or with `private`/`protected`; ordinary hand-authored
-    /// declarations should use [#withModifiers(Modifier...)]. A later
-    /// [#withModifiers(Modifier...)] call still adds to the set installed here.
-    /// The built declaration always carries `abstract` regardless of what is
-    /// passed here.
+    /// Replaces all modifiers, including the default `public`.
+    ///
+    /// Use it to declare a package-private type or member, e.g.
+    /// `withExactModifiers(Set.of(Modifier.FINAL))`; [#withModifiers(Modifier...)]
+    /// can only add modifiers.
+    /// `abstract` is always kept.
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
@@ -142,7 +137,8 @@ public final class AbstractMethodBuilder {
 
     /// Adds a varargs parameter to the method's parameter list, e.g. `int... values`.
     ///
-    /// Valid only as the last parameter; enforced when the method declaration is built.
+    /// Must be the last parameter; otherwise building the method throws
+    /// `IllegalArgumentException`.
     ///
     /// @param name the parameter name
     /// @param componentType the parameter's component type, not an array type

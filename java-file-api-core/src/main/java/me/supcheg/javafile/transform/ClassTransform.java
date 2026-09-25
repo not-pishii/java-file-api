@@ -5,21 +5,23 @@ import me.supcheg.javafile.model.ClassMember;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-/// A transform over [ClassMember]s.
+/// Rewrites the members of a class. Called once per member; what you pass to
+/// `builder.accept(...)` ends up in the result.
 ///
-/// [Transforms#transform(me.supcheg.javafile.model.ClassDecl,ClassTransform)]
-/// invokes the transform once per member of the source declaration; the
-/// transform decides whether to pass the member through unchanged, replace
-/// it, drop it, or add new members, all by calling (or not calling) `accept`
-/// on the supplied builder. The first argument is the target builder's
-/// member sink — typed as `Consumer<ClassMember>` rather than the concrete
-/// `ClassBuilder` so that a transform can be defined without depending on
-/// the builder's other methods. The result is a new declaration; the source
-/// declaration is not modified.
+/// Forward a member with `builder.accept(member)` to keep it, pass a different
+/// one to replace it, skip the call to drop it, or call `accept` several times
+/// to add members. The original declaration is left unchanged.
 ///
-/// Enum declarations use the separate [EnumTransform] instead, since
-/// `EnumDecl` members are typed as [me.supcheg.javafile.model.EnumMember],
-/// not [ClassMember].
+/// ```java
+/// ClassTransform dropDebugMethods = (builder, member) -> {
+///     if (!(member instanceof MethodDecl m && m.name().startsWith("debug"))) {
+///         builder.accept(member);
+///     }
+/// };
+/// JavaFile cleaned = file.transformClass(dropDebugMethods);
+/// ```
+///
+/// For enums use [EnumTransform].
 @FunctionalInterface
 public interface ClassTransform extends BiConsumer<Consumer<ClassMember>, ClassMember> {
     /// Returns a transform that applies this transform, then `next`, to each member.

@@ -7,15 +7,16 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// A `module-info.java` source file: a module declaration and its directives,
-/// with no package or type declaration.
+/// A `module-info.java` file.
 ///
-/// Unlike [JavaFile] and [PackageInfoFile], this type never resolves types
-/// through [me.supcheg.javafile.render.ImportManager]: `uses`/`provides`
-/// directives render their service and implementation types as fully
-/// qualified binary names directly, matching how real-world
-/// `module-info.java` files are written (imports are almost never used
-/// there).
+/// ```java
+/// ModuleFile module = ModuleFile.of("com.example.app", mb -> mb
+///         .withRequires("java.sql")
+///         .withExports("com.example.api"));
+/// ```
+///
+/// Types in `uses` and `provides` are always written fully qualified; no
+/// imports are generated.
 public final class ModuleFile implements RenderableFile {
     private static final Path MODULE_INFO_JAVA = Path.of("module-info.java");
 
@@ -45,7 +46,7 @@ public final class ModuleFile implements RenderableFile {
         return new Meta(open, moduleName, directives);
     }
 
-    /// The render metadata for a [ModuleFile]: its module declaration and directives.
+    /// The declaration and directives of a [ModuleFile]; you rarely need it directly.
     ///
     /// @param open whether `open` is present on the module declaration
     /// @param moduleName the declared module's name, dot-separated

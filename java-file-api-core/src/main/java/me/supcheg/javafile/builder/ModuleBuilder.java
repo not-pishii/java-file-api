@@ -14,7 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/// A mutable builder for a `module-info.java` declaration's directives.
+/// Adds directives to a `module-info.java`.
+///
+/// Obtained from [me.supcheg.javafile.ModuleFile#of(String,Consumer)].
 ///
 /// Instances are not thread-safe.
 public final class ModuleBuilder {
@@ -107,9 +109,7 @@ public final class ModuleBuilder {
         return this;
     }
 
-    /// Adds a `uses` directive from an already-constructed descriptor —
-    /// the only way to declare a `uses` on a nested type, since
-    /// [#withUses(String)] cannot represent nesting (see [ModuleFile]).
+    /// Adds a `uses` directive. Use this overload for a nested service type.
     ///
     /// @param service the consumed service type
     /// @return this builder
@@ -133,10 +133,8 @@ public final class ModuleBuilder {
         return this;
     }
 
-    /// Adds a `provides ... with ...` directive from already-constructed
-    /// descriptors — the only way to declare a `provides` involving a
-    /// nested type, since [#withProvides(String,String...)] cannot represent
-    /// nesting (see [ModuleFile]).
+    /// Adds a `provides ... with ...` directive. Use this overload when a
+    /// service or implementation is a nested type.
     ///
     /// @param service the provided service type
     /// @param implementations the implementation types, in order; at least one
@@ -147,28 +145,24 @@ public final class ModuleBuilder {
         return this;
     }
 
-    /// Whether [#withOpen()] was called.
+    /// Whether the module is declared `open`.
     ///
     /// @return `true` if the module should render as `open`
     public boolean isOpen() {
         return open;
     }
 
-    /// Snapshots the accumulated directives.
+    /// Returns the directives added so far.
     ///
     /// @return the finished directive list
-    /// @throws IllegalArgumentException if the module is [#withOpen()] and declares
-    ///         an explicit `opens` directive, or if two directives `requires`
-    ///         the same module name
+    /// @throws IllegalArgumentException if an `open` module has `opens`
+    ///         directives, or the same module is required twice
     public List<ModuleDirective> build() {
         requireNoOpensInOpenModule();
         requireNoDuplicateRequires();
         return List.copyOf(directives);
     }
 
-    /// Rejects explicit `opens` directives on an `open` module: an `open
-    /// module` already implicitly opens every package, so real `javac`
-    /// rejects the redundant, explicit directive.
     private void requireNoOpensInOpenModule() {
         if (!open) {
             return;
@@ -180,9 +174,6 @@ public final class ModuleBuilder {
         }
     }
 
-    /// Rejects two `requires` directives for the same module name,
-    /// regardless of their `transitive`/`static` modifiers — `javac` rejects
-    /// the duplicate purely by module name.
     private void requireNoDuplicateRequires() {
         Set<String> seen = new HashSet<>();
         for (ModuleDirective directive : directives) {

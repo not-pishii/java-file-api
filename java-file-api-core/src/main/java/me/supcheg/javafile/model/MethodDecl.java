@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/// A concrete (non-abstract) method declaration, usable in both class and
-/// record bodies.
-///
-/// Annotations, modifiers, type parameters, parameters, and thrown types are
-/// defensively copied into unmodifiable collections.
+/// A method with a body in a class, record, or enum.
 ///
 /// @param name the method name
 /// @param returnType the declared return type, or empty for `void`

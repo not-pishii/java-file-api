@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/// Entry point for applying a member-level transform to a declaration or code body.
+/// Applies transforms to declarations and code bodies.
 ///
-/// Each `transform` overload rebuilds the source declaration through the
-/// matching builder, feeding each existing member through the given
-/// transform exactly once; the transform decides what ends up in the
-/// result. The source value is never modified.
+/// Each method returns a new value with the same header (name, modifiers,
+/// supertypes, ...) and the members the transform produced. For whole files,
+/// the `transform*` methods of [me.supcheg.javafile.JavaFile] are more
+/// convenient.
 public final class Transforms {
 
     private Transforms() {}
@@ -76,14 +76,6 @@ public final class Transforms {
         return builder.build();
     }
 
-    /// Rebuilds a constant's constant-specific body, passing each existing
-    /// body member through `transform`. `FieldDecl`, `MethodDecl`, and
-    /// `TypeDecl` — the only kinds [EnumConstantMember] permits — all
-    /// implement [EnumMember] too, so the same transform applied to the
-    /// enum's own members applies here without a dedicated transform type.
-    ///
-    /// @throws IllegalArgumentException if `transform` passes a member kind
-    ///         an enum constant body cannot contain (e.g. a constructor)
     private static EnumConstant transformConstantBody(EnumConstant constant, EnumTransform transform) {
         if (constant.body().isEmpty()) {
             return constant;

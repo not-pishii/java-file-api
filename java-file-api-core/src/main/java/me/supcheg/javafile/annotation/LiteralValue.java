@@ -2,10 +2,9 @@ package me.supcheg.javafile.annotation;
 
 import me.supcheg.javafile.code.ConstantLiteral;
 
-/// A constant annotation value: a string, numeric, or boolean literal.
+/// A string, numeric, or boolean annotation value, e.g. `"x"` or `42`.
 ///
-/// Typed as [ConstantLiteral], so the `null` literal — invalid in an
-/// annotation — is unrepresentable.
+/// Create it with one of the [AnnotationValues] `literal` methods.
 ///
 /// @param literal the literal expression
 public record LiteralValue(ConstantLiteral literal) implements SingleAnnotationValue {}

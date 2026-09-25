@@ -6,11 +6,7 @@ import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 
-/// A record component: a name paired with its declared type.
-///
-/// A record's components determine its canonical constructor parameters and
-/// the accessor methods generated for it. Annotations are defensively
-/// copied into an unmodifiable list.
+/// A record component, e.g. the `int x` in `record Point(int x, int y)`.
 ///
 /// @param name the component name, a valid Java identifier
 /// @param type the declared component type

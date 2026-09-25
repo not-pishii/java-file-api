@@ -8,12 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/// A constructor declaration inside a class body.
-///
-/// Annotations, modifiers, parameters, and thrown types are defensively
-/// copied into unmodifiable collections. Enum constructors are represented
-/// separately by [EnumConstructorDecl], which has no modifiers field since
-/// enum constructors are always implicitly private.
+/// A class constructor. Enum constructors are [EnumConstructorDecl].
 ///
 /// @param annotations the annotations declared on the constructor
 /// @param modifiers the modifiers on the constructor declaration
