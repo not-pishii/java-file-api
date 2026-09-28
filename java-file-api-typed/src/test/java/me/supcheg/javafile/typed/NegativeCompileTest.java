@@ -227,8 +227,8 @@ class NegativeCompileTest {
         // a loop body; a stray break outside a loop cannot be assembled.
         assertRejected(
                 "StrayLoopCtl",
-                "void use() { new LoopCtl(); }",
-                "LoopCtl() is not public in me.supcheg.javafile.typed.LoopCtl");
+                "void use() { new LoopCtl(null); }",
+                "LoopCtl(me.supcheg.javafile.typed.Block<?,?>) is not public in me.supcheg.javafile.typed.LoopCtl");
     }
 
     @Test
@@ -236,7 +236,48 @@ class NegativeCompileTest {
         // Var/MutVar are only ever handed out by HOAS-binding combinators.
         assertRejected(
                 "StrayVar",
-                "void use() { new Var<>(PrimitiveToken.INT, \"fabricated\"); }",
+                "void use() { new Var<>(PrimitiveToken.INT, \"fabricated\", null); }",
                 "is not public in me.supcheg.javafile.typed.Var");
+    }
+
+    @Test
+    void loopForeverGivesNoBreakOfItsOwnLoop() {
+        // The body of loopForever gets no LoopCtl, so the loop provably never
+        // completes normally and loopForever may return Terminated.
+        assertRejected(
+                "BreakOutOfForever",
+                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.loopForever((loop, ctl) -> loop.break_(ctl)));"),
+                "incompatible parameter types in lambda expression");
+    }
+
+    @Test
+    void nothingFollowsLoopForever() {
+        assertRejected(
+                "AfterForever",
+                inClass("cb.method(\"m\", PrimitiveToken.INT,"
+                        + " b -> b.loopForever(loop -> {}).return_(literal(1)));"),
+                "cannot find symbol",
+                "symbol:   method return_(me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int>)");
+    }
+
+    @Test
+    void tryTerminatedRequiresAnEndingTryBlock() {
+        assertRejected(
+                "TryBlockNotEnding",
+                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.tryTerminated("
+                        + "t -> t.exec(call(literal(\"x\"), String_.length)),"
+                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1)))));"),
+                "bad return type in lambda expression");
+    }
+
+    @Test
+    void tryTerminatedRequiresEndingCatchBlocks() {
+        assertRejected(
+                "CatchNotEnding",
+                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.tryTerminated("
+                        + "t -> t.return_(literal(1)),"
+                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
+                        + " String_.length)))));"),
+                "bad return type in lambda expression");
     }
 }

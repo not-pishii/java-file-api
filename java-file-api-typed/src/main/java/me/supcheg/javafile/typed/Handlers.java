@@ -1,25 +1,25 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /// Collects the `catch` clauses and the optional `finally` block of a
 /// [Block#try_(Consumer, Consumer)].
 ///
 /// @param <B> the block type of the `try`/`catch`/`finally` bodies
 public final class Handlers<B extends Block<?, B>> {
-    private final Function<Consumer<? super B>, B> opener;
+    private final B enclosing;
     private final List<Instr.Catch> catches = new ArrayList<>();
-    private B finallyBlock;
+    private @Nullable B finallyBlock;
 
-    Handlers(Function<Consumer<? super B>, B> opener) {
-        this.opener = opener;
+    Handlers(B enclosing) {
+        this.enclosing = enclosing;
     }
 
     /// Adds `catch (Type v) { body }`.
@@ -29,8 +29,9 @@ public final class Handlers<B extends Block<?, B>> {
     /// @param <E> the caught exception type
     /// @return this
     public <E extends Throwable> Handlers<B> catch_(ClassToken<E> type, BiConsumer<? super B, ? super Var<E>> body) {
-        Var<E> binding = new Var<>(type, "caught exception");
-        B block = opener.apply(b -> body.accept(b, binding));
+        B block = enclosing.child("catch block of try_");
+        Var<E> binding = new Var<>(type, "caught exception", block);
+        enclosing.fill(block, b -> body.accept(b, binding));
         catches.add(new Instr.Catch(type, binding, block));
         return this;
     }
@@ -39,8 +40,14 @@ public final class Handlers<B extends Block<?, B>> {
     ///
     /// @param body builds the `finally` block
     /// @return this
+    /// @throws IllegalStateException if a `finally` block was already added
     public Handlers<B> finally_(Consumer<? super B> body) {
-        finallyBlock = opener.apply(body);
+        if (finallyBlock != null) {
+            throw new IllegalStateException("try_ already has a finally_ block");
+        }
+        B block = enclosing.child("finally block of try_");
+        enclosing.fill(block, body);
+        finallyBlock = block;
         return this;
     }
 
@@ -48,7 +55,6 @@ public final class Handlers<B extends Block<?, B>> {
         if (catches.isEmpty() && finallyBlock == null) {
             throw new IllegalArgumentException("try_ requires at least one catch_ or a finally_");
         }
-        Optional<Block<?, ?>> finallyOpt = Optional.ofNullable(finallyBlock);
-        return new Instr.Try(body, List.copyOf(catches), finallyOpt);
+        return new Instr.Try(body, List.copyOf(catches), Optional.ofNullable(finallyBlock));
     }
 }

@@ -24,7 +24,9 @@ sealed interface Node {
     /// A literal, with its value for constant folding.
     record Lit(Expr literal, Object value) implements Node {}
 
-    /// A literal that is not a constant expression: `null` or a text block.
+    /// A literal that is not a constant expression: `null`. (A text block is
+    /// a constant `String` (JLS 15.29) and, once supported, must be a [Lit]
+    /// so that [Constants] folds it as javac does.)
     record RawLit(Expr literal) implements Node {}
 
     /// A reference to a local variable or parameter.
@@ -96,10 +98,14 @@ sealed interface Node {
     /// An untyped core expression from `Unsafe`.
     record Raw(Expr expr) implements Node {}
 
-    /// The body of a [Lambda].
+    /// The body of a [Lambda]. Either way the lambda's parameters are owned by
+    /// a lambda-boundary block (§6.2) nested in the block the lambda is
+    /// built in.
     sealed interface LambdaBody {
-        /// An expression body, `x -> expr`.
-        record Value(Node value) implements LambdaBody {}
+        /// An expression body, `x -> expr`; `scope` is the (statement-less)
+        /// lambda-boundary block that owns the parameters and in which
+        /// `value` is checked.
+        record Value(me.supcheg.javafile.typed.Block<?, ?> scope, Node value) implements LambdaBody {}
 
         /// A block body, `x -> { ... }`.
         record Block(me.supcheg.javafile.typed.Block<?, ?> block) implements LambdaBody {}
