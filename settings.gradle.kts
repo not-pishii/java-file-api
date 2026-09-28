@@ -18,7 +18,7 @@ include(
     "java-file-api-core",
     "java-file-api-lang-model",
     "java-file-api-facts",
-    "java-file-api-typed",
+    "java-file-api-metagen",
     "example",
     "aggregation",
 )

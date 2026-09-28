@@ -118,7 +118,9 @@ public final class FactsCodegen {
                 throw new IllegalStateException("generated file set differs; run generateArities");
             }
             for (Map.Entry<Path, String> file : files.entrySet()) {
-                if (!Files.readString(file.getKey(), StandardCharsets.UTF_8).equals(file.getValue())) {
+                String onDiskText =
+                        Files.readString(file.getKey(), StandardCharsets.UTF_8).replace("\r\n", "\n");
+                if (!onDiskText.equals(file.getValue().replace("\r\n", "\n"))) {
                     throw new IllegalStateException(file.getKey() + " is stale; run generateArities");
                 }
             }
