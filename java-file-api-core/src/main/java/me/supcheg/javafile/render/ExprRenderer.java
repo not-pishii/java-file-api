@@ -77,6 +77,7 @@ import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,6 +85,14 @@ import java.util.stream.Collectors;
 final class ExprRenderer {
 
     private ExprRenderer() {}
+
+    private static String renderTypeArgs(List<TypeRef> typeArgs, Context ctx) {
+        return typeArgs.isEmpty()
+                ? ""
+                : typeArgs.stream()
+                        .map(t -> TypeRefRenderer.renderType(t, ctx))
+                        .collect(Collectors.joining(", ", "<", ">"));
+    }
 
     static String renderExpr(Expr expr, Context ctx) {
         return renderExpr(expr, ctx, Precedence.NO_PARENS_REQUIRED);
@@ -96,12 +105,12 @@ final class ExprRenderer {
                     case FieldAccessExpr(var target, var name) ->
                         target.map(t -> renderExpr(t, ctx, Precedence.PRIMARY_LEVEL) + "." + name)
                                 .orElse(name);
-                    case MethodCallExpr(var target, var method, var args) -> {
+                    case MethodCallExpr(var target, var method, var args, var typeArgs) -> {
                         String prefix = target.map(t -> renderExpr(t, ctx, Precedence.PRIMARY_LEVEL) + ".")
                                 .orElse("");
                         String argsStr =
                                 args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
-                        yield prefix + method + "(" + argsStr + ")";
+                        yield prefix + renderTypeArgs(typeArgs, ctx) + method + "(" + argsStr + ")";
                     }
                     case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
                     case IntLiteral(var value) -> Integer.toString(value);
@@ -175,11 +184,11 @@ final class ExprRenderer {
                     case SuperExpr ignored -> "super";
                     case StaticFieldAccessExpr(var type, var name) ->
                         TypeRefRenderer.renderType(type, ctx) + "." + name;
-                    case StaticMethodCallExpr(var type, var method, var args) -> {
+                    case StaticMethodCallExpr(var type, var method, var args, var typeArgs) -> {
                         String prefix = TypeRefRenderer.renderType(type, ctx);
                         String argsStr =
                                 args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
-                        yield prefix + "." + method + "(" + argsStr + ")";
+                        yield prefix + "." + renderTypeArgs(typeArgs, ctx) + method + "(" + argsStr + ")";
                     }
                     case CastExpr(var type, var operand) -> {
                         String renderedOperand = renderExpr(operand, ctx, Precedence.UNARY_LEVEL);
