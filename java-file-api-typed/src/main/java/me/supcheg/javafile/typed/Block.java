@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
 
@@ -133,7 +134,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param condition the condition
     /// @param then builds the `then` block
     /// @return this block
-    public final B if_(Expr<Boolean> condition, Consumer<? super B> then) {
+    public final B if_(Expr<Prim.Bool> condition, Consumer<? super B> then) {
         requireOpen();
         return append(new Instr.If(condition.node(), open(then), Optional.empty()));
     }
@@ -144,7 +145,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param then builds the `then` block
     /// @param otherwise builds the `else` block
     /// @return this block
-    public final B if_(Expr<Boolean> condition, Consumer<? super B> then, Consumer<? super B> otherwise) {
+    public final B if_(Expr<Prim.Bool> condition, Consumer<? super B> then, Consumer<? super B> otherwise) {
         requireOpen();
         B thenBlock = open(then);
         return append(new Instr.If(condition.node(), thenBlock, Optional.of(open(otherwise))));
@@ -157,7 +158,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param otherwise builds the `else` block, which must end
     /// @return the proof that this block ended
     public final Terminated<R> ifElse(
-            Expr<Boolean> condition,
+            Expr<Prim.Bool> condition,
             Function<? super B, Terminated<R>> then,
             Function<? super B, Terminated<R>> otherwise) {
         requireOpen();
@@ -213,7 +214,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param condition the condition
     /// @param body builds the body, given the loop's `break`/`continue` capability
     /// @return this block
-    public final B while_(Expr<Boolean> condition, BiConsumer<? super B, LoopCtl> body) {
+    public final B while_(Expr<Prim.Bool> condition, BiConsumer<? super B, LoopCtl> body) {
         requireOpen();
         LoopCtl ctl = new LoopCtl();
         return append(new Instr.While(ctl, condition.node(), open(b -> body.accept(b, ctl))));
@@ -224,7 +225,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param body builds the body, given the loop's `break`/`continue` capability
     /// @param condition the condition
     /// @return this block
-    public final B doWhile(BiConsumer<? super B, LoopCtl> body, Expr<Boolean> condition) {
+    public final B doWhile(BiConsumer<? super B, LoopCtl> body, Expr<Prim.Bool> condition) {
         requireOpen();
         LoopCtl ctl = new LoopCtl();
         return append(new Instr.DoWhile(ctl, open(b -> body.accept(b, ctl)), condition.node()));
@@ -242,7 +243,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     public final <T> B for_(
             TypeToken<T> type,
             Expr<? extends T> init,
-            Function<? super MutVar<T>, Expr<Boolean>> condition,
+            Function<? super MutVar<T>, Expr<Prim.Bool>> condition,
             Function<? super MutVar<T>, ? extends Effect> update,
             LoopBody<? super B, ? super MutVar<T>> body) {
         requireOpen();

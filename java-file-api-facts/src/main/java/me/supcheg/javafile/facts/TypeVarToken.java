@@ -15,21 +15,9 @@ public final class TypeVarToken<T> implements RefToken<T> {
     private final TypeVarRef typeRef;
     private final ClassDesc erasure;
 
-    private TypeVarToken(TypeVarRef typeRef, ClassDesc erasure) {
+    TypeVarToken(TypeVarRef typeRef, ClassDesc erasure) {
         this.typeRef = typeRef;
         this.erasure = erasure;
-    }
-
-    /// Introduces the fact that a type variable is in scope.
-    ///
-    /// For fact sources only; see [TypeToken].
-    ///
-    /// @param typeRef the type variable
-    /// @param erasure the erasure of its leftmost bound, `java.lang.Object` for none
-    /// @param <T> the type variable the token stands for; the caller vouches for it
-    /// @return the token
-    public static <T> TypeVarToken<T> introduce(TypeVarRef typeRef, ClassDesc erasure) {
-        return new TypeVarToken<>(typeRef, erasure);
     }
 
     @Override

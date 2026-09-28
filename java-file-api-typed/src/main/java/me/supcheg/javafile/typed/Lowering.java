@@ -232,6 +232,9 @@ final class Lowering {
             case Node.RawLit(var literal) -> literal;
             case Node.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
             case Node.This() -> new ThisExpr();
+            case Node.Box(var type, var operand) ->
+                Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
+            case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());
             case Node.Call(var target, var method, var args) -> expr(target).call(method.name(), lowerArgs(args));
             case Node.StaticCall(var method, var args) ->
                 Exprs.staticCall(method.owner().typeRef(), method.name(), lowerArgs(args));

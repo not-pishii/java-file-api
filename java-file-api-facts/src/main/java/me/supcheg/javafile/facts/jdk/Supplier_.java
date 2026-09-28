@@ -4,13 +4,16 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
+import me.supcheg.javafile.facts.UnsafeFacts;
 
+import javax.annotation.processing.Generated;
 import java.util.Map;
 import java.util.function.Supplier;
 
 /// Facts of `java.util.function.Supplier<T>`.
 ///
 /// @param <T> the result type
+@Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 public final class Supplier_<T> {
     /// `Supplier<T>`.
     public final InterfaceToken<Supplier<T>> token;
@@ -23,8 +26,8 @@ public final class Supplier_<T> {
 
     private Supplier_(RefToken<T> result) {
         this.token = Jdk.iface(Supplier.class, Map.of("T", result), Jdk.arg(result));
-        this.get = MethodRef0.introduce(token, "get", result, Jdk.ABSTRACT);
-        this.sam = Sam0.introduce(get);
+        this.get = UnsafeFacts.method(token, "get", result, Jdk.ABSTRACT);
+        this.sam = UnsafeFacts.sam(get);
     }
 
     /// Instantiates the facts.

@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidStaticMethodRef3<A1, A2, A3> implements Invocable {
     private final DeclaredToken<?> owner;
 
@@ -16,17 +18,13 @@ public final class VoidStaticMethodRef3<A1, A2, A3> implements Invocable {
 
     private final MemberTraits traits;
 
-    private VoidStaticMethodRef3(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, MemberTraits traits) {
+    VoidStaticMethodRef3(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.param1 = param1;
         this.param2 = param2;
         this.param3 = param3;
         this.traits = traits;
-    }
-
-    public static <A1, A2, A3> VoidStaticMethodRef3<A1, A2, A3> introduce(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, MemberTraits traits) {
-        return new VoidStaticMethodRef3<>(owner, name, param1, param2, param3, traits);
     }
 
     @Override

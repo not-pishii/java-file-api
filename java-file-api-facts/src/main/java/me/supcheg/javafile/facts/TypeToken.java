@@ -7,16 +7,17 @@ import java.lang.constant.ClassDesc;
 /// A branded handle of a type of the generated code: the fact "this type
 /// exists", with the Java type it stands for carried as the phantom `T`.
 ///
-/// Primitive types use their box as the phantom — [PrimitiveToken#INT] is a
-/// `TypeToken<Integer>` that renders `int` — so the phantom never decides
-/// between `int` and `Integer`; the token does. Where Java requires a
-/// reference type (type arguments, `instanceof`, casts), APIs take a
-/// [RefToken] instead.
+/// Primitive types use their marker from [Prim] as the phantom —
+/// [PrimitiveToken#INT] is a `TypeToken<Prim.Int>` — so `int` and `Integer`
+/// are different types to javac and never convert into each other
+/// implicitly (§6.1). Where Java requires a reference type (type arguments,
+/// `instanceof`, casts), APIs take a [RefToken] instead.
 ///
 /// Tokens are introduced only by fact sources: metamodels, the mirror source
 /// of `java-file-api-lang-model`, and the typed declarations of
-/// `java-file-api-typed`. Each fact class has a static `introduce` factory
-/// for that purpose; generator code never calls it directly.
+/// `java-file-api-typed`. The constructors of the token classes are not
+/// public; a token that is not derived from another one is created by
+/// [UnsafeFacts] (§3.1).
 ///
 /// @param <T> the Java type this token stands for
 public sealed interface TypeToken<T> permits RefToken, PrimitiveToken {

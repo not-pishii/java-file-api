@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class StaticMethodRef0<R> implements Invocable {
     private final DeclaredToken<?> owner;
 
@@ -12,15 +14,11 @@ public final class StaticMethodRef0<R> implements Invocable {
 
     private final MemberTraits traits;
 
-    private StaticMethodRef0(DeclaredToken<?> owner, String name, TypeToken<R> result, MemberTraits traits) {
+    StaticMethodRef0(DeclaredToken<?> owner, String name, TypeToken<R> result, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.result = result;
         this.traits = traits;
-    }
-
-    public static <R> StaticMethodRef0<R> introduce(DeclaredToken<?> owner, String name, TypeToken<R> result, MemberTraits traits) {
-        return new StaticMethodRef0<>(owner, name, result, traits);
     }
 
     @Override

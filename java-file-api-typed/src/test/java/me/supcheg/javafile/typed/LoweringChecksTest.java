@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class LoweringChecksTest {
         // A Var minted independently of any Lowering pass (as if it had
         // escaped the lambda that was supposed to be its only scope) is not
         // in that Lowering's NameEnv.
-        Var<Integer> escaped = Var.param(PrimitiveToken.INT);
+        Var<Prim.Int> escaped = Var.param(PrimitiveToken.INT);
         Lowering lowering = new Lowering();
 
         assertThrows(IllegalStateException.class, () -> lowering.lowerExpr(new Node.Local(escaped)));
@@ -28,7 +29,7 @@ class LoweringChecksTest {
 
     @Test
     void usingABlockBuilderAfterItsScopeClosedFailsFast() {
-        Body<Integer> body = new Body<>();
+        Body<Prim.Int> body = new Body<>();
         Scopes.within(body, () -> body.return_(literal(1)));
 
         // The scope has since been popped (and the block has ended); any

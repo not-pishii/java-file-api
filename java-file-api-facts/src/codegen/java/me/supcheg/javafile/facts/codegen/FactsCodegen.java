@@ -1,12 +1,15 @@
 package me.supcheg.javafile.facts.codegen;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.builder.ClassBuilder;
-import me.supcheg.javafile.builder.InterfaceBuilder;
-import me.supcheg.javafile.builder.MethodBuilder;
+import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 
@@ -19,6 +22,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -34,6 +38,12 @@ import static me.supcheg.javafile.code.Exprs.this_;
 /// Generates the arity families of `java-file-api-facts` with
 /// `java-file-api-core` itself.
 ///
+/// Every generated type is marked `@Generated`. The families have
+/// package-private constructors: facts are introduced only through
+/// `UnsafeFacts`, which inherits the generated factories of
+/// `InvocableFactories`, and through the checked lookups of `FactSource`,
+/// which inherits the generated `InvocableLookup` (§3.1).
+///
 /// Usage: `FactsCodegen <output dir> write|check`. `check` fails when the
 /// sources on disk differ from what would be generated.
 public final class FactsCodegen {
@@ -41,22 +51,23 @@ public final class FactsCodegen {
     public static final int MAX_ARITY = 12;
 
     private static final String FACTS = "me.supcheg.javafile.facts";
-    private static final String SOURCE = "me.supcheg.javafile.facts.source";
 
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang.Override");
+    private static final ClassDesc GENERATED = ClassDesc.of("javax.annotation.processing.Generated");
     private static final ClassDesc OPTIONAL = ClassDesc.of("java.util.Optional");
     private static final ClassDesc LIST = ClassDesc.of("java.util.List");
 
     private static final ClassDesc TYPE_TOKEN = ClassDesc.of(FACTS, "TypeToken");
     private static final ClassDesc DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
-    private static final ClassDesc CLASS_TOKEN = ClassDesc.of(FACTS, "ClassToken");
+    private static final ClassDesc CONCRETE_CLASS_TOKEN = ClassDesc.of(FACTS, "ConcreteClassToken");
+    private static final ClassDesc ABSTRACT_CLASS_TOKEN = ClassDesc.of(FACTS, "AbstractClassToken");
     private static final ClassDesc INTERFACE_TOKEN = ClassDesc.of(FACTS, "InterfaceToken");
     private static final ClassDesc INVOCABLE = ClassDesc.of(FACTS, "Invocable");
     private static final ClassDesc INVOCABLES = ClassDesc.of(FACTS, "Invocables");
     private static final ClassDesc INVOCABLE_KIND = ClassDesc.of(FACTS, "InvocableKind");
     private static final ClassDesc MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
-    private static final ClassDesc MEMBER_QUERY = ClassDesc.of(SOURCE, "MemberQuery");
-    private static final ClassDesc RESOLUTION = ClassDesc.of(SOURCE, "Resolution");
+    private static final ClassDesc MEMBER_QUERY = ClassDesc.of(FACTS + ".source", "MemberQuery");
+    private static final ClassDesc RESOLUTION = ClassDesc.of(FACTS + ".source", "Resolution");
 
     private FactsCodegen() {}
 
@@ -83,9 +94,10 @@ public final class FactsCodegen {
         List<JavaFile> files = new ArrayList<>();
         for (int n = 0; n <= MAX_ARITY; n++) {
             for (Family family : Family.values()) {
-                files.add(family == Family.SAM || family == Family.VOID_SAM ? sam(family, n) : ref(family, n));
+                files.add(family.isSam() ? sam(family, n) : ref(family, n));
             }
         }
+        files.add(factories());
         files.add(lookup());
         return files;
     }
@@ -131,28 +143,39 @@ public final class FactsCodegen {
 
     /// The generated families of member facts.
     enum Family {
-        METHOD("MethodRef", true, true, "INSTANCE_METHOD"),
-        VOID_METHOD("VoidMethodRef", true, false, "INSTANCE_METHOD"),
-        STATIC_METHOD("StaticMethodRef", false, true, "STATIC_METHOD"),
-        VOID_STATIC_METHOD("VoidStaticMethodRef", false, false, "STATIC_METHOD"),
-        CTOR("CtorRef", true, false, "CONSTRUCTOR"),
-        SAM("Sam", true, true, ""),
-        VOID_SAM("VoidSam", true, false, "");
+        METHOD("MethodRef", "method", true, true, "INSTANCE_METHOD"),
+        VOID_METHOD("VoidMethodRef", "voidMethod", true, false, "INSTANCE_METHOD"),
+        STATIC_METHOD("StaticMethodRef", "staticMethod", false, true, "STATIC_METHOD"),
+        VOID_STATIC_METHOD("VoidStaticMethodRef", "voidStaticMethod", false, false, "STATIC_METHOD"),
+        CTOR("CtorRef", "ctor", true, false, "CONSTRUCTOR"),
+        ABSTRACT_CTOR("AbstractCtorRef", "abstractCtor", true, false, "CONSTRUCTOR"),
+        SAM("Sam", "sam", true, true, ""),
+        VOID_SAM("VoidSam", "voidSam", true, false, "");
 
         final String prefix;
+        final String factory;
         final boolean hasOwner;
         final boolean hasResult;
         final String kind;
 
-        Family(String prefix, boolean hasOwner, boolean hasResult, String kind) {
+        Family(String prefix, String factory, boolean hasOwner, boolean hasResult, String kind) {
             this.prefix = prefix;
+            this.factory = factory;
             this.hasOwner = hasOwner;
             this.hasResult = hasResult;
             this.kind = kind;
         }
 
+        boolean isSam() {
+            return this == SAM || this == VOID_SAM;
+        }
+
+        boolean isCtor() {
+            return this == CTOR || this == ABSTRACT_CTOR;
+        }
+
         String ownerVar() {
-            return this == SAM || this == VOID_SAM ? "F" : "O";
+            return isSam() ? "F" : "O";
         }
 
         List<String> typeVars(int n) {
@@ -189,9 +212,11 @@ public final class FactsCodegen {
             return Types.of(raw);
         }
         return Types.parameterized(
-                raw,
-                vars.stream().map(v -> Types.exact(var(v))).toList(),
-                new me.supcheg.javafile.annotation.AnnotationUse[0]);
+                raw, vars.stream().map(v -> Types.exact(var(v))).toList(), new AnnotationUse[0]);
+    }
+
+    private static Expr instantiate(ClassDesc desc, List<String> typeVars, List<Expr> args) {
+        return typeVars.isEmpty() ? Exprs.new_(desc, args) : newDiamond(desc, args);
     }
 
     private static TypeRef token(String var) {
@@ -206,18 +231,28 @@ public final class FactsCodegen {
         return switch (family) {
             case METHOD, VOID_METHOD -> Types.parameterized(DECLARED_TOKEN, var("O"));
             case STATIC_METHOD, VOID_STATIC_METHOD -> Types.parameterized(DECLARED_TOKEN, Types.unbounded());
-            case CTOR -> Types.parameterized(CLASS_TOKEN, var("O"));
+            case CTOR -> Types.parameterized(CONCRETE_CLASS_TOKEN, var("O"));
+            case ABSTRACT_CTOR -> Types.parameterized(ABSTRACT_CLASS_TOKEN, var("O"));
             case SAM, VOID_SAM -> Types.parameterized(INTERFACE_TOKEN, var("F"));
         };
     }
 
-    /// Fields and introduce parameters of a ref: owner, name?, result?, params, traits.
+    /// The token a lookup of the family introduces its fact for.
+    private static String lookupOwner(Family family) {
+        return switch (family) {
+            case CTOR -> "concreteClassToken";
+            case ABSTRACT_CTOR -> "abstractClassToken";
+            default -> "token";
+        };
+    }
+
+    /// Fields and constructor parameters of a ref: owner, name?, result?, params, traits.
     private record Slot(String name, TypeRef type) {}
 
     private static List<Slot> slots(Family family, int n) {
         List<Slot> slots = new ArrayList<>();
         slots.add(new Slot("owner", ownerType(family)));
-        if (family != Family.CTOR) {
+        if (!family.isCtor()) {
             slots.add(new Slot("name", Types.STRING));
         }
         if (family.hasResult) {
@@ -230,47 +265,50 @@ public final class FactsCodegen {
         return slots;
     }
 
+    private static TypeRef samMethodType(Family family, int n) {
+        Family method = family == Family.SAM ? Family.METHOD : Family.VOID_METHOD;
+        return applied(method.desc(n), family.typeVars(n));
+    }
+
+    private static void generated(ClassBuilder cb) {
+        cb.withAnnotation(
+                GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(FactsCodegen.class.getName())));
+    }
+
+    /// Adds a package-private constructor, which core's builder cannot
+    /// declare: the facts are introduced only by the generated factories.
+    private static void packagePrivateConstructor(ClassBuilder cb, List<Param> params, Consumer<CodeBuilder> body) {
+        CodeBuilder code = new CodeBuilder();
+        body.accept(code);
+        cb.accept(new ConstructorDecl(List.of(), Set.of(), params, code.build(), List.of()));
+    }
+
     private static JavaFile ref(Family family, int n) {
         List<Slot> slots = slots(family, n);
         return JavaFile.class_(family.desc(n), cb -> {
+            generated(cb);
             cb.withModifiers(Modifier.FINAL);
             family.typeVars(n).forEach(v -> cb.withTypeParam(v));
             cb.withInterface(INVOCABLE);
             for (Slot slot : slots) {
                 cb.withField(slot.name(), slot.type(), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
             }
-            cb.withConstructor(ctor -> {
-                ctor.withModifiers(Modifier.PRIVATE);
-                slots.forEach(s -> ctor.withParam(s.name(), s.type()));
-                ctor.withBody(b -> {
-                    for (Slot slot : slots) {
-                        Expr value = slot.name().equals("name")
-                                ? staticCall(INVOCABLES, "requireMethodName", field("name"))
-                                : field(slot.name());
-                        b.assign(this_().field(slot.name()), value);
-                    }
-                });
-            });
-            cb.withMethod("introduce", family.type(n), mb -> {
-                mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
-                family.typeVars(n).forEach(v -> mb.withTypeParam(v));
-                List<Expr> args = new ArrayList<>();
-                for (Slot slot : slots) {
-                    mb.withParam(slot.name(), slot.type());
-                    args.add(field(slot.name()));
-                }
-                mb.withBody(b -> b.return_(
-                        family.typeVars(n).isEmpty()
-                                ? Exprs.new_(family.desc(n), args)
-                                : newDiamond(family.desc(n), args)));
-            });
+            packagePrivateConstructor(
+                    cb, slots.stream().map(s -> new Param(s.name(), s.type())).toList(), b -> {
+                        for (Slot slot : slots) {
+                            Expr value = slot.name().equals("name")
+                                    ? staticCall(INVOCABLES, "requireMethodName", field("name"))
+                                    : field(slot.name());
+                            b.assign(this_().field(slot.name()), value);
+                        }
+                    });
             override(cb, "kind", Types.of(INVOCABLE_KIND), staticField(INVOCABLE_KIND, family.kind));
             override(cb, "owner", ownerType(family), this_().field("owner"));
             override(
                     cb,
                     "name",
                     Types.STRING,
-                    family == Family.CTOR
+                    family.isCtor()
                             ? this_().field("owner").call("erasure").call("displayName")
                             : this_().field("name"));
             if (family.hasResult) {
@@ -302,29 +340,24 @@ public final class FactsCodegen {
     }
 
     private static JavaFile sam(Family family, int n) {
-        Family method = family == Family.SAM ? Family.METHOD : Family.VOID_METHOD;
-        TypeRef methodType = applied(method.desc(n), family.typeVars(n));
+        TypeRef methodType = samMethodType(family, n);
         return JavaFile.class_(family.desc(n), cb -> {
+            generated(cb);
             cb.withModifiers(Modifier.FINAL);
             family.typeVars(n).forEach(v -> cb.withTypeParam(v));
             cb.withField("owner", ownerType(family), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
             cb.withField("method", methodType, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
-            cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)
-                    .withParam("method", methodType)
-                    .withBody(b -> b.assign(
+            packagePrivateConstructor(
+                    cb,
+                    List.of(new Param("method", methodType)),
+                    b -> b.assign(
                                     this_().field("owner"),
                                     staticCall(
                                             INVOCABLES,
                                             "requireSam",
                                             field("method").call("owner"),
                                             field("method")))
-                            .assign(this_().field("method"), field("method"))));
-            cb.withMethod("introduce", family.type(n), mb -> {
-                mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
-                family.typeVars(n).forEach(v -> mb.withTypeParam(v));
-                mb.withParam("method", methodType)
-                        .withBody(b -> b.return_(newDiamond(family.desc(n), field("method"))));
-            });
+                            .assign(this_().field("method"), field("method")));
             getter(cb, "owner", ownerType(family));
             getter(cb, "method", methodType);
             if (family.hasResult) {
@@ -351,55 +384,92 @@ public final class FactsCodegen {
         });
     }
 
-    private static JavaFile lookup() {
-        ClassDesc desc = ClassDesc.of(SOURCE, "InvocableLookup");
-        return JavaFile.interface_(desc, ib -> {
-            ib.withTypeParam("O");
-            ib.withAbstractMethod("token", Types.parameterized(DECLARED_TOKEN, var("O")));
-            ib.withAbstractMethod("classToken", Types.parameterized(CLASS_TOKEN, var("O")));
-            ib.withAbstractMethod(
-                    "resolve",
-                    Types.of(RESOLUTION),
-                    new me.supcheg.javafile.model.Param("query", Types.of(MEMBER_QUERY)));
+    /// The package-private superclass of `UnsafeFacts` holding its generated
+    /// member factories, one per family and arity.
+    private static JavaFile factories() {
+        return JavaFile.class_(ClassDesc.of(FACTS, "InvocableFactories"), cb -> {
+            generated(cb);
+            cb.withExactModifiers(Set.of(Modifier.ABSTRACT));
             for (int n = 0; n <= MAX_ARITY; n++) {
-                lookupMethod(ib, Family.METHOD, "method", "method", n);
-                lookupMethod(ib, Family.VOID_METHOD, "voidMethod", "voidMethod", n);
-                lookupMethod(ib, Family.STATIC_METHOD, "staticMethod", "staticMethod", n);
-                lookupMethod(ib, Family.VOID_STATIC_METHOD, "voidStaticMethod", "voidStaticMethod", n);
-                lookupMethod(ib, Family.CTOR, "ctor", "constructor", n);
+                for (Family family : Family.values()) {
+                    factory(cb, family, n);
+                }
             }
         });
     }
 
-    private static void lookupMethod(InterfaceBuilder ib, Family family, String name, String query, int n) {
+    private static void factory(ClassBuilder cb, Family family, int n) {
+        List<Param> params = family.isSam()
+                ? List.of(new Param("method", samMethodType(family, n)))
+                : slots(family, n).stream()
+                        .map(s -> new Param(s.name(), s.type()))
+                        .toList();
+        List<Expr> args = params.stream().map(p -> (Expr) field(p.name())).toList();
+        cb.withMethod(family.factory, family.type(n), mb -> {
+            mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
+            family.typeVars(n).forEach(v -> mb.withTypeParam(v));
+            params.forEach(mb::withParam);
+            mb.withBody(b -> b.return_(instantiate(family.desc(n), family.typeVars(n), args)));
+        });
+    }
+
+    /// The package-private superclass of `FactSource` holding its generated
+    /// checked lookups, one per member family and arity.
+    private static JavaFile lookup() {
+        return JavaFile.class_(ClassDesc.of(FACTS, "InvocableLookup"), cb -> {
+            generated(cb);
+            cb.withExactModifiers(Set.of(Modifier.ABSTRACT));
+            cb.withTypeParam("O");
+            cb.withAbstractMethod("token", Types.parameterized(DECLARED_TOKEN, var("O")));
+            packagePrivateAbstract(cb, "resolve", Types.of(RESOLUTION), new Param("query", Types.of(MEMBER_QUERY)));
+            packagePrivateAbstract(cb, "concreteClassToken", Types.parameterized(CONCRETE_CLASS_TOKEN, var("O")));
+            packagePrivateAbstract(cb, "abstractClassToken", Types.parameterized(ABSTRACT_CLASS_TOKEN, var("O")));
+            for (int n = 0; n <= MAX_ARITY; n++) {
+                lookupMethod(cb, Family.METHOD, "method", n);
+                lookupMethod(cb, Family.VOID_METHOD, "voidMethod", n);
+                lookupMethod(cb, Family.STATIC_METHOD, "staticMethod", n);
+                lookupMethod(cb, Family.VOID_STATIC_METHOD, "voidStaticMethod", n);
+                lookupMethod(cb, Family.CTOR, "constructor", n);
+                lookupMethod(cb, Family.ABSTRACT_CTOR, "constructor", n);
+            }
+        });
+    }
+
+    private static void packagePrivateAbstract(ClassBuilder cb, String name, TypeRef type, Param... params) {
+        cb.withAbstractMethod(name, type, amb -> {
+            amb.withExactModifiers(Set.of(Modifier.ABSTRACT));
+            for (Param param : params) {
+                amb.withParam(param);
+            }
+        });
+    }
+
+    private static void lookupMethod(ClassBuilder cb, Family family, String query, int n) {
         List<String> vars = new ArrayList<>(family.typeVars(n));
         vars.remove("O");
-        TypeRef result = family.type(n);
-        Consumer<MethodBuilder> spec = mb -> {
+        cb.withMethod(family.factory, family.type(n), mb -> {
             vars.forEach(v -> mb.withTypeParam(v));
             List<Expr> queryArgs = new ArrayList<>();
-            List<Expr> introduceArgs = new ArrayList<>();
-            introduceArgs.add(call(family == Family.CTOR ? "classToken" : "token"));
-            if (family != Family.CTOR) {
+            List<Expr> args = new ArrayList<>();
+            args.add(call(lookupOwner(family)));
+            if (!family.isCtor()) {
                 mb.withParam("name", Types.STRING);
                 queryArgs.add(field("name"));
-                introduceArgs.add(field("name"));
+                args.add(field("name"));
             }
             if (family.hasResult) {
                 mb.withParam("result", token("R"));
                 queryArgs.add(field("result"));
-                introduceArgs.add(field("result"));
+                args.add(field("result"));
             }
             for (int i = 1; i <= n; i++) {
                 mb.withParam("param" + i, token("A" + i));
                 queryArgs.add(field("param" + i));
-                introduceArgs.add(field("param" + i));
+                args.add(field("param" + i));
             }
-            introduceArgs.add(
-                    call("resolve", staticCall(MEMBER_QUERY, query, queryArgs)).call("traits"));
-            mb.withBody(b -> b.return_(staticCall(family.desc(n), "introduce", introduceArgs)));
-        };
-        ib.withDefaultMethod(name, result, spec);
+            args.add(call("resolve", staticCall(MEMBER_QUERY, query, queryArgs)).call("traits"));
+            mb.withBody(b -> b.return_(instantiate(family.desc(n), family.typeVars(n), args)));
+        });
     }
 
     private static void getter(ClassBuilder cb, String name, TypeRef type) {

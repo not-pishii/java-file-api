@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> implements Invocable {
     private final DeclaredToken<O> owner;
 
@@ -28,7 +30,7 @@ public final class MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> implements I
 
     private final MemberTraits traits;
 
-    private MethodRef8(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, MemberTraits traits) {
+    MethodRef8(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.result = result;
@@ -41,10 +43,6 @@ public final class MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> implements I
         this.param7 = param7;
         this.param8 = param8;
         this.traits = traits;
-    }
-
-    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8> MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> introduce(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, MemberTraits traits) {
-        return new MethodRef8<>(owner, name, result, param1, param2, param3, param4, param5, param6, param7, param8, traits);
     }
 
     @Override

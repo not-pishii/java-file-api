@@ -1,139 +1,242 @@
 package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 
 /// Negative compile tests (§11): fixtures of invalid typed-API *usage* — not
-/// invalid generated code — that must fail to compile as generator source.
-/// These guard the guarantee (§1) against a combinator's signature
+/// invalid generated code — that must fail to compile as generator source,
+/// each with the one javac error that proves the guarantee, not just any
+/// failure. These guard the guarantee (§1) against a combinator's signature
 /// accidentally widening enough to admit misuse; if any of these starts
 /// compiling, the guarantee has a hole.
 ///
-/// Each fixture is generator code (not typed-layer *output*) compiled with
-/// the typed/facts/core module classes on the classpath.
+/// Each fixture is generator code compiled with the typed/facts/core module
+/// classes on the classpath; [#controlFixtureCompiles()] compiles a valid
+/// fixture on the same harness, so a broken classpath cannot make the
+/// negative tests pass.
 class NegativeCompileTest {
 
-    private static Compiler compilerWithModuleClasspath() {
+    /// The fixtures import whole packages; the on-demand imports are
+    /// assembled so that the wildcard lint of this source does not trip.
+    private static final String IMPORTS = "package fixtures;\n"
+            + "import java.lang.constant.ClassDesc;\n"
+            + "import java.util.List;\n"
+            + "import me.supcheg.javafile.type.Types;\n"
+            + Stream.of(
+                            "me.supcheg.javafile.facts",
+                            "me.supcheg.javafile.facts.jdk",
+                            "me.supcheg.javafile.typed",
+                            "static me.supcheg.javafile.typed.Expressions")
+                    .map(on -> "import " + on + ".*;\n")
+                    .collect(Collectors.joining());
+
+    private static Compilation compile(String simpleName, String body) {
         List<File> classpath = Arrays.stream(
                         System.getProperty("java.class.path").split(File.pathSeparator))
                 .map(File::new)
                 .toList();
-        return javac().withClasspath(classpath);
+        String source = IMPORTS + "\nclass " + simpleName + " {\n" + body + "\n}\n";
+        return javac().withClasspath(classpath)
+                .compile(JavaFileObjects.forSourceString("fixtures." + simpleName, source));
     }
 
-    private static Compilation compileFixture(String simpleName, String source) {
-        return compilerWithModuleClasspath().compile(JavaFileObjects.forSourceString("fixtures." + simpleName, source));
+    private static void assertRejected(String simpleName, String body, String... expectedErrors) {
+        Compilation compilation = compile(simpleName, body);
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorCount(1);
+        for (String expectedError : expectedErrors) {
+            assertThat(compilation).hadErrorContaining(expectedError);
+        }
+    }
+
+    /// A method body builder of a generated class, for fixtures that need a
+    /// block: `%s` is the statement using `cb`.
+    private static String inClass(String statement) {
+        return """
+                void use() {
+                    TypedJavaFile.class_(ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassSpec() {
+                        public <Self> void build(TypedClassBuilder<Self> cb) {
+                            %s
+                        }
+                    });
+                }
+                """.formatted(statement);
+    }
+
+    @Test
+    void controlFixtureCompiles() {
+        String body = inClass("""
+                cb.method("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed(), (b, boxed) -> b.let(
+                        PrimitiveToken.INT, unbox(PrimitiveToken.INT, boxed), i -> b.if_(
+                                ltInt(i, call(literal("abc"), String_.length)),
+                                t -> t.exec(call(literal("abc"), String_.charAt, i)))
+                        .return_(addInt(i, literal(1)))));
+                cb.method("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                cb.method("empty", String_.TOKEN, b -> b.return_(literalNull(String_.TOKEN)));
+                cb.method("same", PrimitiveToken.BOOLEAN, b -> b.return_(eqRef(literal("a"), literal("b"))));
+                new_(Object_.new_);
+                """);
+
+        assertThat(compile("Control", body)).succeeded();
     }
 
     @Test
     void wrongArgumentTypePassedToCall() {
-        // String_.length takes no arguments; passing one, of the wrong type
-        // besides, must not compile.
-        String source = """
-                package fixtures;
-
-                import me.supcheg.javafile.facts.jdk.String_;
-
-                import static me.supcheg.javafile.typed.Expressions.call;
-                import static me.supcheg.javafile.typed.Expressions.literal;
-
-                class WrongArgumentType {
-                    void use() {
-                        call(literal("hi"), String_.length, literal("unexpected argument"));
-                    }
-                }
-                """;
-
-        Compilation compilation = compileFixture("WrongArgumentType", source);
-
-        assertThat(compilation).failed();
+        assertRejected(
+                "WrongArgumentType",
+                "void use() { call(literal(\"hi\"), String_.charAt, literal(\"not an int\")); }",
+                "no suitable method found for call");
     }
 
     @Test
     void methodBodyWithoutReturnDoesNotCompile() {
-        // A Body<R>-returning lambda that never calls return_/throw_/ifElse
-        // cannot produce a Terminated<R> — the lambda body has no return
-        // statement, which javac itself rejects for a non-void functional
-        // interface method.
-        String source = """
-                package fixtures;
+        assertRejected(
+                "MissingReturn",
+                inClass("cb.method(\"compute\", PrimitiveToken.INT, body -> { });"),
+                "bad return type in lambda expression",
+                "missing return value");
+    }
 
-                import java.lang.constant.ClassDesc;
-                import me.supcheg.javafile.facts.PrimitiveToken;
-                import me.supcheg.javafile.typed.TypedClassBuilder;
-                import me.supcheg.javafile.typed.TypedJavaFile;
+    @Test
+    void implicitBoxingInReturnDoesNotCompile() {
+        assertRejected(
+                "ImplicitBoxing",
+                inClass("cb.method(\"boxed\", Integer_.TOKEN, b -> b.return_(literal(1)));"),
+                "cannot be converted to me.supcheg.javafile.typed.Expr<? extends java.lang.Integer>");
+    }
 
-                class MissingReturn {
-                    void use() {
-                        TypedJavaFile.class_(
-                                ClassDesc.of("fixtures", "Generated"),
-                                new TypedJavaFile.TypedClassSpec() {
-                                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.method("compute", PrimitiveToken.INT, body -> {
-                                            // no return_ call: Terminated<Integer> cannot be produced
-                                        });
-                                    }
-                                });
-                    }
+    @Test
+    void implicitUnboxingInReturnDoesNotCompile() {
+        assertRejected(
+                "ImplicitUnboxing",
+                inClass("cb.method(\"unboxed\", PrimitiveToken.INT,"
+                        + " b -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
+                "inference variable B has incompatible bounds",
+                "upper bounds: me.supcheg.javafile.facts.Prim.Int");
+    }
+
+    @Test
+    void implicitUnboxingOfAnArgumentDoesNotCompile() {
+        assertRejected(
+                "ImplicitUnboxingArgument",
+                "void use() { call(literal(\"hi\"), String_.charAt, box(PrimitiveToken.INT, literal(0))); }",
+                "no suitable method found for call");
+    }
+
+    @Test
+    void boxedConditionDoesNotCompile() {
+        assertRejected(
+                "BoxedCondition",
+                inClass("cb.voidMethod(\"m\", b -> b.if_(box(PrimitiveToken.BOOLEAN, literal(true)), t -> {}).end());"),
+                "incompatible equality constraints me.supcheg.javafile.facts.Prim.Bool,java.lang.Boolean");
+    }
+
+    @Test
+    void nullOfAPrimitiveTypeDoesNotCompile() {
+        assertRejected(
+                "PrimitiveNull",
+                "void use() { literalNull(PrimitiveToken.INT); }",
+                "cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
+    }
+
+    @Test
+    void newOfAnAbstractClassDoesNotCompile() {
+        // The constructor fact of an abstract class is an AbstractCtorRef0,
+        // which new_ does not take; it exists only for a subclass constructor.
+        assertRejected(
+                "NewAbstract",
+                """
+                void use(AbstractCtorRef0<Number> numberCtor) {
+                    new_(numberCtor);
                 }
-                """;
+                """,
+                "no suitable method found for new_(me.supcheg.javafile.facts.AbstractCtorRef0<java.lang.Number>)");
+    }
 
-        Compilation compilation = compileFixture("MissingReturn", source);
+    @Test
+    void forgingAMethodFactDoesNotCompile() {
+        assertRejected(
+                "ForgedMethod",
+                """
+                void use() {
+                    new MethodRef0<String, String>(
+                            String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT);
+                }
+                """,
+                "is not public in me.supcheg.javafile.facts.MethodRef0; cannot be accessed from outside package");
+    }
 
+    @Test
+    void theFormerIntroduceFactoryIsGone() {
+        assertRejected("ForgedByIntroduce", """
+                void use() {
+                    MethodRef0.introduce(String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT);
+                }
+                """, "cannot find symbol");
+    }
+
+    @Test
+    void forgingATokenDoesNotCompile() {
+        assertRejected(
+                "ForgedToken",
+                """
+                void use() {
+                    new FinalClassToken<Integer>(Types.STRING, List.of(), MethodTable.EMPTY);
+                }
+                """,
+                "is not public in me.supcheg.javafile.facts.FinalClassToken; cannot be accessed from outside package");
+    }
+
+    @Test
+    void forgingAFactSourceDoesNotCompile() {
+        assertRejected(
+                "ForgedSource",
+                """
+                void use() {
+                    new FactSource<String>(String_.TOKEN, query -> null);
+                }
+                """,
+                "is not public in me.supcheg.javafile.facts.FactSource; cannot be accessed from outside package");
+    }
+
+    @Test
+    void subclassingAFactSourceDoesNotCompile() {
+        // A subclass is rejected twice over: FactSource is final, and its
+        // only constructor is package-private.
+        Compilation compilation = compile("SubclassedSource", """
+                abstract static class Forged extends FactSource<String> {}
+                """);
         assertThat(compilation).failed();
+        assertThat(compilation).hadErrorCount(2);
+        assertThat(compilation).hadErrorContaining("cannot inherit from final me.supcheg.javafile.facts.FactSource");
     }
 
     @Test
     void loopCtlHasNoPublicConstructor() {
-        // break_/continue_ take a LoopCtl, obtainable only as the third
-        // parameter of a loop body (while_/for_/forEach); it has no public
-        // constructor, so a stray break outside a loop cannot be assembled.
-        String source = """
-                package fixtures;
-
-                import me.supcheg.javafile.typed.LoopCtl;
-
-                class StrayLoopCtl {
-                    void use() {
-                        new LoopCtl();
-                    }
-                }
-                """;
-
-        Compilation compilation = compileFixture("StrayLoopCtl", source);
-
-        assertThat(compilation).failed();
+        // break_/continue_ take a LoopCtl, obtainable only as a parameter of
+        // a loop body; a stray break outside a loop cannot be assembled.
+        assertRejected(
+                "StrayLoopCtl",
+                "void use() { new LoopCtl(); }",
+                "LoopCtl() is not public in me.supcheg.javafile.typed.LoopCtl");
     }
 
     @Test
     void varHasNoPublicConstructor() {
-        // Var/MutVar are only ever handed out by HOAS-binding combinators
-        // (let, letVar, method parameters, loop variables, ...); fabricating
-        // one outside its introducing lambda is not representable.
-        String source = """
-                package fixtures;
-
-                import me.supcheg.javafile.facts.PrimitiveToken;
-                import me.supcheg.javafile.typed.Var;
-
-                class StrayVar {
-                    void use() {
-                        new Var<>(PrimitiveToken.INT, "fabricated");
-                    }
-                }
-                """;
-
-        Compilation compilation = compileFixture("StrayVar", source);
-
-        assertThat(compilation).failed();
+        // Var/MutVar are only ever handed out by HOAS-binding combinators.
+        assertRejected(
+                "StrayVar",
+                "void use() { new Var<>(PrimitiveToken.INT, \"fabricated\"); }",
+                "is not public in me.supcheg.javafile.typed.Var");
     }
 }

@@ -2,19 +2,17 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class CtorRef0<O> implements Invocable {
-    private final ClassToken<O> owner;
+    private final ConcreteClassToken<O> owner;
 
     private final MemberTraits traits;
 
-    private CtorRef0(ClassToken<O> owner, MemberTraits traits) {
+    CtorRef0(ConcreteClassToken<O> owner, MemberTraits traits) {
         this.owner = owner;
         this.traits = traits;
-    }
-
-    public static <O> CtorRef0<O> introduce(ClassToken<O> owner, MemberTraits traits) {
-        return new CtorRef0<>(owner, traits);
     }
 
     @Override
@@ -23,7 +21,7 @@ public final class CtorRef0<O> implements Invocable {
     }
 
     @Override
-    public ClassToken<O> owner() {
+    public ConcreteClassToken<O> owner() {
         return this.owner;
     }
 

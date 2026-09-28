@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.TypeRef;
@@ -31,6 +32,12 @@ sealed interface Node {
 
     /// `this`.
     record This() implements Node {}
+
+    /// Boxing of a primitive value, `Integer.valueOf(operand)`.
+    record Box(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
+
+    /// Unboxing of a box, `operand.intValue()`.
+    record Unbox(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
 
     /// An instance method call; `method` is `void` or not.
     record Call(Node target, Invocable method, List<Node> args) implements Node {}

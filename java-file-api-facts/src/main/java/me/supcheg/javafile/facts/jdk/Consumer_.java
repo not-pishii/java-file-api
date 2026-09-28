@@ -2,15 +2,18 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidSam1;
 
+import javax.annotation.processing.Generated;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /// Facts of `java.util.function.Consumer<T>`.
 ///
 /// @param <T> the argument type
+@Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 public final class Consumer_<T> {
     /// `Consumer<T>`.
     public final InterfaceToken<Consumer<T>> token;
@@ -23,8 +26,8 @@ public final class Consumer_<T> {
 
     private Consumer_(RefToken<T> argument) {
         this.token = Jdk.iface(Consumer.class, Map.of("T", argument), Jdk.arg(argument));
-        this.accept = VoidMethodRef1.introduce(token, "accept", argument, Jdk.ABSTRACT);
-        this.sam = VoidSam1.introduce(accept);
+        this.accept = UnsafeFacts.voidMethod(token, "accept", argument, Jdk.ABSTRACT);
+        this.sam = UnsafeFacts.voidSam(accept);
     }
 
     /// Instantiates the facts.

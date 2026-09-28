@@ -4,8 +4,10 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.Types;
 
+import javax.annotation.processing.Generated;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,6 +26,7 @@ import java.util.stream.Stream;
 /// ```
 ///
 /// @param <E> the element type
+@Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 public final class Stream_<E> {
     /// `Stream<E>`.
     public final InterfaceToken<Stream<E>> token;
@@ -42,10 +45,10 @@ public final class Stream_<E> {
     public Stream_(RefToken<E> element) {
         this.element = element;
         this.token = Jdk.iface(Stream.class, Map.of("T", element), Jdk.arg(element));
-        this.toList = MethodRef0.introduce(token, "toList", listToken(), Jdk.OVERRIDABLE);
+        this.toList = UnsafeFacts.method(token, "toList", listToken(), Jdk.OVERRIDABLE);
         InterfaceToken<Predicate<? super E>> predicate =
                 Jdk.iface(Predicate.class, Map.of(), Types.superBound(element.typeRef()));
-        this.filter = MethodRef1.introduce(token, "filter", token, predicate, Jdk.ABSTRACT);
+        this.filter = UnsafeFacts.method(token, "filter", token, predicate, Jdk.ABSTRACT);
     }
 
     /// `<R> Stream<R> map(Function<? super E, ? extends R>)`, with `R` as the
@@ -57,7 +60,7 @@ public final class Stream_<E> {
     public <R> MethodRef1<Stream<E>, Stream<R>, Function<? super E, ? extends R>> map(RefToken<R> result) {
         InterfaceToken<Function<? super E, ? extends R>> function = Jdk.iface(
                 Function.class, Map.of(), Types.superBound(element.typeRef()), Types.extendsBound(result.typeRef()));
-        return MethodRef1.introduce(
+        return UnsafeFacts.method(
                 token, "map", new Stream_<>(result).token, function, Jdk.ABSTRACT.withTypeArgs(result));
     }
 
