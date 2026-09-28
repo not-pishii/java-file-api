@@ -33,7 +33,7 @@ public final class IfBuilder {
     ///
     /// @param spec receives the builder to populate the `then` body
     /// @return this builder
-    public IfBuilder then(Consumer<CodeBuilder> spec) {
+    public IfBuilder then(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.thenBody = cb.build();
@@ -45,7 +45,7 @@ public final class IfBuilder {
     /// @param condition the clause's condition
     /// @param spec receives the builder to populate the clause's body
     /// @return this builder
-    public IfBuilder elseIf(Expr condition, Consumer<CodeBuilder> spec) {
+    public IfBuilder elseIf(Expr condition, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         elseIfClauses.add(new ElseIfClause(condition, cb.build()));
@@ -56,7 +56,7 @@ public final class IfBuilder {
     ///
     /// @param spec receives the builder to populate the `else` body
     /// @return this builder
-    public IfBuilder else_(Consumer<CodeBuilder> spec) {
+    public IfBuilder else_(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.elseBody = cb.build();

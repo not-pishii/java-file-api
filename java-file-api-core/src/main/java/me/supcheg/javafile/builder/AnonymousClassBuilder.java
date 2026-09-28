@@ -48,7 +48,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param type the declared field type
     /// @param spec receives the builder to populate the field
     /// @return this builder
-    public AnonymousClassBuilder withField(String name, TypeRef type, Consumer<FieldBuilder> spec) {
+    public AnonymousClassBuilder withField(String name, TypeRef type, Consumer<? super FieldBuilder> spec) {
         FieldBuilder fb = new FieldBuilder(name, type);
         spec.accept(fb);
         members.add(fb.build());
@@ -61,7 +61,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public AnonymousClassBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public AnonymousClassBuilder withMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         members.add(mb.build());
@@ -73,7 +73,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public AnonymousClassBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+    public AnonymousClassBuilder withVoidMethod(String name, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         members.add(mb.build());
@@ -85,7 +85,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param desc the nested class to declare
     /// @param spec receives the builder to populate the class declaration
     /// @return this builder
-    public AnonymousClassBuilder withNestedClass(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public AnonymousClassBuilder withNestedClass(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder cb = new ClassBuilder(desc);
         spec.accept(cb);
         members.add(cb.build());
@@ -97,7 +97,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param desc the nested interface to declare
     /// @param spec receives the builder to populate the interface declaration
     /// @return this builder
-    public AnonymousClassBuilder withNestedInterface(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public AnonymousClassBuilder withNestedInterface(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder ib = new InterfaceBuilder(desc);
         spec.accept(ib);
         members.add(ib.build());
@@ -109,7 +109,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param desc the nested record to declare
     /// @param spec receives the builder to populate the record declaration
     /// @return this builder
-    public AnonymousClassBuilder withNestedRecord(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public AnonymousClassBuilder withNestedRecord(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder rb = new RecordBuilder(desc);
         spec.accept(rb);
         members.add(rb.build());
@@ -121,7 +121,7 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param desc the nested enum to declare
     /// @param spec receives the builder to populate the enum declaration
     /// @return this builder
-    public AnonymousClassBuilder withNestedEnum(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public AnonymousClassBuilder withNestedEnum(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder eb = new EnumBuilder(desc);
         spec.accept(eb);
         members.add(eb.build());
@@ -133,7 +133,8 @@ public final class AnonymousClassBuilder implements Consumer<EnumConstantMember>
     /// @param desc the nested annotation type to declare
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return this builder
-    public AnonymousClassBuilder withNestedAnnotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public AnonymousClassBuilder withNestedAnnotationType(
+            ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder ab = new AnnotationTypeBuilder(desc);
         spec.accept(ab);
         members.add(ab.build());

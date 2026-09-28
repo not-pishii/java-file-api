@@ -94,7 +94,7 @@ public final class AnnotationValues {
     /// @param type the nested annotation type
     /// @param spec receives the builder to populate the nested annotation's members
     /// @return an annotation value
-    public static SingleAnnotationValue nested(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public static SingleAnnotationValue nested(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         return new NestedAnnotationValue(ab.build());
@@ -112,7 +112,7 @@ public final class AnnotationValues {
     ///
     /// @param elements the array's elements, in order
     /// @return an annotation value
-    public static AnnotationValue array(List<SingleAnnotationValue> elements) {
+    public static AnnotationValue array(List<? extends SingleAnnotationValue> elements) {
         return new ArrayValue(List.copyOf(elements));
     }
 }

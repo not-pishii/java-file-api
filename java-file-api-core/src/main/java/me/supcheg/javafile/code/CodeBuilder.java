@@ -120,7 +120,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param condition the `if` condition
     /// @param spec receives the builder to populate the `then`/`else if`/`else` bodies
     /// @return this builder
-    public CodeBuilder if_(Expr condition, Consumer<IfBuilder> spec) {
+    public CodeBuilder if_(Expr condition, Consumer<? super IfBuilder> spec) {
         IfBuilder ib = new IfBuilder(condition);
         spec.accept(ib);
         statements.add(ib.build());
@@ -132,7 +132,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param condition the loop condition
     /// @param spec receives the builder to populate the loop body
     /// @return this builder
-    public CodeBuilder while_(Expr condition, Consumer<CodeBuilder> spec) {
+    public CodeBuilder while_(Expr condition, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new WhileStmt(condition, cb.build()));
@@ -144,7 +144,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param condition the loop condition, evaluated after the body
     /// @param spec receives the builder to populate the loop body
     /// @return this builder
-    public CodeBuilder doWhile_(Expr condition, Consumer<CodeBuilder> spec) {
+    public CodeBuilder doWhile_(Expr condition, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new DoWhileStmt(cb.build(), condition));
@@ -163,7 +163,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
             @Nullable LocalVarDeclStmt init,
             @Nullable Expr condition,
             @Nullable Stmt update,
-            Consumer<CodeBuilder> spec) {
+            Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new ForStmt(
@@ -178,7 +178,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param iterable the iterated expression
     /// @param spec receives the builder to populate the loop body
     /// @return this builder
-    public CodeBuilder forEach(TypeRef elementType, String varName, Expr iterable, Consumer<CodeBuilder> spec) {
+    public CodeBuilder forEach(TypeRef elementType, String varName, Expr iterable, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new EnhancedForStmt(elementType, varName, iterable, cb.build()));
@@ -190,7 +190,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param selector the switch selector expression
     /// @param spec receives the builder to populate the switch cases
     /// @return this builder
-    public CodeBuilder switch_(Expr selector, Consumer<SwitchBuilder> spec) {
+    public CodeBuilder switch_(Expr selector, Consumer<? super SwitchBuilder> spec) {
         SwitchBuilder sb = new SwitchBuilder();
         spec.accept(sb);
         statements.add(new SwitchStmt(selector, sb.build()));
@@ -205,7 +205,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param spec receives the builder to populate resources, `catch` clauses, and the `finally` block
     /// @return this builder
     /// @throws IllegalArgumentException if `spec` calls neither `catch_` nor `finally_`
-    public CodeBuilder try_(Consumer<CodeBuilder> block, Consumer<TryBuilder> spec) {
+    public CodeBuilder try_(Consumer<? super CodeBuilder> block, Consumer<? super TryBuilder> spec) {
         CodeBuilder blockBuilder = new CodeBuilder();
         block.accept(blockBuilder);
         TryBuilder tb = new TryBuilder();
@@ -273,15 +273,15 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param spec receives the builder to append exactly one statement to label
     /// @return this builder
     /// @throws IllegalArgumentException if `spec` appends zero or more than one statement
-    public CodeBuilder labeled(String label, Consumer<CodeBuilder> spec) {
+    public CodeBuilder labeled(String label, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
-        List<Stmt> built = cb.build().statements();
+        var built = cb.build().statements();
         if (built.size() != 1) {
             throw new IllegalArgumentException(
                     "labeled statement must wrap exactly one statement, got " + built.size());
         }
-        statements.add(new LabeledStmt(label, built.get(0)));
+        statements.add(new LabeledStmt(label, built.getFirst()));
         return this;
     }
 
@@ -290,7 +290,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param lock the monitor expression
     /// @param spec receives the builder to populate the synchronized block's body
     /// @return this builder
-    public CodeBuilder synchronized_(Expr lock, Consumer<CodeBuilder> spec) {
+    public CodeBuilder synchronized_(Expr lock, Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         statements.add(new SynchronizedStmt(lock, cb.build()));

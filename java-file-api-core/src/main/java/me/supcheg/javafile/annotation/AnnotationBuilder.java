@@ -47,7 +47,7 @@ public final class AnnotationBuilder {
     /// @param type the nested annotation type
     /// @param spec receives the builder to populate the nested annotation's members
     /// @return this builder
-    public AnnotationBuilder withNestedMember(String name, ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public AnnotationBuilder withNestedMember(String name, ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         return withMember(name, AnnotationValues.nested(type, spec));
     }
 
@@ -56,7 +56,7 @@ public final class AnnotationBuilder {
     /// @param name the member name
     /// @param spec receives the builder to populate the array's elements
     /// @return this builder
-    public AnnotationBuilder withArrayMember(String name, Consumer<ArrayValueBuilder> spec) {
+    public AnnotationBuilder withArrayMember(String name, Consumer<? super ArrayValueBuilder> spec) {
         ArrayValueBuilder avb = new ArrayValueBuilder();
         spec.accept(avb);
         return withMember(name, avb.build());

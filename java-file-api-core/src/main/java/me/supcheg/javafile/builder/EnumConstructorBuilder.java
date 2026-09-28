@@ -44,7 +44,7 @@ public final class EnumConstructorBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public EnumConstructorBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public EnumConstructorBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -104,7 +104,7 @@ public final class EnumConstructorBuilder {
     ///
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
-    public EnumConstructorBuilder withBody(Consumer<CodeBuilder> spec) {
+    public EnumConstructorBuilder withBody(Consumer<? super CodeBuilder> spec) {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         this.body = cb.build();

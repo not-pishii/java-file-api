@@ -41,7 +41,7 @@ public final class EnumConstantBuilder {
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public EnumConstantBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public EnumConstantBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -70,7 +70,7 @@ public final class EnumConstantBuilder {
     ///
     /// @param args the constructor arguments, in order
     /// @return this builder
-    public EnumConstantBuilder withArgs(List<Expr> args) {
+    public EnumConstantBuilder withArgs(List<? extends Expr> args) {
         this.args.addAll(args);
         return this;
     }
@@ -81,7 +81,7 @@ public final class EnumConstantBuilder {
     /// @param returnType the method's return type
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumConstantBuilder withMethod(String name, TypeRef returnType, Consumer<MethodBuilder> spec) {
+    public EnumConstantBuilder withMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.of(returnType));
         spec.accept(mb);
         body.add(mb.build());
@@ -93,7 +93,7 @@ public final class EnumConstantBuilder {
     /// @param name the method name
     /// @param spec receives the builder to populate the method
     /// @return this builder
-    public EnumConstantBuilder withVoidMethod(String name, Consumer<MethodBuilder> spec) {
+    public EnumConstantBuilder withVoidMethod(String name, Consumer<? super MethodBuilder> spec) {
         MethodBuilder mb = new MethodBuilder(name, Optional.empty());
         spec.accept(mb);
         body.add(mb.build());

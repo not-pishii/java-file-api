@@ -1,5 +1,6 @@
 package me.supcheg.javafile.type;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -111,6 +112,46 @@ class TypesTest {
         ClassDesc list = ClassDesc.of("java.util", "List");
         assertThat(Types.parameterized(list, Types.unbounded()))
                 .isEqualTo(Types.parameterized(list, List.of(Types.unbounded())));
+    }
+
+    @Test
+    void parameterizedClassTypeRefOverloadAcceptsMultipleArgs() {
+        ClassDesc map = ClassDesc.of("java.util", "Map");
+
+        TypeRef ref = Types.parameterized(Types.of(map), Types.STRING, Types.OBJECT);
+
+        assertThat(ref).isEqualTo(Types.parameterized(map, Types.STRING, Types.OBJECT));
+    }
+
+    @Test
+    void parameterizedClassTypeRefOverloadAcceptsWildcardArgs() {
+        ClassDesc map = ClassDesc.of("java.util", "Map");
+
+        TypeRef ref = Types.parameterized(Types.of(map), Types.unbounded(), Types.extendsBound(Types.OBJECT));
+
+        assertThat(ref).isEqualTo(Types.parameterized(map, Types.unbounded(), Types.extendsBound(Types.OBJECT)));
+    }
+
+    @Test
+    void parameterizedClassTypeRefOverloadsKeepRawAnnotations() {
+        ClassDesc list = ClassDesc.of("java.util", "List");
+        AnnotationUse nonNull = new AnnotationUse(ClassDesc.of("javax.annotation", "Nonnull"), List.of());
+        ClassTypeRef raw = Types.of(list, nonNull);
+
+        assertThat(Types.parameterized(raw, Types.STRING))
+                .isEqualTo(Types.parameterized(list, List.of(Types.exact(Types.STRING)), nonNull));
+        assertThat(Types.parameterized(raw, Types.unbounded()))
+                .isEqualTo(Types.parameterized(list, List.of(Types.unbounded()), nonNull));
+        assertThat(Types.parameterized(raw, List.of(Types.exact(Types.STRING))))
+                .isEqualTo(Types.parameterized(list, List.of(Types.exact(Types.STRING)), nonNull));
+    }
+
+    @Test
+    void parameterizedClassTypeRefListOverloadAcceptsArgs() {
+        ClassDesc map = ClassDesc.of("java.util", "Map");
+        List<TypeArg> args = List.of(Types.exact(Types.STRING), Types.unbounded());
+
+        assertThat(Types.parameterized(Types.of(map), args)).isEqualTo(Types.parameterized(map, args));
     }
 
     @Test

@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 /// one to replace it, skip the call to drop it, or call `accept` several times
 /// to add statements. The original body is left unchanged.
 ///
-/// Apply it with [Transforms#transform(CodeBody,CodeTransform)].
+/// Apply it with [Transforms#transform(CodeBody, CodeTransform)].
 @FunctionalInterface
 public interface CodeTransform extends BiConsumer<CodeBuilder, Stmt> {
     /// Returns a transform that applies this transform, then `next`, to each statement.

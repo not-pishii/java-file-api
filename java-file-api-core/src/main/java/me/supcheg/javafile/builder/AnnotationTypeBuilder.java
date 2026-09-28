@@ -56,7 +56,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     /// @param type the annotation type
     /// @param spec receives the builder to populate the annotation's members
     /// @return this builder
-    public AnnotationTypeBuilder withAnnotation(ClassDesc type, Consumer<AnnotationBuilder> spec) {
+    public AnnotationTypeBuilder withAnnotation(ClassDesc type, Consumer<? super AnnotationBuilder> spec) {
         AnnotationBuilder ab = new AnnotationBuilder(type);
         spec.accept(ab);
         annotations.add(ab.build());
@@ -92,7 +92,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     ///
     /// @param mods the exact modifier set to use
     /// @return this builder
-    public AnnotationTypeBuilder withExactModifiers(Set<Modifier> mods) {
+    public AnnotationTypeBuilder withExactModifiers(Set<? extends Modifier> mods) {
         modifiers.clear();
         modifiers.addAll(mods);
         return this;

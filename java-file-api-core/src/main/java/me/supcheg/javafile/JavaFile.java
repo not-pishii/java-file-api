@@ -62,7 +62,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the class to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the class declaration
     /// @return the finished source file
-    public static JavaFile class_(ClassDesc desc, Consumer<ClassBuilder> spec) {
+    public static JavaFile class_(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder builder = new ClassBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
@@ -73,7 +73,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the interface to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the interface declaration
     /// @return the finished source file
-    public static JavaFile interface_(ClassDesc desc, Consumer<InterfaceBuilder> spec) {
+    public static JavaFile interface_(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder builder = new InterfaceBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
@@ -84,7 +84,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the record to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the record declaration
     /// @return the finished source file
-    public static JavaFile record(ClassDesc desc, Consumer<RecordBuilder> spec) {
+    public static JavaFile record(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder builder = new RecordBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
@@ -95,7 +95,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the enum to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the enum declaration
     /// @return the finished source file
-    public static JavaFile enum_(ClassDesc desc, Consumer<EnumBuilder> spec) {
+    public static JavaFile enum_(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder builder = new EnumBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
@@ -106,7 +106,7 @@ public final class JavaFile implements RenderableFile {
     /// @param desc the annotation type to declare; its package and simple name determine the file location
     /// @param spec receives the builder to populate the annotation type declaration
     /// @return the finished source file
-    public static JavaFile annotationType(ClassDesc desc, Consumer<AnnotationTypeBuilder> spec) {
+    public static JavaFile annotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder builder = new AnnotationTypeBuilder(desc);
         spec.accept(builder);
         return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
