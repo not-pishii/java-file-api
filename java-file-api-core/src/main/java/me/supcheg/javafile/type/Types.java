@@ -3,6 +3,7 @@ package me.supcheg.javafile.type;
 import me.supcheg.javafile.annotation.AnnotationUse;
 
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +13,10 @@ import java.util.List;
 /// Types.of(String.class)                                   // String
 /// Types.of(ClassDesc.of("com.example", "User"))            // User
 /// Types.array(Types.INT)                                   // int[]
-/// Types.parameterized(LIST, Types.STRING)                  // List<String>
-/// Types.parameterized(MAP, Types.exact(Types.STRING),
+/// Types.parameterized(Types.LIST, Types.STRING)            // List<String>
+/// Types.parameterized(Types.MAP, Types.exact(Types.STRING),
 ///         Types.extendsBound(Types.typeVar("T")))          // Map<String, ? extends T>
 /// ```
-///
-/// Here `LIST` and `MAP` are `ClassDesc`s, e.g. `ClassDesc.of("java.util", "List")`.
 public final class Types {
 
     /// The `int` primitive type.
@@ -45,22 +44,22 @@ public final class Types {
     public static final PrimitiveTypeRef CHAR = PrimitiveTypeRef.CHAR;
 
     /// The `java.lang.String` type.
-    public static final ClassTypeRef STRING = of(ClassDesc.of("java.lang", "String"));
+    public static final ClassTypeRef STRING = of(ConstantDescs.CD_String);
 
     /// The `java.lang.Object` type.
-    public static final ClassTypeRef OBJECT = of(ClassDesc.of("java.lang", "Object"));
+    public static final ClassTypeRef OBJECT = of(ConstantDescs.CD_Object);
 
     /// The raw `java.util.List` type.
-    public static final ClassTypeRef LIST = of(ClassDesc.of("java.util", "List"));
+    public static final ClassTypeRef LIST = of(ConstantDescs.CD_List);
 
     /// The raw `java.util.Set` type.
-    public static final ClassTypeRef SET = of(ClassDesc.of("java.util", "Set"));
+    public static final ClassTypeRef SET = of(ConstantDescs.CD_Set);
 
     /// The raw `java.util.Map` type.
-    public static final ClassTypeRef MAP = of(ClassDesc.of("java.util", "Map"));
+    public static final ClassTypeRef MAP = of(ConstantDescs.CD_Map);
 
     /// The raw `java.util.Collection` type.
-    public static final ClassTypeRef COLLECTION = of(ClassDesc.of("java.util", "Collection"));
+    public static final ClassTypeRef COLLECTION = of(ConstantDescs.CD_Collection);
 
     /// The raw `java.util.Optional` type.
     public static final ClassTypeRef OPTIONAL = of(ClassDesc.of("java.util", "Optional"));
@@ -162,6 +161,55 @@ public final class Types {
     public static ParameterizedTypeRef parameterized(
             ClassDesc raw, List<? extends TypeArg> args, AnnotationUse... annotations) {
         return new ParameterizedTypeRef(raw, List.copyOf(args), List.of(annotations));
+    }
+
+    /// Creates a reference to a generic type applied to exact type arguments,
+    /// e.g. `Map<String, Integer>`.
+    ///
+    /// The type-use annotations of `raw` are carried over to the result,
+    /// so `@NonNull List` becomes `@NonNull List<String>`.
+    ///
+    /// @param raw the generic type's raw class or interface
+    /// @param first the first type argument
+    /// @param rest any further type arguments, in order
+    /// @return a parameterized type reference
+    public static ParameterizedTypeRef parameterized(ClassTypeRef raw, TypeRef first, TypeRef... rest) {
+        List<TypeArg> args = new ArrayList<>(rest.length + 1);
+        args.add(exact(first));
+        for (TypeRef ref : rest) {
+            args.add(exact(ref));
+        }
+        return new ParameterizedTypeRef(raw.desc(), args, raw.annotations());
+    }
+
+    /// Creates a reference to a generic type applied to type arguments,
+    /// e.g. `List<? extends Number>`.
+    ///
+    /// The type-use annotations of `raw` are carried over to the result,
+    /// so `@NonNull List` becomes `@NonNull List<?>`.
+    ///
+    /// @param raw the generic type's raw class or interface
+    /// @param first the first type argument
+    /// @param rest any further type arguments, in order
+    /// @return a parameterized type reference
+    public static ParameterizedTypeRef parameterized(ClassTypeRef raw, TypeArg first, TypeArg... rest) {
+        List<TypeArg> args = new ArrayList<>(rest.length + 1);
+        args.add(first);
+        args.addAll(List.of(rest));
+        return new ParameterizedTypeRef(raw.desc(), args, raw.annotations());
+    }
+
+    /// Creates a reference to a generic type applied to a list of type
+    /// arguments, e.g. `Map<String, ? extends T>`.
+    ///
+    /// The type-use annotations of `raw` are carried over to the result,
+    /// so `@NonNull List` becomes `@NonNull List<String>`.
+    ///
+    /// @param raw the generic type's raw class or interface
+    /// @param args the type arguments applied to `raw`, in order
+    /// @return a parameterized type reference
+    public static ParameterizedTypeRef parameterized(ClassTypeRef raw, List<? extends TypeArg> args) {
+        return new ParameterizedTypeRef(raw.desc(), List.copyOf(args), raw.annotations());
     }
 
     /// Creates a reference to a type variable, e.g. `T`.
