@@ -33,7 +33,10 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec populates the class, given its self-branded builder
     /// @return the rendered class, ready for [JavaFile#render()]/[JavaFile#writeTo(java.nio.file.Path)]
+    /// @throws IllegalStateException if called while a method body is being built
     public static JavaFile class_(ClassDesc desc, TypedClassSpec spec) {
+        Scopes.requireNoneOpen(
+                "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
         return JavaFile.class_(desc, cb -> declare(desc, cb, spec));
     }
 
@@ -41,7 +44,9 @@ public final class TypedJavaFile {
             ClassDesc desc, me.supcheg.javafile.builder.ClassBuilder cb, TypedClassSpec spec) {
         ClassTypeRef typeRef = new ClassTypeRef(desc);
         FinalClassToken<Self> self = UnsafeFacts.finalClassToken(typeRef, List.of(OBJECT), MethodTable.EMPTY);
-        spec.build(new TypedClassBuilder<>(cb, self));
+        TypedClassBuilder<Self> builder = new TypedClassBuilder<>(cb, self);
+        spec.build(builder);
+        builder.markBuilt();
     }
 
     /// A self-branded class specification (§3.1, §6.5).

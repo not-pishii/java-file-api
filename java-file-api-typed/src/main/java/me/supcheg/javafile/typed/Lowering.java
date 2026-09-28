@@ -49,18 +49,22 @@ import java.util.Set;
 /// completeness, modifier validity) are the responsibility of the
 /// declaration layer that calls into this class, not of this class itself;
 /// this class performs the structural checks that are intrinsic to lowering
-/// itself: a variable must be declared before it is referenced (enforced by
-/// [NameEnv]) and `break`/`continue` must target a loop currently being
-/// lowered (enforced by the loop stack below) — both would otherwise be
-/// silently mis-rendered rather than caught.
+/// itself: a variable must be in scope where it is referenced (enforced by
+/// the scope stack of [NameEnv]) and `break`/`continue` must target a loop
+/// currently being lowered in the same lambda (enforced by the loop stack
+/// below, which a lambda body starts afresh) — both would otherwise be
+/// silently mis-rendered rather than caught. The builder already rejects
+/// both when the statement is built ([ScopeCheck]); these are defence in
+/// depth.
 ///
 /// One instance lowers exactly one top-level body (a method, constructor, or
-/// lambda); nested blocks and lambdas share its [NameEnv] and loop stack so
-/// names stay unique and `break`/`continue` resolve correctly across nesting.
+/// lambda); nested blocks and lambdas share its [NameEnv] so names stay
+/// unique, and nested blocks share its loop stack so `break`/`continue`
+/// resolve correctly across nesting.
 final class Lowering {
 
     private final NameEnv names = new NameEnv();
-    private final Deque<LoopCtl> loopStack = new ArrayDeque<>();
+    private Deque<LoopCtl> loopStack = new ArrayDeque<>();
     private final Map<LoopCtl, String> loopLabelNames = new HashMap<>();
     private final Set<LoopCtl> usedLabels = new HashSet<>();
     private int labelCounter;
@@ -80,11 +84,16 @@ final class Lowering {
     /// Lowers a sequence of statements into a `core` method/constructor/loop
     /// body.
     CodeBody lowerBlock(List<Instr> instrs) {
-        List<Stmt> stmts = new ArrayList<>(instrs.size());
-        for (Instr instr : instrs) {
-            stmts.add(stmt(instr));
+        names.push();
+        try {
+            List<Stmt> stmts = new ArrayList<>(instrs.size());
+            for (Instr instr : instrs) {
+                stmts.add(stmt(instr));
+            }
+            return new CodeBody(List.copyOf(stmts));
+        } finally {
+            names.pop();
         }
-        return new CodeBody(List.copyOf(stmts));
     }
 
     // ------------------------------------------------------------------
@@ -102,9 +111,18 @@ final class Lowering {
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
-                String name = names.declare(binding);
-                Expr condition = expr(operand).instanceOf(type.typeRef(), name);
-                yield new IfStmt(condition, lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
+                Expr operandExpr = expr(operand);
+                // The binding is in scope in the then-branch only.
+                names.push();
+                Expr condition;
+                CodeBody thenCode;
+                try {
+                    condition = operandExpr.instanceOf(type.typeRef(), names.declare(binding));
+                    thenCode = lowerBlock(then.instrs());
+                } finally {
+                    names.pop();
+                }
+                yield new IfStmt(condition, thenCode, List.of(), lowerOptional(otherwise));
             }
             case Instr.While(var ctl, var condition, var body) -> {
                 Expr conditionExpr = expr(condition);
@@ -117,12 +135,21 @@ final class Lowering {
             }
             case Instr.For(var ctl, var var_, var init, var condition, var update, var body) -> {
                 Expr initExpr = expr(init);
-                String name = names.declare(var_);
-                LocalVarDeclStmt.Typed initStmt =
-                        new LocalVarDeclStmt.Typed(var_.type().typeRef(), name, Optional.of(initExpr));
-                Expr conditionExpr = expr(condition);
-                Stmt updateStmt = effectStmt(update);
-                CodeBody bodyCode = withLoop(ctl, body);
+                // The loop variable is in scope in the condition, the update, and the body.
+                names.push();
+                LocalVarDeclStmt.Typed initStmt;
+                Expr conditionExpr;
+                Stmt updateStmt;
+                CodeBody bodyCode;
+                try {
+                    initStmt = new LocalVarDeclStmt.Typed(
+                            var_.type().typeRef(), names.declare(var_), Optional.of(initExpr));
+                    conditionExpr = expr(condition);
+                    updateStmt = effectStmt(update);
+                    bodyCode = withLoop(ctl, body);
+                } finally {
+                    names.pop();
+                }
                 yield labeled(
                         ctl,
                         new ForStmt(
@@ -130,8 +157,15 @@ final class Lowering {
             }
             case Instr.ForEach(var ctl, var var_, var iterable, var body) -> {
                 Expr iterableExpr = expr(iterable);
-                String name = names.declare(var_);
-                CodeBody bodyCode = withLoop(ctl, body);
+                names.push();
+                String name;
+                CodeBody bodyCode;
+                try {
+                    name = names.declare(var_);
+                    bodyCode = withLoop(ctl, body);
+                } finally {
+                    names.pop();
+                }
                 yield labeled(ctl, new EnhancedForStmt(var_.type().typeRef(), name, iterableExpr, bodyCode));
             }
             case Instr.Return(var value) -> new ReturnStmt(value.map(this::expr));
@@ -182,9 +216,15 @@ final class Lowering {
         CodeBody bodyCode = lowerBlock(body.instrs());
         List<CatchClause> coreCatches = new ArrayList<>();
         for (Instr.Catch c : catches) {
-            String name = names.declare(c.var());
-            CodeBody catchBody = lowerBlock(c.body().instrs());
-            coreCatches.add(new CatchClause(NonEmptyList.copyOf(List.of(c.type().typeRef())), name, catchBody));
+            names.push();
+            try {
+                String name = names.declare(c.var());
+                CodeBody catchBody = lowerBlock(c.body().instrs());
+                coreCatches.add(
+                        new CatchClause(NonEmptyList.copyOf(List.of(c.type().typeRef())), name, catchBody));
+            } finally {
+                names.pop();
+            }
         }
         if (finallyBlock.isPresent()) {
             CodeBody finallyCode = lowerBlock(finallyBlock.get().instrs());
@@ -276,19 +316,31 @@ final class Lowering {
         return result;
     }
 
+    /// A lambda body is a scope of its own for the parameters, and a fresh
+    /// loop context: `break`/`continue` cannot jump out of a lambda.
     private Expr lambda(List<Var<?>> params, Node.LambdaBody body) {
-        List<Param> coreParams = new ArrayList<>(params.size());
-        for (Var<?> param : params) {
-            coreParams.add(new Param(names.declare(param), param.type().typeRef()));
+        Deque<LoopCtl> enclosingLoops = loopStack;
+        loopStack = new ArrayDeque<>();
+        names.push();
+        try {
+            List<Param> coreParams = new ArrayList<>(params.size());
+            for (Var<?> param : params) {
+                coreParams.add(new Param(names.declare(param), param.type().typeRef()));
+            }
+            return switch (body) {
+                case Node.LambdaBody.Value(var ignoredScope, var value) -> Exprs.typedLambda(coreParams, expr(value));
+                case Node.LambdaBody.Block(var block) -> {
+                    List<Stmt> stmts = lowerBlock(block.instrs()).statements();
+                    yield Exprs.typedLambda(coreParams, cb -> {
+                        for (Stmt s : stmts) {
+                            cb.accept(s);
+                        }
+                    });
+                }
+            };
+        } finally {
+            names.pop();
+            loopStack = enclosingLoops;
         }
-        return switch (body) {
-            case Node.LambdaBody.Value(var value) -> Exprs.typedLambda(coreParams, expr(value));
-            case Node.LambdaBody.Block(var block) ->
-                Exprs.typedLambda(coreParams, cb -> {
-                    for (Stmt s : lowerBlock(block.instrs()).statements()) {
-                        cb.accept(s);
-                    }
-                });
-        };
     }
 }
