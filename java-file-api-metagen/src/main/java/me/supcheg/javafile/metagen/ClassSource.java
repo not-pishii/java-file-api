@@ -1,4 +1,4 @@
-package me.supcheg.javafile.typed;
+package me.supcheg.javafile.metagen;
 
 import java.io.IOException;
 import java.io.InputStream;
