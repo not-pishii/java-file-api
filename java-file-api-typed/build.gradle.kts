@@ -1,0 +1,27 @@
+plugins {
+    alias(conventions.plugins.javafile.java.conventions)
+    alias(conventions.plugins.javafile.publishing)
+}
+
+// Phase 1: the arity families (call/staticCall/new_ per MethodRefN/CtorRefN,
+// method/constructor declaration combinators, ...) are hand-written under
+// src/main for arities 0..3 (0..2 for declarations). Raising the ceiling to
+// match java-file-api-facts's MAX_ARITY = 12 is future work: a generator
+// analogous to FactsCodegen (java-file-api-facts/src/codegen), written on
+// java-file-api-core, is the natural way to do it — see the phase-1 report's
+// open questions.
+
+dependencies {
+    api(project(":java-file-api-core"))
+    api(project(":java-file-api-facts"))
+}
+
+testing {
+    suites {
+        named<JvmTestSuite>("test") {
+            dependencies {
+                implementation(libs.compile.testing)
+            }
+        }
+    }
+}
