@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.ClassTypeRef;
 
 import java.lang.constant.ClassDesc;
@@ -39,7 +40,7 @@ public final class TypedJavaFile {
     private static <Self> void declare(
             ClassDesc desc, me.supcheg.javafile.builder.ClassBuilder cb, TypedClassSpec spec) {
         ClassTypeRef typeRef = new ClassTypeRef(desc);
-        FinalClassToken<Self> self = FinalClassToken.introduce(typeRef, List.of(OBJECT), MethodTable.EMPTY);
+        FinalClassToken<Self> self = UnsafeFacts.finalClassToken(typeRef, List.of(OBJECT), MethodTable.EMPTY);
         spec.build(new TypedClassBuilder<>(cb, self));
     }
 

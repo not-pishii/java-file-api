@@ -8,12 +8,14 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.FieldRef;
+import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
+import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticFieldRef;
@@ -30,19 +32,34 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
+import me.supcheg.javafile.facts.jdk.Math_;
 import me.supcheg.javafile.facts.jdk.String_;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
-/// access, calls, `new`, arrays, `cond`, per-primitive operators, and
-/// assignments.
+/// access, calls, `new`, arrays, `cond`, per-primitive operators, explicit
+/// conversions, and assignments.
+///
+/// Primitive values are typed by their [Prim] markers: `literal(1)` is an
+/// `Expr<Prim.Int>`, never an `Expr<Integer>`. Boxing and unboxing are
+/// explicit — [#box(PrimitiveToken, Expr)] and [#unbox(PrimitiveToken, Expr)]
+/// — so passing an `int` where an `Integer` is expected, or the reverse, is
+/// a compile error of the generator. A marker is still a subtype of
+/// `Object`, which leaves two cases to run time:
+///
+/// - a primitive receiver — `call(literal(1), Object_.toString)` — is
+///   rejected when the call is built, with a hint to box it;
+/// - a primitive argument of an `Object` parameter —
+///   `call(list, remove_Object, literal(1))` — is allowed and rendered with
+///   an explicit cast, `list.remove((Object) 1)`, so that the overload the
+///   fact names is the one javac picks.
 ///
 /// Call/`new` combinators are shown here for arity 0..3; arity 4..12 follow
 /// the identical pattern (one overload per [me.supcheg.javafile.facts]
-/// `*RefN` family member) and are a mechanical extension — see the open
-/// questions in the phase-1 report for hoisting this into a generator like
-/// `java-file-api-facts`'s `FactsCodegen`.
+/// `*RefN` family member) and are a mechanical extension.
 ///
 /// Import the methods statically.
 public final class Expressions {
@@ -54,41 +71,90 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     /// Creates a `String` literal.
+    ///
+    /// @param value the value
+    /// @return the literal
     public static Expr<String> literal(String value) {
         return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), String_.TOKEN);
     }
 
     /// Creates an `int` literal.
-    public static Expr<Integer> literal(int value) {
+    ///
+    /// @param value the value
+    /// @return the literal
+    public static Expr<Prim.Int> literal(int value) {
         return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.INT);
     }
 
     /// Creates a `long` literal.
-    public static Expr<Long> literal(long value) {
+    ///
+    /// @param value the value
+    /// @return the literal
+    public static Expr<Prim.Long> literal(long value) {
         return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.LONG);
     }
 
     /// Creates a `double` literal.
-    public static Expr<Double> literal(double value) {
+    ///
+    /// @param value the value
+    /// @return the literal
+    public static Expr<Prim.Double> literal(double value) {
         return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.DOUBLE);
     }
 
     /// Creates a `boolean` literal.
-    public static Expr<Boolean> literal(boolean value) {
+    ///
+    /// @param value the value
+    /// @return the literal
+    public static Expr<Prim.Bool> literal(boolean value) {
         return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.BOOLEAN);
     }
 
-    /// Creates the `null` literal at the given reference type.
+    /// Creates the `null` literal at the given reference type. A primitive
+    /// type has no `null`, so a [PrimitiveToken] is not accepted.
     ///
     /// @param type the declared static type of the literal
+    /// @param <T> the type
+    /// @return the literal
     public static <T> Expr<T> literalNull(RefToken<T> type) {
         return Expr.of(new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull()), type);
     }
 
     /// `this`, at the given self type — the natural companion of
     /// [TypedClassBuilder#self()] inside an instance method/constructor body.
+    ///
+    /// @param type the self type
+    /// @param <T> the self type
+    /// @return the `this` expression
     public static <T> Expr<T> this_(TypeToken<T> type) {
         return Expr.of(new Node.This(), type);
+    }
+
+    // ------------------------------------------------------------------
+    // Boxing (§6.1): explicit only
+    // ------------------------------------------------------------------
+
+    /// Boxes a primitive value, `Integer.valueOf(value)`.
+    ///
+    /// @param type the primitive type
+    /// @param value the primitive value
+    /// @param <P> the marker of the primitive type
+    /// @param <B> the box
+    /// @return the boxed value
+    public static <P, B> Expr<B> box(PrimitiveToken<P, B, ?> type, Expr<P> value) {
+        return Expr.of(new Node.Box(type, value.node()), type.boxed());
+    }
+
+    /// Unboxes a box, `value.intValue()`; it throws `NullPointerException`
+    /// at run time for `null`, which the explicit call makes visible.
+    ///
+    /// @param type the primitive type
+    /// @param value the boxed value
+    /// @param <P> the marker of the primitive type
+    /// @param <B> the box
+    /// @return the primitive value
+    public static <P, B> Expr<P> unbox(PrimitiveToken<P, B, ?> type, Expr<? extends B> value) {
+        return Expr.of(new Node.Unbox(type, value.node()), type);
     }
 
     // ------------------------------------------------------------------
@@ -96,31 +162,45 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     /// Reads an instance field, `target.field`.
+    ///
+    /// @param target the receiver
+    /// @param field the field
+    /// @param <O> the owner type
+    /// @param <T> the field type
+    /// @return the field read
+    /// @throws IllegalArgumentException if `target` is of a primitive type
     public static <O, T> Expr<T> field(Expr<? extends O> target, FieldRef<O, T> field) {
-        return Expr.of(new Node.FieldGet(target.node(), field), field.type());
+        return Expr.of(new Node.FieldGet(receiver(target, field), field), field.type());
     }
 
     /// Reads a static field, `Owner.field`.
+    ///
+    /// @param field the field
+    /// @param <T> the field type
+    /// @return the field read
     public static <T> Expr<T> staticField(StaticFieldRef<T> field) {
         return Expr.of(new Node.StaticFieldGet(field), field.type());
     }
 
     // ------------------------------------------------------------------
-    // Instance calls
+    // Instance calls; each throws IllegalArgumentException for a
+    // receiver of a primitive type
     // ------------------------------------------------------------------
 
     public static <O, R> Invocation<R> call(Expr<? extends O> target, MethodRef0<O, R> method) {
-        return new Invocation<>(new Node.Call(target.node(), method, List.of()), method.result());
+        return new Invocation<>(new Node.Call(receiver(target, method), method, List.of()), method.result());
     }
 
     public static <O, R, A1> Invocation<R> call(
             Expr<? extends O> target, MethodRef1<O, R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.Call(target.node(), method, List.of(a1.node())), method.result());
+        return new Invocation<>(
+                new Node.Call(receiver(target, method), method, arguments(method, a1)), method.result());
     }
 
     public static <O, R, A1, A2> Invocation<R> call(
             Expr<? extends O> target, MethodRef2<O, R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.Call(target.node(), method, List.of(a1.node(), a2.node())), method.result());
+        return new Invocation<>(
+                new Node.Call(receiver(target, method), method, arguments(method, a1, a2)), method.result());
     }
 
     public static <O, R, A1, A2, A3> Invocation<R> call(
@@ -130,21 +210,21 @@ public final class Expressions {
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
         return new Invocation<>(
-                new Node.Call(target.node(), method, List.of(a1.node(), a2.node(), a3.node())), method.result());
+                new Node.Call(receiver(target, method), method, arguments(method, a1, a2, a3)), method.result());
     }
 
     public static <O> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef0<O> method) {
-        return new VoidInvocation(new Node.Call(target.node(), method, List.of()));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, List.of()));
     }
 
     public static <O, A1> VoidInvocation voidCall(
             Expr<? extends O> target, VoidMethodRef1<O, A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.Call(target.node(), method, List.of(a1.node())));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(method, a1)));
     }
 
     public static <O, A1, A2> VoidInvocation voidCall(
             Expr<? extends O> target, VoidMethodRef2<O, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(new Node.Call(target.node(), method, List.of(a1.node(), a2.node())));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(method, a1, a2)));
     }
 
     public static <O, A1, A2, A3> VoidInvocation voidCall(
@@ -153,7 +233,7 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new VoidInvocation(new Node.Call(target.node(), method, List.of(a1.node(), a2.node(), a3.node())));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(method, a1, a2, a3)));
     }
 
     // ------------------------------------------------------------------
@@ -165,12 +245,12 @@ public final class Expressions {
     }
 
     public static <R, A1> Invocation<R> staticCall(StaticMethodRef1<R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.StaticCall(method, List.of(a1.node())), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(method, a1)), method.result());
     }
 
     public static <R, A1, A2> Invocation<R> staticCall(
             StaticMethodRef2<R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.StaticCall(method, List.of(a1.node(), a2.node())), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(method, a1, a2)), method.result());
     }
 
     public static <R, A1, A2, A3> Invocation<R> staticCall(
@@ -178,7 +258,7 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new Invocation<>(new Node.StaticCall(method, List.of(a1.node(), a2.node(), a3.node())), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(method, a1, a2, a3)), method.result());
     }
 
     public static VoidInvocation voidStaticCall(VoidStaticMethodRef0 method) {
@@ -186,12 +266,12 @@ public final class Expressions {
     }
 
     public static <A1> VoidInvocation voidStaticCall(VoidStaticMethodRef1<A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.StaticCall(method, List.of(a1.node())));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(method, a1)));
     }
 
     public static <A1, A2> VoidInvocation voidStaticCall(
             VoidStaticMethodRef2<A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(new Node.StaticCall(method, List.of(a1.node(), a2.node())));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(method, a1, a2)));
     }
 
     public static <A1, A2, A3> VoidInvocation voidStaticCall(
@@ -199,11 +279,13 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new VoidInvocation(new Node.StaticCall(method, List.of(a1.node(), a2.node(), a3.node())));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(method, a1, a2, a3)));
     }
 
     // ------------------------------------------------------------------
-    // Instance creation
+    // Instance creation: only a `CtorRefN` — the constructor of an
+    // instantiable class — is accepted; the constructor of an abstract
+    // class is an `AbstractCtorRefN`, which `new_` does not take (§3.1)
     // ------------------------------------------------------------------
 
     public static <O> Invocation<O> new_(CtorRef0<O> ctor) {
@@ -211,17 +293,17 @@ public final class Expressions {
     }
 
     public static <O, A1> Invocation<O> new_(CtorRef1<O, A1> ctor, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.New(ctor, List.of(a1.node()), false), ctor.owner());
+        return new Invocation<>(new Node.New(ctor, arguments(ctor, a1), false), ctor.owner());
     }
 
     public static <O, A1, A2> Invocation<O> new_(
             CtorRef2<O, A1, A2> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.New(ctor, List.of(a1.node(), a2.node()), false), ctor.owner());
+        return new Invocation<>(new Node.New(ctor, arguments(ctor, a1, a2), false), ctor.owner());
     }
 
     public static <O, A1, A2, A3> Invocation<O> new_(
             CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3) {
-        return new Invocation<>(new Node.New(ctor, List.of(a1.node(), a2.node(), a3.node()), false), ctor.owner());
+        return new Invocation<>(new Node.New(ctor, arguments(ctor, a1, a2, a3), false), ctor.owner());
     }
 
     /// Like [#new_(CtorRef0)], but rendered with a diamond, `new Owner<>()`.
@@ -231,31 +313,45 @@ public final class Expressions {
 
     /// Like [#new_(CtorRef1,Expr)], but rendered with a diamond, `new Owner<>(a1)`.
     public static <O, A1> Invocation<O> newDiamond(CtorRef1<O, A1> ctor, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.New(ctor, List.of(a1.node()), true), ctor.owner());
+        return new Invocation<>(new Node.New(ctor, arguments(ctor, a1), true), ctor.owner());
     }
 
     // ------------------------------------------------------------------
-    // Arrays
+    // Arrays: the ArrayToken witnesses that the expression is an array and
+    // what its element type is — `ArrayToken.of(String_.TOKEN)` for
+    // `String[]`, `PrimitiveToken.INT.array()` for `int[]`
     // ------------------------------------------------------------------
 
     /// Reads an array element, `array[index]`.
-    public static <T> Expr<T> at(Expr<T[]> array, Expr<Integer> index) {
-        return Expr.of(new Node.ArrayAt(array.node(), index.node()), componentOf(array.type()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> TypeToken<T> componentOf(TypeToken<T[]> arrayType) {
-        return (TypeToken<T>) ((ArrayToken<T[]>) arrayType).component();
+    ///
+    /// @param type the array type
+    /// @param array the array
+    /// @param index the index
+    /// @param <A> the array type
+    /// @param <T> the element type
+    /// @return the element read
+    public static <A, T> Expr<T> at(ArrayToken<A, T> type, Expr<? extends A> array, Expr<Prim.Int> index) {
+        return Expr.of(new Node.ArrayAt(array.node(), index.node()), type.component());
     }
 
     /// Reads `array.length`.
-    public static Expr<Integer> length(Expr<?> array) {
+    ///
+    /// @param type the array type
+    /// @param array the array
+    /// @param <A> the array type
+    /// @return the length
+    public static <A> Expr<Prim.Int> length(ArrayToken<A, ?> type, Expr<? extends A> array) {
         return Expr.of(new Node.ArrayLength(array.node()), PrimitiveToken.INT);
     }
 
-    /// Creates `new T[length]`.
-    public static <T> Expr<T[]> newArray(RefToken<T> component, Expr<Integer> length) {
-        return Expr.of(new Node.NewArray(component, length.node()), ArrayToken.of(component));
+    /// Creates an array, `new T[length]`.
+    ///
+    /// @param type the array type
+    /// @param length the length
+    /// @param <A> the array type
+    /// @return the new array
+    public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length) {
+        return Expr.of(new Node.NewArray(type.component(), length.node()), type);
     }
 
     // ------------------------------------------------------------------
@@ -266,7 +362,7 @@ public final class Expressions {
     /// explicitly: the two branches may have different, only jointly related,
     /// static types.
     public static <T> Expr<T> cond(
-            Expr<Boolean> condition, Expr<? extends T> whenTrue, Expr<? extends T> whenFalse, TypeToken<T> type) {
+            Expr<Prim.Bool> condition, Expr<? extends T> whenTrue, Expr<? extends T> whenFalse, TypeToken<T> type) {
         return Expr.of(new Node.Cond(condition.node(), whenTrue.node(), whenFalse.node()), type);
     }
 
@@ -274,47 +370,47 @@ public final class Expressions {
     // `int` operators
     // ------------------------------------------------------------------
 
-    public static Expr<Integer> addInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Int> addInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.ADD, l, r, PrimitiveToken.INT);
     }
 
-    public static Expr<Integer> subInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Int> subInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.SUB, l, r, PrimitiveToken.INT);
     }
 
-    public static Expr<Integer> mulInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Int> mulInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.MUL, l, r, PrimitiveToken.INT);
     }
 
-    public static Expr<Integer> divInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Int> divInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.DIV, l, r, PrimitiveToken.INT);
     }
 
-    public static Expr<Integer> modInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Int> modInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.MOD, l, r, PrimitiveToken.INT);
     }
 
-    public static Expr<Boolean> eqInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> eqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.EQ, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> neqInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> neqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.NEQ, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> ltInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> ltInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.LT, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> leInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> leInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.LE, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> gtInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> gtInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.GT, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> geInt(Expr<Integer> l, Expr<Integer> r) {
+    public static Expr<Prim.Bool> geInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(BinaryOp.GE, l, r, PrimitiveToken.BOOLEAN);
     }
 
@@ -322,19 +418,19 @@ public final class Expressions {
     // `long` / `double` arithmetic (representative subset)
     // ------------------------------------------------------------------
 
-    public static Expr<Long> addLong(Expr<Long> l, Expr<Long> r) {
+    public static Expr<Prim.Long> addLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
         return binary(BinaryOp.ADD, l, r, PrimitiveToken.LONG);
     }
 
-    public static Expr<Long> mulLong(Expr<Long> l, Expr<Long> r) {
+    public static Expr<Prim.Long> mulLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
         return binary(BinaryOp.MUL, l, r, PrimitiveToken.LONG);
     }
 
-    public static Expr<Double> addDouble(Expr<Double> l, Expr<Double> r) {
+    public static Expr<Prim.Double> addDouble(Expr<Prim.Double> l, Expr<Prim.Double> r) {
         return binary(BinaryOp.ADD, l, r, PrimitiveToken.DOUBLE);
     }
 
-    public static Expr<Double> mulDouble(Expr<Double> l, Expr<Double> r) {
+    public static Expr<Prim.Double> mulDouble(Expr<Prim.Double> l, Expr<Prim.Double> r) {
         return binary(BinaryOp.MUL, l, r, PrimitiveToken.DOUBLE);
     }
 
@@ -342,27 +438,42 @@ public final class Expressions {
     // Boolean logic
     // ------------------------------------------------------------------
 
-    public static Expr<Boolean> and(Expr<Boolean> l, Expr<Boolean> r) {
+    public static Expr<Prim.Bool> and(Expr<Prim.Bool> l, Expr<Prim.Bool> r) {
         return binary(BinaryOp.AND, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> or(Expr<Boolean> l, Expr<Boolean> r) {
+    public static Expr<Prim.Bool> or(Expr<Prim.Bool> l, Expr<Prim.Bool> r) {
         return binary(BinaryOp.OR, l, r, PrimitiveToken.BOOLEAN);
     }
 
-    public static Expr<Boolean> not(Expr<Boolean> operand) {
+    public static Expr<Prim.Bool> not(Expr<Prim.Bool> operand) {
         return Expr.of(new Node.Unary(UnaryOp.NOT, operand.node(), PrimitiveToken.BOOLEAN), PrimitiveToken.BOOLEAN);
     }
 
-    /// Reference equality, `l == r`. Distinct from [#eqInt(Expr,Expr)] and
-    /// friends: there is no numeric promotion, and for reference types this
-    /// is identity, never `equals`.
-    public static <T> Expr<Boolean> eqRef(Expr<T> l, Expr<T> r) {
-        return binary(BinaryOp.EQ, l, r, PrimitiveToken.BOOLEAN);
+    /// Reference identity, `l == r`: never `equals`, and never numeric
+    /// equality — compare primitives with [#eqInt(Expr,Expr)] and friends.
+    ///
+    /// The static type of `r` is a subtype of that of `l`, so the operands
+    /// are comparable (JLS 15.21.3).
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @param <T> the static type of `l`
+    /// @return the comparison
+    /// @throws IllegalArgumentException if an operand is of a primitive type
+    public static <T> Expr<Prim.Bool> eqRef(Expr<T> l, Expr<? extends T> r) {
+        return binary(BinaryOp.EQ, reference(l, "eqRef"), reference(r, "eqRef"), PrimitiveToken.BOOLEAN);
     }
 
-    public static <T> Expr<Boolean> neqRef(Expr<T> l, Expr<T> r) {
-        return binary(BinaryOp.NEQ, l, r, PrimitiveToken.BOOLEAN);
+    /// Reference non-identity, `l != r`; see [#eqRef(Expr, Expr)].
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @param <T> the static type of `l`
+    /// @return the comparison
+    /// @throws IllegalArgumentException if an operand is of a primitive type
+    public static <T> Expr<Prim.Bool> neqRef(Expr<T> l, Expr<? extends T> r) {
+        return binary(BinaryOp.NEQ, reference(l, "neqRef"), reference(r, "neqRef"), PrimitiveToken.BOOLEAN);
     }
 
     // ------------------------------------------------------------------
@@ -380,25 +491,36 @@ public final class Expressions {
     // Explicit numeric conversions (no promotion, §6.1/§10)
     // ------------------------------------------------------------------
 
-    public static Expr<Long> widenIntToLong(Expr<Integer> operand) {
+    /// Widening, `(long) operand`; it never loses information.
+    public static Expr<Prim.Long> widenIntToLong(Expr<Prim.Int> operand) {
         return Expr.of(new Node.Cast(PrimitiveToken.LONG.typeRef(), operand.node()), PrimitiveToken.LONG);
     }
 
-    public static Expr<Double> widenIntToDouble(Expr<Integer> operand) {
+    /// Widening, `(double) operand`; it never loses information.
+    public static Expr<Prim.Double> widenIntToDouble(Expr<Prim.Int> operand) {
         return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE.typeRef(), operand.node()), PrimitiveToken.DOUBLE);
     }
 
-    public static Expr<Double> widenLongToDouble(Expr<Long> operand) {
+    /// Widening, `(double) operand`; it may round a large value (JLS 5.1.2).
+    public static Expr<Prim.Double> widenLongToDouble(Expr<Prim.Long> operand) {
         return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE.typeRef(), operand.node()), PrimitiveToken.DOUBLE);
     }
 
-    /// Checked narrowing, `(int) operand`. Unlike widening this can lose
-    /// information; the name says so.
-    public static Expr<Integer> narrowLongToInt(Expr<Long> operand) {
+    /// Checked narrowing, `Math.toIntExact(operand)`: throws
+    /// `ArithmeticException` at run time for a value out of the `int` range.
+    public static Expr<Prim.Int> narrowCheckedLongToInt(Expr<Prim.Long> operand) {
+        return staticCall(Math_.toIntExact, operand);
+    }
+
+    /// Truncating narrowing, `(int) operand`: keeps the low 32 bits of a
+    /// value out of the `int` range, silently (JLS 5.1.3).
+    public static Expr<Prim.Int> narrowTruncatingLongToInt(Expr<Prim.Long> operand) {
         return Expr.of(new Node.Cast(PrimitiveToken.INT.typeRef(), operand.node()), PrimitiveToken.INT);
     }
 
-    public static Expr<Integer> narrowDoubleToInt(Expr<Double> operand) {
+    /// Truncating narrowing, `(int) operand`: rounds toward zero and clamps
+    /// a value out of the `int` range, silently (JLS 5.1.3).
+    public static Expr<Prim.Int> narrowTruncatingDoubleToInt(Expr<Prim.Double> operand) {
         return Expr.of(new Node.Cast(PrimitiveToken.INT.typeRef(), operand.node()), PrimitiveToken.INT);
     }
 
@@ -424,9 +546,11 @@ public final class Expressions {
     }
 
     /// `target.field = value;`
+    ///
+    /// @throws IllegalArgumentException if `target` is of a primitive type
     public static <O, T> Assignment assignField(
             Expr<? extends O> target, MutableFieldRef<O, T> field, Expr<? extends T> value) {
-        return new Assignment(new Node.Assign(new Node.Target.Field(target.node(), field), value.node()));
+        return new Assignment(new Node.Assign(new Node.Target.Field(receiver(target, field), field), value.node()));
     }
 
     /// `Owner.field = value;`
@@ -435,7 +559,19 @@ public final class Expressions {
     }
 
     /// `array[index] = value;`
-    public static <T> Assignment assignAt(Expr<T[]> array, Expr<Integer> index, Expr<? extends T> value) {
+    ///
+    /// Arrays are covariant: storing through an `Object[]` view of a
+    /// `String[]` throws `ArrayStoreException` at run time, as in Java.
+    ///
+    /// @param type the array type
+    /// @param array the array
+    /// @param index the index
+    /// @param value the stored value
+    /// @param <A> the array type
+    /// @param <T> the element type
+    /// @return the assignment
+    public static <A, T> Assignment assignAt(
+            ArrayToken<A, T> type, Expr<? extends A> array, Expr<Prim.Int> index, Expr<? extends T> value) {
         return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), value.node()));
     }
 
@@ -443,5 +579,42 @@ public final class Expressions {
 
     private static <A, B, R> Expr<R> binary(BinaryOp op, Expr<A> l, Expr<B> r, TypeToken<R> type) {
         return Expr.of(new Node.Binary(op, l.node(), r.node(), type), type);
+    }
+
+    /// A primitive has no members: `5.toString()` is not Java. A marker is a
+    /// subtype of `Object`, so javac lets an `Expr<Prim.Int>` through where
+    /// the owner is `Object`; this is where it is caught (§6.1, §9).
+    private static Node receiver(Expr<?> target, Object member) {
+        if (target.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
+            throw new IllegalArgumentException("cannot access " + member + " on an expression of the primitive type "
+                    + primitive + ": a primitive has no members; box it first, e.g. box(PrimitiveToken."
+                    + primitive.typeRef().sourceName().toUpperCase(Locale.ROOT) + ", expr)");
+        }
+        return target.node();
+    }
+
+    private static <T> Expr<T> reference(Expr<T> operand, String combinator) {
+        if (operand.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
+            throw new IllegalArgumentException(combinator + " compares references, but an operand is of the primitive"
+                    + " type " + primitive + "; compare primitives with the per-type comparisons, e.g. eqInt");
+        }
+        return operand;
+    }
+
+    /// Lowers the arguments of a call so that the fact is the overload javac
+    /// picks (§6.1): a primitive argument of a reference parameter — only
+    /// `Object` can take a marker — is cast to the parameter type,
+    /// `(Object) 1`, instead of being boxed implicitly.
+    private static List<Node> arguments(Invocable member, Expr<?>... args) {
+        List<TypeToken<?>> params = member.params();
+        List<Node> nodes = new ArrayList<>(args.length);
+        for (int i = 0; i < args.length; i++) {
+            TypeToken<?> param = params.get(i);
+            Node node = args[i].node();
+            boolean boxes =
+                    args[i].type() instanceof PrimitiveToken<?, ?, ?> && !(param instanceof PrimitiveToken<?, ?, ?>);
+            nodes.add(boxes ? new Node.Cast(param.typeRef(), node) : node);
+        }
+        return List.copyOf(nodes);
     }
 }

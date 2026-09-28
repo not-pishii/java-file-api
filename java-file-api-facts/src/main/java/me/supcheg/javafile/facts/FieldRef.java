@@ -18,20 +18,6 @@ public sealed class FieldRef<O, T> permits MutableFieldRef {
         this.type = type;
     }
 
-    /// Introduces the fact that a type has a `final` instance field.
-    ///
-    /// For fact sources only; see [TypeToken].
-    ///
-    /// @param owner the type owning the field
-    /// @param name the field name
-    /// @param type the field type, as a member of `owner`
-    /// @param <O> the owner type
-    /// @param <T> the field type
-    /// @return the fact
-    public static <O, T> FieldRef<O, T> introduce(DeclaredToken<O> owner, String name, TypeToken<T> type) {
-        return new FieldRef<>(owner, name, type);
-    }
-
     /// The type owning the field.
     ///
     /// @return the owner token

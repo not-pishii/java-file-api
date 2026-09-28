@@ -4,27 +4,32 @@ import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
+
+import javax.annotation.processing.Generated;
 
 /// Facts of `java.lang.StringBuilder`.
+@Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 public final class StringBuilder_ {
     /// `StringBuilder`.
     public static final FinalClassToken<StringBuilder> TOKEN = Jdk.finalClass(StringBuilder.class);
 
     /// `new StringBuilder()`.
-    public static final CtorRef0<StringBuilder> new_ = CtorRef0.introduce(TOKEN, Jdk.FINAL);
+    public static final CtorRef0<StringBuilder> new_ = UnsafeFacts.ctor(TOKEN, Jdk.FINAL);
 
     /// `StringBuilder append(String)`.
     public static final MethodRef1<StringBuilder, StringBuilder, String> append_String =
-            MethodRef1.introduce(TOKEN, "append", TOKEN, String_.TOKEN, Jdk.FINAL);
+            UnsafeFacts.method(TOKEN, "append", TOKEN, String_.TOKEN, Jdk.FINAL);
 
     /// `StringBuilder append(int)`.
-    public static final MethodRef1<StringBuilder, StringBuilder, Integer> append_int =
-            MethodRef1.introduce(TOKEN, "append", TOKEN, PrimitiveToken.INT, Jdk.FINAL);
+    public static final MethodRef1<StringBuilder, StringBuilder, Prim.Int> append_int =
+            UnsafeFacts.method(TOKEN, "append", TOKEN, PrimitiveToken.INT, Jdk.FINAL);
 
     /// `String toString()`.
     public static final MethodRef0<StringBuilder, String> toString =
-            MethodRef0.introduce(TOKEN, "toString", String_.TOKEN, Jdk.FINAL);
+            UnsafeFacts.method(TOKEN, "toString", String_.TOKEN, Jdk.FINAL);
 
     private StringBuilder_() {}
 }

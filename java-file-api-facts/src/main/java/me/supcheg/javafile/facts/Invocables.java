@@ -13,13 +13,6 @@ final class Invocables {
         return Identifiers.requireValid(name);
     }
 
-    static <O> ConcreteClassToken<O> requireInstantiable(ClassToken<O> owner) {
-        if (owner instanceof ConcreteClassToken<O> concrete) {
-            return concrete;
-        }
-        throw new IllegalArgumentException("cannot instantiate " + owner + ": it is abstract or an enum");
-    }
-
     static <F> InterfaceToken<F> requireSam(DeclaredToken<F> owner, Invocable method) {
         if (!(owner instanceof InterfaceToken<F> iface)) {
             throw new IllegalArgumentException(describe(method) + " is not a method of an interface");
@@ -34,7 +27,8 @@ final class Invocables {
     static String describe(Invocable invocable) {
         String params = invocable.params().stream().map(Object::toString).collect(Collectors.joining(", ", "(", ")"));
         return switch (invocable.kind()) {
-            case CONSTRUCTOR -> "new " + invocable.owner() + params;
+            case CONSTRUCTOR ->
+                (invocable.owner() instanceof AbstractClassToken<?> ? "super " : "new ") + invocable.owner() + params;
             case STATIC_METHOD ->
                 "static " + result(invocable) + " " + invocable.owner() + "." + invocable.name() + params;
             case INSTANCE_METHOD -> result(invocable) + " " + invocable.owner() + "." + invocable.name() + params;

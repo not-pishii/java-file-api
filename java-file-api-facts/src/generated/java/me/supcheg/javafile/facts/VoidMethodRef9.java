@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> implements Invocable {
     private final DeclaredToken<O> owner;
 
@@ -28,7 +30,7 @@ public final class VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> impleme
 
     private final MemberTraits traits;
 
-    private VoidMethodRef9(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
+    VoidMethodRef9(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.param1 = param1;
@@ -41,10 +43,6 @@ public final class VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> impleme
         this.param8 = param8;
         this.param9 = param9;
         this.traits = traits;
-    }
-
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> introduce(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
-        return new VoidMethodRef9<>(owner, name, param1, param2, param3, param4, param5, param6, param7, param8, param9, traits);
     }
 
     @Override

@@ -2,9 +2,11 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> implements Invocable {
-    private final ClassToken<O> owner;
+    private final ConcreteClassToken<O> owner;
 
     private final TypeToken<A1> param1;
 
@@ -26,7 +28,7 @@ public final class CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> implements In
 
     private final MemberTraits traits;
 
-    private CtorRef9(ClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
+    CtorRef9(ConcreteClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
         this.owner = owner;
         this.param1 = param1;
         this.param2 = param2;
@@ -40,17 +42,13 @@ public final class CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> implements In
         this.traits = traits;
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> introduce(ClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, MemberTraits traits) {
-        return new CtorRef9<>(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, traits);
-    }
-
     @Override
     public InvocableKind kind() {
         return InvocableKind.CONSTRUCTOR;
     }
 
     @Override
-    public ClassToken<O> owner() {
+    public ConcreteClassToken<O> owner() {
         return this.owner;
     }
 

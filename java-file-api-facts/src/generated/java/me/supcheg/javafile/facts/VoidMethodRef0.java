@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidMethodRef0<O> implements Invocable {
     private final DeclaredToken<O> owner;
 
@@ -10,14 +12,10 @@ public final class VoidMethodRef0<O> implements Invocable {
 
     private final MemberTraits traits;
 
-    private VoidMethodRef0(DeclaredToken<O> owner, String name, MemberTraits traits) {
+    VoidMethodRef0(DeclaredToken<O> owner, String name, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.traits = traits;
-    }
-
-    public static <O> VoidMethodRef0<O> introduce(DeclaredToken<O> owner, String name, MemberTraits traits) {
-        return new VoidMethodRef0<>(owner, name, traits);
     }
 
     @Override

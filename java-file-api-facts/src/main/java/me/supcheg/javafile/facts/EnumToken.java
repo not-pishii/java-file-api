@@ -19,22 +19,9 @@ public final class EnumToken<T> extends ClassTokenData implements ClassToken<T> 
 
     private final List<String> constants;
 
-    private EnumToken(ClassTypeRef typeRef, List<String> constants, MethodTable methods) {
+    EnumToken(ClassTypeRef typeRef, List<String> constants, MethodTable methods) {
         super(typeRef, List.of(CD_ENUM, ConstantDescs.CD_Object), methods);
         this.constants = List.copyOf(constants);
-    }
-
-    /// Introduces the fact that an enum type exists with the given constants.
-    ///
-    /// For fact sources only; see [TypeToken].
-    ///
-    /// @param typeRef the enum type
-    /// @param constants the enum's constant names, in declaration order
-    /// @param methods the enum's instance methods, declared and inherited
-    /// @param <T> the Java type the token stands for; the caller vouches for it
-    /// @return the token
-    public static <T> EnumToken<T> introduce(ClassTypeRef typeRef, List<String> constants, MethodTable methods) {
-        return new EnumToken<>(typeRef, constants, methods);
     }
 
     /// The enum's constant names, in declaration order.

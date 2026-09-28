@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> implements Invocable {
     private final DeclaredToken<?> owner;
 
@@ -24,7 +26,7 @@ public final class VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> implements I
 
     private final MemberTraits traits;
 
-    private VoidStaticMethodRef7(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, MemberTraits traits) {
+    VoidStaticMethodRef7(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.param1 = param1;
@@ -35,10 +37,6 @@ public final class VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> implements I
         this.param6 = param6;
         this.param7 = param7;
         this.traits = traits;
-    }
-
-    public static <A1, A2, A3, A4, A5, A6, A7> VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> introduce(DeclaredToken<?> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, MemberTraits traits) {
-        return new VoidStaticMethodRef7<>(owner, name, param1, param2, param3, param4, param5, param6, param7, traits);
     }
 
     @Override

@@ -8,9 +8,11 @@ import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.Types;
 
+import javax.annotation.processing.Generated;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.lang.reflect.Method;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /// Shorthands of the hand-written metamodel.
+@Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 final class Jdk {
     static final MemberTraits OVERRIDABLE = MemberTraits.DEFAULT;
     static final MemberTraits FINAL = MemberTraits.DEFAULT.with(Overridability.FINAL);
@@ -82,27 +85,28 @@ final class Jdk {
     }
 
     static <T> FinalClassToken<T> finalClass(Class<T> type) {
-        return FinalClassToken.introduce(Types.of(type), chain(type), methods(type, Map.of()));
+        return UnsafeFacts.finalClassToken(Types.of(type), chain(type), methods(type, Map.of()));
     }
 
     static <T> OpenClassToken<T> openClass(Class<T> type) {
-        return OpenClassToken.introduce(Types.of(type), chain(type), methods(type, Map.of()));
+        return UnsafeFacts.openClassToken(Types.of(type), chain(type), methods(type, Map.of()));
     }
 
     static <T> InterfaceToken<T> iface(Class<T> type) {
-        return InterfaceToken.introduce(Types.of(type), methods(type, Map.of()));
+        return UnsafeFacts.interfaceToken(Types.of(type), methods(type, Map.of()));
     }
 
     /// An interface token of a parameterized type, e.g. `List<E>`; the
     /// caller's signature vouches for the phantom.
     static <T> InterfaceToken<T> iface(Class<?> raw, Map<String, TypeToken<?>> vars, TypeArg... args) {
-        return InterfaceToken.introduce(Types.parameterized(desc(raw), List.of(args)), methods(raw, vars));
+        return UnsafeFacts.interfaceToken(Types.parameterized(desc(raw), List.of(args)), methods(raw, vars));
     }
 
     /// A class token of a parameterized type, e.g. `ArrayList<E>`; the
     /// caller's signature vouches for the phantom.
     static <T> OpenClassToken<T> openClass(Class<?> raw, Map<String, TypeToken<?>> vars, TypeArg... args) {
-        return OpenClassToken.introduce(Types.parameterized(desc(raw), List.of(args)), chain(raw), methods(raw, vars));
+        return UnsafeFacts.openClassToken(
+                Types.parameterized(desc(raw), List.of(args)), chain(raw), methods(raw, vars));
     }
 
     /// An exact type argument.

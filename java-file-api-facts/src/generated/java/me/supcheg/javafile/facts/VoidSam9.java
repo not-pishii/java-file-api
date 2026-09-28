@@ -1,17 +1,16 @@
 package me.supcheg.javafile.facts;
 
+import javax.annotation.processing.Generated;
+
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidSam9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> {
     private final InterfaceToken<F> owner;
 
     private final VoidMethodRef9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> method;
 
-    private VoidSam9(VoidMethodRef9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> method) {
+    VoidSam9(VoidMethodRef9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> method) {
         this.owner = Invocables.requireSam(method.owner(), method);
         this.method = method;
-    }
-
-    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidSam9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> introduce(VoidMethodRef9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> method) {
-        return new VoidSam9<>(method);
     }
 
     public InterfaceToken<F> owner() {

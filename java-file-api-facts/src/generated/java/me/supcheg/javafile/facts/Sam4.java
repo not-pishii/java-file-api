@@ -1,17 +1,16 @@
 package me.supcheg.javafile.facts;
 
+import javax.annotation.processing.Generated;
+
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class Sam4<F, R, A1, A2, A3, A4> {
     private final InterfaceToken<F> owner;
 
     private final MethodRef4<F, R, A1, A2, A3, A4> method;
 
-    private Sam4(MethodRef4<F, R, A1, A2, A3, A4> method) {
+    Sam4(MethodRef4<F, R, A1, A2, A3, A4> method) {
         this.owner = Invocables.requireSam(method.owner(), method);
         this.method = method;
-    }
-
-    public static <F, R, A1, A2, A3, A4> Sam4<F, R, A1, A2, A3, A4> introduce(MethodRef4<F, R, A1, A2, A3, A4> method) {
-        return new Sam4<>(method);
     }
 
     public InterfaceToken<F> owner() {

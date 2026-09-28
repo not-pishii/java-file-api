@@ -2,7 +2,9 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class StaticMethodRef5<R, A1, A2, A3, A4, A5> implements Invocable {
     private final DeclaredToken<?> owner;
 
@@ -22,7 +24,7 @@ public final class StaticMethodRef5<R, A1, A2, A3, A4, A5> implements Invocable 
 
     private final MemberTraits traits;
 
-    private StaticMethodRef5(DeclaredToken<?> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, MemberTraits traits) {
+    StaticMethodRef5(DeclaredToken<?> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, MemberTraits traits) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.result = result;
@@ -32,10 +34,6 @@ public final class StaticMethodRef5<R, A1, A2, A3, A4, A5> implements Invocable 
         this.param4 = param4;
         this.param5 = param5;
         this.traits = traits;
-    }
-
-    public static <R, A1, A2, A3, A4, A5> StaticMethodRef5<R, A1, A2, A3, A4, A5> introduce(DeclaredToken<?> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, MemberTraits traits) {
-        return new StaticMethodRef5<>(owner, name, result, param1, param2, param3, param4, param5, traits);
     }
 
     @Override

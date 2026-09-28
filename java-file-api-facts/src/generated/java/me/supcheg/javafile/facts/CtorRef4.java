@@ -2,9 +2,11 @@ package me.supcheg.javafile.facts;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class CtorRef4<O, A1, A2, A3, A4> implements Invocable {
-    private final ClassToken<O> owner;
+    private final ConcreteClassToken<O> owner;
 
     private final TypeToken<A1> param1;
 
@@ -16,7 +18,7 @@ public final class CtorRef4<O, A1, A2, A3, A4> implements Invocable {
 
     private final MemberTraits traits;
 
-    private CtorRef4(ClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, MemberTraits traits) {
+    CtorRef4(ConcreteClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, MemberTraits traits) {
         this.owner = owner;
         this.param1 = param1;
         this.param2 = param2;
@@ -25,17 +27,13 @@ public final class CtorRef4<O, A1, A2, A3, A4> implements Invocable {
         this.traits = traits;
     }
 
-    public static <O, A1, A2, A3, A4> CtorRef4<O, A1, A2, A3, A4> introduce(ClassToken<O> owner, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, MemberTraits traits) {
-        return new CtorRef4<>(owner, param1, param2, param3, param4, traits);
-    }
-
     @Override
     public InvocableKind kind() {
         return InvocableKind.CONSTRUCTOR;
     }
 
     @Override
-    public ClassToken<O> owner() {
+    public ConcreteClassToken<O> owner() {
         return this.owner;
     }
 

@@ -14,6 +14,7 @@ import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 
@@ -60,13 +61,13 @@ public final class TypedClassBuilder<Self> {
     /// Declares a `public final` field with an initializer.
     public <T> FieldRef<Self, T> field(String name, TypeToken<T> type, Expr<? extends T> initializer) {
         core.withField(name, type.typeRef(), lowerExpr(initializer));
-        return FieldRef.introduce(self, name, type);
+        return UnsafeFacts.field(self, name, type);
     }
 
     /// Declares a `public` mutable field with an initializer.
     public <T> MutableFieldRef<Self, T> mutableField(String name, TypeToken<T> type, Expr<? extends T> initializer) {
         core.withField(name, type.typeRef(), lowerExpr(initializer));
-        return MutableFieldRef.introduce(self, name, type);
+        return UnsafeFacts.mutableField(self, name, type);
     }
 
     // ------------------------------------------------------------------
@@ -75,7 +76,7 @@ public final class TypedClassBuilder<Self> {
 
     public <R> MethodRef0<Self, R> method(String name, TypeToken<R> result, Function<Body<R>, Terminated<R>> body) {
         MethodRef0<Self, R> ref =
-                MethodRef0.introduce(self, name, result, MemberTraits.DEFAULT.with(Overridability.FINAL));
+                UnsafeFacts.method(self, name, result, MemberTraits.DEFAULT.with(Overridability.FINAL));
         core.withMethod(name, result.typeRef(), mb -> mb.withBody(cb -> attachBody(cb, new Lowering(), body)));
         return ref;
     }
@@ -83,7 +84,7 @@ public final class TypedClassBuilder<Self> {
     public <R, A1> MethodRef1<Self, R, A1> method(
             String name, TypeToken<R> result, TypeToken<A1> p1, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
         MethodRef1<Self, R, A1> ref =
-                MethodRef1.introduce(self, name, result, p1, MemberTraits.DEFAULT.with(Overridability.FINAL));
+                UnsafeFacts.method(self, name, result, p1, MemberTraits.DEFAULT.with(Overridability.FINAL));
         Var<A1> param = Var.param(p1);
         Lowering lowering = new Lowering();
         String paramName = lowering.declareUpfront(param);
@@ -98,7 +99,7 @@ public final class TypedClassBuilder<Self> {
     public <R, A1, A2> MethodRef2<Self, R, A1, A2> method(
             String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TwoParamBody<R, A1, A2> body) {
         MethodRef2<Self, R, A1, A2> ref =
-                MethodRef2.introduce(self, name, result, p1, p2, MemberTraits.DEFAULT.with(Overridability.FINAL));
+                UnsafeFacts.method(self, name, result, p1, p2, MemberTraits.DEFAULT.with(Overridability.FINAL));
         Var<A1> param1 = Var.param(p1);
         Var<A2> param2 = Var.param(p2);
         Lowering lowering = new Lowering();
@@ -116,7 +117,7 @@ public final class TypedClassBuilder<Self> {
     public <A1> VoidMethodRef1<Self, A1> voidMethod(
             String name, TypeToken<A1> p1, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
         VoidMethodRef1<Self, A1> ref =
-                VoidMethodRef1.introduce(self, name, p1, MemberTraits.DEFAULT.with(Overridability.FINAL));
+                UnsafeFacts.voidMethod(self, name, p1, MemberTraits.DEFAULT.with(Overridability.FINAL));
         Var<A1> param = Var.param(p1);
         Lowering lowering = new Lowering();
         String paramName = lowering.declareUpfront(param);
@@ -128,8 +129,7 @@ public final class TypedClassBuilder<Self> {
     }
 
     public VoidMethodRef0<Self> voidMethod(String name, Function<VoidBody, Terminated<Void>> body) {
-        VoidMethodRef0<Self> ref =
-                VoidMethodRef0.introduce(self, name, MemberTraits.DEFAULT.with(Overridability.FINAL));
+        VoidMethodRef0<Self> ref = UnsafeFacts.voidMethod(self, name, MemberTraits.DEFAULT.with(Overridability.FINAL));
         core.withVoidMethod(name, mb -> mb.withBody(cb -> attachVoidBody(cb, new Lowering(), body)));
         return ref;
     }
@@ -139,13 +139,13 @@ public final class TypedClassBuilder<Self> {
     // ------------------------------------------------------------------
 
     public CtorRef0<Self> constructor(Function<VoidBody, Terminated<Void>> body) {
-        CtorRef0<Self> ref = CtorRef0.introduce(self, MemberTraits.DEFAULT);
+        CtorRef0<Self> ref = UnsafeFacts.ctor(self, MemberTraits.DEFAULT);
         core.withConstructor(cb -> cb.withBody(b -> attachVoidBody(b, new Lowering(), body)));
         return ref;
     }
 
     public <A1> CtorRef1<Self, A1> constructor(TypeToken<A1> p1, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
-        CtorRef1<Self, A1> ref = CtorRef1.introduce(self, p1, MemberTraits.DEFAULT);
+        CtorRef1<Self, A1> ref = UnsafeFacts.ctor(self, p1, MemberTraits.DEFAULT);
         Var<A1> param = Var.param(p1);
         Lowering lowering = new Lowering();
         String paramName = lowering.declareUpfront(param);
