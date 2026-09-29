@@ -15,6 +15,12 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     @Override
     ClassOrInterfaceTypeRef typeRef();
 
+    /// The parameterized supertypes of the type's generic class or interface,
+    /// in terms of its type parameters; [Supertypes#NONE] when not recorded.
+    ///
+    /// @return the supertypes
+    Supertypes supertypes();
+
     /// The instance methods of the type, declared and inherited, as runtime
     /// data for the completeness checks of lowering.
     ///

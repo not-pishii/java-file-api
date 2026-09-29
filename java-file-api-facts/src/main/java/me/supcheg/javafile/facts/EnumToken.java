@@ -20,7 +20,7 @@ public final class EnumToken<T> extends ClassTokenData implements ClassToken<T> 
     private final List<String> constants;
 
     EnumToken(ClassTypeRef typeRef, List<String> constants, MethodTable methods) {
-        super(typeRef, List.of(CD_ENUM, ConstantDescs.CD_Object), methods);
+        super(typeRef, List.of(CD_ENUM, ConstantDescs.CD_Object), Supertypes.NONE, methods);
         this.constants = List.copyOf(constants);
     }
 

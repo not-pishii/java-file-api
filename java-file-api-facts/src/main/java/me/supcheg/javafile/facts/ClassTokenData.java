@@ -10,13 +10,18 @@ import java.util.function.Supplier;
 abstract class ClassTokenData extends DeclaredTokenData {
     private final List<ClassDesc> superclasses;
 
-    ClassTokenData(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        super(typeRef, methods);
+    ClassTokenData(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        super(typeRef, supertypes, methods);
         this.superclasses = List.copyOf(superclasses);
     }
 
-    ClassTokenData(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
-        super(typeRef, methods);
+    ClassTokenData(
+            ClassOrInterfaceTypeRef typeRef,
+            List<ClassDesc> superclasses,
+            Supertypes supertypes,
+            Supplier<MethodTable> methods) {
+        super(typeRef, supertypes, methods);
         this.superclasses = List.copyOf(superclasses);
     }
 

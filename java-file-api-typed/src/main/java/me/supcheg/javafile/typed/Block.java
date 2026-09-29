@@ -263,18 +263,22 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// Appends `if (operand instanceof U v) { then }`; the binding `v` exists
     /// only in `then` (flow typing through HOAS).
     ///
-    /// `U` must be a subtype of the operand's type, and reifiable.
+    /// `U` must be a subtype of the operand's type, and the test checked
+    /// (JLS 15.20.2, 5.1.6.2): `U` is reifiable, or the operand's type is a
+    /// parameterized supertype of `U` that determines its type arguments —
+    /// `listOfStrings instanceof ArrayList<String> a` is accepted,
+    /// `object instanceof List<String> l` is not.
     ///
     /// @param operand the tested expression
     /// @param type the pattern type
     /// @param then builds the `then` block, given the binding
     /// @param <U> the pattern type
     /// @return this block
-    /// @throws IllegalArgumentException if `type` is not reifiable
+    /// @throws IllegalArgumentException if the test would be unchecked
     public final <U> B ifInstanceOf(
             Expr<? super U> operand, RefToken<U> type, BiConsumer<? super B, ? super Var<U>> then) {
         requireOpen();
-        Tokens.requireReifiable(type, "an instanceof pattern");
+        Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOf");
         Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
         fill(thenBlock, b -> then.accept(b, binding));
@@ -290,14 +294,14 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param otherwise builds the `else` block; it must end
     /// @param <U> the pattern type
     /// @return the proof that this block ended
-    /// @throws IllegalArgumentException if `type` is not reifiable
+    /// @throws IllegalArgumentException if the test would be unchecked
     public final <U> Terminated<R> ifInstanceOfElse(
             Expr<? super U> operand,
             RefToken<U> type,
             BiFunction<? super B, ? super Var<U>, Terminated<R>> then,
             Function<? super B, Terminated<R>> otherwise) {
         requireOpen();
-        Tokens.requireReifiable(type, "an instanceof pattern");
+        Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOfElse");
         Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
         fillEnding(thenBlock, b -> then.apply(b, binding));

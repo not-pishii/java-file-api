@@ -12,15 +12,16 @@ import java.util.function.Supplier;
 abstract class DeclaredTokenData {
     private final ClassOrInterfaceTypeRef typeRef;
     private final ClassDesc erasure;
+    private final Supertypes supertypes;
     private final Supplier<MethodTable> methods;
 
-    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, MethodTable methods) {
-        this(typeRef, () -> methods);
+    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
+        this(typeRef, supertypes, () -> methods);
     }
 
     /// For a type whose methods are known only later: a class still being
     /// declared, whose table is complete once its declaration is.
-    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supplier<MethodTable> methods) {
+    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, Supplier<MethodTable> methods) {
         this.typeRef = typeRef;
         this.erasure = switch (typeRef) {
             case ClassTypeRef cls -> cls.desc();
@@ -29,6 +30,15 @@ abstract class DeclaredTokenData {
                 throw new IllegalArgumentException(
                         "a declared type token needs a class or parameterized type, got type variable " + var.name());
         };
+        int arity = typeRef instanceof ParameterizedTypeRef parameterized
+                ? parameterized.args().size()
+                : 0;
+        if (!supertypes.equals(Supertypes.NONE) && supertypes.typeParameters().size() != arity) {
+            throw new IllegalArgumentException("the supertypes of " + TypeNames.describe(typeRef) + " are given for "
+                    + supertypes.typeParameters().size() + " type parameters, but it has " + arity
+                    + " type arguments");
+        }
+        this.supertypes = supertypes;
         this.methods = methods;
     }
 
@@ -38,6 +48,10 @@ abstract class DeclaredTokenData {
 
     public final ClassDesc erasure() {
         return erasure;
+    }
+
+    public final Supertypes supertypes() {
+        return supertypes;
     }
 
     public final MethodTable methods() {

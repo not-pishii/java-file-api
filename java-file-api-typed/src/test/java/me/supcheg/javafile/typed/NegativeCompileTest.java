@@ -192,7 +192,7 @@ class NegativeCompileTest {
                 "ForgedToken",
                 """
                 void use() {
-                    new FinalClassToken<Integer>(Types.STRING, List.of(), MethodTable.EMPTY);
+                    new FinalClassToken<Integer>(Types.STRING, List.of(), Supertypes.NONE, MethodTable.EMPTY);
                 }
                 """,
                 "is not public in me.supcheg.javafile.facts.FinalClassToken; cannot be accessed from outside package");

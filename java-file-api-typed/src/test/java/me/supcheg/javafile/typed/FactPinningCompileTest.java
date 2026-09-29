@@ -450,6 +450,49 @@ class FactPinningCompileTest {
         assertThat(compiled.invoke("lists")).isEqualTo(2);
     }
 
+    @Test
+    void castsAndInstanceofToParameterizedSubtypesDeterminedByTheOperandCompileWithoutUncheckedWarnings()
+            throws Throwable {
+        List_<String> strings = new List_<>(String_.TOKEN);
+        ArrayList_<String> arrayOfStrings = new ArrayList_<>(String_.TOKEN);
+        InterfaceToken<java.util.Collection<String>> collectionOfStrings = UnsafeFacts.interfaceToken(
+                Types.parameterized(ConstantDescs.CD_Collection, Types.STRING), MethodTable.EMPTY);
+
+        CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> void build(TypedClassBuilder<Self> cb) {
+                cb.staticMethod(
+                        "narrow",
+                        arrayOfStrings.token,
+                        strings.token,
+                        (b, l) -> b.return_(castChecked(arrayOfStrings.token, l)));
+                cb.staticMethod(
+                        "size",
+                        PrimitiveToken.INT,
+                        strings.token,
+                        (b, l) -> b.ifInstanceOfElse(
+                                l,
+                                arrayOfStrings.token,
+                                (t, a) -> t.return_(call(a, strings.size)),
+                                e -> e.return_(literal(-1))));
+                cb.staticMethod(
+                        "list", strings.token, collectionOfStrings, (b, c) -> b.return_(castChecked(strings.token, c)));
+            }
+        });
+
+        assertThat(compiled.source())
+                .contains("(ArrayList<String>) v0")
+                .contains("v0 instanceof ArrayList<String> v1")
+                .contains("(List<String>) v0");
+        ArrayList<String> items = new ArrayList<>(List.of("a", "b"));
+        assertThat(compiled.invoke("narrow", items)).isSameAs(items);
+        assertThatThrownBy(() -> compiled.invoke("narrow", List.of("a"))).isInstanceOf(ClassCastException.class);
+        assertThat(compiled.invoke("size", items)).isEqualTo(2);
+        assertThat(compiled.invoke("size", List.of("a"))).isEqualTo(-1);
+        assertThat(compiled.invoke("list", items)).isSameAs(items);
+        assertThatThrownBy(() -> compiled.invoke("list", java.util.Set.of("a"))).isInstanceOf(ClassCastException.class);
+    }
+
     // ------------------------------------------------------------------
     // M2: cond
     // ------------------------------------------------------------------
