@@ -1,22 +1,18 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
-import me.supcheg.javafile.facts.FinalClassToken;
-import me.supcheg.javafile.facts.MethodTable;
-import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.model.ClassMember;
+import me.supcheg.javafile.model.Modifier;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
-/// Entry point of the typed eDSL (§6.5): declares a generated class through
-/// a self-branded [TypedClassBuilder].
+/// Entry point of the typed eDSL (§6.5): declares a generated `final` class
+/// through a self-branded [TypedClassBuilder].
 public final class TypedJavaFile {
-    private static final ClassDesc OBJECT = ClassDesc.of("java.lang", "Object");
-
     private TypedJavaFile() {}
 
-    /// Declares a `final` class. `spec` is implemented as an anonymous class
+    /// Declares a `public final` class, extending `Object`. `spec` is implemented as an anonymous class
     /// (a generic method is not expressible as a lambda) to receive a
     /// [TypedClassBuilder] branded with a `Self` unique to this call — the
     /// same CPS-brand technique as `Facts.withToken` (§3.1):
@@ -25,6 +21,7 @@ public final class TypedJavaFile {
     /// JavaFile file = TypedJavaFile.class_(desc, new TypedJavaFile.TypedClassSpec() {
     ///     public <Self> void build(TypedClassBuilder<Self> cb) {
     ///         var x = cb.field("x", PrimitiveToken.INT, literal(1));
+    ///         cb.method("x2", PrimitiveToken.INT, (b, self) -> b.return_(addInt(field(self, x), field(self, x))));
     ///         ...
     ///     }
     /// });
@@ -33,20 +30,22 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec populates the class, given its self-branded builder
     /// @return the rendered class, ready for [JavaFile#render()]/[JavaFile#writeTo(java.nio.file.Path)]
-    /// @throws IllegalStateException if called while a method body is being built
+    /// @throws IllegalStateException if called while a method body is being built, or if a
+    ///     member `spec` declared is not defined
     public static JavaFile class_(ClassDesc desc, TypedClassSpec spec) {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-        return JavaFile.class_(desc, cb -> declare(desc, cb, spec));
+        List<ClassMember> members = declare(desc, spec);
+        return JavaFile.class_(desc, cb -> {
+            cb.withModifiers(Modifier.FINAL);
+            members.forEach(cb);
+        });
     }
 
-    private static <Self> void declare(
-            ClassDesc desc, me.supcheg.javafile.builder.ClassBuilder cb, TypedClassSpec spec) {
-        ClassTypeRef typeRef = new ClassTypeRef(desc);
-        FinalClassToken<Self> self = UnsafeFacts.finalClassToken(typeRef, List.of(OBJECT), MethodTable.EMPTY);
-        TypedClassBuilder<Self> builder = new TypedClassBuilder<>(cb, self);
+    private static <Self> List<ClassMember> declare(ClassDesc desc, TypedClassSpec spec) {
+        TypedClassBuilder<Self> builder = new TypedClassBuilder<>(desc);
         spec.build(builder);
-        builder.markBuilt();
+        return builder.complete();
     }
 
     /// A self-branded class specification (§3.1, §6.5).

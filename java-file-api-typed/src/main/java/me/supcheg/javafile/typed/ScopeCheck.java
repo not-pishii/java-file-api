@@ -62,7 +62,7 @@ final class ScopeCheck {
             case Node.Local(var v) -> requireInScope(v, use, where);
             case Node.Lit ignored -> {}
             case Node.RawLit ignored -> {}
-            case Node.This ignored -> {}
+            case Node.This(var owner) -> requireThisInScope(owner, use, where);
             case Node.StaticFieldGet ignored -> {}
             case Node.EnumConst ignored -> {}
             case Node.Raw ignored -> {}
@@ -172,6 +172,17 @@ final class ScopeCheck {
         throw new IllegalStateException("the " + var + " declared in the " + owner.path() + " is used in the "
                 + where + ", which is not inside that block: the variable is out of scope there — it escaped the"
                 + " lambda it was handed to (§6.2)");
+    }
+
+    /// `this` is in scope in the body of the instance member it was handed
+    /// to, lambdas in it included (it is effectively final), and nowhere
+    /// else: not in another member, not in a field initializer (§6.5).
+    private static void requireThisInScope(Block<?, ?> owner, @Nullable Block<?, ?> use, String where) {
+        if (!encloses(owner, use)) {
+            throw new IllegalStateException("the this of the " + owner.path() + " is used in the " + where
+                    + ", which is not inside that body: this is handed only to the body of an instance method or"
+                    + " constructor, and is in scope only there (§6.5)");
+        }
     }
 
     private static void loopCtl(LoopCtl ctl, Block<?, ?> use, String form) {

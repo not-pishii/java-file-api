@@ -6,14 +6,21 @@ import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 
 import java.lang.constant.ClassDesc;
+import java.util.function.Supplier;
 
 /// The state shared by the declared token classes.
 abstract class DeclaredTokenData {
     private final ClassOrInterfaceTypeRef typeRef;
     private final ClassDesc erasure;
-    private final MethodTable methods;
+    private final Supplier<MethodTable> methods;
 
     DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, MethodTable methods) {
+        this(typeRef, () -> methods);
+    }
+
+    /// For a type whose methods are known only later: a class still being
+    /// declared, whose table is complete once its declaration is.
+    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supplier<MethodTable> methods) {
         this.typeRef = typeRef;
         this.erasure = switch (typeRef) {
             case ClassTypeRef cls -> cls.desc();
@@ -34,7 +41,7 @@ abstract class DeclaredTokenData {
     }
 
     public final MethodTable methods() {
-        return methods;
+        return methods.get();
     }
 
     @Override

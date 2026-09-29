@@ -120,16 +120,6 @@ public final class Expressions {
         return Expr.of(new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull()), type);
     }
 
-    /// `this`, at the given self type — the natural companion of
-    /// [TypedClassBuilder#self()] inside an instance method/constructor body.
-    ///
-    /// @param type the self type
-    /// @param <T> the self type
-    /// @return the `this` expression
-    public static <T> Expr<T> this_(TypeToken<T> type) {
-        return Expr.of(new Node.This(), type);
-    }
-
     // ------------------------------------------------------------------
     // Boxing (§6.1): explicit only
     // ------------------------------------------------------------------

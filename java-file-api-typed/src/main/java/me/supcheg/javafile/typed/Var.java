@@ -21,7 +21,8 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the Java type of the variable
 public sealed class Var<T> extends Expr<T> permits MutVar {
-    private static final Node UNUSED = new Node.This();
+    /// The node handed to the superclass, never read: [#node()] is overridden.
+    private static final Node UNUSED = new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull());
 
     private final Node local;
     private final String role;

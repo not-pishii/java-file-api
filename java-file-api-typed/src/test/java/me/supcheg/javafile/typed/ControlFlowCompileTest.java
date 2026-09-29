@@ -51,7 +51,7 @@ class ControlFlowCompileTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 // while (true) { if (flag) { return 1; } } — no return after it
-                cb.method(
+                cb.staticMethod(
                         "forever",
                         PrimitiveToken.INT,
                         PrimitiveToken.BOOLEAN,
@@ -59,7 +59,7 @@ class ControlFlowCompileTest {
 
                 // try { return Integer.parseInt(s); } catch (NumberFormatException e) { return -1; }
                 // finally { System.out.println(); }
-                cb.method(
+                cb.staticMethod(
                         "parse",
                         PrimitiveToken.INT,
                         String_.TOKEN,
@@ -70,11 +70,11 @@ class ControlFlowCompileTest {
                                                 f.exec(voidCall(staticField(System_.out), PrintStream_.println)))));
 
                 // if (flag) {} else { return; } — a void body may fall off the end
-                cb.voidMethod(
+                cb.voidStaticMethod(
                         "maybe", PrimitiveToken.BOOLEAN, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
 
                 // a try_ statement whose catch completes normally is continued
-                cb.method(
+                cb.staticMethod(
                         "recover",
                         PrimitiveToken.INT,
                         b -> b.try_(
@@ -83,7 +83,7 @@ class ControlFlowCompileTest {
                                 .return_(literal(2)));
 
                 // while (true) { if (i >= n) break; i = i + 1; } return i;
-                cb.method(
+                cb.staticMethod(
                         "count",
                         PrimitiveToken.INT,
                         PrimitiveToken.INT,
@@ -97,7 +97,7 @@ class ControlFlowCompileTest {
                                         .return_(i)));
 
                 // outer: while (flag) { while (true) { break outer; } } return 0;
-                cb.method(
+                cb.staticMethod(
                         "labeled",
                         PrimitiveToken.INT,
                         PrimitiveToken.BOOLEAN,
@@ -106,7 +106,7 @@ class ControlFlowCompileTest {
                                 .return_(literal(0)));
 
                 // do { if (flag) continue; println(1); } while (flag); return 0;
-                cb.method(
+                cb.staticMethod(
                         "doLoop",
                         PrimitiveToken.INT,
                         PrimitiveToken.BOOLEAN,
@@ -129,7 +129,7 @@ class ControlFlowCompileTest {
         JavaFile file = TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.method(
+                cb.staticMethod(
                         "nested",
                         PrimitiveToken.INT,
                         PrimitiveToken.INT,

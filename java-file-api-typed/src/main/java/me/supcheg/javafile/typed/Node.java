@@ -32,8 +32,9 @@ sealed interface Node {
     /// A reference to a local variable or parameter.
     record Local(Var<?> var) implements Node {}
 
-    /// `this`.
-    record This() implements Node {}
+    /// `this`, handed to the body of an instance member (§6.5); `owner` is the
+    /// root block of that body, where `this` is in scope.
+    record This(Block<?, ?> owner) implements Node {}
 
     /// Boxing of a primitive value, `Integer.valueOf(operand)`.
     record Box(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
