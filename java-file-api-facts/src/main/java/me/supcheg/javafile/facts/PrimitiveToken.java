@@ -1,7 +1,6 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -67,11 +66,13 @@ public final class PrimitiveToken<P, B, A> implements TypeToken<P> {
         this.typeRef = typeRef;
         this.erasure = erasure;
         this.boxClass = boxClass;
-        this.boxed = new FinalClassToken<>(Types.of(boxClass), superclasses, Supertypes.NONE, MethodTable.EMPTY);
+        this.boxed = new FinalClassToken<>(
+                TypeShape.builtin(ClassDesc.ofDescriptor(boxClass.descriptorString()), superclasses), List.of());
         this.array = new ArrayToken<>(this);
     }
 
-    /// The token of the box type, e.g. `Integer` for `int`.
+    /// The token of the box type, e.g. `Integer` for `int`. Its shape is
+    /// [ShapeOrigin#BUILTIN] and records no methods and no supertypes.
     ///
     /// @return the box token
     public FinalClassToken<B> boxed() {

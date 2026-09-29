@@ -4,10 +4,10 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
 import javax.annotation.processing.Generated;
-import java.util.Map;
 import java.util.function.Function;
 
 /// Facts of `java.util.function.Function<T, R>`.
@@ -29,7 +29,7 @@ public final class Function_<T, R> {
     public final Sam1<Function<T, R>, R, T> sam;
 
     private Function_(RefToken<T> argument, RefToken<R> result) {
-        this.token = Jdk.iface(Function.class, Map.of("T", argument, "R", result), Jdk.arg(argument), Jdk.arg(result));
+        this.token = Jdk.iface(Function.class, TokenArg.exact(argument), TokenArg.exact(result));
         this.apply = UnsafeFacts.method(token, "apply", result, argument, Jdk.ABSTRACT);
         this.sam = UnsafeFacts.sam(apply);
     }

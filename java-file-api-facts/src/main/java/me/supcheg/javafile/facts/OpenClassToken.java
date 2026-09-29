@@ -11,8 +11,12 @@ import java.util.List;
 /// @param <T> the Java type this token stands for
 public final class OpenClassToken<T> extends ClassTokenData implements ConcreteClassToken<T> {
 
+    OpenClassToken(TypeShape<DeclaredKind.OpenClass> shape, List<TokenArg> args) {
+        super(shape, args);
+    }
+
     OpenClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
-        super(typeRef, superclasses, supertypes, methods);
+            TypeShape<DeclaredKind.OpenClass> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+        super(shape, typeRef, arguments);
     }
 }

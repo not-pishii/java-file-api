@@ -15,8 +15,15 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     @Override
     ClassOrInterfaceTypeRef typeRef();
 
+    /// The shape the token applies to its type arguments: the data of the
+    /// type that does not depend on them, and who vouches for it.
+    ///
+    /// @return the shape
+    TypeShape<?> shape();
+
     /// The parameterized supertypes of the type's generic class or interface,
-    /// in terms of its type parameters; [Supertypes#NONE] when not recorded.
+    /// in terms of its type parameters; [Supertypes#NONE] when not recorded
+    /// and for a raw type.
     ///
     /// @return the supertypes
     Supertypes supertypes();

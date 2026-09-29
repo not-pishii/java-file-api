@@ -4,10 +4,10 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
 import javax.annotation.processing.Generated;
-import java.util.Map;
 import java.util.function.Supplier;
 
 /// Facts of `java.util.function.Supplier<T>`.
@@ -25,7 +25,7 @@ public final class Supplier_<T> {
     public final Sam0<Supplier<T>, T> sam;
 
     private Supplier_(RefToken<T> result) {
-        this.token = Jdk.iface(Supplier.class, Map.of("T", result), Jdk.arg(result));
+        this.token = Jdk.iface(Supplier.class, TokenArg.exact(result));
         this.get = UnsafeFacts.method(token, "get", result, Jdk.ABSTRACT);
         this.sam = UnsafeFacts.sam(get);
     }

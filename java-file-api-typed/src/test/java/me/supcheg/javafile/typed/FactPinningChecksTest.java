@@ -80,7 +80,9 @@ class FactPinningChecksTest {
         var listOfExtendsString = UnsafeFacts.<List<? extends String>>interfaceToken(
                 Types.parameterized(ConstantDescs.CD_List, Types.extendsBound(Types.STRING)), MethodTable.EMPTY);
         var arrayOfExtendsString = UnsafeFacts.<ArrayList<? extends String>>openClassToken(
-                Types.parameterized(ARRAY_LIST, Types.extendsBound(Types.STRING)), List.of(), MethodTable.EMPTY);
+                Types.parameterized(ARRAY_LIST, Types.extendsBound(Types.STRING)),
+                List.of(ConstantDescs.CD_Object),
+                MethodTable.EMPTY);
 
         // checked: accepted
         assertCheckedCast(strings.token, arrayOfStrings.token);
@@ -120,8 +122,8 @@ class FactPinningChecksTest {
                         List.of(Types.typeVar("A"), Types.typeVar("B")),
                         List.of(Types.parameterized(ConstantDescs.CD_List, Types.typeVar("A")))),
                 MethodTable.EMPTY);
-        var unrecorded =
-                UnsafeFacts.openClassToken(Types.parameterized(ARRAY_LIST, Types.STRING), List.of(), MethodTable.EMPTY);
+        var unrecorded = UnsafeFacts.openClassToken(
+                Types.parameterized(ARRAY_LIST, Types.STRING), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
 
         assertUncheckedCast(
                 strings.token,

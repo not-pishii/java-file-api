@@ -2,12 +2,12 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidSam1;
 
 import javax.annotation.processing.Generated;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /// Facts of `java.util.function.Consumer<T>`.
@@ -25,7 +25,7 @@ public final class Consumer_<T> {
     public final VoidSam1<Consumer<T>, T> sam;
 
     private Consumer_(RefToken<T> argument) {
-        this.token = Jdk.iface(Consumer.class, Map.of("T", argument), Jdk.arg(argument));
+        this.token = Jdk.iface(Consumer.class, TokenArg.exact(argument));
         this.accept = UnsafeFacts.voidMethod(token, "accept", argument, Jdk.ABSTRACT);
         this.sam = UnsafeFacts.voidSam(accept);
     }

@@ -8,11 +8,11 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
 import javax.annotation.processing.Generated;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 /// Facts of `java.util.List<E>`, instantiated with the token of `E` (§3.3):
@@ -53,7 +53,7 @@ public final class List_<E> {
     ///
     /// @param element the element type
     public List_(RefToken<E> element) {
-        this.token = Jdk.iface(List.class, Map.of("E", element), Jdk.arg(element));
+        this.token = Jdk.iface(List.class, TokenArg.exact(element));
         this.get = UnsafeFacts.method(token, "get", element, PrimitiveToken.INT, Jdk.ABSTRACT);
         this.add = UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, element, Jdk.ABSTRACT);
         this.size = UnsafeFacts.method(token, "size", PrimitiveToken.INT, Jdk.ABSTRACT);
