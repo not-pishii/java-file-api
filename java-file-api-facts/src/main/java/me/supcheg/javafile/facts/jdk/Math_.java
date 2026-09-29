@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.StaticMethodRef1;
@@ -17,15 +18,15 @@ public final class Math_ {
 
     /// `static int max(int, int)`.
     public static final StaticMethodRef2<Prim.Int, Prim.Int, Prim.Int> max_int_int = UnsafeFacts.staticMethod(
-            TOKEN, "max", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, Jdk.FINAL);
+            TOKEN, "max", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// `static int abs(int)`.
     public static final StaticMethodRef1<Prim.Int, Prim.Int> abs_int =
-            UnsafeFacts.staticMethod(TOKEN, "abs", PrimitiveToken.INT, PrimitiveToken.INT, Jdk.FINAL);
+            UnsafeFacts.staticMethod(TOKEN, "abs", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// `static int toIntExact(long)`: the checked narrowing of `long` to `int`.
     public static final StaticMethodRef1<Prim.Int, Prim.Long> toIntExact =
-            UnsafeFacts.staticMethod(TOKEN, "toIntExact", PrimitiveToken.INT, PrimitiveToken.LONG, Jdk.FINAL);
+            UnsafeFacts.staticMethod(TOKEN, "toIntExact", PrimitiveToken.INT, PrimitiveToken.LONG, MemberTraits.FINAL);
 
     private Math_() {}
 }

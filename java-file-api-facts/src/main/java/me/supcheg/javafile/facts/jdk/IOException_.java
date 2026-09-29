@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
@@ -15,10 +16,11 @@ public final class IOException_ {
     public static final OpenClassToken<IOException> TOKEN = Jdk.openClass(IOException.class);
 
     /// `new IOException()`.
-    public static final CtorRef0<IOException> new_ = UnsafeFacts.ctor(TOKEN, Jdk.FINAL);
+    public static final CtorRef0<IOException> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     /// `new IOException(String)`.
-    public static final CtorRef1<IOException, String> new_String = UnsafeFacts.ctor(TOKEN, String_.TOKEN, Jdk.FINAL);
+    public static final CtorRef1<IOException, String> new_String =
+            UnsafeFacts.ctor(TOKEN, String_.TOKEN, MemberTraits.FINAL);
 
     private IOException_() {}
 }

@@ -67,6 +67,14 @@ final class Fixtures {
                 return this;
             }
 
+            public String dual(Object o) {
+                return "instance";
+            }
+
+            public static String dual(String s) {
+                return "static";
+            }
+
             public static String which(Object o) {
                 return "Object";
             }
@@ -112,18 +120,25 @@ final class Fixtures {
     private static final ClassDesc SUB_DESC = ClassDesc.of("fixtures", "Sub");
     private static final ClassDesc BOX_DESC = ClassDesc.of("fixtures", "Box");
 
-    /// The instance methods of `Base`, and so of `Sub`, which overrides
-    /// `self` only.
+    /// The methods of `Base`, and so of `Sub`, which overrides `self` only.
+    /// `dual` is an instance and a `static` overload of the same arity.
     private static final MethodTable BASE_METHODS = new MethodTable(
             Set.of(),
             Set.of(
                     new MethodSignature("pick", List.of(CD_Object)),
                     new MethodSignature("pick", List.of(CD_String)),
                     new MethodSignature("only", List.of(CD_Object)),
+                    new MethodSignature("dual", List.of(CD_Object)),
                     new MethodSignature("self", List.of()),
                     new MethodSignature("equals", List.of(CD_Object)),
                     new MethodSignature("hashCode", List.of()),
-                    new MethodSignature("toString", List.of())));
+                    new MethodSignature("toString", List.of())),
+            Set.of(
+                    new MethodSignature("dual", List.of(CD_String)),
+                    new MethodSignature("which", List.of(CD_Object)),
+                    new MethodSignature("which", List.of(CD_String)),
+                    new MethodSignature("which2", List.of(BASE_DESC)),
+                    new MethodSignature("which2", List.of(SUB_DESC))));
 
     static final OpenClassToken<BaseP> BASE =
             UnsafeFacts.openClassToken(Types.of(BASE_DESC), List.of(CD_Object), BASE_METHODS);
@@ -138,6 +153,8 @@ final class Fixtures {
             UnsafeFacts.method(BASE, "pick", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
     static final MethodRef1<BaseP, String, Object> ONLY =
             UnsafeFacts.method(BASE, "only", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
+    static final MethodRef1<BaseP, String, Object> DUAL =
+            UnsafeFacts.method(BASE, "dual", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
     static final MethodRef0<BaseP, BaseP> SELF = UnsafeFacts.method(BASE, "self", BASE, MemberTraits.DEFAULT);
 
     static final MutableFieldRef<BaseP, String> NAME_OF_BASE = UnsafeFacts.mutableField(BASE, "name", String_.TOKEN);

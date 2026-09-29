@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.Prim;
@@ -54,12 +55,12 @@ public final class List_<E> {
     /// @param element the element type
     public List_(RefToken<E> element) {
         this.token = Jdk.iface(List.class, TokenArg.exact(element));
-        this.get = UnsafeFacts.method(token, "get", element, PrimitiveToken.INT, Jdk.ABSTRACT);
-        this.add = UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, element, Jdk.ABSTRACT);
-        this.size = UnsafeFacts.method(token, "size", PrimitiveToken.INT, Jdk.ABSTRACT);
-        this.isEmpty = UnsafeFacts.method(token, "isEmpty", PrimitiveToken.BOOLEAN, Jdk.ABSTRACT);
-        this.stream = UnsafeFacts.method(token, "stream", new Stream_<>(element).token, Jdk.OVERRIDABLE);
-        this.of = UnsafeFacts.staticMethod(token, "of", token, Jdk.FINAL.withTypeArgs(element));
-        this.of_E = UnsafeFacts.staticMethod(token, "of", token, element, Jdk.FINAL.withTypeArgs(element));
+        this.get = UnsafeFacts.method(token, "get", element, PrimitiveToken.INT, MemberTraits.ABSTRACT);
+        this.add = UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, element, MemberTraits.ABSTRACT);
+        this.size = UnsafeFacts.method(token, "size", PrimitiveToken.INT, MemberTraits.ABSTRACT);
+        this.isEmpty = UnsafeFacts.method(token, "isEmpty", PrimitiveToken.BOOLEAN, MemberTraits.ABSTRACT);
+        this.stream = UnsafeFacts.method(token, "stream", new Stream_<>(element).token, MemberTraits.OVERRIDABLE);
+        this.of = UnsafeFacts.staticMethod(token, "of", token, MemberTraits.FINAL.withTypeArgs(element));
+        this.of_E = UnsafeFacts.staticMethod(token, "of", token, element, MemberTraits.FINAL.withTypeArgs(element));
     }
 }

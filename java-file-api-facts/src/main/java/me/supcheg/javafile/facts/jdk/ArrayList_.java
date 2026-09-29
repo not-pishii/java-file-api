@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TokenArg;
@@ -25,6 +26,6 @@ public final class ArrayList_<E> {
     /// @param element the element type
     public ArrayList_(RefToken<E> element) {
         this.token = Jdk.openClass(ArrayList.class, TokenArg.exact(element));
-        this.new_ = UnsafeFacts.ctor(token, Jdk.FINAL);
+        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
     }
 }

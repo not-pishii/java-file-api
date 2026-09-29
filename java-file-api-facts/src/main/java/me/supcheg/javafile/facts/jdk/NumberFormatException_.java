@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
@@ -14,11 +15,11 @@ public final class NumberFormatException_ {
     public static final OpenClassToken<NumberFormatException> TOKEN = Jdk.openClass(NumberFormatException.class);
 
     /// `new NumberFormatException()`.
-    public static final CtorRef0<NumberFormatException> new_ = UnsafeFacts.ctor(TOKEN, Jdk.FINAL);
+    public static final CtorRef0<NumberFormatException> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     /// `new NumberFormatException(String)`.
     public static final CtorRef1<NumberFormatException, String> new_String =
-            UnsafeFacts.ctor(TOKEN, String_.TOKEN, Jdk.FINAL);
+            UnsafeFacts.ctor(TOKEN, String_.TOKEN, MemberTraits.FINAL);
 
     private NumberFormatException_() {}
 }

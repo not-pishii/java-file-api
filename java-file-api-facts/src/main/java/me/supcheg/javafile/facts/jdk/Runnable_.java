@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
@@ -14,7 +15,7 @@ public final class Runnable_ {
     public static final InterfaceToken<Runnable> TOKEN = Jdk.iface(Runnable.class);
 
     /// `void run()`.
-    public static final VoidMethodRef0<Runnable> run = UnsafeFacts.voidMethod(TOKEN, "run", Jdk.ABSTRACT);
+    public static final VoidMethodRef0<Runnable> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
 
     /// The single abstract method, [#run].
     public static final VoidSam0<Runnable> sam = UnsafeFacts.voidSam(run);

@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
@@ -14,11 +15,11 @@ public final class RuntimeException_ {
     public static final OpenClassToken<RuntimeException> TOKEN = Jdk.openClass(RuntimeException.class);
 
     /// `new RuntimeException()`.
-    public static final CtorRef0<RuntimeException> new_ = UnsafeFacts.ctor(TOKEN, Jdk.FINAL);
+    public static final CtorRef0<RuntimeException> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     /// `new RuntimeException(String)`.
     public static final CtorRef1<RuntimeException, String> new_String =
-            UnsafeFacts.ctor(TOKEN, String_.TOKEN, Jdk.FINAL);
+            UnsafeFacts.ctor(TOKEN, String_.TOKEN, MemberTraits.FINAL);
 
     private RuntimeException_() {}
 }

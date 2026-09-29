@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.OpenClassToken;
@@ -17,19 +18,19 @@ public final class Object_ {
     public static final OpenClassToken<Object> TOKEN = Jdk.openClass(Object.class);
 
     /// `new Object()`.
-    public static final CtorRef0<Object> new_ = UnsafeFacts.ctor(TOKEN, Jdk.FINAL);
+    public static final CtorRef0<Object> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     /// `String toString()`.
     public static final MethodRef0<Object, String> toString =
-            UnsafeFacts.method(TOKEN, "toString", String_.TOKEN, Jdk.OVERRIDABLE);
+            UnsafeFacts.method(TOKEN, "toString", String_.TOKEN, MemberTraits.OVERRIDABLE);
 
     /// `int hashCode()`.
     public static final MethodRef0<Object, Prim.Int> hashCode =
-            UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, Jdk.OVERRIDABLE);
+            UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// `boolean equals(Object)`.
     public static final MethodRef1<Object, Prim.Bool, Object> equals =
-            UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, Jdk.OVERRIDABLE);
+            UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, MemberTraits.OVERRIDABLE);
 
     private Object_() {}
 }

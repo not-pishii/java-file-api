@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.jdk;
 
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -14,7 +15,7 @@ public final class Throwable_ {
 
     /// `String getMessage()`.
     public static final MethodRef0<Throwable, String> getMessage =
-            UnsafeFacts.method(TOKEN, "getMessage", String_.TOKEN, Jdk.OVERRIDABLE);
+            UnsafeFacts.method(TOKEN, "getMessage", String_.TOKEN, MemberTraits.OVERRIDABLE);
 
     private Throwable_() {}
 }

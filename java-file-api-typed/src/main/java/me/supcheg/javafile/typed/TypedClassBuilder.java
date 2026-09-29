@@ -14,7 +14,6 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MutableFieldRef;
-import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TypeToken;
@@ -110,7 +109,6 @@ import java.util.function.Supplier;
 ///     [TypedJavaFile#class_(java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call
 public final class TypedClassBuilder<Self> {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
-    private static final MemberTraits FINAL = MemberTraits.DEFAULT.with(Overridability.FINAL);
 
     private final String described;
     private final FinalClassToken<Self> self;
@@ -204,7 +202,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
     public <R> MethodRef0<Self, R> declareMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.method(self, name, result, FINAL));
+        return declare(UnsafeFacts.method(self, name, result, MemberTraits.FINAL));
     }
 
     /// Declares a `public` method, to be defined with [#define(MethodRef1, InstanceBody1)].
@@ -217,7 +215,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <R, A1> MethodRef1<Self, R, A1> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.method(self, name, result, p1, FINAL));
+        return declare(UnsafeFacts.method(self, name, result, p1, MemberTraits.FINAL));
     }
 
     /// Declares a `public` method, to be defined with [#define(MethodRef2, InstanceBody2)].
@@ -233,7 +231,7 @@ public final class TypedClassBuilder<Self> {
     /// @throws IllegalArgumentException if javac would reject the method
     public <R, A1, A2> MethodRef2<Self, R, A1, A2> declareMethod(
             String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.method(self, name, result, p1, p2, FINAL));
+        return declare(UnsafeFacts.method(self, name, result, p1, p2, MemberTraits.FINAL));
     }
 
     /// Declares a `public void` method, to be defined with [#define(VoidMethodRef0, InstanceBody0)].
@@ -242,7 +240,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public VoidMethodRef0<Self> declareVoidMethod(String name) {
-        return declare(UnsafeFacts.voidMethod(self, name, FINAL));
+        return declare(UnsafeFacts.voidMethod(self, name, MemberTraits.FINAL));
     }
 
     /// Declares a `public void` method, to be defined with [#define(VoidMethodRef1, InstanceBody1)].
@@ -253,7 +251,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <A1> VoidMethodRef1<Self, A1> declareVoidMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidMethod(self, name, p1, FINAL));
+        return declare(UnsafeFacts.voidMethod(self, name, p1, MemberTraits.FINAL));
     }
 
     /// Declares a `public void` method, to be defined with [#define(VoidMethodRef2, InstanceBody2)].
@@ -266,7 +264,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <A1, A2> VoidMethodRef2<Self, A1, A2> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.voidMethod(self, name, p1, p2, FINAL));
+        return declare(UnsafeFacts.voidMethod(self, name, p1, p2, MemberTraits.FINAL));
     }
 
     /// Declares a `public static` method, to be defined with [#define(StaticMethodRef0, Function)].
@@ -277,7 +275,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <R> StaticMethodRef0<R> declareStaticMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.staticMethod(self, name, result, FINAL));
+        return declare(UnsafeFacts.staticMethod(self, name, result, MemberTraits.FINAL));
     }
 
     /// Declares a `public static` method, to be defined with [#define(StaticMethodRef1, BiFunction)].
@@ -290,7 +288,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <R, A1> StaticMethodRef1<R, A1> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.staticMethod(self, name, result, p1, FINAL));
+        return declare(UnsafeFacts.staticMethod(self, name, result, p1, MemberTraits.FINAL));
     }
 
     /// Declares a `public static void` method, to be defined with
@@ -300,7 +298,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public VoidStaticMethodRef0 declareVoidStaticMethod(String name) {
-        return declare(UnsafeFacts.voidStaticMethod(self, name, FINAL));
+        return declare(UnsafeFacts.voidStaticMethod(self, name, MemberTraits.FINAL));
     }
 
     /// Declares a `public static void` method, to be defined with
@@ -312,7 +310,7 @@ public final class TypedClassBuilder<Self> {
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
     public <A1> VoidStaticMethodRef1<A1> declareVoidStaticMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidStaticMethod(self, name, p1, FINAL));
+        return declare(UnsafeFacts.voidStaticMethod(self, name, p1, MemberTraits.FINAL));
     }
 
     /// Declares a `public` constructor, to be defined with [#define(CtorRef0, InstanceBody0)].

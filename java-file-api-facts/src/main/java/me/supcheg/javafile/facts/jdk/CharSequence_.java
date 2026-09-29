@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -16,7 +17,7 @@ public final class CharSequence_ {
 
     /// `int length()`.
     public static final MethodRef0<CharSequence, Prim.Int> length =
-            UnsafeFacts.method(TOKEN, "length", PrimitiveToken.INT, Jdk.ABSTRACT);
+            UnsafeFacts.method(TOKEN, "length", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     private CharSequence_() {}
 }

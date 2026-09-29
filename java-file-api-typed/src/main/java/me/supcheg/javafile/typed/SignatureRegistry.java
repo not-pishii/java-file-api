@@ -129,19 +129,23 @@ final class SignatureRegistry {
         return false;
     }
 
-    /// The instance methods of the class: the declared ones and those
-    /// inherited from `Object`. The class is final, so none is abstract.
+    /// The methods of the class: the instance methods declared and those
+    /// inherited from `Object`, and the `static` ones. The class is final, so
+    /// no method is abstract.
     MethodTable table() {
         Set<MethodSignature> concrete = new LinkedHashSet<>();
+        Set<MethodSignature> statics = new LinkedHashSet<>();
         for (Map.Entry<MethodSignature, Invocable> e : methods.entrySet()) {
             if (e.getValue().kind() == InvocableKind.INSTANCE_METHOD) {
                 concrete.add(e.getKey());
+            } else {
+                statics.add(e.getKey());
             }
         }
         for (Inherited inherited : OBJECT_METHODS) {
             concrete.add(inherited.signature());
         }
-        return new MethodTable(Set.of(), concrete);
+        return new MethodTable(Set.of(), concrete, statics);
     }
 
     private static Predicate<Optional<TypeToken<?>>> is(PrimitiveToken<?, ?, ?> type) {

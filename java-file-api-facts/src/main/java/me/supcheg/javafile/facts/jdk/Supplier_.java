@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
@@ -26,7 +27,7 @@ public final class Supplier_<T> {
 
     private Supplier_(RefToken<T> result) {
         this.token = Jdk.iface(Supplier.class, TokenArg.exact(result));
-        this.get = UnsafeFacts.method(token, "get", result, Jdk.ABSTRACT);
+        this.get = UnsafeFacts.method(token, "get", result, MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(get);
     }
 

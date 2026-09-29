@@ -34,6 +34,7 @@ import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.model.Param;
@@ -460,10 +461,14 @@ final class Lowering {
     }
 
     /// Whether the method table of `searched` proves `method` is its only
-    /// method of that name and arity. A table that does not list `method`
-    /// at all is taken as incomplete, proving nothing. The table lists
-    /// instance methods only: a static method of the same name and arity is
-    /// not seen, which the fact sources are relied on to rule out.
+    /// method of that name and arity, instance or `static`: javac considers
+    /// both kinds when it resolves an instance call (JLS 15.12.2.1). A table
+    /// that does not list `method` at all is taken as incomplete, proving
+    /// nothing.
+    ///
+    /// The candidates are counted by the signatures of the table's template,
+    /// not the erased ones of the token: `m(T)` and `m(String)` are two
+    /// methods of a `Box<T>` though both erase to `m(String)` in `Box<String>`.
     private static boolean onlyCandidate(@Nullable TypeToken<?> searched, Invocable method) {
         if (!(searched instanceof DeclaredToken<?> declared)) {
             return false;
@@ -471,10 +476,13 @@ final class Lowering {
         MethodTable table = declared.methods();
         MethodSignature signature = method.signature();
         if (!table.concreteMethods().contains(signature)
-                && !table.abstractMethods().contains(signature)) {
+                && !table.abstractMethods().contains(signature)
+                && !table.staticMethods().contains(signature)) {
             return false;
         }
-        return Stream.concat(table.concreteMethods().stream(), table.abstractMethods().stream())
+        MethodTableTemplate template = declared.shape().methods();
+        return Stream.of(template.concreteMethods(), template.abstractMethods(), template.staticMethods())
+                        .flatMap(Set::stream)
                         .filter(s -> s.name().equals(signature.name())
                                 && s.params().size() == signature.params().size())
                         .count()
