@@ -7,7 +7,7 @@ plugins {
 // written on java-file-api-core and committed under src/generated/java.
 // `generateArities` rewrites them; `checkArities` (part of `check`) fails when
 // the committed sources are stale.
-val codegen: SourceSet by sourceSets.creating
+val codegen = sourceSets.create("codegen")
 
 sourceSets.main {
     java.srcDir("src/generated/java")
@@ -21,7 +21,7 @@ dependencies {
 val generatedDir = layout.projectDirectory.dir("src/generated/java")
 
 tasks {
-    val generateArities by registering(JavaExec::class) {
+    val generateArities = register<JavaExec>("generateArities") {
         group = "build"
         description = "Regenerates the committed arity families"
         classpath = codegen.runtimeClasspath
@@ -29,7 +29,7 @@ tasks {
         args(generatedDir.asFile.absolutePath, "write")
     }
 
-    val checkArities by registering(JavaExec::class) {
+    val checkArities = register<JavaExec>("checkArities") {
         group = "verification"
         description = "Checks that the committed arity families are up to date"
         classpath = codegen.runtimeClasspath
