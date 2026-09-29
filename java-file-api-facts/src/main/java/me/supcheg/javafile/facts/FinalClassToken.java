@@ -12,11 +12,16 @@ import java.util.function.Supplier;
 /// @param <T> the Java type this token stands for
 public final class FinalClassToken<T> extends ClassTokenData implements ConcreteClassToken<T> {
 
-    FinalClassToken(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        super(typeRef, superclasses, methods);
+    FinalClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        super(typeRef, superclasses, supertypes, methods);
     }
 
-    FinalClassToken(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
-        super(typeRef, superclasses, methods);
+    FinalClassToken(
+            ClassOrInterfaceTypeRef typeRef,
+            List<ClassDesc> superclasses,
+            Supertypes supertypes,
+            Supplier<MethodTable> methods) {
+        super(typeRef, superclasses, supertypes, methods);
     }
 }

@@ -67,7 +67,7 @@ public final class PrimitiveToken<P, B, A> implements TypeToken<P> {
         this.typeRef = typeRef;
         this.erasure = erasure;
         this.boxClass = boxClass;
-        this.boxed = new FinalClassToken<>(Types.of(boxClass), superclasses, MethodTable.EMPTY);
+        this.boxed = new FinalClassToken<>(Types.of(boxClass), superclasses, Supertypes.NONE, MethodTable.EMPTY);
         this.array = new ArrayToken<>(this);
     }
 

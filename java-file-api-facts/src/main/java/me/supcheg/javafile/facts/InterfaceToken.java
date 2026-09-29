@@ -10,7 +10,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 /// @param <T> the Java type this token stands for
 public final class InterfaceToken<T> extends DeclaredTokenData implements DeclaredToken<T> {
 
-    InterfaceToken(ClassOrInterfaceTypeRef typeRef, MethodTable methods) {
-        super(typeRef, methods);
+    InterfaceToken(ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
+        super(typeRef, supertypes, methods);
     }
 }

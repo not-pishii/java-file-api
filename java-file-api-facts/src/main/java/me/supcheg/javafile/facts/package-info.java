@@ -24,7 +24,8 @@
 ///   counterparts; only the mutable ones can be assigned.
 /// - Runtime data generics cannot carry: throws-sets, overridability and
 ///   explicit type arguments ([me.supcheg.javafile.facts.MemberTraits]),
-///   method tables, superclass chains, enum constants.
+///   method tables, superclass chains, parameterized supertypes, enum
+///   constants.
 /// - Primitive types are typed by the phantom markers of
 ///   [me.supcheg.javafile.facts.Prim], never by their boxes (§6.1).
 ///

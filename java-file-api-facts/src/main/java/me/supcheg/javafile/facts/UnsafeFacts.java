@@ -60,7 +60,23 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> FinalClassToken<T> finalClassToken(
             ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        return new FinalClassToken<>(typeRef, superclasses, methods);
+        return finalClassToken(typeRef, superclasses, Supertypes.NONE, methods);
+    }
+
+    /// Vouches that a generic final class exists, with its parameterized
+    /// supertypes.
+    ///
+    /// @param typeRef the class type, parameterized
+    /// @param superclasses the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param supertypes the parameterized supertypes of the generic class, see [DeclaredToken#supertypes()]
+    /// @param methods the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
+    ///                                  type arguments do not match the type parameters of `supertypes`
+    public static <T> FinalClassToken<T> finalClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        return new FinalClassToken<>(typeRef, superclasses, supertypes, methods);
     }
 
     /// Vouches that a final class exists whose instance methods are known
@@ -77,7 +93,7 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> FinalClassToken<T> finalClassToken(
             ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
-        return new FinalClassToken<>(typeRef, superclasses, methods);
+        return new FinalClassToken<>(typeRef, superclasses, Supertypes.NONE, methods);
     }
 
     /// Vouches that a class that is neither abstract nor final exists.
@@ -90,7 +106,23 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> OpenClassToken<T> openClassToken(
             ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        return new OpenClassToken<>(typeRef, superclasses, methods);
+        return openClassToken(typeRef, superclasses, Supertypes.NONE, methods);
+    }
+
+    /// Vouches that a generic class that is neither abstract nor final
+    /// exists, with its parameterized supertypes.
+    ///
+    /// @param typeRef the class type, parameterized
+    /// @param superclasses the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param supertypes the parameterized supertypes of the generic class, see [DeclaredToken#supertypes()]
+    /// @param methods the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
+    ///                                  type arguments do not match the type parameters of `supertypes`
+    public static <T> OpenClassToken<T> openClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        return new OpenClassToken<>(typeRef, superclasses, supertypes, methods);
     }
 
     /// Vouches that an abstract class exists.
@@ -103,7 +135,23 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> AbstractClassToken<T> abstractClassToken(
             ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        return new AbstractClassToken<>(typeRef, superclasses, methods);
+        return abstractClassToken(typeRef, superclasses, Supertypes.NONE, methods);
+    }
+
+    /// Vouches that a generic abstract class exists, with its parameterized
+    /// supertypes.
+    ///
+    /// @param typeRef the class type, parameterized
+    /// @param superclasses the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param supertypes the parameterized supertypes of the generic class, see [DeclaredToken#supertypes()]
+    /// @param methods the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
+    ///                                  type arguments do not match the type parameters of `supertypes`
+    public static <T> AbstractClassToken<T> abstractClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        return new AbstractClassToken<>(typeRef, superclasses, supertypes, methods);
     }
 
     /// Vouches that an interface exists.
@@ -114,7 +162,22 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> InterfaceToken<T> interfaceToken(ClassOrInterfaceTypeRef typeRef, MethodTable methods) {
-        return new InterfaceToken<>(typeRef, methods);
+        return interfaceToken(typeRef, Supertypes.NONE, methods);
+    }
+
+    /// Vouches that a generic interface exists, with its parameterized
+    /// supertypes.
+    ///
+    /// @param typeRef the interface type, parameterized
+    /// @param supertypes the parameterized supertypes of the generic interface, see [DeclaredToken#supertypes()]
+    /// @param methods the interface's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
+    ///                                  type arguments do not match the type parameters of `supertypes`
+    public static <T> InterfaceToken<T> interfaceToken(
+            ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
+        return new InterfaceToken<>(typeRef, supertypes, methods);
     }
 
     /// Vouches that an enum exists with the given constants.

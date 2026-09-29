@@ -10,7 +10,8 @@ import java.util.List;
 /// @param <T> the Java type this token stands for
 public final class AbstractClassToken<T> extends ClassTokenData implements ClassToken<T> {
 
-    AbstractClassToken(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
-        super(typeRef, superclasses, methods);
+    AbstractClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+        super(typeRef, superclasses, supertypes, methods);
     }
 }

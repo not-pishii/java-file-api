@@ -359,7 +359,7 @@ public final class Expressions {
     /// @return the new array
     /// @throws IllegalArgumentException if the element type is not reifiable
     public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length) {
-        Tokens.requireReifiable(type.component(), "newArray");
+        Tokens.requireReifiableComponent(type.component());
         return Expr.of(new Node.NewArray(type.component(), length.node()), type);
     }
 
@@ -553,16 +553,19 @@ public final class Expressions {
     /// A checked cast, `(T) operand`. Only representable when `T` and the
     /// operand's static type are in a subtype relation one way or the other —
     /// enforced by `? super T`, so an unrelated cast does not compile — and
-    /// when `T` is reifiable, so the cast is checked at run time for all of
-    /// `T`: `(List<String>) o` is rejected, `(List<?>) o` is not.
+    /// when the cast is checked (JLS 5.1.6.2), so the run-time check covers
+    /// all of `T`: either `T` is reifiable, or the operand's type is a
+    /// parameterized supertype of `T` that determines its type arguments.
+    /// `(List<?>) o` and `(ArrayList<String>) listOfStrings` are accepted,
+    /// `(List<String>) o` and `(ArrayList<Integer>) listOfStrings` are not.
     ///
     /// @param type the target type
     /// @param operand the operand
     /// @param <T> the target type
     /// @return the cast, or `operand` itself if its type is already `T`
-    /// @throws IllegalArgumentException if `type` is not reifiable
+    /// @throws IllegalArgumentException if the cast would be unchecked
     public static <T> Expr<T> castChecked(RefToken<T> type, Expr<? super T> operand) {
-        Tokens.requireReifiable(type, "castChecked");
+        Tokens.requireCheckedCast(operand.type(), type, "castChecked");
         if (Tokens.sameType(operand.type(), type) && Node.isExact(operand.node())) {
             // `(T) operand` would be a redundant cast (javac -Xlint:cast).
             return Expr.of(operand.node(), type);
