@@ -69,12 +69,12 @@ final class ScopeCheck {
             case Node.Box(var ignored, var operand) -> node(operand, use, where);
             case Node.Unbox(var ignored, var operand) -> node(operand, use, where);
             case Node.Call(var target, var ignored, var args) -> {
-                node(target, use, where);
-                nodes(args, use, where);
+                node(target.node(), use, where);
+                operands(args, use, where);
             }
-            case Node.StaticCall(var ignored, var args) -> nodes(args, use, where);
-            case Node.New(var ignored, var args, var ignoredDiamond) -> nodes(args, use, where);
-            case Node.FieldGet(var target, var ignored) -> node(target, use, where);
+            case Node.StaticCall(var ignored, var args) -> operands(args, use, where);
+            case Node.New(var ignored, var args) -> operands(args, use, where);
+            case Node.FieldGet(var target, var ignored) -> node(target.node(), use, where);
             case Node.ArrayAt(var array, var index) -> {
                 node(array, use, where);
                 node(index, use, where);
@@ -108,16 +108,16 @@ final class ScopeCheck {
         }
     }
 
-    private static void nodes(List<Node> nodes, @Nullable Block<?, ?> use, String where) {
-        for (Node n : nodes) {
-            node(n, use, where);
+    private static void operands(List<Node.Operand> operands, @Nullable Block<?, ?> use, String where) {
+        for (Node.Operand operand : operands) {
+            node(operand.node(), use, where);
         }
     }
 
     private static void target(Node.Target target, @Nullable Block<?, ?> use, String where) {
         switch (target) {
             case Node.Target.Local(var v) -> requireInScope(v, use, where);
-            case Node.Target.Field(var t, var ignored) -> node(t, use, where);
+            case Node.Target.Field(var t, var ignored) -> node(t.node(), use, where);
             case Node.Target.StaticField ignored -> {}
             case Node.Target.Element(var array, var index) -> {
                 node(array, use, where);

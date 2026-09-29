@@ -274,7 +274,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     public final <U> B ifInstanceOf(
             Expr<? super U> operand, RefToken<U> type, BiConsumer<? super B, ? super Var<U>> then) {
         requireOpen();
-        Tokens.requireReifiable(type);
+        Tokens.requireReifiable(type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOf");
         Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
         fill(thenBlock, b -> then.accept(b, binding));
@@ -297,7 +297,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             BiFunction<? super B, ? super Var<U>, Terminated<R>> then,
             Function<? super B, Terminated<R>> otherwise) {
         requireOpen();
-        Tokens.requireReifiable(type);
+        Tokens.requireReifiable(type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOfElse");
         Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
         fillEnding(thenBlock, b -> then.apply(b, binding));

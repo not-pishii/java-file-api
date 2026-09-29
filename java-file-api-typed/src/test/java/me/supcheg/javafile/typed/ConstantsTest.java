@@ -2,7 +2,9 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.jdk.CharSequence_;
 import me.supcheg.javafile.facts.jdk.Integer_;
+import me.supcheg.javafile.facts.jdk.String_;
 import org.junit.jupiter.api.Test;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
@@ -14,6 +16,7 @@ import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.narrowTruncatingDoubleToInt;
 import static me.supcheg.javafile.typed.Expressions.not;
 import static me.supcheg.javafile.typed.Expressions.or;
@@ -70,5 +73,24 @@ class ConstantsTest {
         Var<Prim.Bool> flag = Var.param(PrimitiveToken.BOOLEAN, Body.root("root"));
 
         assertThat(constantTrue(or(literal(true), flag))).isFalse();
+    }
+
+    @Test
+    void theCastsThatTypeAnExpressionFoldAsJavacFoldsThem() {
+        // cond branches of its own type are not cast: still a constant
+        assertThat(constantTrue(eqRef(cond(literal(true), literal("a"), literal("b"), String_.TOKEN), literal("a"))))
+                .isTrue();
+        // branches cast to CharSequence: a cast to a type other than String or a primitive is not
+        // a constant expression (JLS 15.29)
+        assertThat(constantTrue(
+                        eqRef(cond(literal(true), literal("a"), literal("b"), CharSequence_.TOKEN), literal("a"))))
+                .isFalse();
+        // `(String) null` is not a constant
+        assertThat(constantTrue(eqRef(literalNull(String_.TOKEN), literalNull(String_.TOKEN))))
+                .isFalse();
+        // a primitive cond stays constant; the casts lowering adds to arguments are never part of a
+        // constant expression, since a call is not one
+        assertThat(constantTrue(cond(literal(false), literal(false), literal(true), PrimitiveToken.BOOLEAN)))
+                .isTrue();
     }
 }
