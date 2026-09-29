@@ -103,17 +103,17 @@ class PrimitivesTest {
                 ClassDesc.of("me.supcheg.example", "Primitives"), new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.method(
+                        cb.staticMethod(
                                 "sameAsObjects",
                                 PrimitiveToken.BOOLEAN,
                                 b -> b.return_(staticCall(Objects_.equals, literal(1), literal(1L))));
-                        cb.method("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
-                        cb.method(
+                        cb.staticMethod("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                        cb.staticMethod(
                                 "unboxed",
                                 PrimitiveToken.INT,
                                 Integer_.TOKEN,
                                 (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
-                        cb.method(
+                        cb.staticMethod(
                                 "intArray",
                                 PrimitiveToken.INT,
                                 b -> b.let(
@@ -121,7 +121,7 @@ class PrimitivesTest {
                                         newArray(ints, literal(3)),
                                         array -> b.exec(assignAt(ints, array, literal(0), literal(7)))
                                                 .return_(addInt(at(ints, array, literal(0)), length(ints, array)))));
-                        cb.method(
+                        cb.staticMethod(
                                 "stringArray",
                                 PrimitiveToken.INT,
                                 b -> b.let(
@@ -129,8 +129,9 @@ class PrimitivesTest {
                                         newArray(strings, literal(2)),
                                         array -> b.exec(assignAt(strings, array, literal(1), literal("abc")))
                                                 .return_(call(at(strings, array, literal(1)), String_.length))));
-                        cb.method("checked", PrimitiveToken.INT, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
-                        cb.method(
+                        cb.staticMethod(
+                                "checked", PrimitiveToken.INT, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
+                        cb.staticMethod(
                                 "truncated",
                                 PrimitiveToken.INT,
                                 b -> b.return_(narrowTruncatingLongToInt(literal(5L))));

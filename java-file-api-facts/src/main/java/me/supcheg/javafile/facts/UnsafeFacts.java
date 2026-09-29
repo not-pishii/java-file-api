@@ -8,6 +8,7 @@ import me.supcheg.javafile.type.TypeVarRef;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /// The single trusted point where facts are introduced (§3.1): every token
 /// and member fact that is not derived from another fact is created here and
@@ -59,6 +60,23 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> FinalClassToken<T> finalClassToken(
             ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
+        return new FinalClassToken<>(typeRef, superclasses, methods);
+    }
+
+    /// Vouches that a final class exists whose instance methods are known
+    /// only later: the class being declared by a typed declaration (§6.5),
+    /// whose method table is complete once its declaration is. `methods` is
+    /// asked on every [DeclaredToken#methods()] call and may throw while the
+    /// table is not known yet.
+    ///
+    /// @param typeRef the class type, plain or parameterized
+    /// @param superclasses the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param methods supplies the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if `typeRef` is a type variable
+    public static <T> FinalClassToken<T> finalClassToken(
+            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
         return new FinalClassToken<>(typeRef, superclasses, methods);
     }
 

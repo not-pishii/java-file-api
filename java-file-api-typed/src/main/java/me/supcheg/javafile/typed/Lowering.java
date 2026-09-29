@@ -271,7 +271,7 @@ final class Lowering {
             case Node.Lit(var literal, var ignoredValue) -> literal;
             case Node.RawLit(var literal) -> literal;
             case Node.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
-            case Node.This() -> new ThisExpr();
+            case Node.This ignored -> new ThisExpr();
             case Node.Box(var type, var operand) ->
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());

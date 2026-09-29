@@ -4,6 +4,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.function.Supplier;
 
 /// A token of a final class, a record included: it can be instantiated but
 /// not extended.
@@ -12,6 +13,10 @@ import java.util.List;
 public final class FinalClassToken<T> extends ClassTokenData implements ConcreteClassToken<T> {
 
     FinalClassToken(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
+        super(typeRef, superclasses, methods);
+    }
+
+    FinalClassToken(ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
         super(typeRef, superclasses, methods);
     }
 }

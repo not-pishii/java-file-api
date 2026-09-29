@@ -43,7 +43,7 @@ class ScopeChecksTest {
         return TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.method("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN, body);
+                cb.method("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN, (b, _, flag) -> body.apply(b, flag));
             }
         });
     }
@@ -98,11 +98,11 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
                         @Override
                         public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, p) -> {
+                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
                                 host.add(p);
                                 return b.return_(p);
                             });
-                            cb.method("b", PrimitiveToken.INT, b -> b.return_(host.getFirst()));
+                            cb.method("b", PrimitiveToken.INT, (b, _) -> b.return_(host.getFirst()));
                         }
                     }))
                     .withMessageContaining("parameter of type int declared in the body of method a is used in the"
@@ -117,7 +117,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
                         @Override
                         public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, p) -> {
+                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
                                 host.add(p);
                                 return b.return_(p);
                             });
@@ -458,11 +458,11 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
                         @Override
                         public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, b -> {
+                            cb.method("a", PrimitiveToken.INT, (b, _) -> {
                                 other.set(b.return_(literal(1)));
                                 return other.get();
                             });
-                            cb.method("b", PrimitiveToken.INT, _ -> other.get());
+                            cb.method("b", PrimitiveToken.INT, (_, _) -> other.get());
                         }
                     }))
                     .withMessageContaining("handed back for the body of method b was issued by the body of method a");
@@ -496,14 +496,16 @@ class ScopeChecksTest {
                             cb.method(
                                     "outer",
                                     PrimitiveToken.INT,
-                                    b -> b.if_(
+                                    (b, _) -> b.if_(
                                                     literal(true),
                                                     _ -> cb.method(
-                                                            "inner", PrimitiveToken.INT, x -> x.return_(literal(1))))
+                                                            "inner",
+                                                            PrimitiveToken.INT,
+                                                            (x, _) -> x.return_(literal(1))))
                                             .return_(literal(0)));
                         }
                     }))
-                    .withMessageContaining("cannot declare method inner of")
+                    .withMessageContaining("cannot declare int me.supcheg.example.Probe.inner()")
                     .withMessageContaining("while the then-branch of if_ in body of method outer is being built");
         }
 
@@ -514,7 +516,7 @@ class ScopeChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> leaked.getFirst().field("late", PrimitiveToken.INT, literal(1)))
-                    .withMessageContaining("the class has already been built");
+                    .withMessageContaining("the declaration of class me.supcheg.example.Probe is already complete");
         }
     }
 }

@@ -76,14 +76,14 @@ class NegativeCompileTest {
     @Test
     void controlFixtureCompiles() {
         String body = inClass("""
-                cb.method("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed(), (b, boxed) -> b.let(
+                cb.method("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed(), (b, self, boxed) -> b.let(
                         PrimitiveToken.INT, unbox(PrimitiveToken.INT, boxed), i -> b.if_(
                                 ltInt(i, call(literal("abc"), String_.length)),
                                 t -> t.exec(call(literal("abc"), String_.charAt, i)))
                         .return_(addInt(i, literal(1)))));
-                cb.method("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
-                cb.method("empty", String_.TOKEN, b -> b.return_(literalNull(String_.TOKEN)));
-                cb.method("same", PrimitiveToken.BOOLEAN, b -> b.return_(eqRef(literal("a"), literal("b"))));
+                cb.method("boxed", Integer_.TOKEN, (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                cb.method("empty", String_.TOKEN, (b, self) -> b.return_(literalNull(String_.TOKEN)));
+                cb.method("same", PrimitiveToken.BOOLEAN, (b, self) -> b.return_(eqRef(literal("a"), literal("b"))));
                 new_(Object_.new_);
                 """);
 
@@ -102,7 +102,7 @@ class NegativeCompileTest {
     void methodBodyWithoutReturnDoesNotCompile() {
         assertRejected(
                 "MissingReturn",
-                inClass("cb.method(\"compute\", PrimitiveToken.INT, body -> { });"),
+                inClass("cb.method(\"compute\", PrimitiveToken.INT, (body, self) -> { });"),
                 "bad return type in lambda expression",
                 "missing return value");
     }
@@ -111,7 +111,7 @@ class NegativeCompileTest {
     void implicitBoxingInReturnDoesNotCompile() {
         assertRejected(
                 "ImplicitBoxing",
-                inClass("cb.method(\"boxed\", Integer_.TOKEN, b -> b.return_(literal(1)));"),
+                inClass("cb.method(\"boxed\", Integer_.TOKEN, (b, self) -> b.return_(literal(1)));"),
                 "cannot be converted to me.supcheg.javafile.typed.Expr<? extends java.lang.Integer>");
     }
 
@@ -120,7 +120,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ImplicitUnboxing",
                 inClass("cb.method(\"unboxed\", PrimitiveToken.INT,"
-                        + " b -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
+                        + " (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
                 "inference variable B has incompatible bounds",
                 "upper bounds: me.supcheg.javafile.facts.Prim.Int");
     }
@@ -137,7 +137,8 @@ class NegativeCompileTest {
     void boxedConditionDoesNotCompile() {
         assertRejected(
                 "BoxedCondition",
-                inClass("cb.voidMethod(\"m\", b -> b.if_(box(PrimitiveToken.BOOLEAN, literal(true)), t -> {}).end());"),
+                inClass(
+                        "cb.voidMethod(\"m\", (b, self) -> b.if_(box(PrimitiveToken.BOOLEAN, literal(true)), t -> {}).end());"),
                 "incompatible equality constraints me.supcheg.javafile.facts.Prim.Bool,java.lang.Boolean");
     }
 
@@ -246,7 +247,8 @@ class NegativeCompileTest {
         // completes normally and loopForever may return Terminated.
         assertRejected(
                 "BreakOutOfForever",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.loopForever((loop, ctl) -> loop.break_(ctl)));"),
+                inClass(
+                        "cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.loopForever((loop, ctl) -> loop.break_(ctl)));"),
                 "incompatible parameter types in lambda expression");
     }
 
@@ -255,7 +257,7 @@ class NegativeCompileTest {
         assertRejected(
                 "AfterForever",
                 inClass("cb.method(\"m\", PrimitiveToken.INT,"
-                        + " b -> b.loopForever(loop -> {}).return_(literal(1)));"),
+                        + " (b, self) -> b.loopForever(loop -> {}).return_(literal(1)));"),
                 "cannot find symbol",
                 "symbol:   method return_(me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int>)");
     }
@@ -264,7 +266,7 @@ class NegativeCompileTest {
     void tryTerminatedRequiresAnEndingTryBlock() {
         assertRejected(
                 "TryBlockNotEnding",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.tryTerminated("
+                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
                         + "t -> t.exec(call(literal(\"x\"), String_.length)),"
                         + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1)))));"),
                 "bad return type in lambda expression");
@@ -274,7 +276,7 @@ class NegativeCompileTest {
     void tryTerminatedRequiresEndingCatchBlocks() {
         assertRejected(
                 "CatchNotEnding",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, b -> b.tryTerminated("
+                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
                         + "t -> t.return_(literal(1)),"
                         + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
                         + " String_.length)))));"),
