@@ -199,6 +199,41 @@ class NegativeCompileTest {
     }
 
     @Test
+    void forgingATypeShapeDoesNotCompile() {
+        // A shape vouches for a type: only UnsafeFacts makes one.
+        assertRejected(
+                "ForgedShape",
+                """
+                void use() {
+                    new TypeShape<DeclaredKind.FinalClass>(ShapeOrigin.UNSAFE, DeclaredKind.FINAL_CLASS,
+                            ClassDesc.of("a.B"), List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY,
+                            List.of(), false);
+                }
+                """,
+                "is not public in me.supcheg.javafile.facts.TypeShape; cannot be accessed from outside package");
+    }
+
+    @Test
+    void aShapeCannotClaimTheBuiltinOrigin() {
+        // Only a metamodel origin can be claimed; the others belong to the modules that own them.
+        assertRejected("ClaimedBuiltin", """
+                void use() {
+                    UnsafeFacts.shape(ShapeOrigin.BUILTIN, DeclaredKind.FINAL_CLASS, ClassDesc.of("a.B"),
+                            List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY, List.of(), false);
+                }
+                """, "no suitable method found for shape");
+    }
+
+    @Test
+    void aShapeMakesOnlyTokensOfItsKind() {
+        assertRejected("KindMismatch", """
+                InterfaceToken<String> use(TypeShape<DeclaredKind.FinalClass> shape) {
+                    return UnsafeFacts.interfaceToken(shape);
+                }
+                """, "no suitable method found for interfaceToken");
+    }
+
+    @Test
     void forgingAFactSourceDoesNotCompile() {
         assertRejected(
                 "ForgedSource",
