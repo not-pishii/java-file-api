@@ -209,7 +209,7 @@ public final class TypeShape<K extends DeclaredKind> {
         return supertypes;
     }
 
-    /// The instance methods of the type, declared and inherited.
+    /// The methods of the type, instance and `static`, declared and inherited.
     ///
     /// @return the method table template
     /// @throws IllegalStateException if the methods of the type are not known yet:

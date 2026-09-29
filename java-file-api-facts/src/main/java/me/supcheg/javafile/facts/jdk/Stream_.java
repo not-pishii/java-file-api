@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.RefToken;
@@ -44,9 +45,9 @@ public final class Stream_<E> {
     public Stream_(RefToken<E> element) {
         this.element = element;
         this.token = Jdk.iface(Stream.class, TokenArg.exact(element));
-        this.toList = UnsafeFacts.method(token, "toList", listToken(), Jdk.OVERRIDABLE);
+        this.toList = UnsafeFacts.method(token, "toList", listToken(), MemberTraits.OVERRIDABLE);
         InterfaceToken<Predicate<? super E>> predicate = Jdk.iface(Predicate.class, TokenArg.superBound(element));
-        this.filter = UnsafeFacts.method(token, "filter", token, predicate, Jdk.ABSTRACT);
+        this.filter = UnsafeFacts.method(token, "filter", token, predicate, MemberTraits.ABSTRACT);
     }
 
     /// `<R> Stream<R> map(Function<? super E, ? extends R>)`, with `R` as the
@@ -59,7 +60,7 @@ public final class Stream_<E> {
         InterfaceToken<Function<? super E, ? extends R>> function =
                 Jdk.iface(Function.class, TokenArg.superBound(element), TokenArg.extendsBound(result));
         return UnsafeFacts.method(
-                token, "map", new Stream_<>(result).token, function, Jdk.ABSTRACT.withTypeArgs(result));
+                token, "map", new Stream_<>(result).token, function, MemberTraits.ABSTRACT.withTypeArgs(result));
     }
 
     private InterfaceToken<List<E>> listToken() {

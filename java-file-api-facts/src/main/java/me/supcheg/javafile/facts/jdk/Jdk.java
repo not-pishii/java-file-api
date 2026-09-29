@@ -3,12 +3,10 @@ package me.supcheg.javafile.facts.jdk;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
-import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
-import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
@@ -46,10 +44,6 @@ import java.util.Set;
 /// read by reflection once per type, and its tokens.
 @Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 final class Jdk {
-    static final MemberTraits OVERRIDABLE = MemberTraits.DEFAULT;
-    static final MemberTraits FINAL = MemberTraits.DEFAULT.with(Overridability.FINAL);
-    static final MemberTraits ABSTRACT = MemberTraits.DEFAULT.with(Overridability.ABSTRACT);
-
     /// The public, non-final methods of `Object` every class inherits.
     private static final Set<Signature> OBJECT_METHODS = Set.of(
             Signature.of("equals", Param.fixed(ConstantDescs.CD_Object)),
@@ -145,22 +139,23 @@ final class Jdk {
                 .toList();
     }
 
-    /// Reads the method table template of a JDK type by reflection: a
+    /// Reads the method table template of a JDK type by reflection, statics
+    /// included: a
     /// parameter typed by a type variable that stands for a type parameter
     /// of `type` refers to it, every other parameter is erased.
     private static MethodTableTemplate methods(Class<?> type, Supertypes supertypes) {
         Set<Signature> abstracts = new HashSet<>();
         Set<Signature> concretes = new HashSet<>(OBJECT_METHODS);
+        Set<Signature> statics = new HashSet<>();
         for (Method method : type.getMethods()) {
-            if (Modifier.isStatic(method.getModifiers())) {
-                continue;
-            }
             List<Param> params = new ArrayList<>();
             for (int i = 0; i < method.getParameterCount(); i++) {
                 params.add(param(type, supertypes, method, i));
             }
             Signature signature = new Signature(method.getName(), params);
-            if (Modifier.isAbstract(method.getModifiers())) {
+            if (Modifier.isStatic(method.getModifiers())) {
+                statics.add(signature);
+            } else if (Modifier.isAbstract(method.getModifiers())) {
                 if (!OBJECT_METHODS.contains(signature)) {
                     abstracts.add(signature);
                 }
@@ -169,7 +164,7 @@ final class Jdk {
             }
         }
         concretes.removeAll(abstracts);
-        return new MethodTableTemplate(abstracts, concretes);
+        return new MethodTableTemplate(abstracts, concretes, statics);
     }
 
     private static Param param(Class<?> type, Supertypes supertypes, Method method, int i) {

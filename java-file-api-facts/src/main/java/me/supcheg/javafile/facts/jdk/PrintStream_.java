@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.jdk;
 
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -17,15 +18,16 @@ public final class PrintStream_ {
     public static final OpenClassToken<PrintStream> TOKEN = Jdk.openClass(PrintStream.class);
 
     /// `void println()`.
-    public static final VoidMethodRef0<PrintStream> println = UnsafeFacts.voidMethod(TOKEN, "println", Jdk.OVERRIDABLE);
+    public static final VoidMethodRef0<PrintStream> println =
+            UnsafeFacts.voidMethod(TOKEN, "println", MemberTraits.OVERRIDABLE);
 
     /// `void println(String)`.
     public static final VoidMethodRef1<PrintStream, String> println_String =
-            UnsafeFacts.voidMethod(TOKEN, "println", String_.TOKEN, Jdk.OVERRIDABLE);
+            UnsafeFacts.voidMethod(TOKEN, "println", String_.TOKEN, MemberTraits.OVERRIDABLE);
 
     /// `void println(int)`.
     public static final VoidMethodRef1<PrintStream, Prim.Int> println_int =
-            UnsafeFacts.voidMethod(TOKEN, "println", PrimitiveToken.INT, Jdk.OVERRIDABLE);
+            UnsafeFacts.voidMethod(TOKEN, "println", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private PrintStream_() {}
 }

@@ -72,7 +72,7 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param typeParameters the type parameters with their bounds, see [TypeShape#typeParameters()]
     /// @param superclasses the erased superclass chain, see [TypeShape#superclasses()]
     /// @param supertypes the parameterized supertypes, see [TypeShape#supertypes()]
-    /// @param methods the instance methods, declared and inherited, see [TypeShape#methods()]
+    /// @param methods the methods, instance and `static`, declared and inherited, see [TypeShape#methods()]
     /// @param enumConstants the enum constants, see [TypeShape#enumConstants()]
     /// @param sealed whether the type is `sealed`
     /// @param <K> the kind of the type
@@ -101,7 +101,7 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param typeParameters the type parameters with their bounds, see [TypeShape#typeParameters()]
     /// @param superclasses the erased superclass chain, see [TypeShape#superclasses()]
     /// @param supertypes the parameterized supertypes, see [TypeShape#supertypes()]
-    /// @param methods the instance methods, declared and inherited, see [TypeShape#methods()]
+    /// @param methods the methods, instance and `static`, declared and inherited, see [TypeShape#methods()]
     /// @param enumConstants the enum constants, see [TypeShape#enumConstants()]
     /// @param sealed whether the type is `sealed`
     /// @param <K> the kind of the type

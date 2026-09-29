@@ -40,6 +40,7 @@ class TypeShapeTest {
                     List.of(Types.parameterized(CD_COMPARABLE, Types.parameterized(BOX, Types.typeVar("T"))))),
             new MethodTableTemplate(
                     Set.of(Signature.of("put", Param.var(0)), Signature.of("get", Param.fixed(ConstantDescs.CD_int))),
+                    Set.of(),
                     Set.of()),
             List.of(),
             false);
@@ -111,7 +112,7 @@ class TypeShapeTest {
                         new TypeParam("B", List.of(Types.typeVar("A")))),
                 List.of(ConstantDescs.CD_Object),
                 Supertypes.NONE,
-                new MethodTableTemplate(Set.of(), Set.of(Signature.of("set", Param.var(0), Param.var(1)))),
+                new MethodTableTemplate(Set.of(), Set.of(Signature.of("set", Param.var(0), Param.var(1))), Set.of()),
                 List.of(),
                 false);
 
@@ -173,7 +174,7 @@ class TypeShapeTest {
                         List.of(new TypeParam("T", List.of())),
                         List.of(),
                         Supertypes.NONE,
-                        new MethodTableTemplate(Set.of(Signature.of("put", Param.var(1))), Set.of()),
+                        new MethodTableTemplate(Set.of(Signature.of("put", Param.var(1))), Set.of(), Set.of()),
                         List.of(),
                         false))
                 .withMessage("the method table of interface fixtures.Box<T> refers to type parameter #1,"
@@ -387,7 +388,7 @@ class TypeShapeTest {
     @Test
     void aTableKnownOnlyLaterIsAskedUntilItIsKnown() {
         AtomicInteger asked = new AtomicInteger();
-        MethodTable table = new MethodTable(Set.of(), Set.of(new MethodSignature("run", List.of())));
+        MethodTable table = new MethodTable(Set.of(), Set.of(new MethodSignature("run", List.of())), Set.of());
         ClassOrInterfaceTypeRef self = Types.of(ClassDesc.of("fixtures", "Self"));
         FinalClassToken<Object> token = UnsafeFacts.finalClassToken(self, List.of(ConstantDescs.CD_Object), () -> {
             if (asked.incrementAndGet() == 1) {

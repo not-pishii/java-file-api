@@ -28,7 +28,7 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     /// @return the supertypes
     Supertypes supertypes();
 
-    /// The instance methods of the type, declared and inherited, as runtime
+    /// The methods of the type, instance and `static`, declared and inherited, as runtime
     /// data for the completeness checks of lowering.
     ///
     /// @return the method table

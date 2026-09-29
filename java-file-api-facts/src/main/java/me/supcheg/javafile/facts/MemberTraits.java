@@ -12,20 +12,29 @@ import java.util.List;
 ///   fact was instantiated with, rendered as `recv.<A, B>m(...)` so that the
 ///   compiler never infers something else.
 ///
-/// @param throwsTypes the exception types in the `throws` clause
+/// @param throwsTypes the exception types in the `throws` clause: classes, or type variables bounded by `Throwable`
 /// @param overridability whether the method can be overridden
 /// @param typeArgs the explicit type arguments of a generic method; empty for none
 public record MemberTraits(
-        List<ClassToken<? extends Throwable>> throwsTypes, Overridability overridability, List<RefToken<?>> typeArgs) {
+        List<RefToken<? extends Throwable>> throwsTypes, Overridability overridability, List<RefToken<?>> typeArgs) {
 
     /// No `throws` clause, overridable, not generic.
     public static final MemberTraits DEFAULT = new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of());
 
+    /// No `throws` clause, overridable, not generic; the same as [#DEFAULT].
+    public static final MemberTraits OVERRIDABLE = DEFAULT;
+
+    /// No `throws` clause, `final` or `static`, not generic.
+    public static final MemberTraits FINAL = DEFAULT.with(Overridability.FINAL);
+
+    /// No `throws` clause, `abstract`, not generic.
+    public static final MemberTraits ABSTRACT = DEFAULT.with(Overridability.ABSTRACT);
+
     public MemberTraits {
         throwsTypes = List.copyOf(throwsTypes);
         typeArgs = List.copyOf(typeArgs);
-        for (ClassToken<? extends Throwable> type : throwsTypes) {
-            if (!type.isSubclassOf(ConstantDescs.CD_Throwable)) {
+        for (RefToken<? extends Throwable> type : throwsTypes) {
+            if (type instanceof ClassToken<?> cls && !cls.isSubclassOf(ConstantDescs.CD_Throwable)) {
                 throw new IllegalArgumentException("not a Throwable: " + type);
             }
         }
@@ -37,7 +46,7 @@ public record MemberTraits(
     /// @return the new traits
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public final MemberTraits throwing(ClassToken<? extends Throwable>... types) {
+    public final MemberTraits throwing(RefToken<? extends Throwable>... types) {
         return new MemberTraits(List.of(types), overridability, typeArgs);
     }
 

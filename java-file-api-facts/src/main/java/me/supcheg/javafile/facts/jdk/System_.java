@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.StaticFieldRef;
@@ -21,7 +22,7 @@ public final class System_ {
 
     /// `static long currentTimeMillis()`.
     public static final StaticMethodRef0<Prim.Long> currentTimeMillis =
-            UnsafeFacts.staticMethod(TOKEN, "currentTimeMillis", PrimitiveToken.LONG, Jdk.FINAL);
+            UnsafeFacts.staticMethod(TOKEN, "currentTimeMillis", PrimitiveToken.LONG, MemberTraits.FINAL);
 
     private System_() {}
 }

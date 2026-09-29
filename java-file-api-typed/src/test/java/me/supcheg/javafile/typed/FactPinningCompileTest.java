@@ -49,6 +49,7 @@ import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.unbox;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Fixtures.BASE;
+import static me.supcheg.javafile.typed.Fixtures.DUAL;
 import static me.supcheg.javafile.typed.Fixtures.LABEL;
 import static me.supcheg.javafile.typed.Fixtures.NAME_OF_BASE;
 import static me.supcheg.javafile.typed.Fixtures.NAME_OF_SUB;
@@ -112,6 +113,22 @@ class FactPinningCompileTest {
         assertThat(compiled.invoke("only", sub)).isEqualTo("only");
         assertThat(compiled.invoke("whichObject")).isEqualTo("Object");
         assertThat(compiled.invoke("whichString")).isEqualTo("String");
+    }
+
+    @Test
+    void anInstanceCallKeepsItsCastWhenAStaticOverloadOfTheSameArityExists() throws Throwable {
+        CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> void build(TypedClassBuilder<Self> cb) {
+                // Base declares the instance dual(Object) and the static dual(String): javac
+                // considers both for `sub.dual("x")` and picks the static one, unless cast
+                cb.staticMethod("dual", String_.TOKEN, SUB, (b, s) -> b.return_(call(s, DUAL, literal("x"))));
+            }
+        });
+        Object sub = compiled.instantiate(Fixtures.SUB_NAME);
+
+        assertThat(compiled.source()).contains(".dual((Object) \"x\")");
+        assertThat(compiled.invoke("dual", sub)).isEqualTo("instance");
     }
 
     @Test

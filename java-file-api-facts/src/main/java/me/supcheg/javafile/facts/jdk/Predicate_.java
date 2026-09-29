@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -28,7 +29,7 @@ public final class Predicate_<T> {
 
     private Predicate_(RefToken<T> argument) {
         this.token = Jdk.iface(Predicate.class, TokenArg.exact(argument));
-        this.test = UnsafeFacts.method(token, "test", PrimitiveToken.BOOLEAN, argument, Jdk.ABSTRACT);
+        this.test = UnsafeFacts.method(token, "test", PrimitiveToken.BOOLEAN, argument, MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(test);
     }
 

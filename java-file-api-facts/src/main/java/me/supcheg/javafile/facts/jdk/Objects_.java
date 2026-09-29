@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
@@ -18,8 +19,8 @@ public final class Objects_ {
     public static final FinalClassToken<Objects> TOKEN = Jdk.finalClass(Objects.class);
 
     /// `static boolean equals(Object, Object)`.
-    public static final StaticMethodRef2<Prim.Bool, Object, Object> equals =
-            UnsafeFacts.staticMethod(TOKEN, "equals", PrimitiveToken.BOOLEAN, Object_.TOKEN, Object_.TOKEN, Jdk.FINAL);
+    public static final StaticMethodRef2<Prim.Bool, Object, Object> equals = UnsafeFacts.staticMethod(
+            TOKEN, "equals", PrimitiveToken.BOOLEAN, Object_.TOKEN, Object_.TOKEN, MemberTraits.FINAL);
 
     private Objects_() {}
 
@@ -30,6 +31,6 @@ public final class Objects_ {
     /// @param <T> the checked type
     /// @return the method fact
     public static <T> StaticMethodRef1<T, T> requireNonNull(RefToken<T> type) {
-        return UnsafeFacts.staticMethod(TOKEN, "requireNonNull", type, type, Jdk.FINAL.withTypeArgs(type));
+        return UnsafeFacts.staticMethod(TOKEN, "requireNonNull", type, type, MemberTraits.FINAL.withTypeArgs(type));
     }
 }

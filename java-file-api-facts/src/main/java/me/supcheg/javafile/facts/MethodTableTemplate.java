@@ -19,21 +19,31 @@ import java.util.stream.Stream;
 /// position. [#instantiate(List)] fills the variables in; a token does so
 /// once, with the erasures of its type arguments.
 ///
-/// @param abstractMethods the methods without an implementation
-/// @param concreteMethods the methods with an implementation
-public record MethodTableTemplate(Set<Signature> abstractMethods, Set<Signature> concreteMethods) {
+/// @param abstractMethods the instance methods without an implementation
+/// @param concreteMethods the instance methods with an implementation
+/// @param staticMethods the `static` methods
+public record MethodTableTemplate(
+        Set<Signature> abstractMethods, Set<Signature> concreteMethods, Set<Signature> staticMethods) {
 
     /// A template with no methods.
-    public static final MethodTableTemplate EMPTY = new MethodTableTemplate(Set.of(), Set.of());
+    public static final MethodTableTemplate EMPTY = new MethodTableTemplate(Set.of(), Set.of(), Set.of());
 
-    /// @throws IllegalArgumentException if a method is both abstract and concrete
+    /// @throws IllegalArgumentException if a method is both abstract and concrete, or
+    ///                                  both static and an instance method
     public MethodTableTemplate {
         abstractMethods = Set.copyOf(abstractMethods);
         concreteMethods = Set.copyOf(concreteMethods);
+        staticMethods = Set.copyOf(staticMethods);
         Set<Signature> both = new HashSet<>(abstractMethods);
         both.retainAll(concreteMethods);
         if (!both.isEmpty()) {
             throw new IllegalArgumentException("methods both abstract and concrete: " + both);
+        }
+        Set<Signature> instance = new HashSet<>(abstractMethods);
+        instance.addAll(concreteMethods);
+        instance.retainAll(staticMethods);
+        if (!instance.isEmpty()) {
+            throw new IllegalArgumentException("methods both static and instance: " + instance);
         }
     }
 
@@ -44,7 +54,8 @@ public record MethodTableTemplate(Set<Signature> abstractMethods, Set<Signature>
     /// @return the template
     /// @throws IllegalArgumentException if a method of `table` is both abstract and concrete
     public static MethodTableTemplate of(MethodTable table) {
-        return new MethodTableTemplate(fixed(table.abstractMethods()), fixed(table.concreteMethods()));
+        return new MethodTableTemplate(
+                fixed(table.abstractMethods()), fixed(table.concreteMethods()), fixed(table.staticMethods()));
     }
 
     /// The number of type parameters the template refers to: one more than
@@ -52,7 +63,8 @@ public record MethodTableTemplate(Set<Signature> abstractMethods, Set<Signature>
     ///
     /// @return the least number of type parameters of a type with this template
     public int typeParameterCount() {
-        return Stream.concat(abstractMethods.stream(), concreteMethods.stream())
+        return Stream.of(abstractMethods, concreteMethods, staticMethods)
+                .flatMap(Set::stream)
                 .flatMap(s -> s.params().stream())
                 .mapToInt(p -> p instanceof Var(int index) ? index + 1 : 0)
                 .max()
@@ -69,7 +81,10 @@ public record MethodTableTemplate(Set<Signature> abstractMethods, Set<Signature>
             throw new IllegalArgumentException("the template refers to " + typeParameterCount()
                     + " type parameters, but " + arguments.size() + " type arguments are given");
         }
-        return new MethodTable(instantiate(abstractMethods, arguments), instantiate(concreteMethods, arguments));
+        return new MethodTable(
+                instantiate(abstractMethods, arguments),
+                instantiate(concreteMethods, arguments),
+                instantiate(staticMethods, arguments));
     }
 
     private static Set<MethodSignature> instantiate(Set<Signature> signatures, List<ClassDesc> arguments) {

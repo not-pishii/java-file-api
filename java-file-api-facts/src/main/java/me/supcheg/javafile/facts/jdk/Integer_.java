@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -22,15 +23,19 @@ public final class Integer_ {
 
     /// `static Integer valueOf(int)`.
     public static final StaticMethodRef1<Integer, Prim.Int> valueOf_int =
-            UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, PrimitiveToken.INT, Jdk.FINAL);
+            UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// `static int parseInt(String) throws NumberFormatException`.
     public static final StaticMethodRef1<Prim.Int, String> parseInt = UnsafeFacts.staticMethod(
-            TOKEN, "parseInt", PrimitiveToken.INT, String_.TOKEN, Jdk.FINAL.throwing(NumberFormatException_.TOKEN));
+            TOKEN,
+            "parseInt",
+            PrimitiveToken.INT,
+            String_.TOKEN,
+            MemberTraits.FINAL.throwing(NumberFormatException_.TOKEN));
 
     /// `int intValue()`.
     public static final MethodRef0<Integer, Prim.Int> intValue =
-            UnsafeFacts.method(TOKEN, "intValue", PrimitiveToken.INT, Jdk.FINAL);
+            UnsafeFacts.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.FINAL);
 
     private Integer_() {}
 }
