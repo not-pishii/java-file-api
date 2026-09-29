@@ -372,4 +372,30 @@ class NegativeCompileTest {
                 "me.supcheg.javafile.facts.FieldRef<Self,me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
                         + " me.supcheg.javafile.facts.MutableFieldRef<O,T>");
     }
+
+    @Test
+    void newDiamondIsNotPartOfTheApi() {
+        // B12: lowering places the diamond itself, where the target type is the constructed one
+        assertRejected("NewDiamond", "void use() { newDiamond(Object_.new_); }", "cannot find symbol", "newDiamond");
+    }
+
+    @Test
+    void aCastToAPrimitiveTypeDoesNotCompile() {
+        // B13, the static half: a cast or pattern type is a reference type
+        assertRejected(
+                "CastToPrimitive",
+                "void use() { castChecked(PrimitiveToken.INT, literalNull(Object_.TOKEN)); }",
+                "method castChecked in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
+    }
+
+    @Test
+    void aPrimitiveCondWithReferenceBranchesDoesNotCompile() {
+        // M2, the static half: a primitive conditional takes branches of exactly its type
+        assertRejected(
+                "PrimitiveCond",
+                "void use() { cond(literal(true), literal(\"a\"), literal(\"b\"), PrimitiveToken.INT); }",
+                "method cond in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "inference variable T has incompatible bounds");
+    }
 }
