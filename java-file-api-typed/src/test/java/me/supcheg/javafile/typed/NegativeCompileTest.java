@@ -282,4 +282,94 @@ class NegativeCompileTest {
                         + " String_.length)))));"),
                 "bad return type in lambda expression");
     }
+
+    @Test
+    void thereIsNoThisFactory() {
+        // this is handed to an instance body as a parameter; it cannot be
+        // made from a token, of another class or in a static context.
+        assertRejected(
+                "ThisFromToken",
+                inClass("cb.staticMethod(\"m\", String_.TOKEN,"
+                        + " b -> b.return_(call(this_(String_.TOKEN), Object_.toString)));"),
+                "cannot find symbol",
+                "method this_(me.supcheg.javafile.facts.FinalClassToken<java.lang.String>)");
+    }
+
+    @Test
+    void aStaticMethodBodyGetsNoThis() {
+        assertRejected(
+                "StaticThis",
+                inClass("cb.staticMethod(\"m\", PrimitiveToken.INT, (b, self) -> b.return_(literal(1)));"),
+                "incompatible parameter types in lambda expression");
+    }
+
+    @Test
+    void theThisOfOneClassIsUnusableInAnotherClass() {
+        assertRejected(
+                "ForeignThis",
+                """
+                void use() {
+                    TypedJavaFile.class_(ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
+                        public <A> void build(TypedClassBuilder<A> a) {
+                            var x = a.field("x", PrimitiveToken.INT, literal(1));
+                            TypedJavaFile.class_(ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
+                                public <B> void build(TypedClassBuilder<B> b) {
+                                    b.method("m", PrimitiveToken.INT, (body, self) -> body.return_(field(self, x)));
+                                }
+                            });
+                        }
+                    });
+                }
+                """,
+                "method field in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "inference variable O has incompatible bounds",
+                "equality constraints: A",
+                "lower bounds: B");
+    }
+
+    @Test
+    void aMemberOfAnotherClassCannotBeDefined() {
+        assertRejected(
+                "ForeignDefine",
+                """
+                void use() {
+                    TypedJavaFile.class_(ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
+                        public <A> void build(TypedClassBuilder<A> a) {
+                            var m = a.declareMethod("m", PrimitiveToken.INT);
+                            TypedJavaFile.class_(ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
+                                public <B> void build(TypedClassBuilder<B> b) {
+                                    b.define(m, (body, self) -> body.return_(literal(1)));
+                                }
+                            });
+                        }
+                    });
+                }
+                """,
+                "no suitable method found for define(me.supcheg.javafile.facts.MethodRef0<A,"
+                        + "me.supcheg.javafile.facts.Prim.Int>",
+                "me.supcheg.javafile.facts.MethodRef0<A,me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
+                        + " me.supcheg.javafile.facts.MethodRef0<B,R>");
+    }
+
+    @Test
+    void aFactOfAnExistingClassCannotBeDefined() {
+        assertRejected(
+                "JdkDefine",
+                inClass("cb.define(Object_.toString, (b, self) -> b.return_(literal(\"x\")));"),
+                "no suitable method found for define(me.supcheg.javafile.facts.MethodRef0<java.lang.Object,"
+                        + "java.lang.String>");
+    }
+
+    @Test
+    void anImmutableFieldCannotBeAssigned() {
+        assertRejected(
+                "AssignFinalField",
+                inClass("""
+                        var x = cb.field("x", PrimitiveToken.INT, literal(1));
+                        cb.constructor((b, self) -> b.exec(assignField(self, x, literal(2))).end());
+                        """),
+                "method assignField in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "me.supcheg.javafile.facts.FieldRef<Self,me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
+                        + " me.supcheg.javafile.facts.MutableFieldRef<O,T>");
+    }
 }
