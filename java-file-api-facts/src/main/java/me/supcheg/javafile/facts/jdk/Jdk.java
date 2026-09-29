@@ -1,18 +1,25 @@
 package me.supcheg.javafile.facts.jdk;
 
+import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
-import me.supcheg.javafile.facts.MethodSignature;
-import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
+import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
-import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.TokenArg;
+import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeArg;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
 
 import javax.annotation.processing.Generated;
@@ -32,9 +39,11 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-/// Shorthands of the hand-written metamodel.
+/// Shorthands of the hand-written metamodel: the [TypeShape] of a JDK type,
+/// read by reflection once per type, and its tokens.
 @Generated(value = "hand-written", comments = "stand-in for the output of the @Facts processor (§5)")
 final class Jdk {
     static final MemberTraits OVERRIDABLE = MemberTraits.DEFAULT;
@@ -42,14 +51,69 @@ final class Jdk {
     static final MemberTraits ABSTRACT = MemberTraits.DEFAULT.with(Overridability.ABSTRACT);
 
     /// The public, non-final methods of `Object` every class inherits.
-    static final Set<MethodSignature> OBJECT_METHODS = Set.of(
-            new MethodSignature("equals", List.of(ConstantDescs.CD_Object)),
-            new MethodSignature("hashCode", List.of()),
-            new MethodSignature("toString", List.of()));
+    private static final Set<Signature> OBJECT_METHODS = Set.of(
+            Signature.of("equals", Param.fixed(ConstantDescs.CD_Object)),
+            Signature.of("hashCode"),
+            Signature.of("toString"));
+
+    private static final ClassValue<TypeShape<DeclaredKind.FinalClass>> FINAL_CLASSES =
+            shapes(DeclaredKind.FINAL_CLASS);
+    private static final ClassValue<TypeShape<DeclaredKind.OpenClass>> OPEN_CLASSES = shapes(DeclaredKind.OPEN_CLASS);
+    private static final ClassValue<TypeShape<DeclaredKind.Interface>> INTERFACES = shapes(DeclaredKind.INTERFACE);
 
     private Jdk() {}
 
-    static List<ClassDesc> chain(Class<?> type) {
+    static <T> FinalClassToken<T> finalClass(Class<T> type) {
+        return UnsafeFacts.finalClassToken(FINAL_CLASSES.get(type));
+    }
+
+    static <T> OpenClassToken<T> openClass(Class<T> type) {
+        return UnsafeFacts.openClassToken(OPEN_CLASSES.get(type));
+    }
+
+    static <T> InterfaceToken<T> iface(Class<T> type) {
+        return UnsafeFacts.interfaceToken(INTERFACES.get(type));
+    }
+
+    /// An interface token of a parameterized type, e.g. `List<E>`; the
+    /// caller's signature vouches for the phantom.
+    static <T> InterfaceToken<T> iface(Class<?> raw, TokenArg... args) {
+        return UnsafeFacts.interfaceToken(INTERFACES.get(raw), args);
+    }
+
+    /// A class token of a parameterized type, e.g. `ArrayList<E>`; the
+    /// caller's signature vouches for the phantom.
+    static <T> OpenClassToken<T> openClass(Class<?> raw, TokenArg... args) {
+        return UnsafeFacts.openClassToken(OPEN_CLASSES.get(raw), args);
+    }
+
+    private static <K extends DeclaredKind> ClassValue<TypeShape<K>> shapes(K kind) {
+        return new ClassValue<>() {
+            @Override
+            protected TypeShape<K> computeValue(Class<?> type) {
+                return shape(kind, type);
+            }
+        };
+    }
+
+    /// Reads the shape of a JDK type by reflection, vouched for by hand.
+    ///
+    /// A stand-in for what the `@Facts` processor computes from
+    /// `javax.lang.model`. A type that is not generic records no supertypes.
+    private static <K extends DeclaredKind> TypeShape<K> shape(K kind, Class<?> type) {
+        Supertypes supertypes = type.getTypeParameters().length > 0 ? supertypes(type) : Supertypes.NONE;
+        return UnsafeFacts.shape(
+                kind,
+                desc(type),
+                typeParameters(type),
+                chain(type),
+                supertypes,
+                methods(type, supertypes),
+                List.of(),
+                type.isSealed());
+    }
+
+    private static List<ClassDesc> chain(Class<?> type) {
         List<ClassDesc> chain = new ArrayList<>();
         for (Class<?> c = type.getSuperclass(); c != null; c = c.getSuperclass()) {
             chain.add(desc(c));
@@ -57,30 +121,45 @@ final class Jdk {
         return chain;
     }
 
-    static ClassDesc desc(Class<?> type) {
+    private static ClassDesc desc(Class<?> type) {
         return ClassDesc.ofDescriptor(type.descriptorString());
     }
 
-    /// Reads the method table of a JDK type by reflection, substituting the
-    /// erasures of the given type-variable tokens by variable name.
-    ///
-    /// A stand-in for what metagen computes from `Signature` attributes.
-    static MethodTable methods(Class<?> type, Map<String, TypeToken<?>> vars) {
-        Set<MethodSignature> abstracts = new HashSet<>();
-        Set<MethodSignature> concretes = new HashSet<>(OBJECT_METHODS);
+    private static Map<String, TypeRef> ownVariables(Class<?> type) {
+        Map<String, TypeRef> env = new HashMap<>();
+        for (TypeVariable<?> var : type.getTypeParameters()) {
+            env.put(var.getName(), Types.typeVar(var.getName()));
+        }
+        return env;
+    }
+
+    private static List<TypeParam> typeParameters(Class<?> type) {
+        Map<String, TypeRef> env = ownVariables(type);
+        return Arrays.stream(type.getTypeParameters())
+                .map(var -> new TypeParam(
+                        var.getName(),
+                        Arrays.stream(var.getBounds())
+                                .filter(bound -> bound != Object.class)
+                                .map(bound -> (ClassOrInterfaceTypeRef) typeRef(bound, env))
+                                .toList()))
+                .toList();
+    }
+
+    /// Reads the method table template of a JDK type by reflection: a
+    /// parameter typed by a type variable that stands for a type parameter
+    /// of `type` refers to it, every other parameter is erased.
+    private static MethodTableTemplate methods(Class<?> type, Supertypes supertypes) {
+        Set<Signature> abstracts = new HashSet<>();
+        Set<Signature> concretes = new HashSet<>(OBJECT_METHODS);
         for (Method method : type.getMethods()) {
             if (Modifier.isStatic(method.getModifiers())) {
                 continue;
             }
-            List<ClassDesc> params = new ArrayList<>();
-            Type[] generic = method.getGenericParameterTypes();
-            for (int i = 0; i < generic.length; i++) {
-                params.add(
-                        generic[i] instanceof TypeVariable<?> var && vars.containsKey(var.getName())
-                                ? vars.get(var.getName()).erasure()
-                                : desc(method.getParameterTypes()[i]));
+            List<Param> params = new ArrayList<>();
+            for (int i = 0; i < method.getParameterCount(); i++) {
+                params.add(param(type, supertypes, method, i));
             }
-            MethodSignature signature = new MethodSignature(method.getName(), params);
+            Signature signature = new Signature(method.getName(), params);
             if (Modifier.isAbstract(method.getModifiers())) {
                 if (!OBJECT_METHODS.contains(signature)) {
                     abstracts.add(signature);
@@ -90,20 +169,45 @@ final class Jdk {
             }
         }
         concretes.removeAll(abstracts);
-        return new MethodTable(abstracts, concretes);
+        return new MethodTableTemplate(abstracts, concretes);
+    }
+
+    private static Param param(Class<?> type, Supertypes supertypes, Method method, int i) {
+        return method.getGenericParameterTypes()[i] instanceof TypeVariable<?> var
+                        && var.getGenericDeclaration() instanceof Class<?> declaring
+                ? typeParameterIndex(type, supertypes, declaring, var)
+                        .<Param>map(Param::var)
+                        .orElseGet(() -> Param.fixed(desc(method.getParameterTypes()[i])))
+                : Param.fixed(desc(method.getParameterTypes()[i]));
+    }
+
+    /// The position of the type parameter of `type` that the type variable
+    /// `var` of its supertype `declaring` stands for, if one does.
+    private static Optional<Integer> typeParameterIndex(
+            Class<?> type, Supertypes supertypes, Class<?> declaring, TypeVariable<?> var) {
+        List<String> own = Arrays.stream(type.getTypeParameters())
+                .map(TypeVariable::getName)
+                .toList();
+        if (declaring == type) {
+            return Optional.of(own.indexOf(var.getName()));
+        }
+        if (own.isEmpty()) {
+            return Optional.empty();
+        }
+        int position = Arrays.asList(declaring.getTypeParameters()).indexOf(var);
+        return supertypes
+                .supertype(desc(declaring))
+                .map(supertype -> supertype.args().get(position))
+                .flatMap(arg -> arg instanceof ExactTypeArg(TypeVarRef named)
+                        ? Optional.of(own.indexOf(named.name()))
+                        : Optional.empty());
     }
 
     /// Reads the parameterized supertypes of a generic JDK type by
     /// reflection, in terms of its type parameters.
-    ///
-    /// A stand-in for what metagen computes from `Signature` attributes.
-    static Supertypes supertypes(Class<?> type) {
-        Map<String, TypeRef> env = new HashMap<>();
-        for (TypeVariable<?> var : type.getTypeParameters()) {
-            env.put(var.getName(), Types.typeVar(var.getName()));
-        }
+    private static Supertypes supertypes(Class<?> type) {
         Map<ClassDesc, ParameterizedTypeRef> found = new LinkedHashMap<>();
-        collectSupertypes(type, env, found);
+        collectSupertypes(type, ownVariables(type), found);
         return new Supertypes(
                 Arrays.stream(type.getTypeParameters())
                         .map(v -> Types.typeVar(v.getName()))
@@ -166,36 +270,5 @@ final class Jdk {
         }
         Type upper = wildcard.getUpperBounds()[0];
         return upper == Object.class ? Types.unbounded() : Types.extendsBound(typeRef(upper, env));
-    }
-
-    static <T> FinalClassToken<T> finalClass(Class<T> type) {
-        return UnsafeFacts.finalClassToken(Types.of(type), chain(type), methods(type, Map.of()));
-    }
-
-    static <T> OpenClassToken<T> openClass(Class<T> type) {
-        return UnsafeFacts.openClassToken(Types.of(type), chain(type), methods(type, Map.of()));
-    }
-
-    static <T> InterfaceToken<T> iface(Class<T> type) {
-        return UnsafeFacts.interfaceToken(Types.of(type), methods(type, Map.of()));
-    }
-
-    /// An interface token of a parameterized type, e.g. `List<E>`; the
-    /// caller's signature vouches for the phantom.
-    static <T> InterfaceToken<T> iface(Class<?> raw, Map<String, TypeToken<?>> vars, TypeArg... args) {
-        return UnsafeFacts.interfaceToken(
-                Types.parameterized(desc(raw), List.of(args)), supertypes(raw), methods(raw, vars));
-    }
-
-    /// A class token of a parameterized type, e.g. `ArrayList<E>`; the
-    /// caller's signature vouches for the phantom.
-    static <T> OpenClassToken<T> openClass(Class<?> raw, Map<String, TypeToken<?>> vars, TypeArg... args) {
-        return UnsafeFacts.openClassToken(
-                Types.parameterized(desc(raw), List.of(args)), chain(raw), supertypes(raw), methods(raw, vars));
-    }
-
-    /// An exact type argument.
-    static TypeArg arg(TypeToken<?> token) {
-        return Types.exact(token.typeRef());
     }
 }

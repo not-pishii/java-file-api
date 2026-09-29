@@ -1,45 +1,34 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
-import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.type.TypeVarRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
-import java.util.function.Supplier;
+import java.util.List;
 
-/// The state shared by the declared token classes.
+/// The state shared by the declared token classes: a [TypeShape] applied to
+/// type arguments.
 abstract class DeclaredTokenData {
+    private final TypeShape<?> shape;
     private final ClassOrInterfaceTypeRef typeRef;
-    private final ClassDesc erasure;
-    private final Supertypes supertypes;
-    private final Supplier<MethodTable> methods;
+    private final List<ClassDesc> arguments;
+    private volatile @Nullable MethodTable methods;
 
-    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
-        this(typeRef, supertypes, () -> methods);
+    DeclaredTokenData(TypeShape<?> shape, List<TokenArg> args) {
+        this(shape, shape.typeRef(args), shape.erasures(args));
     }
 
-    /// For a type whose methods are known only later: a class still being
-    /// declared, whose table is complete once its declaration is.
-    DeclaredTokenData(ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, Supplier<MethodTable> methods) {
+    /// @param typeRef the shape's type, raw or with one type argument per type parameter
+    /// @param arguments the erasures the shape's method table is instantiated with
+    DeclaredTokenData(TypeShape<?> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+        this.shape = shape;
         this.typeRef = typeRef;
-        this.erasure = switch (typeRef) {
-            case ClassTypeRef cls -> cls.desc();
-            case ParameterizedTypeRef parameterized -> parameterized.raw();
-            case TypeVarRef var ->
-                throw new IllegalArgumentException(
-                        "a declared type token needs a class or parameterized type, got type variable " + var.name());
-        };
-        int arity = typeRef instanceof ParameterizedTypeRef parameterized
-                ? parameterized.args().size()
-                : 0;
-        if (!supertypes.equals(Supertypes.NONE) && supertypes.typeParameters().size() != arity) {
-            throw new IllegalArgumentException("the supertypes of " + TypeNames.describe(typeRef) + " are given for "
-                    + supertypes.typeParameters().size() + " type parameters, but it has " + arity
-                    + " type arguments");
-        }
-        this.supertypes = supertypes;
-        this.methods = methods;
+        this.arguments = List.copyOf(arguments);
+    }
+
+    public final TypeShape<?> shape() {
+        return shape;
     }
 
     public final ClassOrInterfaceTypeRef typeRef() {
@@ -47,15 +36,26 @@ abstract class DeclaredTokenData {
     }
 
     public final ClassDesc erasure() {
-        return erasure;
+        return shape.desc();
     }
 
+    /// The supertypes of the shape, except for a raw type, whose supertypes
+    /// are erased (JLS 4.8).
     public final Supertypes supertypes() {
-        return supertypes;
+        boolean raw = !(typeRef instanceof ParameterizedTypeRef)
+                && !shape.typeParameters().isEmpty();
+        return raw ? Supertypes.NONE : shape.supertypes();
     }
 
+    /// The shape's method table instantiated with the erasures of the type
+    /// arguments, computed once it is known.
     public final MethodTable methods() {
-        return methods.get();
+        MethodTable table = methods;
+        if (table == null) {
+            table = shape.methods().instantiate(arguments);
+            methods = table;
+        }
+        return table;
     }
 
     @Override

@@ -6,10 +6,10 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
 import javax.annotation.processing.Generated;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /// Facts of `java.util.function.Predicate<T>`.
@@ -27,7 +27,7 @@ public final class Predicate_<T> {
     public final Sam1<Predicate<T>, Prim.Bool, T> sam;
 
     private Predicate_(RefToken<T> argument) {
-        this.token = Jdk.iface(Predicate.class, Map.of("T", argument), Jdk.arg(argument));
+        this.token = Jdk.iface(Predicate.class, TokenArg.exact(argument));
         this.test = UnsafeFacts.method(token, "test", PrimitiveToken.BOOLEAN, argument, Jdk.ABSTRACT);
         this.sam = UnsafeFacts.sam(test);
     }

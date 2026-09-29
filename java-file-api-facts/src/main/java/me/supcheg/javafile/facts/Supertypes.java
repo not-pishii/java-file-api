@@ -57,7 +57,7 @@ public record Supertypes(List<TypeVarRef> typeParameters, List<ParameterizedType
                 throw new IllegalArgumentException(
                         "two supertypes of generic type " + supertype.raw().displayName());
             }
-            requireDeclared(supertype, names);
+            TypeVariables.requireDeclared(supertype, names, "a supertype");
         }
     }
 
@@ -105,28 +105,5 @@ public record Supertypes(List<TypeVarRef> typeParameters, List<ParameterizedType
             case SuperTypeArg bound -> new SuperTypeArg(substitute(bound.bound(), env));
             case UnboundedTypeArg unbounded -> unbounded;
         };
-    }
-
-    private static void requireDeclared(TypeRef type, Set<String> names) {
-        switch (type) {
-            case TypeVarRef var -> {
-                if (!names.contains(var.name())) {
-                    throw new IllegalArgumentException("a supertype names undeclared type variable " + var.name());
-                }
-            }
-            case ParameterizedTypeRef p -> p.args().forEach(a -> requireDeclared(a, names));
-            case ArrayTypeRef array -> requireDeclared(array.component(), names);
-            case ClassTypeRef ignored -> {}
-            case PrimitiveTypeRef ignored -> {}
-        }
-    }
-
-    private static void requireDeclared(TypeArg arg, Set<String> names) {
-        switch (arg) {
-            case ExactTypeArg exact -> requireDeclared(exact.type(), names);
-            case ExtendsTypeArg bound -> requireDeclared(bound.bound(), names);
-            case SuperTypeArg bound -> requireDeclared(bound.bound(), names);
-            case UnboundedTypeArg ignored -> {}
-        }
     }
 }

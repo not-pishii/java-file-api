@@ -1,9 +1,5 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassTypeRef;
-
-import java.lang.constant.ClassDesc;
-import java.lang.constant.ConstantDescs;
 import java.util.List;
 
 /// A token of an enum type that also carries the enum's constants, in
@@ -15,20 +11,16 @@ import java.util.List;
 ///
 /// @param <T> the Java type this token stands for
 public final class EnumToken<T> extends ClassTokenData implements ClassToken<T> {
-    private static final ClassDesc CD_ENUM = ClassDesc.of("java.lang.Enum");
 
-    private final List<String> constants;
-
-    EnumToken(ClassTypeRef typeRef, List<String> constants, MethodTable methods) {
-        super(typeRef, List.of(CD_ENUM, ConstantDescs.CD_Object), Supertypes.NONE, methods);
-        this.constants = List.copyOf(constants);
+    EnumToken(TypeShape<DeclaredKind.EnumClass> shape) {
+        super(shape, List.of());
     }
 
     /// The enum's constant names, in declaration order.
     ///
     /// @return the constant names
     public List<String> constants() {
-        return constants;
+        return shape().enumConstants();
     }
 
     /// Looks up a constant of the enum.
@@ -37,8 +29,8 @@ public final class EnumToken<T> extends ClassTokenData implements ClassToken<T> 
     /// @return the constant
     /// @throws FactLookupException if the enum declares no such constant
     public EnumConstant<T> constant(String name) {
-        if (!constants.contains(name)) {
-            throw new FactLookupException("enum constant " + this + "." + name, "the enum token", constants);
+        if (!constants().contains(name)) {
+            throw new FactLookupException("enum constant " + this + "." + name, "the enum token", constants());
         }
         return new EnumConstant<>(this, name);
     }

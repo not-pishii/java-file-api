@@ -8,7 +8,12 @@
 ///   [me.supcheg.javafile.facts.OpenClassToken]s and
 ///   [me.supcheg.javafile.facts.AbstractClassToken]s are extended,
 ///   [me.supcheg.javafile.facts.ConcreteClassToken]s are instantiated,
-///   [me.supcheg.javafile.facts.RefToken]s are type arguments.
+///   [me.supcheg.javafile.facts.RefToken]s are type arguments. A declared
+///   token is a [me.supcheg.javafile.facts.TypeShape] — the data of a type
+///   apart from its type arguments, with its
+///   [me.supcheg.javafile.facts.ShapeOrigin] — applied to
+///   [me.supcheg.javafile.facts.TokenArg]s; the shape's
+///   [me.supcheg.javafile.facts.DeclaredKind] decides the token class.
 /// - Members, one overload per fact (§3.2), arity 0 to 12:
 ///   `MethodRefN<O, R, A1..AN>` and `VoidMethodRefN<O, A1..AN>` (instance
 ///   methods), `StaticMethodRefN<R, A1..AN>` and `VoidStaticMethodRefN<A1..AN>`,
