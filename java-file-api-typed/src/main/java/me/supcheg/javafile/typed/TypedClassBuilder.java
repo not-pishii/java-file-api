@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /// Builds a typed `final` class declaration (§6.5), branded with `Self`.
 ///
@@ -182,8 +183,12 @@ public final class TypedClassBuilder<Self> {
         registry.field(name);
         ScopeCheck.standalone(initializer.node(), "initializer of field " + name);
         Slot slot = slot(field, null, "field " + field);
-        slot.define(new FieldDecl(
-                name, type.typeRef(), List.of(), modifiers, Optional.of(new Lowering().lowerExpr(initializer.node()))));
+        slot.define(() -> new FieldDecl(
+                name,
+                type.typeRef(),
+                List.of(),
+                modifiers,
+                Optional.of(new Lowering().lowerInitializer(initializer.node(), type))));
     }
 
     // ------------------------------------------------------------------
@@ -711,7 +716,7 @@ public final class TypedClassBuilder<Self> {
     public TypedClassBuilder<Self> add(UnsafeMember member) {
         requireOpen("an unsafe member of " + described);
         Slot slot = slot(member, null, "an unsafe member");
-        slot.define(member.member());
+        slot.define(member::member);
         return this;
     }
 
@@ -720,6 +725,11 @@ public final class TypedClassBuilder<Self> {
     // ------------------------------------------------------------------
 
     /// Completes the declaration: every declared member must be defined.
+    ///
+    /// The members are lowered only now, when the method table of [#self()]
+    /// is complete: lowering consults it to pin the overload a call of a
+    /// method of this class names, and a body may call a method whose
+    /// overloads are declared after it.
     ///
     /// @return the members, in declaration order
     /// @throws IllegalStateException if a declared member is not defined
@@ -779,19 +789,24 @@ public final class TypedClassBuilder<Self> {
         return Expr.of(new Node.This(root), self);
     }
 
-    /// Builds `root` — the root of its scope tree — from `bodyFn` and lowers
-    /// the member it is the body of.
-    private static <R, B extends Block<R, B>> ClassMember member(
+    /// Builds `root` — the root of its scope tree — from `bodyFn`, and
+    /// returns the lowering of the member it is the body of, run on
+    /// [#complete()].
+    private static <R, B extends Block<R, B>> Supplier<ClassMember> member(
             Slot slot, B root, List<Var<?>> params, Function<? super B, Terminated<R>> bodyFn) {
+        Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
+        Block.requireIssuedBy(terminated, root);
+        return () -> lower(slot, root, params);
+    }
+
+    private static ClassMember lower(Slot slot, Block<?, ?> root, List<Var<?>> params) {
         Invocable fact = slot.fact();
-        Lowering lowering = new Lowering();
+        Lowering lowering = new Lowering(fact.resultType().orElse(null));
         List<Param> coreParams = new ArrayList<>(params.size());
         for (Var<?> param : params) {
             coreParams.add(
                     new Param(lowering.declareUpfront(param), param.type().typeRef()));
         }
-        Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
-        Block.requireIssuedBy(terminated, root);
         CodeBody code = lowering.lowerBlock(root.instrs());
         List<AnnotationUse> annotations = slot.overrides ? List.of(new AnnotationUse(OVERRIDE, List.of())) : List.of();
         return switch (fact.kind()) {
@@ -824,8 +839,9 @@ public final class TypedClassBuilder<Self> {
         final String what;
         final @Nullable Invocable fact;
 
+        /// The lowering of the member, once it is defined.
         @Nullable
-        ClassMember member;
+        Supplier<ClassMember> member;
 
         boolean overrides;
 
@@ -839,10 +855,10 @@ public final class TypedClassBuilder<Self> {
         }
 
         ClassMember member() {
-            return Objects.requireNonNull(member);
+            return Objects.requireNonNull(member).get();
         }
 
-        void define(ClassMember member) {
+        void define(Supplier<ClassMember> member) {
             this.member = member;
         }
     }

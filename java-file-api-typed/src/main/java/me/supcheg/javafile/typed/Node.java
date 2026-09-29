@@ -21,6 +21,25 @@ import java.util.Optional;
 /// refers to variables by identity; lowering assigns names.
 sealed interface Node {
 
+    /// Whether javac types `node`, lowered as it stands, by exactly the token
+    /// of the typed [me.supcheg.javafile.typed.Expr] it is the node of.
+    /// Every construct is typed so, except an instance call through a
+    /// receiver of a subtype of the method's owner — the subtype may override
+    /// the method with a narrower result (JLS 8.4.8.3) — and an element of an
+    /// array so typed. Lowering pins such a node where its type matters, see
+    /// [Lowering].
+    ///
+    /// @param node the node
+    /// @return `true` if the static type javac infers is the token's
+    static boolean isExact(Node node) {
+        return switch (node) {
+            case Call(var target, var method, var ignored) ->
+                isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
+            case ArrayAt(var array, var ignored) -> isExact(array);
+            default -> true;
+        };
+    }
+
     /// A literal, with its value for constant folding.
     record Lit(Expr literal, Object value) implements Node {}
 
@@ -42,17 +61,20 @@ sealed interface Node {
     /// Unboxing of a box, `operand.intValue()`.
     record Unbox(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
 
-    /// An instance method call; `method` is `void` or not.
-    record Call(Node target, Invocable method, List<Node> args) implements Node {}
+    /// An instance method call; `method` is `void` or not. The receiver and
+    /// the arguments keep their static types: lowering pins the member the
+    /// fact names from them (§6.1).
+    record Call(Operand target, Invocable method, List<Operand> args) implements Node {}
 
     /// A static method call.
-    record StaticCall(Invocable method, List<Node> args) implements Node {}
+    record StaticCall(Invocable method, List<Operand> args) implements Node {}
 
-    /// An instance creation, `new T(args)` or `new T<>(args)`.
-    record New(Invocable ctor, List<Node> args, boolean diamond) implements Node {}
+    /// An instance creation, `new T(args)`; lowering renders `new T<>(args)`
+    /// itself where the target type is exactly `T`.
+    record New(Invocable ctor, List<Operand> args) implements Node {}
 
     /// An instance field read.
-    record FieldGet(Node target, FieldRef<?, ?> field) implements Node {}
+    record FieldGet(Operand target, FieldRef<?, ?> field) implements Node {}
 
     /// A static field read.
     record StaticFieldGet(StaticFieldRef<?> field) implements Node {}
@@ -99,6 +121,14 @@ sealed interface Node {
     /// An untyped core expression from `Unsafe`.
     record Raw(Expr expr) implements Node {}
 
+    /// A subexpression together with the token of its static type, where
+    /// lowering needs the type to pin the member the fact names: the
+    /// receiver and the arguments of a call, the receiver of a field.
+    ///
+    /// @param node the expression
+    /// @param type the token of its static type
+    record Operand(Node node, TypeToken<?> type) {}
+
     /// The body of a [Lambda]. Either way the lambda's parameters are owned by
     /// a lambda-boundary block (§6.2) nested in the block the lambda is
     /// built in.
@@ -118,7 +148,7 @@ sealed interface Node {
         record Local(MutVar<?> var) implements Target {}
 
         /// A non-final instance field.
-        record Field(Node target, MutableFieldRef<?, ?> field) implements Target {}
+        record Field(Operand target, MutableFieldRef<?, ?> field) implements Target {}
 
         /// A non-final static field.
         record StaticField(MutableStaticFieldRef<?> field) implements Target {}
