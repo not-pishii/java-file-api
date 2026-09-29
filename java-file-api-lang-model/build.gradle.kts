@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api(project(":java-file-api-core"))
+    api(project(":java-file-api-facts"))
 }
 
 testing {
