@@ -14,4 +14,16 @@ class JavaStringsProperties {
         String withoutEscapedPairs = escaped.replace("\\\\", "").replace("\\\"", "");
         assertThat(withoutEscapedPairs).doesNotContain("\"");
     }
+
+    @Property
+    void textBlockLinesHaveNoUnescapedTripleQuoteNoRawLineTerminatorAndNoTrailingWhiteSpace(@ForAll String value) {
+        for (String line : JavaStrings.textBlockLines(value)) {
+            assertThat(line).doesNotContain("\n", "\r");
+            assertThat(line.replace("\\\\", "").replace("\\\"", "")).doesNotContain("\"\"\"");
+            if (!line.isEmpty()) {
+                assertThat(Character.isWhitespace(line.charAt(line.length() - 1)))
+                        .isFalse();
+            }
+        }
+    }
 }

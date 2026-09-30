@@ -492,8 +492,11 @@ final class ExprRenderer {
 
     private static String renderTextBlock(String value, Context ctx) {
         StringBuilder sb = new StringBuilder("\"\"\"" + ctx.newline());
-        for (String line : value.split("\n", -1)) {
-            sb.append(ctx.pad()).append(line).append(ctx.newline());
+        for (String line : JavaStrings.textBlockLines(value)) {
+            if (!line.isEmpty()) {
+                sb.append(ctx.pad()).append(line);
+            }
+            sb.append(ctx.newline());
         }
         sb.append(ctx.pad()).append("\"\"\"");
         return sb.toString();
