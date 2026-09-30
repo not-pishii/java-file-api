@@ -171,10 +171,19 @@ class ExprRendererTest {
     }
 
     @Test
-    void textBlockKeepsATrailingBlankLineForAValueEndingInNewline() {
+    void textBlockPutsTheClosingDelimiterRightAfterTheFinalNewlineOfAValue() {
         assertThat(ExprRenderer.renderExpr(
                         textBlock("line one\nline two\n"), Context.of(standardFormat(), new ImportManager("p"))))
-                .isEqualTo("\"\"\"\n" + "line one\n" + "line two\n" + "\n" + "\"\"\"");
+                .isEqualTo("\"\"\"\n" + "line one\n" + "line two\n" + "\"\"\"");
+    }
+
+    @Test
+    void textBlockLeavesEmptyLinesWithoutIndentation() {
+        String rendered = ExprRenderer.renderExpr(
+                textBlock("a\n\nb\n"),
+                Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("\"\"\"\n    a\n\n    b\n    \"\"\"");
     }
 
     @Test
@@ -201,7 +210,7 @@ class ExprRendererTest {
                         .withIncreasedPad()
                         .withIncreasedPad());
 
-        assertThat(rendered).isEqualTo("\"\"\"\n        line one\n        line two\n        \"\"\"");
+        assertThat(rendered).isEqualTo("\"\"\"\n        line one\n        line two\\\n        \"\"\"");
     }
 
     @Test
