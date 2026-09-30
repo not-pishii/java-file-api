@@ -112,4 +112,59 @@ class MultiroundTest {
                 .contains("type p.Broken in @Facts is not resolvable after all rounds: it mentions gen.Never, which"
                         + " no processor generated");
     }
+
+    @Test
+    void aFullMetamodelWaitsForTheMetamodelOfARequestedTypeItMentions() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public gen.Missing missing() { return null; } }"));
+
+        // B has to wait for gen.Missing, and A for B: else A would have no fact of b()
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        assertThat(sources.get("gen.facts.p.A_")).contains("B_.Data.SHAPE").contains("MethodRef0<A, B> b");
+        assertThat(sources.get("gen.facts.p.B_")).contains("MethodRef0<B, Missing> missing");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aFullMetamodelWhoseMentionedRequestedTypeNeverGetsReadyIsAnErrorInTheLastRound() {
+        Compilation compilation = process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public gen.Never never() { return null; } }");
+
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+                .contains(
+                        "type p.B in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                                + " processor generated",
+                        "type p.A in @Facts is not resolvable after all rounds: it mentions p.B, whose metamodel is"
+                                + " not ready");
+    }
+
+    @Test
+    void anInterfaceWaitsForATypeItsInheritedSamMentions() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
+                class G {}
+                """,
+                "package p; public interface Base { gen.Missing run(); }",
+                "package p; public interface Sub extends Base {}"));
+
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        assertThat(sources.get("gen.facts.p.Sub_"))
+                .contains("Sam0<Sub, Missing> sam")
+                .contains("Missing_.Data.SHAPE");
+        assertThat(sources.keySet()).contains("gen.facts.gen.Missing_");
+    }
 }
