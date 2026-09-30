@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
+import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 
@@ -22,12 +23,28 @@ final class Models {
     private final Elements elements;
     private final MirrorTranslator translator;
     private final Map<Key, Translation<TypeModel>> models = new HashMap<>();
+    private final Map<String, Translation<Optional<SamModel>>> sams = new HashMap<>();
 
     /// @param elements the element utilities of the compilation
     /// @param translator the translator of the compilation
     Models(Elements elements, MirrorTranslator translator) {
         this.elements = elements;
         this.translator = translator;
+    }
+
+    /// The translator of the compilation.
+    ///
+    /// @return the translator
+    MirrorTranslator translator() {
+        return translator;
+    }
+
+    /// The single abstract method of a functional interface.
+    ///
+    /// @param type the interface
+    /// @return the method, see [MirrorTranslator#sam(TypeElement)]
+    Translation<Optional<SamModel>> sam(TypeElement type) {
+        return sams.computeIfAbsent(binaryName(type), _ -> translator.sam(type));
     }
 
     /// The model of a type.

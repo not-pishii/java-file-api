@@ -57,9 +57,10 @@ import java.util.stream.Collectors;
 ///
 /// In the last round it reports what never became ready.
 ///
-/// Full metamodels, with a fact per member, come with plan steps 8–9: until
-/// then a requested type gets a token-only metamodel, marked and listed as
-/// such, so no other compilation mistakes it for a full one.
+/// A requested type that is not generic gets a full metamodel, with a fact
+/// per member ([MemberPlan]); a generic one, until plan step 9, a token-only
+/// metamodel, marked and listed as such, so no other compilation mistakes it
+/// for a full one.
 ///
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
@@ -73,6 +74,7 @@ public final class FactsProcessor extends AbstractProcessor {
     private final SortedSet<Site> unresolvedSites = new TreeSet<>();
     private final SortedMap<String, SortedSet<Site>> requested = new TreeMap<>();
     private final SortedMap<String, String> waiting = new TreeMap<>();
+    private final SortedMap<String, String> blocked = new TreeMap<>();
     private final Map<String, Done> done = new HashMap<>();
     private final Map<ClassDesc, String> ownMetamodels = new HashMap<>();
 
@@ -190,6 +192,7 @@ public final class FactsProcessor extends AbstractProcessor {
         SortedMap<String, TypeElement> mentioned = new TreeMap<>();
         Map<String, SortedSet<Site>> mentionedBy = new HashMap<>();
         Set<String> requestedTypes = new TreeSet<>();
+        Map<String, String> unavailableTypes = new HashMap<>();
         for (Map.Entry<String, SortedSet<Site>> entry : requested.entrySet()) {
             TypeElement type = elements.getTypeElement(entry.getKey());
             if (type == null) {
@@ -228,17 +231,31 @@ public final class FactsProcessor extends AbstractProcessor {
                 case Closure.Outcome.Ready ready -> {
                     waiting.remove(entry.getKey());
                     Optional<? extends Element> at = first(requesters, elements);
-                    for (SkippedMember skipped : ready.full().skipped()) {
-                        diagnostics.skipped(
-                                at, binaryName + ": no fact of " + skipped.member() + ", which " + skipped.reason());
+                    boolean full = type.getTypeParameters().isEmpty();
+                    if (full) {
+                        // the plan of the members reports what it leaves out, and why
+                        ready.unavailable().forEach(u -> unavailableTypes.put(u.type(), u.reason()));
+                    } else {
+                        for (SkippedMember skipped : ready.full().skipped()) {
+                            diagnostics.skipped(
+                                    at,
+                                    binaryName + ": no fact of " + skipped.member() + ", which " + skipped.reason());
+                        }
+                        for (Closure.Unavailable unavailable : ready.unavailable()) {
+                            diagnostics.skipped(
+                                    at,
+                                    binaryName + ": no metamodel of " + unavailable.type()
+                                            + ", which its signatures mention: " + unavailable.reason());
+                        }
                     }
-                    for (Closure.Unavailable unavailable : ready.unavailable()) {
-                        diagnostics.skipped(
-                                at,
-                                binaryName + ": no metamodel of " + unavailable.type()
-                                        + ", which its signatures mention: " + unavailable.reason());
-                    }
-                    planned.add(new Planned(type, binaryName, true, requesters, stale));
+                    planned.add(new Planned(
+                            type,
+                            binaryName,
+                            true,
+                            full,
+                            requesters,
+                            stale,
+                            ready.signatureTypes().keySet()));
                     ready.signatureTypes().forEach((name, element) -> {
                         mentioned.put(name, element);
                         mentionedBy.computeIfAbsent(name, _ -> new TreeSet<>()).addAll(requesters);
@@ -255,16 +272,50 @@ public final class FactsProcessor extends AbstractProcessor {
                 case ReuseIndex.Lookup.Reusable(ClassDesc metamodel) ->
                     done.put(binaryName, new Done.Reused(metamodel));
                 case ReuseIndex.Lookup.Absent(List<String> stale) ->
-                    planned.add(new Planned(entry.getValue(), binaryName, false, mentionedBy.get(binaryName), stale));
+                    planned.add(new Planned(
+                            entry.getValue(), binaryName, false, false, mentionedBy.get(binaryName), stale, Set.of()));
             }
         }
+        Map<String, ClassDesc> metamodels = new HashMap<>();
+        done.forEach((name, result) -> {
+            switch (result) {
+                case Done.Generated(ClassDesc metamodel, boolean ignored) -> metamodels.put(name, metamodel);
+                case Done.Reused(ClassDesc metamodel) -> metamodels.put(name, metamodel);
+                case Done.Failed ignored -> {}
+            }
+        });
         for (Planned metamodel : planned) {
-            write(base, metamodel, models, index, elements, diagnostics);
+            metamodels.put(metamodel.binaryName(), MetamodelNames.metamodel(base, metamodel.type(), elements));
+        }
+        Targets targets = new Targets(models, metamodels, unavailableTypes);
+        for (Planned metamodel : planned) {
+            String key = metamodel.type().getQualifiedName().toString();
+            // a full metamodel refers to the metamodel of a requested type it mentions: one that is not
+            // ready yet must be waited for, or the members that mention it would have no fact for good
+            Optional<String> notReady = metamodel.full()
+                    ? metamodel.mentions().stream()
+                            .filter(name -> requestedTypes.contains(name)
+                                    && !metamodels.containsKey(name)
+                                    && !(done.get(name) instanceof Done.Failed))
+                            .findFirst()
+                    : Optional.empty();
+            if (notReady.isPresent()) {
+                blocked.put(key, notReady.get());
+            } else {
+                blocked.remove(key);
+                write(base, metamodel, models, targets, index, elements, diagnostics);
+            }
         }
     }
 
     private void write(
-            String base, Planned planned, Models models, ReuseIndex index, Elements elements, Diagnostics diagnostics) {
+            String base,
+            Planned planned,
+            Models models,
+            Targets targets,
+            ReuseIndex index,
+            Elements elements,
+            Diagnostics diagnostics) {
         Optional<? extends Element> at = first(planned.requesters(), elements);
         ClassDesc metamodel = MetamodelNames.metamodel(base, planned.type(), elements);
         String name = Models.binaryName(metamodel);
@@ -286,9 +337,8 @@ public final class FactsProcessor extends AbstractProcessor {
         for (String reason : planned.stale()) {
             diagnostics.warning(at, reason + "; generating " + name);
         }
-        // plan step 8: a requested type gets its full metamodel, DECLARED_PUBLIC, listed as full
         TypeModel model =
-                switch (models.of(planned.type(), MemberFilter.NONE)) {
+                switch (models.of(planned.type(), planned.full() ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE)) {
                     case Translation.Ok<TypeModel>(TypeModel value) -> value;
                     case Translation.Deferred<TypeModel> _ ->
                         throw new IllegalStateException(planned.binaryName() + " was read, but is deferred now");
@@ -299,12 +349,29 @@ public final class FactsProcessor extends AbstractProcessor {
                 .map(site -> site.resolve(elements))
                 .flatMap(Optional::stream)
                 .toArray(Element[]::new);
-        switch (MetamodelEmitter.tokenOnly(metamodel, model, Canonical.of(model))) {
+        Canonical canonical = Canonical.of(model);
+        MetamodelEmitter.Emission emission;
+        if (planned.full()) {
+            MemberPlan plan =
+                    MemberPlan.of(planned.type(), models, targets, MetamodelEmitter.takenNames(model, targets));
+            for (MemberPlan.Skip skip : plan.skipped()) {
+                diagnostics.skipped(
+                        at, planned.binaryName() + ": no fact of " + skip.member() + ", which " + skip.reason());
+            }
+            emission = MetamodelEmitter.full(metamodel, model, canonical, plan, targets);
+        } else {
+            emission = MetamodelEmitter.tokenOnly(metamodel, model, canonical);
+        }
+        switch (emission) {
             case MetamodelEmitter.Emission.Clash(String reason) -> diagnostics.error(at, reason);
             case MetamodelEmitter.Emission.Written(var file) -> {
                 try {
                     JavaFileWriter.writeTo(file, processingEnv.getFiler(), originating);
-                    index.publish(ReuseIndex.Completeness.TOKEN, planned.binaryName(), metamodel, originating);
+                    index.publish(
+                            planned.full() ? ReuseIndex.Completeness.FULL : ReuseIndex.Completeness.TOKEN,
+                            planned.binaryName(),
+                            metamodel,
+                            originating);
                 } catch (IOException e) {
                     throw new UncheckedIOException("cannot write " + name, e);
                 }
@@ -317,6 +384,10 @@ public final class FactsProcessor extends AbstractProcessor {
         for (Site site : unresolvedSites) {
             diagnostics.error(site.resolve(elements), "a type in @Facts is not resolvable after all rounds");
         }
+        blocked.forEach((type, mentioned) -> diagnostics.error(
+                first(requested.get(type), elements),
+                "type " + type + " in @Facts is not resolvable after all rounds: it mentions " + mentioned
+                        + ", whose metamodel is not ready"));
         waiting.forEach((type, unresolved) -> diagnostics.error(
                 first(requested.get(type), elements),
                 "type " + type + " in @Facts is not resolvable after all rounds: it mentions " + unresolved
@@ -332,10 +403,18 @@ public final class FactsProcessor extends AbstractProcessor {
     /// @param type the type
     /// @param binaryName the binary name of the type
     /// @param requested whether `@Facts` asks for the type, rather than a signature mentioning it
+    /// @param full whether the metamodel has a fact per member: a requested type that is not generic
     /// @param requesters the `@Facts` the metamodel is generated for
     /// @param stale why the metamodels of the type on the classpath were not reused
+    /// @param mentions the binary names of the classes and interfaces the signatures of a requested type mention
     private record Planned(
-            TypeElement type, String binaryName, boolean requested, SortedSet<Site> requesters, List<String> stale) {}
+            TypeElement type,
+            String binaryName,
+            boolean requested,
+            boolean full,
+            SortedSet<Site> requesters,
+            List<String> stale,
+            Set<String> mentions) {}
 
     /// What became of a type.
     private sealed interface Done {

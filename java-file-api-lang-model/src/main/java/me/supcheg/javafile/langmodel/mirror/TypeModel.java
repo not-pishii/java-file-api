@@ -27,7 +27,8 @@ import java.util.List;
 /// @param supertypes every parameterized supertype, transitively, sorted by binary name
 /// @param methods every non-`private` method a call on the type may resolve to: declared and
 ///                inherited instance methods, and the `static` methods of the type and its
-///                superclasses, but not those of its superinterfaces
+///                superclasses, but not those of its superinterfaces; a public method of
+///                `Object` that an interface redeclares abstract is not abstract
 /// @param enumConstants the enum constants, in declaration order; empty unless an enum
 /// @param sealed whether the type is `sealed`
 /// @param filter which members are in `members`

@@ -58,7 +58,7 @@ class OptionsTest {
         assertThat(ProcessorHarness.generatedSources(compilation))
                 .containsOnlyKeys("com.acme.gen.facts.p.Svc_", "com.acme.gen.facts.p.Dep_");
         assertThat(ProcessorHarness.resources(compilation))
-                .containsEntry("META-INF/javafile/metamodel/token/p.Svc", "com.acme.gen.facts.p.Svc_\n")
+                .containsEntry("META-INF/javafile/metamodel/full/p.Svc", "com.acme.gen.facts.p.Svc_\n")
                 .containsEntry("META-INF/javafile/metamodel/token/p.Dep", "com.acme.gen.facts.p.Dep_\n")
                 .hasSize(2);
     }

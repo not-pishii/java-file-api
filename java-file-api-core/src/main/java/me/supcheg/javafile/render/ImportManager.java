@@ -9,6 +9,10 @@ import java.util.Map;
 
 // A nested type is not visible by its simple name just because its package
 // matches the file's, so nested types are always imported explicitly.
+//
+// A top-level type of java.lang or of the file's package is visible by its
+// simple name without an import, and still claims the name: a nested type or
+// another package's type of the same simple name, imported, would hide it.
 final class ImportManager implements TypeContext {
 
     private final String currentPackage;
@@ -24,10 +28,6 @@ final class ImportManager implements TypeContext {
         String packageName = desc.packageName();
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
 
-        if (chain.size() == 1 && sameScopeAsCurrentFile) {
-            return chain.getFirst();
-        }
-
         String leafSimpleName = chain.getLast();
         ClassDesc existing = claims.get(leafSimpleName);
         if (existing == null) {
@@ -39,13 +39,20 @@ final class ImportManager implements TypeContext {
         }
 
         String dotted = ClassDescNames.qualifiedByDots(desc);
-        return sameScopeAsCurrentFile ? dotted : packageName + "." + dotted;
+        return sameScopeAsCurrentFile && chain.size() > 1 ? dotted : packageName + "." + dotted;
     }
 
     List<String> sortedImports() {
         return claims.values().stream()
+                .filter(desc -> !visibleWithoutImport(desc))
                 .map(desc -> desc.packageName() + "." + ClassDescNames.qualifiedByDots(desc))
                 .sorted()
                 .toList();
+    }
+
+    private boolean visibleWithoutImport(ClassDesc desc) {
+        return ClassDescNames.nestingChain(desc).size() == 1
+                && (desc.packageName().equals(currentPackage)
+                        || desc.packageName().equals("java.lang"));
     }
 }

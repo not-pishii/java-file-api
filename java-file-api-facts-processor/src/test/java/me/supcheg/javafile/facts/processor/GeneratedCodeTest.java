@@ -176,7 +176,8 @@ class GeneratedCodeTest {
                 "package p; public interface Api { Raw<?> raw(); }");
         String source = ProcessorHarness.generatedSources(compilation).get("gen.facts.p.Raw_");
         assertThat(source)
-                .contains("@SuppressWarnings(\"rawtypes\")")
+                .contains("@SuppressWarnings({")
+                .contains("\"rawtypes\",")
                 .contains("public final class Raw_ {")
                 .contains("OpenClassToken<Raw> TOKEN");
         ClassLoader loader = load(compilation);
@@ -222,6 +223,26 @@ class GeneratedCodeTest {
                         class G {}
                         """)));
         assertThat(second).isEqualTo(first);
+    }
+
+    @Test
+    void aCanonicalFormTooLongForOneConstantIsJoinedFromParts() throws Exception {
+        StringBuilder library = new StringBuilder("package p; public class Wide {");
+        for (int i = 0; i < 700; i++) {
+            library.append(" public void method").append(i).append("(int a, String b) {}");
+        }
+        library.append(" }");
+        Compilation compilation = generate("p.Wide.class", library.toString());
+        ClassLoader loader = load(compilation);
+
+        TypeShape<?> shape = shape(loader, "gen.facts.p.Wide_");
+        assertThat(shape.origin()).isInstanceOfSatisfying(ShapeOrigin.Metamodel.class, origin -> {
+            String text = origin.canonical().get();
+            assertThat(text).hasSizeGreaterThan(65535);
+            assertThat(sha256(text)).isEqualTo(origin.fingerprint());
+        });
+        assertThat(ProcessorHarness.generatedSources(compilation).get("gen.facts.p.Wide_"))
+                .contains("String.join(\"\", ");
     }
 
     private static String sha256(String text) {

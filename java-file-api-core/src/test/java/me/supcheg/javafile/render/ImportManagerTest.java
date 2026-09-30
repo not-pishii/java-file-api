@@ -153,4 +153,42 @@ class ImportManagerTest {
         assertThat(topLevel).isEqualTo("other.pkg.Entry");
         assertThat(imports.sortedImports()).containsExactly("java.util.Map.Entry");
     }
+
+    @Test
+    void aJavaLangTypeClaimsItsNameSoALaterNestedTypeOfTheSameLeafNameIsQualified() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+
+        String javaLang = imports.reference(ClassDesc.of("java.lang", "Double"));
+        String nested =
+                imports.reference(ClassDesc.of("me.supcheg.facts", "Prim").nested("Double"));
+
+        assertThat(javaLang).isEqualTo("Double");
+        assertThat(nested).isEqualTo("me.supcheg.facts.Prim.Double");
+        assertThat(imports.sortedImports()).isEmpty();
+    }
+
+    @Test
+    void aNestedTypeClaimsItsNameSoALaterJavaLangTypeOfTheSameLeafNameIsQualified() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+
+        String nested =
+                imports.reference(ClassDesc.of("me.supcheg.facts", "Prim").nested("Double"));
+        String javaLang = imports.reference(ClassDesc.of("java.lang", "Double"));
+
+        assertThat(nested).isEqualTo("Double");
+        assertThat(javaLang).isEqualTo("java.lang.Double");
+        assertThat(imports.sortedImports()).containsExactly("me.supcheg.facts.Prim.Double");
+    }
+
+    @Test
+    void aTypeOfTheCurrentPackageClaimsItsNameSoALaterImportedTypeIsQualified() {
+        ImportManager imports = new ImportManager("me.supcheg.example");
+
+        String sibling = imports.reference(ClassDesc.of("me.supcheg.example", "List"));
+        String other = imports.reference(ClassDesc.of("java.util", "List"));
+
+        assertThat(sibling).isEqualTo("List");
+        assertThat(other).isEqualTo("java.util.List");
+        assertThat(imports.sortedImports()).isEmpty();
+    }
 }
