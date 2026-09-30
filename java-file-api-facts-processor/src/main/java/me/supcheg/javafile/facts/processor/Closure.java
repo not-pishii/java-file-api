@@ -5,6 +5,7 @@ import me.supcheg.javafile.langmodel.mirror.FieldModel;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MemberModel;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
+import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 
@@ -22,6 +23,10 @@ import java.util.TreeSet;
 /// token-only metamodel of every class or interface in the signatures of
 /// those members — parameters, results, fields, `throws`, type arguments,
 /// the bounds of the type parameters of the type and of its members.
+///
+/// A functional interface that is not generic has a fact of its single
+/// abstract method whether it declares the method or inherits it, so the
+/// types of that signature are in the closure too.
 ///
 /// The closure has depth 1: a token-only metamodel needs only the shape of
 /// its type, which describes supertypes and methods by descriptors, not by
@@ -49,8 +54,20 @@ final class Closure {
             return new Outcome.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
                     + " mention types that are not public: " + String.join(", ", full.nonPublicBoundTypes()));
         }
+        List<ClassDesc> signatureTypes = signatureTypes(full);
+        if (full.typeParams().isEmpty()) {
+            // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
+            switch (models.sam(requested)) {
+                case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
+                    sam.ifPresent(found -> MemberPlan.mentions(List.of(found.method()), signatureTypes));
+                case Translation.Deferred<Optional<SamModel>>(String unresolved) -> {
+                    return new Outcome.Waiting(unresolved);
+                }
+                case Translation.Unrepresentable<Optional<SamModel>> ignored -> {}
+            }
+        }
         TreeSet<String> mentioned = new TreeSet<>();
-        for (ClassDesc desc : signatureTypes(full)) {
+        for (ClassDesc desc : signatureTypes) {
             mentioned.add(Models.binaryName(desc));
         }
         mentioned.remove(Models.binaryName(full.desc()));

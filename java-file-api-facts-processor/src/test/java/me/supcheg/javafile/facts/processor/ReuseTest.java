@@ -64,7 +64,7 @@ class ReuseTest {
         Compilation b = ProcessorHarness.succeeded(
                 ProcessorHarness.process(List.of(v1, moduleA), generator("b", "p.Other.class")));
         assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Other_");
-        assertThat(ProcessorHarness.resources(b)).containsOnlyKeys("META-INF/javafile/metamodel/token/p.Other");
+        assertThat(ProcessorHarness.resources(b)).containsOnlyKeys("META-INF/javafile/metamodel/full/p.Other");
         assertThat(b.diagnostics()).isEmpty();
     }
 
@@ -141,7 +141,11 @@ class ReuseTest {
         ProcessorHarness.library(directory, List.of(v1), """
                 package x.facts.p;
                 @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Dep.class, fingerprint = "%s", complete = true)
-                public final class Dep_ {}
+                public final class Dep_ {
+                    public static final class Data {
+                        public static final me.supcheg.javafile.facts.TypeShape<me.supcheg.javafile.facts.DeclaredKind.OpenClass> SHAPE = null;
+                    }
+                }
                 """.formatted(fingerprint));
         Path index = Files.createDirectories(directory.resolve("META-INF/javafile/metamodel/full"));
         Files.writeString(index.resolve("p.Dep"), "x.facts.p.Dep_\n");

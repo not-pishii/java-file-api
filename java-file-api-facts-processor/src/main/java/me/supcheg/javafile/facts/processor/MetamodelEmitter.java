@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationValues;
+import me.supcheg.javafile.annotation.SingleAnnotationValue;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
@@ -33,12 +34,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -60,8 +61,10 @@ import java.util.stream.IntStream;
 ///   generic type, `ANY` with a wildcard per argument and a public
 ///   constructor taking a token per type parameter, which sets `token`.
 ///
-/// Only token-only metamodels are written yet. The facts of members come
-/// with the full metamodels (plan steps 8–9), each after the token.
+/// A token-only metamodel has nothing more. A full one, of a type that is
+/// not generic, has the facts of the members [MemberPlan] chose after the
+/// token (mini-spec §2.3, §2.7), each a `public static final` field; the
+/// full metamodels of generic types come with plan step 9.
 final class MetamodelEmitter {
     private static final String FACTS = "me.supcheg.javafile.facts";
     private static final String CORE_TYPE = "me.supcheg.javafile.type";
@@ -88,6 +91,11 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_PARAMETERIZED = ClassDesc.of(CORE_TYPE, "ParameterizedTypeRef");
     private static final ClassDesc CD_PRIMITIVE = ClassDesc.of(CORE_TYPE, "PrimitiveTypeRef");
 
+    /// The longest part of the canonical form written as one string
+    /// literal, in characters: far below the limit of a constant, whatever
+    /// the encoding.
+    private static final int TEXT_PART = 15000;
+
     /// The `value` of `@Generated`.
     static final String GENERATOR = "me.supcheg.javafile.facts.processor.FactsProcessor";
 
@@ -101,16 +109,64 @@ final class MetamodelEmitter {
     /// @param canonical the canonical form of `model`
     /// @return the source file, or why none can be written
     static Emission tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical) {
+        return emit(metamodel, model, canonical, Optional.empty());
+    }
+
+    /// The full metamodel of a type that is not generic: its shape and
+    /// token, and a fact per member of the plan.
+    ///
+    /// @param metamodel the metamodel class
+    /// @param model the type, read with its declared public members
+    /// @param canonical the canonical form of `model`
+    /// @param plan the members that get a fact, see [MemberPlan#of]
+    /// @param targets the metamodels of the types the signatures mention
+    /// @return the source file, or why none can be written
+    static Emission full(ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan plan, Targets targets) {
+        return emit(metamodel, model, canonical, Optional.of(new Full(plan, targets)));
+    }
+
+    /// The simple names a fact of the metamodel of a type may not have,
+    /// beyond those [MetamodelNames] reserves: the classes an expression
+    /// starts with, the metamodels of the types mentioned, whose nested
+    /// `Data` class it names, and the first name of the qualified name of
+    /// that class.
+    ///
+    /// @param model the type, read with its declared public members
+    /// @param targets the metamodels of the types the signatures mention
+    /// @return the names
+    static Set<String> takenNames(TypeModel model, Targets targets) {
+        Set<String> taken = new HashSet<>(MemberFacts.QUALIFIERS);
+        List<ClassDesc> mentioned = new ArrayList<>();
+        MemberPlan.mentions(model.members(), mentioned);
+        for (ClassDesc desc : mentioned) {
+            targets.of(desc).ifPresent(target -> {
+                taken.add(target.metamodel().displayName());
+                String packageName = target.metamodel().packageName();
+                taken.add(packageName.substring(
+                        0, packageName.indexOf('.') < 0 ? packageName.length() : packageName.indexOf('.')));
+            });
+        }
+        return taken;
+    }
+
+    private record Full(MemberPlan plan, Targets targets) {}
+
+    private static Emission emit(ClassDesc metamodel, TypeModel model, Canonical canonical, Optional<Full> full) {
         Token token = Token.of(model.kind());
         boolean raw =
                 !model.typeParams().isEmpty() && !model.nonPublicBoundTypes().isEmpty();
         List<TypeParam> typeParams = raw ? List.of() : model.typeParams();
+        Optional<MemberFacts> facts = full.map(f -> new MemberFacts(model.desc(), model.kind(), f.targets()));
+        List<MemberFacts.Spec> specs =
+                full.flatMap(f -> facts.map(x -> x.specs(f.plan()))).orElse(List.of());
         Set<ClassDesc> mentioned = new LinkedHashSet<>();
         mentioned.add(model.desc());
         Mentions.of(typeParams, mentioned);
+        facts.ifPresent(f -> mentioned.addAll(f.signatureTypes()));
         Set<ClassDesc> referenced = new LinkedHashSet<>(mentioned);
+        facts.ifPresent(f -> referenced.addAll(f.uses()));
         referenced.addAll(infrastructure(token));
-        List<String> clashes = clashes(metamodel, mentioned, referenced);
+        List<String> clashes = clashes(metamodel, mentioned);
         if (!clashes.isEmpty()) {
             return new Emission.Clash("the metamodel " + metamodel.packageName() + "." + metamodel.displayName()
                     + " of " + Models.binaryName(model.desc()) + " cannot be written yet: "
@@ -134,11 +190,15 @@ final class MetamodelEmitter {
                             CD_GENERATED_METAMODEL,
                             ab -> ab.withMember("of", AnnotationValues.classValue(model.desc()))
                                     .withMember("fingerprint", AnnotationValues.literal(canonical.fingerprint()))
-                                    .withMember("complete", AnnotationValues.literal(false)));
+                                    .withMember("complete", AnnotationValues.literal(full.isPresent())));
+            // a deprecated type is no concern of the metamodel that describes it; a raw token is meant
+            List<SingleAnnotationValue> suppressed = new ArrayList<>();
             if (raw) {
-                cb.withAnnotation(
-                        CD_SUPPRESS_WARNINGS, ab -> ab.withMember("value", AnnotationValues.literal("rawtypes")));
+                suppressed.add(AnnotationValues.literal("rawtypes"));
             }
+            suppressed.add(AnnotationValues.literal("deprecation"));
+            suppressed.add(AnnotationValues.literal("removal"));
+            cb.withAnnotation(CD_SUPPRESS_WARNINGS, ab -> ab.withMember("value", AnnotationValues.array(suppressed)));
             for (TypeParam param : typeParams) {
                 cb.withTypeParam(new TypeParam(
                         renaming.get(param.name()),
@@ -170,11 +230,19 @@ final class MetamodelEmitter {
                         Types.parameterized(token.tokenClass(), Types.of(model.desc())),
                         fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                 .withInitializer(Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), shape)));
-                cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
             } else {
                 generic(cb, model, token, names, shape);
             }
-            // plan steps 8–9: the facts of the members of a full metamodel go here
+            for (MemberFacts.Spec spec : specs) {
+                cb.withField(
+                        spec.name(),
+                        spec.type(),
+                        fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                .withInitializer(spec.init()));
+            }
+            if (typeParams.isEmpty()) {
+                cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
+            }
         }));
     }
 
@@ -338,13 +406,27 @@ final class MetamodelEmitter {
 
     /// The canonical form, a string literal per line: a text block would
     /// need escaping the core renderer does not do.
+    ///
+    /// A constant string of more than 65535 bytes does not compile, and the
+    /// concatenation of literals is one constant: a long form is joined at
+    /// run time from parts that are each short.
     private static Expr text(Canonical canonical) {
-        return canonical
-                .text()
-                .lines()
-                .<Expr>map(line -> Exprs.literal(line + "\n"))
-                .reduce(Exprs::add)
-                .orElseThrow();
+        List<Expr> parts = new ArrayList<>();
+        StringBuilder part = new StringBuilder();
+        for (String line : canonical.text().lines().toList()) {
+            if (part.length() + line.length() > TEXT_PART) {
+                parts.add(Exprs.literal(part.toString()));
+                part.setLength(0);
+            }
+            part.append(line).append('\n');
+        }
+        parts.add(Exprs.literal(part.toString()));
+        if (parts.size() == 1) {
+            return parts.getFirst();
+        }
+        List<Expr> args = new ArrayList<>(List.of(Exprs.literal("")));
+        args.addAll(parts);
+        return Exprs.staticCall(ConstantDescs.CD_String, "join", args);
     }
 
     private static TypeRef rename(TypeRef type, Map<String, String> renaming) {
@@ -403,29 +485,15 @@ final class MetamodelEmitter {
 
     /// The simple names the rendered metamodel would get wrong: the core
     /// renderer imports a class by its simple name unless another class
-    /// took the name first, but it does not know that a nested class of
-    /// the metamodel, a class of `java.lang` or a class of the metamodel's
-    /// own package is visible by that name without an import.
-    private static List<String> clashes(ClassDesc metamodel, Set<ClassDesc> mentioned, Set<ClassDesc> referenced) {
+    /// took the name first, but it does not know that a nested class of the
+    /// metamodel — `Data`, `Canonical` — or the metamodel itself is visible
+    /// by that name in its own body.
+    private static List<String> clashes(ClassDesc metamodel, Set<ClassDesc> mentioned) {
         Set<String> reserved = Set.of(MetamodelNames.DATA, MetamodelNames.CANONICAL, metamodel.displayName());
         List<String> clashes = new ArrayList<>();
         for (ClassDesc desc : mentioned) {
             if (reserved.contains(leaf(desc))) {
                 clashes.add(Models.binaryName(desc) + " has the simple name of " + leaf(desc) + " in the metamodel");
-            }
-        }
-        Map<String, Set<String>> byLeaf = new TreeMap<>();
-        for (ClassDesc desc : referenced) {
-            byLeaf.computeIfAbsent(leaf(desc), _ -> new TreeSet<>()).add(Models.binaryName(desc));
-        }
-        for (Map.Entry<String, Set<String>> entry : byLeaf.entrySet()) {
-            Set<String> names = entry.getValue();
-            boolean implicit = referenced.stream()
-                    .filter(d -> leaf(d).equals(entry.getKey()))
-                    .anyMatch(d -> d.packageName().equals("java.lang")
-                            || d.packageName().equals(metamodel.packageName()));
-            if (names.size() > 1 && implicit) {
-                clashes.add(String.join(" and ", names) + " share the simple name " + entry.getKey());
             }
         }
         return clashes;

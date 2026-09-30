@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 import static me.supcheg.javafile.facts.MethodTableTemplate.Param.fixed;
 import static me.supcheg.javafile.facts.MethodTableTemplate.Param.var;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /// [MirrorTranslator#type(javax.lang.model.element.TypeElement, MemberFilter)]: the shape of a declared type and its
 /// members.
@@ -732,10 +737,11 @@ class MirrorTranslatorTypeTest {
         assertThat(entry.desc()).isEqualTo(ClassDesc.of("java.util.Map$Entry"));
         assertThat(entry.kind()).isEqualTo(DeclaredKind.INTERFACE);
 
+        // Comparator redeclares equals(Object) abstract; every class has it from Object
         assertThat(jdk.get("java.util.Comparator").methods().abstractMethods())
-                .containsExactlyInAnyOrder(
-                        Signature.of("compare", var(0), var(0)),
-                        Signature.of("equals", fixed(ConstantDescs.CD_Object)));
+                .containsExactly(Signature.of("compare", var(0), var(0)));
+        assertThat(jdk.get("java.util.Comparator").methods().concreteMethods())
+                .contains(Signature.of("equals", fixed(ConstantDescs.CD_Object)));
 
         MethodModel max = methods(jdk.get("java.util.Collections")).get("max");
         assertThat(max.typeParams())
@@ -775,5 +781,194 @@ class MirrorTranslatorTypeTest {
         List<Object> results = Harness.run(action);
 
         assertThat(results.get(0)).isEqualTo(results.get(1));
+    }
+
+    // ---- member(TypeElement, Element)
+
+    @Test
+    void memberTranslatesOneMemberAsTypeDoes() {
+        List<Translation<MemberModel>> results = Harness.run(
+                env -> {
+                    TypeElement type = env.element("p.M");
+                    return type.getEnclosedElements().stream()
+                            .filter(e -> e.getKind() != ElementKind.CONSTRUCTOR
+                                    || e.getModifiers().contains(Modifier.PUBLIC))
+                            .map(e -> env.translator().member(type, e))
+                            .toList();
+                },
+                """
+                package p;
+                public class M {
+                    public int field;
+                    public M(String s) {}
+                    public String method(long l) { return null; }
+                    public Hidden hidden() { return null; }
+                }
+                """,
+                "package p; class Hidden {}");
+
+        assertThat(results).hasSize(4);
+        assertThat(results.get(0))
+                .isEqualTo(
+                        new Translation.Ok<MemberModel>(new FieldModel("field", false, Types.INT, Mutability.MUTABLE)));
+        assertThat(((Translation.Ok<MemberModel>) results.get(1)).value()).isInstanceOf(CtorModel.class);
+        assertThat(((Translation.Ok<MemberModel>) results.get(2)).value())
+                .isInstanceOfSatisfying(MethodModel.class, m -> {
+                    assertThat(m.name()).isEqualTo("method");
+                    assertThat(m.params()).containsExactly(PrimitiveTypeRef.LONG);
+                });
+        assertThat(results.get(3))
+                .isEqualTo(
+                        new Translation.Unrepresentable<MemberModel>("mentions types that are not public: p.Hidden"));
+    }
+
+    @Test
+    void memberIsDeferredWhileASignatureMentionsATypeNotGeneratedYet() {
+        Translation<MemberModel> result = Harness.runUnresolved(
+                env -> env.translator().member(env.element("p.M"), env.method("p.M", "later")),
+                "package p; public class M { public Missing later() { return null; } }");
+
+        assertThat(result).isInstanceOf(Translation.Deferred.class);
+    }
+
+    @Test
+    void memberRefusesWhatIsNotAFieldConstructorOrMethod() {
+        Harness.run(
+                env -> {
+                    TypeElement type = env.element("p.M");
+                    Element nested = type.getEnclosedElements().stream()
+                            .filter(e -> e.getKind() == ElementKind.CLASS)
+                            .findFirst()
+                            .orElseThrow();
+                    assertThatThrownBy(() -> env.translator().member(type, nested))
+                            .isInstanceOf(IllegalArgumentException.class);
+                    return 0;
+                },
+                "package p; public class M { public static class N {} }");
+    }
+
+    // ---- sam(TypeElement)
+
+    private static Translation<Optional<SamModel>> sam(String name, String... sources) {
+        return Harness.run(env -> env.translator().sam(env.element(name)), sources);
+    }
+
+    private static SamModel samOf(String name, String... sources) {
+        Translation<Optional<SamModel>> result = sam(name, sources);
+        assertThat(result).isInstanceOf(Translation.Ok.class);
+        return ((Translation.Ok<Optional<SamModel>>) result).value().orElseThrow();
+    }
+
+    @Test
+    void aSamIsTheSingleAbstractMethodWithoutTheMethodsOfObject() {
+        SamModel sam = samOf(
+                "p.Fn",
+                "package p; public interface Fn { String apply(String s); boolean equals(Object o); int hashCode(); String toString(); }");
+
+        assertThat(sam.declared()).isTrue();
+        assertThat(sam.method().name()).isEqualTo("apply");
+        assertThat(sam.method().params()).containsExactly(Types.STRING);
+        assertThat(sam.method().result()).contains(Types.STRING);
+        assertThat(sam.method().overridability()).isEqualTo(Overridability.ABSTRACT);
+    }
+
+    @Test
+    void aSamMayBeInheritedAndIsAMemberOfTheInterface() {
+        SamModel sam = samOf(
+                "p.StrFn", "package p; public interface StrFn extends java.util.function.Function<String, String> {}");
+
+        assertThat(sam.declared()).isFalse();
+        assertThat(sam.method().name()).isEqualTo("apply");
+        assertThat(sam.method().params()).containsExactly(Types.STRING);
+        assertThat(sam.method().result()).contains(Types.STRING);
+    }
+
+    @Test
+    void aSamOfAGenericInterfaceIsInTermsOfItsTypeParameters() {
+        SamModel sam = samOf("p.Op", "package p; public interface Op<T> extends java.util.function.Function<T, T> {}");
+
+        assertThat(sam.method().params()).containsExactly(Types.typeVar("T"));
+        assertThat(sam.method().result()).contains(Types.typeVar("T"));
+    }
+
+    @Test
+    void theSamOfSeveralOverrideEquivalentMethodsHasTheMostSpecificResult() {
+        SamModel declared = samOf(
+                "p.C",
+                "package p; public interface A { Object get(); }",
+                "package p; public interface B { CharSequence get(); }",
+                "package p; public interface C extends A, B { String get(); }");
+        assertThat(declared.method().result()).contains(Types.STRING);
+
+        SamModel inherited = samOf(
+                "p.D",
+                "package p; public interface E { Object get(); }",
+                "package p; public interface F { CharSequence get(); }",
+                "package p; public interface G extends E, F {}",
+                "package p; public interface D extends G {}");
+        assertThat(inherited.method().result()).contains(Types.of(ClassDesc.of("java.lang.CharSequence")));
+
+        SamModel primitive = samOf(
+                "p.P",
+                "package p; public interface Q { int get(); }",
+                "package p; public interface R { int get(); }",
+                "package p; public interface P extends Q, R {}");
+        assertThat(primitive.method().result()).contains(Types.INT);
+    }
+
+    @Test
+    void thereIsNoSamWhereAnInterfaceIsNotFunctional() {
+        Translation<Optional<SamModel>> none = new Translation.Ok<>(Optional.empty());
+
+        assertThat(sam("p.Two", "package p; public interface Two { void a(); void b(); }"))
+                .isEqualTo(none);
+        assertThat(sam("p.None", "package p; public interface None {}")).isEqualTo(none);
+        assertThat(sam("p.Gen", "package p; public interface Gen { <T> T id(T t); }"))
+                .isEqualTo(none);
+        assertThat(sam("p.Cls", "package p; public abstract class Cls { public abstract void run(); }"))
+                .isEqualTo(none);
+        assertThat(sam("p.Dflt", "package p; public interface Dflt extends Runnable { default void run() {} }"))
+                .isEqualTo(none);
+    }
+
+    @Test
+    void aSamWithoutAModelIsReportedOnlyWhereItIsInherited() {
+        String hidden = "package p; class Hidden {}";
+
+        // declared: the skipped member of the type says why
+        assertThat(sam("p.Own", "package p; public interface Own { Hidden run(); }", hidden))
+                .isEqualTo(new Translation.Ok<Optional<SamModel>>(Optional.empty()));
+        assertThat(sam(
+                        "p.Sub",
+                        "package p; public interface Base { Hidden run(); }",
+                        "package p; public interface Sub extends Base {}",
+                        hidden))
+                .isEqualTo(new Translation.Unrepresentable<Optional<SamModel>>(
+                        "mentions types that are not public: p.Hidden"));
+    }
+
+    @Test
+    void aSamIsDeferredWhileItsSignatureMentionsATypeNotGeneratedYet() {
+        Translation<Optional<SamModel>> result = Harness.runUnresolved(
+                env -> env.translator().sam(env.element("p.Later")),
+                "package p; public interface Later { Missing run(); }");
+
+        assertThat(result).isInstanceOf(Translation.Deferred.class);
+    }
+
+    @Test
+    void anInterfaceRedeclaringAnObjectMethodDoesNotAskForItButAnAbstractClassDoes() {
+        Map<String, TypeModel> models = Harness.run(
+                env -> Map.of(
+                        "i", Harness.ok(env.tokenOnly("p.I")),
+                        "c", Harness.ok(env.tokenOnly("p.C"))),
+                "package p; public interface I { boolean equals(Object o); String toString(); void m(); }",
+                "package p; public abstract class C { public abstract String toString(); public abstract void m(); }");
+
+        assertThat(models.get("i").methods().abstractMethods()).containsExactly(Signature.of("m"));
+        assertThat(models.get("i").methods().concreteMethods())
+                .contains(Signature.of("equals", fixed(ConstantDescs.CD_Object)), Signature.of("toString"));
+        assertThat(models.get("c").methods().abstractMethods())
+                .containsExactlyInAnyOrder(Signature.of("toString"), Signature.of("m"));
     }
 }

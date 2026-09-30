@@ -40,6 +40,20 @@ public final class VarScope {
         return new VarScope(variables);
     }
 
+    /// The type parameters of a method and of a type that has it as a
+    /// member, which is not always the type that declares it: an inherited
+    /// method, seen as a member of the subtype, mentions the type
+    /// parameters of the subtype.
+    ///
+    /// @param owner the type
+    /// @param executable a method or constructor of `owner`, declared or inherited
+    /// @return the scope
+    static VarScope of(TypeElement owner, ExecutableElement executable) {
+        List<TypeParameterElement> variables = new ArrayList<>(executable.getTypeParameters());
+        variables.addAll(owner.getTypeParameters());
+        return new VarScope(variables);
+    }
+
     /// Whether a type variable is in scope.
     ///
     /// @param variable the element of the type variable

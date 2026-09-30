@@ -79,6 +79,14 @@ import java.util.stream.Collectors;
 ///
 /// Type-use annotations are left out.
 public final class MirrorTranslator {
+    /// The public methods of `Object` that an interface may redeclare
+    /// abstract without asking its implementations for them, and without
+    /// ceasing to be functional (JLS 9.8).
+    private static final Set<MethodTableTemplate.Signature> OBJECT_METHODS = Set.of(
+            MethodTableTemplate.Signature.of("equals", MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object)),
+            MethodTableTemplate.Signature.of("hashCode"),
+            MethodTableTemplate.Signature.of("toString"));
+
     private final Elements elements;
     private final javax.lang.model.util.Types types;
 
@@ -140,6 +148,99 @@ public final class MirrorTranslator {
         } catch (Unresolved unresolved) {
             return new Translation.Deferred<>(unresolved.type);
         }
+    }
+
+    /// Translates one member of a type, as [#type] does for each member its
+    /// filter selects: as a member of the type (`Types.asMemberOf`), whatever its
+    /// access. It lets a caller tell which element a [MemberModel] is of.
+    ///
+    /// @param owner the class, interface, enum or record
+    /// @param member a field, constructor or method of `owner`
+    /// @return the member, or the reason it has no model, as [SkippedMember#reason()] tells it; deferred
+    ///         if its signature mentions a type not generated yet
+    /// @throws IllegalArgumentException if `member` is not a field, constructor or method
+    public Translation<MemberModel> member(TypeElement owner, Element member) {
+        DeclaredType self = (DeclaredType) owner.asType();
+        List<MemberModel> members = new ArrayList<>();
+        List<SkippedMember> skipped = new ArrayList<>();
+        try {
+            switch (member.getKind()) {
+                case FIELD -> field(owner, self, (VariableElement) member, members, skipped);
+                case CONSTRUCTOR -> constructor(self, (ExecutableElement) member, members, skipped);
+                case METHOD -> method(owner, self, (ExecutableElement) member, members, skipped);
+                default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
+            }
+        } catch (Unresolved unresolved) {
+            return new Translation.Deferred<>(unresolved.type);
+        }
+        return members.isEmpty()
+                ? new Translation.Unrepresentable<>(skipped.getFirst().reason())
+                : new Translation.Ok<>(members.getFirst());
+    }
+
+    /// The single abstract method of a functional interface (JLS 9.8), as a
+    /// member of the interface: the one abstract method left once the
+    /// `public` methods of `Object` are set aside, declared by the interface
+    /// or inherited from a superinterface.
+    ///
+    /// Empty for what is not a functional interface, for one whose method is
+    /// generic, which a lambda cannot implement, and for one that declares
+    /// its method but has no model of it, which [#type] reports as a
+    /// [SkippedMember].
+    ///
+    /// @param element the type
+    /// @return the method; empty if there is none to make a `sam` fact of; unrepresentable if
+    ///         the method is inherited and its signature has no model, for the reason [#member] gives;
+    ///         deferred if it mentions a type not generated yet
+    public Translation<Optional<SamModel>> sam(TypeElement element) {
+        if (element.getKind() != ElementKind.INTERFACE) {
+            return new Translation.Ok<>(Optional.empty());
+        }
+        try {
+            DeclaredType self = (DeclaredType) element.asType();
+            Set<MethodTableTemplate.Signature> abstracts =
+                    methods(element, self).abstractMethods();
+            if (abstracts.size() != 1) {
+                return new Translation.Ok<>(Optional.empty());
+            }
+            MethodTableTemplate.Signature signature = abstracts.iterator().next();
+            List<ExecutableElement> candidates = ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
+                    .filter(m -> m.getModifiers().contains(Modifier.ABSTRACT))
+                    .filter(m -> signature(m, element, self).equals(signature))
+                    .toList();
+            ExecutableElement method = mostSpecific(candidates, self);
+            boolean declared = method.getEnclosingElement().equals(element);
+            if (!method.getTypeParameters().isEmpty()) {
+                return new Translation.Ok<>(Optional.empty());
+            }
+            return switch (member(element, method)) {
+                case Translation.Ok<MemberModel>(MemberModel model) ->
+                    new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
+                case Translation.Deferred<MemberModel>(String unresolved) -> new Translation.Deferred<>(unresolved);
+                case Translation.Unrepresentable<MemberModel>(String reason) ->
+                    declared ? new Translation.Ok<>(Optional.empty()) : new Translation.Unrepresentable<>(reason);
+            };
+        } catch (Unresolved unresolved) {
+            return new Translation.Deferred<>(unresolved.type);
+        }
+    }
+
+    /// The method whose result is a subtype of the results of the others, as
+    /// members of the type. Override-equivalent methods of supertypes have
+    /// results that are subtypes of one another, so there is one.
+    private ExecutableElement mostSpecific(List<ExecutableElement> candidates, DeclaredType self) {
+        return candidates.stream()
+                .filter(candidate -> {
+                    TypeMirror result = ((ExecutableType) types.asMemberOf(self, candidate)).getReturnType();
+                    return candidates.stream().allMatch(other -> {
+                        TypeMirror otherResult = ((ExecutableType) types.asMemberOf(self, other)).getReturnType();
+                        return result.getKind().isPrimitive() || result.getKind() == TypeKind.VOID
+                                ? result.getKind() == otherResult.getKind()
+                                : types.isSubtype(types.erasure(result), types.erasure(otherResult));
+                    });
+                })
+                .findFirst()
+                .orElseGet(candidates::getFirst);
     }
 
     private Translation<TypeModel> model(TypeElement element, MemberFilter filter) {
@@ -248,21 +349,33 @@ public final class MirrorTranslator {
             if (modifiers.contains(Modifier.PRIVATE)) {
                 continue;
             }
-            ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
-            MethodTableTemplate.Signature signature = new MethodTableTemplate.Signature(
-                    method.getSimpleName().toString(),
-                    type.getParameterTypes().stream()
-                            .map(p -> param(p, element))
-                            .toList());
+            MethodTableTemplate.Signature signature = signature(method, element, self);
             Category category = modifiers.contains(Modifier.STATIC)
                     ? Category.STATIC
                     : modifiers.contains(Modifier.ABSTRACT) ? Category.ABSTRACT : Category.CONCRETE;
             table.merge(signature, category, Category::stronger);
         }
+        if (element.getKind() == ElementKind.INTERFACE) {
+            // an interface that redeclares a public method of Object abstract does not ask its
+            // implementations for it: every class has it from Object
+            for (MethodTableTemplate.Signature signature : OBJECT_METHODS) {
+                table.computeIfPresent(
+                        signature, (key, category) -> category == Category.ABSTRACT ? Category.CONCRETE : category);
+            }
+        }
         return new MethodTableTemplate(
                 signatures(table, Category.ABSTRACT),
                 signatures(table, Category.CONCRETE),
                 signatures(table, Category.STATIC));
+    }
+
+    /// The signature of a method as a member of a type, in the template of
+    /// the method table.
+    private MethodTableTemplate.Signature signature(ExecutableElement method, TypeElement owner, DeclaredType self) {
+        ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
+        return new MethodTableTemplate.Signature(
+                method.getSimpleName().toString(),
+                type.getParameterTypes().stream().map(p -> param(p, owner)).toList());
     }
 
     private static Set<MethodTableTemplate.Signature> signatures(
@@ -363,7 +476,7 @@ public final class MirrorTranslator {
             ExecutableElement method,
             List<MemberModel> members,
             List<SkippedMember> skipped) {
-        Reading reading = new Reading(VarScope.of(method));
+        Reading reading = new Reading(VarScope.of(owner, method));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
         List<TypeParam> typeParams = typeParams(type, reading);
         TypeMirror returnType = type.getReturnType();
