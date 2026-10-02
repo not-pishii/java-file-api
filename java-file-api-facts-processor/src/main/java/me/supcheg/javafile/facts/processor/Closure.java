@@ -24,9 +24,14 @@ import java.util.TreeSet;
 /// those members — parameters, results, fields, `throws`, type arguments,
 /// the bounds of the type parameters of the type and of its members.
 ///
-/// A functional interface that is not generic has a fact of its single
-/// abstract method whether it declares the method or inherits it, so the
-/// types of that signature are in the closure too.
+/// A functional interface has a fact of its single abstract method whether
+/// it declares the method or inherits it, so the types of that signature
+/// are in the closure too.
+///
+/// A generic type is rejected if a bound of its type parameters mentions a
+/// type the metamodel cannot declare the bound with — one that is not
+/// `public`, or that no metamodel can name: without the bound javac would
+/// accept a token of a type argument the type does not.
 ///
 /// The closure has depth 1: a token-only metamodel needs only the shape of
 /// its type, which describes supertypes and methods by descriptors, not by
@@ -55,16 +60,14 @@ final class Closure {
                     + " mention types that are not public: " + String.join(", ", full.nonPublicBoundTypes()));
         }
         List<ClassDesc> signatureTypes = signatureTypes(full);
-        if (full.typeParams().isEmpty()) {
-            // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
-            switch (models.sam(requested)) {
-                case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
-                    sam.ifPresent(found -> MemberPlan.mentions(List.of(found.method()), signatureTypes));
-                case Translation.Deferred<Optional<SamModel>>(String unresolved) -> {
-                    return new Outcome.Waiting(unresolved);
-                }
-                case Translation.Unrepresentable<Optional<SamModel>> ignored -> {}
+        // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
+        switch (models.sam(requested)) {
+            case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
+                sam.ifPresent(found -> MemberPlan.mentions(List.of(found.method()), signatureTypes));
+            case Translation.Deferred<Optional<SamModel>>(String unresolved) -> {
+                return new Outcome.Waiting(unresolved);
             }
+            case Translation.Unrepresentable<Optional<SamModel>> ignored -> {}
         }
         TreeSet<String> mentioned = new TreeSet<>();
         for (ClassDesc desc : signatureTypes) {
@@ -91,6 +94,14 @@ final class Closure {
                 }
                 case Translation.Unrepresentable<TypeModel>(String reason) ->
                     unavailable.add(new Unavailable(binaryName, reason));
+            }
+        }
+        List<ClassDesc> bounds = new ArrayList<>();
+        Mentions.of(full.typeParams(), bounds);
+        for (Unavailable type : unavailable) {
+            if (bounds.stream().anyMatch(bound -> Models.binaryName(bound).equals(type.type()))) {
+                return new Outcome.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
+                        + " mention " + type.type() + ", which has no metamodel: " + type.reason());
             }
         }
         return new Outcome.Ready(full, types, unavailable);

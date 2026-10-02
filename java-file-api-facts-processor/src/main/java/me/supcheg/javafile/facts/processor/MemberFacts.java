@@ -11,31 +11,53 @@ import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.ExactTypeArg;
+import me.supcheg.javafile.type.ExtendsTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeArg;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-/// The fields of a full metamodel that hold the facts of the members of its
-/// type (mini-spec §2.3, §2.7): a type and an initializer each, made by
-/// `UnsafeFacts`.
+/// The facts of the members of a type in its full metamodel (mini-spec §2.3,
+/// §2.4, §2.7), each made by `UnsafeFacts`:
+///
+/// - a `public static final` field with an initializer ([Spec.Constant]) for
+///   a member of a type that is not generic, and for a `static` member of a
+///   generic one;
+/// - a `public final` field the constructor of the metamodel assigns
+///   ([Spec.Assigned]) for an instance member of a generic type, in terms of
+///   its type parameters and of the tokens the constructor takes for them;
+/// - a method ([Spec.Factory]) for a generic method: it takes a token per
+///   type parameter of the method — a witness, never inferred — under the
+///   bounds the method declares, and returns the fact with the witnesses as
+///   its explicit type arguments. It is an instance method for an instance
+///   method of a generic type, which needs the tokens of the type, and
+///   `static` otherwise.
 ///
 /// Every token of another type is made on the spot from the shape in that
-/// type's metamodel — `UnsafeFacts.<Y>openClassToken(Y_.Data.SHAPE)` —
-/// never from `Y_.TOKEN`, so the classes of metamodels initialize without a
-/// cycle (§2.6); only the token of the type itself is `TOKEN`.
-///
-/// The types of a signature are those of [MemberPlan]: classes and
-/// interfaces that are not generic, primitives and arrays of them.
+/// type's metamodel — `UnsafeFacts.<List<E>>interfaceToken(List_.Data.SHAPE,
+/// TokenArg.exact(e))` — never from `Y_.TOKEN` or the constructor of `Y_`,
+/// so the classes of metamodels initialize without a cycle (§2.6) and making
+/// a metamodel makes no other. The token of the type itself is `TOKEN`, or
+/// `token` for a generic type applied to its own type parameters; a `static`
+/// member of a generic type is owned by `ANY`. A generic type mentioned
+/// without type arguments is raw, and its token is the shape applied to
+/// nothing.
 final class MemberFacts {
     private static final String FACTS = "me.supcheg.javafile.facts";
 
@@ -43,35 +65,113 @@ final class MemberFacts {
     private static final ClassDesc CD_MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
     private static final ClassDesc CD_PRIMITIVE_TOKEN = ClassDesc.of(FACTS, "PrimitiveToken");
     private static final ClassDesc CD_ARRAY_TOKEN = ClassDesc.of(FACTS, "ArrayToken");
+    private static final ClassDesc CD_TOKEN_ARG = ClassDesc.of(FACTS, "TokenArg");
+    private static final ClassDesc CD_REF_TOKEN = ClassDesc.of(FACTS, "RefToken");
     private static final ClassDesc CD_FLOAT = ClassDesc.of("java.lang.Float");
     private static final ClassDesc CD_DOUBLE = ClassDesc.of("java.lang.Double");
 
     /// The greatest number of parameters of a member with a fact.
     private static final int MAX_ARITY = 12;
 
-    /// A field of the metamodel.
-    ///
-    /// @param name the name of the fact
-    /// @param type the type of the field
-    /// @param init the initializer
-    record Spec(String name, TypeRef type, Expr init) {}
+    /// A fact as a member of the metamodel.
+    sealed interface Spec {
 
-    private final ClassDesc self;
-    private final DeclaredKind selfKind;
-    private final Targets targets;
-    private final Set<ClassDesc> uses = new LinkedHashSet<>();
-    private final Set<ClassDesc> signatureTypes = new LinkedHashSet<>();
+        /// The name of the fact.
+        ///
+        /// @return the name
+        String name();
 
-    /// @param self the type of the metamodel
-    /// @param selfKind the kind of the type
-    /// @param targets the metamodels of the types the signatures mention
-    MemberFacts(ClassDesc self, DeclaredKind selfKind, Targets targets) {
-        this.self = self;
-        this.selfKind = selfKind;
-        this.targets = targets;
+        /// A `public static final` field.
+        ///
+        /// @param name the name of the fact
+        /// @param type the type of the field
+        /// @param init the initializer
+        record Constant(String name, TypeRef type, Expr init) implements Spec {}
+
+        /// A `public final` field of a generic metamodel, assigned by its
+        /// constructor.
+        ///
+        /// @param name the name of the fact
+        /// @param type the type of the field
+        /// @param init what the constructor assigns, in terms of its parameters
+        record Assigned(String name, TypeRef type, Expr init) implements Spec {}
+
+        /// A method that makes the fact of a generic method from a token per
+        /// type parameter.
+        ///
+        /// @param name the name of the fact
+        /// @param isStatic whether the method needs no instance of the metamodel
+        /// @param typeParams the type parameters of the generic method, with its bounds
+        /// @param witnesses the parameters: a token per type parameter
+        /// @param type the type of the fact
+        /// @param result the fact, in terms of the parameters
+        record Factory(
+                String name,
+                boolean isStatic,
+                List<TypeParam> typeParams,
+                List<Witness> witnesses,
+                TypeRef type,
+                Expr result)
+                implements Spec {}
     }
 
-    /// The classes the fields refer to by simple name apart from the class
+    /// A parameter of a [Spec.Factory]: the token of a type argument.
+    ///
+    /// @param name the name of the parameter
+    /// @param type its type, `RefToken<T>`
+    record Witness(String name, TypeRef type) {}
+
+    /// The type the facts are of, as its metamodel names it.
+    ///
+    /// @param desc the type
+    /// @param kind the kind of the type
+    /// @param declared the type parameters as the type declares them, in order; empty unless generic
+    /// @param typeParams the type parameters of the metamodel, in order: those of `declared`, some renamed
+    /// @param witnesses the parameters of the constructor of the metamodel and its fields of the same
+    ///     names: a token per type parameter
+    record Self(
+            ClassDesc desc, DeclaredKind kind, List<String> declared, List<String> typeParams, List<String> witnesses) {
+
+        boolean generic() {
+            return !declared.isEmpty();
+        }
+    }
+
+    /// How the type parameters and parameters of a [Spec.Factory] are named.
+    sealed interface Locals {
+
+        /// Under names no member has, starting with [MemberPlan#PROBE]: for
+        /// the source the names the metamodel uses itself are read off, which
+        /// what is local to a method is not among.
+        record Probe() implements Locals {}
+
+        /// As the generic methods name their type parameters, and after them.
+        ///
+        /// @param typeNames the simple names of the classes the metamodel refers to, which a type
+        ///     parameter of the same name would hide
+        /// @param taken the names the body of the metamodel starts a name with, which a parameter of
+        ///     the same name would hide
+        record Named(Set<String> typeNames, Set<String> taken) implements Locals {}
+    }
+
+    private final Self self;
+    private final Targets targets;
+    private final Locals locals;
+    private final Set<ClassDesc> uses = new LinkedHashSet<>();
+    private final Set<ClassDesc> signatureTypes = new LinkedHashSet<>();
+    private boolean raw;
+    private boolean instanceFactories;
+
+    /// @param self the type of the metamodel
+    /// @param targets the metamodels of the types the signatures mention
+    /// @param locals how what is local to a factory is named
+    MemberFacts(Self self, Targets targets, Locals locals) {
+        this.self = self;
+        this.targets = targets;
+        this.locals = locals;
+    }
+
+    /// The classes the facts refer to by simple name apart from the class
     /// of the metamodel: the fact classes, `MemberTraits`, the nested `Data`
     /// classes of other metamodels and the types of the signatures.
     ///
@@ -87,17 +187,32 @@ final class MemberFacts {
         return signatureTypes;
     }
 
-    /// The fields of a plan: enum constants in declaration order, then
+    /// Whether a signature mentions a generic type without type arguments.
+    ///
+    /// @return `true` if the metamodel names a raw type, after [#specs]
+    boolean raw() {
+        return raw;
+    }
+
+    /// Whether a factory is an instance method, which reads the tokens of
+    /// the type parameters off the fields of the metamodel.
+    ///
+    /// @return `true` if the metamodel is to keep the tokens its constructor takes, after [#specs]
+    boolean instanceFactories() {
+        return instanceFactories;
+    }
+
+    /// The facts of a plan: enum constants in declaration order, then
     /// fields, constructors, methods — each sorted by name — and `sam`.
     ///
     /// @param plan the plan
-    /// @return the fields
+    /// @return the facts
     List<Spec> specs(MemberPlan plan) {
         List<Spec> specs = new ArrayList<>();
         for (MemberPlan.EnumFact constant : plan.enumConstants()) {
-            specs.add(new Spec(
+            specs.add(new Spec.Constant(
                     constant.name(),
-                    parameterized(family("EnumConstant"), Types.of(self)),
+                    parameterized(family("EnumConstant"), Types.of(self.desc())),
                     Exprs.field(MetamodelNames.TOKEN).call("constant", Exprs.literal(constant.constant()))));
         }
         List<MemberPlan.Fact> sorted = plan.members().stream()
@@ -108,7 +223,7 @@ final class MemberFacts {
                     switch (fact.model()) {
                         case FieldModel field -> field(fact.name(), field);
                         case CtorModel ctor -> ctor(fact.name(), ctor);
-                        case MethodModel method -> new Spec(fact.name(), methodType(method), methodFact(method));
+                        case MethodModel method -> method(fact.name(), method);
                     });
         }
         plan.sam().ifPresent(sam -> specs.add(sam(sam)));
@@ -123,44 +238,120 @@ final class MemberFacts {
         };
     }
 
+    // ---- scopes
+
+    /// A type variable in scope.
+    ///
+    /// @param name its name in the metamodel
+    /// @param witness the token of the type it stands for
+    /// @param position its position among the type parameters of the type, or -1 for one of a method
+    private record Var(String name, Expr witness, int position) {}
+
+    /// Where a fact is made.
+    ///
+    /// @param vars the type variables in scope, by declared name; those of a method hide those of the type
+    /// @param instance whether the fact is made for an instance of a generic metamodel, where `token`
+    ///     is the type applied to its own type parameters
+    private record Scope(Map<String, Var> vars, boolean instance) {
+
+        Var var(String declared) {
+            Var found = vars.get(declared);
+            if (found == null) {
+                throw new IllegalStateException("type variable " + declared + " is not in scope");
+            }
+            return found;
+        }
+    }
+
+    /// The scope of a member without type parameters of its own.
+    private Scope scope(boolean isStatic) {
+        boolean instance = self.generic() && !isStatic;
+        Map<String, Var> vars = new HashMap<>();
+        if (instance) {
+            for (int i = 0; i < self.declared().size(); i++) {
+                vars.put(
+                        self.declared().get(i),
+                        new Var(
+                                self.typeParams().get(i),
+                                Exprs.field(self.witnesses().get(i)),
+                                i));
+            }
+        }
+        return new Scope(vars, instance);
+    }
+
+    /// The token that owns a member: `TOKEN`, or, of a generic type, `token`
+    /// for an instance member and `ANY` for a `static` one.
+    private Expr owner(boolean isStatic) {
+        if (!self.generic()) {
+            return Exprs.field(MetamodelNames.TOKEN);
+        }
+        return Exprs.field(isStatic ? MetamodelNames.ANY : MetamodelNames.INSTANCE_TOKEN);
+    }
+
+    /// The type itself as the facts of its instance members are typed by it:
+    /// applied to its own type parameters.
+    private TypeRef ownerType() {
+        if (!self.generic()) {
+            return Types.of(self.desc());
+        }
+        return new ParameterizedTypeRef(
+                self.desc(),
+                self.typeParams().stream()
+                        .<TypeArg>map(name -> Types.exact(Types.typeVar(name)))
+                        .toList());
+    }
+
+    /// A field for a member without type parameters of its own: assigned by
+    /// the constructor for an instance member of a generic type.
+    private Spec value(String name, TypeRef type, Expr init, Scope scope) {
+        return scope.instance() ? new Spec.Assigned(name, type, init) : new Spec.Constant(name, type, init);
+    }
+
     // ---- fields
 
     private Spec field(String name, FieldModel field) {
-        TypeRef type = phantom(field.type());
-        TypeRef owner = Types.of(self);
-        Expr token = token(field.type());
+        Scope scope = scope(field.isStatic());
+        TypeRef type = phantom(field.type(), scope);
+        TypeRef owner = ownerType();
+        Expr token = token(field.type(), scope);
         Expr nameLiteral = Exprs.literal(field.name());
-        Expr owned = Exprs.field(MetamodelNames.TOKEN);
+        Expr owned = owner(field.isStatic());
         if (field.isStatic()) {
             return switch (field.mutability()) {
                 case FieldModel.Mutability.Constant constant ->
-                    new Spec(
+                    value(
                             name,
                             parameterized(family("StaticFieldRef"), type),
-                            unsafe("constantField", owned, nameLiteral, token, constantValue(constant.value())));
+                            unsafe("constantField", owned, nameLiteral, token, constantValue(constant.value())),
+                            scope);
                 case FieldModel.Mutability.Final ignored ->
-                    new Spec(
+                    value(
                             name,
                             parameterized(family("StaticFieldRef"), type),
-                            unsafe("staticField", owned, nameLiteral, token));
+                            unsafe("staticField", owned, nameLiteral, token),
+                            scope);
                 case FieldModel.Mutability.Mutable ignored ->
-                    new Spec(
+                    value(
                             name,
                             parameterized(family("MutableStaticFieldRef"), type),
-                            unsafe("mutableStaticField", owned, nameLiteral, token));
+                            unsafe("mutableStaticField", owned, nameLiteral, token),
+                            scope);
             };
         }
         return switch (field.mutability()) {
             case FieldModel.Mutability.Mutable ignored ->
-                new Spec(
+                value(
                         name,
                         parameterized(family("MutableFieldRef"), owner, type),
-                        unsafe("mutableField", owned, nameLiteral, token));
+                        unsafe("mutableField", owned, nameLiteral, token),
+                        scope);
             case FieldModel.Mutability.Final ignored ->
-                new Spec(
+                value(
                         name,
                         parameterized(family("FieldRef"), owner, type),
-                        unsafe("field", owned, nameLiteral, token));
+                        unsafe("field", owned, nameLiteral, token),
+                        scope);
             case FieldModel.Mutability.Constant ignored ->
                 throw new IllegalStateException("an instance field is not a constant: " + field.name());
         };
@@ -193,27 +384,97 @@ final class MemberFacts {
     // ---- constructors and methods
 
     private Spec ctor(String name, CtorModel ctor) {
-        boolean isAbstract = selfKind instanceof DeclaredKind.AbstractClass;
-        int arity = ctor.params().size();
-        List<TypeRef> typeArgs = new ArrayList<>(List.of(Types.of(self)));
-        List<Expr> args = new ArrayList<>(List.of(Exprs.field(MetamodelNames.TOKEN)));
-        for (TypeRef param : ctor.params()) {
-            typeArgs.add(phantom(param));
-            args.add(token(param));
+        if (!ctor.typeParams().isEmpty()) {
+            throw new IllegalStateException("a generic constructor has no fact: " + name);
         }
-        args.add(traits(Overridability.FINAL, ctor.throwsTypes()));
+        Scope scope = scope(false);
+        boolean isAbstract = self.kind() instanceof DeclaredKind.AbstractClass;
+        int arity = ctor.params().size();
+        List<TypeRef> typeArgs = new ArrayList<>(List.of(ownerType()));
+        List<Expr> args = new ArrayList<>(List.of(owner(false)));
+        for (TypeRef param : ctor.params()) {
+            typeArgs.add(phantom(param, scope));
+            args.add(token(param, scope));
+        }
+        args.add(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), scope));
         String family = (isAbstract ? "AbstractCtorRef" : "CtorRef") + requireArity(arity);
-        return new Spec(
-                name, parameterized(family(family), typeArgs), unsafe(isAbstract ? "abstractCtor" : "ctor", args));
+        return value(
+                name,
+                parameterized(family(family), typeArgs),
+                unsafe(isAbstract ? "abstractCtor" : "ctor", args),
+                scope);
     }
 
-    private TypeRef methodType(MethodModel method) {
+    private Spec method(String name, MethodModel method) {
+        if (method.typeParams().isEmpty()) {
+            Scope scope = scope(method.isStatic());
+            return value(name, methodType(method, scope), methodFact(method, List.of(), scope), scope);
+        }
+        Scope outer = scope(method.isStatic());
+        List<String> declared =
+                method.typeParams().stream().map(TypeParam::name).toList();
+        List<String> names;
+        List<String> witnessNames;
+        switch (locals) {
+            case Locals.Probe ignored -> {
+                names = numbered("T", declared.size());
+                witnessNames = numbered("w", declared.size());
+            }
+            case Locals.Named(Set<String> typeNames, Set<String> taken) -> {
+                Set<String> hidden = new HashSet<>(typeNames);
+                Set<String> avoided = new HashSet<>(taken);
+                if (outer.instance()) {
+                    hidden.addAll(self.typeParams());
+                    avoided.addAll(self.witnesses());
+                }
+                names = MetamodelNames.typeParameters(declared, hidden);
+                witnessNames = MetamodelNames.witnesses(names, avoided);
+            }
+        }
+        Map<String, Var> vars = new HashMap<>(outer.vars());
+        List<Expr> witnessTokens = new ArrayList<>();
+        List<Witness> witnesses = new ArrayList<>();
+        for (int i = 0; i < declared.size(); i++) {
+            Expr witness = Exprs.field(witnessNames.get(i));
+            vars.put(declared.get(i), new Var(names.get(i), witness, -1));
+            witnessTokens.add(witness);
+            witnesses.add(
+                    new Witness(witnessNames.get(i), parameterized(use(CD_REF_TOKEN), Types.typeVar(names.get(i)))));
+        }
+        Scope scope = new Scope(vars, outer.instance());
+        List<TypeParam> typeParams = new ArrayList<>();
+        for (int i = 0; i < declared.size(); i++) {
+            typeParams.add(new TypeParam(
+                    names.get(i),
+                    method.typeParams().get(i).bounds().stream()
+                            .map(bound -> (ClassOrInterfaceTypeRef) javaType(bound, scope))
+                            .toList()));
+        }
+        instanceFactories |= outer.instance();
+        return new Spec.Factory(
+                name,
+                !outer.instance(),
+                typeParams,
+                witnesses,
+                methodType(method, scope),
+                methodFact(method, witnessTokens, scope));
+    }
+
+    private static List<String> numbered(String kind, int count) {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            names.add(MemberPlan.PROBE + kind + i);
+        }
+        return names;
+    }
+
+    private TypeRef methodType(MethodModel method, Scope scope) {
         List<TypeRef> typeArgs = new ArrayList<>();
         if (!method.isStatic()) {
-            typeArgs.add(Types.of(self));
+            typeArgs.add(ownerType());
         }
-        method.result().ifPresent(result -> typeArgs.add(phantom(result)));
-        method.params().forEach(param -> typeArgs.add(phantom(param)));
+        method.result().ifPresent(result -> typeArgs.add(phantom(result, scope)));
+        method.params().forEach(param -> typeArgs.add(phantom(param, scope)));
         String family = (method.result().isEmpty() ? "Void" : "")
                 + (method.isStatic() ? "Static" : "")
                 + "MethodRef"
@@ -221,27 +482,28 @@ final class MemberFacts {
         return parameterized(family(family), typeArgs);
     }
 
-    /// The `UnsafeFacts.method(TOKEN, "name", result, params…, traits)` of a
+    /// The `UnsafeFacts.method(owner, "name", result, params…, traits)` of a
     /// method, or the factory of its kind.
-    private Expr methodFact(MethodModel method) {
-        List<Expr> args = new ArrayList<>(List.of(Exprs.field(MetamodelNames.TOKEN), Exprs.literal(method.name())));
-        method.result().ifPresent(result -> args.add(token(result)));
-        method.params().forEach(param -> args.add(token(param)));
-        args.add(traits(method.overridability(), method.throwsTypes()));
+    private Expr methodFact(MethodModel method, List<Expr> witnesses, Scope scope) {
+        List<Expr> args = new ArrayList<>(List.of(owner(method.isStatic()), Exprs.literal(method.name())));
+        method.result().ifPresent(result -> args.add(token(result, scope)));
+        method.params().forEach(param -> args.add(token(param, scope)));
+        args.add(traits(method.overridability(), method.throwsTypes(), witnesses, scope));
         String factory = method.isStatic() ? "staticMethod" : "method";
         return unsafe(method.result().isEmpty() ? "void" + capitalized(factory) : factory, args);
     }
 
     private Spec sam(MemberPlan.SamFact sam) {
         MethodModel method = sam.method();
-        List<TypeRef> typeArgs = new ArrayList<>(List.of(Types.of(self)));
-        method.result().ifPresent(result -> typeArgs.add(phantom(result)));
-        method.params().forEach(param -> typeArgs.add(phantom(param)));
+        Scope scope = scope(false);
+        List<TypeRef> typeArgs = new ArrayList<>(List.of(ownerType()));
+        method.result().ifPresent(result -> typeArgs.add(phantom(result, scope)));
+        method.params().forEach(param -> typeArgs.add(phantom(param, scope)));
         boolean isVoid = method.result().isEmpty();
         String family =
                 (isVoid ? "VoidSam" : "Sam") + requireArity(method.params().size());
-        Expr fact = sam.reuse().<Expr>map(Exprs::field).orElseGet(() -> methodFact(method));
-        return new Spec("sam", parameterized(family(family), typeArgs), unsafe(isVoid ? "voidSam" : "sam", fact));
+        Expr fact = sam.reuse().<Expr>map(Exprs::field).orElseGet(() -> methodFact(method, List.of(), scope));
+        return value("sam", parameterized(family(family), typeArgs), unsafe(isVoid ? "voidSam" : "sam", fact), scope);
     }
 
     private static int requireArity(int arity) {
@@ -255,45 +517,85 @@ final class MemberFacts {
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 
-    private Expr traits(Overridability overridability, List<ClassOrInterfaceTypeRef> throwsTypes) {
-        Expr base = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
-        return throwsTypes.isEmpty()
-                ? base
-                : base.call("throwing", throwsTypes.stream().map(this::token).toList());
+    /// The traits of a method or constructor: what it throws — a type
+    /// variable by the token given for it — and, for a generic method, the
+    /// tokens of its type arguments.
+    private Expr traits(
+            Overridability overridability,
+            List<ClassOrInterfaceTypeRef> throwsTypes,
+            List<Expr> witnesses,
+            Scope scope) {
+        Expr traits = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
+        if (!throwsTypes.isEmpty()) {
+            traits = traits.call(
+                    "throwing", throwsTypes.stream().map(t -> token(t, scope)).toList());
+        }
+        return witnesses.isEmpty() ? traits : traits.call("withTypeArgs", witnesses);
     }
 
     // ---- tokens and their phantom types
 
     /// The token of a type: a primitive's constant, the array token of an
-    /// array, `TOKEN` for the type itself and the token made from the shape
-    /// of its metamodel for any other type.
-    private Expr token(TypeRef type) {
+    /// array, the token given for a type variable, and for a class or
+    /// interface the token of the type itself or one made from the shape of
+    /// its metamodel.
+    private Expr token(TypeRef type, Scope scope) {
         return switch (type) {
             case PrimitiveTypeRef primitive -> Exprs.staticField(use(CD_PRIMITIVE_TOKEN), primitive.name());
             case ArrayTypeRef array ->
                 array.component() instanceof PrimitiveTypeRef
-                        ? token(array.component()).call("array")
-                        : Exprs.staticCall(use(CD_ARRAY_TOKEN), "of", token(array.component()));
-            case ClassTypeRef cls -> declaredToken(cls);
-            case ParameterizedTypeRef ignored -> throw new IllegalStateException("not supported yet: " + type);
-            case TypeVarRef ignored -> throw new IllegalStateException("not supported yet: " + type);
+                        ? token(array.component(), scope).call("array")
+                        : Exprs.staticCall(use(CD_ARRAY_TOKEN), "of", token(array.component(), scope));
+            case ClassTypeRef cls -> declaredToken(cls, cls.desc(), List.of(), scope);
+            case ParameterizedTypeRef parameterized ->
+                declaredToken(parameterized, parameterized.raw(), parameterized.args(), scope);
+            case TypeVarRef variable -> scope.var(variable.name()).witness();
         };
     }
 
-    private Expr declaredToken(ClassTypeRef cls) {
-        if (cls.desc().equals(self)) {
-            return Exprs.field(MetamodelNames.TOKEN);
+    private Expr declaredToken(ClassOrInterfaceTypeRef type, ClassDesc desc, List<TypeArg> args, Scope scope) {
+        if (desc.equals(self.desc())) {
+            if (!self.generic()) {
+                return Exprs.field(MetamodelNames.TOKEN);
+            }
+            if (scope.instance() && ownTypeParameters(args, scope)) {
+                return Exprs.field(MetamodelNames.INSTANCE_TOKEN);
+            }
         }
-        Targets.Target target = targets.of(cls.desc())
-                .orElseThrow(() -> new IllegalStateException(
-                        "no metamodel of " + cls.desc().displayName()));
-        signatureTypes.add(cls.desc());
+        Targets.Target target =
+                targets.of(desc).orElseThrow(() -> new IllegalStateException("no metamodel of " + desc.displayName()));
         ClassDesc data = use(target.metamodel().nested(MetamodelNames.DATA));
+        List<Expr> tokenArgs = new ArrayList<>(List.of(Exprs.staticField(data, MetamodelNames.SHAPE)));
+        for (TypeArg arg : args) {
+            tokenArgs.add(tokenArg(arg, scope));
+        }
         return new StaticMethodCallExpr(
-                Types.of(use(CD_UNSAFE_FACTS)),
-                factory(target.kind()),
-                List.of(Exprs.staticField(data, MetamodelNames.SHAPE)),
-                List.of(Types.of(cls.desc())));
+                Types.of(use(CD_UNSAFE_FACTS)), factory(target.kind()), tokenArgs, List.of(javaType(type, scope)));
+    }
+
+    /// Whether type arguments are the type parameters of the type itself, in order.
+    private static boolean ownTypeParameters(List<TypeArg> args, Scope scope) {
+        if (args.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < args.size(); i++) {
+            if (!(args.get(i) instanceof ExactTypeArg(TypeRef exact)
+                    && exact instanceof TypeVarRef variable
+                    && scope.var(variable.name()).position() == i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Expr tokenArg(TypeArg arg, Scope scope) {
+        ClassDesc tokenArg = use(CD_TOKEN_ARG);
+        return switch (arg) {
+            case ExactTypeArg exact -> Exprs.staticCall(tokenArg, "exact", token(exact.type(), scope));
+            case ExtendsTypeArg bound -> Exprs.staticCall(tokenArg, "extendsBound", token(bound.bound(), scope));
+            case SuperTypeArg bound -> Exprs.staticCall(tokenArg, "superBound", token(bound.bound(), scope));
+            case UnboundedTypeArg ignored -> Exprs.staticCall(tokenArg, "unbounded");
+        };
     }
 
     private static String factory(DeclaredKind kind) {
@@ -308,23 +610,42 @@ final class MemberFacts {
 
     /// The type a token is typed by: the marker of a primitive, the type
     /// itself otherwise.
-    private TypeRef phantom(TypeRef type) {
+    private TypeRef phantom(TypeRef type, Scope scope) {
         if (type instanceof PrimitiveTypeRef primitive) {
             return Types.of(use(ClassDesc.of(FACTS, "Prim$" + marker(primitive))));
         }
-        return javaType(type);
+        return javaType(type, scope);
     }
 
-    private TypeRef javaType(TypeRef type) {
+    /// A type as the metamodel writes it: its type variables under their
+    /// names in the metamodel.
+    private TypeRef javaType(TypeRef type, Scope scope) {
         return switch (type) {
             case PrimitiveTypeRef primitive -> primitive;
-            case ArrayTypeRef array -> Types.array(javaType(array.component()));
+            case ArrayTypeRef array -> Types.array(javaType(array.component(), scope));
             case ClassTypeRef cls -> {
                 signatureTypes.add(cls.desc());
+                raw |= targets.generic(cls.desc());
                 yield cls;
             }
-            case ParameterizedTypeRef ignored -> throw new IllegalStateException("not supported yet: " + type);
-            case TypeVarRef ignored -> throw new IllegalStateException("not supported yet: " + type);
+            case ParameterizedTypeRef parameterized -> {
+                signatureTypes.add(parameterized.raw());
+                yield new ParameterizedTypeRef(
+                        parameterized.raw(),
+                        parameterized.args().stream()
+                                .map(arg -> javaTypeArg(arg, scope))
+                                .toList());
+            }
+            case TypeVarRef variable -> Types.typeVar(scope.var(variable.name()).name());
+        };
+    }
+
+    private TypeArg javaTypeArg(TypeArg arg, Scope scope) {
+        return switch (arg) {
+            case ExactTypeArg exact -> Types.exact(javaType(exact.type(), scope));
+            case ExtendsTypeArg bound -> Types.extendsBound(javaType(bound.bound(), scope));
+            case SuperTypeArg bound -> Types.superBound(javaType(bound.bound(), scope));
+            case UnboundedTypeArg unbounded -> unbounded;
         };
     }
 

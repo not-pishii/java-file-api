@@ -5,7 +5,6 @@ import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
-import me.supcheg.javafile.langmodel.mirror.SkippedMember;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import org.jspecify.annotations.Nullable;
@@ -58,10 +57,8 @@ import java.util.stream.Collectors;
 ///
 /// In the last round it reports what never became ready.
 ///
-/// A requested type that is not generic gets a full metamodel, with a fact
-/// per member ([MemberPlan]); a generic one, until plan step 9, a token-only
-/// metamodel, marked and listed as such, so no other compilation mistakes it
-/// for a full one.
+/// A requested type gets a full metamodel, with a fact per member
+/// ([MemberPlan]) — in terms of its type parameters if it is generic.
 ///
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
@@ -231,27 +228,10 @@ public final class FactsProcessor extends AbstractProcessor {
                 }
                 case Closure.Outcome.Ready ready -> {
                     waiting.remove(entry.getKey());
-                    Optional<? extends Element> at = first(requesters, elements);
-                    boolean full = type.getTypeParameters().isEmpty();
-                    Set<String> awaited = Set.of();
-                    if (full) {
-                        // the plan of the members reports what it leaves out, and why
-                        ready.unavailable().forEach(u -> unavailableTypes.put(u.type(), u.reason()));
-                        awaited = awaited(base, type, binaryName, ready, models, elements);
-                    } else {
-                        for (SkippedMember skipped : ready.full().skipped()) {
-                            diagnostics.skipped(
-                                    at,
-                                    binaryName + ": no fact of " + skipped.member() + ", which " + skipped.reason());
-                        }
-                        for (Closure.Unavailable unavailable : ready.unavailable()) {
-                            diagnostics.skipped(
-                                    at,
-                                    binaryName + ": no metamodel of " + unavailable.type()
-                                            + ", which its signatures mention: " + unavailable.reason());
-                        }
-                    }
-                    planned.add(new Planned(type, binaryName, true, full, requesters, stale, awaited));
+                    // the plan of the members reports what it leaves out, and why
+                    ready.unavailable().forEach(u -> unavailableTypes.put(u.type(), u.reason()));
+                    Set<String> awaited = awaited(base, type, binaryName, ready, models, elements);
+                    planned.add(new Planned(type, binaryName, true, requesters, stale, awaited));
                     ready.signatureTypes().forEach((name, element) -> {
                         mentioned.put(name, element);
                         mentionedBy.computeIfAbsent(name, _ -> new TreeSet<>()).addAll(requesters);
@@ -269,7 +249,7 @@ public final class FactsProcessor extends AbstractProcessor {
                     done.put(binaryName, new Done.Reused(metamodel));
                 case ReuseIndex.Lookup.Absent(List<String> stale) ->
                     planned.add(new Planned(
-                            entry.getValue(), binaryName, false, false, mentionedBy.get(binaryName), stale, Set.of()));
+                            entry.getValue(), binaryName, false, mentionedBy.get(binaryName), stale, Set.of()));
             }
         }
         Map<String, ClassDesc> metamodels = new HashMap<>();
@@ -288,7 +268,7 @@ public final class FactsProcessor extends AbstractProcessor {
             String key = metamodel.type().getQualifiedName().toString();
             // a full metamodel refers to the metamodel of a requested type it mentions: one that is not
             // ready yet must be waited for, or the members that mention it would have no fact for good
-            Optional<String> notReady = metamodel.full()
+            Optional<String> notReady = metamodel.requested()
                     ? metamodel.mentions().stream()
                             .filter(name -> requestedTypes.contains(name)
                                     && !metamodels.containsKey(name)
@@ -307,7 +287,7 @@ public final class FactsProcessor extends AbstractProcessor {
     /// The types whose metamodels the facts of a requested type would refer
     /// to if every type its signatures mention had one: those of the members
     /// that get a fact, not of the ones left out whatever happens — a generic
-    /// method, one that mentions a type that is not public.
+    /// constructor, a member that mentions a type that is not public.
     private static Set<String> awaited(
             String base,
             TypeElement type,
@@ -355,7 +335,8 @@ public final class FactsProcessor extends AbstractProcessor {
             diagnostics.warning(at, reason + "; generating " + name);
         }
         TypeModel model =
-                switch (models.of(planned.type(), planned.full() ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE)) {
+                switch (models.of(
+                        planned.type(), planned.requested() ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE)) {
                     case Translation.Ok<TypeModel>(TypeModel value) -> value;
                     case Translation.Deferred<TypeModel> _ ->
                         throw new IllegalStateException(planned.binaryName() + " was read, but is deferred now");
@@ -368,7 +349,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 .toArray(Element[]::new);
         Canonical canonical = Canonical.of(model);
         JavaFile file;
-        if (planned.full()) {
+        if (planned.requested()) {
             Set<String> taken = MetamodelEmitter.takenNames(
                     metamodel, model, canonical, MemberPlan.probe(planned.type(), models, targets), targets);
             MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
@@ -376,9 +357,9 @@ public final class FactsProcessor extends AbstractProcessor {
                 diagnostics.skipped(
                         at, planned.binaryName() + ": no fact of " + skip.member() + ", which " + skip.reason());
             }
-            file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets);
+            file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken);
         } else {
-            file = MetamodelEmitter.tokenOnly(metamodel, model, canonical);
+            file = MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets);
         }
         try {
             try (Writer writer = processingEnv
@@ -388,7 +369,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 writer.write(MetamodelEmitter.source(file));
             }
             index.publish(
-                    planned.full() ? ReuseIndex.Completeness.FULL : ReuseIndex.Completeness.TOKEN,
+                    planned.requested() ? ReuseIndex.Completeness.FULL : ReuseIndex.Completeness.TOKEN,
                     planned.binaryName(),
                     metamodel,
                     originating);
@@ -420,8 +401,8 @@ public final class FactsProcessor extends AbstractProcessor {
     ///
     /// @param type the type
     /// @param binaryName the binary name of the type
-    /// @param requested whether `@Facts` asks for the type, rather than a signature mentioning it
-    /// @param full whether the metamodel has a fact per member: a requested type that is not generic
+    /// @param requested whether `@Facts` asks for the type, rather than a signature mentioning it: the
+    ///     metamodel is full then, with a fact per member, and token-only otherwise
     /// @param requesters the `@Facts` the metamodel is generated for
     /// @param stale why the metamodels of the type on the classpath were not reused
     /// @param mentions the binary names of the classes and interfaces the facts of a full metamodel refer to
@@ -429,7 +410,6 @@ public final class FactsProcessor extends AbstractProcessor {
             TypeElement type,
             String binaryName,
             boolean requested,
-            boolean full,
             SortedSet<Site> requesters,
             List<String> stale,
             Set<String> mentions) {}

@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
@@ -39,7 +40,9 @@ import java.util.Optional;
 /// A metamodel found on the classpath is reused only if the fingerprint in
 /// its [me.supcheg.javafile.facts.meta.GeneratedMetamodel] matches the type
 /// on the current classpath: a library may ship metamodels generated
-/// against another version of a type. Javac finds the first resource of a
+/// against another version of a type. Nor is one of another
+/// [MetamodelFormat#VERSION] reused: which members have a fact is decided
+/// by the format, not by the type alone. Javac finds the first resource of a
 /// name on the classpath, so the first module to list a type is the one
 /// asked.
 final class ReuseIndex {
@@ -136,6 +139,12 @@ final class ReuseIndex {
         boolean complete = Boolean.TRUE.equals(marker.get().get("complete"));
         if (directory == Completeness.FULL && !complete) {
             return new Candidate.Stale(listed + " is listed as full, but is token-only");
+        }
+        Object format = marker.get().get("format");
+        if (!Integer.valueOf(MetamodelFormat.VERSION).equals(format)) {
+            return new Candidate.Stale("metamodel " + listed + " on the classpath is of "
+                    + (format == null ? "an older format" : "format " + format) + ", not of format "
+                    + MetamodelFormat.VERSION + ", which this processor generates");
         }
         MemberFilter filter = complete ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE;
         return switch (models.of(type, filter)) {

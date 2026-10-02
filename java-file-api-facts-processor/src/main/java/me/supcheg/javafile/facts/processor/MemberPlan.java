@@ -7,12 +7,6 @@ import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
-import me.supcheg.javafile.type.ArrayTypeRef;
-import me.supcheg.javafile.type.ClassTypeRef;
-import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.TypeRef;
-import me.supcheg.javafile.type.TypeVarRef;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -46,15 +40,15 @@ import java.util.TreeSet;
 ///   interface, a class with `$` in its simple name;
 /// - it is a constructor of an inner class, which needs an enclosing
 ///   instance no `CtorRefN` takes;
-/// - its signature is generic — a type variable, a parameterized or raw
-///   generic type, type parameters of its own — which comes with the
-///   generic metamodels (plan step 9);
+/// - it is a generic constructor: `new` gives a constructor no explicit
+///   type arguments in the generated code, and a fact never leaves them to
+///   inference;
 /// - its name would be that of another member, or, even with `_` appended,
 ///   a name the metamodel itself starts a name with: it would hide that.
 ///
 /// The names are those of [MetamodelNames#members] over every declared
 /// `public` member, with a fact or without: a member that gets its fact
-/// later, as the generic ones will, does not rename the others.
+/// later does not rename the others.
 ///
 /// @param enumConstants the enum constants that get a fact, in declaration order
 /// @param members the fields, constructors and methods that get a fact
@@ -92,7 +86,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
 
     /// Plans the facts of a type.
     ///
-    /// @param type the type, a class, interface, enum or record that is not generic
+    /// @param type the type, a class, interface, enum or record
     /// @param models the models of the round
     /// @param targets the metamodels of the types the signatures mention
     /// @param taken the names the metamodel starts a name with, see [MetamodelEmitter#takenNames]: a
@@ -145,7 +139,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// names it uses itself ([MetamodelEmitter#takenNames]) before the facts
     /// are named.
     ///
-    /// @param type the type, a class, interface, enum or record that is not generic
+    /// @param type the type, a class, interface, enum or record
     /// @param models the models of the round
     /// @param targets the metamodels of the types the signatures mention
     /// @return the plan, with nothing skipped
@@ -159,6 +153,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         List<Fact> members = new ArrayList<>();
         candidates.members().forEach((element, model) -> members.add(new Fact(PROBE + members.size(), model)));
         return new MemberPlan(enums, members, sam(type, models, targets, members, new ArrayList<>()), List.of());
+    }
+
+    /// The names of the facts, `sam` among them if there is one.
+    ///
+    /// @return the names
+    Set<String> names() {
+        Set<String> names = new LinkedHashSet<>();
+        enumConstants.forEach(fact -> names.add(fact.name()));
+        members.forEach(fact -> names.add(fact.name()));
+        sam.ifPresent(fact -> names.add(MetamodelNames.SAM));
+        return names;
     }
 
     /// The classes and interfaces whose metamodels the facts refer to, the
@@ -253,6 +258,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                     Optional<String> declared = members.stream()
                             .filter(f -> f.model() instanceof MethodModel other
                                     && !other.isStatic()
+                                    && other.typeParams().isEmpty()
                                     && other.name().equals(method.name())
                                     && other.params().equals(method.params()))
                             .map(Fact::name)
@@ -268,57 +274,22 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         };
     }
 
-    /// Why a member cannot have a fact yet, though the translator read it.
+    /// Why a member cannot have a fact, though the translator read it.
     private static Optional<String> unsupported(MemberModel model, Targets targets) {
-        List<TypeRef> types = new ArrayList<>();
-        switch (model) {
-            case FieldModel field -> types.add(field.type());
-            case CtorModel ctor -> {
-                if (!ctor.typeParams().isEmpty()) {
-                    return Optional.of("is generic, and facts of generic members are not supported yet");
-                }
-                types.addAll(ctor.params());
-                types.addAll(ctor.throwsTypes());
-            }
-            case MethodModel method -> {
-                if (!method.typeParams().isEmpty()) {
-                    return Optional.of("is generic, and facts of generic members are not supported yet");
-                }
-                method.result().ifPresent(types::add);
-                types.addAll(method.params());
-                types.addAll(method.throwsTypes());
-            }
+        if (model instanceof CtorModel ctor && !ctor.typeParams().isEmpty()) {
+            return Optional.of("is a generic constructor, whose type arguments a fact cannot give explicitly");
         }
-        for (TypeRef type : types) {
-            Optional<String> reason = unsupported(type, targets);
-            if (reason.isPresent()) {
-                return reason;
+        // a token is made of every type of the signature, and the bounds of a generic method are written
+        // out: all of them are to be types a metamodel can name
+        Set<ClassDesc> mentioned = new LinkedHashSet<>();
+        mentions(List.of(model), mentioned);
+        for (ClassDesc desc : mentioned) {
+            if (targets.of(desc).isEmpty()) {
+                return Optional.of(
+                        "mentions " + Models.binaryName(desc) + ", which has no metamodel: " + targets.whyNone(desc));
             }
         }
         return Optional.empty();
-    }
-
-    private static Optional<String> unsupported(TypeRef type, Targets targets) {
-        return switch (type) {
-            case PrimitiveTypeRef ignored -> Optional.empty();
-            case ArrayTypeRef array -> unsupported(array.component(), targets);
-            case TypeVarRef variable ->
-                Optional.of("mentions the type variable " + variable.name()
-                        + ", and facts of generic members are not supported yet");
-            case ParameterizedTypeRef parameterized ->
-                Optional.of("mentions the parameterized type " + Models.binaryName(parameterized.raw())
-                        + ", and facts of generic types are not supported yet");
-            case ClassTypeRef cls -> {
-                if (targets.generic(cls.desc())) {
-                    yield Optional.of("mentions the raw type " + Models.binaryName(cls.desc())
-                            + ", and facts of generic types are not supported yet");
-                }
-                yield targets.of(cls.desc()).isPresent()
-                        ? Optional.empty()
-                        : Optional.of("mentions " + Models.binaryName(cls.desc()) + ", which has no metamodel: "
-                                + targets.whyNone(cls.desc()));
-            }
-        };
     }
 
     /// A member as a diagnostic names it: `method greet(p.Hidden)`.
@@ -330,7 +301,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         };
     }
 
-    /// The classes and interfaces the signatures of the members mention.
+    /// The classes and interfaces the signatures of the members mention, the
+    /// bounds of the type parameters of a generic method among them.
     ///
     /// @param members the members
     /// @param found where to add
@@ -343,6 +315,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                     ctor.throwsTypes().forEach(t -> Mentions.of(t, found));
                 }
                 case MethodModel method -> {
+                    Mentions.of(method.typeParams(), found);
                     method.result().ifPresent(r -> Mentions.of(r, found));
                     method.params().forEach(p -> Mentions.of(p, found));
                     method.throwsTypes().forEach(t -> Mentions.of(t, found));
