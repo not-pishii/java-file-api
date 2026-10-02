@@ -119,7 +119,7 @@ public final class MirrorTranslator {
 
     /// Translates a declared type: its shape — kind, type parameters,
     /// superclasses, parameterized supertypes, method table, enum
-    /// constants, `sealed` — and the members `filter` selects, as members
+    /// constants, `sealed`, the single abstract method — and the members `filter` selects, as members
     /// of the type (`Types.asMemberOf`). The members are those of `filter`
     /// only; the method table is complete whatever the filter.
     ///
@@ -183,64 +183,113 @@ public final class MirrorTranslator {
     /// `public` methods of `Object` are set aside, declared by the interface
     /// or inherited from a superinterface.
     ///
-    /// Empty for what is not a functional interface, for one whose method is
-    /// generic, which a lambda cannot implement, and for one that declares
-    /// its method but has no model of it, which [#type] reports as a
-    /// [SkippedMember].
+    /// Where the interface inherits several override-equivalent abstract
+    /// methods, the method is the function type of the interface (JLS 9.9):
+    /// its result is the most specific of theirs, and it throws only what
+    /// every one of them allows — the exceptions of their `throws` clauses
+    /// that are a subtype of an exception of each clause.
+    ///
+    /// Empty for what is not a functional interface — a `sealed` interface
+    /// is none —, for one whose method, or a method it is override-equivalent
+    /// to, is generic, and for one that declares its method but has no model
+    /// of it, which [#type] reports as a [SkippedMember].
     ///
     /// @param element the type
     /// @return the method; empty if there is none to make a `sam` fact of; unrepresentable if
     ///         the method is inherited and its signature has no model, for the reason [#member] gives;
     ///         deferred if it mentions a type not generated yet
     public Translation<Optional<SamModel>> sam(TypeElement element) {
-        if (element.getKind() != ElementKind.INTERFACE) {
-            return new Translation.Ok<>(Optional.empty());
-        }
         try {
-            DeclaredType self = (DeclaredType) element.asType();
-            Set<MethodTableTemplate.Signature> abstracts =
-                    methods(element, self).abstractMethods();
-            if (abstracts.size() != 1) {
-                return new Translation.Ok<>(Optional.empty());
-            }
-            MethodTableTemplate.Signature signature = abstracts.iterator().next();
-            List<ExecutableElement> candidates = ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
-                    .filter(m -> m.getModifiers().contains(Modifier.ABSTRACT))
-                    .filter(m -> signature(m, element, self).equals(signature))
-                    .toList();
-            ExecutableElement method = mostSpecific(candidates, self);
-            boolean declared = method.getEnclosingElement().equals(element);
-            if (!method.getTypeParameters().isEmpty()) {
-                return new Translation.Ok<>(Optional.empty());
-            }
-            return switch (member(element, method)) {
-                case Translation.Ok<MemberModel>(MemberModel model) ->
-                    new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
-                case Translation.Deferred<MemberModel>(String unresolved) -> new Translation.Deferred<>(unresolved);
-                case Translation.Unrepresentable<MemberModel>(String reason) ->
-                    declared ? new Translation.Ok<>(Optional.empty()) : new Translation.Unrepresentable<>(reason);
-            };
+            return readSam(element);
         } catch (Unresolved unresolved) {
             return new Translation.Deferred<>(unresolved.type);
         }
     }
 
+    private Translation<Optional<SamModel>> readSam(TypeElement element) {
+        if (element.getKind() != ElementKind.INTERFACE || element.getModifiers().contains(Modifier.SEALED)) {
+            return new Translation.Ok<>(Optional.empty());
+        }
+        DeclaredType self = (DeclaredType) element.asType();
+        Set<MethodTableTemplate.Signature> abstracts = methods(element, self).abstractMethods();
+        if (abstracts.size() != 1) {
+            return new Translation.Ok<>(Optional.empty());
+        }
+        MethodTableTemplate.Signature signature = abstracts.iterator().next();
+        List<ExecutableElement> candidates = ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
+                .filter(m -> m.getModifiers().contains(Modifier.ABSTRACT))
+                .filter(m -> signature(m, element, self).equals(signature))
+                .toList();
+        if (candidates.stream().anyMatch(m -> !m.getTypeParameters().isEmpty())) {
+            return new Translation.Ok<>(Optional.empty());
+        }
+        ExecutableElement method = mostSpecific(candidates, self);
+        boolean declared = method.getEnclosingElement().equals(element);
+        List<MemberModel> members = new ArrayList<>();
+        List<SkippedMember> skipped = new ArrayList<>();
+        method(element, self, method, functionThrows(candidates, self), members, skipped);
+        if (members.isEmpty()) {
+            return declared
+                    ? new Translation.Ok<>(Optional.empty())
+                    : new Translation.Unrepresentable<>(skipped.getFirst().reason());
+        }
+        return new Translation.Ok<>(Optional.of(new SamModel((MethodModel) members.getFirst(), declared)));
+    }
+
     /// The method whose result is a subtype of the results of the others, as
-    /// members of the type. Override-equivalent methods of supertypes have
-    /// results that are subtypes of one another, so there is one.
+    /// members of the type: the one that is return-type-substitutable for
+    /// every other (JLS 8.4.5). A result that is a subtype as it is written
+    /// is preferred to one that is a subtype only once erased.
     private ExecutableElement mostSpecific(List<ExecutableElement> candidates, DeclaredType self) {
+        return mostSpecific(candidates, self, false)
+                .or(() -> mostSpecific(candidates, self, true))
+                .orElseGet(candidates::getFirst);
+    }
+
+    private Optional<ExecutableElement> mostSpecific(
+            List<ExecutableElement> candidates, DeclaredType self, boolean erased) {
         return candidates.stream()
                 .filter(candidate -> {
                     TypeMirror result = ((ExecutableType) types.asMemberOf(self, candidate)).getReturnType();
+                    requireResolved(result);
                     return candidates.stream().allMatch(other -> {
                         TypeMirror otherResult = ((ExecutableType) types.asMemberOf(self, other)).getReturnType();
-                        return result.getKind().isPrimitive() || result.getKind() == TypeKind.VOID
-                                ? result.getKind() == otherResult.getKind()
-                                : types.isSubtype(types.erasure(result), types.erasure(otherResult));
+                        requireResolved(otherResult);
+                        if (result.getKind().isPrimitive() || result.getKind() == TypeKind.VOID) {
+                            return result.getKind() == otherResult.getKind();
+                        }
+                        if (otherResult.getKind().isPrimitive() || otherResult.getKind() == TypeKind.VOID) {
+                            return false;
+                        }
+                        return erased
+                                ? types.isSubtype(types.erasure(result), types.erasure(otherResult))
+                                : types.isSubtype(result, otherResult);
                     });
                 })
-                .findFirst()
-                .orElseGet(candidates::getFirst);
+                .findFirst();
+    }
+
+    /// What the function type of override-equivalent methods throws (JLS
+    /// 9.9): every exception of one of their `throws` clauses that is a
+    /// subtype of an exception of each clause.
+    private List<TypeMirror> functionThrows(List<ExecutableElement> candidates, DeclaredType self) {
+        List<List<? extends TypeMirror>> clauses = new ArrayList<>();
+        for (ExecutableElement candidate : candidates) {
+            List<? extends TypeMirror> clause = ((ExecutableType) types.asMemberOf(self, candidate)).getThrownTypes();
+            clause.forEach(MirrorTranslator::requireResolved);
+            clauses.add(clause);
+        }
+        List<TypeMirror> thrown = new ArrayList<>();
+        for (List<? extends TypeMirror> clause : clauses) {
+            for (TypeMirror exception : clause) {
+                boolean everyClauseAllows = clauses.stream()
+                        .allMatch(other -> other.stream().anyMatch(allowed -> types.isSubtype(exception, allowed)));
+                if (everyClauseAllows && thrown.stream().noneMatch(found -> types.isSameType(found, exception))) {
+                    thrown.add(exception);
+                }
+            }
+        }
+        return thrown;
     }
 
     private Translation<TypeModel> model(TypeElement element, MemberFilter filter) {
@@ -262,6 +311,13 @@ public final class MirrorTranslator {
         if (filter == MemberFilter.DECLARED_PUBLIC) {
             members(element, self, members, skipped);
         }
+        Optional<MethodModel> sam =
+                switch (readSam(element)) {
+                    case Translation.Ok<Optional<SamModel>>(Optional<SamModel> found) -> found.map(SamModel::method);
+                    case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
+                        throw new IllegalStateException("a deferred sam is thrown, not returned: " + unresolved);
+                    case Translation.Unrepresentable<Optional<SamModel>> ignored -> Optional.empty();
+                };
         shape.problems.addAll(bounds.problems);
         if (!shape.problems.isEmpty()) {
             return new Translation.Unrepresentable<>("type " + element.getQualifiedName() + ": " + shape.problem());
@@ -276,6 +332,7 @@ public final class MirrorTranslator {
                 methods,
                 enumConstants,
                 element.getModifiers().contains(Modifier.SEALED),
+                sam,
                 filter,
                 members,
                 skipped));
@@ -476,6 +533,18 @@ public final class MirrorTranslator {
             ExecutableElement method,
             List<MemberModel> members,
             List<SkippedMember> skipped) {
+        List<? extends TypeMirror> thrown = ((ExecutableType) types.asMemberOf(self, method)).getThrownTypes();
+        method(owner, self, method, thrown, members, skipped);
+    }
+
+    /// A method that throws `thrown`, whatever its own `throws` clause says.
+    private void method(
+            TypeElement owner,
+            DeclaredType self,
+            ExecutableElement method,
+            List<? extends TypeMirror> thrown,
+            List<MemberModel> members,
+            List<SkippedMember> skipped) {
         Reading reading = new Reading(VarScope.of(owner, method));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
         List<TypeParam> typeParams = typeParams(type, reading);
@@ -483,7 +552,8 @@ public final class MirrorTranslator {
         Optional<TypeRef> result =
                 returnType.getKind() == TypeKind.VOID ? Optional.empty() : Optional.of(type(returnType, reading));
         List<TypeRef> params = params(type, reading);
-        List<ClassOrInterfaceTypeRef> throwsTypes = throwsTypes(type, reading);
+        List<ClassOrInterfaceTypeRef> throwsTypes =
+                thrown.stream().map(t -> reference(t, reading)).toList();
         Set<Modifier> modifiers = method.getModifiers();
         boolean isStatic = modifiers.contains(Modifier.STATIC);
         Overridability overridability;

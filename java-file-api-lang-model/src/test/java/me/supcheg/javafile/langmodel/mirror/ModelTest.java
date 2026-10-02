@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class ModelTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false,
+                Optional.empty(),
                 filter,
                 members,
                 skipped);
@@ -44,6 +46,52 @@ class ModelTest {
         assertThatThrownBy(() -> type(ConstantDescs.CD_int, MemberFilter.NONE, List.of(), List.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a declared type is a class or interface, got int");
+    }
+
+    private static TypeModel functional(DeclaredKind kind, boolean sealed, MethodModel sam) {
+        return new TypeModel(
+                ClassDesc.of("p.T"),
+                kind,
+                List.of(),
+                List.of(),
+                List.of(),
+                Supertypes.NONE,
+                MethodTableTemplate.EMPTY,
+                List.of(),
+                sealed,
+                Optional.of(sam),
+                MemberFilter.NONE,
+                List.of(),
+                List.of());
+    }
+
+    private static MethodModel run(boolean isStatic, List<TypeParam> typeParams, Overridability overridability) {
+        return new MethodModel("run", isStatic, typeParams, Optional.empty(), List.of(), List.of(), overridability);
+    }
+
+    @Test
+    void onlyAnInterfaceThatIsNotSealedHasASam() {
+        MethodModel sam = run(false, List.of(), Overridability.ABSTRACT);
+
+        assertThat(functional(DeclaredKind.INTERFACE, false, sam).sam()).contains(sam);
+        assertThatThrownBy(() -> functional(DeclaredKind.INTERFACE, true, sam))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("only an interface that is not sealed is functional, got T");
+        assertThatThrownBy(() -> functional(DeclaredKind.ABSTRACT_CLASS, false, sam))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("only an interface that is not sealed is functional, got T");
+    }
+
+    @Test
+    void aSamIsAbstractAndNotGeneric() {
+        for (MethodModel sam : List.of(
+                run(true, List.of(), Overridability.FINAL),
+                run(false, List.of(), Overridability.OVERRIDABLE),
+                run(false, List.of(new TypeParam("X", List.of())), Overridability.ABSTRACT))) {
+            assertThatThrownBy(() -> functional(DeclaredKind.INTERFACE, false, sam))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("a single abstract method is abstract and not generic, got run");
+        }
     }
 
     @Test

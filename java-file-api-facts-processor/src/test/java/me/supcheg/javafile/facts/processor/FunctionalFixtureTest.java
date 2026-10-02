@@ -5,11 +5,17 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.VoidSam0;
+import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
+
+import java.lang.constant.ClassDesc;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,12 +44,26 @@ class FunctionalFixtureTest extends FixtureSupport {
         "package p; public interface Base { Object get(); }",
         "package p; public interface Sub3 extends Base { String get(); }",
         "package p; public interface Fn2 { void call(String a, int b, long c); }",
+        "package p; public sealed interface Sealed permits SealedImpl { void run(); }",
+        "package p; public final class SealedImpl implements Sealed { public void run() {} }",
+        "package p; public sealed interface SealedSub extends Run permits SealedSubImpl {}",
+        "package p; public final class SealedSubImpl implements SealedSub { public void run() {} }",
+        "package p; public interface IoA { void m() throws java.io.IOException; }",
+        "package p; public interface SqlB { void m() throws java.sql.SQLException; }",
+        "package p; public interface NotFoundB { void m() throws java.io.FileNotFoundException; }",
+        "package p; public interface IoB { void m() throws java.io.IOException; }",
+        "package p; public interface NoneB { void m(); }",
+        "package p; public interface Disjoint extends IoA, SqlB {}",
+        "package p; public interface Nested extends IoA, NotFoundB {}",
+        "package p; public interface Same extends IoA, IoB {}",
+        "package p; public interface OneWithout extends IoA, NoneB {}",
     };
 
     private static final String ALL =
             "p.Fn.class, p.Sub.class, p.Sub2.class, p.Redecl.class, p.Run.class, p.Two.class, p.Wide.class,"
                     + " p.Empty.class, p.Gen.class, p.Def.class, p.Comp.class, p.WithDefault.class, p.StrFn.class,"
-                    + " p.StrOp.class, p.Hid.class, p.Hid2.class, p.Sub3.class, p.Fn2.class";
+                    + " p.StrOp.class, p.Hid.class, p.Hid2.class, p.Sub3.class, p.Fn2.class, p.Sealed.class,"
+                    + " p.SealedSub.class, p.Disjoint.class, p.Nested.class, p.Same.class, p.OneWithout.class";
 
     private static boolean hasSam(ClassLoader loader, String metamodel) {
         try {
@@ -132,6 +152,38 @@ class FunctionalFixtureTest extends FixtureSupport {
         assertThat(factNames(loader, "gen.facts.p.Def_")).containsExactly("apply_String");
         assertThat(((Invocable) fact(loader, "gen.facts.p.Def_", "apply_String")).traits())
                 .isEqualTo(MemberTraits.OVERRIDABLE);
+    }
+
+    @Test
+    void aSealedInterfaceIsNotFunctionalAndHasNoSam() throws Exception {
+        ClassLoader loader = load(generate(ALL, LIBRARY));
+
+        // JLS 9.8: a functional interface is not sealed
+        assertThat(hasSam(loader, "gen.facts.p.Sealed_")).isFalse();
+        assertThat(factNames(loader, "gen.facts.p.Sealed_")).containsExactly("run");
+        assertThat(hasSam(loader, "gen.facts.p.SealedSub_")).isFalse();
+        assertThat(factNames(loader, "gen.facts.p.SealedSub_")).isEmpty();
+        assertThat(shape(loader, "gen.facts.p.Sealed_").sealed()).isTrue();
+    }
+
+    private static List<TypeRef> samThrows(ClassLoader loader, String type) throws ReflectiveOperationException {
+        VoidSam0<?> sam = (VoidSam0<?>) fact(loader, "gen.facts.p." + type + "_", "sam");
+        assertThat(sam.method().traits().overridability()).isEqualTo(Overridability.ABSTRACT);
+        return sam.method().traits().throwsTypes().stream()
+                .<TypeRef>map(RefToken::typeRef)
+                .toList();
+    }
+
+    @Test
+    void anInheritedSamThrowsWhatEveryMethodItStandsForAllows() throws Exception {
+        ClassLoader loader = load(generate(ALL, LIBRARY));
+
+        // JLS 9.9: a lambda of the interface may throw only what each of the methods may
+        assertThat(samThrows(loader, "Disjoint")).isEmpty();
+        assertThat(samThrows(loader, "Nested"))
+                .containsExactly(Types.of(ClassDesc.of("java.io.FileNotFoundException")));
+        assertThat(samThrows(loader, "Same")).containsExactly(Types.of(ClassDesc.of("java.io.IOException")));
+        assertThat(samThrows(loader, "OneWithout")).isEmpty();
     }
 
     @Test

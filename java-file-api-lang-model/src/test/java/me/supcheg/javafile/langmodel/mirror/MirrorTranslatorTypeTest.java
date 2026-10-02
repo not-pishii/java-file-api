@@ -916,6 +916,164 @@ class MirrorTranslatorTypeTest {
         assertThat(primitive.method().result()).contains(Types.INT);
     }
 
+    private static List<TypeRef> samThrows(String a, String b) {
+        return List.copyOf(samOf(
+                        "p.C",
+                        "package p; public interface A { void m()" + a + "; }",
+                        "package p; public interface B { void m()" + b + "; }",
+                        "package p; public interface C extends A, B {}")
+                .method()
+                .throwsTypes());
+    }
+
+    @Test
+    void theSamOfSeveralOverrideEquivalentMethodsThrowsWhatEachOfThemAllows() {
+        TypeRef io = Types.of(ClassDesc.of("java.io.IOException"));
+        TypeRef notFound = Types.of(ClassDesc.of("java.io.FileNotFoundException"));
+        TypeRef eof = Types.of(ClassDesc.of("java.io.EOFException"));
+        String ioClause = " throws java.io.IOException";
+
+        // JLS 9.9: an exception of a clause that is a subtype of an exception of each clause
+        assertThat(samThrows(ioClause, " throws java.sql.SQLException")).isEmpty();
+        assertThat(samThrows(" throws java.sql.SQLException", ioClause)).isEmpty();
+        assertThat(samThrows(ioClause, " throws java.io.FileNotFoundException")).containsExactly(notFound);
+        assertThat(samThrows(" throws java.io.FileNotFoundException", ioClause)).containsExactly(notFound);
+        assertThat(samThrows(ioClause, ioClause)).containsExactly(io);
+        assertThat(samThrows(ioClause, "")).isEmpty();
+        assertThat(samThrows("", ioClause)).isEmpty();
+        assertThat(samThrows(
+                        " throws java.io.FileNotFoundException, java.sql.SQLException",
+                        " throws java.io.IOException, java.io.EOFException"))
+                .containsExactly(notFound);
+        assertThat(samThrows(
+                        " throws java.io.IOException, java.sql.SQLException",
+                        " throws java.io.EOFException, java.io.FileNotFoundException"))
+                .containsExactlyInAnyOrder(eof, notFound);
+    }
+
+    @Test
+    void theThrowsOfAnInheritedSamAreAllowedByEveryMethodHoweverDeepTheyAre() {
+        SamModel sam = samOf(
+                "p.D",
+                "package p; public interface A { Object m() throws java.io.IOException; }",
+                "package p; public interface B { String m() throws java.sql.SQLException; }",
+                "package p; public interface C extends A, B {}",
+                "package p; public interface D extends C {}");
+
+        assertThat(sam.declared()).isFalse();
+        assertThat(sam.method().result()).contains(Types.STRING);
+        assertThat(sam.method().throwsTypes()).isEmpty();
+    }
+
+    @Test
+    void aSamTheInterfaceDeclaresThrowsWhatItDeclares() {
+        SamModel sam = samOf(
+                "p.C",
+                "package p; public interface A { void m() throws java.io.IOException; }",
+                "package p; public interface B { void m() throws java.sql.SQLException; }",
+                "package p; public interface C extends A, B { void m(); }");
+
+        assertThat(sam.declared()).isTrue();
+        assertThat(sam.method().throwsTypes()).isEmpty();
+    }
+
+    @Test
+    void anExceptionNoMethodAllowsDoesNotMakeTheSamUnrepresentable() {
+        SamModel sam = samOf(
+                "p.C",
+                "package p; public interface A { void m() throws Hidden; }",
+                "package p; public interface B { void m(); }",
+                "package p; public interface C extends A, B {}",
+                "package p; class Hidden extends Exception {}");
+
+        assertThat(sam.method().throwsTypes()).isEmpty();
+    }
+
+    @Test
+    void theResultOfASamIsTheOneWrittenAsASubtypeBeforeTheOneThatIsASubtypeErased() {
+        TypeRef strings = Types.parameterized(ClassDesc.of("java.util.List"), Types.STRING);
+
+        for (String order : List.of("A, B", "B, A")) {
+            SamModel sam = samOf(
+                    "p.C",
+                    "package p; public interface A { java.util.List m(); }",
+                    "package p; public interface B { java.util.List<String> m(); }",
+                    "package p; public interface C extends " + order + " {}");
+
+            assertThat(sam.method().result()).as(order).contains(strings);
+        }
+    }
+
+    @Test
+    void aSealedInterfaceIsNotFunctional() {
+        Translation<Optional<SamModel>> none = new Translation.Ok<>(Optional.empty());
+        String[] sources = {
+            "package p; public sealed interface S permits Impl { void run(); }",
+            "package p; public final class Impl implements S { public void run() {} }",
+            "package p; public sealed interface Sub extends Runnable permits SubImpl {}",
+            "package p; public final class SubImpl implements Sub { public void run() {} }"
+        };
+
+        assertThat(sam("p.S", sources)).isEqualTo(none);
+        assertThat(sam("p.Sub", sources)).isEqualTo(none);
+        // JLS 9.8 excludes only the sealed interface itself
+        assertThat(samOf(
+                                "p.Open",
+                                "package p; public sealed interface S permits Open { void run(); }",
+                                "package p; public non-sealed interface Open extends S {}")
+                        .method()
+                        .name())
+                .isEqualTo("run");
+    }
+
+    @Test
+    void aMethodOverrideEquivalentToAGenericOneIsNoSam() {
+        assertThat(sam(
+                        "p.C",
+                        "package p; public interface A { <T> void m(T t); }",
+                        "package p; public interface B { void m(Object o); }",
+                        "package p; public interface C extends A, B {}"))
+                .isEqualTo(new Translation.Ok<Optional<SamModel>>(Optional.empty()));
+    }
+
+    @Test
+    void theModelOfATypeHoldsItsSam() {
+        Map<String, Optional<MethodModel>> sams = Harness.run(
+                env -> Map.of(
+                        "declared", Harness.ok(env.full("p.Fn")).sam(),
+                        "inherited", Harness.ok(env.tokenOnly("p.Sub")).sam(),
+                        "generic", Harness.ok(env.tokenOnly("p.Op")).sam(),
+                        "sealed", Harness.ok(env.full("p.S")).sam(),
+                        "hidden", Harness.ok(env.full("p.Hid")).sam(),
+                        "class", Harness.ok(env.full("p.Impl")).sam(),
+                        "two", Harness.ok(env.full("p.Two")).sam()),
+                "package p; public interface Fn { String apply(int i) throws java.io.IOException; }",
+                "package p; public interface Sub extends Fn {}",
+                "package p; public interface Op<T> extends java.util.function.Function<T, T> {}",
+                "package p; public sealed interface S permits Impl { void run(); }",
+                "package p; public final class Impl implements S { public void run() {} }",
+                "package p; class Hidden {}",
+                "package p; public interface HidBase { Hidden h(); }",
+                "package p; public interface Hid extends HidBase {}",
+                "package p; public interface Two { void a(); void b(); }");
+
+        MethodModel apply = new MethodModel(
+                "apply",
+                false,
+                List.of(),
+                Optional.of(Types.STRING),
+                List.of(Types.INT),
+                List.of(Types.of(ClassDesc.of("java.io.IOException"))),
+                Overridability.ABSTRACT);
+        assertThat(sams.get("declared")).contains(apply);
+        assertThat(sams.get("inherited")).contains(apply);
+        assertThat(sams.get("generic").orElseThrow().params()).containsExactly(Types.typeVar("T"));
+        assertThat(sams.get("sealed")).isEmpty();
+        assertThat(sams.get("hidden")).isEmpty();
+        assertThat(sams.get("class")).isEmpty();
+        assertThat(sams.get("two")).isEmpty();
+    }
+
     @Test
     void thereIsNoSamWhereAnInterfaceIsNotFunctional() {
         Translation<Optional<SamModel>> none = new Translation.Ok<>(Optional.empty());
