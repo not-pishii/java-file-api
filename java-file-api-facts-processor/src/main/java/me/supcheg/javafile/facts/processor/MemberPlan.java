@@ -1,7 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
-import me.supcheg.javafile.langmodel.mirror.FieldModel;
 import me.supcheg.javafile.langmodel.mirror.MemberModel;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
@@ -15,7 +14,6 @@ import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /// Which members of a requested type get a fact, and under which name
 /// (mini-spec §2.2, §2.3, Q3, Q6, Q10).
@@ -171,12 +171,10 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     ///
     /// @return the binary names
     Set<String> mentionedTypes() {
-        List<ClassDesc> found = new ArrayList<>();
-        mentions(members.stream().map(Fact::model).toList(), found);
-        sam.ifPresent(fact -> mentions(List.of(fact.method()), found));
-        Set<String> names = new TreeSet<>();
-        found.forEach(desc -> names.add(Models.binaryName(desc)));
-        return names;
+        return Stream.concat(members.stream().map(Fact::model), sam.stream().map(SamFact::method))
+                .flatMap(Mentions::of)
+                .map(Models::binaryName)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /// The declared members of a type that a fact can be made of.
@@ -281,8 +279,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         }
         // a token is made of every type of the signature, and the bounds of a generic method are written
         // out: all of them are to be types a metamodel can name
-        Set<ClassDesc> mentioned = new LinkedHashSet<>();
-        mentions(List.of(model), mentioned);
+        Set<ClassDesc> mentioned = Mentions.of(model).collect(Collectors.toCollection(LinkedHashSet::new));
         for (ClassDesc desc : mentioned) {
             if (targets.of(desc).isEmpty()) {
                 return Optional.of(
@@ -299,28 +296,5 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             case CONSTRUCTOR -> "constructor " + member;
             default -> "method " + member;
         };
-    }
-
-    /// The classes and interfaces the signatures of the members mention, the
-    /// bounds of the type parameters of a generic method among them.
-    ///
-    /// @param members the members
-    /// @param found where to add
-    static void mentions(Collection<? extends MemberModel> members, Collection<ClassDesc> found) {
-        for (MemberModel member : members) {
-            switch (member) {
-                case FieldModel field -> Mentions.of(field.type(), found);
-                case CtorModel ctor -> {
-                    ctor.params().forEach(p -> Mentions.of(p, found));
-                    ctor.throwsTypes().forEach(t -> Mentions.of(t, found));
-                }
-                case MethodModel method -> {
-                    Mentions.of(method.typeParams(), found);
-                    method.result().ifPresent(r -> Mentions.of(r, found));
-                    method.params().forEach(p -> Mentions.of(p, found));
-                    method.throwsTypes().forEach(t -> Mentions.of(t, found));
-                }
-            }
-        }
     }
 }

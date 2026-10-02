@@ -41,7 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /// Writes a metamodel as a core [JavaFile] (mini-spec §2.3, §2.6, §2.7).
 ///
@@ -80,6 +84,7 @@ import java.util.stream.IntStream;
 final class MetamodelEmitter {
     private static final String FACTS = "me.supcheg.javafile.facts";
     private static final String CORE_TYPE = "me.supcheg.javafile.type";
+    private static final Pattern NESTING = Pattern.compile("\\$");
 
     private static final ClassDesc CD_GENERATED = ClassDesc.of("javax.annotation.processing.Generated");
     private static final ClassDesc CD_GENERATED_METAMODEL = ClassDesc.of(GeneratedMetamodel.class.getName());
@@ -206,31 +211,31 @@ final class MetamodelEmitter {
             ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, Optional<Full> full) {
         Token token = Token.of(model.kind());
         // without its bounds a type parameter would take a token of any type: no type parameters then
-        List<ClassDesc> inBounds = new ArrayList<>();
-        Mentions.of(model.typeParams(), inBounds);
+        List<ClassDesc> inBounds = Mentions.ofBounds(model.typeParams()).toList();
         boolean raw = !model.typeParams().isEmpty()
                 && (!model.nonPublicBoundTypes().isEmpty() || !inBounds.stream().allMatch(targets::nameable));
         List<TypeParam> typeParams = raw ? List.of() : model.typeParams();
         List<String> declared = typeParams.stream().map(TypeParam::name).toList();
-        Set<ClassDesc> referenced = new LinkedHashSet<>();
-        referenced.add(model.desc());
-        Mentions.of(typeParams, referenced);
-        full.ifPresent(f -> {
-            // what the facts refer to does not depend on how type parameters and parameters are named
-            MemberFacts unnamed = new MemberFacts(
-                    new MemberFacts.Self(model.desc(), model.kind(), declared, declared, declared),
-                    targets,
-                    new MemberFacts.Locals.Probe());
-            unnamed.specs(f.plan());
-            referenced.addAll(unnamed.signatureTypes());
-            referenced.addAll(unnamed.uses());
-        });
-        referenced.addAll(infrastructure(token));
-        Set<String> typeNames = new HashSet<>();
-        referenced.forEach(desc -> typeNames.addAll(simpleNames(desc)));
-        typeNames.add(metamodel.displayName());
-        typeNames.add(MetamodelNames.DATA);
-        typeNames.add(MetamodelNames.CANONICAL);
+
+        Set<ClassDesc> referenced = Stream.of(
+                        Stream.of(model.desc()),
+                        Mentions.ofBounds(typeParams),
+                        full.stream().flatMap(f -> {
+                            // what the facts refer to does not depend on how type parameters and parameters are named
+                            MemberFacts unnamed = new MemberFacts(
+                                    new MemberFacts.Self(model.desc(), model.kind(), declared, declared, declared),
+                                    targets,
+                                    new MemberFacts.Locals.Probe());
+                            unnamed.specs(f.plan());
+                            return Stream.concat(unnamed.signatureTypes().stream(), unnamed.uses().stream());
+                        }),
+                        infrastructure(token).stream())
+                .flatMap(Function.identity())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        var typeNames = Stream.concat(
+                        referenced.stream().flatMap(MetamodelEmitter::simpleNames),
+                        Stream.of(metamodel.displayName(), MetamodelNames.DATA, MetamodelNames.CANONICAL))
+                .collect(Collectors.toSet());
         List<String> names = MetamodelNames.typeParameters(declared, typeNames);
         Map<String, String> renaming = new HashMap<>();
         IntStream.range(0, declared.size()).forEach(i -> renaming.put(declared.get(i), names.get(i)));
@@ -687,8 +692,8 @@ final class MetamodelEmitter {
     }
 
     /// The simple names a class may be written by: its own and those of the classes it is nested in.
-    private static List<String> simpleNames(ClassDesc desc) {
-        return List.of(desc.displayName().split("\\$"));
+    private static Stream<String> simpleNames(ClassDesc desc) {
+        return Pattern.compile("\\$").splitAsStream(desc.displayName());
     }
 
     /// The token family of a kind of type.
