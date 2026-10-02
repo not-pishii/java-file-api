@@ -15,7 +15,11 @@ final class JavaStrings {
                 case '\r' -> sb.append("\\r");
                 case '\t' -> sb.append("\\t");
                 default -> {
-                    if (c < 0x20) {
+                    // a surrogate without its pair is no character: no encoding writes it
+                    boolean paired = Character.isHighSurrogate(c)
+                            ? i + 1 < raw.length() && Character.isLowSurrogate(raw.charAt(i + 1))
+                            : i > 0 && Character.isHighSurrogate(raw.charAt(i - 1));
+                    if (c < 0x20 || Character.isSurrogate(c) && !paired) {
                         sb.append(String.format("\\u%04x", (int) c));
                     } else {
                         sb.append(c);
