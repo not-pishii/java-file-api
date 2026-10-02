@@ -71,6 +71,14 @@ import java.util.stream.Stream;
 /// member method abstract get(int) -> #0 throws -
 /// member method static <^0> of(^0[]) -> java.util.List<^0> throws -
 /// ```
+///
+/// A functional interface has a line for its single abstract method as a
+/// member of it, declared or inherited, before the method table: what a
+/// `sam` fact says, which a change of a supertype alone can change.
+///
+/// ```
+/// sam apply(#0) -> #1 throws -
+/// ```
 public final class Canonical {
 
     /// The first line of every canonical form: the name and version of the
@@ -109,6 +117,9 @@ public final class Canonical {
                     case DECLARED_PUBLIC -> "declared-public";
                 });
         lines.addAll(sorted(model.members().stream().map(m -> member(m, model.typeParams()))));
+        model.sam()
+                .ifPresent(sam -> lines.add("sam " + sam.name() + params(sam.params(), scope) + " -> "
+                        + sam.result().map(scope::type).orElse("void") + throwsClause(sam.throwsTypes(), scope)));
         lines.add("table abstract " + items(table(model.methods().abstractMethods())));
         lines.add("table concrete " + items(table(model.methods().concreteMethods())));
         lines.add("table static " + items(table(model.methods().staticMethods())));

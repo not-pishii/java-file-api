@@ -2,11 +2,13 @@ package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Optional;
 
 /// A declared type as [MirrorTranslator] reads it: what a `TypeShape`
 /// holds, plus the members a metamodel makes facts of. Plain data: it makes
@@ -31,6 +33,9 @@ import java.util.List;
 ///                `Object` that an interface redeclares abstract is not abstract
 /// @param enumConstants the enum constants, in declaration order; empty unless an enum
 /// @param sealed whether the type is `sealed`
+/// @param sam the single abstract method of a functional interface as a member of it, declared or
+///            inherited, as [MirrorTranslator#sam(javax.lang.model.element.TypeElement)] finds it;
+///            empty if the type is not functional or the method has no model
 /// @param filter which members are in `members`
 /// @param members the members `filter` selects that have facts, in declaration order
 /// @param skipped the members `filter` selects that have no facts, in declaration order
@@ -44,12 +49,15 @@ public record TypeModel(
         MethodTableTemplate methods,
         List<String> enumConstants,
         boolean sealed,
+        Optional<MethodModel> sam,
         MemberFilter filter,
         List<MemberModel> members,
         List<SkippedMember> skipped) {
 
-    /// @throws IllegalArgumentException if `desc` is not a class or interface, or `filter` is
-    ///                                  [MemberFilter#NONE] but there are members
+    /// @throws IllegalArgumentException if `desc` is not a class or interface, `filter` is
+    ///                                  [MemberFilter#NONE] but there are members, or there is a
+    ///                                  `sam` but the type is not an interface, is `sealed`, or the
+    ///                                  method is not an abstract one without type parameters
     public TypeModel {
         if (!desc.isClassOrInterface()) {
             throw new IllegalArgumentException("a declared type is a class or interface, got " + desc.displayName());
@@ -60,6 +68,19 @@ public record TypeModel(
         enumConstants = List.copyOf(enumConstants);
         members = List.copyOf(members);
         skipped = List.copyOf(skipped);
+        if (sam.isPresent()) {
+            MethodModel method = sam.get();
+            if (!(kind instanceof DeclaredKind.Interface) || sealed) {
+                throw new IllegalArgumentException(
+                        "only an interface that is not sealed is functional, got " + desc.displayName());
+            }
+            if (method.isStatic()
+                    || method.overridability() != Overridability.ABSTRACT
+                    || !method.typeParams().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "a single abstract method is abstract and not generic, got " + method.name());
+            }
+        }
         if (filter == MemberFilter.NONE && !(members.isEmpty() && skipped.isEmpty())) {
             throw new IllegalArgumentException("a model without members has members " + members + " " + skipped);
         }

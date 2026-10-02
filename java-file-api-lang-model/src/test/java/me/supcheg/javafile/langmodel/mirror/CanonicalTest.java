@@ -312,6 +312,77 @@ class CanonicalTest {
                 .doesNotHaveDuplicates();
     }
 
+    // ---- sam
+
+    private static final String[] FUNCTIONAL = {
+        "package p; public interface A { Object m() throws java.io.IOException; }",
+        "package p; public interface B { Object m() throws java.io.IOException; }",
+        "package p; public interface T extends A, B {}"
+    };
+
+    private static Canonical functional(MemberFilter filter, String a, String b) {
+        return canonical("p.T", filter, a, b, FUNCTIONAL[2]);
+    }
+
+    @Test
+    void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
+        assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
+                .isEqualTo("""
+                        javafile-facts-canonical 1
+                        type p.T interface sealed=no
+                        tparams -
+                        superclasses -
+                        supertypes -
+                        enum -
+                        members none
+                        sam m() -> java.lang.Object throws java.io.IOException
+                        table abstract m()
+                        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+                        table static -
+                        """);
+        assertThat(canonical(
+                                "p.Op",
+                                MemberFilter.DECLARED_PUBLIC,
+                                "package p; public interface Op<A, B> { B apply(A a, int[] is) throws Exception, Error; }")
+                        .text())
+                .contains("member method abstract apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n"
+                        + "sam apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n");
+        assertThat(canonical("p.Two", MemberFilter.NONE, "package p; public interface Two { void a(); void b(); }")
+                        .text())
+                .doesNotContain("sam ");
+    }
+
+    @Test
+    void theInheritedSamIsHashed() {
+        // nothing of p.T itself changes: not its members, its supertypes or its method table
+        for (MemberFilter filter : MemberFilter.values()) {
+            assertThat(List.of(
+                            functional(filter, FUNCTIONAL[0], FUNCTIONAL[1]).fingerprint(),
+                            // the throws of the function type (JLS 9.9)
+                            functional(filter, FUNCTIONAL[0].replace("IOException", "EOFException"), FUNCTIONAL[1])
+                                    .fingerprint(),
+                            functional(filter, FUNCTIONAL[0].replace(" throws java.io.IOException", ""), FUNCTIONAL[1])
+                                    .fingerprint(),
+                            functional(
+                                            filter,
+                                            FUNCTIONAL[0],
+                                            FUNCTIONAL[1].replace("IOException", "FileNotFoundException"))
+                                    .fingerprint(),
+                            // the result
+                            functional(filter, FUNCTIONAL[0].replace("Object m", "String m"), FUNCTIONAL[1])
+                                    .fingerprint()))
+                    .as("%s", filter)
+                    .doesNotHaveDuplicates();
+        }
+    }
+
+    @Test
+    void aSamThatIsTheSameIsHashedTheSame() {
+        assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]))
+                .isEqualTo(functional(
+                        MemberFilter.NONE, FUNCTIONAL[0].replace("java.io.IOException", "Exception"), FUNCTIONAL[1]));
+    }
+
     @Test
     void theFilterIsHashed() {
         assertThat(canonical("p.T", MemberFilter.NONE, BASE).fingerprint())
@@ -333,6 +404,7 @@ class CanonicalTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false,
+                Optional.empty(),
                 MemberFilter.DECLARED_PUBLIC,
                 List.of(new MethodModel(
                         "m",
@@ -361,6 +433,7 @@ class CanonicalTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false,
+                Optional.empty(),
                 MemberFilter.DECLARED_PUBLIC,
                 List.of(
                         new CtorModel(
