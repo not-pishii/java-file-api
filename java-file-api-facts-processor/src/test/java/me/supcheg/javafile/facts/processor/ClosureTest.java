@@ -94,14 +94,14 @@ class ClosureTest {
                         "gen.facts.p.B_");
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
                 .containsExactly(
-                        "p.A: no fact of method hidden(), which mentions types that are not public: p.Hidden",
-                        "p.A: no metamodel of p.Dol$lar, which its signatures mention: a class with $ in its simple"
-                                + " name is not supported yet",
-                        "p.A: no metamodel of p.Marker, which its signatures mention: annotation interface p.Marker"
-                                + " is not supported yet");
+                        "p.A: no fact of method dollar(), which mentions p.Dol$lar, which has no metamodel: a class"
+                                + " with $ in its simple name is not supported yet",
+                        "p.A: no fact of method marker(), which mentions p.Marker, which has no metamodel:"
+                                + " annotation interface p.Marker is not supported yet",
+                        "p.A: no fact of method hidden(), which mentions types that are not public: p.Hidden");
         assertThat(ProcessorHarness.resources(compilation))
                 .hasSize(14)
-                .containsEntry("META-INF/javafile/metamodel/token/p.A", "gen.facts.p.A_\n")
+                .containsEntry("META-INF/javafile/metamodel/full/p.A", "gen.facts.p.A_\n")
                 .containsEntry("META-INF/javafile/metamodel/token/java.util.List", "gen.facts.java.util.List_\n");
         ProcessorHarness.compileAndLoad(compilation, out, classpath);
     }

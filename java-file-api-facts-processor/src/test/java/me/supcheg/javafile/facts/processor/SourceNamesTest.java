@@ -14,7 +14,7 @@ class SourceNamesTest {
             import me.supcheg.javafile.facts.UnsafeFacts;
 
             @Generated("x.y.Processor")
-            @GeneratedMetamodel(of = Thing.class, fingerprint = "class Thing_ { hidden }", complete = true)
+            @GeneratedMetamodel(of = Thing.class, fingerprint = "class Thing_ { hidden }", complete = true, format = 2)
             final class Thing_<E extends Bound> {
                 public static final StaticFieldRef<String> NAME =
                         UnsafeFacts.constantField(TOKEN, "a \\" quoted.name \\\\", Other_.Data.SHAPE, 1.5e3, 0x1FL);

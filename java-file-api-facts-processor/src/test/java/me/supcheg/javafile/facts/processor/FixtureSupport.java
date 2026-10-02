@@ -1,14 +1,23 @@
 package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
+import com.google.testing.compile.Compiler;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeShape;
 import org.junit.jupiter.api.io.TempDir;
 
 import javax.tools.Diagnostic;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,12 +83,62 @@ abstract class FixtureSupport {
 
     /// The names of the `public static` fields of a metamodel that hold facts, sorted: all but `TOKEN`.
     static List<String> factNames(ClassLoader loader, String metamodel) throws ReflectiveOperationException {
-        return java.util.Arrays.stream(loader.loadClass(metamodel).getFields())
-                .filter(f -> java.lang.reflect.Modifier.isStatic(f.getModifiers()))
-                .map(java.lang.reflect.Field::getName)
+        return Arrays.stream(loader.loadClass(metamodel).getFields())
+                .filter(f -> Modifier.isStatic(f.getModifiers()))
+                .map(Field::getName)
                 .filter(name -> !name.equals("TOKEN"))
                 .sorted()
                 .toList();
+    }
+
+    /// The names of the facts of a metamodel, sorted: its `public` fields, of the class and of its
+    /// instances, but `TOKEN`, `ANY` and `token`, and its methods, which make the facts of generic methods.
+    static List<String> memberNames(ClassLoader loader, String metamodel) throws ReflectiveOperationException {
+        Class<?> type = loader.loadClass(metamodel);
+        return Stream.concat(
+                        Arrays.stream(type.getFields())
+                                .map(Field::getName)
+                                .filter(name ->
+                                        !List.of("TOKEN", "ANY", "token").contains(name)),
+                        Arrays.stream(type.getDeclaredMethods())
+                                .filter(m -> Modifier.isPublic(m.getModifiers()))
+                                .map(Method::getName))
+                .sorted()
+                .toList();
+    }
+
+    /// An instance of a generic metamodel: its constructor takes a token per type parameter.
+    static Object instance(ClassLoader loader, String metamodel, RefToken<?>... witnesses)
+            throws ReflectiveOperationException {
+        Class<?>[] parameters = new Class<?>[witnesses.length];
+        Arrays.fill(parameters, RefToken.class);
+        return loader.loadClass(metamodel).getConstructor(parameters).newInstance((Object[]) witnesses);
+    }
+
+    /// The value of a `public` field of an instance of a generic metamodel.
+    static Object fact(Object instance, String field) throws ReflectiveOperationException {
+        return instance.getClass().getField(field).get(instance);
+    }
+
+    /// The fact of a generic method: what the method of a metamodel returns for a token per type
+    /// parameter. `instance` is `null` for a `static` one.
+    static Object made(ClassLoader loader, String metamodel, Object instance, String method, RefToken<?>... witnesses)
+            throws ReflectiveOperationException {
+        Class<?>[] parameters = new Class<?>[witnesses.length];
+        Arrays.fill(parameters, RefToken.class);
+        return loader.loadClass(metamodel).getMethod(method, parameters).invoke(instance, (Object[]) witnesses);
+    }
+
+    /// Compiles code that uses the generated metamodels, after [#load] has compiled them.
+    Compilation use(String source) {
+        List<File> classpath = new ArrayList<>(List.of(out.toFile(), lib.toFile()));
+        for (String entry : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            classpath.add(new File(entry));
+        }
+        return Compiler.javac()
+                .withClasspath(classpath)
+                .withOptions("-proc:none")
+                .compile(ProcessorHarness.source(source));
     }
 
     static TypeShape<?> shape(ClassLoader loader, String metamodel) throws ReflectiveOperationException {
