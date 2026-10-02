@@ -1,10 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
-import me.supcheg.javafile.langmodel.mirror.CtorModel;
-import me.supcheg.javafile.langmodel.mirror.FieldModel;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
-import me.supcheg.javafile.langmodel.mirror.MemberModel;
-import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
@@ -17,6 +13,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 /// What the full metamodel of a requested type needs (mini-spec §3): the
 /// model of the type with its declared `public` members (Q6), and a
@@ -59,16 +56,20 @@ final class Closure {
             return new Outcome.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
                     + " mention types that are not public: " + String.join(", ", full.nonPublicBoundTypes()));
         }
-        List<ClassDesc> signatureTypes = signatureTypes(full);
+        List<ClassDesc> signatureTypes = Mentions.of(full).toList();
         // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
+        List<ClassDesc> samMentions;
         switch (models.sam(requested)) {
-            case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
-                sam.ifPresent(found -> MemberPlan.mentions(List.of(found.method()), signatureTypes));
-            case Translation.Deferred<Optional<SamModel>>(String unresolved) -> {
+            case Translation.Ok<Optional<SamModel>>(var sam) ->
+                samMentions =
+                        sam.stream().map(SamModel::method).flatMap(Mentions::of).toList();
+            case Translation.Deferred<Optional<SamModel>>(var unresolved) -> {
                 return new Outcome.Waiting(unresolved);
             }
-            case Translation.Unrepresentable<Optional<SamModel>> ignored -> {}
+            case Translation.Unrepresentable<Optional<SamModel>> _ -> samMentions = List.of();
         }
+        signatureTypes =
+                Stream.concat(signatureTypes.stream(), samMentions.stream()).toList();
         TreeSet<String> mentioned = new TreeSet<>();
         for (ClassDesc desc : signatureTypes) {
             mentioned.add(Models.binaryName(desc));
@@ -96,8 +97,7 @@ final class Closure {
                     unavailable.add(new Unavailable(binaryName, reason));
             }
         }
-        List<ClassDesc> bounds = new ArrayList<>();
-        Mentions.of(full.typeParams(), bounds);
+        List<ClassDesc> bounds = Mentions.ofBounds(full.typeParams()).toList();
         for (Unavailable type : unavailable) {
             if (bounds.stream().anyMatch(bound -> Models.binaryName(bound).equals(type.type()))) {
                 return new Outcome.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
@@ -105,28 +105,6 @@ final class Closure {
             }
         }
         return new Outcome.Ready(full, types, unavailable);
-    }
-
-    private static List<ClassDesc> signatureTypes(TypeModel model) {
-        List<ClassDesc> found = new ArrayList<>();
-        Mentions.of(model.typeParams(), found);
-        for (MemberModel member : model.members()) {
-            switch (member) {
-                case MethodModel method -> {
-                    Mentions.of(method.typeParams(), found);
-                    method.result().ifPresent(result -> Mentions.of(result, found));
-                    method.params().forEach(param -> Mentions.of(param, found));
-                    method.throwsTypes().forEach(thrown -> Mentions.of(thrown, found));
-                }
-                case CtorModel ctor -> {
-                    Mentions.of(ctor.typeParams(), found);
-                    ctor.params().forEach(param -> Mentions.of(param, found));
-                    ctor.throwsTypes().forEach(thrown -> Mentions.of(thrown, found));
-                }
-                case FieldModel field -> Mentions.of(field.type(), found);
-            }
-        }
-        return found;
     }
 
     /// The closure of a requested type.
