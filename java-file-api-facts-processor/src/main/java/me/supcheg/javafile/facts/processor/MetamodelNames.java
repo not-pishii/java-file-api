@@ -53,10 +53,13 @@ final class MetamodelNames {
     /// The field of [#CANONICAL] holding the canonical form.
     static final String TEXT = "TEXT";
 
+    /// The fact of the single abstract method of a functional interface.
+    static final String SAM = "sam";
+
     /// The names a member fact may not have: those of the tokens, the
     /// functional interface's `sam`, the reserve for an exhaustive switch and
     /// the nested classes.
-    private static final Set<String> RESERVED = Set.of(TOKEN, INSTANCE_TOKEN, ANY, "sam", "switch_", DATA, CANONICAL);
+    private static final Set<String> RESERVED = Set.of(TOKEN, INSTANCE_TOKEN, ANY, SAM, "switch_", DATA, CANONICAL);
 
     private MetamodelNames() {}
 
@@ -301,7 +304,18 @@ final class MetamodelNames {
     /// @param typeParameters the type parameters of the metamodel, in order
     /// @return the parameter names, in order
     static List<String> witnesses(List<String> typeParameters) {
-        Set<String> used = new HashSet<>();
+        return witnesses(typeParameters, Set.of());
+    }
+
+    /// Parameters that take a token per type parameter, as
+    /// [#witnesses(List)] names them, where some names mean something else:
+    /// such a name gets `_` appended too.
+    ///
+    /// @param typeParameters the type parameters, in order
+    /// @param taken the names a parameter may not have
+    /// @return the parameter names, in order
+    static List<String> witnesses(List<String> typeParameters, Set<String> taken) {
+        Set<String> used = new HashSet<>(taken);
         List<String> names = new ArrayList<>();
         for (String typeParameter : typeParameters) {
             String name = typeParameter.substring(0, 1).toLowerCase(Locale.ROOT) + typeParameter.substring(1);

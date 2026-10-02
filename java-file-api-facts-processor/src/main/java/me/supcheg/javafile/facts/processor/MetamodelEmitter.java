@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.javafile.model.Modifier;
@@ -34,12 +35,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /// Writes a metamodel as a core [JavaFile] (mini-spec §2.3, §2.6, §2.7).
@@ -56,14 +57,23 @@ import java.util.stream.IntStream;
 /// - a nested class `Canonical` whose `TEXT` is the canonical form of the
 ///   type, loaded only when the target-classpath check needs it;
 /// - the token: `TOKEN` for a type that is not generic, or used raw because a
-///   bound of a type parameter mentions a type that is not public; for a
+///   bound of a type parameter mentions a type the metamodel cannot write —
+///   one that is not public, or with `$` in its simple name; for a
 ///   generic type, `ANY` with a wildcard per argument and a public
-///   constructor taking a token per type parameter, which sets `token`.
+///   constructor taking a token per type parameter, which sets `token`. The
+///   type parameters of the metamodel are those of the type, with its bounds.
 ///
-/// A token-only metamodel has nothing more. A full one, of a type that is
-/// not generic, has the facts of the members [MemberPlan] chose after the
-/// token (mini-spec §2.3, §2.7), each a `public static final` field; the
-/// full metamodels of generic types come with plan step 9.
+/// A token-only metamodel has nothing more. A full one has the facts of the
+/// members [MemberPlan] chose (mini-spec §2.3, §2.4, §2.7), as [MemberFacts]
+/// makes them: `public static final` fields after the token; in the
+/// metamodel of a generic type also `public final` fields its constructor
+/// assigns, in terms of the tokens it takes; and a method per generic
+/// method, which takes a token per type parameter of that method. The type
+/// parameters of a metamodel, and of such a method, have the bounds the
+/// type declares, so javac rejects a token of a type argument out of bounds.
+///
+/// The nested classes come first: the `Data` of the metamodel has claimed
+/// its simple name by the time a fact names the `Data` of another.
 ///
 /// The source is ASCII ([#source]): whatever `-encoding` it is compiled
 /// with, a name or a constant is what the type has.
@@ -109,22 +119,31 @@ final class MetamodelEmitter {
     /// @param metamodel the metamodel class
     /// @param model the type, read with no members
     /// @param canonical the canonical form of `model`
+    /// @param targets the types of the round, which tell a raw type in a bound of a type parameter
     /// @return the source file
-    static JavaFile tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical) {
-        return emit(metamodel, model, canonical, Optional.empty());
+    static JavaFile tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets) {
+        return emit(metamodel, model, canonical, targets, Optional.empty());
     }
 
-    /// The full metamodel of a type that is not generic: its shape and
-    /// token, and a fact per member of the plan.
+    /// The full metamodel of a type: its shape and token, and a fact per
+    /// member of the plan.
     ///
     /// @param metamodel the metamodel class
     /// @param model the type, read with its declared public members
     /// @param canonical the canonical form of `model`
     /// @param plan the members that get a fact, see [MemberPlan#of]
     /// @param targets the metamodels of the types the signatures mention
+    /// @param taken the names the body of the metamodel starts a name with, see [#takenNames]: no
+    ///     parameter is named so
     /// @return the source file
-    static JavaFile full(ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan plan, Targets targets) {
-        return emit(metamodel, model, canonical, Optional.of(new Full(plan, targets)));
+    static JavaFile full(
+            ClassDesc metamodel,
+            TypeModel model,
+            Canonical canonical,
+            MemberPlan plan,
+            Targets targets,
+            Set<String> taken) {
+        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))));
     }
 
     /// The names a fact of the full metamodel of a type may not have, beyond
@@ -135,7 +154,10 @@ final class MetamodelEmitter {
     ///
     /// The names are read off the source of the metamodel itself, written
     /// with every candidate of a fact, so they are what the metamodel says,
-    /// however the core renderer imports and qualifies.
+    /// however the core renderer imports and qualifies. What is local to a
+    /// method or to the constructor — a parameter, a type parameter of a
+    /// method — is not among them: it hides no fact where a fact is read, and
+    /// is itself named after the facts are.
     ///
     /// @param metamodel the metamodel class
     /// @param model the type, read with its declared public members
@@ -145,7 +167,8 @@ final class MetamodelEmitter {
     /// @return the names
     static Set<String> takenNames(
             ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan probe, Targets targets) {
-        String source = full(metamodel, model, canonical, probe, targets).render();
+        String source = emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())))
+                .render();
         Set<String> names = SourceNames.inBodyOf(metamodel.displayName(), source);
         names.removeIf(name -> name.startsWith(MemberPlan.PROBE));
         return names;
@@ -172,30 +195,66 @@ final class MetamodelEmitter {
         return ascii.toString();
     }
 
-    private record Full(MemberPlan plan, Targets targets) {}
+    /// What a full metamodel has beyond a token-only one.
+    ///
+    /// @param plan the facts
+    /// @param taken the names no parameter may have; empty for the source [#takenNames] reads them off,
+    ///     where what is local has a name no member has
+    private record Full(MemberPlan plan, Optional<Set<String>> taken) {}
 
-    private static JavaFile emit(ClassDesc metamodel, TypeModel model, Canonical canonical, Optional<Full> full) {
+    private static JavaFile emit(
+            ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, Optional<Full> full) {
         Token token = Token.of(model.kind());
-        boolean raw =
-                !model.typeParams().isEmpty() && !model.nonPublicBoundTypes().isEmpty();
+        // without its bounds a type parameter would take a token of any type: no type parameters then
+        List<ClassDesc> inBounds = new ArrayList<>();
+        Mentions.of(model.typeParams(), inBounds);
+        boolean raw = !model.typeParams().isEmpty()
+                && (!model.nonPublicBoundTypes().isEmpty() || !inBounds.stream().allMatch(targets::nameable));
         List<TypeParam> typeParams = raw ? List.of() : model.typeParams();
-        Optional<MemberFacts> facts = full.map(f -> new MemberFacts(model.desc(), model.kind(), f.targets()));
-        List<MemberFacts.Spec> specs =
-                full.flatMap(f -> facts.map(x -> x.specs(f.plan()))).orElse(List.of());
+        List<String> declared = typeParams.stream().map(TypeParam::name).toList();
         Set<ClassDesc> referenced = new LinkedHashSet<>();
         referenced.add(model.desc());
         Mentions.of(typeParams, referenced);
-        facts.ifPresent(f -> referenced.addAll(f.signatureTypes()));
-        facts.ifPresent(f -> referenced.addAll(f.uses()));
+        full.ifPresent(f -> {
+            // what the facts refer to does not depend on how type parameters and parameters are named
+            MemberFacts unnamed = new MemberFacts(
+                    new MemberFacts.Self(model.desc(), model.kind(), declared, declared, declared),
+                    targets,
+                    new MemberFacts.Locals.Probe());
+            unnamed.specs(f.plan());
+            referenced.addAll(unnamed.signatureTypes());
+            referenced.addAll(unnamed.uses());
+        });
         referenced.addAll(infrastructure(token));
-        Set<String> taken = referenced.stream().map(MetamodelEmitter::leaf).collect(Collectors.toSet());
-        taken.add(metamodel.displayName());
-        taken.add(MetamodelNames.DATA);
-        taken.add(MetamodelNames.CANONICAL);
-        List<String> declared = typeParams.stream().map(TypeParam::name).toList();
-        List<String> names = MetamodelNames.typeParameters(declared, taken);
+        Set<String> typeNames = new HashSet<>();
+        referenced.forEach(desc -> typeNames.addAll(simpleNames(desc)));
+        typeNames.add(metamodel.displayName());
+        typeNames.add(MetamodelNames.DATA);
+        typeNames.add(MetamodelNames.CANONICAL);
+        List<String> names = MetamodelNames.typeParameters(declared, typeNames);
         Map<String, String> renaming = new HashMap<>();
         IntStream.range(0, declared.size()).forEach(i -> renaming.put(declared.get(i), names.get(i)));
+        List<String> witnesses = full.map(f -> f.taken()
+                        .map(taken -> {
+                            Set<String> avoided = new HashSet<>(taken);
+                            avoided.addAll(f.plan().names());
+                            return MetamodelNames.witnesses(names, avoided);
+                        })
+                        .orElseGet(() -> IntStream.range(0, names.size())
+                                .mapToObj(i -> MemberPlan.PROBE + "c" + i)
+                                .toList()))
+                .orElseGet(() -> MetamodelNames.witnesses(names));
+        Optional<MemberFacts> facts = full.map(f -> new MemberFacts(
+                new MemberFacts.Self(model.desc(), model.kind(), declared, names, witnesses),
+                targets,
+                f.taken()
+                        .<MemberFacts.Locals>map(taken -> new MemberFacts.Locals.Named(typeNames, taken))
+                        .orElseGet(MemberFacts.Locals.Probe::new)));
+        List<MemberFacts.Spec> specs =
+                full.flatMap(f -> facts.map(x -> x.specs(f.plan()))).orElse(List.of());
+        boolean rawSignatures = facts.map(MemberFacts::raw).orElse(false)
+                || typeParams.stream().flatMap(param -> param.bounds().stream()).anyMatch(b -> raw(b, targets));
+        boolean keepWitnesses = facts.map(MemberFacts::instanceFactories).orElse(false);
         ClassDesc data = metamodel.nested(MetamodelNames.DATA);
         ClassDesc canonicalClass = metamodel.nested(MetamodelNames.CANONICAL);
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
@@ -206,10 +265,11 @@ final class MetamodelEmitter {
                             CD_GENERATED_METAMODEL,
                             ab -> ab.withMember("of", AnnotationValues.classValue(model.desc()))
                                     .withMember("fingerprint", AnnotationValues.literal(canonical.fingerprint()))
-                                    .withMember("complete", AnnotationValues.literal(full.isPresent())));
-            // a deprecated type is no concern of the metamodel that describes it; a raw token is meant
+                                    .withMember("complete", AnnotationValues.literal(full.isPresent()))
+                                    .withMember("format", AnnotationValues.literal(MetamodelFormat.VERSION)));
+            // a deprecated type is no concern of the metamodel that describes it; a raw type is meant
             List<SingleAnnotationValue> suppressed = new ArrayList<>();
-            if (raw) {
+            if (raw || rawSignatures) {
                 suppressed.add(AnnotationValues.literal("rawtypes"));
             }
             suppressed.add(AnnotationValues.literal("deprecation"));
@@ -247,27 +307,63 @@ final class MetamodelEmitter {
                         fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                 .withInitializer(Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), shape)));
             } else {
-                generic(cb, model, token, names, shape);
+                any(cb, model, token, names, shape);
             }
             for (MemberFacts.Spec spec : specs) {
-                cb.withField(
-                        spec.name(),
-                        spec.type(),
-                        fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .withInitializer(spec.init()));
+                if (spec instanceof MemberFacts.Spec.Constant(String name, TypeRef type, Expr init)) {
+                    cb.withField(
+                            name,
+                            type,
+                            fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                    .withInitializer(init));
+                }
             }
             if (typeParams.isEmpty()) {
                 cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
+            } else {
+                instance(cb, model, token, names, witnesses, keepWitnesses, specs, shape);
+            }
+            for (MemberFacts.Spec spec : specs) {
+                if (spec instanceof MemberFacts.Spec.Factory factory) {
+                    cb.withMethod(factory.name(), factory.type(), mb -> {
+                        mb.withModifiers(Modifier.PUBLIC);
+                        if (factory.isStatic()) {
+                            mb.withModifiers(Modifier.STATIC);
+                        }
+                        for (TypeParam param : factory.typeParams()) {
+                            mb.withTypeParam(param.name(), param.bounds().toArray(ClassOrInterfaceTypeRef[]::new));
+                        }
+                        for (MemberFacts.Witness witness : factory.witnesses()) {
+                            mb.withParam(witness.name(), witness.type());
+                        }
+                        mb.withBody(body -> body.return_(factory.result()));
+                    });
+                }
             }
         });
     }
 
-    private static void generic(ClassBuilder cb, TypeModel model, Token token, List<String> names, Expr shape) {
-        List<Expr> wildcards = names.stream()
-                .<Expr>map(_ -> Exprs.staticCall(CD_TOKEN_ARG, "unbounded"))
-                .toList();
+    /// Whether a type mentions a generic type without type arguments.
+    private static boolean raw(TypeRef type, Targets targets) {
+        return switch (type) {
+            case ClassTypeRef cls -> targets.generic(cls.desc());
+            case ParameterizedTypeRef parameterized ->
+                parameterized.args().stream().anyMatch(arg -> switch (arg) {
+                    case ExactTypeArg exact -> raw(exact.type(), targets);
+                    case ExtendsTypeArg bound -> raw(bound.bound(), targets);
+                    case SuperTypeArg bound -> raw(bound.bound(), targets);
+                    case UnboundedTypeArg ignored -> false;
+                });
+            case ArrayTypeRef array -> raw(array.component(), targets);
+            case TypeVarRef ignored -> false;
+            case PrimitiveTypeRef ignored -> false;
+        };
+    }
+
+    /// `ANY`: the type with a wildcard for every type argument.
+    private static void any(ClassBuilder cb, TypeModel model, Token token, List<String> names, Expr shape) {
         List<Expr> anyArgs = new ArrayList<>(List.of(shape));
-        anyArgs.addAll(wildcards);
+        names.forEach(_ -> anyArgs.add(Exprs.staticCall(CD_TOKEN_ARG, "unbounded")));
         cb.withField(
                 MetamodelNames.ANY,
                 Types.parameterized(
@@ -277,6 +373,21 @@ final class MetamodelEmitter {
                                 names.stream().map(_ -> Types.unbounded()).toList())),
                 fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                         .withInitializer(Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), anyArgs)));
+    }
+
+    /// What an instance of a generic metamodel holds: `token`, the facts in
+    /// terms of the type parameters, and the constructor that takes a token
+    /// per type parameter and makes them. The tokens are kept in fields of
+    /// the names of the parameters if a method of the metamodel reads them.
+    private static void instance(
+            ClassBuilder cb,
+            TypeModel model,
+            Token token,
+            List<String> names,
+            List<String> witnesses,
+            boolean keepWitnesses,
+            List<MemberFacts.Spec> specs,
+            Expr shape) {
         ParameterizedTypeRef self = new ParameterizedTypeRef(
                 model.desc(),
                 names.stream().map(n -> Types.exact(Types.typeVar(n))).toList());
@@ -284,16 +395,41 @@ final class MetamodelEmitter {
                 MetamodelNames.INSTANCE_TOKEN,
                 Types.parameterized(token.tokenClass(), self),
                 fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
-        List<String> witnesses = MetamodelNames.witnesses(names);
+        List<MemberFacts.Spec.Assigned> assigned = new ArrayList<>();
+        for (MemberFacts.Spec spec : specs) {
+            if (spec instanceof MemberFacts.Spec.Assigned field) {
+                assigned.add(field);
+                cb.withField(field.name(), field.type(), fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
+            }
+        }
+        if (keepWitnesses) {
+            for (int i = 0; i < names.size(); i++) {
+                cb.withField(
+                        witnesses.get(i),
+                        Types.parameterized(CD_REF_TOKEN, Types.typeVar(names.get(i))),
+                        fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
+            }
+        }
         cb.withConstructor(ctor -> {
+            ctor.withModifiers(Modifier.PUBLIC);
             List<Expr> args = new ArrayList<>(List.of(shape));
             for (int i = 0; i < names.size(); i++) {
                 ctor.withParam(witnesses.get(i), Types.parameterized(CD_REF_TOKEN, Types.typeVar(names.get(i))));
                 args.add(Exprs.staticCall(CD_TOKEN_ARG, "exact", Exprs.field(witnesses.get(i))));
             }
-            ctor.withBody(body -> body.assign(
-                    Exprs.this_().field(MetamodelNames.INSTANCE_TOKEN),
-                    Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), args)));
+            ctor.withBody(body -> {
+                if (keepWitnesses) {
+                    for (String witness : witnesses) {
+                        body.assign(Exprs.this_().field(witness), Exprs.field(witness));
+                    }
+                }
+                body.assign(
+                        Exprs.this_().field(MetamodelNames.INSTANCE_TOKEN),
+                        Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), args));
+                for (MemberFacts.Spec.Assigned field : assigned) {
+                    body.assign(Exprs.this_().field(field.name()), field.init());
+                }
+            });
         });
     }
 
@@ -550,9 +686,9 @@ final class MetamodelEmitter {
                 ConstantDescs.CD_String);
     }
 
-    private static String leaf(ClassDesc desc) {
-        String name = desc.displayName();
-        return name.substring(name.lastIndexOf('$') + 1);
+    /// The simple names a class may be written by: its own and those of the classes it is nested in.
+    private static List<String> simpleNames(ClassDesc desc) {
+        return List.of(desc.displayName().split("\\$"));
     }
 
     /// The token family of a kind of type.

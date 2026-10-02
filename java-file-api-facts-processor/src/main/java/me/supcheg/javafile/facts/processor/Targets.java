@@ -53,6 +53,16 @@ final class Targets {
         return model(desc).map(model -> !model.typeParams().isEmpty()).orElse(false);
     }
 
+    /// Whether generated code can name a type: a class with `$` in its
+    /// simple name is read as a member class by `java-file-api-core`, and no
+    /// import reaches the unnamed package.
+    ///
+    /// @param desc the class or interface
+    /// @return `true` if a metamodel can write the type
+    boolean nameable(ClassDesc desc) {
+        return !desc.packageName().isEmpty() && models.element(desc).isPresent();
+    }
+
     /// Why a type that has no metamodel has none.
     ///
     /// @param desc the class or interface
