@@ -39,4 +39,12 @@ public @interface GeneratedMetamodel {
     ///
     /// @return whether the metamodel is complete
     boolean complete();
+
+    /// The [MetamodelFormat#VERSION] of the processor that generated the
+    /// metamodel: which facts a complete metamodel has of a type is decided by
+    /// the format, so a metamodel of another format is not reused, whatever
+    /// its fingerprint.
+    ///
+    /// @return the format version
+    int format();
 }
