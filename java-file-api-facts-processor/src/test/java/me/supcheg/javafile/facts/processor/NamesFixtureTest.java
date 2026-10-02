@@ -88,14 +88,13 @@ class NamesFixtureTest extends FixtureSupport {
     }
 
     @Test
-    void aFactNamedLikeAClassTheMetamodelStartsAnExpressionWithIsLeftOut() throws Exception {
+    void aFactNamedLikeAClassTheMetamodelStartsAnExpressionWithIsEscaped() throws Exception {
         Compilation compilation = generate("p.Tk.class, p.Other.class", """
                 package p;
                 public class Tk {
                     public int UnsafeFacts;
                     public int MemberTraits;
                     public int Float;
-                    public int gen;
                     public int Other_;
                     public Other other() { return null; }
                     public int fine;
@@ -103,19 +102,64 @@ class NamesFixtureTest extends FixtureSupport {
                 """, "package p; public class Other {}");
         ClassLoader loader = load(compilation);
 
-        assertThat(factNames(loader, "gen.facts.p.Tk_")).containsExactly("fine", "new_", "other");
+        assertThat(factNames(loader, "gen.facts.p.Tk_"))
+                .containsExactly("Float", "MemberTraits_", "Other__", "UnsafeFacts_", "fine", "new_", "other");
+        assertThat(((FieldRef<?, ?>) fact(loader, "gen.facts.p.Tk_", "UnsafeFacts_")).name())
+                .isEqualTo("UnsafeFacts");
+        assertThat(warnings(compilation)).isEmpty();
+    }
+
+    @Test
+    void theNameOfAFactDoesNotDependOnWhichOtherMembersGetAFact() throws Exception {
+        // m(java.util.List<String>) has no fact yet, and still m(java.awt.List) is told from it
+        Compilation compilation = generate("p.Ov.class", """
+                package p;
+                public class Ov {
+                    public void m(java.awt.List list) {}
+                    public void m(java.util.List<String> list) {}
+                    public void n(java.awt.List list) {}
+                    public void k(int i) {}
+                    public <T> void k(T t) {}
+                    public int size;
+                    public <T> T size() { return null; }
+                    public Ov(java.awt.List list) {}
+                    public Ov(java.util.List<String> list) {}
+                }
+                """);
+        ClassLoader loader = load(compilation);
+
+        assertThat(factNames(loader, "gen.facts.p.Ov_"))
+                .containsExactly("k_int", "m_java_awt_List", "n_List", "new_java_awt_List", "size");
         assertThat(warnings(compilation))
-                .containsExactly(
-                        "p.Tk: no fact of field UnsafeFacts, which would be named UnsafeFacts, which is a class the"
-                                + " metamodel refers to",
-                        "p.Tk: no fact of field MemberTraits, which would be named MemberTraits, which is a class the"
-                                + " metamodel refers to",
-                        "p.Tk: no fact of field Float, which would be named Float, which is a class the metamodel"
-                                + " refers to",
-                        "p.Tk: no fact of field gen, which would be named gen, which is a class the metamodel refers"
-                                + " to",
-                        "p.Tk: no fact of field Other_, which would be named Other_, which is a class the metamodel"
-                                + " refers to");
+                .containsExactlyInAnyOrder(
+                        "p.Ov: no fact of method m(java.util.List<java.lang.String>), which mentions the parameterized"
+                                + " type java.util.List, and facts of generic types are not supported yet",
+                        "p.Ov: no fact of method <T>k(T), which is generic, and facts of generic members are not"
+                                + " supported yet",
+                        "p.Ov: no fact of method <T>size(), which is generic, and facts of generic members are not"
+                                + " supported yet",
+                        "p.Ov: no fact of constructor Ov(java.util.List<java.lang.String>), which mentions the"
+                                + " parameterized type java.util.List, and facts of generic types are not supported"
+                                + " yet");
+    }
+
+    @Test
+    void aMemberThatSharesItsNameWithOneThatHasNoFactYetGetsNoneEither() throws Exception {
+        Compilation compilation = generate("p.Sh.class", """
+                package p;
+                public class Sh {
+                    public int x_;
+                    public int x;
+                    public <T> T x() { return null; }
+                    public void other() {}
+                }
+                """);
+        ClassLoader loader = load(compilation);
+
+        // x() would be x_ once it gets a fact: the field x_ may not take the name now
+        assertThat(factNames(loader, "gen.facts.p.Sh_")).containsExactly("new_", "other", "x");
+        assertThat(warnings(compilation))
+                .contains("p.Sh: no fact of field x_, method <T>x(), which would all be named x_");
     }
 
     @Test

@@ -1,7 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
-import me.supcheg.javafile.filer.JavaFileWriter;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
@@ -21,6 +21,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -232,9 +233,11 @@ public final class FactsProcessor extends AbstractProcessor {
                     waiting.remove(entry.getKey());
                     Optional<? extends Element> at = first(requesters, elements);
                     boolean full = type.getTypeParameters().isEmpty();
+                    Set<String> awaited = Set.of();
                     if (full) {
                         // the plan of the members reports what it leaves out, and why
                         ready.unavailable().forEach(u -> unavailableTypes.put(u.type(), u.reason()));
+                        awaited = awaited(base, type, binaryName, ready, models, elements);
                     } else {
                         for (SkippedMember skipped : ready.full().skipped()) {
                             diagnostics.skipped(
@@ -248,14 +251,7 @@ public final class FactsProcessor extends AbstractProcessor {
                                             + ", which its signatures mention: " + unavailable.reason());
                         }
                     }
-                    planned.add(new Planned(
-                            type,
-                            binaryName,
-                            true,
-                            full,
-                            requesters,
-                            stale,
-                            ready.signatureTypes().keySet()));
+                    planned.add(new Planned(type, binaryName, true, full, requesters, stale, awaited));
                     ready.signatureTypes().forEach((name, element) -> {
                         mentioned.put(name, element);
                         mentionedBy.computeIfAbsent(name, _ -> new TreeSet<>()).addAll(requesters);
@@ -308,6 +304,27 @@ public final class FactsProcessor extends AbstractProcessor {
         }
     }
 
+    /// The types whose metamodels the facts of a requested type would refer
+    /// to if every type its signatures mention had one: those of the members
+    /// that get a fact, not of the ones left out whatever happens — a generic
+    /// method, one that mentions a type that is not public.
+    private static Set<String> awaited(
+            String base,
+            TypeElement type,
+            String binaryName,
+            Closure.Outcome.Ready ready,
+            Models models,
+            Elements elements) {
+        Map<String, ClassDesc> assumed = new HashMap<>();
+        ready.signatureTypes()
+                .forEach((name, element) -> assumed.put(name, MetamodelNames.metamodel(base, element, elements)));
+        assumed.put(binaryName, MetamodelNames.metamodel(base, type, elements));
+        Map<String, String> unavailable = new HashMap<>();
+        ready.unavailable().forEach(u -> unavailable.put(u.type(), u.reason()));
+        return MemberPlan.of(type, models, new Targets(models, assumed, unavailable), Set.of())
+                .mentionedTypes();
+    }
+
     private void write(
             String base,
             Planned planned,
@@ -350,34 +367,35 @@ public final class FactsProcessor extends AbstractProcessor {
                 .flatMap(Optional::stream)
                 .toArray(Element[]::new);
         Canonical canonical = Canonical.of(model);
-        MetamodelEmitter.Emission emission;
+        JavaFile file;
         if (planned.full()) {
-            MemberPlan plan =
-                    MemberPlan.of(planned.type(), models, targets, MetamodelEmitter.takenNames(model, targets));
+            Set<String> taken = MetamodelEmitter.takenNames(
+                    metamodel, model, canonical, MemberPlan.probe(planned.type(), models, targets), targets);
+            MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
             for (MemberPlan.Skip skip : plan.skipped()) {
                 diagnostics.skipped(
                         at, planned.binaryName() + ": no fact of " + skip.member() + ", which " + skip.reason());
             }
-            emission = MetamodelEmitter.full(metamodel, model, canonical, plan, targets);
+            file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets);
         } else {
-            emission = MetamodelEmitter.tokenOnly(metamodel, model, canonical);
+            file = MetamodelEmitter.tokenOnly(metamodel, model, canonical);
         }
-        switch (emission) {
-            case MetamodelEmitter.Emission.Clash(String reason) -> diagnostics.error(at, reason);
-            case MetamodelEmitter.Emission.Written(var file) -> {
-                try {
-                    JavaFileWriter.writeTo(file, processingEnv.getFiler(), originating);
-                    index.publish(
-                            planned.full() ? ReuseIndex.Completeness.FULL : ReuseIndex.Completeness.TOKEN,
-                            planned.binaryName(),
-                            metamodel,
-                            originating);
-                } catch (IOException e) {
-                    throw new UncheckedIOException("cannot write " + name, e);
-                }
-                done.put(planned.binaryName(), new Done.Generated(metamodel, planned.requested()));
+        try {
+            try (Writer writer = processingEnv
+                    .getFiler()
+                    .createSourceFile(file.qualifiedName(), originating)
+                    .openWriter()) {
+                writer.write(MetamodelEmitter.source(file));
             }
+            index.publish(
+                    planned.full() ? ReuseIndex.Completeness.FULL : ReuseIndex.Completeness.TOKEN,
+                    planned.binaryName(),
+                    metamodel,
+                    originating);
+        } catch (IOException e) {
+            throw new UncheckedIOException("cannot write " + name, e);
         }
+        done.put(planned.binaryName(), new Done.Generated(metamodel, planned.requested()));
     }
 
     private void reportUnfinished(Elements elements, Diagnostics diagnostics) {
@@ -406,7 +424,7 @@ public final class FactsProcessor extends AbstractProcessor {
     /// @param full whether the metamodel has a fact per member: a requested type that is not generic
     /// @param requesters the `@Facts` the metamodel is generated for
     /// @param stale why the metamodels of the type on the classpath were not reused
-    /// @param mentions the binary names of the classes and interfaces the signatures of a requested type mention
+    /// @param mentions the binary names of the classes and interfaces the facts of a full metamodel refer to
     private record Planned(
             TypeElement type,
             String binaryName,

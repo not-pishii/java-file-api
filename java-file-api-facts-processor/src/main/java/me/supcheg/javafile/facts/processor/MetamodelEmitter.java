@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +64,9 @@ import java.util.stream.IntStream;
 /// not generic, has the facts of the members [MemberPlan] chose after the
 /// token (mini-spec §2.3, §2.7), each a `public static final` field; the
 /// full metamodels of generic types come with plan step 9.
+///
+/// The source is ASCII ([#source]): whatever `-encoding` it is compiled
+/// with, a name or a constant is what the type has.
 final class MetamodelEmitter {
     private static final String FACTS = "me.supcheg.javafile.facts";
     private static final String CORE_TYPE = "me.supcheg.javafile.type";
@@ -92,9 +94,9 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_PRIMITIVE = ClassDesc.of(CORE_TYPE, "PrimitiveTypeRef");
 
     /// The longest part of the canonical form written as one string
-    /// literal, in characters: far below the limit of a constant, whatever
-    /// the encoding.
-    private static final int TEXT_PART = 15000;
+    /// literal, in bytes of the modified UTF-8 a class file holds a constant
+    /// in: far below the 65535 of a constant.
+    static final int TEXT_PART = 15000;
 
     /// The `value` of `@Generated`.
     static final String GENERATOR = "me.supcheg.javafile.facts.processor.FactsProcessor";
@@ -107,8 +109,8 @@ final class MetamodelEmitter {
     /// @param metamodel the metamodel class
     /// @param model the type, read with no members
     /// @param canonical the canonical form of `model`
-    /// @return the source file, or why none can be written
-    static Emission tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical) {
+    /// @return the source file
+    static JavaFile tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical) {
         return emit(metamodel, model, canonical, Optional.empty());
     }
 
@@ -120,38 +122,59 @@ final class MetamodelEmitter {
     /// @param canonical the canonical form of `model`
     /// @param plan the members that get a fact, see [MemberPlan#of]
     /// @param targets the metamodels of the types the signatures mention
-    /// @return the source file, or why none can be written
-    static Emission full(ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan plan, Targets targets) {
+    /// @return the source file
+    static JavaFile full(ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan plan, Targets targets) {
         return emit(metamodel, model, canonical, Optional.of(new Full(plan, targets)));
     }
 
-    /// The simple names a fact of the metamodel of a type may not have,
-    /// beyond those [MetamodelNames] reserves: the classes an expression
-    /// starts with, the metamodels of the types mentioned, whose nested
-    /// `Data` class it names, and the first name of the qualified name of
-    /// that class.
+    /// The names a fact of the full metamodel of a type may not have, beyond
+    /// those [MetamodelNames] reserves: every name its body starts a name
+    /// with — a class, the first name of a qualified name, a field. A fact
+    /// of such a name would hide what the name means, in the metamodel and
+    /// in its nested classes.
     ///
+    /// The names are read off the source of the metamodel itself, written
+    /// with every candidate of a fact, so they are what the metamodel says,
+    /// however the core renderer imports and qualifies.
+    ///
+    /// @param metamodel the metamodel class
     /// @param model the type, read with its declared public members
+    /// @param canonical the canonical form of `model`
+    /// @param probe every member that may get a fact, see [MemberPlan#probe]
     /// @param targets the metamodels of the types the signatures mention
     /// @return the names
-    static Set<String> takenNames(TypeModel model, Targets targets) {
-        Set<String> taken = new HashSet<>(MemberFacts.QUALIFIERS);
-        List<ClassDesc> mentioned = new ArrayList<>();
-        MemberPlan.mentions(model.members(), mentioned);
-        for (ClassDesc desc : mentioned) {
-            targets.of(desc).ifPresent(target -> {
-                taken.add(target.metamodel().displayName());
-                String packageName = target.metamodel().packageName();
-                taken.add(packageName.substring(
-                        0, packageName.indexOf('.') < 0 ? packageName.length() : packageName.indexOf('.')));
-            });
+    static Set<String> takenNames(
+            ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan probe, Targets targets) {
+        String source = full(metamodel, model, canonical, probe, targets).render();
+        Set<String> names = SourceNames.inBodyOf(metamodel.displayName(), source);
+        names.removeIf(name -> name.startsWith(MemberPlan.PROBE));
+        return names;
+    }
+
+    /// The source of a metamodel, in ASCII: every other character is a
+    /// Unicode escape, which Java reads the same anywhere in a source file.
+    /// The renderer leaves no `\` before such a character but in a string
+    /// literal, where it writes them in pairs, so the escape is one (JLS 3.3).
+    ///
+    /// @param file the metamodel
+    /// @return the source
+    static String source(JavaFile file) {
+        String rendered = file.render();
+        StringBuilder ascii = new StringBuilder(rendered.length());
+        for (int i = 0; i < rendered.length(); i++) {
+            char c = rendered.charAt(i);
+            if (c < 0x7f) {
+                ascii.append(c);
+            } else {
+                ascii.append(String.format("\\u%04x", (int) c));
+            }
         }
-        return taken;
+        return ascii.toString();
     }
 
     private record Full(MemberPlan plan, Targets targets) {}
 
-    private static Emission emit(ClassDesc metamodel, TypeModel model, Canonical canonical, Optional<Full> full) {
+    private static JavaFile emit(ClassDesc metamodel, TypeModel model, Canonical canonical, Optional<Full> full) {
         Token token = Token.of(model.kind());
         boolean raw =
                 !model.typeParams().isEmpty() && !model.nonPublicBoundTypes().isEmpty();
@@ -159,19 +182,12 @@ final class MetamodelEmitter {
         Optional<MemberFacts> facts = full.map(f -> new MemberFacts(model.desc(), model.kind(), f.targets()));
         List<MemberFacts.Spec> specs =
                 full.flatMap(f -> facts.map(x -> x.specs(f.plan()))).orElse(List.of());
-        Set<ClassDesc> mentioned = new LinkedHashSet<>();
-        mentioned.add(model.desc());
-        Mentions.of(typeParams, mentioned);
-        facts.ifPresent(f -> mentioned.addAll(f.signatureTypes()));
-        Set<ClassDesc> referenced = new LinkedHashSet<>(mentioned);
+        Set<ClassDesc> referenced = new LinkedHashSet<>();
+        referenced.add(model.desc());
+        Mentions.of(typeParams, referenced);
+        facts.ifPresent(f -> referenced.addAll(f.signatureTypes()));
         facts.ifPresent(f -> referenced.addAll(f.uses()));
         referenced.addAll(infrastructure(token));
-        List<String> clashes = clashes(metamodel, mentioned);
-        if (!clashes.isEmpty()) {
-            return new Emission.Clash("the metamodel " + metamodel.packageName() + "." + metamodel.displayName()
-                    + " of " + Models.binaryName(model.desc()) + " cannot be written yet: "
-                    + String.join("; ", clashes));
-        }
         Set<String> taken = referenced.stream().map(MetamodelEmitter::leaf).collect(Collectors.toSet());
         taken.add(metamodel.displayName());
         taken.add(MetamodelNames.DATA);
@@ -183,7 +199,7 @@ final class MetamodelEmitter {
         ClassDesc data = metamodel.nested(MetamodelNames.DATA);
         ClassDesc canonicalClass = metamodel.nested(MetamodelNames.CANONICAL);
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
-        return new Emission.Written(JavaFile.class_(metamodel, cb -> {
+        return JavaFile.class_(metamodel, cb -> {
             cb.withModifiers(Modifier.FINAL)
                     .withAnnotation(CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                     .withAnnotation(
@@ -243,7 +259,7 @@ final class MetamodelEmitter {
             if (typeParams.isEmpty()) {
                 cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
             }
-        }));
+        });
     }
 
     private static void generic(ClassBuilder cb, TypeModel model, Token token, List<String> names, Expr shape) {
@@ -404,29 +420,80 @@ final class MetamodelEmitter {
         return Exprs.staticCall(CD_LIST, "of", items);
     }
 
-    /// The canonical form, a string literal per line: a text block would
-    /// need escaping the core renderer does not do.
+    /// The canonical form as string literals: a text block would need
+    /// escaping the core renderer does not do.
     ///
     /// A constant string of more than 65535 bytes does not compile, and the
     /// concatenation of literals is one constant: a long form is joined at
-    /// run time from parts that are each short.
+    /// run time from parts that are each short — whole lines where they fit,
+    /// pieces of a line that is itself too long.
     private static Expr text(Canonical canonical) {
-        List<Expr> parts = new ArrayList<>();
-        StringBuilder part = new StringBuilder();
-        for (String line : canonical.text().lines().toList()) {
-            if (part.length() + line.length() > TEXT_PART) {
-                parts.add(Exprs.literal(part.toString()));
-                part.setLength(0);
-            }
-            part.append(line).append('\n');
-        }
-        parts.add(Exprs.literal(part.toString()));
+        List<Expr> parts = parts(canonical.text(), TEXT_PART).stream()
+                .<Expr>map(Exprs::literal)
+                .toList();
         if (parts.size() == 1) {
             return parts.getFirst();
         }
         List<Expr> args = new ArrayList<>(List.of(Exprs.literal("")));
         args.addAll(parts);
         return Exprs.staticCall(ConstantDescs.CD_String, "join", args);
+    }
+
+    /// Splits a text into parts of at most `limit` bytes of modified UTF-8
+    /// each, which joined are the text: after a line break where a line
+    /// fits, within a line that does not, never within a surrogate pair.
+    ///
+    /// @param text the text
+    /// @param limit the most bytes of a part, at least 6: those of a surrogate pair
+    /// @return the parts, at least one
+    static List<String> parts(String text, int limit) {
+        List<String> parts = new ArrayList<>();
+        StringBuilder part = new StringBuilder();
+        int partBytes = 0;
+        int lineStart = 0;
+        while (lineStart < text.length()) {
+            int lineBreak = text.indexOf('\n', lineStart);
+            int lineEnd = lineBreak < 0 ? text.length() : lineBreak + 1;
+            int lineBytes = bytes(text, lineStart, lineEnd);
+            if (partBytes + lineBytes > limit && partBytes > 0) {
+                parts.add(part.toString());
+                part.setLength(0);
+                partBytes = 0;
+            }
+            if (lineBytes <= limit) {
+                part.append(text, lineStart, lineEnd);
+                partBytes += lineBytes;
+            } else {
+                int i = lineStart;
+                while (i < lineEnd) {
+                    int next = i + Character.charCount(text.codePointAt(i));
+                    int width = bytes(text, i, next);
+                    if (partBytes + width > limit) {
+                        parts.add(part.toString());
+                        part.setLength(0);
+                        partBytes = 0;
+                    }
+                    part.append(text, i, next);
+                    partBytes += width;
+                    i = next;
+                }
+            }
+            lineStart = lineEnd;
+        }
+        if (partBytes > 0 || parts.isEmpty()) {
+            parts.add(part.toString());
+        }
+        return parts;
+    }
+
+    /// The bytes of a part of a text in the modified UTF-8 of a class file.
+    private static int bytes(String text, int from, int to) {
+        int bytes = 0;
+        for (int i = from; i < to; i++) {
+            char c = text.charAt(i);
+            bytes += c != 0 && c < 0x80 ? 1 : c < 0x800 ? 2 : 3;
+        }
+        return bytes;
     }
 
     private static TypeRef rename(TypeRef type, Map<String, String> renaming) {
@@ -483,39 +550,9 @@ final class MetamodelEmitter {
                 ConstantDescs.CD_String);
     }
 
-    /// The simple names the rendered metamodel would get wrong: the core
-    /// renderer imports a class by its simple name unless another class
-    /// took the name first, but it does not know that a nested class of the
-    /// metamodel — `Data`, `Canonical` — or the metamodel itself is visible
-    /// by that name in its own body.
-    private static List<String> clashes(ClassDesc metamodel, Set<ClassDesc> mentioned) {
-        Set<String> reserved = Set.of(MetamodelNames.DATA, MetamodelNames.CANONICAL, metamodel.displayName());
-        List<String> clashes = new ArrayList<>();
-        for (ClassDesc desc : mentioned) {
-            if (reserved.contains(leaf(desc))) {
-                clashes.add(Models.binaryName(desc) + " has the simple name of " + leaf(desc) + " in the metamodel");
-            }
-        }
-        return clashes;
-    }
-
     private static String leaf(ClassDesc desc) {
         String name = desc.displayName();
         return name.substring(name.lastIndexOf('$') + 1);
-    }
-
-    /// The source of a metamodel, or why it cannot be written.
-    sealed interface Emission {
-
-        /// The source is written.
-        ///
-        /// @param file the source file
-        record Written(JavaFile file) implements Emission {}
-
-        /// The core renderer would get a name of the metamodel wrong.
-        ///
-        /// @param reason which names, for a diagnostic
-        record Clash(String reason) implements Emission {}
     }
 
     /// The token family of a kind of type.

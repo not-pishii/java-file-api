@@ -200,16 +200,25 @@ class GeneratedCodeTest {
     }
 
     @Test
-    void aTypeNamedLikeANestedClassOfTheMetamodelIsNotWrittenYet() {
-        Compilation compilation = ProcessorHarness.process(
-                List.of(ProcessorHarness.library(lib, List.of(), "package p; public class Data {}")), """
-                package gen;
-                @me.supcheg.javafile.facts.meta.Facts(p.Data.class)
-                class G {}
-                """);
+    void aTypeNamedLikeANestedClassOfTheMetamodelIsWrittenQualified() throws Exception {
+        Compilation compilation = generate(
+                "p.Data.class, p.Canonical.class, p.Uses.class",
+                "package p; public class Data {}",
+                "package p; public interface Canonical<Data extends p.Data> {}",
+                "package p; public class Uses<T extends Data & Canonical<Data>> {}");
+        ClassLoader loader = load(compilation);
+
+        assertThat(token(loader, "gen.facts.p.Data_").typeRef()).isEqualTo(Types.of(ClassDesc.of("p.Data")));
+        assertThat(ProcessorHarness.generatedSources(compilation).get("gen.facts.p.Data_"))
+                .contains("OpenClassToken<p.Data> TOKEN")
+                .contains("static final class Data {");
+        assertThat(ProcessorHarness.generatedSources(compilation).get("gen.facts.p.Uses_"))
+                .contains("final class Uses_<T extends p.Data & p.Canonical<p.Data>>");
+        assertThat(shape(loader, "gen.facts.p.Canonical_").typeParameters())
+                .extracting(TypeParam::name)
+                .containsExactly("Data");
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
-                .containsExactly("the metamodel gen.facts.p.Data_ of p.Data cannot be written yet: p.Data has the"
-                        + " simple name of Data in the metamodel");
+                .isEmpty();
     }
 
     @Test
