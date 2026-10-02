@@ -4,9 +4,18 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
 import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.model.AnnotationTypeDecl;
+import me.supcheg.javafile.model.ClassDecl;
+import me.supcheg.javafile.model.EnumDecl;
+import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.ModuleDirective;
+import me.supcheg.javafile.model.RecordDecl;
+import me.supcheg.javafile.model.TypeDecl;
 
+import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /// The built-in [SourceRenderer]. Adds imports automatically: a type is
 /// imported unless another type with the same simple name already is, in
@@ -35,7 +44,9 @@ public final class StandardRenderer implements SourceRenderer {
     }
 
     private String renderClassFile(JavaFile.Meta meta, Format format) {
-        var imports = new ImportManager(meta.packageName());
+        List<ClassDesc> declared = new ArrayList<>();
+        collectDeclared(meta.typeDecl(), declared);
+        var imports = new ImportManager(meta.packageName(), declared);
         Context ctx = Context.of(format, imports);
         String body = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
 
@@ -55,6 +66,40 @@ public final class StandardRenderer implements SourceRenderer {
         }
         out.append(body);
         return out.toString();
+    }
+
+    /// The types a file declares: `decl` and the types nested in it, at any depth.
+    private static void collectDeclared(TypeDecl decl, List<ClassDesc> found) {
+        List<?> members =
+                switch (decl) {
+                    case ClassDecl c -> {
+                        found.add(c.desc());
+                        yield c.members();
+                    }
+                    case InterfaceDecl i -> {
+                        found.add(i.desc());
+                        yield i.members();
+                    }
+                    case RecordDecl r -> {
+                        found.add(r.desc());
+                        yield r.members();
+                    }
+                    case EnumDecl e -> {
+                        found.add(e.desc());
+                        yield Stream.concat(
+                                        e.constants().stream().flatMap(c -> c.body().stream()), e.members().stream())
+                                .toList();
+                    }
+                    case AnnotationTypeDecl a -> {
+                        found.add(a.desc());
+                        yield List.of();
+                    }
+                };
+        for (Object member : members) {
+            if (member instanceof TypeDecl nested) {
+                collectDeclared(nested, found);
+            }
+        }
     }
 
     private String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {
