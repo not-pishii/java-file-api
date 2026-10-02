@@ -107,12 +107,27 @@ final class MetamodelNames {
     /// name are not named, but reported as conflicts.
     ///
     /// The name of a member does not depend on the order of `members`, but on
-    /// which members there are: pass those that get a fact.
+    /// which members there are: pass every member that may ever get a fact,
+    /// whether it gets one now or not, so that a name stays when a member
+    /// that had none gets its fact.
     ///
     /// @param members fields, enum constants, methods and constructors
     /// @return the names
     /// @throws IllegalArgumentException if an element is of another kind, or a parameter type is unsupported
     static MemberNames members(List<? extends Element> members) {
+        return members(members, Set.of());
+    }
+
+    /// The names of the facts of members, as [#members(List)] gives them,
+    /// in a metamodel that uses some names itself: such a name gets `_`
+    /// appended, as a reserved one does. The escaped name may be taken too:
+    /// the caller is to check.
+    ///
+    /// @param members fields, enum constants, methods and constructors
+    /// @param taken the names the metamodel starts a name with, see [MetamodelEmitter#takenNames]
+    /// @return the names
+    /// @throws IllegalArgumentException if an element is of another kind, or a parameter type is unsupported
+    static MemberNames members(List<? extends Element> members, Set<String> taken) {
         List<Member> parsed = members.stream().map(MetamodelNames::parse).toList();
         Map<String, List<Member>> overloads = new HashMap<>();
         for (Member member : parsed) {
@@ -125,7 +140,7 @@ final class MetamodelNames {
         Set<String> fields = new HashSet<>();
         for (Member member : parsed) {
             String name = member.name(qualified(member, overloads.get(member.name(new boolean[0]))));
-            if (RESERVED.contains(name)) {
+            if (RESERVED.contains(name) || taken.contains(name)) {
                 name += "_";
             }
             escaped.put(member, name);
@@ -199,7 +214,9 @@ final class MetamodelNames {
     /// keyword of a primitive (`int`), the simple name of a class with the
     /// names of its enclosing classes joined by `_` (`Map_Entry`), the name of a
     /// type variable (`E`), and `Array` appended for an array or varargs
-    /// (`intArray`, `StringArray`, `EArray`). Type arguments do not count.
+    /// (`intArray`, `StringArray`, `EArray`). Type arguments do not count. A
+    /// type that is not resolved stands as javac names it, its dots turned
+    /// into `_`.
     ///
     /// @param type the declared type of the parameter
     /// @param qualified whether a class is preceded by its package, its dots
@@ -213,6 +230,7 @@ final class MetamodelNames {
             case DECLARED -> declaredSuffix(((DeclaredType) type).asElement(), qualified);
             case TYPEVAR -> ((TypeVariable) type).asElement().getSimpleName().toString();
             case ARRAY -> typeSuffix(((ArrayType) type).getComponentType(), qualified) + "Array";
+            case ERROR -> type.toString().replaceAll("[^\\p{javaJavaIdentifierPart}]+", "_");
             default -> throw new IllegalArgumentException("Not a parameter type: " + type);
         };
     }

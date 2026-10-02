@@ -49,11 +49,6 @@ final class MemberFacts {
     /// The greatest number of parameters of a member with a fact.
     private static final int MAX_ARITY = 12;
 
-    /// The simple names of the classes the fact fields refer to at the start
-    /// of an expression: a fact named so would hide the class.
-    static final Set<String> QUALIFIERS =
-            Set.of("UnsafeFacts", "MemberTraits", "PrimitiveToken", "ArrayToken", "Float", "Double");
-
     /// A field of the metamodel.
     ///
     /// @param name the name of the fact

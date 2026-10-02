@@ -23,10 +23,12 @@ import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 /// Which members of a requested type get a fact, and under which name
 /// (mini-spec §2.2, §2.3, Q3, Q6, Q10).
@@ -47,8 +49,12 @@ import java.util.Set;
 /// - its signature is generic — a type variable, a parameterized or raw
 ///   generic type, type parameters of its own — which comes with the
 ///   generic metamodels (plan step 9);
-/// - its name would be that of another member, or of a class the
-///   metamodel names in an expression.
+/// - its name would be that of another member, or, even with `_` appended,
+///   a name the metamodel itself starts a name with: it would hide that.
+///
+/// The names are those of [MetamodelNames#members] over every declared
+/// `public` member, with a fact or without: a member that gets its fact
+/// later, as the generic ones will, does not rename the others.
 ///
 /// @param enumConstants the enum constants that get a fact, in declaration order
 /// @param members the fields, constructors and methods that get a fact
@@ -81,59 +87,127 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @param reason why it has none, for a diagnostic
     record Skip(String member, String reason) {}
 
+    /// The start of the names of the facts of a [#probe]: no member has such a name.
+    static final String PROBE = "fact$";
+
     /// Plans the facts of a type.
     ///
     /// @param type the type, a class, interface, enum or record that is not generic
     /// @param models the models of the round
     /// @param targets the metamodels of the types the signatures mention
-    /// @param taken the names of classes the metamodel uses as the start of an expression: a fact
-    ///     of such a name would hide the class
+    /// @param taken the names the metamodel starts a name with, see [MetamodelEmitter#takenNames]: a
+    ///     fact of such a name would hide what the name means, so it gets `_` appended
     /// @return the plan
     static MemberPlan of(TypeElement type, Models models, Targets targets, Set<String> taken) {
-        List<Skip> skipped = new ArrayList<>();
-        List<Element> enumConstants = new ArrayList<>();
-        Map<Element, MemberModel> candidates = new LinkedHashMap<>();
-        for (Element member : type.getEnclosedElements()) {
-            switch (member.getKind()) {
-                case ENUM_CONSTANT -> enumConstants.add(member);
-                case FIELD, CONSTRUCTOR, METHOD -> {
-                    if (member.getModifiers().contains(Modifier.PUBLIC)) {
-                        candidate(type, member, models.translator(), targets, candidates, skipped);
-                    }
-                }
-                default -> {
-                    // member types have metamodels of their own; initializers are not members
-                }
-            }
-        }
-        List<Element> named = new ArrayList<>(enumConstants);
-        named.addAll(candidates.keySet());
-        MetamodelNames.MemberNames names = MetamodelNames.members(named);
+        Candidates candidates = Candidates.of(type, models, targets);
+        List<Skip> skipped = new ArrayList<>(candidates.skipped());
+        Set<Element> live = new LinkedHashSet<>(candidates.enumConstants());
+        live.addAll(candidates.members().keySet());
+        MetamodelNames.MemberNames names = MetamodelNames.members(candidates.named(), taken);
         names.conflicts().forEach((name, sharing) -> {
-            sharing.forEach(candidates::remove);
-            enumConstants.removeAll(sharing);
-            skipped.add(new Skip(
-                    String.join(", ", sharing.stream().map(MemberPlan::describe).toList()),
-                    "would all be named " + name));
+            if (sharing.stream().anyMatch(live::contains)) {
+                sharing.forEach(live::remove);
+                skipped.add(new Skip(
+                        String.join(
+                                ", ", sharing.stream().map(MemberPlan::describe).toList()),
+                        "would all be named " + name));
+            }
         });
         Map<Element, String> factNames = new LinkedHashMap<>();
         names.names().forEach((element, name) -> {
+            if (!live.contains(element)) {
+                return;
+            }
             if (taken.contains(name)) {
-                skipped.add(new Skip(
-                        describe(element), "would be named " + name + ", which is a class the metamodel refers to"));
-                candidates.remove(element);
-                enumConstants.remove(element);
+                skipped.add(
+                        new Skip(describe(element), "would be named " + name + ", a name the metamodel itself uses"));
+                live.remove(element);
             } else {
                 factNames.put(element, name);
             }
         });
-        List<EnumFact> enums = enumConstants.stream()
+        List<EnumFact> enums = candidates.enumConstants().stream()
+                .filter(live::contains)
                 .map(e -> new EnumFact(factNames.get(e), e.getSimpleName().toString()))
                 .toList();
         List<Fact> members = new ArrayList<>();
-        candidates.forEach((element, model) -> members.add(new Fact(factNames.get(element), model)));
+        candidates.members().forEach((element, model) -> {
+            if (live.contains(element)) {
+                members.add(new Fact(factNames.get(element), model));
+            }
+        });
         Optional<SamFact> sam = sam(type, models, targets, members, skipped);
         return new MemberPlan(enums, members, sam, skipped);
+    }
+
+    /// Every member of a type that may get a fact, whatever its name, under
+    /// a name no member has: what the metamodel is written with to find the
+    /// names it uses itself ([MetamodelEmitter#takenNames]) before the facts
+    /// are named.
+    ///
+    /// @param type the type, a class, interface, enum or record that is not generic
+    /// @param models the models of the round
+    /// @param targets the metamodels of the types the signatures mention
+    /// @return the plan, with nothing skipped
+    static MemberPlan probe(TypeElement type, Models models, Targets targets) {
+        Candidates candidates = Candidates.of(type, models, targets);
+        List<EnumFact> enums = new ArrayList<>();
+        for (Element constant : candidates.enumConstants()) {
+            enums.add(new EnumFact(
+                    PROBE + "e" + enums.size(), constant.getSimpleName().toString()));
+        }
+        List<Fact> members = new ArrayList<>();
+        candidates.members().forEach((element, model) -> members.add(new Fact(PROBE + members.size(), model)));
+        return new MemberPlan(enums, members, sam(type, models, targets, members, new ArrayList<>()), List.of());
+    }
+
+    /// The classes and interfaces whose metamodels the facts refer to, the
+    /// type itself among them if a signature mentions it.
+    ///
+    /// @return the binary names
+    Set<String> mentionedTypes() {
+        List<ClassDesc> found = new ArrayList<>();
+        mentions(members.stream().map(Fact::model).toList(), found);
+        sam.ifPresent(fact -> mentions(List.of(fact.method()), found));
+        Set<String> names = new TreeSet<>();
+        found.forEach(desc -> names.add(Models.binaryName(desc)));
+        return names;
+    }
+
+    /// The declared members of a type that a fact can be made of.
+    ///
+    /// @param named every enum constant and `public` field, constructor and method, with a fact or
+    ///     without: what the names are told apart among
+    /// @param enumConstants the enum constants, in declaration order
+    /// @param members the fields, constructors and methods a fact can be made of, in declaration order
+    /// @param skipped the `public` members no fact can be made of, and why
+    private record Candidates(
+            List<Element> named, List<Element> enumConstants, Map<Element, MemberModel> members, List<Skip> skipped) {
+
+        static Candidates of(TypeElement type, Models models, Targets targets) {
+            List<Skip> skipped = new ArrayList<>();
+            List<Element> named = new ArrayList<>();
+            List<Element> enumConstants = new ArrayList<>();
+            Map<Element, MemberModel> members = new LinkedHashMap<>();
+            for (Element member : type.getEnclosedElements()) {
+                switch (member.getKind()) {
+                    case ENUM_CONSTANT -> {
+                        enumConstants.add(member);
+                        named.add(member);
+                    }
+                    case FIELD, CONSTRUCTOR, METHOD -> {
+                        if (member.getModifiers().contains(Modifier.PUBLIC)) {
+                            named.add(member);
+                            candidate(type, member, models.translator(), targets, members, skipped);
+                        }
+                    }
+                    default -> {
+                        // member types have metamodels of their own; initializers are not members
+                    }
+                }
+            }
+            return new Candidates(named, enumConstants, members, skipped);
+        }
     }
 
     private static void candidate(

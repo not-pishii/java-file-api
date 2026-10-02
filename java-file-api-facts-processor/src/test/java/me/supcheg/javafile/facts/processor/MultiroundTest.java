@@ -151,6 +151,34 @@ class MultiroundTest {
     }
 
     @Test
+    void aFullMetamodelDoesNotWaitForATypeOnlyMembersWithoutAFactMention() {
+        Compilation compilation = process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
+                class G {}
+                """,
+                "package p; public class A { public <T> B b(T t) { return null; } public void take(Hidden h, B b) {}"
+                        + " public int size() { return 0; } }",
+                "package p; class Hidden {}",
+                "package p; public class B { public gen.Never never() { return null; } }");
+
+        // b(T) and take(Hidden, B) get no fact whatever becomes of B: A has nothing to wait for
+        // the compilation fails for B, so what was generated cannot be read: the warnings of A, given
+        // as its metamodel is written, tell that it was
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+                .contains("type p.B in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                        + " processor generated")
+                .noneMatch(message -> message.startsWith("type p.A in @Facts"));
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
+                .contains(
+                        "p.A: no fact of method <T>b(T), which is generic, and facts of generic members are not"
+                                + " supported yet",
+                        "p.A: no fact of method take(p.Hidden,p.B), which mentions types that are not public:"
+                                + " p.Hidden");
+    }
+
+    @Test
     void anInterfaceWaitsForATypeItsInheritedSamMentions() {
         Compilation compilation = ProcessorHarness.succeeded(process(
                 """
