@@ -132,6 +132,27 @@ class MultiroundTest {
     }
 
     @Test
+    void aFullMetamodelWaitsForARequestedTypeATypeArgumentOrABoundMentions() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.C.class, p.B.class})
+                class G {}
+                """,
+                "package p; public class A { public void all(java.util.List<? extends B> all) {} }",
+                "package p; public class C { public <T extends B> void bound(T t) {} }",
+                "package p; public class B { public gen.Missing missing() { return null; } }"));
+
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        assertThat(sources.get("gen.facts.p.A_"))
+                .contains("VoidMethodRef1<A, List<? extends B>> all_List")
+                .contains("TokenArg.extendsBound(UnsafeFacts.<B>openClassToken(B_.Data.SHAPE))");
+        assertThat(sources.get("gen.facts.p.C_"))
+                .contains("public static <T extends B> VoidMethodRef1<C, T> bound_T(RefToken<T> t) {");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
     void aFullMetamodelWhoseMentionedRequestedTypeNeverGetsReadyIsAnErrorInTheLastRound() {
         Compilation compilation = process(
                 """
@@ -158,12 +179,12 @@ class MultiroundTest {
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
                 class G {}
                 """,
-                "package p; public class A { public <T> B b(T t) { return null; } public void take(Hidden h, B b) {}"
+                "package p; public class A { public <T> A(T t, B b) {} public void take(Hidden h, B b) {}"
                         + " public int size() { return 0; } }",
                 "package p; class Hidden {}",
                 "package p; public class B { public gen.Never never() { return null; } }");
 
-        // b(T) and take(Hidden, B) get no fact whatever becomes of B: A has nothing to wait for
+        // A(T, B) and take(Hidden, B) get no fact whatever becomes of B: A has nothing to wait for
         // the compilation fails for B, so what was generated cannot be read: the warnings of A, given
         // as its metamodel is written, tell that it was
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
@@ -172,8 +193,8 @@ class MultiroundTest {
                 .noneMatch(message -> message.startsWith("type p.A in @Facts"));
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
                 .contains(
-                        "p.A: no fact of method <T>b(T), which is generic, and facts of generic members are not"
-                                + " supported yet",
+                        "p.A: no fact of constructor <T>A(T,p.B), which is a generic constructor, whose type"
+                                + " arguments a fact cannot give explicitly",
                         "p.A: no fact of method take(p.Hidden,p.B), which mentions types that are not public:"
                                 + " p.Hidden");
     }

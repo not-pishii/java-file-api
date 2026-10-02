@@ -100,7 +100,7 @@ class GeneratedCodeTest {
             assertThat(sources.get("gen.facts.java.util.List_"))
                     .contains("@Generated(\"me.supcheg.javafile.facts.processor.FactsProcessor\")")
                     .contains("@GeneratedMetamodel(of = List.class, fingerprint = \"" + origin.fingerprint()
-                            + "\", complete = false)");
+                            + "\", complete = true, format = 2)");
         });
 
         Class<?> list = loader.loadClass("gen.facts.java.util.List_");

@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
+import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
@@ -97,7 +98,7 @@ class ReuseTest {
 
     @Test
     void aMatchingFullMetamodelIsReusedForARequestAndForAToken() throws IOException {
-        Path full = fullMetamodel(fingerprintOfDep(v1));
+        Path full = fullMetamodel(fingerprintOfDep(v1), MetamodelFormat.VERSION);
         Compilation requested =
                 ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
         assertThat(ProcessorHarness.generatedSources(requested)).isEmpty();
@@ -110,13 +111,26 @@ class ReuseTest {
 
     @Test
     void aFullMetamodelOfAnotherVersionIsNotReused() throws IOException {
-        Path full = fullMetamodel(fingerprintOfDep(v2));
+        Path full = fullMetamodel(fingerprintOfDep(v2), MetamodelFormat.VERSION);
         Compilation b =
                 ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
         assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
         assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated"
                         + " from a different p.Dep; generating b.facts.p.Dep_");
+    }
+
+    @Test
+    void aFullMetamodelOfAnotherFormatIsNotReused() throws IOException {
+        // which members have a fact is decided by the format: the same type, but not the same facts
+        Path full = fullMetamodel(fingerprintOfDep(v1), MetamodelFormat.VERSION - 1);
+        Compilation b =
+                ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
+        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
+                .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of format "
+                        + (MetamodelFormat.VERSION - 1) + ", not of format " + MetamodelFormat.VERSION
+                        + ", which this processor generates; generating b.facts.p.Dep_");
     }
 
     @Test
@@ -136,17 +150,17 @@ class ReuseTest {
     }
 
     /// A hand-made full metamodel `x.facts.p.Dep_` of `p.Dep`, listed in the index.
-    private Path fullMetamodel(String fingerprint) throws IOException {
+    private Path fullMetamodel(String fingerprint, int format) throws IOException {
         Path directory = Files.createDirectory(root.resolve("x"));
         ProcessorHarness.library(directory, List.of(v1), """
                 package x.facts.p;
-                @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Dep.class, fingerprint = "%s", complete = true)
+                @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Dep.class, fingerprint = "%s", complete = true, format = %d)
                 public final class Dep_ {
                     public static final class Data {
                         public static final me.supcheg.javafile.facts.TypeShape<me.supcheg.javafile.facts.DeclaredKind.OpenClass> SHAPE = null;
                     }
                 }
-                """.formatted(fingerprint));
+                """.formatted(fingerprint, format));
         Path index = Files.createDirectories(directory.resolve("META-INF/javafile/metamodel/full"));
         Files.writeString(index.resolve("p.Dep"), "x.facts.p.Dep_\n");
         return directory;

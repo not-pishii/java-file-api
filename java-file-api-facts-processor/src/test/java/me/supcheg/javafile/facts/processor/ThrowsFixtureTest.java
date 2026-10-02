@@ -83,7 +83,22 @@ class ThrowsFixtureTest extends FixtureSupport {
     }
 
     @Test
-    void anExceptionThatIsNotPublicOrIsATypeVariableGivesNoFact() throws Exception {
+    void aTypeVariableInAThrowsClauseIsTheTokenGivenForIt() throws Exception {
+        Compilation compilation = generate("p.Io.class", LIBRARY);
+        ClassLoader loader = load(compilation);
+        RefToken<?> failure = token(loader, "gen.facts.p.Failure_");
+
+        Invocable generic = (Invocable) made(loader, "gen.facts.p.Io_", null, "generic", failure);
+
+        assertThat(List.<Object>copyOf(generic.traits().throwsTypes())).containsExactly(failure);
+        assertThat(generic.traits().typeArgs()).containsExactly(failure);
+        assertThat(sources(compilation).get("gen.facts.p.Io_"))
+                .contains("public static <X extends Throwable> VoidMethodRef0<Io> generic(RefToken<X> x) {")
+                .contains("MemberTraits.OVERRIDABLE.throwing(x).withTypeArgs(x)");
+    }
+
+    @Test
+    void anExceptionThatIsNotPublicGivesNoFact() throws Exception {
         Compilation compilation = generate("p.Io.class", LIBRARY);
         ClassLoader loader = load(compilation);
 
@@ -91,8 +106,6 @@ class ThrowsFixtureTest extends FixtureSupport {
                 .containsExactly("custom", "locked", "multi", "new_", "new_int", "read", "unchecked", "util");
         assertThat(warnings(compilation))
                 .containsExactly(
-                        "p.Io: no fact of method <X>generic(), which is generic, and facts of generic members are not"
-                                + " supported yet",
                         "p.Io: no fact of method hidden(), which mentions types that are not public: p.Secret",
                         "p.Io: no fact of constructor Io(java.lang.String), which mentions types that are not public:"
                                 + " p.Secret");

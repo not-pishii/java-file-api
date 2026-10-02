@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
+import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -159,8 +160,9 @@ class OptionsTest {
                 }
                 """, generator("gen", "p.Svc.class"));
         assertThat(errors(compilation))
-                .containsExactly("the @Facts processor generates metamodel format 1, but java-file-api-facts on the"
-                        + " classpath has format 999; use java-file-api-facts of the same version as the processor");
+                .containsExactly("the @Facts processor generates metamodel format " + MetamodelFormat.VERSION
+                        + ", but java-file-api-facts on the classpath has format 999; use java-file-api-facts of the"
+                        + " same version as the processor");
     }
 
     @Test

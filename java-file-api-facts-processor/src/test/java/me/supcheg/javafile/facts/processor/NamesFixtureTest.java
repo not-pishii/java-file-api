@@ -111,40 +111,35 @@ class NamesFixtureTest extends FixtureSupport {
 
     @Test
     void theNameOfAFactDoesNotDependOnWhichOtherMembersGetAFact() throws Exception {
-        // m(java.util.List<String>) has no fact yet, and still m(java.awt.List) is told from it
+        // m(java.util.List<Hidden>) has no fact, and still m(java.awt.List) is told from it
         Compilation compilation = generate("p.Ov.class", """
                 package p;
                 public class Ov {
                     public void m(java.awt.List list) {}
-                    public void m(java.util.List<String> list) {}
+                    public void m(java.util.List<Hidden> list) {}
                     public void n(java.awt.List list) {}
                     public void k(int i) {}
                     public <T> void k(T t) {}
                     public int size;
                     public <T> T size() { return null; }
                     public Ov(java.awt.List list) {}
-                    public Ov(java.util.List<String> list) {}
+                    public Ov(java.util.List<Hidden> list) {}
                 }
-                """);
+                """, "package p; class Hidden {}");
         ClassLoader loader = load(compilation);
 
-        assertThat(factNames(loader, "gen.facts.p.Ov_"))
-                .containsExactly("k_int", "m_java_awt_List", "n_List", "new_java_awt_List", "size");
+        assertThat(memberNames(loader, "gen.facts.p.Ov_"))
+                .containsExactly("k_T", "k_int", "m_java_awt_List", "n_List", "new_java_awt_List", "size", "size_");
         assertThat(warnings(compilation))
                 .containsExactlyInAnyOrder(
-                        "p.Ov: no fact of method m(java.util.List<java.lang.String>), which mentions the parameterized"
-                                + " type java.util.List, and facts of generic types are not supported yet",
-                        "p.Ov: no fact of method <T>k(T), which is generic, and facts of generic members are not"
-                                + " supported yet",
-                        "p.Ov: no fact of method <T>size(), which is generic, and facts of generic members are not"
-                                + " supported yet",
-                        "p.Ov: no fact of constructor Ov(java.util.List<java.lang.String>), which mentions the"
-                                + " parameterized type java.util.List, and facts of generic types are not supported"
-                                + " yet");
+                        "p.Ov: no fact of method m(java.util.List<p.Hidden>), which mentions types that are not"
+                                + " public: p.Hidden",
+                        "p.Ov: no fact of constructor Ov(java.util.List<p.Hidden>), which mentions types that are"
+                                + " not public: p.Hidden");
     }
 
     @Test
-    void aMemberThatSharesItsNameWithOneThatHasNoFactYetGetsNoneEither() throws Exception {
+    void membersThatWouldShareANameAfterAnEscapeGetNoFact() throws Exception {
         Compilation compilation = generate("p.Sh.class", """
                 package p;
                 public class Sh {
@@ -156,7 +151,7 @@ class NamesFixtureTest extends FixtureSupport {
                 """);
         ClassLoader loader = load(compilation);
 
-        // x() would be x_ once it gets a fact: the field x_ may not take the name now
+        // x() is x_, as a field is named x: the field x_ may not take the name
         assertThat(factNames(loader, "gen.facts.p.Sh_")).containsExactly("new_", "other", "x");
         assertThat(warnings(compilation))
                 .contains("p.Sh: no fact of field x_, method <T>x(), which would all be named x_");

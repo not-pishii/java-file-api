@@ -149,6 +149,8 @@ class FunctionalFixtureTest extends FixtureSupport {
         assertThat(hasSam(loader, "gen.facts.p.Gen_"))
                 .as("generic: a lambda cannot implement it")
                 .isFalse();
+        // the generic method has a fact, which a method reference or a class may implement
+        assertThat(memberNames(loader, "gen.facts.p.Gen_")).containsExactly("id_T");
         assertThat(factNames(loader, "gen.facts.p.Def_")).containsExactly("apply_String");
         assertThat(((Invocable) fact(loader, "gen.facts.p.Def_", "apply_String")).traits())
                 .isEqualTo(MemberTraits.OVERRIDABLE);
@@ -191,13 +193,10 @@ class FunctionalFixtureTest extends FixtureSupport {
         Compilation compilation = generate(ALL, LIBRARY);
 
         assertThat(warnings(compilation))
-                .contains(
-                        "p.Gen: no fact of method <T>id(T), which is generic, and facts of generic members are not"
-                                + " supported yet",
+                .containsExactly(
                         "p.Hid: no fact of method s(), which mentions types that are not public: p.Secret",
                         "p.Hid2: no fact of the single abstract method, which mentions types that are not public:"
-                                + " p.Secret")
-                .hasSize(3);
+                                + " p.Secret");
     }
 
     @Test

@@ -302,4 +302,18 @@ class MetamodelNamesTest {
                     .hasMessageContaining("void");
         });
     }
+
+    @Test
+    void aTypeParameterNamedLikeWhatTheMetamodelNamesGetsAnUnderscore() {
+        assertThat(MetamodelNames.typeParameters(List.of("E", "List", "List_", "T"), Set.of("List", "Data")))
+                .containsExactly("E", "List__", "List_", "T");
+    }
+
+    @Test
+    void aWitnessIsNamedAfterItsTypeParameterUnlessTheNameIsTaken() {
+        assertThat(MetamodelNames.witnesses(List.of("E", "Key", "TOKEN", "Int", "e")))
+                .containsExactly("e", "key", "tOKEN", "int_", "e_");
+        assertThat(MetamodelNames.witnesses(List.of("T", "Token", "R"), Set.of("t", "token", "token_")))
+                .containsExactly("t_", "token__", "r");
+    }
 }
