@@ -58,7 +58,7 @@ class MetaAnnotationsTest {
 
                         import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
-                        @GeneratedMetamodel(of = String.class, fingerprint = "abc", complete = true)
+                        @GeneratedMetamodel(of = String.class, fingerprint = "abc", complete = true, format = 2)
                         final class Meta {}
                         """),
                         JavaFileObjects.forSourceString("b.package-info", """
