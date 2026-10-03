@@ -1,0 +1,1 @@
+gen/G.java:12:1: warning: p.Poly: no fact of constructor <T>Poly(T), which is a generic constructor, whose type arguments a fact cannot give explicitly

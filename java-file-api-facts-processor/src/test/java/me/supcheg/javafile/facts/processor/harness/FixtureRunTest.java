@@ -152,6 +152,7 @@ class FixtureRunTest {
         file("one/lib/p/Dep.java", DEP);
         request("one", "gen", "Thing");
         file("one/use/Checks.java", """
+                import gen.facts.java.lang.String_;
                 import gen.facts.p.Thing_;
                 import me.supcheg.javafile.facts.Prim;
                 import me.supcheg.javafile.facts.StaticFieldRef;
@@ -181,6 +182,20 @@ class FixtureRunTest {
                                 .isEqualTo(3);
                     }
 
+                    public static void anArgumentOfTheJdkAndAClassOfTheLibrary(Typed typed) {
+                        assertThat(typed.apply(
+                                        Thing_.LIMIT.type(), String_.TOKEN, text -> staticField(Thing_.LIMIT), "x"))
+                                .isEqualTo(3);
+                    }
+
+                    public static void renderedWithoutRunning(Typed typed) {
+                        assertThat(typed.render(
+                                        Thing_.LIMIT.type(), Thing_.TOKEN, thing -> staticField(Thing_.LIMIT)))
+                                .contains("class Out")
+                                .contains("go(Thing ")
+                                .contains("Thing.LIMIT");
+                    }
+
                     static void notPublicSoNoCheck() {
                         throw new IllegalStateException();
                     }
@@ -204,9 +219,14 @@ class FixtureRunTest {
                         "one: use/Checks.holds",
                         "one: use/Checks.doesNotHold",
                         "one: use/Checks.failsAnAssertStatement",
-                        "one: use/Checks.throughTheTypedLayer");
+                        "one: use/Checks.throughTheTypedLayer",
+                        "one: use/Checks.renderedWithoutRunning",
+                        "one: use/Checks.anArgumentOfTheJdkAndAClassOfTheLibrary");
         assertThat(outcomes.get("one: use/Checks.holds")).isEmpty();
         assertThat(outcomes.get("one: use/Checks.throughTheTypedLayer")).isEmpty();
+        assertThat(outcomes.get("one: use/Checks.renderedWithoutRunning")).isEmpty();
+        assertThat(outcomes.get("one: use/Checks.anArgumentOfTheJdkAndAClassOfTheLibrary"))
+                .isEmpty();
         assertThat(outcomes.get("one: use/Checks.doesNotHold"))
                 .get()
                 .isInstanceOf(AssertionError.class)

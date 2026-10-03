@@ -314,15 +314,20 @@ public final class FixtureRun {
     /// @param work where the rendered classes are compiled into
     private record ThroughTyped(Supplier<Path> library, Path work) implements Typed {
         @Override
-        public <R, P> Object apply(
-                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body, P argument) {
-            String source = TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+        public <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
+            return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                         @Override
                         public <Self> void build(TypedClassBuilder<Self> cb) {
                             cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
                         }
                     })
                     .render();
+        }
+
+        @Override
+        public <R, P> Object apply(
+                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body, P argument) {
+            String source = render(result, parameter, body);
             Compiled compiled = Javac.plain()
                     .alone()
                     .linted()
@@ -335,8 +340,10 @@ public final class FixtureRun {
             try {
                 Files.createDirectories(work);
                 Path directory = compiled.writeTo(Files.createTempDirectory(work, "typed"));
+                // the library too: the parent of the loader of an argument of the JDK sees none of it
                 try (URLClassLoader loader = new URLClassLoader(
-                        new URL[] {url(directory)}, argument.getClass().getClassLoader())) {
+                        new URL[] {url(directory), url(library.get())},
+                        argument.getClass().getClassLoader())) {
                     return Arrays.stream(loader.loadClass("out.Out").getMethods())
                             .filter(method -> method.getName().equals("go"))
                             .findFirst()
