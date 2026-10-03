@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: no metamodel of p.ByHidden: the bounds of the type parameters of p.ByHidden mention types that are not public: p.Hidden

@@ -1,0 +1,2 @@
+gen/G.java:8:1: warning: p.GoneApi (a supertype of p.Sub): no fact of method gone(p.Secret), which mentions types that are not public: p.Secret
+gen/G.java:8:1: error: p.Sup: no fact of method lost(p.Secret), which mentions types that are not public: p.Secret

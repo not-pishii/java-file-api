@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: no metamodel of p.ByDollar: the bounds of the type parameters of p.ByDollar mention p.Dol$lar, which has no metamodel: a class with $ in its simple name is not supported yet

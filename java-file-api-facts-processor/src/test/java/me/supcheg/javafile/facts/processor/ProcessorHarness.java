@@ -30,6 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// (mini-spec §9.2): a library is compiled into a directory, the generator
 /// against it with the processor, and what the processor wrote is read back
 /// as sources, written into a directory for the next compilation, or loaded.
+///
+/// To be removed (mini-spec §11, 9t): the tests that still use it move to
+/// [me.supcheg.javafile.facts.processor.harness.Javac] or into
+/// `src/test/fixtures`; nothing new is written against it.
 final class ProcessorHarness {
     private static final Pattern PACKAGE = Pattern.compile("\\bpackage\\s+([\\w.]+)\\s*;");
     private static final Pattern TYPE = Pattern.compile("\\b(?:class|interface|enum|record)\\s+([\\w$]+)");

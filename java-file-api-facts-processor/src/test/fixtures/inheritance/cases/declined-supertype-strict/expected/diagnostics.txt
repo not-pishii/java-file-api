@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.Over: no facts of the public members inherited from p.Bounded, which has no full metamodel: the bounds of the type parameters of p.Bounded mention types that are not public: p.Secret

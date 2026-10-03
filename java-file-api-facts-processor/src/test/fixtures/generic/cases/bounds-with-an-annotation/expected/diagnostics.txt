@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: no metamodel of p.ByMarker: the bounds of the type parameters of p.ByMarker mention p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
