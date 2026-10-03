@@ -2,29 +2,21 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTable;
-import me.supcheg.javafile.facts.MethodTableTemplate;
-import me.supcheg.javafile.facts.MethodTableTemplate.Param;
-import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.Supertypes;
-import me.supcheg.javafile.facts.TokenArg;
-import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.ArrayList_;
-import me.supcheg.javafile.facts.jdk.CharSequence_;
 import me.supcheg.javafile.facts.jdk.Integer_;
 import me.supcheg.javafile.facts.jdk.List_;
 import me.supcheg.javafile.facts.jdk.Object_;
 import me.supcheg.javafile.facts.jdk.String_;
-import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -33,10 +25,8 @@ import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -267,48 +257,5 @@ class FactPinningChecksTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new_(ctor))
                 .withMessageContaining("`new` needs exact type arguments, not wildcards (JLS 15.9)");
-    }
-
-    // ------------------------------------------------------------------
-    // candidates are counted by the signatures of the template
-    // ------------------------------------------------------------------
-
-    interface TwinP<T> {}
-
-    /// `Twin<CharSequence>` of `class Twin<T> { m(T); m(CharSequence); }`: both methods
-    /// erase to `m(CharSequence)`, so the token's table lists one, yet javac has two
-    /// candidates.
-    private static String renderCallOnTwin(MethodTableTemplate template) {
-        TypeShape<DeclaredKind.OpenClass> shape = UnsafeFacts.shape(
-                DeclaredKind.OPEN_CLASS,
-                ClassDesc.of("fixtures", "Twin"),
-                List.of(new TypeParam("T", List.of())),
-                List.of(ConstantDescs.CD_Object),
-                Supertypes.NONE,
-                template,
-                List.of(),
-                false);
-        OpenClassToken<TwinP<CharSequence>> twin =
-                UnsafeFacts.openClassToken(shape, TokenArg.exact(CharSequence_.TOKEN));
-        var m = UnsafeFacts.method(twin, "m", String_.TOKEN, CharSequence_.TOKEN, MemberTraits.DEFAULT);
-        return TypedJavaFile.class_(ClassDesc.of("me.supcheg.example", "Twins"), new TypedJavaFile.TypedClassSpec() {
-                    @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.staticMethod("call", String_.TOKEN, twin, (b, t) -> b.return_(call(t, m, literal("x"))));
-                    }
-                })
-                .render();
-    }
-
-    @Test
-    void candidatesAreCountedBySignaturesOfTheTemplateNotByTheErasedOnes() {
-        Signature ofT = Signature.of("m", Param.var(0));
-        Signature ofCharSequence = Signature.of("m", Param.fixed(ClassDesc.of("java.lang", "CharSequence")));
-
-        assertThat(renderCallOnTwin(new MethodTableTemplate(Set.of(), Set.of(ofT, ofCharSequence), Set.of())))
-                .contains(".m((CharSequence) \"x\")");
-        assertThat(renderCallOnTwin(new MethodTableTemplate(Set.of(), Set.of(ofT), Set.of())))
-                .contains(".m(\"x\")")
-                .doesNotContain("(CharSequence)");
     }
 }

@@ -30,13 +30,16 @@ import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
-import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -44,6 +47,7 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.constant.ClassDesc;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -53,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The pure `typed → core` lowering pass (§7). Erases the phantom types and
@@ -91,7 +96,19 @@ import java.util.stream.Stream;
 ///   arity — the only candidate of the fixed-arity phases, which is where an
 ///   applicable fact is found. A primitive argument of a reference parameter
 ///   is always cast, `(Object) 1`: boxing is never left implicit (§6.1).
-///   Static methods and constructors have no table to prove it by.
+///   The arguments of static methods and constructors are always cast.
+/// - **Overloads that erase alike.** A fact is known among the members of
+///   its owner by the signature it declares
+///   ([Invocable#declared()]), not by the erased one: `m(T)` of a
+///   `Box<String>` and its `m(String)` take the same argument types, and so
+///   do `<T> m(T)` with `String` for `T` and `m(String)`. No cast of an
+///   argument tells them apart and explicit type arguments do not rule out
+///   a method that is not generic (JLS 15.12.2.1), so javac would report an
+///   ambiguity or pick the other one. Where both are members of the owner
+///   such a call cannot be written in Java, and lowering rejects it with a
+///   [FactLookupException]; where the other one is added by the type of
+///   the receiver, a subtype of the owner, the receiver is cast to the
+///   owner.
 /// - **Receivers of fields.** A field read or assigned through a receiver
 ///   whose static type is not the field's owner is qualified by a cast,
 ///   `((Owner) recv).f`, so a field of the receiver's type hiding it (JLS
@@ -413,13 +430,15 @@ final class Lowering {
     }
 
     /// `target.method(args)`. The receiver is cast to the method's owner
-    /// where the call must be pinned and the receiver is of a subtype;
-    /// otherwise it is pinned itself where its type decides the overload.
+    /// where the call must be pinned and the receiver is of a subtype, and
+    /// where the subtype has an overload that erases as the method does
+    /// ([#hasTwin]); otherwise it is pinned itself where its type decides the
+    /// overload.
     private Expr call(Node.Operand target, Invocable method, List<Node.Operand> args, boolean pin) {
         DeclaredToken<?> owner = method.owner();
         Expr receiver;
         TypeToken<?> searched;
-        if (pin && !Tokens.sameType(target.type(), owner)) {
+        if ((pin && !Tokens.sameType(target.type(), owner)) || hasTwin(target.type(), method)) {
             receiver = Exprs.cast(owner.typeRef(), expr(target.node()));
             searched = owner;
         } else {
@@ -437,22 +456,23 @@ final class Lowering {
     /// The arguments of `member`, each of exactly its parameter's type unless
     /// `searched` — the type whose methods javac searches, `null` if there is
     /// no method table to consult — has no other candidate.
+    ///
+    /// @throws FactLookupException if no arguments make javac resolve `member`, see [#requireDistinct]
     private List<Expr> arguments(Invocable member, @Nullable TypeToken<?> searched, List<Node.Operand> args) {
+        requireDistinct(member);
         boolean onlyCandidate = onlyCandidate(searched, member);
         List<TypeToken<?>> params = member.params();
-        List<Expr> lowered = new ArrayList<>(args.size());
-        for (int i = 0; i < args.size(); i++) {
-            Node.Operand arg = args.get(i);
-            TypeToken<?> param = params.get(i);
-            boolean boxes =
-                    arg.type() instanceof PrimitiveToken<?, ?, ?> && !(param instanceof PrimitiveToken<?, ?, ?>);
-            if (boxes || (!onlyCandidate && !Tokens.sameType(arg.type(), param))) {
-                lowered.add(Exprs.cast(param.typeRef(), expr(arg.node())));
-            } else {
-                lowered.add(expr(arg.node(), !onlyCandidate));
-            }
-        }
-        return lowered;
+        return IntStream.range(0, args.size())
+                .mapToObj(i -> {
+                    Node.Operand arg = args.get(i);
+                    TypeToken<?> param = params.get(i);
+                    boolean boxes = arg.type() instanceof PrimitiveToken<?, ?, ?>
+                            && !(param instanceof PrimitiveToken<?, ?, ?>);
+                    return boxes || (!onlyCandidate && !Tokens.sameType(arg.type(), param))
+                            ? Exprs.cast(param.typeRef(), expr(arg.node()))
+                            : expr(arg.node(), !onlyCandidate);
+                })
+                .toList();
     }
 
     /// Whether javac types `arg` by exactly `param` without a cast.
@@ -466,27 +486,104 @@ final class Lowering {
     /// that does not list `method` at all is taken as incomplete, proving
     /// nothing.
     ///
-    /// The candidates are counted by the signatures of the table's template,
-    /// not the erased ones of the token: `m(T)` and `m(String)` are two
-    /// methods of a `Box<T>` though both erase to `m(String)` in `Box<String>`.
+    /// The candidates are the signatures of the table's template, not the
+    /// erased ones of the token: `m(T)` and `m(String)` are two methods of a
+    /// `Box<T>` though both erase to `m(String)` in `Box<String>`. In the
+    /// type that owns `method` the one candidate is the fact if it is the
+    /// signature the fact declares; in a subtype, whose template lists the
+    /// method in terms of its own type parameters, if it erases as the fact
+    /// does.
     private static boolean onlyCandidate(@Nullable TypeToken<?> searched, Invocable method) {
         if (!(searched instanceof DeclaredToken<?> declared)) {
             return false;
         }
-        MethodTable table = declared.methods();
-        MethodSignature signature = method.signature();
-        if (!table.concreteMethods().contains(signature)
-                && !table.abstractMethods().contains(signature)
-                && !table.staticMethods().contains(signature)) {
+        List<MethodTableTemplate.Signature> candidates =
+                candidates(declared.shape().methods(), method).toList();
+        if (candidates.size() != 1) {
             return false;
         }
-        MethodTableTemplate template = declared.shape().methods();
-        return Stream.of(template.concreteMethods(), template.abstractMethods(), template.staticMethods())
-                        .flatMap(Set::stream)
-                        .filter(s -> s.name().equals(signature.name())
-                                && s.params().size() == signature.params().size())
-                        .count()
-                == 1;
+        return declared.shape() == method.owner().shape()
+                ? candidates.getFirst().equals(method.declared())
+                : candidates.getFirst().instantiate(declared.argumentErasures()).equals(method.signature());
+    }
+
+    /// Whether a receiver type that is not the owner of `method` has
+    /// another method that erases as `method` does: an overload the subtype
+    /// adds, `m(String)` beside the `m(T)` it inherits from a `Base<String>`,
+    /// or beside an inherited `<T> m(T)` called with `String` for `T`. Through
+    /// the owner the subtype's overload is not a candidate.
+    ///
+    /// The method itself is among the subtype's methods under a signature
+    /// in terms of the subtype's type parameters, which erases as it does
+    /// unless a type parameter of the method decides its erasure.
+    ///
+    /// A type variable does not say what its bounds add: it may have such
+    /// an overload of any method that takes arguments.
+    private static boolean hasTwin(TypeToken<?> searched, Invocable method) {
+        DeclaredToken<?> owner = method.owner();
+        return switch (searched) {
+            case DeclaredToken<?> declared when declared.shape() == owner.shape() -> false;
+            case DeclaredToken<?> declared -> {
+                MethodSignature erased = method.signature();
+                int itself =
+                        method.declared().instantiate(owner.argumentErasures()).equals(erased) ? 1 : 0;
+                yield candidates(declared.shape().methods(), method)
+                                .filter(s -> s.instantiate(declared.argumentErasures())
+                                        .equals(erased))
+                                .count()
+                        > itself;
+            }
+            case TypeVarToken<?> _ -> !method.params().isEmpty();
+            case ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ -> false;
+        };
+    }
+
+    /// The members of a type javac chooses among for a use of `member`: its
+    /// methods of that name and arity, instance and `static`, or its
+    /// constructors of that arity.
+    private static Stream<MethodTableTemplate.Signature> candidates(MethodTableTemplate template, Invocable member) {
+        Stream<MethodTableTemplate.Signature> members =
+                member.kind() == InvocableKind.CONSTRUCTOR ? template.constructors().stream() : template.methods();
+        return members.filter(s -> s.name().equals(member.name())
+                && s.params().size() == member.params().size());
+    }
+
+    /// Rejects a fact whose owner has another member that erases as the fact
+    /// does under the type arguments of the fact: `m(T)` and `m(String)` of
+    /// a `Box<String>`, `<T> m(T)` with `String` for `T` and `m(String)`.
+    /// Both take the arguments of the fact, cast or not, so javac reports
+    /// an ambiguity or resolves the other one.
+    ///
+    /// A member of a type without type parameters that is declared as it
+    /// erases has no such twin, and a table that does not list the fact
+    /// proves nothing.
+    ///
+    /// @throws FactLookupException if the owner of `member` has such a member
+    private static void requireDistinct(Invocable member) {
+        DeclaredToken<?> owner = member.owner();
+        List<ClassDesc> arguments = owner.argumentErasures();
+        MethodTableTemplate.Signature declared = member.declared();
+        MethodSignature erased = member.signature();
+        if (arguments.isEmpty() && declared.instantiate(arguments).equals(erased)) {
+            return;
+        }
+        List<MethodTableTemplate.Signature> candidates =
+                candidates(owner.shape().methods(), member).toList();
+        if (!candidates.contains(declared)) {
+            return;
+        }
+        List<String> twins = candidates.stream()
+                .filter(s -> !s.equals(declared) && s.instantiate(arguments).equals(erased))
+                .map(MethodTableTemplate.Signature::toString)
+                .sorted()
+                .toList();
+        if (!twins.isEmpty()) {
+            throw new FactLookupException(
+                    "way to make javac resolve " + member + ": it is declared " + declared + " and is " + erased
+                            + " here, as the overload declared " + String.join(", ", twins) + " is",
+                    owner.toString(),
+                    twins);
+        }
     }
 
     /// The receiver of a field of `owner`: cast to `owner` if it is of

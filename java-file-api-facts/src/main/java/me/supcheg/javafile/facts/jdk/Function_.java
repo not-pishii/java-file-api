@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts.jdk;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.TokenArg;
@@ -31,7 +32,8 @@ public final class Function_<T, R> {
 
     private Function_(RefToken<T> argument, RefToken<R> result) {
         this.token = Jdk.iface(Function.class, TokenArg.exact(argument), TokenArg.exact(result));
-        this.apply = UnsafeFacts.method(token, "apply", result, argument, MemberTraits.ABSTRACT);
+        this.apply = UnsafeFacts.method(
+                token, "apply", result, UnsafeFacts.param(argument, Param.var(0)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(apply);
     }
 

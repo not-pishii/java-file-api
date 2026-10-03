@@ -492,7 +492,8 @@ final class MetamodelEmitter {
                 CD_TEMPLATE,
                 signatures(template.abstractMethods()),
                 signatures(template.concreteMethods()),
-                signatures(template.staticMethods()));
+                signatures(template.staticMethods()),
+                signatures(template.constructors()));
     }
 
     private static Expr signatures(Collection<MethodTableTemplate.Signature> signatures) {
@@ -504,18 +505,25 @@ final class MetamodelEmitter {
     }
 
     private static Expr signature(MethodTableTemplate.Signature signature) {
-        List<Expr> args = new ArrayList<>();
-        args.add(Exprs.literal(signature.name()));
-        for (MethodTableTemplate.Param param : signature.params()) {
-            args.add(
-                    switch (param) {
-                        case MethodTableTemplate.Fixed(ClassDesc erasure) ->
-                            Exprs.staticCall(CD_PARAM, "fixed", classDesc(erasure));
-                        case MethodTableTemplate.Var(int index) ->
-                            Exprs.staticCall(CD_PARAM, "var", Exprs.literal(index));
-                    });
-        }
-        return Exprs.staticCall(CD_SIGNATURE, "of", args);
+        return Exprs.staticCall(
+                CD_SIGNATURE,
+                "of",
+                Stream.concat(
+                                Stream.of(Exprs.literal(signature.name())),
+                                signature.params().stream().map(MetamodelEmitter::param))
+                        .toList());
+    }
+
+    /// A parameter of the method table template as an expression that makes it.
+    static Expr param(MethodTableTemplate.Param param) {
+        return switch (param) {
+            case MethodTableTemplate.Fixed(ClassDesc erasure) ->
+                Exprs.staticCall(CD_PARAM, "fixed", classDesc(erasure));
+            case MethodTableTemplate.Var(int index, int dimensions)
+            when dimensions == 0 -> Exprs.staticCall(CD_PARAM, "var", Exprs.literal(index));
+            case MethodTableTemplate.Var(int index, int dimensions) ->
+                Exprs.staticCall(CD_PARAM, "var", Exprs.literal(index), Exprs.literal(dimensions));
+        };
     }
 
     /// A type reference as an expression that makes it.

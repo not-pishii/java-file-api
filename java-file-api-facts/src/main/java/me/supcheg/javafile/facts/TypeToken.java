@@ -19,8 +19,11 @@ import java.lang.constant.ClassDesc;
 /// public; a token that is not derived from another one is created by
 /// [UnsafeFacts] (§3.1).
 ///
+/// A token is also the [FactParam] of a parameter that is declared as the
+/// token erases.
+///
 /// @param <T> the Java type this token stands for
-public sealed interface TypeToken<T> permits RefToken, PrimitiveToken {
+public sealed interface TypeToken<T> extends FactParam<T> permits RefToken, PrimitiveToken {
 
     /// The type as written in generated code.
     ///

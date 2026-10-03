@@ -2,6 +2,9 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
+import java.lang.constant.ClassDesc;
+import java.util.List;
+
 /// A token of a declared type — a class or an interface, possibly
 /// parameterized, e.g. `String` or `List<String>`.
 ///
@@ -27,6 +30,14 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     ///
     /// @return the supertypes
     Supertypes supertypes();
+
+    /// The erasures the method table of [#shape()] is instantiated with, one
+    /// per type parameter of the type: the erasure of a type argument that is
+    /// a type or an upper bound, otherwise that of the bound of the type
+    /// parameter, as for the raw type.
+    ///
+    /// @return the erasures, empty for a type that is not generic
+    List<ClassDesc> argumentErasures();
 
     /// The methods of the type, instance and `static`, declared and inherited, as runtime
     /// data for the completeness checks of lowering.

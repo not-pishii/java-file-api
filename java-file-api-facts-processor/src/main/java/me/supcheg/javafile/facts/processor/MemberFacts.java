@@ -4,6 +4,7 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
 import me.supcheg.javafile.langmodel.mirror.FieldModel;
@@ -32,6 +33,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /// The facts of the members of a type in its full metamodel (mini-spec §2.3,
 /// §2.4, §2.7), each made by `UnsafeFacts`:
@@ -390,13 +394,15 @@ final class MemberFacts {
         Scope scope = scope(false);
         boolean isAbstract = self.kind() instanceof DeclaredKind.AbstractClass;
         int arity = ctor.params().size();
-        List<TypeRef> typeArgs = new ArrayList<>(List.of(ownerType()));
-        List<Expr> args = new ArrayList<>(List.of(owner(false)));
-        for (TypeRef param : ctor.params()) {
-            typeArgs.add(phantom(param, scope));
-            args.add(token(param, scope));
-        }
-        args.add(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), scope));
+        List<TypeRef> typeArgs = Stream.concat(
+                        Stream.of(ownerType()), ctor.params().stream().map(param -> phantom(param, scope)))
+                .toList();
+        List<Expr> args = Stream.of(
+                        Stream.of(owner(false)),
+                        params(ctor.params(), ctor.declared(), scope),
+                        Stream.of(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), scope)))
+                .flatMap(Function.identity())
+                .toList();
         String family = (isAbstract ? "AbstractCtorRef" : "CtorRef") + requireArity(arity);
         return value(
                 name,
@@ -485,12 +491,37 @@ final class MemberFacts {
     /// The `UnsafeFacts.method(owner, "name", result, params…, traits)` of a
     /// method, or the factory of its kind.
     private Expr methodFact(MethodModel method, List<Expr> witnesses, Scope scope) {
-        List<Expr> args = new ArrayList<>(List.of(owner(method.isStatic()), Exprs.literal(method.name())));
-        method.result().ifPresent(result -> args.add(token(result, scope)));
-        method.params().forEach(param -> args.add(token(param, scope)));
-        args.add(traits(method.overridability(), method.throwsTypes(), witnesses, scope));
+        List<Expr> args = Stream.of(
+                        Stream.of(owner(method.isStatic()), Exprs.literal(method.name())),
+                        method.result().stream().map(result -> token(result, scope)),
+                        params(method.params(), method.declared(), scope),
+                        Stream.of(traits(method.overridability(), method.throwsTypes(), witnesses, scope)))
+                .flatMap(Function.identity())
+                .toList();
         String factory = method.isStatic() ? "staticMethod" : "method";
         return unsafe(method.result().isEmpty() ? "void" + capitalized(factory) : factory, args);
+    }
+
+    /// The parameters of a method or constructor as its fact takes them: the
+    /// token of each, and how the member declares it where that is not how
+    /// the token erases — a type variable, or an array of one, which erases
+    /// with what it stands for. The declaration tells the fact from another
+    /// overload that takes the same tokens.
+    private Stream<Expr> params(List<TypeRef> params, List<MethodTableTemplate.Param> declared, Scope scope) {
+        return IntStream.range(0, params.size()).mapToObj(i -> {
+            Expr token = token(params.get(i), scope);
+            return erasesWithItsVariable(params.get(i))
+                    ? unsafe("param", token, MetamodelEmitter.param(declared.get(i)))
+                    : token;
+        });
+    }
+
+    private static boolean erasesWithItsVariable(TypeRef type) {
+        return switch (type) {
+            case TypeVarRef _ -> true;
+            case ArrayTypeRef array -> erasesWithItsVariable(array.component());
+            case PrimitiveTypeRef _, ClassTypeRef _, ParameterizedTypeRef _ -> false;
+        };
     }
 
     private Spec sam(MemberPlan.SamFact sam) {

@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class AbstractCtorRef1<O, A1> implements Invocable {
@@ -12,10 +13,13 @@ public final class AbstractCtorRef1<O, A1> implements Invocable {
 
     private final MemberTraits traits;
 
-    AbstractCtorRef1(AbstractClassToken<O> owner, TypeToken<A1> param1, MemberTraits traits) {
+    private final List<Param> declaredParams;
+
+    AbstractCtorRef1(AbstractClassToken<O> owner, TypeToken<A1> param1, MemberTraits traits, List<Param> declaredParams) {
         this.owner = owner;
         this.param1 = param1;
         this.traits = traits;
+        this.declaredParams = declaredParams;
     }
 
     @Override
@@ -50,6 +54,11 @@ public final class AbstractCtorRef1<O, A1> implements Invocable {
     @Override
     public MemberTraits traits() {
         return this.traits;
+    }
+
+    @Override
+    public List<Param> declaredParams() {
+        return this.declaredParams;
     }
 
     @Override

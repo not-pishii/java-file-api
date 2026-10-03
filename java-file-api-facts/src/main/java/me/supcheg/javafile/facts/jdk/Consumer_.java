@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -27,7 +28,8 @@ public final class Consumer_<T> {
 
     private Consumer_(RefToken<T> argument) {
         this.token = Jdk.iface(Consumer.class, TokenArg.exact(argument));
-        this.accept = UnsafeFacts.voidMethod(token, "accept", argument, MemberTraits.ABSTRACT);
+        this.accept = UnsafeFacts.voidMethod(
+                token, "accept", UnsafeFacts.param(argument, Param.var(0)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.voidSam(accept);
     }
 

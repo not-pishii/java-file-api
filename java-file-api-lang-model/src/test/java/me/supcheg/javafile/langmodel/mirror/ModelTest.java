@@ -66,7 +66,8 @@ class ModelTest {
     }
 
     private static MethodModel run(boolean isStatic, List<TypeParam> typeParams, Overridability overridability) {
-        return new MethodModel("run", isStatic, typeParams, Optional.empty(), List.of(), List.of(), overridability);
+        return new MethodModel(
+                "run", isStatic, typeParams, Optional.empty(), List.of(), List.of(), List.of(), overridability);
     }
 
     @Test
@@ -112,23 +113,58 @@ class ModelTest {
     @Test
     void methodsHaveAtMostTwelveParametersAndStaticOnesAreFinal() {
         assertThatThrownBy(() -> new MethodModel(
-                        "m", false, List.of(), Optional.empty(), THIRTEEN, List.of(), Overridability.OVERRIDABLE))
+                        "m",
+                        false,
+                        List.of(),
+                        Optional.empty(),
+                        THIRTEEN,
+                        List.of(),
+                        List.of(),
+                        Overridability.OVERRIDABLE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("method m has 13 parameters, more than 12");
         assertThatThrownBy(() -> new MethodModel(
-                        "m", true, List.of(), Optional.empty(), List.of(), List.of(), Overridability.OVERRIDABLE))
+                        "m",
+                        true,
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Overridability.OVERRIDABLE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("static method m cannot be OVERRIDABLE");
         assertThatThrownBy(() -> new MethodModel(
-                        "not a name", false, List.of(), Optional.empty(), List.of(), List.of(), Overridability.FINAL))
+                        "not a name",
+                        false,
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Overridability.FINAL))
                 .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new MethodModel(
+                        "m",
+                        false,
+                        List.of(),
+                        Optional.empty(),
+                        List.of(Types.INT),
+                        List.of(),
+                        List.of(),
+                        Overridability.FINAL))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("method m has 1 parameters, but 0 are declared: []");
     }
 
     @Test
     void constructorsHaveAtMostTwelveParameters() {
-        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of()))
+        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), List.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constructor has 13 parameters, more than 12");
+        assertThatThrownBy(() -> new CtorModel(List.of(), List.of(Types.INT), List.of(), List.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("a constructor has 1 parameters, but 0 are declared: []");
     }
 
     @Test

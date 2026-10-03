@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidMethodRef2<O, A1, A2> implements Invocable {
@@ -16,12 +17,15 @@ public final class VoidMethodRef2<O, A1, A2> implements Invocable {
 
     private final MemberTraits traits;
 
-    VoidMethodRef2(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, MemberTraits traits) {
+    private final List<Param> declaredParams;
+
+    VoidMethodRef2(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, MemberTraits traits, List<Param> declaredParams) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.param1 = param1;
         this.param2 = param2;
         this.traits = traits;
+        this.declaredParams = declaredParams;
     }
 
     @Override
@@ -60,6 +64,11 @@ public final class VoidMethodRef2<O, A1, A2> implements Invocable {
     @Override
     public MemberTraits traits() {
         return this.traits;
+    }
+
+    @Override
+    public List<Param> declaredParams() {
+        return this.declaredParams;
     }
 
     @Override

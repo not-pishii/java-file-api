@@ -66,6 +66,9 @@ public final class FactsCodegen {
     private static final ClassDesc INVOCABLES = ClassDesc.of(FACTS, "Invocables");
     private static final ClassDesc INVOCABLE_KIND = ClassDesc.of(FACTS, "InvocableKind");
     private static final ClassDesc MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
+    private static final ClassDesc FACT_PARAM = ClassDesc.of(FACTS, "FactParam");
+    private static final ClassDesc TEMPLATE_PARAM = ClassDesc.of(FACTS + ".MethodTableTemplate$Param");
+    private static final String DECLARED_PARAMS = "declaredParams";
     private static final ClassDesc MEMBER_QUERY = ClassDesc.of(FACTS + ".source", "MemberQuery");
     private static final ClassDesc RESOLUTION = ClassDesc.of(FACTS + ".source", "Resolution");
 
@@ -246,8 +249,32 @@ public final class FactsCodegen {
         };
     }
 
-    /// Fields and constructor parameters of a ref: owner, name?, result?, params, traits.
+    /// Fields and constructor parameters of a ref: owner, name?, result?, params, traits,
+    /// and the parameters as the member declares them.
     private record Slot(String name, TypeRef type) {}
+
+    /// The parameters of a factory of `UnsafeFacts`: those of the constructor of the ref, but
+    /// each parameter is a `FactParam`, which says how it is declared too.
+    private static List<Param> factoryParams(Family family, int n) {
+        return slots(family, n).stream()
+                .filter(s -> !s.name().equals(DECLARED_PARAMS))
+                .map(s -> new Param(
+                        s.name(),
+                        s.name().startsWith("param")
+                                ? Types.parameterized(
+                                        FACT_PARAM, var("A" + s.name().substring("param".length())))
+                                : s.type()))
+                .toList();
+    }
+
+    /// `Invocables.declared(owner, param1, ...)`: the parameters as the member declares them.
+    private static Expr declaredParams(Expr owner, int n) {
+        return staticCall(
+                INVOCABLES,
+                "declared",
+                Stream.concat(Stream.of(owner), IntStream.rangeClosed(1, n).mapToObj(i -> field("param" + i)))
+                        .toList());
+    }
 
     private static List<Slot> slots(Family family, int n) {
         List<Slot> slots = new ArrayList<>();
@@ -262,6 +289,7 @@ public final class FactsCodegen {
             slots.add(new Slot("param" + i, token("A" + i)));
         }
         slots.add(new Slot("traits", Types.of(MEMBER_TRAITS)));
+        slots.add(new Slot(DECLARED_PARAMS, Types.parameterized(LIST, Types.of(TEMPLATE_PARAM))));
         return slots;
     }
 
@@ -335,6 +363,11 @@ public final class FactsCodegen {
                                     .mapToObj(i -> (Expr) this_().field("param" + i))
                                     .toList()));
             override(cb, "traits", Types.of(MEMBER_TRAITS), this_().field("traits"));
+            override(
+                    cb,
+                    DECLARED_PARAMS,
+                    Types.parameterized(LIST, Types.of(TEMPLATE_PARAM)),
+                    this_().field(DECLARED_PARAMS));
             override(cb, "toString", Types.STRING, staticCall(INVOCABLES, "describe", this_()));
         });
     }
@@ -399,12 +432,15 @@ public final class FactsCodegen {
     }
 
     private static void factory(ClassBuilder cb, Family family, int n) {
-        List<Param> params = family.isSam()
-                ? List.of(new Param("method", samMethodType(family, n)))
-                : slots(family, n).stream()
-                        .map(s -> new Param(s.name(), s.type()))
-                        .toList();
-        List<Expr> args = params.stream().map(p -> (Expr) field(p.name())).toList();
+        List<Param> params =
+                family.isSam() ? List.of(new Param("method", samMethodType(family, n))) : factoryParams(family, n);
+        List<Expr> args = Stream.concat(
+                        params.stream()
+                                .map(p -> p.name().startsWith("param")
+                                        ? staticCall(INVOCABLES, "token", field(p.name()))
+                                        : field(p.name())),
+                        family.isSam() ? Stream.empty() : Stream.of(declaredParams(field("owner"), n)))
+                .toList();
         cb.withMethod(family.factory, family.type(n), mb -> {
             mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
             family.typeVars(n).forEach(v -> mb.withTypeParam(v));
@@ -468,6 +504,7 @@ public final class FactsCodegen {
                 args.add(field("param" + i));
             }
             args.add(call("resolve", staticCall(MEMBER_QUERY, query, queryArgs)).call("traits"));
+            args.add(declaredParams(call(lookupOwner(family)), n));
             mb.withBody(b -> b.return_(instantiate(family.desc(n), family.typeVars(n), args)));
         });
     }

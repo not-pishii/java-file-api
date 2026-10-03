@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.jdk;
 
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
@@ -10,6 +11,7 @@ import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.UnsafeFacts;
 
 import javax.annotation.processing.Generated;
+import java.lang.constant.ConstantDescs;
 import java.util.Objects;
 
 /// Facts of `java.util.Objects`.
@@ -31,6 +33,11 @@ public final class Objects_ {
     /// @param <T> the checked type
     /// @return the method fact
     public static <T> StaticMethodRef1<T, T> requireNonNull(RefToken<T> type) {
-        return UnsafeFacts.staticMethod(TOKEN, "requireNonNull", type, type, MemberTraits.FINAL.withTypeArgs(type));
+        return UnsafeFacts.staticMethod(
+                TOKEN,
+                "requireNonNull",
+                type,
+                UnsafeFacts.param(type, Param.fixed(ConstantDescs.CD_Object)),
+                MemberTraits.FINAL.withTypeArgs(type));
     }
 }

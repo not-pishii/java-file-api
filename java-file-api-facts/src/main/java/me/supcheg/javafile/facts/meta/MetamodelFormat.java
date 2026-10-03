@@ -15,12 +15,15 @@ package me.supcheg.javafile.facts.meta;
 /// - 2: metamodels of generic types with facts in terms of their type
 ///   parameters, facts of generic methods as factories that take a token per
 ///   type parameter, tokens of parameterized and raw types in signatures.
+/// - 3: a fact says how the member declares each parameter that is a type
+///   variable or an array of one, the method table lists `T[]` as an array of
+///   the type argument, and lists the constructors.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     private MetamodelFormat() {}
 }

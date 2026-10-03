@@ -10,6 +10,7 @@ import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -59,7 +60,7 @@ class CanonicalTest {
         Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
 
         assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 1
+                        javafile-facts-canonical 2
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -77,10 +78,11 @@ class CanonicalTest {
                         member method overridable run() -> void throws -
                         member method static <^0 extends java.lang.CharSequence> make(^0, int[]) -> ^0 throws -
                         table abstract -
-                        table concrete clone(); compareTo(p.T); equals(java.lang.Object); fill(java.lang.Number[]); \
+                        table concrete clone(); compareTo(p.T); equals(java.lang.Object); fill(#0[]); \
                         finalize(); get(int); getClass(); hashCode(); hidden(int); notify(); notifyAll(); pack(); \
                         put(#0, java.util.List, java.util.List, java.util.List); run(); toString(); wait(); wait(long); wait(long, int)
                         table static make(java.lang.CharSequence, int[])
+                        table ctor T(#0)
                         """);
     }
 
@@ -96,7 +98,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 1
+                        javafile-facts-canonical 2
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -328,7 +330,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 1
+                        javafile-facts-canonical 2
                         type p.T interface sealed=no
                         tparams -
                         superclasses -
@@ -339,6 +341,7 @@ class CanonicalTest {
                         table abstract m()
                         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
                         table static -
+                        table ctor -
                         """);
         assertThat(canonical(
                                 "p.Op",
@@ -413,6 +416,7 @@ class CanonicalTest {
                         Optional.of(Types.typeVar("Q")),
                         List.of(),
                         List.of(),
+                        List.of(),
                         Overridability.ABSTRACT)),
                 List.of());
 
@@ -439,12 +443,16 @@ class CanonicalTest {
                         new CtorModel(
                                 List.of(new TypeParam("E", List.of()), new TypeParam("F", List.of(Types.typeVar("E")))),
                                 List.of(Types.typeVar("E"), Types.typeVar("F")),
+                                List.of(
+                                        MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object),
+                                        MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object)),
                                 List.of()),
                         new MethodModel(
                                 "m",
                                 false,
                                 List.of(new TypeParam("E", List.of())),
                                 Optional.of(Types.typeVar("E")),
+                                List.of(),
                                 List.of(),
                                 List.of(),
                                 Overridability.FINAL)),

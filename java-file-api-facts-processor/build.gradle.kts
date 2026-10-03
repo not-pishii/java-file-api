@@ -14,6 +14,8 @@ testing {
         named<JvmTestSuite>("test") {
             dependencies {
                 implementation(libs.compile.testing)
+                // what the typed layer makes of the generated facts
+                implementation(project(":java-file-api-typed"))
             }
         }
     }

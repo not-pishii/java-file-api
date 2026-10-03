@@ -166,7 +166,7 @@ public final class MirrorTranslator {
         try {
             switch (member.getKind()) {
                 case FIELD -> field(owner, self, (VariableElement) member, members, skipped);
-                case CONSTRUCTOR -> constructor(self, (ExecutableElement) member, members, skipped);
+                case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member, members, skipped);
                 case METHOD -> method(owner, self, (ExecutableElement) member, members, skipped);
                 default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
             }
@@ -423,16 +423,25 @@ public final class MirrorTranslator {
         return new MethodTableTemplate(
                 signatures(table, Category.ABSTRACT),
                 signatures(table, Category.CONCRETE),
-                signatures(table, Category.STATIC));
+                signatures(table, Category.STATIC),
+                ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
+                        .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
+                        .map(constructor -> new MethodTableTemplate.Signature(
+                                desc(element).displayName(), declared(constructor, element, self)))
+                        .collect(Collectors.toUnmodifiableSet()));
     }
 
     /// The signature of a method as a member of a type, in the template of
     /// the method table.
     private MethodTableTemplate.Signature signature(ExecutableElement method, TypeElement owner, DeclaredType self) {
-        ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
-        return new MethodTableTemplate.Signature(
-                method.getSimpleName().toString(),
-                type.getParameterTypes().stream().map(p -> param(p, owner)).toList());
+        return new MethodTableTemplate.Signature(method.getSimpleName().toString(), declared(method, owner, self));
+    }
+
+    /// The parameters of a method or constructor as a member of a type, in
+    /// the template of the method table.
+    private List<MethodTableTemplate.Param> declared(ExecutableElement member, TypeElement owner, DeclaredType self) {
+        ExecutableType type = (ExecutableType) types.asMemberOf(self, member);
+        return type.getParameterTypes().stream().map(p -> param(p, owner)).toList();
     }
 
     private static Set<MethodTableTemplate.Signature> signatures(
@@ -444,15 +453,23 @@ public final class MirrorTranslator {
     }
 
     /// The erasure of a parameter in the template of the method table: a
-    /// type variable of the type itself is erased with the type argument.
+    /// type variable of the type itself, and an array of one, is erased with
+    /// the type argument.
     private MethodTableTemplate.Param param(TypeMirror param, TypeElement owner) {
-        if (param.getKind() == TypeKind.TYPEVAR) {
-            int index = owner.getTypeParameters().indexOf((TypeParameterElement) ((TypeVariable) param).asElement());
-            if (index >= 0) {
-                return new MethodTableTemplate.Var(index);
-            }
-        }
-        return new MethodTableTemplate.Fixed(erasure(types.erasure(param)));
+        return variable(param, owner, 0).orElseGet(() -> new MethodTableTemplate.Fixed(erasure(types.erasure(param))));
+    }
+
+    /// `type` as a type parameter of `owner` under `dimensions` array
+    /// dimensions more than its own; empty if it is not one, nor an array of one.
+    private static Optional<MethodTableTemplate.Param> variable(TypeMirror type, TypeElement owner, int dimensions) {
+        return switch (type.getKind()) {
+            case ARRAY -> variable(((ArrayType) type).getComponentType(), owner, dimensions + 1);
+            case TYPEVAR ->
+                Optional.of(owner.getTypeParameters().indexOf(((TypeVariable) type).asElement()))
+                        .filter(index -> index >= 0)
+                        .map(index -> new MethodTableTemplate.Var(index, dimensions));
+            default -> Optional.empty();
+        };
     }
 
     private ClassDesc erasure(TypeMirror erased) {
@@ -479,7 +496,7 @@ public final class MirrorTranslator {
             }
             switch (member.getKind()) {
                 case FIELD -> field(element, self, (VariableElement) member, members, skipped);
-                case CONSTRUCTOR -> constructor(self, (ExecutableElement) member, members, skipped);
+                case CONSTRUCTOR -> constructor(element, self, (ExecutableElement) member, members, skipped);
                 case METHOD -> method(element, self, (ExecutableElement) member, members, skipped);
                 default -> {
                     // enum constants are TypeModel.enumConstants; member types have models of their own
@@ -515,7 +532,11 @@ public final class MirrorTranslator {
     }
 
     private void constructor(
-            DeclaredType self, ExecutableElement constructor, List<MemberModel> members, List<SkippedMember> skipped) {
+            TypeElement owner,
+            DeclaredType self,
+            ExecutableElement constructor,
+            List<MemberModel> members,
+            List<SkippedMember> skipped) {
         Reading reading = new Reading(VarScope.of(constructor));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, constructor);
         List<TypeParam> typeParams = typeParams(type, reading);
@@ -524,7 +545,8 @@ public final class MirrorTranslator {
         reading.skipReason(params.size())
                 .ifPresentOrElse(
                         reason -> skipped.add(new SkippedMember("constructor " + constructor, reason)),
-                        () -> members.add(new CtorModel(typeParams, params, throwsTypes)));
+                        () -> members.add(
+                                new CtorModel(typeParams, params, declared(constructor, owner, self), throwsTypes)));
     }
 
     private void method(
@@ -571,7 +593,14 @@ public final class MirrorTranslator {
                 .ifPresentOrElse(
                         reason -> skipped.add(new SkippedMember("method " + method, reason)),
                         () -> members.add(new MethodModel(
-                                name, isStatic, typeParams, result, params, throwsTypes, overridability)));
+                                name,
+                                isStatic,
+                                typeParams,
+                                result,
+                                params,
+                                declared(method, owner, self),
+                                throwsTypes,
+                                overridability)));
     }
 
     private List<TypeParam> typeParams(ExecutableType type, Reading reading) {
