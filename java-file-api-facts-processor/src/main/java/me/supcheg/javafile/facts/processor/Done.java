@@ -1,6 +1,9 @@
 package me.supcheg.javafile.facts.processor;
 
 import java.lang.constant.ClassDesc;
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /// What became of a type in an earlier round: the one thing about a type the
 /// processor has to remember, since a metamodel is written once and the
@@ -22,4 +25,17 @@ sealed interface Done {
 
     /// It has no metamodel; an error is reported.
     record Failed() implements Done {}
+
+    /// Its metamodel is owed: metamodels written in earlier rounds refer to it, but it is not written
+    /// yet, for the type may turn out a supertype of a type that is not there
+    /// ([TypeGraph.Token.Held]). The types that mention it are done with, and are not read again to
+    /// find it mentioned, so it is remembered here.
+    ///
+    /// @param mentioners the binary names of the types whose metamodels refer to it, sorted
+    record Held(SortedSet<String> mentioners) implements Done {
+        /// Copies the names.
+        public Held {
+            mentioners = Collections.unmodifiableSortedSet(new TreeSet<>(mentioners));
+        }
+    }
 }

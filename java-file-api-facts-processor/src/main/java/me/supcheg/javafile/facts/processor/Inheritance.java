@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -79,6 +80,30 @@ final class Inheritance {
         return named(type)
                 .filter(supertype -> supertype.getKind() == TypeKind.ERROR)
                 .map(TypeMirror::toString);
+    }
+
+    /// Whether a type that does not exist yet may extend or implement a
+    /// type, directly or through others: not a `final` class, an enum or a
+    /// record, and of a `sealed` type only through a subtype it permits that
+    /// such a type may extend — or through one it permits that does not
+    /// exist yet itself.
+    ///
+    /// @param type a class, interface, enum or record
+    /// @return `true` if the type may yet turn out a supertype of a type another processor generates
+    static boolean open(TypeElement type) {
+        return switch (type.getKind()) {
+            case ENUM, RECORD, ANNOTATION_TYPE -> false;
+            default -> {
+                Set<Modifier> modifiers = type.getModifiers();
+                if (modifiers.contains(Modifier.FINAL)) {
+                    yield false;
+                }
+                yield !modifiers.contains(Modifier.SEALED)
+                        || type.getPermittedSubclasses().stream()
+                                .anyMatch(permitted -> permitted.getKind() != TypeKind.DECLARED
+                                        || open((TypeElement) ((DeclaredType) permitted).asElement()));
+            }
+        };
     }
 
     private static Stream<TypeMirror> named(TypeElement type) {

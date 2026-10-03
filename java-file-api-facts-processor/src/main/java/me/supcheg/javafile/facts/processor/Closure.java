@@ -71,10 +71,13 @@ import java.util.stream.Stream;
 /// one that is not generated yet among them: what such a type extends and
 /// implements in turn is not known, so the family is not all there, and nor
 /// is it while a class literal of `@Facts` names a type that is not
-/// generated yet. The graph tells so ([TypeGraph#complete()]), and nothing
-/// is written from it: once the missing type is there, a type this round
-/// has as only mentioned, or has not at all, may be a supertype of it, of
-/// which a full metamodel is wanted.
+/// generated yet. The graph tells so ([TypeGraph#complete()]): once the
+/// missing type is there, a type this round has as only mentioned may be a
+/// supertype of it, of which a full metamodel is wanted. So the token-only
+/// metamodel of a mentioned type that can be extended or implemented
+/// ([Inheritance#open]) is held back in such a graph ([Token.Held]); what
+/// nothing can extend gets its token-only metamodel at once, and the full
+/// metamodels are written whatever is missing.
 ///
 /// A generic type is rejected if a bound of its type parameters mentions a
 /// type the metamodel cannot declare the bound with — one that is not
@@ -91,8 +94,7 @@ final class Closure {
     /// The graph of a round.
     ///
     /// @param requested the types `@Facts` asks for, by binary name
-    /// @param unresolved the `@Facts` with a class literal of a type that is not generated yet, by the
-    ///     name of the type or package each is on
+    /// @param asked whether every class literal of `@Facts` names a type that is there
     /// @param done what became of types in earlier rounds, by binary name
     /// @param models the models of the round
     /// @param index the metamodels on the classpath
@@ -101,7 +103,7 @@ final class Closure {
     /// @return the graph
     static TypeGraph of(
             Map<String, TypeElement> requested,
-            Set<String> unresolved,
+            TypeGraph.Asked asked,
             Map<String, Done> done,
             Models models,
             ReuseIndex index,
@@ -129,20 +131,40 @@ final class Closure {
                 .filter(type -> !(type instanceof Kin.Declined))
                 .map(Kin::name)
                 .collect(Collectors.toSet());
-        SortedMap<String, Mention> mentioned = ready.values().stream()
-                .flatMap(read -> read.mentions().stream())
+        List<Edge.Supertype> missing = family.entrySet().stream()
+                .flatMap(entry -> Inheritance.missing(entry.getValue())
+                        .map(supertype -> new Edge.Supertype(entry.getKey(), supertype)))
+                .toList();
+        // while a type is missing, a mentioned type it may extend or implement is not known to be only mentioned
+        Holding holding =
+                asked == TypeGraph.Asked.ALL_THERE && missing.isEmpty() ? Holding.NOTHING : Holding.WHAT_IS_OPEN;
+        // the types whose metamodels are owed are mentioned by types no round reads again
+        SortedMap<String, Done.Held> owed = done.entrySet().stream()
+                .flatMap(entry -> entry.getValue() instanceof Done.Held held
+                        ? Stream.of(Map.entry(entry.getKey(), held))
+                        : Stream.empty())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+        SortedMap<String, Mention> mentioned = Stream.concat(
+                        ready.values().stream().flatMap(read -> read.mentions().stream()),
+                        owed.keySet().stream().flatMap(name -> mention(name, models).right().stream()))
                 .filter(mention -> !untokened.contains(mention.name()))
                 .collect(Collectors.toMap(Mention::name, Function.identity(), (first, second) -> first, TreeMap::new));
-        Function<String, Optional<Token>> tokens =
-                name -> Optional.ofNullable(mentioned.get(name)).map(mention -> token(mention, done, models, index));
+        Function<String, Optional<Token>> tokens = name ->
+                Optional.ofNullable(mentioned.get(name)).map(mention -> token(mention, done, models, index, holding));
         List<Node> present = Stream.<Stream<? extends Node>>of(
                         kin.stream().map(type -> switch (type) {
                             case Kin.Asked(String name, Request request, var _, var _) ->
                                 new Node.Requested(name, request);
                             case Kin.Inherited(String name, Request.Plan plan, var _, var _) ->
                                 new Node.Inherited(name, plan);
+                            // what a supertype without a full metamodel is, is known: its token is not held
                             case Kin.Declined(String name, String reason) ->
-                                new Node.Declined(name, reason, tokens.apply(name));
+                                new Node.Declined(
+                                        name,
+                                        reason,
+                                        Optional.ofNullable(mentioned.get(name))
+                                                .map(mention -> token(mention, done, models, index, Holding.NOTHING)));
                             case Kin.Hidden(String name) -> new Node.Hidden(name);
                         }),
                         mentioned.keySet().stream()
@@ -152,18 +174,18 @@ final class Closure {
                 .<Node>flatMap(Function.identity())
                 .toList();
         Set<String> names = present.stream().map(Node::name).collect(Collectors.toSet());
-        List<Edge.Supertype> missing = family.entrySet().stream()
-                .flatMap(entry -> Inheritance.missing(entry.getValue())
-                        .map(supertype -> new Edge.Supertype(entry.getKey(), supertype)))
-                .toList();
         Stream<Node> absent = Stream.concat(
                         waiting.values().stream(), missing.stream().map(Edge::to))
                 .distinct()
                 .filter(name -> !names.contains(name))
                 .map(Node.Absent::new);
-        Stream<Edge> signatures = ready.entrySet().stream()
-                .flatMap(entry -> entry.getValue().mentions().stream()
-                        .map(mention -> new Edge.Signature(entry.getKey(), mention.name())));
+        Stream<Edge> signatures = Stream.concat(
+                ready.entrySet().stream()
+                        .flatMap(entry -> entry.getValue().mentions().stream()
+                                .map(mention -> new Edge.Signature(entry.getKey(), mention.name()))),
+                owed.entrySet().stream()
+                        .flatMap(entry -> entry.getValue().mentioners().stream()
+                                .map(mentioner -> new Edge.Signature(mentioner, entry.getKey()))));
         Stream<Edge> inheritance = family.entrySet().stream()
                 .flatMap(entry -> Inheritance.direct(entry.getValue(), elements)
                         .map(supertype -> new Edge.Supertype(entry.getKey(), models.binaryName(supertype))));
@@ -171,7 +193,7 @@ final class Closure {
                 Stream.concat(present.stream(), absent),
                 Stream.of(signatures, inheritance, missing.stream(), awaits(ready, waiting, models, base, elements))
                         .flatMap(Function.identity()),
-                unresolved.stream());
+                asked);
     }
 
     /// What becomes of a requested type in this round.
@@ -183,6 +205,7 @@ final class Closure {
             case Done.Failed settled -> Kin.Asked.of(name, new Request.Settled(settled));
             case Done.Reused(var _, boolean full) when !full -> asked(name, find(type, models, index));
             case Done.Reused settled -> Kin.Asked.of(name, new Request.Settled(settled));
+            case Done.Held _ -> asked(name, find(type, models, index));
             case null -> asked(name, find(type, models, index));
         };
     }
@@ -216,6 +239,7 @@ final class Closure {
             case Done.Failed settled -> Kin.Inherited.of(name, new Request.Settled(settled));
             case Done.Reused(var _, boolean full) when !full -> inherited(name, find(type, models, index));
             case Done.Reused settled -> Kin.Inherited.of(name, new Request.Settled(settled));
+            case Done.Held _ -> inherited(name, find(type, models, index));
             case null -> inherited(name, find(type, models, index));
         };
     }
@@ -309,18 +333,23 @@ final class Closure {
     }
 
     /// What the round has for a token of a mentioned type that is not requested.
-    private static Token token(Mention mention, Map<String, Done> done, Models models, ReuseIndex index) {
+    private static Token token(
+            Mention mention, Map<String, Done> done, Models models, ReuseIndex index, Holding holding) {
         return switch (mention) {
             case Mention.Unavailable(var _, String reason) -> new Token.Unavailable(reason);
             case Mention.Available(String name, TypeElement type) ->
                 Optional.ofNullable(done.get(name))
+                        .filter(settled -> !(settled instanceof Done.Held))
                         .<Token>map(Token.Settled::new)
                         .orElseGet(() -> switch (index.find(type, ReuseIndex.Completeness.TOKEN, models)) {
                             case ReuseIndex.Lookup.Reusable(
                                     ClassDesc metamodel,
                                     ReuseIndex.Completeness completeness) ->
                                 new Token.OnClasspath(metamodel, completeness == ReuseIndex.Completeness.FULL);
-                            case ReuseIndex.Lookup.Absent(List<String> stale) -> new Token.Planned(type, stale);
+                            case ReuseIndex.Lookup.Absent(List<String> stale) ->
+                                holding == Holding.WHAT_IS_OPEN && Inheritance.open(type)
+                                        ? new Token.Held(type, stale)
+                                        : new Token.Planned(type, stale);
                         });
         };
     }
@@ -388,6 +417,14 @@ final class Closure {
                 .collect(Collectors.toMap(Mention.Unavailable::name, Mention.Unavailable::reason));
         return MemberPlan.of(read.type(), models, new Targets(models, assumed, unavailable), Set.of())
                 .mentionedTypes();
+    }
+
+    /// Which token-only metamodels a round holds back.
+    private enum Holding {
+        /// None: the graph is complete.
+        NOTHING,
+        /// Those of the types a type that is missing may extend or implement.
+        WHAT_IS_OPEN
     }
 
     /// A type of the family — a requested type or a supertype of one — and what the round makes of it.

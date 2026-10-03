@@ -114,14 +114,13 @@ class ReuseTest {
                 .compile(generator("b", "p.Other.class, gen.Late.class"))
                 .orFail();
 
-        // round 1 would reuse the token-only a.facts.p.Dep_ for Other, but settles nothing: gen.Late is
-        // not there; round 2 finds Dep to be a supertype, and every metamodel refers to its full one
+        // round 1 writes the full Other_, which takes the token of Dep from the token-only a.facts.p.Dep_
+        // of the classpath: a token of Dep whatever gen.Late turns out to extend. Round 2 finds Dep to be
+        // a supertype, for which the token-only metamodel is not enough: its full one is generated
         assertThat(b.sources().keySet())
                 .containsExactlyInAnyOrder("gen.Late", "b.facts.p.Other_", "b.facts.p.Dep_", "b.facts.gen.Late_");
         assertThat(b.sources().get("b.facts.p.Dep_")).contains("complete = true");
-        assertThat(b.sources().get("b.facts.p.Other_"))
-                .contains("Dep_.Data.SHAPE")
-                .doesNotContain("a.facts");
+        assertThat(b.sources().get("b.facts.p.Other_")).contains("a.facts.p.Dep_.Data.SHAPE");
         assertThat(b.diagnostics()).isEmpty();
     }
 

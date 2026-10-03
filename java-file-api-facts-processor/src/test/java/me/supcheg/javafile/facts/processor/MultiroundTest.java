@@ -15,21 +15,25 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// Fixture `multiround` (mini-spec §8, §9.2, Q13): types another processor
 /// generates, requested in `@Facts` or mentioned by a requested type, get
-/// their metamodels in a later round; no metamodel is written before every
-/// requested type and every supertype of one is there, so a type is known
-/// to be a supertype before its metamodel is written; a type that never
-/// appears is an error in the last round, which tells what each type
-/// waited for.
+/// their metamodels in a later round; while a requested type or a supertype
+/// of one is not there, the token-only metamodel of a type it may extend or
+/// implement is held back, so a type is known to be a supertype before its
+/// metamodel is written, and every other metamodel is written at once; a
+/// type that never appears is an error in the last round, which tells what
+/// each type waited for, and the metamodels held back are written there.
 class MultiroundTest {
     @TempDir
     Path classes;
@@ -129,8 +133,57 @@ class MultiroundTest {
             + " public Other other() { return null; } }";
     private static final String BASE = "package p; public class Base { public int inherited() { return 7; } }";
     private static final String OTHER = "package p; public class Other { public void other() {} }";
-    private static final String HELD =
-            "; no metamodel is written before that type is there, which may extend or" + " implement any other";
+    private static final String USE = """
+            package use;
+            import gen.facts.java.lang.Object_;
+            import gen.facts.java.lang.String_;
+            import gen.facts.p.Holder_;
+            class Use {
+                Object holder = Holder_.TOKEN;
+                Object base = Holder_.base;
+                Object string = String_.TOKEN;
+                Object object = Object_.toString;
+            }
+            """;
+
+    /// The warning of javac for a file a processor writes in the last round.
+    private static String lastRound(String metamodel) {
+        return "File for type '" + metamodel + "' created in the last round will not be subject to annotation"
+                + " processing.";
+    }
+
+    /// Records the types each round starts with: the sources it is given, and from the second round on
+    /// those the processors wrote in the round before.
+    private static final class Rounds extends AbstractProcessor {
+        private final List<Set<String>> roots = new ArrayList<>();
+
+        /// The types the processors wrote in a round, which are what the next round starts with.
+        ///
+        /// @param round the round, from 1
+        /// @return the qualified names, sorted
+        Set<String> writtenIn(int round) {
+            return roots.get(round);
+        }
+
+        @Override
+        public Set<String> getSupportedAnnotationTypes() {
+            return Set.of("*");
+        }
+
+        @Override
+        public SourceVersion getSupportedSourceVersion() {
+            return SourceVersion.latestSupported();
+        }
+
+        @Override
+        public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+            roots.add(round.getRootElements().stream()
+                    .filter(TypeElement.class::isInstance)
+                    .map(root -> ((TypeElement) root).getQualifiedName().toString())
+                    .collect(Collectors.toCollection(TreeSet::new)));
+            return false;
+        }
+    }
 
     private static Compiled process(InRounds generating, String... sources) {
         return Javac.facts().with(generating).compile(sources);
@@ -307,23 +360,43 @@ class MultiroundTest {
     }
 
     @Test
-    void nothingIsWrittenBeforeTheLastOfTheRequestedTypesIsThere() {
-        Compiled compilation = process(
+    void whatMayYetBeASupertypeIsHeldBackUntilTheLastOfTheRequestedTypesIsThere() {
+        Rounds rounds = new Rounds();
+        Compiled compilation = Javac.facts()
+                .with(
                         new InRounds(List.of(
                                 Map.of("gen.Late", LATE),
                                 Map.of("gen.Later", "package gen; public class Later extends p.Other {}"))),
-                        """
+                        rounds)
+                .compile("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class, gen.Later.class})
                 class G {}
-                """,
-                        HOLDER,
-                        BASE,
-                        OTHER)
+                """, HOLDER, BASE, OTHER, USE)
                 .orFail();
         Map<String, String> sources = compilation.sources();
 
+        // round 1 has neither gen.Late nor gen.Later: the full metamodels are what they are whatever
+        // those turn out to extend, and so are the token-only ones of final classes; those of Base, Other
+        // and InterruptedException, which a missing type may extend, are held back
+        assertThat(rounds.writtenIn(1))
+                .containsExactly(
+                        "gen.Late",
+                        "gen.facts.java.lang.Class_",
+                        "gen.facts.java.lang.Object_",
+                        "gen.facts.java.lang.String_",
+                        "gen.facts.p.Holder_");
         // round 2 has gen.Late, and Base as its supertype, but not gen.Later yet, which extends Other
+        assertThat(rounds.writtenIn(2)).containsExactly("gen.Later", "gen.facts.gen.Late_", "gen.facts.p.Base_");
+        // round 3 has every type: Other is a supertype, InterruptedException is only mentioned after all
+        assertThat(rounds.writtenIn(3))
+                .containsExactly(
+                        "gen.facts.gen.Later_", "gen.facts.java.lang.InterruptedException_", "gen.facts.p.Other_");
+        // Holder_ of round 1 names Base_ of round 2 and Other_ of round 3
+        assertThat(sources.get("gen.facts.p.Holder_"))
+                .contains("Base_.Data.SHAPE")
+                .contains("Other_.Data.SHAPE");
+        assertThat(sources.get("gen.facts.java.lang.InterruptedException_")).contains("complete = false");
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
         assertThat(sources.get("gen.facts.p.Other_"))
                 .contains("complete = true")
@@ -334,22 +407,33 @@ class MultiroundTest {
     }
 
     @Test
-    void nothingIsWrittenBeforeTheSupertypeOfARequestedTypeIsThere() {
-        Compiled compilation = process(
-                        new InRounds(List.of(Map.of("gen.Late", LATE))),
-                        """
+    void whatMayYetBeASupertypeIsHeldBackUntilTheSupertypeOfARequestedTypeIsThere() {
+        Rounds rounds = new Rounds();
+        Compiled compilation = Javac.facts()
+                .with(new InRounds(List.of(Map.of("gen.Late", LATE))), rounds)
+                .compile("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
                 class G {}
-                """,
-                        HOLDER,
-                        BASE,
-                        OTHER,
-                        "package p; public class Sub extends gen.Late {}")
+                """, HOLDER, BASE, OTHER, "package p; public class Sub extends gen.Late {}", USE)
                 .orFail();
         Map<String, String> sources = compilation.sources();
 
         // gen.Late is not asked for; what it extends is not known before it is there
+        assertThat(rounds.writtenIn(1))
+                .containsExactly(
+                        "gen.Late",
+                        "gen.facts.java.lang.Class_",
+                        "gen.facts.java.lang.Object_",
+                        "gen.facts.java.lang.String_",
+                        "gen.facts.p.Holder_");
+        assertThat(rounds.writtenIn(2))
+                .containsExactly(
+                        "gen.facts.gen.Late_",
+                        "gen.facts.java.lang.InterruptedException_",
+                        "gen.facts.p.Base_",
+                        "gen.facts.p.Other_",
+                        "gen.facts.p.Sub_");
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
         assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
         assertThat(sources.get("gen.facts.p.Other_")).contains("complete = false");
@@ -371,6 +455,8 @@ class MultiroundTest {
         TypeGraph graph = probe.graph();
 
         assertThat(graph.complete()).isFalse();
+        // what gen.Late may extend: not String or Class, which are final, nor Object, a supertype already
+        assertThat(graph.held()).containsExactly("java.lang.InterruptedException", "p.Base", "p.Other");
         assertThat(graph.missingSupertypes()).containsExactly(new TypeGraph.Edge.Supertype("p.Sub", "gen.Late"));
         assertThat(graph.nodes().get("gen.Late")).isEqualTo(new TypeGraph.Node.Absent("gen.Late"));
         // Base is only mentioned as far as this round knows
@@ -407,36 +493,116 @@ class MultiroundTest {
         assertThat(compilation.diagnostics()).isEmpty();
     }
 
+    private static final String[] HELD_BACK = {
+        "gen.facts.java.lang.InterruptedException_", "gen.facts.p.Base_", "gen.facts.p.Other_"
+    };
+
     @Test
-    void aRequestedTypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
-        Compiled compilation = process(new InRounds(List.of()), """
+    void aRequestedTypeThatNeverAppearsIsOneErrorOfJavacAndOneOfTheProcessor() {
+        Rounds rounds = new Rounds();
+        Compiled compilation = Javac.facts().with(rounds).compile("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
                 class G {}
-                """, HOLDER, BASE, OTHER);
+                """, HOLDER, BASE, OTHER, USE);
 
-        // javac tells that gen.Late is missing, the processor that it waited for it: no metamodel is
-        // written that would name another that is not, so nothing else is told
+        // javac tells that gen.Late is missing, the processor that it waited for it; the code that
+        // imports the metamodels written in round 1 has nothing to complain of
         assertThat(compilation.errors())
                 .containsExactly(
                         "cannot find symbol\n  symbol:   class Late\n  location: package gen",
-                        "a type in @Facts is not resolvable after all rounds" + HELD);
-        assertThat(compilation.warnings()).isEmpty();
+                        "a type in @Facts is not resolvable after all rounds");
+        assertThat(rounds.writtenIn(1))
+                .containsExactly(
+                        "gen.facts.java.lang.Class_",
+                        "gen.facts.java.lang.Object_",
+                        "gen.facts.java.lang.String_",
+                        "gen.facts.p.Holder_");
+        // what was held back for gen.Late is written when no round is left: javac warns of each file
+        assertThat(compilation.warnings())
+                .containsExactlyInAnyOrder(
+                        Stream.of(HELD_BACK).map(MultiroundTest::lastRound).toArray(String[]::new));
     }
 
     @Test
-    void aSupertypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
-        Compiled compilation = process(
-                new InRounds(List.of()), """
+    void anImportOfAMetamodelHeldBackForATypeThatNeverAppearsIsAnErrorOfItsOwn() {
+        Compiled compilation = Javac.facts().compile("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
+                class G {}
+                """, HOLDER, BASE, OTHER, USE, """
+                package use;
+                import gen.facts.p.Base_;
+                class UseHeld {
+                    Object base = Base_.TOKEN;
+                }
+                """);
+
+        // javac does not find a file of the last round through an import
+        assertThat(compilation.errors())
+                .containsExactly(
+                        "cannot find symbol\n  symbol:   class Base_\n  location: package gen.facts.p",
+                        "cannot find symbol\n  symbol:   class Late\n  location: package gen",
+                        "a type in @Facts is not resolvable after all rounds");
+    }
+
+    @Test
+    void aCompilerThatGoesOnAfterTheErrorFindsTheMetamodelsOfTheLastRound() {
+        Compiled compilation =
+                Javac.facts().options("-XDshould-stop.ifError=FLOW").compile("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
+                class G {}
+                """, HOLDER, BASE, OTHER, USE);
+
+        // Holder_ names Base_ and Other_, which the last round wrote, by their qualified names: javac
+        // attributes it, and has nothing to add
+        assertThat(compilation.errors())
+                .containsExactly(
+                        "cannot find symbol\n  symbol:   class Late\n  location: package gen",
+                        "a type in @Facts is not resolvable after all rounds");
+    }
+
+    @Test
+    void aSupertypeThatNeverAppearsIsOneErrorOfJavacAndOneOfTheProcessor() {
+        Compiled compilation =
+                Javac.facts().compile("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
                 class G {}
-                """, HOLDER, BASE, OTHER, "package p; public class Sub extends gen.Late {}");
+                """, HOLDER, BASE, OTHER, "package p; public class Sub extends gen.Late {}", USE);
 
-        assertThat(unresolvable(compilation))
-                .containsExactly("type p.Sub in @Facts is not resolvable after all rounds: it mentions gen.Late,"
-                        + " which no processor generated" + HELD);
-        assertThat(compilation.errors()).hasSize(2).noneMatch(message -> message.contains("_"));
+        assertThat(compilation.errors())
+                .containsExactly(
+                        "cannot find symbol\n  symbol:   class Late\n  location: package gen",
+                        "type p.Sub in @Facts is not resolvable after all rounds: it mentions gen.Late, which no"
+                                + " processor generated");
+        assertThat(compilation.warnings())
+                .containsExactlyInAnyOrder(
+                        Stream.of(HELD_BACK).map(MultiroundTest::lastRound).toArray(String[]::new));
+    }
+
+    @Test
+    void aSupertypeWithoutAFullMetamodelIsToldToTheRequestOfALaterRoundToo() {
+        String bounded = "package p; public class Bounded<T extends Secret> { public void lost() {} }";
+        Compiled compilation = process(
+                        new InRounds(List.of(Map.of(
+                                "gen.More",
+                                "package gen; @me.supcheg.javafile.facts.meta.Facts(p.Second.class) class More {}"))),
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.First.class)
+                class G {}
+                """,
+                        bounded,
+                        "package p; class Secret {}",
+                        "package p; public class First extends Bounded<Secret> {}",
+                        "package p; public class Second extends Bounded<Secret> {}")
+                .orFail();
+
+        String why = ": no facts of the public members inherited from p.Bounded, which has no full metamodel: the"
+                + " bounds of the type parameters of p.Bounded mention types that are not public: p.Secret";
+        assertThat(compilation.warnings()).containsExactly("p.First" + why, "p.Second" + why);
     }
 
     @Test
@@ -475,7 +641,7 @@ class MultiroundTest {
                 @me.supcheg.javafile.facts.meta.Facts({gen.Never.class, gen.Missing.class})
                 class G {}
                 """);
-        assertThat(compilation.errors()).contains("a type in @Facts is not resolvable after all rounds" + HELD);
+        assertThat(compilation.errors()).contains("a type in @Facts is not resolvable after all rounds");
     }
 
     @Test
