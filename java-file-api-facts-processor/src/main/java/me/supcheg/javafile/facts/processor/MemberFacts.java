@@ -25,15 +25,13 @@ import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -129,17 +127,44 @@ final class MemberFacts {
     ///
     /// @param desc the type
     /// @param kind the kind of the type
-    /// @param declared the type parameters as the type declares them, in order; empty unless generic
-    /// @param typeParams the type parameters of the metamodel, in order: those of `declared`, some renamed
-    /// @param witnesses the parameters of the constructor of the metamodel and its fields of the same
-    ///     names: a token per type parameter
-    record Self(
-            ClassDesc desc, DeclaredKind kind, List<String> declared, List<String> typeParams, List<String> witnesses) {
+    /// @param typeVars the type parameters of the type, in order; empty unless generic
+    record Self(ClassDesc desc, DeclaredKind kind, List<TypeVar> typeVars) {
+
+        /// The type, its type parameters given by the lists that name them.
+        ///
+        /// @param desc the type
+        /// @param kind the kind of the type
+        /// @param declared the type parameters as the type declares them, in order
+        /// @param typeParams the type parameters of the metamodel, in order: those of `declared`, some renamed
+        /// @param witnesses the parameters of the constructor of the metamodel and its fields of the same
+        ///     names: a token per type parameter
+        /// @return the type
+        static Self of(
+                ClassDesc desc,
+                DeclaredKind kind,
+                List<String> declared,
+                List<String> typeParams,
+                List<String> witnesses) {
+            return new Self(
+                    desc,
+                    kind,
+                    IntStream.range(0, declared.size())
+                            .mapToObj(i -> new TypeVar(declared.get(i), typeParams.get(i), witnesses.get(i)))
+                            .toList());
+        }
 
         boolean generic() {
-            return !declared.isEmpty();
+            return !typeVars.isEmpty();
         }
     }
+
+    /// A type parameter of the type the facts are of.
+    ///
+    /// @param declared its name as the type declares it
+    /// @param name its name in the metamodel: `declared`, or renamed
+    /// @param witness the parameter of the constructor of the metamodel that takes its token, and the
+    ///     field of the same name
+    record TypeVar(String declared, String name, String witness) {}
 
     /// How the type parameters and parameters of a [Spec.Factory] are named.
     sealed interface Locals {
@@ -161,84 +186,73 @@ final class MemberFacts {
     private final Self self;
     private final Targets targets;
     private final Locals locals;
+    /// The classes the facts refer to by simple name apart from the class of the metamodel, as
+    /// [Facts#uses] tells; each [#specs] adds to it.
     private final Set<ClassDesc> uses = new LinkedHashSet<>();
-    private final Set<ClassDesc> signatureTypes = new LinkedHashSet<>();
-    private boolean raw;
-    private boolean instanceFactories;
 
-    /// @param self the type of the metamodel
-    /// @param targets the metamodels of the types the signatures mention
-    /// @param locals how what is local to a factory is named
-    MemberFacts(Self self, Targets targets, Locals locals) {
+    private MemberFacts(Self self, Targets targets, Locals locals) {
         this.self = self;
         this.targets = targets;
         this.locals = locals;
     }
 
-    /// The classes the facts refer to by simple name apart from the class
-    /// of the metamodel: the fact classes, `MemberTraits`, the nested `Data`
-    /// classes of other metamodels and the types of the signatures.
+    /// The facts of a plan.
     ///
-    /// @return the classes, after [#specs]
-    Set<ClassDesc> uses() {
-        return uses;
-    }
-
-    /// The classes and interfaces the signatures mention.
-    ///
-    /// @return the types, after [#specs]
-    Set<ClassDesc> signatureTypes() {
-        return signatureTypes;
-    }
-
-    /// Whether a signature mentions a generic type without type arguments.
-    ///
-    /// @return `true` if the metamodel names a raw type, after [#specs]
-    boolean raw() {
-        return raw;
-    }
-
-    /// Whether a factory is an instance method, which reads the tokens of
-    /// the type parameters off the fields of the metamodel.
-    ///
-    /// @return `true` if the metamodel is to keep the tokens its constructor takes, after [#specs]
-    boolean instanceFactories() {
-        return instanceFactories;
-    }
-
-    /// The facts of a plan: enum constants in declaration order, then
-    /// fields, constructors, methods — each sorted by name — and `sam`.
-    ///
+    /// @param self the type of the metamodel
+    /// @param targets the metamodels of the types the signatures mention
+    /// @param locals how what is local to a factory is named
     /// @param plan the plan
     /// @return the facts
-    List<Spec> specs(MemberPlan plan) {
-        List<Spec> specs = new ArrayList<>();
-        for (MemberPlan.EnumFact constant : plan.enumConstants()) {
-            specs.add(new Spec.Constant(
-                    constant.name(),
-                    parameterized(family("EnumConstant"), Types.of(self.desc())),
-                    Exprs.field(MetamodelNames.TOKEN).call("constant", Exprs.literal(constant.constant()))));
+    static Facts of(Self self, Targets targets, Locals locals, MemberPlan plan) {
+        MemberFacts facts = new MemberFacts(self, targets, locals);
+        List<Spec> specs = facts.specs(plan);
+        return new Facts(specs, facts.uses);
+    }
+
+    /// The facts of a plan, and what they refer to.
+    ///
+    /// @param specs the facts: enum constants in declaration order, then fields, constructors, methods
+    ///     — each sorted by name — and `sam`
+    /// @param uses the classes the facts refer to by simple name apart from the class of the
+    ///     metamodel: the fact classes, `MemberTraits`, the nested `Data` classes of other metamodels
+    ///     and the markers of primitives
+    record Facts(List<Spec> specs, Set<ClassDesc> uses) {
+
+        /// Whether a factory is an instance method, which reads the tokens of
+        /// the type parameters off the fields of the metamodel.
+        ///
+        /// @return `true` if the metamodel is to keep the tokens its constructor takes
+        boolean instanceFactories() {
+            return specs.stream().anyMatch(spec -> spec instanceof Spec.Factory factory && !factory.isStatic());
         }
-        List<MemberPlan.Fact> sorted = plan.members().stream()
-                .sorted(Comparator.<MemberPlan.Fact>comparingInt(f -> group(f)).thenComparing(MemberPlan.Fact::name))
+    }
+
+    private List<Spec> specs(MemberPlan plan) {
+        return Stream.of(
+                        plan.enumConstants().stream()
+                                .<Spec>map(constant -> new Spec.Constant(
+                                        constant.name(),
+                                        parameterized(family("EnumConstant"), Types.of(self.desc())),
+                                        Exprs.field(MetamodelNames.TOKEN)
+                                                .call("constant", Exprs.literal(constant.constant())))),
+                        plan.members().stream()
+                                .sorted(Comparator.comparingInt(MemberFacts::group)
+                                        .thenComparing(MemberPlan.Fact::name))
+                                .map(fact -> switch (fact.model()) {
+                                    case FieldModel field -> field(fact.name(), field);
+                                    case CtorModel ctor -> ctor(fact.name(), ctor);
+                                    case MethodModel method -> method(fact.name(), method);
+                                }),
+                        plan.sam().stream().map(this::sam))
+                .flatMap(Function.identity())
                 .toList();
-        for (MemberPlan.Fact fact : sorted) {
-            specs.add(
-                    switch (fact.model()) {
-                        case FieldModel field -> field(fact.name(), field);
-                        case CtorModel ctor -> ctor(fact.name(), ctor);
-                        case MethodModel method -> method(fact.name(), method);
-                    });
-        }
-        plan.sam().ifPresent(sam -> specs.add(sam(sam)));
-        return specs;
     }
 
     private static int group(MemberPlan.Fact fact) {
         return switch (fact.model()) {
-            case FieldModel ignored -> 0;
-            case CtorModel ignored -> 1;
-            case MethodModel ignored -> 2;
+            case FieldModel _ -> 0;
+            case CtorModel _ -> 1;
+            case MethodModel _ -> 2;
         };
     }
 
@@ -270,17 +284,16 @@ final class MemberFacts {
     /// The scope of a member without type parameters of its own.
     private Scope scope(boolean isStatic) {
         boolean instance = self.generic() && !isStatic;
-        Map<String, Var> vars = new HashMap<>();
-        if (instance) {
-            for (int i = 0; i < self.declared().size(); i++) {
-                vars.put(
-                        self.declared().get(i),
-                        new Var(
-                                self.typeParams().get(i),
-                                Exprs.field(self.witnesses().get(i)),
-                                i));
-            }
-        }
+        Map<String, Var> vars = instance
+                ? IntStream.range(0, self.typeVars().size())
+                        .boxed()
+                        .collect(Collectors.toMap(
+                                i -> self.typeVars().get(i).declared(),
+                                i -> new Var(
+                                        self.typeVars().get(i).name(),
+                                        Exprs.field(self.typeVars().get(i).witness()),
+                                        i)))
+                : Map.of();
         return new Scope(vars, instance);
     }
 
@@ -301,8 +314,8 @@ final class MemberFacts {
         }
         return new ParameterizedTypeRef(
                 self.desc(),
-                self.typeParams().stream()
-                        .<TypeArg>map(name -> Types.exact(Types.typeVar(name)))
+                self.typeVars().stream()
+                        .<TypeArg>map(typeVar -> Types.exact(Types.typeVar(typeVar.name())))
                         .toList());
     }
 
@@ -329,13 +342,13 @@ final class MemberFacts {
                             parameterized(family("StaticFieldRef"), type),
                             unsafe("constantField", owned, nameLiteral, token, constantValue(constant.value())),
                             scope);
-                case FieldModel.Mutability.Final ignored ->
+                case FieldModel.Mutability.Final _ ->
                     value(
                             name,
                             parameterized(family("StaticFieldRef"), type),
                             unsafe("staticField", owned, nameLiteral, token),
                             scope);
-                case FieldModel.Mutability.Mutable ignored ->
+                case FieldModel.Mutability.Mutable _ ->
                     value(
                             name,
                             parameterized(family("MutableStaticFieldRef"), type),
@@ -344,19 +357,19 @@ final class MemberFacts {
             };
         }
         return switch (field.mutability()) {
-            case FieldModel.Mutability.Mutable ignored ->
+            case FieldModel.Mutability.Mutable _ ->
                 value(
                         name,
                         parameterized(family("MutableFieldRef"), owner, type),
                         unsafe("mutableField", owned, nameLiteral, token),
                         scope);
-            case FieldModel.Mutability.Final ignored ->
+            case FieldModel.Mutability.Final _ ->
                 value(
                         name,
                         parameterized(family("FieldRef"), owner, type),
                         unsafe("field", owned, nameLiteral, token),
                         scope);
-            case FieldModel.Mutability.Constant ignored ->
+            case FieldModel.Mutability.Constant _ ->
                 throw new IllegalStateException("an instance field is not a constant: " + field.name());
         };
     }
@@ -419,44 +432,42 @@ final class MemberFacts {
         Scope outer = scope(method.isStatic());
         List<String> declared =
                 method.typeParams().stream().map(TypeParam::name).toList();
-        List<String> names;
-        List<String> witnessNames;
-        switch (locals) {
-            case Locals.Probe ignored -> {
-                names = numbered("T", declared.size());
-                witnessNames = numbered("w", declared.size());
-            }
-            case Locals.Named(Set<String> typeNames, Set<String> taken) -> {
-                Set<String> hidden = new HashSet<>(typeNames);
-                Set<String> avoided = new HashSet<>(taken);
-                if (outer.instance()) {
-                    hidden.addAll(self.typeParams());
-                    avoided.addAll(self.witnesses());
-                }
-                names = MetamodelNames.typeParameters(declared, hidden);
-                witnessNames = MetamodelNames.witnesses(names, avoided);
-            }
-        }
-        Map<String, Var> vars = new HashMap<>(outer.vars());
-        List<Expr> witnessTokens = new ArrayList<>();
-        List<Witness> witnesses = new ArrayList<>();
-        for (int i = 0; i < declared.size(); i++) {
-            Expr witness = Exprs.field(witnessNames.get(i));
-            vars.put(declared.get(i), new Var(names.get(i), witness, -1));
-            witnessTokens.add(witness);
-            witnesses.add(
-                    new Witness(witnessNames.get(i), parameterized(use(CD_REF_TOKEN), Types.typeVar(names.get(i)))));
-        }
+        LocalNames local =
+                switch (locals) {
+                    case Locals.Probe _ ->
+                        new LocalNames(numbered("T", declared.size()), numbered("w", declared.size()));
+                    case Locals.Named(Set<String> typeNames, Set<String> taken) -> {
+                        Set<String> hidden = outer.instance()
+                                ? union(typeNames, self.typeVars().stream().map(TypeVar::name))
+                                : typeNames;
+                        Set<String> avoided = outer.instance()
+                                ? union(taken, self.typeVars().stream().map(TypeVar::witness))
+                                : taken;
+                        List<String> names = MetamodelNames.typeParameters(declared, hidden);
+                        yield new LocalNames(names, MetamodelNames.witnesses(names, avoided));
+                    }
+                };
+        List<String> names = local.typeParams();
+        List<Expr> witnessTokens =
+                local.witnesses().stream().<Expr>map(Exprs::field).toList();
+        List<Witness> witnesses = IntStream.range(0, declared.size())
+                .mapToObj(i -> new Witness(
+                        local.witnesses().get(i), parameterized(use(CD_REF_TOKEN), Types.typeVar(names.get(i)))))
+                .toList();
+        Map<String, Var> vars = Stream.concat(
+                        outer.vars().entrySet().stream(),
+                        IntStream.range(0, declared.size())
+                                .mapToObj(i ->
+                                        Map.entry(declared.get(i), new Var(names.get(i), witnessTokens.get(i), -1))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (_, inner) -> inner));
         Scope scope = new Scope(vars, outer.instance());
-        List<TypeParam> typeParams = new ArrayList<>();
-        for (int i = 0; i < declared.size(); i++) {
-            typeParams.add(new TypeParam(
-                    names.get(i),
-                    method.typeParams().get(i).bounds().stream()
-                            .map(bound -> (ClassOrInterfaceTypeRef) javaType(bound, scope))
-                            .toList()));
-        }
-        instanceFactories |= outer.instance();
+        List<TypeParam> typeParams = IntStream.range(0, declared.size())
+                .mapToObj(i -> new TypeParam(
+                        names.get(i),
+                        method.typeParams().get(i).bounds().stream()
+                                .map(bound -> (ClassOrInterfaceTypeRef) javaType(bound, scope))
+                                .toList()))
+                .toList();
         return new Spec.Factory(
                 name,
                 !outer.instance(),
@@ -466,21 +477,33 @@ final class MemberFacts {
                 methodFact(method, witnessTokens, scope));
     }
 
+    /// The names of the type parameters of a generic method and of its parameters.
+    ///
+    /// @param typeParams the type parameters, in order
+    /// @param witnesses the parameters, a token per type parameter
+    private record LocalNames(List<String> typeParams, List<String> witnesses) {}
+
+    private static Set<String> union(Set<String> names, Stream<String> more) {
+        return Stream.concat(names.stream(), more).collect(Collectors.toSet());
+    }
+
     private static List<String> numbered(String kind, int count) {
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            names.add(MemberPlan.PROBE + kind + i);
-        }
-        return names;
+        return IntStream.range(0, count)
+                .mapToObj(i -> MemberPlan.PROBE + kind + i)
+                .toList();
+    }
+
+    /// The phantom types of the result and the parameters of a method.
+    private Stream<TypeRef> phantoms(MethodModel method, Scope scope) {
+        return Stream.concat(
+                method.result().stream().map(result -> phantom(result, scope)),
+                method.params().stream().map(param -> phantom(param, scope)));
     }
 
     private TypeRef methodType(MethodModel method, Scope scope) {
-        List<TypeRef> typeArgs = new ArrayList<>();
-        if (!method.isStatic()) {
-            typeArgs.add(ownerType());
-        }
-        method.result().ifPresent(result -> typeArgs.add(phantom(result, scope)));
-        method.params().forEach(param -> typeArgs.add(phantom(param, scope)));
+        List<TypeRef> typeArgs = Stream.concat(
+                        Stream.of(ownerType()).filter(_ -> !method.isStatic()), phantoms(method, scope))
+                .toList();
         String family = (method.result().isEmpty() ? "Void" : "")
                 + (method.isStatic() ? "Static" : "")
                 + "MethodRef"
@@ -527,9 +550,8 @@ final class MemberFacts {
     private Spec sam(MemberPlan.SamFact sam) {
         MethodModel method = sam.method();
         Scope scope = scope(false);
-        List<TypeRef> typeArgs = new ArrayList<>(List.of(ownerType()));
-        method.result().ifPresent(result -> typeArgs.add(phantom(result, scope)));
-        method.params().forEach(param -> typeArgs.add(phantom(param, scope)));
+        List<TypeRef> typeArgs =
+                Stream.concat(Stream.of(ownerType()), phantoms(method, scope)).toList();
         boolean isVoid = method.result().isEmpty();
         String family =
                 (isVoid ? "VoidSam" : "Sam") + requireArity(method.params().size());
@@ -596,27 +618,21 @@ final class MemberFacts {
         Targets.Target target =
                 targets.of(desc).orElseThrow(() -> new IllegalStateException("no metamodel of " + desc.displayName()));
         ClassDesc data = use(target.metamodel().nested(MetamodelNames.DATA));
-        List<Expr> tokenArgs = new ArrayList<>(List.of(Exprs.staticField(data, MetamodelNames.SHAPE)));
-        for (TypeArg arg : args) {
-            tokenArgs.add(tokenArg(arg, scope));
-        }
+        List<Expr> tokenArgs = Stream.concat(
+                        Stream.of(Exprs.staticField(data, MetamodelNames.SHAPE)),
+                        args.stream().map(arg -> tokenArg(arg, scope)))
+                .toList();
         return new StaticMethodCallExpr(
                 Types.of(use(CD_UNSAFE_FACTS)), factory(target.kind()), tokenArgs, List.of(javaType(type, scope)));
     }
 
     /// Whether type arguments are the type parameters of the type itself, in order.
     private static boolean ownTypeParameters(List<TypeArg> args, Scope scope) {
-        if (args.isEmpty()) {
-            return false;
-        }
-        for (int i = 0; i < args.size(); i++) {
-            if (!(args.get(i) instanceof ExactTypeArg(TypeRef exact)
-                    && exact instanceof TypeVarRef variable
-                    && scope.var(variable.name()).position() == i)) {
-                return false;
-            }
-        }
-        return true;
+        return !args.isEmpty()
+                && IntStream.range(0, args.size())
+                        .allMatch(i -> args.get(i) instanceof ExactTypeArg(TypeRef exact)
+                                && exact instanceof TypeVarRef variable
+                                && scope.var(variable.name()).position() == i);
     }
 
     private Expr tokenArg(TypeArg arg, Scope scope) {
@@ -625,17 +641,17 @@ final class MemberFacts {
             case ExactTypeArg exact -> Exprs.staticCall(tokenArg, "exact", token(exact.type(), scope));
             case ExtendsTypeArg bound -> Exprs.staticCall(tokenArg, "extendsBound", token(bound.bound(), scope));
             case SuperTypeArg bound -> Exprs.staticCall(tokenArg, "superBound", token(bound.bound(), scope));
-            case UnboundedTypeArg ignored -> Exprs.staticCall(tokenArg, "unbounded");
+            case UnboundedTypeArg _ -> Exprs.staticCall(tokenArg, "unbounded");
         };
     }
 
     private static String factory(DeclaredKind kind) {
         return switch (kind) {
-            case DeclaredKind.FinalClass ignored -> "finalClassToken";
-            case DeclaredKind.OpenClass ignored -> "openClassToken";
-            case DeclaredKind.AbstractClass ignored -> "abstractClassToken";
-            case DeclaredKind.Interface ignored -> "interfaceToken";
-            case DeclaredKind.EnumClass ignored -> "enumToken";
+            case DeclaredKind.FinalClass _ -> "finalClassToken";
+            case DeclaredKind.OpenClass _ -> "openClassToken";
+            case DeclaredKind.AbstractClass _ -> "abstractClassToken";
+            case DeclaredKind.Interface _ -> "interfaceToken";
+            case DeclaredKind.EnumClass _ -> "enumToken";
         };
     }
 
@@ -654,19 +670,13 @@ final class MemberFacts {
         return switch (type) {
             case PrimitiveTypeRef primitive -> primitive;
             case ArrayTypeRef array -> Types.array(javaType(array.component(), scope));
-            case ClassTypeRef cls -> {
-                signatureTypes.add(cls.desc());
-                raw |= targets.generic(cls.desc());
-                yield cls;
-            }
-            case ParameterizedTypeRef parameterized -> {
-                signatureTypes.add(parameterized.raw());
-                yield new ParameterizedTypeRef(
+            case ClassTypeRef cls -> cls;
+            case ParameterizedTypeRef parameterized ->
+                new ParameterizedTypeRef(
                         parameterized.raw(),
                         parameterized.args().stream()
                                 .map(arg -> javaTypeArg(arg, scope))
                                 .toList());
-            }
             case TypeVarRef variable -> Types.typeVar(scope.var(variable.name()).name());
         };
     }
