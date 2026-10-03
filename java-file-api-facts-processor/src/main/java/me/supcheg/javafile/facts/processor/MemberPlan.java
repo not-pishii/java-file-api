@@ -6,14 +6,15 @@ import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
+import me.supcheg.routine.Either;
+import me.supcheg.routine.EitherCollectors;
+import me.supcheg.routine.Pair;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
-import java.lang.constant.ClassDesc;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,7 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Which members of a requested type get a fact, and under which name
@@ -94,44 +98,51 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @return the plan
     static MemberPlan of(TypeElement type, Models models, Targets targets, Set<String> taken) {
         Candidates candidates = Candidates.of(type, models, targets);
-        List<Skip> skipped = new ArrayList<>(candidates.skipped());
-        Set<Element> live = new LinkedHashSet<>(candidates.enumConstants());
-        live.addAll(candidates.members().keySet());
+        Set<Element> live = Stream.concat(candidates.enumConstants().stream(), candidates.members().keySet().stream())
+                .collect(Collectors.toSet());
         MetamodelNames.MemberNames names = MetamodelNames.members(candidates.named(), taken);
-        names.conflicts().forEach((name, sharing) -> {
-            if (sharing.stream().anyMatch(live::contains)) {
-                sharing.forEach(live::remove);
-                skipped.add(new Skip(
-                        String.join(
-                                ", ", sharing.stream().map(MemberPlan::describe).toList()),
-                        "would all be named " + name));
-            }
-        });
-        Map<Element, String> factNames = new LinkedHashMap<>();
-        names.names().forEach((element, name) -> {
-            if (!live.contains(element)) {
-                return;
-            }
-            if (taken.contains(name)) {
-                skipped.add(
-                        new Skip(describe(element), "would be named " + name + ", a name the metamodel itself uses"));
-                live.remove(element);
-            } else {
-                factNames.put(element, name);
-            }
-        });
+        // a conflict is skipped as a whole once one of its members is a candidate; none is in `names`
+        List<Skip> conflicts = names.conflicts().entrySet().stream()
+                .filter(conflict -> conflict.getValue().stream().anyMatch(live::contains))
+                .map(conflict -> new Skip(
+                        conflict.getValue().stream().map(MemberPlan::describe).collect(Collectors.joining(", ")),
+                        "would all be named " + conflict.getKey()))
+                .toList();
+        Pair<List<Skip>, Map<Element, String>> named = names.names().entrySet().stream()
+                .filter(entry -> live.contains(entry.getKey()))
+                .<Either<Skip, Map.Entry<Element, String>>>map(entry -> taken.contains(entry.getValue())
+                        ? Either.left(new Skip(
+                                describe(entry.getKey()),
+                                "would be named " + entry.getValue() + ", a name the metamodel itself uses"))
+                        : Either.right(entry))
+                .collect(EitherCollectors.groupingTo(
+                        Collectors.toList(),
+                        Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (first, second) -> second,
+                                LinkedHashMap::new)));
+        Map<Element, String> factNames = named.right();
         List<EnumFact> enums = candidates.enumConstants().stream()
-                .filter(live::contains)
+                .filter(factNames::containsKey)
                 .map(e -> new EnumFact(factNames.get(e), e.getSimpleName().toString()))
                 .toList();
-        List<Fact> members = new ArrayList<>();
-        candidates.members().forEach((element, model) -> {
-            if (live.contains(element)) {
-                members.add(new Fact(factNames.get(element), model));
-            }
-        });
-        Optional<SamFact> sam = sam(type, models, targets, members, skipped);
-        return new MemberPlan(enums, members, sam, skipped);
+        List<Fact> members = candidates.members().entrySet().stream()
+                .filter(entry -> factNames.containsKey(entry.getKey()))
+                .map(entry -> new Fact(factNames.get(entry.getKey()), entry.getValue()))
+                .toList();
+        Optional<Either<Skip, SamFact>> sam = sam(type, models, targets, members);
+        return new MemberPlan(
+                enums,
+                members,
+                sam.flatMap(either -> either.right()),
+                Stream.of(
+                                candidates.skipped().stream(),
+                                conflicts.stream(),
+                                named.left().stream(),
+                                sam.flatMap(either -> either.left()).stream())
+                        .flatMap(Function.identity())
+                        .toList());
     }
 
     /// Every member of a type that may get a fact, whatever its name, under
@@ -145,25 +156,36 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @return the plan, with nothing skipped
     static MemberPlan probe(TypeElement type, Models models, Targets targets) {
         Candidates candidates = Candidates.of(type, models, targets);
-        List<EnumFact> enums = new ArrayList<>();
-        for (Element constant : candidates.enumConstants()) {
-            enums.add(new EnumFact(
-                    PROBE + "e" + enums.size(), constant.getSimpleName().toString()));
-        }
-        List<Fact> members = new ArrayList<>();
-        candidates.members().forEach((element, model) -> members.add(new Fact(PROBE + members.size(), model)));
-        return new MemberPlan(enums, members, sam(type, models, targets, members, new ArrayList<>()), List.of());
+        List<EnumFact> enums = IntStream.range(0, candidates.enumConstants().size())
+                .mapToObj(i -> new EnumFact(
+                        PROBE + "e" + i,
+                        candidates.enumConstants().get(i).getSimpleName().toString()))
+                .toList();
+        List<MemberModel> memberModels = List.copyOf(candidates.members().values());
+        List<Fact> members = IntStream.range(0, memberModels.size())
+                .mapToObj(i -> new Fact(PROBE + i, memberModels.get(i)))
+                .toList();
+        return new MemberPlan(
+                enums, members, sam(type, models, targets, members).flatMap(either -> either.right()), List.of());
     }
 
     /// The names of the facts, `sam` among them if there is one.
     ///
     /// @return the names
     Set<String> names() {
-        Set<String> names = new LinkedHashSet<>();
-        enumConstants.forEach(fact -> names.add(fact.name()));
-        members.forEach(fact -> names.add(fact.name()));
-        sam.ifPresent(fact -> names.add(MetamodelNames.SAM));
-        return names;
+        return Stream.of(
+                        enumConstants.stream().map(EnumFact::name),
+                        members.stream().map(Fact::name),
+                        sam.stream().map(_ -> MetamodelNames.SAM))
+                .flatMap(Function.identity())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /// The members the facts are of, the single abstract method among them if there is one.
+    ///
+    /// @return the members
+    Stream<MemberModel> models() {
+        return Stream.concat(members.stream().map(Fact::model), sam.stream().map(SamFact::method));
     }
 
     /// The classes and interfaces whose metamodels the facts refer to, the
@@ -171,10 +193,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     ///
     /// @return the binary names
     Set<String> mentionedTypes() {
-        return Stream.concat(members.stream().map(Fact::model), sam.stream().map(SamFact::method))
-                .flatMap(Mentions::of)
-                .map(Models::binaryName)
-                .collect(Collectors.toCollection(TreeSet::new));
+        return models().flatMap(Mentions::of).map(Models::binaryName).collect(Collectors.toCollection(TreeSet::new));
     }
 
     /// The declared members of a type that a fact can be made of.
@@ -188,51 +207,49 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             List<Element> named, List<Element> enumConstants, Map<Element, MemberModel> members, List<Skip> skipped) {
 
         static Candidates of(TypeElement type, Models models, Targets targets) {
-            List<Skip> skipped = new ArrayList<>();
-            List<Element> named = new ArrayList<>();
-            List<Element> enumConstants = new ArrayList<>();
-            Map<Element, MemberModel> members = new LinkedHashMap<>();
-            for (Element member : type.getEnclosedElements()) {
-                switch (member.getKind()) {
-                    case ENUM_CONSTANT -> {
-                        enumConstants.add(member);
-                        named.add(member);
-                    }
-                    case FIELD, CONSTRUCTOR, METHOD -> {
-                        if (member.getModifiers().contains(Modifier.PUBLIC)) {
-                            named.add(member);
-                            candidate(type, member, models.translator(), targets, members, skipped);
-                        }
-                    }
-                    default -> {
-                        // member types have metamodels of their own; initializers are not members
-                    }
-                }
-            }
-            return new Candidates(named, enumConstants, members, skipped);
+            List<Element> enclosed = List.copyOf(type.getEnclosedElements());
+            // member types have metamodels of their own; initializers are not members
+            Predicate<Element> isConstant = member -> member.getKind() == ElementKind.ENUM_CONSTANT;
+            Predicate<Element> isPublicMember = member -> switch (member.getKind()) {
+                case FIELD, CONSTRUCTOR, METHOD -> member.getModifiers().contains(Modifier.PUBLIC);
+                default -> false;
+            };
+            List<Element> enumConstants = enclosed.stream().filter(isConstant).toList();
+            List<Element> publicMembers =
+                    enclosed.stream().filter(isPublicMember).toList();
+            List<Element> named =
+                    enclosed.stream().filter(isConstant.or(isPublicMember)).toList();
+            Pair<List<Skip>, Map<Element, MemberModel>> read = publicMembers.stream()
+                    .map(member -> candidate(type, member, models.translator(), targets))
+                    .collect(EitherCollectors.groupingTo(
+                            Collectors.toList(),
+                            Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (first, second) -> second,
+                                    LinkedHashMap::new)));
+            return new Candidates(named, enumConstants, read.right(), read.left());
         }
     }
 
-    private static void candidate(
-            TypeElement type,
-            Element member,
-            MirrorTranslator translator,
-            Targets targets,
-            Map<Element, MemberModel> candidates,
-            List<Skip> skipped) {
-        switch (translator.member(type, member)) {
+    /// A `public` field, constructor or method: the member and its model, or why it has no fact.
+    private static Either<Skip, Map.Entry<Element, MemberModel>> candidate(
+            TypeElement type, Element member, MirrorTranslator translator, Targets targets) {
+        return switch (translator.member(type, member)) {
             case Translation.Ok<MemberModel>(MemberModel model) -> {
                 Optional<String> unsupported = member.getKind() == ElementKind.CONSTRUCTOR && inner(type)
                         ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
                         : unsupported(model, targets);
-                unsupported.ifPresentOrElse(
-                        reason -> skipped.add(new Skip(describe(member), reason)), () -> candidates.put(member, model));
+                yield unsupported
+                        .<Either<Skip, Map.Entry<Element, MemberModel>>>map(
+                                reason -> Either.left(new Skip(describe(member), reason)))
+                        .orElseGet(() -> Either.right(Map.entry(member, model)));
             }
             case Translation.Deferred<MemberModel>(String unresolved) ->
                 throw new IllegalStateException(describe(member) + " was read, but mentions " + unresolved + " now");
             case Translation.Unrepresentable<MemberModel>(String reason) ->
-                skipped.add(new Skip(describe(member), reason));
-        }
+                Either.left(new Skip(describe(member), reason));
+        };
     }
 
     private static boolean inner(TypeElement type) {
@@ -240,36 +257,38 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 && !type.getModifiers().contains(Modifier.STATIC);
     }
 
-    private static Optional<SamFact> sam(
-            TypeElement type, Models models, Targets targets, List<Fact> members, List<Skip> skipped) {
+    /// The fact of the single abstract method, or why it has none; empty if there is no such method, or
+    /// the interface declares it and it has no fact, as is reported for the member.
+    private static Optional<Either<Skip, SamFact>> sam(
+            TypeElement type, Models models, Targets targets, List<Fact> members) {
         return switch (models.sam(type)) {
             case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
-                sam.flatMap(found -> {
-                    MethodModel method = found.method();
-                    Optional<String> unsupported = unsupported(method, targets);
-                    if (unsupported.isPresent()) {
-                        if (!found.declared()) {
-                            skipped.add(new Skip("the single abstract method " + method.name(), unsupported.get()));
-                        }
-                        return Optional.empty();
-                    }
-                    Optional<String> declared = members.stream()
-                            .filter(f -> f.model() instanceof MethodModel other
-                                    && !other.isStatic()
-                                    && other.typeParams().isEmpty()
-                                    && other.name().equals(method.name())
-                                    && other.params().equals(method.params()))
-                            .map(Fact::name)
-                            .findFirst();
-                    return Optional.of(new SamFact(method, declared));
-                });
+                sam.flatMap(found -> samFact(found, targets, members));
             case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
                 throw new IllegalStateException("the single abstract method was read, but mentions " + unresolved);
-            case Translation.Unrepresentable<Optional<SamModel>>(String reason) -> {
-                skipped.add(new Skip("the single abstract method", reason));
-                yield Optional.empty();
-            }
+            case Translation.Unrepresentable<Optional<SamModel>>(String reason) ->
+                Optional.of(Either.left(new Skip("the single abstract method", reason)));
         };
+    }
+
+    private static Optional<Either<Skip, SamFact>> samFact(SamModel found, Targets targets, List<Fact> members) {
+        MethodModel method = found.method();
+        Optional<String> unsupported = unsupported(method, targets);
+        if (unsupported.isPresent()) {
+            return found.declared()
+                    ? Optional.empty()
+                    : Optional.of(
+                            Either.left(new Skip("the single abstract method " + method.name(), unsupported.get())));
+        }
+        Optional<String> declared = members.stream()
+                .filter(f -> f.model() instanceof MethodModel other
+                        && !other.isStatic()
+                        && other.typeParams().isEmpty()
+                        && other.name().equals(method.name())
+                        && other.params().equals(method.params()))
+                .map(Fact::name)
+                .findFirst();
+        return Optional.of(Either.right(new SamFact(method, declared)));
     }
 
     /// Why a member cannot have a fact, though the translator read it.
@@ -279,14 +298,12 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         }
         // a token is made of every type of the signature, and the bounds of a generic method are written
         // out: all of them are to be types a metamodel can name
-        Set<ClassDesc> mentioned = Mentions.of(model).collect(Collectors.toCollection(LinkedHashSet::new));
-        for (ClassDesc desc : mentioned) {
-            if (targets.of(desc).isEmpty()) {
-                return Optional.of(
+        return Mentions.of(model)
+                .distinct()
+                .filter(desc -> targets.of(desc).isEmpty())
+                .findFirst()
+                .map(desc ->
                         "mentions " + Models.binaryName(desc) + ", which has no metamodel: " + targets.whyNone(desc));
-            }
-        }
-        return Optional.empty();
     }
 
     /// A member as a diagnostic names it: `method greet(p.Hidden)`.

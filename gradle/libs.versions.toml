@@ -7,6 +7,7 @@ compile-testing = "0.23.0"
 mockito = "5.23.0"
 vanniktech-maven-publish = "0.33.0"
 spotless = "8.8.0"
+routine = "1.0.0"
 
 [libraries]
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -15,6 +16,7 @@ compile-testing = { module = "com.google.testing.compile:compile-testing", versi
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+routine = { module = "me.supcheg:routine", version.ref = "routine" }
 
 [plugins]
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
