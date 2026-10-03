@@ -36,6 +36,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -258,6 +259,83 @@ class JdkTypesTest {
                 .contains("length", "charAt_int", "subSequence_int_int", "isEmpty");
         assertThat(loaded.factNames("gen.facts.java.lang.Object_")).contains("toString", "equals_Object", "hashCode");
         assertThat(compiled.warnings()).isEmpty();
+    }
+
+    /// `capacity()` is declared by the package-private `AbstractStringBuilder`, `LOCSIG` by the package-private
+    /// `ZipConstants`: the facts `StringBuilder_` and `ZipFile_` adopt are rendered by the typed layer as members
+    /// of the `public` types, which javac compiles in another package and the JVM runs.
+    @Test
+    void theMembersJdkTypesAdoptAreCalledThroughTheTypedLayer() throws Exception {
+        Compiled compilation = processor()
+                .compile(generator("java.lang.StringBuilder.class, java.util.zip.ZipFile.class"), """
+                package use;
+
+                import gen.facts.java.lang.StringBuilder_;
+                import gen.facts.java.util.zip.ZipFile_;
+                import java.lang.constant.ClassDesc;
+                import me.supcheg.javafile.facts.PrimitiveToken;
+                import me.supcheg.javafile.typed.TypedClassBuilder;
+                import me.supcheg.javafile.typed.TypedJavaFile;
+
+                import static me.supcheg.javafile.typed.Expressions.call;
+                import static me.supcheg.javafile.typed.Expressions.staticField;
+
+                public final class Run {
+                    public static String source() {
+                        return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                                    @Override
+                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                        cb.staticMethod(
+                                                "capacity",
+                                                PrimitiveToken.INT,
+                                                StringBuilder_.TOKEN,
+                                                (b, builder) -> b.return_(call(builder, StringBuilder_.capacity)));
+                                        cb.staticMethod(
+                                                "locsig",
+                                                PrimitiveToken.LONG,
+                                                StringBuilder_.TOKEN,
+                                                (b, builder) -> b.return_(staticField(ZipFile_.LOCSIG)));
+                                    }
+                                })
+                                .render();
+                    }
+                }
+                """)
+                .orFail();
+        Path classes = compilation.writeTo(out.resolve("classes"));
+        String source;
+        try (URLClassLoader run =
+                new URLClassLoader(new URL[] {classes.toUri().toURL()}, JdkTypesTest.class.getClassLoader())) {
+            source = (String) run.loadClass("use.Run").getMethod("source").invoke(null);
+        }
+
+        assertThat(source).contains("return v0.capacity();").contains("return ZipFile.LOCSIG;");
+        Path rendered = Javac.plain().alone().linted().compile(source).clean().writeTo(out.resolve("rendered"));
+        try (URLClassLoader loader =
+                new URLClassLoader(new URL[] {rendered.toUri().toURL()}, null)) {
+            Class<?> made = loader.loadClass("out.Out");
+            assertThat(made.getMethod("capacity", StringBuilder.class).invoke(null, new StringBuilder(32)))
+                    .isEqualTo(32);
+            assertThat(made.getMethod("locsig", StringBuilder.class).invoke(null, new StringBuilder()))
+                    .isEqualTo(0x04034b50L);
+        }
+    }
+
+    /// `Comparator` redeclares `equals(Object)`: that is a member it declares, with a fact of its own, as an
+    /// override in a class is; `Object`, a supertype of the interface (JLS 9.2), has the others.
+    @Test
+    void anInterfaceThatRedeclaresAMethodOfObjectHasAFactOfThatMethodAlone() {
+        Map<String, String> sources = processed("java.util.Comparator.class").sources();
+
+        assertThat(sources.get("gen.facts.java.util.Comparator_"))
+                .contains(" equals_Object;")
+                .doesNotContain("> hashCode")
+                .doesNotContain("> toString");
+        assertThat(sources.get("gen.facts.java.lang.Object_"))
+                .contains("complete = true")
+                .contains(" equals_Object = ")
+                .contains(" hashCode = ")
+                .contains(" toString = ");
     }
 
     @Test
