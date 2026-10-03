@@ -95,6 +95,10 @@ public final class Fields {
 `typed.apply(result, parameter, body, argument)` renders `static R go(P p) { return <body>; }`
 with the typed layer, compiles it against the library alone under `-Xlint:all -Werror`, and calls
 it with `argument`.
+`typed.render(result, parameter, body)` gives that source without compiling or running it: for
+a check on the source, and where the typed layer must reject a fact (`FactLookupException`). The
+library is on the classpath of what runs, so an argument of the JDK (a `String`) may be given to a
+class of the library.
 
 ### `use-fails/`
 
@@ -162,6 +166,7 @@ diff -r java-file-api-facts-processor/build/dump/before java-file-api-facts-proc
 | end to end through the typed layer | `use/` with a `Typed` parameter |
 | a member has no fact; a token out of bounds; a fact is not of a mutable family | `use-fails/` (the absence is in `expected/` too) |
 | a rule of every generated source; two cases that must agree | `SnapshotsTest` |
+| the metamodel of a type of the JDK, whose members are many | `JdkTypesTest` (no snapshot: it is tied to the JDK) |
 | several rounds with another processor, the graph, options that are wrong, anything driven step by step | a scenario test on `harness.Javac` |
 | a pure function over `javax.lang.model` elements | a unit test with `@ExtendWith(InCompilation.class)` |
 
@@ -192,19 +197,10 @@ compiled.snapshot().verify(Path.of("src/test/snapshots/MultiroundTest/late"));  
 Snapshots of such tests live under `src/test/snapshots/`, never under `src/test/fixtures/`
 (every directory there is a fixture).
 
-The old helpers and what replaces them:
-
-| `ProcessorHarness` / `FixtureSupport` | `harness` |
-|---|---|
-| `library(dir, classpath, sources…)` | `Javac.plain().classpath(classpath).compile(sources…).orFail().writeTo(dir)` |
-| `process(classpath, options, others, sources…)` | `Javac.facts().classpath(classpath).options(options).with(others…).compile(sources…)` |
-| `succeeded(compilation)` | `.orFail()` |
-| `generatedSources(…)`, `resources(…)` | `.sources()`, `.resources()` |
-| `messages(…, ERROR)`, `messages(…, WARNING)` | `.errors()`, `.warnings()` |
-| `write(compilation, dir)` | `.writeTo(dir)` |
-| `compileAndLoad(…)`, `fact(…)`, `factNames(…)`, `instance(…)`, `made(…)`, `use(…)` | a fixture: `expected/`, `use/`, `use-fails/` |
-| `withObject(base, …)` and other exact sets of sources | a snapshot |
-| a processor written in the test to get at `Elements` | `@ExtendWith(InCompilation.class)` + `@InCompilation.Sources(…)`, parameters `Elements`, `Types`, `ProcessingEnvironment`, `RoundEnvironment` |
+A processor written in the test to get at `Elements` is a unit test with `@ExtendWith(InCompilation.class)` and
+`@InCompilation.Sources(…)`; its parameters are `Elements`, `Types`, `ProcessingEnvironment`, `RoundEnvironment`.
+A library the test builds from a file of a fixture — `Source.in(Path.of("src/test/fixtures/reuse/lib"))` — is
+the way a scenario test and a fixture share sources instead of writing them twice.
 
 ## Adding a fixture or a case
 
@@ -214,37 +210,33 @@ The old helpers and what replaces them:
 3. Run with `-Pfixtures.update -Pfixtures.only=<fixture>`, and read the `expected/` it wrote.
 4. Write `use/` and `use-fails/` against the names in `expected/`; run without the flag.
 
-## Moving an old `*FixtureTest` here
+## Writing the checks of a fixture
 
-1. **Library.** Every text block of the test becomes a file of `lib/`. Libraries of different
-   tests of the class go into the one `lib/`; where two declare a type of the same name, rename
-   one (`Api` → `GoneApi`) — names in messages change with it, behaviour does not.
-2. **Cases.** One case per distinct request: the same types asked for with the same options are
-   one case, whatever number of tests used it. Do not merge requests the old tests kept apart
-   when a test asserts on the whole output of one (exact sets of sources, "no warnings").
-   A request `attempt(…)` expected to fail is a case with `expected/diagnostics.txt` alone.
-3. **Snapshot.** `-Pfixtures.update`, then check `expected/` against every assertion of the old
-   test on sources, fact names, resources and diagnostics — the snapshot must show each of them.
-   If it does not, the case is not the request the old test made.
-4. **`use/`.** Rewrite every assertion on loaded facts without reflection: `fact(loader,
-   "gen.facts.p.Greeter_", "INT")` is `Greeter_.INT`, a cast to a family is a typed local, an
-   instance of a generic metamodel is `new Box_<>(String_.TOKEN)`. Keep one check per old test
-   or per thing it tells, named for what it tells. `ranOn(…)` end-to-end helpers are
-   `typed.apply(…)`.
-5. **`use-fails/`.** `use(source)` expected not to compile, and any "has no fact X" assertion
-   worth a compile-time proof.
-6. **Table.** Write down old test → where each of its assertions went; delete the old class only
-   when the table has no gap. Compare the JaCoCo totals of the module before and after.
+1. **Library.** Every type the checks talk about is a file of `lib/`. Libraries of different requests go into the
+   one `lib/`; where two declare a type of the same name, rename one — names in messages change with it, behaviour
+   does not. A case that needs another version of a type has a `lib/` of its own with that file.
+2. **Cases.** One case per distinct request: the same types asked for with the same options are one case. Do not
+   merge requests when a check is on the whole output of one (exact sets of sources, "no warnings").
+   A request expected to fail is a case with `expected/diagnostics.txt` alone.
+3. **Snapshot.** `-Pfixtures.update`, then read `expected/` — it must show every fact and every message the checks
+   rely on.
+4. **`use/`.** A check on a fact is a typed local, not a cast: `StaticFieldRef<Prim.Int> n = Greeter_.N;`, an
+   instance of a generic metamodel is `new Box_<>(String_.TOKEN)`. An end-to-end check through the typed layer is
+   `typed.apply(…)` (renders, compiles and runs), `typed.render(…)` where the check is on the rendered source or on
+   the typed layer rejecting a fact.
+5. **`use-fails/`.** A member that has no fact; a token out of bounds.
 
 Pitfalls:
 
-- `use/` compiles under `-Xlint:all -Werror`: a raw type in a declaration is an error — use `var`
-  for facts of raw types (`var raw = box.raw_Map;`), and typed locals elsewhere.
-- Do not request JDK types (`String.class`) unless the test is about them: a full metamodel of a
-  JDK class is a large snapshot tied to the JDK version. A mentioned JDK type gets its
-  token-only metamodel anyway, and `String_.TOKEN` is there to use.
-- Line and column in `diagnostics.txt` are those of `@Facts` in `G.java`: reformatting `G.java`
-  changes the snapshot.
-- A check must be able to fail: after writing `use/`, break one expectation and see the test fail
-  with a message that tells why.
+- `use/` compiles under `-Xlint:all -Werror`: a raw type in a declaration is an error — use `var` for facts of raw
+  types (`var raw = box.raw_Map;`), and typed locals elsewhere. A class of `use/` must not be named like one of
+  `java.lang` (`Deprecated`).
+- Do not request JDK types (`String.class`) unless the test is about them: a full metamodel of a JDK class is a
+  large snapshot tied to the JDK version. A mentioned JDK type gets its token-only metamodel anyway, `String_.TOKEN`
+  is there to use (not in a library without any `Object`: an interface that mentions no `String` has none — add a
+  type of the library to be a witness). Tests of the JDK types are in `JdkTypesTest`, which keeps no snapshot.
+- Line and column in `diagnostics.txt` are those of `@Facts` in `G.java`: reformatting `G.java` changes the snapshot.
+- The class of `request/` that is the request is `G`: a library type of that name cannot be imported there.
+- A check must be able to fail: after writing `use/`, break one expectation and see the test fail with a message
+  that tells why.
 - The harness itself is tested by `harness/FixtureRunTest`; change the harness there first.

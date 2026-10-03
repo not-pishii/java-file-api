@@ -1,8 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
-import com.google.testing.compile.JavaFileObjects;
+import me.supcheg.javafile.facts.processor.harness.Compiled;
+import me.supcheg.javafile.facts.processor.harness.Javac;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -10,7 +9,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -21,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,8 +70,22 @@ class MultiroundTest {
         }
     }
 
-    private static Compilation process(String... sources) {
-        return ProcessorHarness.process(List.of(), List.of(), List.of(new Generating()), sources);
+    /// The metamodels every compilation generates besides those of its own types: the full one of `java.lang.Object`,
+    /// which every requested type extends, and the token-only ones of the types the signatures of `Object` mention.
+    ///
+    /// @param base the base of the mirror packages
+    /// @param others more metamodels, by qualified name
+    /// @return `others` and those of `Object`
+    private static List<String> withObject(String base, String... others) {
+        return Stream.concat(
+                        Stream.of(others),
+                        Stream.of("Object_", "Class_", "InterruptedException_", "String_")
+                                .map(name -> base + ".java.lang." + name))
+                .toList();
+    }
+
+    private static Compiled process(String... sources) {
+        return Javac.facts().with(new Generating()).compile(sources);
     }
 
     /// Generates sources round by round: those of the first map in its first round, of the second
@@ -119,28 +132,29 @@ class MultiroundTest {
     private static final String HELD =
             "; no metamodel is written before that type is there, which may extend or" + " implement any other";
 
-    private static Compilation process(InRounds generating, String... sources) {
-        return ProcessorHarness.process(List.of(), List.of(), List.of(generating), sources);
+    private static Compiled process(InRounds generating, String... sources) {
+        return Javac.facts().with(generating).compile(sources);
     }
 
     /// The errors of the last round about the requested types that never became ready, in order.
-    private static List<String> unresolvable(Compilation compilation) {
-        return ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR).stream()
+    private static List<String> unresolvable(Compiled compilation) {
+        return compilation.errors().stream()
                 .filter(message -> message.startsWith("type "))
                 .toList();
     }
 
     @Test
     void aRequestedTypeGeneratedByAnotherProcessorIsReadInTheNextRound() {
-        Compilation compilation = ProcessorHarness.succeeded(
-                process("""
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({gen.Missing.class, p.Uses.class})
                 class G {}
-                """, "package p; public class Uses { public gen.Missing missing() { return null; } }"));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                """, "package p; public class Uses { public gen.Missing missing() { return null; } }")
+                .orFail();
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.keySet())
-                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Missing",
                         "gen.Other",
@@ -152,30 +166,31 @@ class MultiroundTest {
 
     @Test
     void aTypeMentionedButNotGeneratedYetDefersTheRequestedType() {
-        Compilation compilation = ProcessorHarness.succeeded(
-                process("""
+        Compiled compilation = process(
+                        """
                 @me.supcheg.javafile.facts.meta.Facts(p.Uses.class)
                 package gen;
-                """, "package p; public class Uses { public gen.Missing missing() { return null; } }"));
-        assertThat(ProcessorHarness.generatedSources(compilation).keySet())
-                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                """, "package p; public class Uses { public gen.Missing missing() { return null; } }")
+                .orFail();
+        assertThat(compilation.sources().keySet())
+                .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts", "gen.Missing", "gen.Other", "gen.facts.p.Uses_", "gen.facts.gen.Missing_"));
     }
 
     @Test
     void aSupertypeGeneratedByAnotherProcessorGetsItsFullMetamodelInTheNextRound() {
-        Compilation compilation = ProcessorHarness.succeeded(
-                process("""
+        Compiled compilation = process("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
                 class G {}
-                """, "package p; public class Sub extends gen.Missing { public void sub() {} }"));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                """, "package p; public class Sub extends gen.Missing { public void sub() {} }")
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // Sub waits for its superclass; then Missing, which is not asked for, is read as a supertype, and
         // Other, which Missing mentions, gets a token
         assertThat(sources.keySet())
-                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Missing",
                         "gen.Other",
@@ -191,7 +206,7 @@ class MultiroundTest {
 
     @Test
     void aSupertypeThatMentionsATypeThatNeverAppearsIsToldWithTheRequestItIsThereFor() {
-        Compilation compilation = process("""
+        Compiled compilation = process("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
                 class G {}
@@ -208,8 +223,7 @@ class MultiroundTest {
 
     @Test
     void aTypeMentionedBeforeARequestedTypeThatExtendsItAppearsGetsItsFullMetamodel() throws Exception {
-        Compilation compilation = ProcessorHarness.succeeded(
-                process(new InRounds(List.of(Map.of("gen.Late", LATE))), """
+        Compiled compilation = process(new InRounds(List.of(Map.of("gen.Late", LATE))), """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
                 class G {}
@@ -240,13 +254,14 @@ class MultiroundTest {
                                 .render();
                     }
                 }
-                """));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                """)
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // round 1 has Base as a type Holder mentions, and writes nothing: gen.Late is not there; round 2
         // finds Base to be a supertype of it, and writes its full metamodel
         assertThat(sources.keySet())
-                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Late",
                         "gen.facts.gen.Late_",
@@ -262,24 +277,25 @@ class MultiroundTest {
                 .contains("VoidMethodRef0<Late> late")
                 .doesNotContain("> inherited");
         assertThat(sources.get("gen.facts.p.Holder_")).contains("Base_.Data.SHAPE");
-        assertThat(ProcessorHarness.resources(compilation))
+        assertThat(compilation.resources())
                 .containsKey("META-INF/javafile/metamodel/full/p.Base")
                 .doesNotContainKey("META-INF/javafile/metamodel/token/p.Base");
         assertThat(compilation.diagnostics()).isEmpty();
 
         // the member Late inherits is called through the metamodel of Base
-        ProcessorHarness.write(compilation, classes);
+        compilation.writeTo(classes);
         String source;
         try (URLClassLoader run =
                 new URLClassLoader(new URL[] {classes.toUri().toURL()}, MultiroundTest.class.getClassLoader())) {
             source = (String) run.loadClass("use.Run").getMethod("inherited").invoke(null);
         }
-        Compilation out = Compiler.javac()
-                .withClasspath(List.of(classes.toFile()))
-                .withOptions("-proc:none", "-Xlint:all", "-Werror")
-                .compile(JavaFileObjects.forSourceString("out.Out", source));
-        assertThat(out.status()).as("%s%n%s", out.diagnostics(), source).isEqualTo(Compilation.Status.SUCCESS);
-        ProcessorHarness.write(out, rendered);
+        Compiled out = Javac.plain()
+                .alone()
+                .linted()
+                .classpath(classes)
+                .compile(source)
+                .clean();
+        out.writeTo(rendered);
         try (URLClassLoader loader = new URLClassLoader(
                 new URL[] {rendered.toUri().toURL(), classes.toUri().toURL()}, null)) {
             Class<?> late = loader.loadClass("gen.Late");
@@ -292,19 +308,20 @@ class MultiroundTest {
 
     @Test
     void nothingIsWrittenBeforeTheLastOfTheRequestedTypesIsThere() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                new InRounds(List.of(
-                        Map.of("gen.Late", LATE),
-                        Map.of("gen.Later", "package gen; public class Later extends p.Other {}"))),
-                """
+        Compiled compilation = process(
+                        new InRounds(List.of(
+                                Map.of("gen.Late", LATE),
+                                Map.of("gen.Later", "package gen; public class Later extends p.Other {}"))),
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class, gen.Later.class})
                 class G {}
                 """,
-                HOLDER,
-                BASE,
-                OTHER));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                        HOLDER,
+                        BASE,
+                        OTHER)
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // round 2 has gen.Late, and Base as its supertype, but not gen.Later yet, which extends Other
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
@@ -318,18 +335,19 @@ class MultiroundTest {
 
     @Test
     void nothingIsWrittenBeforeTheSupertypeOfARequestedTypeIsThere() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                new InRounds(List.of(Map.of("gen.Late", LATE))),
-                """
+        Compiled compilation = process(
+                        new InRounds(List.of(Map.of("gen.Late", LATE))),
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
                 class G {}
                 """,
-                HOLDER,
-                BASE,
-                OTHER,
-                "package p; public class Sub extends gen.Late {}"));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                        HOLDER,
+                        BASE,
+                        OTHER,
+                        "package p; public class Sub extends gen.Late {}")
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // gen.Late is not asked for; what it extends is not known before it is there
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
@@ -341,15 +359,15 @@ class MultiroundTest {
     @Test
     void theGraphOfARoundIsNotCompleteWhileASupertypeIsMissing() {
         GraphProbe probe = new GraphProbe("p.Sub", "p.Holder");
-        ProcessorHarness.succeeded(ProcessorHarness.process(
-                List.of(),
-                List.of(),
-                List.of(new InRounds(List.of(Map.of("gen.Late", LATE))), probe),
-                "package gen; class G {}",
-                HOLDER,
-                BASE,
-                OTHER,
-                "package p; public class Sub extends gen.Late {}"));
+        Javac.facts()
+                .with(new InRounds(List.of(Map.of("gen.Late", LATE))), probe)
+                .compile(
+                        "package gen; class G {}",
+                        HOLDER,
+                        BASE,
+                        OTHER,
+                        "package p; public class Sub extends gen.Late {}")
+                .orFail();
         TypeGraph graph = probe.graph();
 
         assertThat(graph.complete()).isFalse();
@@ -361,21 +379,23 @@ class MultiroundTest {
 
     @Test
     void aTypeThatIsOnlyMentionedWhenEveryRequestedTypeIsThereKeepsItsTokenOnlyMetamodel() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                new InRounds(List.of(Map.of("gen.Unrelated", "package gen; public class Unrelated extends p.Base {}"))),
-                """
+        Compiled compilation = process(
+                        new InRounds(List.of(
+                                Map.of("gen.Unrelated", "package gen; public class Unrelated extends p.Base {}"))),
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Holder.class)
                 class G {}
                 """,
-                HOLDER,
-                BASE,
-                OTHER));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                        HOLDER,
+                        BASE,
+                        OTHER)
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // a type another processor generates that nothing asks for changes nothing
         assertThat(sources.keySet())
-                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Unrelated",
                         "gen.facts.p.Holder_",
@@ -383,13 +403,13 @@ class MultiroundTest {
                         "gen.facts.p.Other_"));
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = false");
         assertThat(sources.get("gen.facts.p.Other_")).contains("complete = false");
-        assertThat(ProcessorHarness.resources(compilation)).containsKey("META-INF/javafile/metamodel/token/p.Base");
+        assertThat(compilation.resources()).containsKey("META-INF/javafile/metamodel/token/p.Base");
         assertThat(compilation.diagnostics()).isEmpty();
     }
 
     @Test
     void aRequestedTypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
-        Compilation compilation = process(new InRounds(List.of()), """
+        Compiled compilation = process(new InRounds(List.of()), """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
                 class G {}
@@ -397,17 +417,16 @@ class MultiroundTest {
 
         // javac tells that gen.Late is missing, the processor that it waited for it: no metamodel is
         // written that would name another that is not, so nothing else is told
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+        assertThat(compilation.errors())
                 .containsExactly(
                         "cannot find symbol\n  symbol:   class Late\n  location: package gen",
                         "a type in @Facts is not resolvable after all rounds" + HELD);
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
-                .isEmpty();
+        assertThat(compilation.warnings()).isEmpty();
     }
 
     @Test
     void aSupertypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
-        Compilation compilation = process(
+        Compiled compilation = process(
                 new InRounds(List.of()), """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
@@ -417,34 +436,33 @@ class MultiroundTest {
         assertThat(unresolvable(compilation))
                 .containsExactly("type p.Sub in @Facts is not resolvable after all rounds: it mentions gen.Late,"
                         + " which no processor generated" + HELD);
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
-                .hasSize(2)
-                .noneMatch(message -> message.contains("_"));
+        assertThat(compilation.errors()).hasSize(2).noneMatch(message -> message.contains("_"));
     }
 
     @Test
     void aFactsAnotherProcessorGeneratesCannotMakeAMetamodelThatIsWrittenFull() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                new InRounds(List.of(Map.of(
-                        "gen.Late",
-                        LATE,
-                        "gen.More",
-                        "package gen; @me.supcheg.javafile.facts.meta.Facts(gen.Late.class) class More {}"))),
-                """
+        Compiled compilation = process(
+                        new InRounds(List.of(Map.of(
+                                "gen.Late",
+                                LATE,
+                                "gen.More",
+                                "package gen; @me.supcheg.javafile.facts.meta.Facts(gen.Late.class) class More {}"))),
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Holder.class)
                 class G {}
                 """,
-                HOLDER,
-                BASE,
-                OTHER));
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+                        HOLDER,
+                        BASE,
+                        OTHER)
+                .orFail();
+        Map<String, String> sources = compilation.sources();
 
         // the graph of round 1 is complete for the @Facts there is, so Base, which Holder mentions, gets
         // its token-only metamodel; the @Facts of round 2 is the first to ask for a subtype of Base
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = false");
         assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
+        assertThat(compilation.warnings())
                 .containsExactly("gen.Late: no facts of the public members inherited from p.Base, which has no full"
                         + " metamodel: its token-only metamodel gen.facts.p.Base_ was generated in an earlier round,"
                         + " before a type that extends or implements p.Base was asked for");
@@ -452,41 +470,41 @@ class MultiroundTest {
 
     @Test
     void aRequestedTypeThatNeverAppearsIsAnErrorInTheLastRound() {
-        Compilation compilation = process("""
+        Compiled compilation = process("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({gen.Never.class, gen.Missing.class})
                 class G {}
                 """);
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
-                .contains("a type in @Facts is not resolvable after all rounds" + HELD);
+        assertThat(compilation.errors()).contains("a type in @Facts is not resolvable after all rounds" + HELD);
     }
 
     @Test
     void aTypeMentioningATypeThatNeverAppearsIsAnErrorInTheLastRound() {
-        Compilation compilation =
+        Compiled compilation =
                 process("""
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Broken.class)
                 class G {}
                 """, "package p; public class Broken { public gen.Never never() { return null; } }");
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+        assertThat(compilation.errors())
                 .contains("type p.Broken in @Facts is not resolvable after all rounds: it mentions gen.Never, which"
                         + " no processor generated");
     }
 
     @Test
     void aFullMetamodelWaitsForTheMetamodelOfARequestedTypeItMentions() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                """
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
                 class G {}
                 """,
-                "package p; public class A { public B b() { return null; } }",
-                "package p; public class B { public gen.Missing missing() { return null; } }"));
+                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class B { public gen.Missing missing() { return null; } }")
+                .orFail();
 
         // B has to wait for gen.Missing, and A for B: else A would have no fact of b()
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.get("gen.facts.p.A_")).contains("B_.Data.SHAPE").contains("MethodRef0<A, B> b");
         assertThat(sources.get("gen.facts.p.B_")).contains("MethodRef0<B, Missing> missing");
         assertThat(compilation.diagnostics()).isEmpty();
@@ -494,17 +512,18 @@ class MultiroundTest {
 
     @Test
     void aFullMetamodelWaitsForARequestedTypeATypeArgumentOrABoundMentions() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                """
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.C.class, p.B.class})
                 class G {}
                 """,
-                "package p; public class A { public void all(java.util.List<? extends B> all) {} }",
-                "package p; public class C { public <T extends B> void bound(T t) {} }",
-                "package p; public class B { public gen.Missing missing() { return null; } }"));
+                        "package p; public class A { public void all(java.util.List<? extends B> all) {} }",
+                        "package p; public class C { public <T extends B> void bound(T t) {} }",
+                        "package p; public class B { public gen.Missing missing() { return null; } }")
+                .orFail();
 
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.get("gen.facts.p.A_"))
                 .contains("VoidMethodRef1<A, List<? extends B>> all_List")
                 .contains("TokenArg.extendsBound(UnsafeFacts.<B>openClassToken(B_.Data.SHAPE))");
@@ -515,7 +534,7 @@ class MultiroundTest {
 
     @Test
     void aFullMetamodelWhoseMentionedRequestedTypeNeverGetsReadyIsAnErrorInTheLastRound() {
-        Compilation compilation = process(
+        Compiled compilation = process(
                 """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
@@ -534,7 +553,7 @@ class MultiroundTest {
 
     @Test
     void theErrorOfTheLastRoundTellsTheChainOfMetamodelsATypeWaitsFor() {
-        Compilation compilation = process(
+        Compiled compilation = process(
                 """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.C.class, p.A.class, p.B.class, p.Fine.class})
@@ -559,7 +578,7 @@ class MultiroundTest {
 
     @Test
     void typesThatMentionEachOtherWaitForTheMissingTypeNotForEachOther() {
-        Compilation compilation = process(
+        Compiled compilation = process(
                 """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class, p.C.class})
@@ -582,17 +601,18 @@ class MultiroundTest {
 
     @Test
     void requestedTypesThatMentionEachOtherAreGeneratedInOneRound() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                """
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
                 class G {}
                 """,
-                "package p; public class A { public B b() { return null; } }",
-                "package p; public class B { public A a() { return null; } }"));
+                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class B { public A a() { return null; } }")
+                .orFail();
 
         // a metamodel refers to another through its Data.SHAPE only: neither has to be there first
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.get("gen.facts.p.A_")).contains("B_.Data.SHAPE").contains("MethodRef0<A, B> b");
         assertThat(sources.get("gen.facts.p.B_")).contains("A_.Data.SHAPE").contains("MethodRef0<B, A> a");
         assertThat(compilation.diagnostics()).isEmpty();
@@ -600,18 +620,19 @@ class MultiroundTest {
 
     @Test
     void typesThatMentionEachOtherAndATypeGeneratedLaterAreGeneratedOnceItIsThere() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                """
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class, p.C.class})
                 class G {}
                 """,
-                "package p; public class A { public B b() { return null; } }",
-                "package p; public class B { public A a() { return null; } public C c() { return null; } }",
-                "package p; public class C { public gen.Missing missing() { return null; } }"));
+                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class B { public A a() { return null; } public C c() { return null; } }",
+                        "package p; public class C { public gen.Missing missing() { return null; } }")
+                .orFail();
 
         // C waits for gen.Missing, B for C and A for B, though A and B mention each other
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.get("gen.facts.p.A_")).contains("MethodRef0<A, B> b");
         assertThat(sources.get("gen.facts.p.B_")).contains("MethodRef0<B, A> a").contains("MethodRef0<B, C> c");
         assertThat(sources.get("gen.facts.p.C_")).contains("MethodRef0<C, Missing> missing");
@@ -621,16 +642,16 @@ class MultiroundTest {
     @Test
     void theGraphOfARoundHasAnEdgeToWhatEachTypeWaitsFor() {
         GraphProbe probe = new GraphProbe("p.E", "p.D", "p.C", "p.B", "p.A");
-        ProcessorHarness.succeeded(ProcessorHarness.process(
-                List.of(),
-                List.of(),
-                List.of(new Generating(), probe),
-                "package gen; class G {}",
-                "package p; public class A { public B b() { return null; } }",
-                "package p; public class B { public gen.Missing missing() { return null; } }",
-                "package p; public class C { public D d() { return null; } }",
-                "package p; public class D { public C c() { return null; } }",
-                "package p; public class E { public A a() { return null; } public <T> E(T t, B b) {} }"));
+        Javac.facts()
+                .with(new Generating(), probe)
+                .compile(
+                        "package gen; class G {}",
+                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class B { public gen.Missing missing() { return null; } }",
+                        "package p; public class C { public D d() { return null; } }",
+                        "package p; public class D { public C c() { return null; } }",
+                        "package p; public class E { public A a() { return null; } public <T> E(T t, B b) {} }")
+                .orFail();
         TypeGraph graph = probe.graph();
 
         // in the first round gen.Missing is not generated yet; C and D mention each other, and await nothing;
@@ -653,7 +674,7 @@ class MultiroundTest {
 
     @Test
     void aFullMetamodelDoesNotWaitForATypeOnlyMembersWithoutAFactMention() {
-        Compilation compilation = process(
+        Compiled compilation = process(
                 """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
@@ -667,11 +688,11 @@ class MultiroundTest {
         // A(T, B) and take(Hidden, B) get no fact whatever becomes of B: A has nothing to wait for
         // the compilation fails for B, so what was generated cannot be read: the warnings of A, given
         // as its metamodel is written, tell that it was
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+        assertThat(compilation.errors())
                 .contains("type p.B in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
                         + " processor generated")
                 .noneMatch(message -> message.startsWith("type p.A in @Facts"));
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
+        assertThat(compilation.warnings())
                 .contains(
                         "p.A: no fact of constructor <T>A(T,p.B), which is a generic constructor, whose type"
                                 + " arguments a fact cannot give explicitly",
@@ -681,16 +702,17 @@ class MultiroundTest {
 
     @Test
     void anInterfaceWaitsForATypeItsInheritedSamMentions() {
-        Compilation compilation = ProcessorHarness.succeeded(process(
-                """
+        Compiled compilation = process(
+                        """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
                 class G {}
                 """,
-                "package p; public interface Base { gen.Missing run(); }",
-                "package p; public interface Sub extends Base {}"));
+                        "package p; public interface Base { gen.Missing run(); }",
+                        "package p; public interface Sub extends Base {}")
+                .orFail();
 
-        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        Map<String, String> sources = compilation.sources();
         assertThat(sources.get("gen.facts.p.Sub_"))
                 .contains("Sam0<Sub, Missing> sam")
                 .contains("Missing_.Data.SHAPE");

@@ -1,8 +1,5 @@
 package me.supcheg.javafile.facts.processor;
 
-import com.google.testing.compile.Compilation;
-import me.supcheg.javafile.facts.ShapeOrigin;
-import me.supcheg.javafile.facts.TypeShape;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -15,8 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /// The canonical form in a metamodel is cut into string constants that each
 /// fit the 65535 bytes of modified UTF-8 a class file allows, even where a
-/// single line of it does not.
-class CanonicalTextPartsTest extends FixtureSupport {
+/// single line of it does not. (A metamodel of a class with such a line is
+/// compiled in `GeneratedCodeTest`.)
+class CanonicalTextPartsTest {
     private static final String CYRILLIC = String.valueOf((char) 0x44f);
     private static final String CJK = String.valueOf((char) 0x4e2d);
     private static final String PAIR = new String(Character.toChars(0x1F600));
@@ -74,26 +72,5 @@ class CanonicalTextPartsTest extends FixtureSupport {
         assertThat(parts)
                 .allSatisfy(part ->
                         assertThat(modifiedUtf8(part)).isPositive().isLessThanOrEqualTo(MetamodelEmitter.TEXT_PART));
-    }
-
-    @Test
-    void aMetamodelWhoseCanonicalFormHasALineTooLongForOneConstantCompiles() throws Exception {
-        // not public: no facts, but all in the one line of the method table
-        String name = "a_method_with_a_name_long_enough_to_fill_the_table_" + "x".repeat(200) + CYRILLIC;
-        StringBuilder library = new StringBuilder("package p; public class Wide {");
-        for (int i = 0; i < 300; i++) {
-            library.append(" void ").append(name).append(i).append("(int a, String b) {}");
-        }
-        library.append(" }");
-        Compilation compilation = generate("p.Wide.class", library.toString());
-        ClassLoader loader = load(compilation);
-
-        TypeShape<?> shape = shape(loader, "gen.facts.p.Wide_");
-        assertThat(shape.origin()).isInstanceOfSatisfying(ShapeOrigin.Metamodel.class, origin -> {
-            String text = origin.canonical().get();
-            assertThat(text.lines().mapToInt(CanonicalTextPartsTest::modifiedUtf8))
-                    .anyMatch(bytes -> bytes > 65535);
-            assertThat(text).contains("table concrete " + name + "0(int, java.lang.String); ");
-        });
     }
 }

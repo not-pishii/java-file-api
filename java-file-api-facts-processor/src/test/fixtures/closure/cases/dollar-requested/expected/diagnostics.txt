@@ -1,0 +1,1 @@
+gen/G.java:5:17: error: p.Dol$lar: a class with $ in its simple name is not supported yet

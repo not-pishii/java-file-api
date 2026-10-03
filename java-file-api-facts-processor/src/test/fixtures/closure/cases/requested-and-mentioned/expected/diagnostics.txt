@@ -1,0 +1,3 @@
+gen/G.java:8:1: warning: p.A: no fact of method dollar(), which mentions p.Dol$lar, which has no metamodel: a class with $ in its simple name is not supported yet
+gen/G.java:8:1: warning: p.A: no fact of method marker(), which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
+gen/G.java:8:1: warning: p.A: no fact of method hidden(), which mentions types that are not public: p.Hidden
