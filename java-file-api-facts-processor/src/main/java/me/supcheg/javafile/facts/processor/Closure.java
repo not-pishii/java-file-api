@@ -4,6 +4,7 @@ import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
+import me.supcheg.javafile.langmodel.mirror.Hierarchy;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
@@ -21,9 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -115,15 +114,21 @@ final class Closure {
                         models::binaryName, Function.identity(), (first, second) -> first, TreeMap::new));
         List<Kin> kin = family.entrySet().stream()
                 .map(entry -> requested.containsKey(entry.getKey())
-                        ? ask(entry.getKey(), entry.getValue(), done, models, index)
+                        ? new Kin.Asked(entry.getKey(), find(entry.getKey(), entry.getValue(), done, models, index))
                         : inherit(entry.getKey(), entry.getValue(), done, models, index))
                 .toList();
         SortedMap<String, Reading.Ready> ready = kin.stream()
-                .flatMap(type -> type.ready().map(read -> Map.entry(type.name(), read)).stream())
+                .flatMap(type -> found(type)
+                        .flatMap(found -> found instanceof Found.Read(Reading.Ready read, var _)
+                                ? Stream.of(Map.entry(type.name(), read))
+                                : Stream.empty()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
         SortedMap<String, String> waiting = kin.stream()
-                .flatMap(type -> type.unresolved().map(awaited -> Map.entry(type.name(), awaited)).stream())
+                .flatMap(type -> found(type)
+                        .flatMap(found -> found instanceof Found.Waiting(String awaited)
+                                ? Stream.of(Map.entry(type.name(), awaited))
+                                : Stream.empty()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
         // a type of which a full metamodel is wanted needs no token-only one, and a hidden type has none
@@ -154,10 +159,8 @@ final class Closure {
                 Optional.ofNullable(mentioned.get(name)).map(mention -> token(mention, done, models, index, holding));
         List<Node> present = Stream.<Stream<? extends Node>>of(
                         kin.stream().map(type -> switch (type) {
-                            case Kin.Asked(String name, Request request, var _, var _) ->
-                                new Node.Requested(name, request);
-                            case Kin.Inherited(String name, Request.Plan plan, var _, var _) ->
-                                new Node.Inherited(name, plan);
+                            case Kin.Asked(String name, Found found) -> new Node.Requested(name, request(found));
+                            case Kin.Inherited(String name, Found.Full found) -> new Node.Inherited(name, plan(found));
                             // what a supertype without a full metamodel is, is known: its token is not held
                             case Kin.Declined(String name, String reason) ->
                                 new Node.Declined(
@@ -196,78 +199,80 @@ final class Closure {
                 asked);
     }
 
-    /// What becomes of a requested type in this round.
-    private static Kin ask(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
-        return switch (done.get(name)) {
-            case Done.Generated(ClassDesc metamodel, boolean full)
-            when !full -> Kin.Asked.of(name, new Request.Late(metamodel));
-            case Done.Generated settled -> Kin.Asked.of(name, new Request.Settled(settled));
-            case Done.Failed settled -> Kin.Asked.of(name, new Request.Settled(settled));
-            case Done.Reused(var _, boolean full) when !full -> asked(name, find(type, models, index));
-            case Done.Reused settled -> Kin.Asked.of(name, new Request.Settled(settled));
-            case Done.Held _ -> asked(name, find(type, models, index));
-            case null -> asked(name, find(type, models, index));
-        };
-    }
-
-    private static Kin asked(String name, Found found) {
-        return switch (found) {
-            case Found.Planned(Request.Plan plan, var ready, var unresolved) ->
-                new Kin.Asked(name, plan, ready, unresolved);
-            case Found.Unrepresentable(String reason) -> Kin.Asked.of(name, new Request.Unrepresentable(reason));
-            case Found.Rejected(String reason) -> Kin.Asked.of(name, new Request.Rejected(reason));
-        };
-    }
-
     /// What becomes of a supertype of a requested type that is not requested itself.
     private static Kin inherit(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
         if (!MirrorTranslator.isPublic(type)) {
             return new Kin.Hidden(name);
         }
-        Optional<String> refusal = MirrorTranslator.refusal(type);
-        if (refusal.isPresent()) {
-            return new Kin.Declined(name, refusal.get());
-        }
+        return MirrorTranslator.refusal(type)
+                .<Kin>map(refusal -> new Kin.Declined(name, refusal))
+                .orElseGet(() -> switch (find(name, type, done, models, index)) {
+                    case Found.Full full -> new Kin.Inherited(name, full);
+                    case Found.Late(ClassDesc tokenOnly) ->
+                        new Kin.Declined(
+                                name,
+                                "its token-only metamodel " + Models.binaryName(tokenOnly) + " was generated in an"
+                                        + " earlier round, before a type that extends or implements " + name
+                                        + " was asked for");
+                    case Found.Unrepresentable(String reason) -> new Kin.Declined(name, reason);
+                    case Found.Rejected(String reason) -> new Kin.Declined(name, reason);
+                });
+    }
+
+    /// What a round finds for the full metamodel wanted of a type: what an
+    /// earlier round made of it, or else one on the classpath to reuse, or
+    /// else the type as it is read.
+    private static Found find(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
         return switch (done.get(name)) {
-            case Done.Generated(ClassDesc metamodel, boolean full)
-            when !full ->
-                new Kin.Declined(
-                        name,
-                        "its token-only metamodel " + Models.binaryName(metamodel) + " was generated in an earlier"
-                                + " round, before a type that extends or implements " + name + " was asked for");
-            case Done.Generated settled -> Kin.Inherited.of(name, new Request.Settled(settled));
-            case Done.Failed settled -> Kin.Inherited.of(name, new Request.Settled(settled));
-            case Done.Reused(var _, boolean full) when !full -> inherited(name, find(type, models, index));
-            case Done.Reused settled -> Kin.Inherited.of(name, new Request.Settled(settled));
-            case Done.Held _ -> inherited(name, find(type, models, index));
-            case null -> inherited(name, find(type, models, index));
+            case Done.GeneratedToken(ClassDesc metamodel) -> new Found.Late(metamodel);
+            case Done.GeneratedFull settled -> new Found.Settled(settled);
+            case Done.ReusedFull settled -> new Found.Settled(settled);
+            case Done.Failed settled -> new Found.Settled(settled);
+            // neither is a full metamodel: one is looked for as if no round had dealt with the type
+            case Done.ReusedToken _, Done.Held _ -> look(type, models, index);
+            case null -> look(type, models, index);
         };
     }
 
-    private static Kin inherited(String name, Found found) {
-        return switch (found) {
-            case Found.Planned(Request.Plan plan, var ready, var unresolved) ->
-                new Kin.Inherited(name, plan, ready, unresolved);
-            case Found.Unrepresentable(String reason) -> new Kin.Declined(name, reason);
-            case Found.Rejected(String reason) -> new Kin.Declined(name, reason);
-        };
-    }
-
-    /// What a round finds for the full metamodel of a type no earlier round
-    /// dealt with: one on the classpath to reuse, or else the type as it is read.
-    private static Found find(TypeElement type, Models models, ReuseIndex index) {
+    private static Found look(TypeElement type, Models models, ReuseIndex index) {
         return switch (index.find(type, ReuseIndex.Completeness.FULL, models)) {
-            case ReuseIndex.Lookup.Reusable(ClassDesc metamodel, var _) ->
-                new Found.Planned(new Request.OnClasspath(metamodel), Optional.empty(), Optional.empty());
+            case ReuseIndex.Lookup.Reusable(ClassDesc metamodel, var _) -> new Found.Reusable(metamodel);
             case ReuseIndex.Lookup.Absent(List<String> stale) ->
                 switch (read(type, models)) {
-                    case Reading.Ready read ->
-                        new Found.Planned(new Request.Ready(type, stale), Optional.of(read), Optional.empty());
-                    case Reading.Waiting(String unresolved) ->
-                        new Found.Planned(new Request.Waiting(), Optional.empty(), Optional.of(unresolved));
+                    case Reading.Ready read -> new Found.Read(read, stale);
+                    case Reading.Waiting(String unresolved) -> new Found.Waiting(unresolved);
                     case Reading.Unrepresentable(String reason) -> new Found.Unrepresentable(reason);
                     case Reading.Rejected(String reason) -> new Found.Rejected(reason);
                 };
+        };
+    }
+
+    /// What the round finds for the full metamodel of a type of the family, if one is wanted of it.
+    private static Stream<Found> found(Kin kin) {
+        return switch (kin) {
+            case Kin.Asked(var _, Found found) -> Stream.of(found);
+            case Kin.Inherited(var _, Found.Full found) -> Stream.of(found);
+            case Kin.Declined _, Kin.Hidden _ -> Stream.empty();
+        };
+    }
+
+    /// What becomes of a request, as the graph tells it.
+    private static Request request(Found found) {
+        return switch (found) {
+            case Found.Full full -> plan(full);
+            case Found.Late(ClassDesc tokenOnly) -> new Request.Late(tokenOnly);
+            case Found.Unrepresentable(String reason) -> new Request.Unrepresentable(reason);
+            case Found.Rejected(String reason) -> new Request.Rejected(reason);
+        };
+    }
+
+    /// What becomes of a full metamodel that can be made, as the graph tells it.
+    private static Request.Plan plan(Found.Full found) {
+        return switch (found) {
+            case Found.Settled(Done done) -> new Request.Settled(done);
+            case Found.Reusable(ClassDesc metamodel) -> new Request.OnClasspath(metamodel);
+            case Found.Read(Reading.Ready read, List<String> stale) -> new Request.Ready(read.type(), stale);
+            case Found.Waiting _ -> new Request.Waiting();
         };
     }
 
@@ -345,7 +350,7 @@ final class Closure {
                             case ReuseIndex.Lookup.Reusable(
                                     ClassDesc metamodel,
                                     ReuseIndex.Completeness completeness) ->
-                                new Token.OnClasspath(metamodel, completeness == ReuseIndex.Completeness.FULL);
+                                new Token.OnClasspath(metamodel, completeness);
                             case ReuseIndex.Lookup.Absent(List<String> stale) ->
                                 holding == Holding.WHAT_IS_OPEN && Inheritance.open(type)
                                         ? new Token.Held(type, stale)
@@ -373,7 +378,15 @@ final class Closure {
                         entry -> factMentions(entry.getKey(), entry.getValue(), models, base, elements),
                         (first, second) -> first,
                         TreeMap::new));
-        SortedSet<String> held = held(new TreeSet<>(waiting.keySet()), factMentions);
+        // the types that wait: those that are not read, and every type a fact of which mentions one that waits
+        Set<String> held = Stream.concat(
+                        waiting.keySet().stream(),
+                        Hierarchy.beyond(
+                                List.copyOf(waiting.keySet()),
+                                awaited -> factMentions.entrySet().stream()
+                                        .filter(entry -> entry.getValue().contains(awaited))
+                                        .map(Map.Entry::getKey)))
+                .collect(Collectors.toSet());
         return Stream.concat(
                 waiting.entrySet().stream().map(entry -> new Edge.Awaits(entry.getKey(), entry.getValue())),
                 factMentions.entrySet().stream()
@@ -381,18 +394,6 @@ final class Closure {
                         .flatMap(entry -> entry.getValue().stream()
                                 .filter(mentioned -> held.contains(mentioned) && !mentioned.equals(entry.getKey()))
                                 .map(mentioned -> new Edge.Awaits(entry.getKey(), mentioned))));
-    }
-
-    /// The types that wait: those in `held` already, and every type a fact of which mentions one of
-    /// them, and so on until no type is added.
-    private static SortedSet<String> held(SortedSet<String> held, Map<String, Set<String>> factMentions) {
-        SortedSet<String> grown = Stream.concat(
-                        held.stream(),
-                        factMentions.entrySet().stream()
-                                .filter(entry -> entry.getValue().stream().anyMatch(held::contains))
-                                .map(Map.Entry::getKey))
-                .collect(Collectors.toCollection(TreeSet::new));
-        return grown.size() == held.size() ? held : held(grown, factMentions);
     }
 
     /// The types whose metamodels the facts of a type would refer
@@ -433,31 +434,15 @@ final class Closure {
         /// The binary name of the type.
         String name();
 
-        /// What the type mentions, if a full metamodel is wanted of it and it is read.
-        default Optional<Reading.Ready> ready() {
-            return Optional.empty();
-        }
-
-        /// The type it is not read for, if a full metamodel is wanted of it and it waits.
-        default Optional<String> unresolved() {
-            return Optional.empty();
-        }
-
         /// A type `@Facts` asks for.
-        record Asked(String name, Request request, Optional<Reading.Ready> ready, Optional<String> unresolved)
-                implements Kin {
-            static Asked of(String name, Request request) {
-                return new Asked(name, request, Optional.empty(), Optional.empty());
-            }
-        }
+        ///
+        /// @param found what the round finds for its full metamodel
+        record Asked(String name, Found found) implements Kin {}
 
         /// A supertype that gets a full metamodel.
-        record Inherited(String name, Request.Plan plan, Optional<Reading.Ready> ready, Optional<String> unresolved)
-                implements Kin {
-            static Inherited of(String name, Request.Plan plan) {
-                return new Inherited(name, plan, Optional.empty(), Optional.empty());
-            }
-        }
+        ///
+        /// @param found what the round finds for its full metamodel
+        record Inherited(String name, Found.Full found) implements Kin {}
 
         /// A supertype no full metamodel can be made of, though it is `public`.
         record Declined(String name, String reason) implements Kin {}
@@ -466,16 +451,31 @@ final class Closure {
         record Hidden(String name) implements Kin {}
     }
 
-    /// What a round finds for the full metamodel of a type.
+    /// What a round finds for the full metamodel wanted of a type.
     private sealed interface Found {
 
-        /// A full metamodel can be made, or is there to reuse.
+        /// A full metamodel is there, is reused, or can be written once the type is read.
+        sealed interface Full extends Found {}
+
+        /// An earlier round dealt with the type.
+        record Settled(Done done) implements Full {}
+
+        /// A full metamodel on the classpath matches the type.
+        record Reusable(ClassDesc metamodel) implements Full {}
+
+        /// The type is read: its full metamodel can be written.
         ///
-        /// @param plan what becomes of it
-        /// @param ready what the type mentions, if it is read
-        /// @param unresolved the type it is not read for, if it waits
-        record Planned(Request.Plan plan, Optional<Reading.Ready> ready, Optional<String> unresolved)
-                implements Found {}
+        /// @param read the type and what its signatures mention
+        /// @param stale why the metamodels of the type on the classpath are not reused
+        record Read(Reading.Ready read, List<String> stale) implements Full {}
+
+        /// The type or a type it mentions is not generated yet.
+        ///
+        /// @param unresolved the missing type, as javac names it
+        record Waiting(String unresolved) implements Full {}
+
+        /// An earlier round generated a token-only metamodel of the type.
+        record Late(ClassDesc tokenOnly) implements Found {}
 
         /// No metamodel can be made of the type.
         record Unrepresentable(String reason) implements Found {}

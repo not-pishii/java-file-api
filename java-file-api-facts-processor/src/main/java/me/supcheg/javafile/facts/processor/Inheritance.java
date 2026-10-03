@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.langmodel.mirror.Hierarchy;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -8,7 +10,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// What a type extends and implements (Q13): a requested type inherits
@@ -33,23 +34,7 @@ final class Inheritance {
     /// @param elements the element utilities of the compilation
     /// @return the supertypes
     static Stream<TypeElement> supertypes(TypeElement type, Elements elements) {
-        return further(List.of(type), Set.of(type), elements);
-    }
-
-    private static Stream<TypeElement> further(List<TypeElement> nearer, Set<TypeElement> seen, Elements elements) {
-        List<TypeElement> next = nearer.stream()
-                .flatMap(type -> direct(type, elements))
-                .distinct()
-                .filter(supertype -> !seen.contains(supertype))
-                .toList();
-        return next.isEmpty()
-                ? Stream.empty()
-                : Stream.concat(
-                        next.stream(),
-                        further(
-                                next,
-                                Stream.concat(seen.stream(), next.stream()).collect(Collectors.toSet()),
-                                elements));
+        return Hierarchy.beyond(List.of(type), nearer -> direct(nearer, elements));
     }
 
     /// The superclass and the superinterfaces a type names itself, the

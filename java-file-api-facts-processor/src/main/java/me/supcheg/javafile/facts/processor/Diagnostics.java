@@ -60,6 +60,16 @@ final class Diagnostics {
                 () -> messager.printMessage(Diagnostic.Kind.WARNING, message));
     }
 
+    /// Reports what a round found to tell.
+    ///
+    /// @param message the error or the warning
+    void report(Message message) {
+        switch (message) {
+            case Message.Error(Optional<? extends Element> element, String text) -> error(element, text);
+            case Message.Warning(Optional<? extends Element> element, String text) -> warning(element, text);
+        }
+    }
+
     /// Reports that a member of a type gets no fact (Q10): a warning, or
     /// under `-Ajavafile.facts.strict=true` an error if `@Facts` asks for
     /// the type and the type declares the member. Of a type that is in the
@@ -85,5 +95,21 @@ final class Diagnostics {
         } else {
             warning(element, message);
         }
+    }
+
+    /// What a round has to tell, read off its graph before anything is reported.
+    sealed interface Message {
+
+        /// An error.
+        ///
+        /// @param element the `@Facts` it concerns, empty if it no longer exists
+        /// @param text the message
+        record Error(Optional<? extends Element> element, String text) implements Message {}
+
+        /// A warning.
+        ///
+        /// @param element the `@Facts` it concerns, empty if it no longer exists
+        /// @param text the message
+        record Warning(Optional<? extends Element> element, String text) implements Message {}
     }
 }

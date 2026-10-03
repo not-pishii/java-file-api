@@ -108,8 +108,9 @@ class ClosureTest {
         assertThat(graph.from("p.Root", Edge.Supertype.class).map(Edge::to))
                 .containsExactly("java.lang.Object", "p.Mid");
         assertThat(graph.from("p.Mid", Edge.Supertype.class).map(Edge::to)).containsExactly("p.Top");
-        assertThat(graph.supertypes("p.Leaf")).containsExactly("java.lang.Object", "p.Mid", "p.Root", "p.Top");
-        assertThat(graph.supertypes("p.CtorEx"))
+        assertThat(GraphProbe.supertypes(graph, "p.Leaf"))
+                .containsExactly("java.lang.Object", "p.Mid", "p.Root", "p.Top");
+        assertThat(GraphProbe.supertypes(graph, "p.CtorEx"))
                 .containsExactly(
                         "java.io.Serializable", "java.lang.Exception", "java.lang.Object", "java.lang.Throwable");
         // every supertype is read for a full metamodel, as if it were asked for
@@ -155,7 +156,7 @@ class ClosureTest {
                 .containsExactly("p.HiddenBase");
         assertThat(graph.from("p.HiddenBase", Edge.Supertype.class).map(Edge::to))
                 .containsExactly("p.Root");
-        assertThat(graph.supertypes("p.OverHidden"))
+        assertThat(GraphProbe.supertypes(graph, "p.OverHidden"))
                 .containsExactly("java.lang.Object", "p.HiddenBase", "p.Mid", "p.Root", "p.Top");
         assertThat(graph.nodes().get("p.Root")).isInstanceOf(Node.Inherited.class);
         assertThat(graph.reasons("p.HiddenBase")).containsExactly(new Reason.Supertype("p.OverHidden"));
@@ -179,7 +180,7 @@ class ClosureTest {
                 .isInstanceOfSatisfying(
                         Node.Requested.class,
                         requested -> assertThat(requested.asked()).isInstanceOf(Request.Ready.class));
-        assertThat(graph.supertypes("p.OverBounded")).containsExactly("java.lang.Object", "p.Bounded");
+        assertThat(GraphProbe.supertypes(graph, "p.OverBounded")).containsExactly("java.lang.Object", "p.Bounded");
     }
 
     @Test
@@ -199,7 +200,7 @@ class ClosureTest {
         TypeGraph graph = graph("java.util.concurrent.TimeUnit", "java.lang.StringBuilder");
 
         assertThat(graph.edges()).noneMatch(edge -> edge instanceof Edge.Awaits);
-        assertThat(graph.supertypes("java.util.concurrent.TimeUnit"))
+        assertThat(GraphProbe.supertypes(graph, "java.util.concurrent.TimeUnit"))
                 .containsExactly(
                         "java.io.Serializable",
                         "java.lang.Comparable",

@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.langmodel.mirror.Hierarchy;
+
 import javax.lang.model.element.TypeElement;
 import java.lang.constant.ClassDesc;
 import java.util.Collections;
@@ -7,6 +9,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -72,46 +75,86 @@ import java.util.stream.Stream;
 /// so every answer comes in the same order however the graph was put
 /// together.
 ///
-/// @param nodes the types, by binary name
-/// @param edges the dependencies between them
-/// @param asked whether every type `@Facts` asks for is a node
-record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked asked) {
+final class TypeGraph {
+    private final SortedMap<String, Node> nodes;
+    private final SortedSet<Edge> edges;
+    private final Asked asked;
+    private final Map<String, List<Edge>> leaving;
+    private final Map<String, List<String>> mentioners;
+    private final Map<String, List<String>> subtypes;
 
     /// @throws IllegalArgumentException if a node is not under its own name, an edge is from or to a
     ///                                  type that is not a node, or a token-only metamodel is held
     ///                                  back though the graph is complete
-    TypeGraph {
-        SortedMap<String, Node> sortedNodes = new TreeMap<>(nodes);
-        SortedSet<Edge> sortedEdges = new TreeSet<>(Edge.ORDER);
-        sortedEdges.addAll(edges);
-        sortedNodes.forEach((name, node) -> {
+    private TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked asked) {
+        nodes.forEach((name, node) -> {
             if (!node.name().equals(name)) {
                 throw new IllegalArgumentException("node " + node.name() + " is under the name " + name);
             }
         });
-        sortedEdges.stream()
+        edges.stream()
                 .flatMap(edge -> Stream.of(edge.from(), edge.to()))
-                .filter(name -> !sortedNodes.containsKey(name))
+                .filter(name -> !nodes.containsKey(name))
                 .findFirst()
                 .ifPresent(name -> {
                     throw new IllegalArgumentException("an edge is at " + name + ", which is not a node");
                 });
-        nodes = Collections.unmodifiableSortedMap(sortedNodes);
-        edges = Collections.unmodifiableSortedSet(sortedEdges);
-        boolean complete = asked == Asked.ALL_THERE
-                && sortedEdges.stream()
-                        .noneMatch(edge ->
-                                edge instanceof Edge.Supertype && sortedNodes.get(edge.to()) instanceof Node.Absent);
-        if (complete) {
-            sortedNodes.values().stream()
-                    .filter(node ->
-                            node.token().filter(Token.Held.class::isInstance).isPresent())
-                    .findFirst()
-                    .ifPresent(node -> {
-                        throw new IllegalArgumentException(
-                                "the token-only metamodel of " + node.name() + " is held back, but no type is missing");
-                    });
+        this.nodes = Collections.unmodifiableSortedMap(nodes);
+        this.edges = Collections.unmodifiableSortedSet(edges);
+        this.asked = asked;
+        // the edges are read many times a round: each index is made once, in the order of the edges
+        this.leaving = edges.stream().collect(Collectors.groupingBy(Edge::from));
+        this.mentioners = edges.stream()
+                .filter(Edge.Signature.class::isInstance)
+                .collect(Collectors.groupingBy(Edge::to, Collectors.mapping(Edge::from, Collectors.toList())));
+        this.subtypes = edges.stream()
+                .filter(Edge.Supertype.class::isInstance)
+                .collect(Collectors.groupingBy(Edge::to, Collectors.mapping(Edge::from, Collectors.toList())));
+        if (complete()) {
+            held().findFirst().ifPresent(name -> {
+                throw new IllegalArgumentException(
+                        "the token-only metamodel of " + name + " is held back, but no type is missing");
+            });
         }
+    }
+
+    /// The types, by binary name.
+    ///
+    /// @return the nodes, sorted
+    SortedMap<String, Node> nodes() {
+        return nodes;
+    }
+
+    /// The dependencies between the types.
+    ///
+    /// @return the edges, in [Edge#ORDER]
+    SortedSet<Edge> edges() {
+        return edges;
+    }
+
+    /// Whether every type `@Facts` asks for is a node.
+    ///
+    /// @return whether one is missing
+    Asked asked() {
+        return asked;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof TypeGraph graph
+                && nodes.equals(graph.nodes)
+                && List.copyOf(edges).equals(List.copyOf(graph.edges))
+                && asked == graph.asked;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nodes, List.copyOf(edges), asked);
+    }
+
+    @Override
+    public String toString() {
+        return "TypeGraph[nodes=" + nodes + ", edges=" + edges + ", asked=" + asked + "]";
     }
 
     /// A graph of nodes and edges, in whatever order they come, in which
@@ -189,10 +232,9 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
     /// @param <E> the kind of the edges
     /// @return the edges
     <E extends Edge> Stream<E> from(String name, Class<E> kind) {
-        return edges.stream()
+        return leaving.getOrDefault(name, List.of()).stream()
                 .filter(kind::isInstance)
-                .map(kind::cast)
-                .filter(edge -> edge.from().equals(name));
+                .map(kind::cast);
     }
 
     /// The types whose signatures mention a type, sorted.
@@ -200,19 +242,7 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
     /// @param name the binary name of the mentioned type
     /// @return the binary names of the types that mention it
     Stream<String> mentioners(String name) {
-        return edges.stream()
-                .filter(edge -> edge instanceof Edge.Signature && edge.to().equals(name))
-                .map(Edge::from);
-    }
-
-    /// The types a type extends or implements, directly or through others,
-    /// sorted.
-    ///
-    /// @param name the binary name of the type
-    /// @return the binary names of its supertypes
-    Stream<String> supertypes(String name) {
-        Map<String, List<String>> direct = supertypeEdges(Edge::from, Edge::to);
-        return reach(new TreeSet<>(Set.of(name)), direct).stream().filter(supertype -> !supertype.equals(name));
+        return mentioners.getOrDefault(name, List.of()).stream();
     }
 
     /// The requested types a type is a supertype of, and the type itself if
@@ -222,8 +252,11 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
     /// @param name the binary name of the type
     /// @return the binary names of the requested types
     Stream<String> roots(String name) {
-        Map<String, List<String>> direct = supertypeEdges(Edge::to, Edge::from);
-        return reach(new TreeSet<>(Set.of(name)), direct).stream()
+        return Stream.concat(
+                        Stream.of(name),
+                        Hierarchy.beyond(
+                                List.of(name), supertype -> subtypes.getOrDefault(supertype, List.of()).stream()))
+                .sorted()
                 .filter(subtype -> nodes.get(subtype) instanceof Node.Requested);
     }
 
@@ -239,21 +272,6 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
                         roots(name).filter(root -> !root.equals(name)).map(Reason.Supertype::new),
                         mentioners(name).map(Reason.Mentioned::new))
                 .flatMap(Function.identity());
-    }
-
-    private Map<String, List<String>> supertypeEdges(Function<Edge, String> key, Function<Edge, String> value) {
-        return edges.stream()
-                .filter(Edge.Supertype.class::isInstance)
-                .collect(Collectors.groupingBy(key, Collectors.mapping(value, Collectors.toList())));
-    }
-
-    /// The types in `reached` and every type a step leads to from them, and so on until no type is added.
-    private static SortedSet<String> reach(SortedSet<String> reached, Map<String, List<String>> steps) {
-        SortedSet<String> grown = Stream.concat(
-                        reached.stream(),
-                        reached.stream().flatMap(type -> steps.getOrDefault(type, List.of()).stream()))
-                .collect(Collectors.toCollection(TreeSet::new));
-        return grown.size() == reached.size() ? reached : reach(grown, steps);
     }
 
     /// Whether a type awaits another: its metamodel is not written in this round.
@@ -327,26 +345,29 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
         ///
         /// @return empty unless a full metamodel is wanted of the type
         default Optional<Request> request() {
-            return Optional.empty();
+            return switch (this) {
+                case Requested(var _, Request asked) -> Optional.of(asked);
+                case Inherited(var _, Request.Plan plan) -> Optional.of(plan);
+                case Declined _, Hidden _, Mentioned _, Absent _ -> Optional.empty();
+            };
         }
 
         /// What the round has for a token of the type, where it has no full metamodel.
         ///
         /// @return empty unless a signature mentions the type and no full metamodel is wanted of it
         default Optional<Token> token() {
-            return Optional.empty();
+            return switch (this) {
+                case Declined(var _, var _, Optional<Token> mentioned) -> mentioned;
+                case Mentioned(var _, Token mentioned) -> Optional.of(mentioned);
+                case Requested _, Inherited _, Hidden _, Absent _ -> Optional.empty();
+            };
         }
 
         /// A type `@Facts` asks for.
         ///
         /// @param name the binary name
         /// @param asked what becomes of the request in this round
-        record Requested(String name, Request asked) implements Node {
-            @Override
-            public Optional<Request> request() {
-                return Optional.of(asked);
-            }
-        }
+        record Requested(String name, Request asked) implements Node {}
 
         /// A `public` type a requested type extends or implements, directly
         /// or through others, which `@Facts` does not ask for: it gets a full
@@ -354,12 +375,7 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
         ///
         /// @param name the binary name
         /// @param plan what becomes of its full metamodel in this round
-        record Inherited(String name, Request.Plan plan) implements Node {
-            @Override
-            public Optional<Request> request() {
-                return Optional.of(plan);
-            }
-        }
+        record Inherited(String name, Request.Plan plan) implements Node {}
 
         /// A `public` type a requested type extends or implements that no
         /// full metamodel can be made of: the members inherited from it have
@@ -368,12 +384,7 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
         /// @param name the binary name
         /// @param reason why there is no full metamodel, a sentence about the type
         /// @param mentioned what the round has for a token of the type, if a signature mentions it
-        record Declined(String name, String reason, Optional<Token> mentioned) implements Node {
-            @Override
-            public Optional<Token> token() {
-                return mentioned;
-            }
-        }
+        record Declined(String name, String reason, Optional<Token> mentioned) implements Node {}
 
         /// A type a requested type extends or implements that is not
         /// `public`, or is nested in a type that is not: no metamodel can
@@ -387,12 +398,7 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
         ///
         /// @param name the binary name
         /// @param mentioned what the round has for a token of the type
-        record Mentioned(String name, Token mentioned) implements Node {
-            @Override
-            public Optional<Token> token() {
-                return Optional.of(mentioned);
-            }
-        }
+        record Mentioned(String name, Token mentioned) implements Node {}
 
         /// A type that does not exist yet: no processor has generated it.
         ///
@@ -463,8 +469,8 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked ask
         /// A metamodel on the classpath matches the type and is reused.
         ///
         /// @param metamodel the metamodel class
-        /// @param full whether the metamodel is full
-        record OnClasspath(ClassDesc metamodel, boolean full) implements Token {}
+        /// @param completeness whether the metamodel is full or token-only
+        record OnClasspath(ClassDesc metamodel, ReuseIndex.Completeness completeness) implements Token {}
 
         /// A token-only metamodel is written in this round.
         ///
