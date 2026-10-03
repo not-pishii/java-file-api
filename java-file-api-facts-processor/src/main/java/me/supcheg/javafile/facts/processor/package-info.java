@@ -1,7 +1,7 @@
 /// The `@Facts` annotation processor (§5 of the main spec): generates the
-/// metamodels of the types `@Facts` asks for, and token-only metamodels of
-/// the types their signatures mention, as sources written with
-/// `java-file-api-core`.
+/// metamodels of the types `@Facts` asks for and of the types those extend
+/// and implement, and token-only metamodels of the types their signatures
+/// mention, as sources written with `java-file-api-core`.
 ///
 /// [me.supcheg.javafile.facts.processor.FactsProcessor] is the only public
 /// class; javac finds it through `META-INF/services`, and Gradle treats it as

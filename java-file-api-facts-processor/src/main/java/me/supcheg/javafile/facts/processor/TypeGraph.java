@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -17,19 +18,39 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// The types of one round and how they depend on each other (mini-spec §3,
-/// §8): what `@Facts` asks for, what the signatures of those types mention,
-/// what they extend and implement, and what is not generated yet.
+/// §8, Q13): every type that is needed to generate what `@Facts` asks for
+/// in full, and why it is needed.
 ///
 /// A type is a node, named by its binary name, and says what the round makes
-/// of its metamodel. An edge is one of three kinds:
+/// of its metamodel:
 ///
-/// - [Edge.Signature] — a signature of a requested type mentions the type,
-///   which therefore needs a token;
-/// - [Edge.Supertype] — a requested type extends or implements the type,
-///   directly or through others;
-/// - [Edge.Awaits] — the full metamodel of a requested type cannot be
-///   written before the type is there: a type no processor generated yet, or
-///   a requested type that itself awaits one.
+/// - [Node.Requested] — `@Facts` asks for the type: a full metamodel;
+/// - [Node.Inherited] — a requested type extends or implements the type,
+///   directly or through others: a full metamodel too, so that a member the
+///   requested type inherits is reached through the metamodel of the type
+///   that declares it (Q6(b)), without `@Facts` naming every supertype;
+/// - [Node.Hidden] — such a supertype that is not `public`: no metamodel,
+///   its `public` members are facts of the metamodels of its nearest
+///   `public` subtypes;
+/// - [Node.Declined] — such a supertype no full metamodel can be made of
+///   for another reason: the members inherited from it have no facts;
+/// - [Node.Mentioned] — a signature of a type with a full metamodel mentions
+///   the type: a token-only metamodel, and nothing further, neither for
+///   what its own signatures mention nor for what it extends;
+/// - [Node.Absent] — a type no processor has generated yet.
+///
+/// An edge is one of three kinds:
+///
+/// - [Edge.Signature] — a signature of a type with a full metamodel mentions
+///   the type, which therefore needs a token;
+/// - [Edge.Supertype] — a type extends or implements the type directly;
+/// - [Edge.Awaits] — the full metamodel of a type cannot be written before
+///   the type is there: a type no processor generated yet, or a type that
+///   itself awaits one.
+///
+/// Why a type is in the graph is read from it ([#reasons(String)]): it is
+/// asked for, it is a supertype of what is asked for, signatures mention
+/// it.
 ///
 /// The graph is a value: it is built once per round ([Closure]), nothing in
 /// it changes, and what the processor does in the round — which metamodels
@@ -95,7 +116,7 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
                 .filter(edge -> edge.from().equals(name));
     }
 
-    /// The requested types whose signatures mention a type, sorted.
+    /// The types whose signatures mention a type, sorted.
     ///
     /// @param name the binary name of the mentioned type
     /// @return the binary names of the types that mention it
@@ -105,14 +126,55 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
                 .map(Edge::from);
     }
 
-    /// The supertypes a type inherits `public` members from, sorted by name:
-    /// the members are facts of the metamodels of those types, not of its
-    /// own (Q6(b)).
+    /// The types a type extends or implements, directly or through others,
+    /// sorted.
     ///
-    /// @param name the binary name of a requested type
-    /// @return the nodes of the supertypes
-    Stream<Node> inherited(String name) {
-        return from(name, Edge.Supertype.class).filter(Edge.Supertype::inherits).map(edge -> nodes.get(edge.to()));
+    /// @param name the binary name of the type
+    /// @return the binary names of its supertypes
+    Stream<String> supertypes(String name) {
+        Map<String, List<String>> direct = supertypeEdges(Edge::from, Edge::to);
+        return reach(new TreeSet<>(Set.of(name)), direct).stream().filter(supertype -> !supertype.equals(name));
+    }
+
+    /// The requested types a type is a supertype of, and the type itself if
+    /// it is requested, sorted: the requests the type is in the graph for,
+    /// unless it is only mentioned.
+    ///
+    /// @param name the binary name of the type
+    /// @return the binary names of the requested types
+    Stream<String> roots(String name) {
+        Map<String, List<String>> direct = supertypeEdges(Edge::to, Edge::from);
+        return reach(new TreeSet<>(Set.of(name)), direct).stream()
+                .filter(subtype -> nodes.get(subtype) instanceof Node.Requested);
+    }
+
+    /// Why a type is in the graph: every reason there is, a request first,
+    /// then the requested types it is a supertype of, then the types that
+    /// mention it, each sorted.
+    ///
+    /// @param name the binary name of the type
+    /// @return the reasons; empty for a type that is only awaited
+    Stream<Reason> reasons(String name) {
+        return Stream.<Stream<? extends Reason>>of(
+                        nodes.get(name) instanceof Node.Requested ? Stream.of(new Reason.Asked()) : Stream.empty(),
+                        roots(name).filter(root -> !root.equals(name)).map(Reason.Supertype::new),
+                        mentioners(name).map(Reason.Mentioned::new))
+                .flatMap(Function.identity());
+    }
+
+    private Map<String, List<String>> supertypeEdges(Function<Edge, String> key, Function<Edge, String> value) {
+        return edges.stream()
+                .filter(Edge.Supertype.class::isInstance)
+                .collect(Collectors.groupingBy(key, Collectors.mapping(value, Collectors.toList())));
+    }
+
+    /// The types in `reached` and every type a step leads to from them, and so on until no type is added.
+    private static SortedSet<String> reach(SortedSet<String> reached, Map<String, List<String>> steps) {
+        SortedSet<String> grown = Stream.concat(
+                        reached.stream(),
+                        reached.stream().flatMap(type -> steps.getOrDefault(type, List.of()).stream()))
+                .collect(Collectors.toCollection(TreeSet::new));
+        return grown.size() == reached.size() ? reached : reach(grown, steps);
     }
 
     /// Whether a type awaits another: its metamodel is not written in this round.
@@ -182,81 +244,107 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
         /// @return the name
         String name();
 
-        /// What full metamodel there is of the type, for a type that inherits `public` members from it.
+        /// What becomes of the full metamodel of the type in this round.
         ///
-        /// @return the full metamodel, or why there is none
-        Full full();
+        /// @return empty unless a full metamodel is wanted of the type
+        default Optional<Request> request() {
+            return Optional.empty();
+        }
+
+        /// What the round has for a token of the type, where it has no full metamodel.
+        ///
+        /// @return empty unless a signature mentions the type and no full metamodel is wanted of it
+        default Optional<Token> token() {
+            return Optional.empty();
+        }
 
         /// A type `@Facts` asks for.
         ///
         /// @param name the binary name
-        /// @param request what becomes of the request in this round
-        record Requested(String name, Request request) implements Node {
+        /// @param asked what becomes of the request in this round
+        record Requested(String name, Request asked) implements Node {
             @Override
-            public Full full() {
-                return new Full.Asked();
+            public Optional<Request> request() {
+                return Optional.of(asked);
             }
         }
 
-        /// A type a signature of a requested type mentions, which `@Facts` does not ask for.
+        /// A `public` type a requested type extends or implements, directly
+        /// or through others, which `@Facts` does not ask for: it gets a full
+        /// metamodel as if it were asked for.
         ///
         /// @param name the binary name
-        /// @param token what the round has for a token of the type
-        record Mentioned(String name, Token token) implements Node {
+        /// @param plan what becomes of its full metamodel in this round
+        record Inherited(String name, Request.Plan plan) implements Node {
             @Override
-            public Full full() {
-                return switch (token) {
-                    case Token.OnClasspath(var _, boolean full) when full -> new Full.OnClasspath();
-                    case Token.Settled(Done.Reused(var _, boolean full)) when full -> new Full.OnClasspath();
-                    case Token.Unavailable(String reason) -> new Full.Refused(name + ": " + reason);
-                    case Token.OnClasspath _, Token.Settled _, Token.Planned _ -> new Full.Askable();
-                };
+            public Optional<Request> request() {
+                return Optional.of(plan);
             }
         }
 
-        /// A type a requested type extends or implements, which `@Facts` does not ask for and no
-        /// signature mentions.
+        /// A `public` type a requested type extends or implements that no
+        /// full metamodel can be made of: the members inherited from it have
+        /// no facts, and the requested type is generated without them.
         ///
         /// @param name the binary name
-        /// @param full what full metamodel there is of it
-        record Inherited(String name, Full full) implements Node {}
+        /// @param reason why there is no full metamodel, a sentence about the type
+        /// @param mentioned what the round has for a token of the type, if a signature mentions it
+        record Declined(String name, String reason, Optional<Token> mentioned) implements Node {
+            @Override
+            public Optional<Token> token() {
+                return mentioned;
+            }
+        }
+
+        /// A type a requested type extends or implements that is not
+        /// `public`, or is nested in a type that is not: no metamodel can
+        /// name it. Its `public` members are facts of the full metamodels
+        /// of the nearest `public` subtypes, which adopt them.
+        ///
+        /// @param name the binary name
+        record Hidden(String name) implements Node {}
+
+        /// A type a signature mentions, of which no full metamodel is wanted.
+        ///
+        /// @param name the binary name
+        /// @param mentioned what the round has for a token of the type
+        record Mentioned(String name, Token mentioned) implements Node {
+            @Override
+            public Optional<Token> token() {
+                return Optional.of(mentioned);
+            }
+        }
 
         /// A type that does not exist yet: no processor has generated it.
         ///
         /// @param name the name, as javac gives it
-        record Absent(String name) implements Node {
-            @Override
-            public Full full() {
-                return new Full.Refused(name + " does not exist");
-            }
-        }
+        record Absent(String name) implements Node {}
     }
 
-    /// What becomes of a requested type in a round.
+    /// What becomes of the full metamodel of a type in a round.
     sealed interface Request {
+
+        /// What becomes of a full metamodel that can be made: of a
+        /// requested type, and of a supertype of one, which is in the graph
+        /// as [Node.Inherited] only with such a plan.
+        sealed interface Plan extends Request {}
 
         /// An earlier round dealt with the type.
         ///
         /// @param done what became of it
-        record Settled(Done done) implements Request {}
-
-        /// An earlier round generated a token-only metamodel of the type, before `@Facts` asked for
-        /// it: a metamodel is written once, so there is no full one.
-        ///
-        /// @param tokenOnly the metamodel class
-        record Late(ClassDesc tokenOnly) implements Request {}
+        record Settled(Done done) implements Plan {}
 
         /// A full metamodel on the classpath matches the type and is reused.
         ///
         /// @param metamodel the metamodel class
-        record OnClasspath(ClassDesc metamodel) implements Request {}
+        record OnClasspath(ClassDesc metamodel) implements Plan {}
 
         /// The type and what its signatures mention are read: the full metamodel is written in this
         /// round unless the type awaits another.
         ///
         /// @param type the type
         /// @param stale why the metamodels of the type on the classpath are not reused
-        record Ready(TypeElement type, List<String> stale) implements Request {
+        record Ready(TypeElement type, List<String> stale) implements Plan {
             /// Copies the reasons.
             public Ready {
                 stale = List.copyOf(stale);
@@ -264,7 +352,13 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
         }
 
         /// The type or a type it mentions is not generated yet: an [Edge.Awaits] leads to it.
-        record Waiting() implements Request {}
+        record Waiting() implements Plan {}
+
+        /// An earlier round generated a token-only metamodel of the type, before `@Facts` asked for
+        /// it: a metamodel is written once, so there is no full one.
+        ///
+        /// @param tokenOnly the metamodel class
+        record Late(ClassDesc tokenOnly) implements Request {}
 
         /// No metamodel can be made of the type, full or token-only.
         ///
@@ -309,22 +403,24 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
         record Unavailable(String reason) implements Token {}
     }
 
-    /// What full metamodel there is of a type.
-    sealed interface Full {
+    /// Why a type is in the graph. A type may have several reasons; the
+    /// first of [#reasons(String)] that applies decides its metamodel: a
+    /// full one for a type that is asked for or is a supertype, a token-only
+    /// one for a type that is only mentioned.
+    sealed interface Reason {
 
-        /// `@Facts` asks for one.
-        record Asked() implements Full {}
+        /// `@Facts` asks for the type.
+        record Asked() implements Reason {}
 
-        /// One on the classpath matches the type.
-        record OnClasspath() implements Full {}
-
-        /// None, but `@Facts` could ask for one.
-        record Askable() implements Full {}
-
-        /// None, and `@Facts` cannot ask for one.
+        /// A requested type extends or implements the type, directly or through others.
         ///
-        /// @param reason why, a sentence about the type
-        record Refused(String reason) implements Full {}
+        /// @param of the binary name of the requested type
+        record Supertype(String of) implements Reason {}
+
+        /// A signature of a type with a full metamodel mentions the type.
+        ///
+        /// @param by the binary name of the type whose signature it is, which has reasons of its own
+        record Mentioned(String by) implements Reason {}
     }
 
     /// A dependency of a type on another.
@@ -353,27 +449,26 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
             };
         }
 
-        /// A signature of the requested type `from` mentions `to`: in a parameter, a result, a
-        /// field, `throws`, a type argument, a bound of a type parameter of the type or of a
-        /// method, or the single abstract method of a functional interface, declared or inherited.
+        /// A signature of `from`, a type whose full metamodel is read, mentions `to`: in a
+        /// parameter, a result, a field, `throws`, a type argument, a bound of a type parameter of
+        /// the type or of a method, or the single abstract method of a functional interface,
+        /// declared or inherited.
         ///
-        /// @param from the requested type
+        /// @param from the type with the full metamodel
         /// @param to the mentioned type
         record Signature(String from, String to) implements Edge {}
 
-        /// The requested type `from` extends or implements `to`, directly or through other types.
+        /// `from` extends or implements `to` directly.
         ///
-        /// @param from the requested type
-        /// @param to the superclass or superinterface
-        /// @param inherits whether `from` inherits `public` fields or methods that `to` declares and
-        ///     no type between them, nor `from` itself, declares again
-        record Supertype(String from, String to, boolean inherits) implements Edge {}
+        /// @param from a requested type or a supertype of one
+        /// @param to its superclass or a superinterface it names
+        record Supertype(String from, String to) implements Edge {}
 
-        /// The full metamodel of the requested type `from` is not written before `to` is there:
-        /// `to` is not generated yet, or is a requested type a fact of `from` mentions, which
-        /// itself awaits a type.
+        /// The full metamodel of `from` is not written before `to` is there: `to` is not generated
+        /// yet, or is a type with a full metamodel that a fact of `from` mentions, which itself
+        /// awaits a type.
         ///
-        /// @param from the requested type
+        /// @param from the type with the full metamodel
         /// @param to the awaited type
         record Awaits(String from, String to) implements Edge {}
     }

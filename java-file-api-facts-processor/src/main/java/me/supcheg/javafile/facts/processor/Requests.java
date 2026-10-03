@@ -110,6 +110,15 @@ final class Requests {
         return Optional.empty();
     }
 
+    /// Whether a type and every type that encloses it are `public`: only
+    /// such a type can have a metamodel, which names it from another package.
+    ///
+    /// @param type a class, interface, enum, record or annotation interface
+    /// @return `true` if code of any package can name the type
+    static boolean isPublic(TypeElement type) {
+        return notPublic(type).isEmpty();
+    }
+
     /// The innermost type of `type` and its enclosing types that is not public.
     private static Optional<TypeElement> notPublic(TypeElement type) {
         return enclosing(type)

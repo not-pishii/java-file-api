@@ -1,7 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
-import me.supcheg.javafile.facts.processor.TypeGraph.Full;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
@@ -28,42 +27,56 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/// Builds the [TypeGraph] of a round: the closure of the types `@Facts`
-/// asks for (mini-spec §3).
+/// Builds the [TypeGraph] of a round: every type that is needed to
+/// generate the types `@Facts` asks for in full (mini-spec §3, Q13).
 ///
-/// A requested type that no earlier round dealt with, and that has no full
-/// metamodel on the classpath to reuse, is read with its declared `public`
-/// members (Q6). It then has
+/// A full metamodel is wanted of every requested type, and of every type a
+/// requested type extends or implements, directly or through others
+/// ([Inheritance]): a full metamodel has the facts of the members its type
+/// declares (Q6(b)), so an inherited member is reached through the metamodel
+/// of the supertype, which is therefore generated without `@Facts` naming
+/// it — `java.lang.Object` like any other. Of those supertypes
+///
+/// - one that is not `public` has no metamodel ([Node.Hidden]): its `public`
+///   members are adopted by its nearest `public` subtypes;
+/// - one no full metamodel can be made of for another reason is declined
+///   ([Node.Declined]), which does not fail the requested type.
+///
+/// A type a full metamodel is wanted of, that no earlier round dealt with
+/// and that has no full metamodel on the classpath to reuse, is read with
+/// the `public` members it declares and adopts. It then has
 ///
 /// - a [Edge.Signature] to every class or interface in the signatures of
 ///   those members — parameters, results, fields, `throws`, type arguments,
 ///   the bounds of the type parameters of the type and of its members. A
 ///   functional interface has a fact of its single abstract method whether
 ///   it declares the method or inherits it, so the types of that signature
-///   are mentioned too. Each mentioned type that is not requested itself
-///   gets a token-only metamodel, unless one on the classpath is reused;
-/// - a [Edge.Supertype] to every type it extends or implements, directly or
-///   through others ([Inheritance]);
+///   are mentioned too. Each mentioned type of which no full metamodel is
+///   wanted gets a token-only one, unless one on the classpath is reused;
 /// - a [Edge.Awaits] to the type it cannot be read for, if a type it
-///   mentions is not generated yet; or, once read, to every requested type
-///   a fact of it mentions that itself awaits a type: a full metamodel
-///   refers to the metamodel of a requested type it mentions, so one that
-///   is not there yet must be waited for, or the members that mention it
-///   would have no fact for good. Two requested types that mention each
-///   other do not await each other: a metamodel refers to another through
-///   its `Data.SHAPE` only (§2.6), so both are written in the same round.
-///   Only a type that is missing makes a type wait, and every type that
-///   waits is on a way to one.
+///   mentions is not generated yet; or, once read, to every type with a
+///   full metamodel that a fact of it mentions and that itself awaits a
+///   type: a full metamodel refers to the metamodel of such a type, so one
+///   that is not there yet must be waited for, or the members that mention
+///   it would have no fact for good. Two types that mention each other do
+///   not await each other: a metamodel refers to another through its
+///   `Data.SHAPE` only (§2.6), so both are written in the same round. Nor
+///   does a type await its supertypes: its metamodel does not refer to
+///   theirs. Only a type that is missing makes a type wait, and every type
+///   that waits is on a way to one.
+///
+/// Every type of the family — the requested types and their supertypes —
+/// has a [Edge.Supertype] to each type it extends or implements directly.
 ///
 /// A generic type is rejected if a bound of its type parameters mentions a
 /// type the metamodel cannot declare the bound with — one that is not
 /// `public`, or that no metamodel can name: without the bound javac would
 /// accept a token of a type argument the type does not.
 ///
-/// The closure has depth 1: a token-only metamodel needs only the shape of
-/// its type, which describes supertypes and methods by descriptors, not by
-/// tokens, so nothing further is needed. Nor is a metamodel generated for a
-/// supertype: the edge is there to tell where the inherited members are.
+/// Along signatures the closure has depth 1: a token-only metamodel needs
+/// only the shape of its type, which describes supertypes and methods by
+/// descriptors, not by tokens, so neither what a mentioned type mentions nor
+/// what it extends is needed. Along supertypes it is transitive.
 final class Closure {
     private Closure() {}
 
@@ -83,36 +96,48 @@ final class Closure {
             ReuseIndex index,
             String base,
             Elements elements) {
-        List<Asked> asked = requested.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(entry -> ask(entry.getKey(), entry.getValue(), done, models, index))
+        SortedMap<String, TypeElement> family = requested.values().stream()
+                .flatMap(type -> Stream.concat(Stream.of(type), Inheritance.supertypes(type)))
+                .collect(Collectors.toMap(
+                        models::binaryName, Function.identity(), (first, second) -> first, TreeMap::new));
+        List<Kin> kin = family.entrySet().stream()
+                .map(entry -> requested.containsKey(entry.getKey())
+                        ? ask(entry.getKey(), entry.getValue(), done, models, index)
+                        : inherit(entry.getKey(), entry.getValue(), done, models, index))
                 .toList();
-        SortedMap<String, Reading.Ready> ready = asked.stream()
+        SortedMap<String, Reading.Ready> ready = kin.stream()
                 .flatMap(type -> type.ready().map(read -> Map.entry(type.name(), read)).stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
-        SortedMap<String, String> waiting = asked.stream()
+        SortedMap<String, String> waiting = kin.stream()
                 .flatMap(type -> type.unresolved().map(unresolved -> Map.entry(type.name(), unresolved)).stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+        // a type of which a full metamodel is wanted needs no token-only one, and a hidden type has none
+        Set<String> untokened = kin.stream()
+                .filter(type -> !(type instanceof Kin.Declined))
+                .map(Kin::name)
+                .collect(Collectors.toSet());
         SortedMap<String, Mention> mentioned = ready.values().stream()
                 .flatMap(read -> read.mentions().stream())
-                .filter(mention -> !requested.containsKey(mention.name()))
+                .filter(mention -> !untokened.contains(mention.name()))
                 .collect(Collectors.toMap(Mention::name, Function.identity(), (first, second) -> first, TreeMap::new));
-        SortedMap<String, TypeElement> supertypes = ready.values().stream()
-                .flatMap(read -> Inheritance.supertypes(read.type()))
-                .collect(Collectors.toMap(
-                        models::binaryName, Function.identity(), (first, second) -> first, TreeMap::new));
+        Function<String, Optional<Token>> tokens =
+                name -> Optional.ofNullable(mentioned.get(name)).map(mention -> token(mention, done, models, index));
         List<Node> present = Stream.<Stream<? extends Node>>of(
-                        asked.stream().map(type -> new Node.Requested(type.name(), type.request())),
-                        mentioned.values().stream()
-                                .map(mention ->
-                                        new Node.Mentioned(mention.name(), token(mention, done, models, index))),
-                        supertypes.entrySet().stream()
-                                .filter(entry -> !requested.containsKey(entry.getKey())
-                                        && !mentioned.containsKey(entry.getKey()))
-                                .map(entry -> new Node.Inherited(
-                                        entry.getKey(), full(entry.getKey(), entry.getValue(), done, models, index))))
+                        kin.stream().map(type -> switch (type) {
+                            case Kin.Asked(String name, Request request, var _, var _) ->
+                                new Node.Requested(name, request);
+                            case Kin.Inherited(String name, Request.Plan plan, var _, var _) ->
+                                new Node.Inherited(name, plan);
+                            case Kin.Declined(String name, String reason) ->
+                                new Node.Declined(name, reason, tokens.apply(name));
+                            case Kin.Hidden(String name) -> new Node.Hidden(name);
+                        }),
+                        mentioned.keySet().stream()
+                                .filter(name -> !family.containsKey(name))
+                                .map(name -> new Node.Mentioned(
+                                        name, tokens.apply(name).orElseThrow())))
                 .<Node>flatMap(Function.identity())
                 .toList();
         Set<String> names = present.stream().map(Node::name).collect(Collectors.toSet());
@@ -123,8 +148,9 @@ final class Closure {
         Stream<Edge> signatures = ready.entrySet().stream()
                 .flatMap(entry -> entry.getValue().mentions().stream()
                         .map(mention -> new Edge.Signature(entry.getKey(), mention.name())));
-        Stream<Edge> inheritance = ready.entrySet().stream()
-                .flatMap(entry -> supertypes(entry.getKey(), entry.getValue(), models, elements));
+        Stream<Edge> inheritance = family.entrySet().stream()
+                .flatMap(entry -> Inheritance.direct(entry.getValue())
+                        .map(supertype -> new Edge.Supertype(entry.getKey(), models.binaryName(supertype))));
         return TypeGraph.of(
                 Stream.concat(present.stream(), absent),
                 Stream.of(signatures, inheritance, awaits(ready, waiting, models, base, elements))
@@ -132,31 +158,79 @@ final class Closure {
     }
 
     /// What becomes of a requested type in this round.
-    private static Asked ask(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
-        Done previous = done.get(name);
-        if (previous != null) {
-            return Asked.of(
-                    name,
-                    previous instanceof Done.Generated(ClassDesc metamodel, boolean full) && !full
-                            ? new Request.Late(metamodel)
-                            : new Request.Settled(previous));
+    private static Kin ask(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
+        return switch (done.get(name)) {
+            case Done.Generated(ClassDesc metamodel, boolean full)
+            when !full -> Kin.Asked.of(name, new Request.Late(metamodel));
+            case Done.Generated settled -> Kin.Asked.of(name, new Request.Settled(settled));
+            case Done.Failed settled -> Kin.Asked.of(name, new Request.Settled(settled));
+            case Done.Reused(var _, boolean full) when !full -> asked(name, find(type, models, index));
+            case Done.Reused settled -> Kin.Asked.of(name, new Request.Settled(settled));
+            case null -> asked(name, find(type, models, index));
+        };
+    }
+
+    private static Kin asked(String name, Found found) {
+        return switch (found) {
+            case Found.Planned(Request.Plan plan, var ready, var unresolved) ->
+                new Kin.Asked(name, plan, ready, unresolved);
+            case Found.Unrepresentable(String reason) -> Kin.Asked.of(name, new Request.Unrepresentable(reason));
+            case Found.Rejected(String reason) -> Kin.Asked.of(name, new Request.Rejected(reason));
+        };
+    }
+
+    /// What becomes of a supertype of a requested type that is not requested itself.
+    private static Kin inherit(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
+        if (!Requests.isPublic(type)) {
+            return new Kin.Hidden(name);
         }
+        Optional<String> refusal = Requests.refusal(type);
+        if (refusal.isPresent()) {
+            return new Kin.Declined(name, refusal.get());
+        }
+        return switch (done.get(name)) {
+            case Done.Generated(ClassDesc metamodel, boolean full)
+            when !full ->
+                new Kin.Declined(
+                        name,
+                        "its token-only metamodel " + Models.binaryName(metamodel) + " was generated in an earlier"
+                                + " round, before a type that extends or implements " + name + " was asked for");
+            case Done.Generated settled -> Kin.Inherited.of(name, new Request.Settled(settled));
+            case Done.Failed settled -> Kin.Inherited.of(name, new Request.Settled(settled));
+            case Done.Reused(var _, boolean full) when !full -> inherited(name, find(type, models, index));
+            case Done.Reused settled -> Kin.Inherited.of(name, new Request.Settled(settled));
+            case null -> inherited(name, find(type, models, index));
+        };
+    }
+
+    private static Kin inherited(String name, Found found) {
+        return switch (found) {
+            case Found.Planned(Request.Plan plan, var ready, var unresolved) ->
+                new Kin.Inherited(name, plan, ready, unresolved);
+            case Found.Unrepresentable(String reason) -> new Kin.Declined(name, reason);
+            case Found.Rejected(String reason) -> new Kin.Declined(name, reason);
+        };
+    }
+
+    /// What a round finds for the full metamodel of a type no earlier round
+    /// dealt with: one on the classpath to reuse, or else the type as it is read.
+    private static Found find(TypeElement type, Models models, ReuseIndex index) {
         return switch (index.find(type, ReuseIndex.Completeness.FULL, models)) {
             case ReuseIndex.Lookup.Reusable(ClassDesc metamodel, var _) ->
-                Asked.of(name, new Request.OnClasspath(metamodel));
+                new Found.Planned(new Request.OnClasspath(metamodel), Optional.empty(), Optional.empty());
             case ReuseIndex.Lookup.Absent(List<String> stale) ->
                 switch (read(type, models)) {
                     case Reading.Ready read ->
-                        new Asked(name, new Request.Ready(type, stale), Optional.of(read), Optional.empty());
+                        new Found.Planned(new Request.Ready(type, stale), Optional.of(read), Optional.empty());
                     case Reading.Waiting(String unresolved) ->
-                        new Asked(name, new Request.Waiting(), Optional.empty(), Optional.of(unresolved));
-                    case Reading.Unrepresentable(String reason) -> Asked.of(name, new Request.Unrepresentable(reason));
-                    case Reading.Rejected(String reason) -> Asked.of(name, new Request.Rejected(reason));
+                        new Found.Planned(new Request.Waiting(), Optional.empty(), Optional.of(unresolved));
+                    case Reading.Unrepresentable(String reason) -> new Found.Unrepresentable(reason);
+                    case Reading.Rejected(String reason) -> new Found.Rejected(reason);
                 };
         };
     }
 
-    /// Reads a requested type and what its signatures mention.
+    /// Reads a type a full metamodel is wanted of and what its signatures mention.
     private static Reading read(TypeElement requested, Models models) {
         return switch (models.of(requested, MemberFilter.DECLARED_PUBLIC)) {
             case Translation.Deferred<TypeModel>(String unresolved) -> new Reading.Waiting(unresolved);
@@ -239,31 +313,10 @@ final class Closure {
         };
     }
 
-    /// What full metamodel there is of a supertype that is neither requested nor mentioned.
-    private static Full full(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
-        return Requests.refusal(type).<Full>map(Full.Refused::new).orElseGet(() -> switch (done.get(name)) {
-            case Done.Reused(var _, boolean full) when full -> new Full.OnClasspath();
-            case Done.Reused _, Done.Generated _, Done.Failed _ -> new Full.Askable();
-            case null ->
-                switch (index.find(type, ReuseIndex.Completeness.FULL, models)) {
-                    case ReuseIndex.Lookup.Reusable _ -> new Full.OnClasspath();
-                    case ReuseIndex.Lookup.Absent _ -> new Full.Askable();
-                };
-        });
-    }
-
-    private static Stream<Edge> supertypes(String name, Reading.Ready read, Models models, Elements elements) {
-        boolean functional =
-                models.sam(read.type()) instanceof Translation.Ok<Optional<SamModel>>(var sam) && sam.isPresent();
-        Set<TypeElement> declarers = Inheritance.declarers(read.type(), functional, elements);
-        return Inheritance.supertypes(read.type())
-                .map(supertype ->
-                        new Edge.Supertype(name, models.binaryName(supertype), declarers.contains(supertype)));
-    }
-
-    /// The edges to what the requested types wait for: the missing type of
-    /// each type that is not read for it, and, of each type that is read,
-    /// the requested types its facts mention that wait themselves.
+    /// The edges to what the types with full metamodels wait for: the
+    /// missing type of each type that is not read for it, and, of each type
+    /// that is read, the types with full metamodels its facts mention that
+    /// wait themselves.
     private static Stream<Edge> awaits(
             SortedMap<String, Reading.Ready> ready,
             SortedMap<String, String> waiting,
@@ -301,7 +354,7 @@ final class Closure {
         return grown.size() == held.size() ? held : held(grown, factMentions);
     }
 
-    /// The types whose metamodels the facts of a requested type would refer
+    /// The types whose metamodels the facts of a type would refer
     /// to if every type its signatures mention had one: those of the members
     /// that get a fact, not of the ones left out whatever happens — a generic
     /// constructor, a member that mentions a type that is not public.
@@ -325,19 +378,64 @@ final class Closure {
                 .mentionedTypes();
     }
 
-    /// A requested type and what the round makes of it.
-    ///
-    /// @param name the binary name
-    /// @param request what becomes of the request
-    /// @param ready what the type mentions, if it is read
-    /// @param unresolved the type it is not read for, if it waits
-    private record Asked(String name, Request request, Optional<Reading.Ready> ready, Optional<String> unresolved) {
-        static Asked of(String name, Request request) {
-            return new Asked(name, request, Optional.empty(), Optional.empty());
+    /// A type of the family — a requested type or a supertype of one — and what the round makes of it.
+    private sealed interface Kin {
+
+        /// The binary name of the type.
+        String name();
+
+        /// What the type mentions, if a full metamodel is wanted of it and it is read.
+        default Optional<Reading.Ready> ready() {
+            return Optional.empty();
         }
+
+        /// The type it is not read for, if a full metamodel is wanted of it and it waits.
+        default Optional<String> unresolved() {
+            return Optional.empty();
+        }
+
+        /// A type `@Facts` asks for.
+        record Asked(String name, Request request, Optional<Reading.Ready> ready, Optional<String> unresolved)
+                implements Kin {
+            static Asked of(String name, Request request) {
+                return new Asked(name, request, Optional.empty(), Optional.empty());
+            }
+        }
+
+        /// A supertype that gets a full metamodel.
+        record Inherited(String name, Request.Plan plan, Optional<Reading.Ready> ready, Optional<String> unresolved)
+                implements Kin {
+            static Inherited of(String name, Request.Plan plan) {
+                return new Inherited(name, plan, Optional.empty(), Optional.empty());
+            }
+        }
+
+        /// A supertype no full metamodel can be made of, though it is `public`.
+        record Declined(String name, String reason) implements Kin {}
+
+        /// A supertype that is not `public`.
+        record Hidden(String name) implements Kin {}
     }
 
-    /// A requested type as it is read.
+    /// What a round finds for the full metamodel of a type.
+    private sealed interface Found {
+
+        /// A full metamodel can be made, or is there to reuse.
+        ///
+        /// @param plan what becomes of it
+        /// @param ready what the type mentions, if it is read
+        /// @param unresolved the type it is not read for, if it waits
+        record Planned(Request.Plan plan, Optional<Reading.Ready> ready, Optional<String> unresolved)
+                implements Found {}
+
+        /// No metamodel can be made of the type.
+        record Unrepresentable(String reason) implements Found {}
+
+        /// No full metamodel can be made of the type.
+        record Rejected(String reason) implements Found {}
+    }
+
+    /// A type a full metamodel is wanted of, as it is read.
     private sealed interface Reading {
 
         /// The full metamodel can be generated.
