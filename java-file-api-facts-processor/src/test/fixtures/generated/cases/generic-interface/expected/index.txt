@@ -1,0 +1,2 @@
+META-INF/javafile/metamodel/full/p.Coll -> gen.facts.p.Coll_
+META-INF/javafile/metamodel/full/p.Seq -> gen.facts.p.Seq_
