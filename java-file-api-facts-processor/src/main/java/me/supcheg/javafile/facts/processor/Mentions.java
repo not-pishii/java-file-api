@@ -54,22 +54,33 @@ final class Mentions {
     /// @param member the member
     /// @return the mentions
     static Stream<ClassDesc> of(MemberModel member) {
+        return signature(member).flatMap(Mentions::of);
+    }
+
+    /// The types written in the signature of a member, in the order they are written in: the bounds
+    /// of its own type parameters, the result, the parameters and the exceptions it throws.
+    ///
+    /// @param member the member
+    /// @return the types
+    static Stream<TypeRef> signature(MemberModel member) {
         return switch (member) {
             case MethodModel method ->
-                Stream.of(
-                                ofBounds(method.typeParams()),
-                                method.result().stream().flatMap(Mentions::of),
-                                method.params().stream().flatMap(Mentions::of),
-                                method.throwsTypes().stream().flatMap(Mentions::of))
+                Stream.<Stream<? extends TypeRef>>of(
+                                bounds(method.typeParams()),
+                                method.result().stream(),
+                                method.params().stream(),
+                                method.throwsTypes().stream())
                         .flatMap(Function.identity());
             case CtorModel ctor ->
-                Stream.of(
-                                ofBounds(ctor.typeParams()),
-                                ctor.params().stream().flatMap(Mentions::of),
-                                ctor.throwsTypes().stream().flatMap(Mentions::of))
+                Stream.<Stream<? extends TypeRef>>of(
+                                bounds(ctor.typeParams()), ctor.params().stream(), ctor.throwsTypes().stream())
                         .flatMap(Function.identity());
-            case FieldModel field -> of(field.type());
+            case FieldModel field -> Stream.of(field.type());
         };
+    }
+
+    private static Stream<TypeRef> bounds(List<TypeParam> typeParams) {
+        return typeParams.stream().map(TypeParam::bounds).<TypeRef>flatMap(Collection::stream);
     }
 
     /// What a type mentions.
@@ -91,10 +102,7 @@ final class Mentions {
     /// @param typeParams the type parameters
     /// @return the mentions
     static Stream<ClassDesc> ofBounds(List<TypeParam> typeParams) {
-        return typeParams.stream()
-                .map(TypeParam::bounds)
-                .flatMap(Collection::stream)
-                .flatMap(Mentions::of);
+        return bounds(typeParams).flatMap(Mentions::of);
     }
 
     private static Stream<ClassDesc> of(TypeArg arg) {

@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":java-file-api-core"))
     implementation(project(":java-file-api-facts"))
     implementation(project(":java-file-api-lang-model"))
+    implementation(libs.routine)
 }
 
 testing {
