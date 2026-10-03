@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// Fixture `multiround` (mini-spec §8, §9.2): types another processor
 /// generates, requested in `@Facts` or mentioned by a requested type, get
 /// their metamodels in a later round; a type that never appears is an
-/// error in the last round.
+/// error in the last round, which tells what each type waited for.
 class MultiroundTest {
     /// Generates `gen.Missing` and `gen.Other` in its first round.
     private static final class Generating extends AbstractProcessor {
@@ -57,6 +57,13 @@ class MultiroundTest {
 
     private static Compilation process(String... sources) {
         return ProcessorHarness.process(List.of(), List.of(), List.of(new Generating()), sources);
+    }
+
+    /// The errors of the last round about the requested types that never became ready, in order.
+    private static List<String> unresolvable(Compilation compilation) {
+        return ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR).stream()
+                .filter(message -> message.startsWith("type "))
+                .toList();
     }
 
     @Test
@@ -163,12 +170,131 @@ class MultiroundTest {
                 "package p; public class A { public B b() { return null; } }",
                 "package p; public class B { public gen.Never never() { return null; } }");
 
-        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
-                .contains(
+        assertThat(unresolvable(compilation))
+                .containsExactly(
+                        "type p.A in @Facts is not resolvable after all rounds: it waits for the metamodel of p.B,"
+                                + " which mentions gen.Never, which no processor generated",
                         "type p.B in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                                + " processor generated");
+    }
+
+    @Test
+    void theErrorOfTheLastRoundTellsTheChainOfMetamodelsATypeWaitsFor() {
+        Compilation compilation = process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.C.class, p.A.class, p.B.class, p.Fine.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public C c() { return null; } }",
+                "package p; public class C { public gen.Never never() { return null; } }",
+                "package p; public class Fine { public int size() { return 0; } }");
+
+        // A waits for B though B is read: its metamodel is not written before that of C is
+        assertThat(unresolvable(compilation))
+                .containsExactly(
+                        "type p.A in @Facts is not resolvable after all rounds: it waits for the metamodel of p.B,"
+                                + " which waits for the metamodel of p.C, which mentions gen.Never, which no"
                                 + " processor generated",
-                        "type p.A in @Facts is not resolvable after all rounds: it mentions p.B, whose metamodel is"
-                                + " not ready");
+                        "type p.B in @Facts is not resolvable after all rounds: it waits for the metamodel of p.C,"
+                                + " which mentions gen.Never, which no processor generated",
+                        "type p.C in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                                + " processor generated");
+    }
+
+    @Test
+    void typesThatMentionEachOtherWaitForTheMissingTypeNotForEachOther() {
+        Compilation compilation = process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class, p.C.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } public C c() { return null; } }",
+                "package p; public class B { public A a() { return null; } public C c() { return null; } }",
+                "package p; public class C { public A a() { return null; } public gen.Never never() { return null; } }");
+
+        // the three mention each other in a circle; what is reported is the missing type, by the shortest way
+        assertThat(unresolvable(compilation))
+                .containsExactly(
+                        "type p.A in @Facts is not resolvable after all rounds: it waits for the metamodel of p.C,"
+                                + " which mentions gen.Never, which no processor generated",
+                        "type p.B in @Facts is not resolvable after all rounds: it waits for the metamodel of p.C,"
+                                + " which mentions gen.Never, which no processor generated",
+                        "type p.C in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                                + " processor generated");
+    }
+
+    @Test
+    void requestedTypesThatMentionEachOtherAreGeneratedInOneRound() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public A a() { return null; } }"));
+
+        // a metamodel refers to another through its Data.SHAPE only: neither has to be there first
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        assertThat(sources.get("gen.facts.p.A_")).contains("B_.Data.SHAPE").contains("MethodRef0<A, B> b");
+        assertThat(sources.get("gen.facts.p.B_")).contains("A_.Data.SHAPE").contains("MethodRef0<B, A> a");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void typesThatMentionEachOtherAndATypeGeneratedLaterAreGeneratedOnceItIsThere() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.B.class, p.C.class})
+                class G {}
+                """,
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public A a() { return null; } public C c() { return null; } }",
+                "package p; public class C { public gen.Missing missing() { return null; } }"));
+
+        // C waits for gen.Missing, B for C and A for B, though A and B mention each other
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+        assertThat(sources.get("gen.facts.p.A_")).contains("MethodRef0<A, B> b");
+        assertThat(sources.get("gen.facts.p.B_")).contains("MethodRef0<B, A> a").contains("MethodRef0<B, C> c");
+        assertThat(sources.get("gen.facts.p.C_")).contains("MethodRef0<C, Missing> missing");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void theGraphOfARoundHasAnEdgeToWhatEachTypeWaitsFor() {
+        GraphProbe probe = new GraphProbe("p.E", "p.D", "p.C", "p.B", "p.A");
+        ProcessorHarness.succeeded(ProcessorHarness.process(
+                List.of(),
+                List.of(),
+                List.of(new Generating(), probe),
+                "package gen; class G {}",
+                "package p; public class A { public B b() { return null; } }",
+                "package p; public class B { public gen.Missing missing() { return null; } }",
+                "package p; public class C { public D d() { return null; } }",
+                "package p; public class D { public C c() { return null; } }",
+                "package p; public class E { public A a() { return null; } public <T> E(T t, B b) {} }"));
+        TypeGraph graph = probe.graph();
+
+        // in the first round gen.Missing is not generated yet; C and D mention each other, and await nothing;
+        // E mentions B in a constructor that gets no fact, and so does not await it
+        assertThat(graph.edges().stream().filter(edge -> edge instanceof TypeGraph.Edge.Awaits))
+                .containsExactly(
+                        new TypeGraph.Edge.Awaits("p.A", "p.B"),
+                        new TypeGraph.Edge.Awaits("p.B", "gen.Missing"),
+                        new TypeGraph.Edge.Awaits("p.E", "p.A"));
+        assertThat(graph.nodes().get("gen.Missing")).isEqualTo(new TypeGraph.Node.Absent("gen.Missing"));
+        assertThat(graph.nodes().get("p.B"))
+                .isEqualTo(new TypeGraph.Node.Requested("p.B", new TypeGraph.Request.Waiting()));
+        assertThat(graph.waitOf("p.E"))
+                .contains(new TypeGraph.Wait.Missing(List.of("p.E", "p.A", "p.B", "gen.Missing")));
+        assertThat(graph.waitOf("p.C")).isEmpty();
+        assertThat(graph.waitOf("p.D")).isEmpty();
+        assertThat(graph.from("p.E", TypeGraph.Edge.Signature.class).map(TypeGraph.Edge::to))
+                .containsExactly("p.A", "p.B");
     }
 
     @Test

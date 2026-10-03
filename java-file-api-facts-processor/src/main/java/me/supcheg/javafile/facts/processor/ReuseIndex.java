@@ -81,7 +81,7 @@ final class ReuseIndex {
             }
             switch (candidate(type, listed.get(), directory, models)) {
                 case Candidate.Matching(ClassDesc metamodel) -> {
-                    return new Lookup.Reusable(metamodel);
+                    return new Lookup.Reusable(metamodel, directory);
                 }
                 case Candidate.Stale(String reason) -> stale.add(reason);
             }
@@ -200,7 +200,8 @@ final class ReuseIndex {
         /// A metamodel to reuse.
         ///
         /// @param metamodel the metamodel class
-        record Reusable(ClassDesc metamodel) implements Lookup {}
+        /// @param completeness whether the metamodel is full or token-only
+        record Reusable(ClassDesc metamodel, Completeness completeness) implements Lookup {}
 
         /// None to reuse.
         ///
