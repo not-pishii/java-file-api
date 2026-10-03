@@ -18,12 +18,15 @@ package me.supcheg.javafile.facts.meta;
 /// - 3: a fact says how the member declares each parameter that is a type
 ///   variable or an array of one, the method table lists `T[]` as an array of
 ///   the type argument, and lists the constructors.
+/// - 4: a metamodel has the facts of the `public` members its type inherits
+///   from supertypes that are not `public`, as members of the type; the
+///   supertypes of a requested type have full metamodels of their own.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
 
     private MetamodelFormat() {}
 }

@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 2
+/// javafile-facts-canonical 3
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
@@ -68,7 +68,11 @@ import java.util.stream.Stream;
 /// class: `table ctor ArrayList(); ArrayList(int)`.
 ///
 /// With [MemberFilter#DECLARED_PUBLIC], `members declared-public` is
-/// followed by a line per member:
+/// followed by a line per member: of those the type declares, and of those
+/// it adopts from its supertypes that are not `public`
+/// ([MirrorTranslator#members(javax.lang.model.element.TypeElement)]), as
+/// members of the type — so a change of such a supertype changes the
+/// fingerprint of the type that tells its members:
 ///
 /// ```
 /// member ctor <^0 extends java.lang.Number>(^0, int[]) throws java.io.IOException
@@ -90,7 +94,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 2";
+    public static final String HEADER = "javafile-facts-canonical 3";
 
     private final String text;
     private final String fingerprint;

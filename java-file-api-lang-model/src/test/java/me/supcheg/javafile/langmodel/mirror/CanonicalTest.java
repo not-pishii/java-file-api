@@ -60,7 +60,7 @@ class CanonicalTest {
         Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
 
         assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 2
+                        javafile-facts-canonical 3
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -87,6 +87,31 @@ class CanonicalTest {
     }
 
     @Test
+    void theMembersAdoptedFromASupertypeThatIsNotPublicAreInTheTextAndTheFingerprint() {
+        String pub = "package p; public class Pub extends Hidden<String> { public void own() {} }";
+        String hidden = "package p; class Hidden<T> { public T get() { return null; } public static final int K = 1; }";
+        Canonical canonical = canonical("p.Pub", MemberFilter.DECLARED_PUBLIC, pub, hidden);
+
+        assertThat(canonical.text()).contains("""
+                        members declared-public
+                        member ctor() throws -
+                        member field static constant int K = 1
+                        member method overridable get() -> java.lang.String throws -
+                        member method overridable own() -> void throws -
+                        table abstract -
+                        """);
+        // a change of the hidden supertype alone is a change of the type that adopts its members
+        String changed =
+                "package p; class Hidden<T> { public T get() { return null; } public static final int K = 2; }";
+        assertThat(canonical("p.Pub", MemberFilter.DECLARED_PUBLIC, pub, changed)
+                        .fingerprint())
+                .isNotEqualTo(canonical.fingerprint());
+        // which a token-only metamodel, without members, does not tell
+        assertThat(canonical("p.Pub", MemberFilter.NONE, pub, changed))
+                .isEqualTo(canonical("p.Pub", MemberFilter.NONE, pub, hidden));
+    }
+
+    @Test
     void textOfATokenOnlyModel() {
         Canonical canonical = canonical("p.Day", MemberFilter.NONE, """
                 package p;
@@ -98,7 +123,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 2
+                        javafile-facts-canonical 3
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -330,7 +355,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 2
+                        javafile-facts-canonical 3
                         type p.T interface sealed=no
                         tparams -
                         superclasses -

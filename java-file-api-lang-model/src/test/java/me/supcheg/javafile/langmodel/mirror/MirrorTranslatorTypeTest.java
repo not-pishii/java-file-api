@@ -483,9 +483,9 @@ class MirrorTranslatorTypeTest {
                     void pack() {}
                     private void priv() {}
                 }
-                class Base { public void inherited() {} }
-                """);
+                """, "package p; public class Base { public void inherited() {} }");
 
+        // not inherited(): Base is public, so its members are told by its own metamodel
         assertThat(model.members())
                 .filteredOn(MethodModel.class::isInstance)
                 .containsExactly(
@@ -867,6 +867,196 @@ class MirrorTranslatorTypeTest {
                 "package p; public class M { public static class N {} }");
     }
 
+    // ---- members adopted from supertypes that are not public
+
+    private static final String HIDDEN_FAMILY = """
+            package p;
+            public class Pub extends Near<String> {
+                public String redeclared() { return "pub"; }
+                public String api() { return "api"; }
+                public String pub() { return "pub"; }
+                public static String hiddenStatic() { return "pub"; }
+            }
+            abstract class Near<T> extends Far<T> implements HiddenApi {
+                public static final String HID = "near";
+                public String overridden() { return "near"; }
+                public String near() { return "near"; }
+                public static String snear() { return "snear"; }
+                public Near() {}
+            }
+            abstract class Far<T> {
+                public static final String FAR = "far";
+                public static final String HID = "far";
+                public T item;
+                public T get() { return item; }
+                public void set(T value, java.util.List<? extends T> more) {}
+                public Far<T> self() { return this; }
+                public String overridden() { return "far"; }
+                public String redeclared() { return "far"; }
+                public static String sfar() { return "sfar"; }
+                public static String hiddenStatic() { return "far"; }
+                protected void prot() {}
+                void pack() {}
+            }
+            interface HiddenApi extends PubApi {
+                String CONST = "const";
+                String api();
+                default String dflt() { return "dflt"; }
+                static void istatic() {}
+            }
+            """;
+    private static final String PUB_API =
+            "package p; public interface PubApi { String pub(); default void beyond() {} }";
+
+    /// The members of a type as [MirrorTranslator#members] lists them: `name of Declarer`.
+    private static List<String> memberElements(String name, String... sources) {
+        return Harness.run(
+                env -> env.translator().members(env.element(name)).stream()
+                        .map(member -> (member.getKind() == ElementKind.CONSTRUCTOR ? "new" : member.getSimpleName())
+                                + " of " + member.getEnclosingElement().getSimpleName())
+                        .toList(),
+                sources);
+    }
+
+    @Test
+    void theMembersOfATypeAreThoseItDeclaresAndThenThoseItAdoptsTheNearerFirst() {
+        assertThat(memberElements("p.Pub", HIDDEN_FAMILY, PUB_API))
+                .containsExactly(
+                        "new of Pub",
+                        "redeclared of Pub",
+                        "api of Pub",
+                        "pub of Pub",
+                        "hiddenStatic of Pub",
+                        // not the constructor of Near, which is not inherited
+                        "HID of Near",
+                        "overridden of Near",
+                        "near of Near",
+                        "snear of Near",
+                        // not HID, which Near hides; overridden(), which Near overrides; redeclared() and
+                        // hiddenStatic(), which Pub declares again; nor what is not public
+                        "FAR of Far",
+                        "item of Far",
+                        "get of Far",
+                        "set of Far",
+                        "self of Far",
+                        "sfar of Far",
+                        // not api(), which Pub implements, nor the static method of an interface
+                        "CONST of HiddenApi",
+                        "dflt of HiddenApi");
+    }
+
+    @Test
+    void aTypeWithoutSupertypesThatAreNotPublicAdoptsNothing() {
+        // beyond() is told by PubApi, which has a metamodel of its own
+        assertThat(memberElements("p.Impl", "package p; public abstract class Impl implements PubApi {}", PUB_API))
+                .containsExactly("new of Impl");
+        assertThat(memberElements("java.util.ArrayList")).allMatch(member -> member.endsWith(" of ArrayList"));
+    }
+
+    @Test
+    void whatIsBeyondAPublicSupertypeIsNotAdopted() {
+        // Mid is public: what it has from Far is its own to tell
+        assertThat(memberElements("p.Low", """
+                        package p;
+                        public class Low extends Mid { public void low() {} }
+                        class Far { public void far() {} }
+                        """, "package p; public class Mid extends Far { public void mid() {} }"))
+                .containsExactly("new of Low", "low of Low");
+        assertThat(memberElements(
+                        "p.Mid",
+                        "package p; public class Mid extends Far { public void mid() {} }",
+                        "package p; class Far { public void far() {} }"))
+                .containsExactly("new of Mid", "mid of Mid", "far of Far");
+    }
+
+    @Test
+    void adoptedMembersAreMembersOfTheTypeInItsTerms() {
+        TypeModel model = full("p.Pub", HIDDEN_FAMILY, PUB_API);
+        Map<String, MethodModel> methods = methods(model);
+
+        // T of Far is String in Pub
+        assertThat(methods.get("get").result()).contains(Types.STRING);
+        assertThat(methods.get("set").params())
+                .containsExactly(
+                        Types.STRING, Types.parameterized(ConstantDescs.CD_List, Types.extendsBound(Types.STRING)));
+        assertThat(methods.get("set").declared())
+                .containsExactly(fixed(ConstantDescs.CD_String), fixed(ConstantDescs.CD_List));
+        assertThat(model.members())
+                .contains(
+                        new FieldModel("item", false, Types.STRING, Mutability.MUTABLE),
+                        new FieldModel("HID", true, Types.STRING, new Mutability.Constant("near")),
+                        new FieldModel("CONST", true, Types.STRING, new Mutability.Constant("const")));
+        assertThat(methods.get("snear").isStatic()).isTrue();
+        assertThat(methods.get("near").overridability()).isEqualTo(Overridability.OVERRIDABLE);
+        assertThat(methods.get("redeclared").overridability()).isEqualTo(Overridability.OVERRIDABLE);
+        // a result of the type that is not public: no fact, as for a declared member
+        assertThat(methods).doesNotContainKey("self");
+        assertThat(model.skipped())
+                .containsExactly(new SkippedMember("method self()", "mentions types that are not public: p.Far"));
+        // and the method table lists them as before
+        assertThat(model.methods().concreteMethods())
+                .contains(Signature.of("near"), Signature.of("get"), Signature.of("self"));
+    }
+
+    @Test
+    void adoptedMembersOfAGenericTypeAreInTermsOfItsTypeParameters() {
+        TypeModel model = full("p.Gen", """
+                package p;
+                public final class Gen<E extends Number> extends Hidden<E[], String> {}
+                class Hidden<T, U> {
+                    public T first;
+                    public U second(T value) { return null; }
+                }
+                """);
+
+        assertThat(model.members())
+                .contains(new FieldModel("first", false, Types.array(Types.typeVar("E")), Mutability.MUTABLE));
+        MethodModel second = methods(model).get("second");
+        assertThat(second.result()).contains(Types.STRING);
+        assertThat(second.params()).containsExactly(Types.array(Types.typeVar("E")));
+        assertThat(second.declared()).containsExactly(var(0, 1));
+        // of the final type that has it
+        assertThat(second.overridability()).isEqualTo(Overridability.FINAL);
+    }
+
+    @Test
+    void aMemberThatComesInSeveralWaysIsAdoptedOnce() {
+        assertThat(memberElements("p.Diamond", """
+                        package p;
+                        public class Diamond implements Left, Right {}
+                        interface Root { int ROOT = 1; default void root() {} }
+                        interface Left extends Root {}
+                        interface Right extends Root {}
+                        """)).containsExactly("new of Diamond", "ROOT of Root", "root of Root");
+    }
+
+    @Test
+    void ofAbstractMethodsOfOneSignatureTheOneOfTheMostSpecificResultIsAdopted() {
+        TypeModel model = full("p.Twins", """
+                package p;
+                public abstract class Twins implements Loose, Tight {}
+                interface Loose { Object twin(); void same(); }
+                interface Tight { String twin(); void same(); }
+                """);
+
+        assertThat(model.members())
+                .filteredOn(MethodModel.class::isInstance)
+                .extracting(member -> ((MethodModel) member).name() + " "
+                        + ((MethodModel) member).result().map(Object::toString).orElse("void"))
+                .containsExactlyInAnyOrder("twin " + Types.STRING, "same void");
+    }
+
+    @Test
+    void aMethodAnInheritedImplementationStandsForIsNotAdopted() {
+        // Base is public and implements run() of Hidden for Impl
+        assertThat(memberElements("p.Impl", """
+                        package p;
+                        public class Impl extends Base implements Hidden {}
+                        interface Hidden { void run(); default void more() {} }
+                        """, "package p; public class Base { public void run() {} }"))
+                .containsExactly("new of Impl", "more of Hidden");
+    }
+
     // ---- sam(TypeElement)
 
     private static Translation<Optional<SamModel>> sam(String name, String... sources) {
@@ -1124,6 +1314,25 @@ class MirrorTranslatorTypeTest {
                         hidden))
                 .isEqualTo(new Translation.Unrepresentable<Optional<SamModel>>(
                         "mentions types that are not public: p.Hidden"));
+    }
+
+    @Test
+    void aSamAdoptedFromAnInterfaceThatIsNotPublicCountsAsDeclared() {
+        String hidden = "package p; interface Hidden { String apply(String s); }";
+        SamModel sam = samOf("p.Fn", "package p; public interface Fn extends Hidden {}", hidden);
+
+        // Fn has the method among its members, so its fact is that member's
+        assertThat(sam.declared()).isTrue();
+        assertThat(sam.method().name()).isEqualTo("apply");
+        TypeModel model = full("p.Fn", "package p; public interface Fn extends Hidden {}", hidden);
+        assertThat(model.members()).containsExactly(sam.method());
+        assertThat(model.sam()).contains(sam.method());
+        // and one that has no model is reported for the member alone
+        assertThat(sam(
+                        "p.Odd",
+                        "package p; public interface Odd extends Leaky {}",
+                        "package p; interface Leaky { Leaky run(); }"))
+                .isEqualTo(new Translation.Ok<Optional<SamModel>>(Optional.empty()));
     }
 
     @Test

@@ -6,10 +6,17 @@ import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.lang.constant.ClassDesc;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,15 +28,17 @@ import java.util.Optional;
 /// in the next.
 final class Models {
     private final Elements elements;
+    private final Types types;
     private final MirrorTranslator translator;
     private final Map<Key, Translation<TypeModel>> models = new HashMap<>();
     private final Map<String, Translation<Optional<SamModel>>> sams = new HashMap<>();
 
     /// @param elements the element utilities of the compilation
-    /// @param translator the translator of the compilation
-    Models(Elements elements, MirrorTranslator translator) {
+    /// @param types the type utilities of the compilation
+    Models(Elements elements, Types types) {
         this.elements = elements;
-        this.translator = translator;
+        this.types = types;
+        this.translator = new MirrorTranslator(elements, types);
     }
 
     /// The translator of the compilation.
@@ -54,6 +63,30 @@ final class Models {
     /// @return the model, or why there is none
     Translation<TypeModel> of(TypeElement type, MemberFilter filter) {
         return models.computeIfAbsent(new Key(binaryName(type), filter), _ -> translator.type(type, filter));
+    }
+
+    /// The fields, constructors and methods a full metamodel of a type has
+    /// facts of: the `public` ones it declares, then the ones it adopts from
+    /// its supertypes that are not `public`.
+    ///
+    /// @param type the type
+    /// @return the members, see [MirrorTranslator#members(TypeElement)]
+    List<Element> members(TypeElement type) {
+        return translator.members(type);
+    }
+
+    /// The types of the parameters of a method or constructor as a member of
+    /// a type, which for a member the type inherits are in terms of the
+    /// type: `String`, where `Hidden<T>` declares `set(T)` and the type
+    /// extends `Hidden<String>`.
+    ///
+    /// @param owner the type
+    /// @param member a member of `owner`, declared or inherited
+    /// @return the types, empty for a field
+    List<? extends TypeMirror> parameters(TypeElement owner, Element member) {
+        return member instanceof ExecutableElement
+                ? ((ExecutableType) types.asMemberOf((DeclaredType) owner.asType(), member)).getParameterTypes()
+                : List.of();
     }
 
     /// The binary name of a type, `java.util.Map$Entry`.

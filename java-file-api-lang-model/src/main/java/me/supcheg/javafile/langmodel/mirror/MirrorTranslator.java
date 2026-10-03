@@ -122,7 +122,8 @@ public final class MirrorTranslator {
     /// superclasses, parameterized supertypes, method table, enum
     /// constants, `sealed`, the single abstract method — and the members `filter` selects, as members
     /// of the type (`Types.asMemberOf`). The members are those of `filter`
-    /// only; the method table is complete whatever the filter.
+    /// only, out of [#members(TypeElement)]; the method table is complete
+    /// whatever the filter.
     ///
     /// A member whose signature cannot be translated, mentions a type that
     /// is not `public`, or has more than [MemberModel#MAX_ARITY] parameters
@@ -151,26 +152,124 @@ public final class MirrorTranslator {
         }
     }
 
+    /// The fields, constructors and methods a full metamodel of a type has
+    /// facts of ([MemberFilter#DECLARED_PUBLIC]): the `public` ones the type
+    /// declares, in declaration order, and then the ones it adopts.
+    ///
+    /// A type adopts the `public` fields and methods it inherits from a
+    /// supertype that is not `public`: such a supertype has no metamodel, so
+    /// its members are told as members of the nearest subtype that can have
+    /// one, as javac sees them — `capacity()` of `java.lang.StringBuilder`,
+    /// which the package-private `AbstractStringBuilder` declares. The
+    /// supertypes a type adopts from are the ones it reaches through
+    /// supertypes that are not `public` alone: what is beyond a `public`
+    /// supertype is told by that supertype. Of their members the type adopts
+    /// those it has:
+    ///
+    /// - not a method a nearer type overrides or implements, nor a field or
+    ///   a `static` method a nearer type hides;
+    /// - not a `static` method of an interface, which is not inherited;
+    /// - of several abstract methods of the same signature one, that of the
+    ///   most specific result, as for a `sam`;
+    /// - each once, however many ways lead to the supertype that declares it.
+    ///
+    /// Constructors are not inherited, so none is adopted.
+    ///
+    /// @param element the class, interface, enum or record
+    /// @return the members, each a field, constructor or method
+    public List<Element> members(TypeElement element) {
+        DeclaredType self = (DeclaredType) element.asType();
+        return Stream.<Element>concat(
+                        element.getEnclosedElements().stream()
+                                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                                .filter(member -> switch (member.getKind()) {
+                                    // enum constants are TypeModel.enumConstants; member types have models of
+                                    // their own
+                                    case FIELD, CONSTRUCTOR, METHOD -> true;
+                                    default -> false;
+                                }),
+                        adopted(element, self))
+                .toList();
+    }
+
+    /// The members a type adopts, see [#members(TypeElement)]: those of the nearer supertype first.
+    private Stream<Element> adopted(TypeElement element, DeclaredType self) {
+        List<TypeElement> hidden = hiddenSupertypes(List.of(element), Set.of()).toList();
+        if (hidden.isEmpty()) {
+            return Stream.empty();
+        }
+        Map<String, List<Element>> inherited = elements.getAllMembers(element).stream()
+                .<Element>map(member -> member)
+                .filter(member -> member.getKind() == ElementKind.FIELD || member.getKind() == ElementKind.METHOD)
+                .collect(Collectors.groupingBy(member -> member.getSimpleName().toString()));
+        List<Element> had = hidden.stream()
+                .<Element>flatMap(supertype -> supertype.getEnclosedElements().stream())
+                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                .filter(member -> {
+                    List<Element> namesakes =
+                            inherited.getOrDefault(member.getSimpleName().toString(), List.of());
+                    return namesakes.contains(member)
+                            && namesakes.stream().noneMatch(other -> replaces(other, member, element));
+                })
+                .toList();
+        // abstract methods of one signature that do not override each other are one member of the type
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = had.stream()
+                .filter(member -> member.getKind() == ElementKind.METHOD)
+                .map(ExecutableElement.class::cast)
+                .collect(Collectors.groupingBy(method -> signature(method, element, self)));
+        return had.stream()
+                .filter(member -> !(member instanceof ExecutableElement method)
+                        || pick(twins.get(signature(method, element, self)), self)
+                                .equals(method));
+    }
+
+    private ExecutableElement pick(List<ExecutableElement> twins, DeclaredType self) {
+        return twins.size() == 1 ? twins.getFirst() : mostSpecific(twins, self);
+    }
+
+    /// The supertypes that are not `public` which `nearer` reach through
+    /// such supertypes alone: each once, the nearer first.
+    private static Stream<TypeElement> hiddenSupertypes(List<TypeElement> nearer, Set<TypeElement> seen) {
+        List<TypeElement> next = nearer.stream()
+                .flatMap(type -> Stream.concat(Stream.of(type.getSuperclass()), type.getInterfaces().stream()))
+                .filter(supertype -> supertype.getKind() == TypeKind.DECLARED)
+                .map(supertype -> (TypeElement) ((DeclaredType) supertype).asElement())
+                .filter(supertype -> !isPublic(supertype))
+                .distinct()
+                .filter(supertype -> !seen.contains(supertype))
+                .toList();
+        return next.isEmpty()
+                ? Stream.empty()
+                : Stream.concat(
+                        next.stream(),
+                        hiddenSupertypes(
+                                next,
+                                Stream.concat(seen.stream(), next.stream()).collect(Collectors.toSet())));
+    }
+
+    /// Whether `type` has `other` in place of `member`: `other` hides it, or
+    /// overrides or implements it as a member of `type`.
+    private boolean replaces(Element other, Element member, TypeElement type) {
+        return other != member
+                && (elements.hides(other, member)
+                        || other instanceof ExecutableElement overrider
+                                && member instanceof ExecutableElement overridden
+                                && elements.overrides(overrider, overridden, type));
+    }
+
     /// Translates one member of a type, as [#type] does for each member its
     /// filter selects: as a member of the type (`Types.asMemberOf`), whatever its
     /// access. It lets a caller tell which element a [MemberModel] is of.
     ///
     /// @param owner the class, interface, enum or record
-    /// @param member a field, constructor or method of `owner`
+    /// @param member a field, constructor or method of `owner`, declared or inherited
     /// @return the member, or the reason it has no model, as [SkippedMember#reason()] tells it; deferred
     ///         if its signature mentions a type not generated yet
     /// @throws IllegalArgumentException if `member` is not a field, constructor or method
     public Translation<MemberModel> member(TypeElement owner, Element member) {
         DeclaredType self = (DeclaredType) owner.asType();
         try {
-            Read read =
-                    switch (member.getKind()) {
-                        case FIELD -> field(owner, self, (VariableElement) member);
-                        case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member);
-                        case METHOD -> method(owner, self, (ExecutableElement) member);
-                        default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
-                    };
-            return switch (read) {
+            return switch (read(owner, self, member)) {
                 case Read.Made(MemberModel model) -> new Translation.Ok<>(model);
                 case Read.Skipped(SkippedMember skip) -> new Translation.Unrepresentable<>(skip.reason());
             };
@@ -192,8 +291,9 @@ public final class MirrorTranslator {
     ///
     /// Empty for what is not a functional interface — a `sealed` interface
     /// is none —, for one whose method, or a method it is override-equivalent
-    /// to, is generic, and for one that declares its method but has no model
-    /// of it, which [#type] reports as a [SkippedMember].
+    /// to, is generic, and for one that declares its method, or adopts it
+    /// ([#members(TypeElement)]), but has no model of it, which [#type]
+    /// reports as a [SkippedMember].
     ///
     /// @param element the type
     /// @return the method; empty if there is none to make a `sam` fact of; unrepresentable if
@@ -225,7 +325,11 @@ public final class MirrorTranslator {
             return new Translation.Ok<>(Optional.empty());
         }
         ExecutableElement method = mostSpecific(candidates, self);
-        boolean declared = method.getEnclosingElement().equals(element);
+        // declared, or adopted from a superinterface that is not public: a member the type has a fact of
+        boolean declared = method.getEnclosingElement().equals(element)
+                || adopted(element, self)
+                        .anyMatch(member -> member instanceof ExecutableElement adopted
+                                && signature(adopted, element, self).equals(signature));
         return switch (method(element, self, method, functionThrows(candidates, self))) {
             case Read.Made(MemberModel model) ->
                 new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
@@ -306,7 +410,11 @@ public final class MirrorTranslator {
                 .filter(e -> e.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(e -> e.getSimpleName().toString())
                 .toList();
-        List<Read> reads = filter == MemberFilter.DECLARED_PUBLIC ? members(element, self) : List.of();
+        List<Read> reads = filter == MemberFilter.DECLARED_PUBLIC
+                ? members(element).stream()
+                        .map(member -> read(element, self, member))
+                        .toList()
+                : List.of();
         Optional<MethodModel> sam =
                 switch (readSam(element)) {
                     case Translation.Ok<Optional<SamModel>>(Optional<SamModel> found) -> found.map(SamModel::method);
@@ -477,17 +585,13 @@ public final class MirrorTranslator {
         };
     }
 
-    private List<Read> members(TypeElement element, DeclaredType self) {
-        return element.getEnclosedElements().stream()
-                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
-                .flatMap(member -> switch (member.getKind()) {
-                    case FIELD -> Stream.of(field(element, self, (VariableElement) member));
-                    case CONSTRUCTOR -> Stream.of(constructor(element, self, (ExecutableElement) member));
-                    case METHOD -> Stream.of(method(element, self, (ExecutableElement) member));
-                    // enum constants are TypeModel.enumConstants; member types have models of their own
-                    default -> Stream.<Read>empty();
-                })
-                .toList();
+    private Read read(TypeElement owner, DeclaredType self, Element member) {
+        return switch (member.getKind()) {
+            case FIELD -> field(owner, self, (VariableElement) member);
+            case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member);
+            case METHOD -> method(owner, self, (ExecutableElement) member);
+            default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
+        };
     }
 
     private Read field(TypeElement owner, DeclaredType self, VariableElement field) {
