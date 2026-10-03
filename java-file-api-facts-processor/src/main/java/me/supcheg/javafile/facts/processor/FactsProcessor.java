@@ -4,7 +4,6 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
-import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Either;
@@ -194,7 +193,7 @@ public final class FactsProcessor extends AbstractProcessor {
     }
 
     private void generate(String base, Elements elements, Diagnostics diagnostics) {
-        Models models = new Models(elements, new MirrorTranslator(elements, processingEnv.getTypeUtils()));
+        Models models = new Models(elements, processingEnv.getTypeUtils());
         ReuseIndex index = new ReuseIndex(processingEnv.getFiler(), elements);
         SortedMap<String, Asked> asked = requested.entrySet().stream()
                 .flatMap(entry -> Optional.ofNullable(elements.getTypeElement(entry.getKey()))

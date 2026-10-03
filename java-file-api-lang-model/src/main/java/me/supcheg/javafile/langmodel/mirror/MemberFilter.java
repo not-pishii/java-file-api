@@ -12,6 +12,10 @@ public enum MemberFilter {
     /// The `public` fields, constructors and methods the type declares,
     /// `static` ones included, but not those it inherits: a full metamodel,
     /// whose inherited members are reached through the metamodels of its
-    /// supertypes. Enum constants are always in [TypeModel#enumConstants()].
+    /// supertypes. A supertype that is not `public` has no metamodel, so the
+    /// `public` fields and methods the type inherits from it count as
+    /// declared by the type, see
+    /// [MirrorTranslator#members(javax.lang.model.element.TypeElement)].
+    /// Enum constants are always in [TypeModel#enumConstants()].
     DECLARED_PUBLIC
 }

@@ -5,6 +5,8 @@ package me.supcheg.javafile.langmodel.mirror;
 ///
 /// @param method the method as a member of the interface; not `static`, and
 /// [me.supcheg.javafile.facts.Overridability#ABSTRACT]
-/// @param declared whether the interface itself declares the method rather than inherits it, in which
-///     case [TypeModel#members()] holds it too, unless it is skipped
+/// @param declared whether the method is among the members the interface has facts of
+///     ([MirrorTranslator#members(javax.lang.model.element.TypeElement)]) — it declares the method, or
+///     adopts it from a superinterface that is not `public` — rather than inherits it from an interface
+///     that has a metamodel of its own; [TypeModel#members()] holds it too then, unless it is skipped
 public record SamModel(MethodModel method, boolean declared) {}

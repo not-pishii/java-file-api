@@ -33,8 +33,12 @@ import java.util.stream.Stream;
 ///
 /// Only members the type declares get one, and only `public` ones (Q3: no
 /// `protected`); an inherited member is reached through the metamodel of the
-/// supertype (Q6(b)). The exception is `sam`, which a functional interface
-/// has whether it declares its abstract method or inherits it.
+/// supertype (Q6(b)). A supertype that is not `public` has no metamodel, so
+/// the `public` fields and methods the type inherits from it are adopted:
+/// they get a fact here, as members of the type, in its terms (Q13,
+/// [me.supcheg.javafile.langmodel.mirror.MirrorTranslator#members]). The
+/// other exception is `sam`, which a functional interface has whether it
+/// declares its abstract method or inherits it.
 ///
 /// A member gets no fact, and is reported as [Skip], if
 ///
@@ -51,8 +55,9 @@ import java.util.stream.Stream;
 ///   a name the metamodel itself starts a name with: it would hide that.
 ///
 /// The names are those of [MetamodelNames#members] over every declared
-/// `public` member, with a fact or without: a member that gets its fact
-/// later does not rename the others.
+/// or adopted `public` member, with a fact or without: a member that gets
+/// its fact later does not rename the others. An adopted method is named
+/// after its parameters as the type has them.
 ///
 /// @param enumConstants the enum constants that get a fact, in declaration order
 /// @param members the fields, constructors and methods that get a fact
@@ -100,19 +105,27 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         Candidates candidates = Candidates.of(type, models, targets);
         Set<Element> live = Stream.concat(candidates.enumConstants().stream(), candidates.members().keySet().stream())
                 .collect(Collectors.toSet());
-        MetamodelNames.MemberNames names = MetamodelNames.members(candidates.named(), taken);
+        MetamodelNames.MemberNames names = MetamodelNames.members(
+                candidates.named().stream()
+                        .map(member -> member.getEnclosingElement().equals(type)
+                                ? MetamodelNames.Named.declared(member)
+                                : new MetamodelNames.Named(member, models.parameters(type, member)))
+                        .toList(),
+                taken);
         // a conflict is skipped as a whole once one of its members is a candidate; none is in `names`
         List<Skip> conflicts = names.conflicts().entrySet().stream()
                 .filter(conflict -> conflict.getValue().stream().anyMatch(live::contains))
                 .map(conflict -> new Skip(
-                        conflict.getValue().stream().map(MemberPlan::describe).collect(Collectors.joining(", ")),
+                        conflict.getValue().stream()
+                                .map(member -> describe(type, member))
+                                .collect(Collectors.joining(", ")),
                         "would all be named " + conflict.getKey()))
                 .toList();
         Pair<List<Skip>, Map<Element, String>> named = names.names().entrySet().stream()
                 .filter(entry -> live.contains(entry.getKey()))
                 .<Either<Skip, Map.Entry<Element, String>>>map(entry -> taken.contains(entry.getValue())
                         ? Either.left(new Skip(
-                                describe(entry.getKey()),
+                                describe(type, entry.getKey()),
                                 "would be named " + entry.getValue() + ", a name the metamodel itself uses"))
                         : Either.right(entry))
                 .collect(EitherCollectors.groupingTo(
@@ -196,12 +209,13 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         return models().flatMap(Mentions::of).map(Models::binaryName).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    /// The declared members of a type that a fact can be made of.
+    /// The members of a type that a fact can be made of: those it declares and those it adopts.
     ///
     /// @param named every enum constant and `public` field, constructor and method, with a fact or
     ///     without: what the names are told apart among
     /// @param enumConstants the enum constants, in declaration order
-    /// @param members the fields, constructors and methods a fact can be made of, in declaration order
+    /// @param members the fields, constructors and methods a fact can be made of, the declared ones in
+    ///     declaration order and then the adopted ones
     /// @param skipped the `public` members no fact can be made of, and why
     private record Candidates(
             List<Element> named, List<Element> enumConstants, Map<Element, MemberModel> members, List<Skip> skipped) {
@@ -210,15 +224,16 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             List<Element> enclosed = List.copyOf(type.getEnclosedElements());
             // member types have metamodels of their own; initializers are not members
             Predicate<Element> isConstant = member -> member.getKind() == ElementKind.ENUM_CONSTANT;
-            Predicate<Element> isPublicMember = member -> switch (member.getKind()) {
-                case FIELD, CONSTRUCTOR, METHOD -> member.getModifiers().contains(Modifier.PUBLIC);
-                default -> false;
-            };
             List<Element> enumConstants = enclosed.stream().filter(isConstant).toList();
-            List<Element> publicMembers =
-                    enclosed.stream().filter(isPublicMember).toList();
-            List<Element> named =
-                    enclosed.stream().filter(isConstant.or(isPublicMember)).toList();
+            List<Element> publicMembers = models.members(type);
+            Set<Element> withFacts = Set.copyOf(publicMembers);
+            // the constants and the declared members as they are declared, then the adopted members
+            List<Element> named = Stream.concat(
+                            enclosed.stream().filter(isConstant.or(withFacts::contains)),
+                            publicMembers.stream()
+                                    .filter(member ->
+                                            !member.getEnclosingElement().equals(type)))
+                    .toList();
             Pair<List<Skip>, Map<Element, MemberModel>> read = publicMembers.stream()
                     .map(member -> candidate(type, member, models.translator(), targets))
                     .collect(EitherCollectors.groupingTo(
@@ -242,13 +257,14 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         : unsupported(model, targets);
                 yield unsupported
                         .<Either<Skip, Map.Entry<Element, MemberModel>>>map(
-                                reason -> Either.left(new Skip(describe(member), reason)))
+                                reason -> Either.left(new Skip(describe(type, member), reason)))
                         .orElseGet(() -> Either.right(Map.entry(member, model)));
             }
             case Translation.Deferred<MemberModel>(String unresolved) ->
-                throw new IllegalStateException(describe(member) + " was read, but mentions " + unresolved + " now");
+                throw new IllegalStateException(
+                        describe(type, member) + " was read, but mentions " + unresolved + " now");
             case Translation.Unrepresentable<MemberModel>(String reason) ->
-                Either.left(new Skip(describe(member), reason));
+                Either.left(new Skip(describe(type, member), reason));
         };
     }
 
@@ -306,12 +322,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         "mentions " + Models.binaryName(desc) + ", which has no metamodel: " + targets.whyNone(desc));
     }
 
-    /// A member as a diagnostic names it: `method greet(p.Hidden)`.
-    static String describe(Element member) {
-        return switch (member.getKind()) {
-            case FIELD, ENUM_CONSTANT -> "field " + member.getSimpleName();
-            case CONSTRUCTOR -> "constructor " + member;
-            default -> "method " + member;
-        };
+    /// A member of a type as a diagnostic names it: `method greet(p.Hidden)`, and, for one the type
+    /// adopts, `method capacity() of java.lang.AbstractStringBuilder`.
+    static String describe(TypeElement type, Element member) {
+        String described =
+                switch (member.getKind()) {
+                    case FIELD, ENUM_CONSTANT -> "field " + member.getSimpleName();
+                    case CONSTRUCTOR -> "constructor " + member;
+                    default -> "method " + member;
+                };
+        return member.getEnclosingElement().equals(type)
+                ? described
+                : described + " of " + ((TypeElement) member.getEnclosingElement()).getQualifiedName();
     }
 }

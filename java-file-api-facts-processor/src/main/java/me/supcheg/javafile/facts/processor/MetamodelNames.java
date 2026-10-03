@@ -70,12 +70,40 @@ final class MetamodelNames {
     /// @param conflicts the members that would share a name, by that name; none of them is in `names`
     record MemberNames(Map<Element, String> names, Map<String, List<Element>> conflicts) {}
 
+    /// A member to name.
+    ///
+    /// @param element the field, enum constant, method or constructor
+    /// @param parameters the types its parameters are named after, empty for a field: the declared ones
+    ///     of a member the type declares, and those of a member it adopts from a supertype that is not
+    ///     `public` as the type has them — `set_String`, not `set_T`, where the type extends
+    ///     `Hidden<String>`
+    record Named(Element element, List<? extends TypeMirror> parameters) {
+        /// Copies the types.
+        Named {
+            parameters = List.copyOf(parameters);
+        }
+
+        /// A member named after the declared types of its parameters.
+        ///
+        /// @param element the field, enum constant, method or constructor
+        /// @return the member
+        static Named declared(Element element) {
+            return new Named(
+                    element,
+                    element instanceof ExecutableElement executable
+                            ? executable.getParameters().stream()
+                                    .map(VariableElement::asType)
+                                    .toList()
+                            : List.of());
+        }
+    }
+
     /// A member and what its name is made of.
     ///
     /// @param element the member
     /// @param prefix the name of a field, enum constant or method, `new` or `super` for a constructor
-    /// @param parameters the declared types of the parameters, empty for a field
-    private record Member(Element element, String prefix, List<TypeMirror> parameters) {
+    /// @param parameters the types the parameters are named after, empty for a field
+    private record Member(Element element, String prefix, List<? extends TypeMirror> parameters) {
         /// Whether the name is the prefix alone: that of a field, a constant, a method without parameters.
         boolean bare() {
             return parameters.isEmpty() && element.getKind() != ElementKind.CONSTRUCTOR;
@@ -117,7 +145,7 @@ final class MetamodelNames {
     /// @return the names
     /// @throws IllegalArgumentException if an element is of another kind, or a parameter type is unsupported
     static MemberNames members(List<? extends Element> members) {
-        return members(members, Set.of());
+        return members(members.stream().map(Named::declared).toList(), Set.of());
     }
 
     /// The names of the facts of members, as [#members(List)] gives them,
@@ -125,11 +153,12 @@ final class MetamodelNames {
     /// appended, as a reserved one does. The escaped name may be taken too:
     /// the caller is to check.
     ///
-    /// @param members fields, enum constants, methods and constructors
+    /// @param members fields, enum constants, methods and constructors, each with the types its
+    ///     parameters are named after
     /// @param taken the names the metamodel starts a name with, see [MetamodelEmitter#takenNames]
     /// @return the names
     /// @throws IllegalArgumentException if an element is of another kind, or a parameter type is unsupported
-    static MemberNames members(List<? extends Element> members, Set<String> taken) {
+    static MemberNames members(List<Named> members, Set<String> taken) {
         List<Member> parsed = members.stream().map(MetamodelNames::parse).toList();
         Map<String, List<Member>> overloads =
                 parsed.stream().collect(Collectors.groupingBy(member -> member.name(new boolean[0])));
@@ -174,23 +203,19 @@ final class MetamodelNames {
         return new MemberNames(names, conflicts);
     }
 
-    private static Member parse(Element element) {
+    private static Member parse(Named member) {
+        Element element = member.element();
         return switch (element.getKind()) {
             case FIELD, ENUM_CONSTANT ->
                 new Member(element, element.getSimpleName().toString(), List.of());
-            case METHOD -> new Member(element, element.getSimpleName().toString(), parameters(element));
+            case METHOD -> new Member(element, element.getSimpleName().toString(), member.parameters());
             case CONSTRUCTOR ->
                 new Member(
                         element,
                         element.getEnclosingElement().getModifiers().contains(Modifier.ABSTRACT) ? "super" : "new",
-                        parameters(element));
+                        member.parameters());
             default -> throw new IllegalArgumentException("Not a member with a fact: " + element);
         };
-    }
-
-    private static List<TypeMirror> parameters(Element executable) {
-        return ((ExecutableElement) executable)
-                .getParameters().stream().map(VariableElement::asType).toList();
     }
 
     /// The positions of the parameters of `member` whose declared types are
