@@ -442,10 +442,8 @@ final class Lowering {
             receiver = Exprs.cast(owner.typeRef(), expr(target.node()));
             searched = owner;
         } else {
-            boolean settled = true;
-            for (int i = 0; i < args.size(); i++) {
-                settled &= settled(args.get(i), method.params().get(i));
-            }
+            boolean settled = IntStream.range(0, args.size())
+                    .allMatch(i -> settled(args.get(i), method.params().get(i)));
             receiver = expr(target.node(), pin || !settled);
             searched = target.type();
         }
