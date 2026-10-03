@@ -14,10 +14,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import java.lang.constant.ClassDesc;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +22,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /// The names in generated metamodels (mini-spec §2.2), as pure functions:
 /// those of a type — the metamodel class and its type parameters — and those
@@ -89,11 +90,9 @@ final class MetamodelNames {
             if (bare()) {
                 return prefix;
             }
-            StringBuilder name = new StringBuilder(prefix);
-            for (int i = 0; i < parameters.size(); i++) {
-                name.append('_').append(typeSuffix(parameters.get(i), qualified.length > i && qualified[i]));
-            }
-            return parameters.isEmpty() ? name.append('_').toString() : name.toString();
+            return IntStream.range(0, parameters.size())
+                    .mapToObj(i -> typeSuffix(parameters.get(i), qualified.length > i && qualified[i]))
+                    .collect(Collectors.joining("_", prefix + "_", ""));
         }
     }
 
@@ -132,46 +131,46 @@ final class MetamodelNames {
     /// @throws IllegalArgumentException if an element is of another kind, or a parameter type is unsupported
     static MemberNames members(List<? extends Element> members, Set<String> taken) {
         List<Member> parsed = members.stream().map(MetamodelNames::parse).toList();
-        Map<String, List<Member>> overloads = new HashMap<>();
-        for (Member member : parsed) {
-            overloads
-                    .computeIfAbsent(member.name(new boolean[0]), key -> new ArrayList<>())
-                    .add(member);
-        }
+        Map<String, List<Member>> overloads =
+                parsed.stream().collect(Collectors.groupingBy(member -> member.name(new boolean[0])));
 
-        Map<Member, String> escaped = new LinkedHashMap<>();
-        Set<String> fields = new HashSet<>();
-        for (Member member : parsed) {
-            String name = member.name(qualified(member, overloads.get(member.name(new boolean[0]))));
-            if (RESERVED.contains(name) || taken.contains(name)) {
-                name += "_";
-            }
-            escaped.put(member, name);
-            if (member.field()) {
-                fields.add(name);
-            }
-        }
+        Map<Member, String> escaped = parsed.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        member -> {
+                            String name = member.name(qualified(member, overloads.get(member.name(new boolean[0]))));
+                            return RESERVED.contains(name) || taken.contains(name) ? name + "_" : name;
+                        },
+                        (first, second) -> second,
+                        LinkedHashMap::new));
+        Set<String> fields = escaped.entrySet().stream()
+                .filter(e -> e.getKey().field())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toSet());
 
-        Map<Member, String> finalNames = new LinkedHashMap<>();
-        Map<String, List<Member>> byName = new TreeMap<>();
-        escaped.forEach((member, name) -> {
-            String finalName = !member.field() && member.bare() && fields.contains(name) ? name + "_" : name;
-            finalNames.put(member, finalName);
-            byName.computeIfAbsent(finalName, key -> new ArrayList<>()).add(member);
-        });
+        Map<Member, String> finalNames = escaped.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> !e.getKey().field() && e.getKey().bare() && fields.contains(e.getValue())
+                                ? e.getValue() + "_"
+                                : e.getValue(),
+                        (first, second) -> second,
+                        LinkedHashMap::new));
+        Map<String, List<Member>> byName = finalNames.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getValue, TreeMap::new, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
-        Map<Element, String> names = new LinkedHashMap<>();
-        Map<String, List<Element>> conflicts = new TreeMap<>();
-        finalNames.forEach((member, name) -> {
-            if (byName.get(name).size() == 1) {
-                names.put(member.element(), name);
-            }
-        });
-        byName.forEach((name, sharing) -> {
-            if (sharing.size() > 1) {
-                conflicts.put(name, sharing.stream().map(Member::element).toList());
-            }
-        });
+        Map<Element, String> names = finalNames.entrySet().stream()
+                .filter(e -> byName.get(e.getValue()).size() == 1)
+                .collect(Collectors.toMap(
+                        e -> e.getKey().element(), Map.Entry::getValue, (first, second) -> second, LinkedHashMap::new));
+        Map<String, List<Element>> conflicts = byName.entrySet().stream()
+                .filter(e -> e.getValue().size() > 1)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().stream().map(Member::element).toList(),
+                        (first, second) -> second,
+                        TreeMap::new));
         return new MemberNames(names, conflicts);
     }
 
@@ -239,17 +238,26 @@ final class MetamodelNames {
     }
 
     private static String declaredSuffix(Element type, boolean qualified) {
-        Deque<String> chain = new ArrayDeque<>();
-        Element current = type;
-        while (current instanceof TypeElement element) {
-            chain.addFirst(element.getSimpleName().toString());
-            current = element.getEnclosingElement();
-        }
-        String name = String.join("_", chain);
-        if (qualified && current instanceof PackageElement pkg && !pkg.isUnnamed()) {
+        List<TypeElement> chain = enclosing(type).toList();
+        String name = nestedName(chain);
+        Element outer = chain.isEmpty() ? type : chain.getLast().getEnclosingElement();
+        if (qualified && outer instanceof PackageElement pkg && !pkg.isUnnamed()) {
             return pkg.getQualifiedName().toString().replace('.', '_') + "_" + name;
         }
         return name;
+    }
+
+    /// `type` and the types that enclose it, the innermost first.
+    private static Stream<TypeElement> enclosing(Element type) {
+        return Stream.iterate(type, element -> element instanceof TypeElement, Element::getEnclosingElement)
+                .map(TypeElement.class::cast);
+    }
+
+    /// The simple names of a type and of the types that enclose it, outermost first, joined by `_`.
+    private static String nestedName(List<TypeElement> enclosing) {
+        return enclosing.reversed().stream()
+                .map(element -> element.getSimpleName().toString())
+                .collect(Collectors.joining("_"));
     }
 
     /// The metamodel class of a type: `<base>.p.q.T_` for `p.q.T`, with a
@@ -261,15 +269,9 @@ final class MetamodelNames {
     /// @param elements the element utilities of the compilation
     /// @return the metamodel class
     static ClassDesc metamodel(String base, TypeElement type, Elements elements) {
-        Deque<String> chain = new ArrayDeque<>();
-        Element current = type;
-        while (current instanceof TypeElement element) {
-            chain.addFirst(element.getSimpleName().toString());
-            current = element.getEnclosingElement();
-        }
         PackageElement pkg = elements.getPackageOf(type);
         String packageName = pkg.isUnnamed() ? base : base + "." + pkg.getQualifiedName();
-        return ClassDesc.of(packageName, String.join("_", chain) + "_");
+        return ClassDesc.of(packageName, nestedName(enclosing(type).toList()) + "_");
     }
 
     /// The type parameters of a generic metamodel: those of the type, with

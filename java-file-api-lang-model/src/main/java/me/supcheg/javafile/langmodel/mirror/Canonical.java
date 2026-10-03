@@ -118,15 +118,15 @@ public final class Canonical {
                                                 .map(Canonical::binaryName)
                                                 .toList()),
                                 "supertypes "
-                                        + items(sorted(model.supertypes().supertypes().stream()
-                                                .map(scope::type))),
+                                        + items(model.supertypes().supertypes().stream()
+                                                .map(scope::type).sorted().toList()),
                                 "enum " + items(model.enumConstants()),
                                 "members "
                                         + switch (model.filter()) {
                                             case NONE -> "none";
                                             case DECLARED_PUBLIC -> "declared-public";
                                         }),
-                        sorted(model.members().stream().map(m -> member(m, model.typeParams()))).stream(),
+                        model.members().stream().map(m -> member(m, model.typeParams())).sorted(),
                         model
                                 .sam()
                                 .map(sam -> "sam " + sam.name() + params(sam.params(), scope) + " -> "
@@ -229,18 +229,20 @@ public final class Canonical {
         return " throws "
                 + (throwsTypes.isEmpty()
                         ? "-"
-                        : String.join(", ", sorted(throwsTypes.stream().map(scope::type))));
+                        : throwsTypes.stream().map(scope::type).sorted().collect(Collectors.joining(", ")));
     }
 
     private static List<String> table(Collection<MethodTableTemplate.Signature> signatures) {
-        return sorted(signatures.stream()
+        return signatures.stream()
                 .map(s -> s.params().stream()
                         .map(p -> switch (p) {
                             case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
                             case MethodTableTemplate.Var(int index, int dimensions) ->
                                 "#" + index + "[]".repeat(dimensions);
                         })
-                        .collect(Collectors.joining(", ", s.name() + "(", ")"))));
+                        .collect(Collectors.joining(", ", s.name() + "(", ")")))
+                .sorted()
+                .toList();
     }
 
     private static String kind(DeclaredKind kind) {
@@ -286,10 +288,6 @@ public final class Canonical {
 
     private static String items(List<String> items) {
         return items.isEmpty() ? "-" : String.join("; ", items);
-    }
-
-    private static List<String> sorted(Stream<String> items) {
-        return items.sorted().toList();
     }
 
     private static String sha256(String text) {

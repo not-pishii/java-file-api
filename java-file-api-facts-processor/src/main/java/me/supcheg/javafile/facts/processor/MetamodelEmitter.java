@@ -34,8 +34,6 @@ import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -234,12 +232,12 @@ final class MetamodelEmitter {
                         Mentions.ofBounds(typeParams),
                         full.stream().flatMap(f -> {
                             // what the facts refer to does not depend on how type parameters and parameters are named
-                            MemberFacts unnamed = new MemberFacts(
-                                    new MemberFacts.Self(model.desc(), model.kind(), declared, declared, declared),
+                            MemberFacts.Facts unnamed = MemberFacts.of(
+                                    MemberFacts.Self.of(model.desc(), model.kind(), declared, declared, declared),
                                     targets,
-                                    new MemberFacts.Locals.Probe());
-                            unnamed.specs(f.plan());
-                            return Stream.concat(unnamed.signatureTypes().stream(), unnamed.uses().stream());
+                                    new MemberFacts.Locals.Probe(),
+                                    f.plan());
+                            return Stream.concat(f.plan().models().flatMap(Mentions::of), unnamed.uses().stream());
                         }),
                         infrastructure(token).stream())
                 .flatMap(Function.identity())
@@ -254,29 +252,30 @@ final class MetamodelEmitter {
                 .flatMap(Function.identity())
                 .collect(Collectors.toSet());
         List<String> names = MetamodelNames.typeParameters(declared, typeNames);
-        Map<String, String> renaming = new HashMap<>();
-        IntStream.range(0, declared.size()).forEach(i -> renaming.put(declared.get(i), names.get(i)));
+        Map<String, String> renaming =
+                IntStream.range(0, declared.size()).boxed().collect(Collectors.toMap(declared::get, names::get));
         List<String> witnesses = full.map(f -> f.taken()
-                        .map(taken -> {
-                            Set<String> avoided = new HashSet<>(taken);
-                            avoided.addAll(f.plan().names());
-                            return MetamodelNames.witnesses(names, avoided);
-                        })
+                        .map(taken -> MetamodelNames.witnesses(
+                                names,
+                                Stream.concat(taken.stream(), f.plan().names().stream())
+                                        .collect(Collectors.toSet())))
                         .orElseGet(() -> IntStream.range(0, names.size())
                                 .mapToObj(i -> MemberPlan.PROBE + "c" + i)
                                 .toList()))
                 .orElseGet(() -> MetamodelNames.witnesses(names));
-        Optional<MemberFacts> facts = full.map(f -> new MemberFacts(
-                new MemberFacts.Self(model.desc(), model.kind(), declared, names, witnesses),
+        Optional<MemberFacts.Facts> facts = full.map(f -> MemberFacts.of(
+                MemberFacts.Self.of(model.desc(), model.kind(), declared, names, witnesses),
                 targets,
                 f.taken()
                         .<MemberFacts.Locals>map(taken -> new MemberFacts.Locals.Named(typeNames, taken))
-                        .orElseGet(MemberFacts.Locals.Probe::new)));
-        List<MemberFacts.Spec> specs =
-                full.flatMap(f -> facts.map(x -> x.specs(f.plan()))).orElse(List.of());
-        boolean rawSignatures = facts.map(MemberFacts::raw).orElse(false)
+                        .orElseGet(MemberFacts.Locals.Probe::new),
+                f.plan()));
+        List<MemberFacts.Spec> specs = facts.map(MemberFacts.Facts::specs).orElse(List.of());
+        boolean rawSignatures = full.map(f ->
+                                f.plan().models().flatMap(Mentions::signature).anyMatch(type -> raw(type, targets)))
+                        .orElse(false)
                 || typeParams.stream().flatMap(param -> param.bounds().stream()).anyMatch(b -> raw(b, targets));
-        boolean keepWitnesses = facts.map(MemberFacts::instanceFactories).orElse(false);
+        boolean keepWitnesses = facts.map(MemberFacts.Facts::instanceFactories).orElse(false);
         ClassDesc data = metamodel.nested(MetamodelNames.DATA);
         ClassDesc canonicalClass = metamodel.nested(MetamodelNames.CANONICAL);
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
@@ -290,12 +289,11 @@ final class MetamodelEmitter {
                                     .withMember("complete", AnnotationValues.literal(full.isPresent()))
                                     .withMember("format", AnnotationValues.literal(MetamodelFormat.VERSION)));
             // a deprecated type is no concern of the metamodel that describes it; a raw type is meant
-            List<SingleAnnotationValue> suppressed = new ArrayList<>();
-            if (raw || rawSignatures) {
-                suppressed.add(AnnotationValues.literal("rawtypes"));
-            }
-            suppressed.add(AnnotationValues.literal("deprecation"));
-            suppressed.add(AnnotationValues.literal("removal"));
+            List<SingleAnnotationValue> suppressed = Stream.concat(
+                            Stream.of("rawtypes").filter(_ -> raw || rawSignatures),
+                            Stream.of("deprecation", "removal"))
+                    .<SingleAnnotationValue>map(warning -> AnnotationValues.literal(warning))
+                    .toList();
             cb.withAnnotation(CD_SUPPRESS_WARNINGS, ab -> ab.withMember("value", AnnotationValues.array(suppressed)));
             for (TypeParam param : typeParams) {
                 cb.withTypeParam(new TypeParam(
@@ -375,18 +373,19 @@ final class MetamodelEmitter {
                     case ExactTypeArg exact -> raw(exact.type(), targets);
                     case ExtendsTypeArg bound -> raw(bound.bound(), targets);
                     case SuperTypeArg bound -> raw(bound.bound(), targets);
-                    case UnboundedTypeArg ignored -> false;
+                    case UnboundedTypeArg _ -> false;
                 });
             case ArrayTypeRef array -> raw(array.component(), targets);
-            case TypeVarRef ignored -> false;
-            case PrimitiveTypeRef ignored -> false;
+            case TypeVarRef _ -> false;
+            case PrimitiveTypeRef _ -> false;
         };
     }
 
     /// `ANY`: the type with a wildcard for every type argument.
     private static void any(ClassBuilder cb, TypeModel model, Token token, List<String> names, Expr shape) {
-        List<Expr> anyArgs = new ArrayList<>(List.of(shape));
-        names.forEach(_ -> anyArgs.add(Exprs.staticCall(CD_TOKEN_ARG, "unbounded")));
+        List<Expr> anyArgs = Stream.concat(
+                        Stream.of(shape), names.stream().map(_ -> Exprs.staticCall(CD_TOKEN_ARG, "unbounded")))
+                .toList();
         cb.withField(
                 MetamodelNames.ANY,
                 Types.parameterized(
@@ -418,12 +417,12 @@ final class MetamodelEmitter {
                 MetamodelNames.INSTANCE_TOKEN,
                 Types.parameterized(token.tokenClass(), self),
                 fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
-        List<MemberFacts.Spec.Assigned> assigned = new ArrayList<>();
-        for (MemberFacts.Spec spec : specs) {
-            if (spec instanceof MemberFacts.Spec.Assigned field) {
-                assigned.add(field);
-                cb.withField(field.name(), field.type(), fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
-            }
+        List<MemberFacts.Spec.Assigned> assigned = specs.stream()
+                .filter(MemberFacts.Spec.Assigned.class::isInstance)
+                .map(MemberFacts.Spec.Assigned.class::cast)
+                .toList();
+        for (MemberFacts.Spec.Assigned field : assigned) {
+            cb.withField(field.name(), field.type(), fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
         }
         if (keepWitnesses) {
             for (int i = 0; i < names.size(); i++) {
@@ -435,11 +434,14 @@ final class MetamodelEmitter {
         }
         cb.withConstructor(ctor -> {
             ctor.withModifiers(Modifier.PUBLIC);
-            List<Expr> args = new ArrayList<>(List.of(shape));
             for (int i = 0; i < names.size(); i++) {
                 ctor.withParam(witnesses.get(i), Types.parameterized(CD_REF_TOKEN, Types.typeVar(names.get(i))));
-                args.add(Exprs.staticCall(CD_TOKEN_ARG, "exact", Exprs.field(witnesses.get(i))));
             }
+            List<Expr> args = Stream.concat(
+                            Stream.of(shape),
+                            witnesses.stream()
+                                    .map(witness -> Exprs.staticCall(CD_TOKEN_ARG, "exact", Exprs.field(witness))))
+                    .toList();
             ctor.withBody(body -> {
                 if (keepWitnesses) {
                     for (String witness : witnesses) {
@@ -566,7 +568,7 @@ final class MetamodelEmitter {
             case ExactTypeArg exact -> Exprs.staticCall(CD_TYPES, "exact", typeRef(exact.type()));
             case ExtendsTypeArg bound -> Exprs.staticCall(CD_TYPES, "extendsBound", typeRef(bound.bound()));
             case SuperTypeArg bound -> Exprs.staticCall(CD_TYPES, "superBound", typeRef(bound.bound()));
-            case UnboundedTypeArg ignored -> Exprs.staticCall(CD_TYPES, "unbounded");
+            case UnboundedTypeArg _ -> Exprs.staticCall(CD_TYPES, "unbounded");
         };
     }
 
@@ -601,9 +603,11 @@ final class MetamodelEmitter {
         if (parts.size() == 1) {
             return parts.getFirst();
         }
-        List<Expr> args = new ArrayList<>(List.of(Exprs.literal("")));
-        args.addAll(parts);
-        return Exprs.staticCall(ConstantDescs.CD_String, "join", args);
+        return Exprs.staticCall(
+                ConstantDescs.CD_String,
+                "join",
+                Stream.<Expr>concat(Stream.of(Exprs.literal("")), parts.stream())
+                        .toList());
     }
 
     /// Splits a text into parts of at most `limit` bytes of modified UTF-8
@@ -655,12 +659,12 @@ final class MetamodelEmitter {
 
     /// The bytes of a part of a text in the modified UTF-8 of a class file.
     private static int bytes(String text, int from, int to) {
-        int bytes = 0;
-        for (int i = from; i < to; i++) {
-            char c = text.charAt(i);
-            bytes += c != 0 && c < 0x80 ? 1 : c < 0x800 ? 2 : 3;
-        }
-        return bytes;
+        return IntStream.range(from, to)
+                .map(i -> {
+                    char c = text.charAt(i);
+                    return c != 0 && c < 0x80 ? 1 : c < 0x800 ? 2 : 3;
+                })
+                .sum();
     }
 
     private static TypeRef rename(TypeRef type, Map<String, String> renaming) {
@@ -735,19 +739,19 @@ final class MetamodelEmitter {
 
         static Token of(DeclaredKind kind) {
             return switch (kind) {
-                case DeclaredKind.FinalClass ignored ->
+                case DeclaredKind.FinalClass _ ->
                     new Token(nestedKind("FinalClass"), "FINAL_CLASS", token("FinalClassToken"), "finalClassToken");
-                case DeclaredKind.OpenClass ignored ->
+                case DeclaredKind.OpenClass _ ->
                     new Token(nestedKind("OpenClass"), "OPEN_CLASS", token("OpenClassToken"), "openClassToken");
-                case DeclaredKind.AbstractClass ignored ->
+                case DeclaredKind.AbstractClass _ ->
                     new Token(
                             nestedKind("AbstractClass"),
                             "ABSTRACT_CLASS",
                             token("AbstractClassToken"),
                             "abstractClassToken");
-                case DeclaredKind.Interface ignored ->
+                case DeclaredKind.Interface _ ->
                     new Token(nestedKind("Interface"), "INTERFACE", token("InterfaceToken"), "interfaceToken");
-                case DeclaredKind.EnumClass ignored ->
+                case DeclaredKind.EnumClass _ ->
                     new Token(nestedKind("EnumClass"), "ENUM_CLASS", token("EnumToken"), "enumToken");
             };
         }

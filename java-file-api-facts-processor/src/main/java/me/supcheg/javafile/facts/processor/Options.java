@@ -1,10 +1,10 @@
 package me.supcheg.javafile.facts.processor;
 
 import javax.lang.model.SourceVersion;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /// The options of the processor, `-A<name>=<value>` on the javac command
 /// line (mini-spec §2.1, §2.3):
@@ -29,17 +29,20 @@ record Options(Optional<String> basePackage, boolean strict) {
     /// @param options the processor options
     /// @return the options, or what is wrong with them
     static Parsed parse(Map<String, String> options) {
-        List<String> errors = new ArrayList<>();
         Optional<String> basePackage = Optional.ofNullable(options.get(PACKAGE));
-        basePackage
-                .filter(name -> !SourceVersion.isName(name))
-                .ifPresent(name -> errors.add("-A" + PACKAGE + "=" + name + " is not a package name"));
         String strictValue = options.getOrDefault(STRICT, "false");
-        boolean strict = strictValue.equals("true");
-        if (!strict && !strictValue.equals("false")) {
-            errors.add("-A" + STRICT + "=" + strictValue + " is neither true nor false");
-        }
-        return errors.isEmpty() ? new Parsed.Valid(new Options(basePackage, strict)) : new Parsed.Invalid(errors);
+        List<String> errors = Stream.of(
+                        basePackage
+                                .filter(name -> !SourceVersion.isName(name))
+                                .map(name -> "-A" + PACKAGE + "=" + name + " is not a package name"),
+                        Optional.of(strictValue)
+                                .filter(value -> !value.equals("true") && !value.equals("false"))
+                                .map(value -> "-A" + STRICT + "=" + value + " is neither true nor false"))
+                .flatMap(Optional::stream)
+                .toList();
+        return errors.isEmpty()
+                ? new Parsed.Valid(new Options(basePackage, strictValue.equals("true")))
+                : new Parsed.Invalid(errors);
     }
 
     /// The options, or why there are none.
