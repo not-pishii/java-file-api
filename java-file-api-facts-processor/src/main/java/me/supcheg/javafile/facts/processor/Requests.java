@@ -1,16 +1,14 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /// Reads the types `@Facts` asks for (mini-spec §1.1, §8).
@@ -79,74 +77,9 @@ final class Requests {
     }
 
     private static Literal declared(TypeElement type) {
-        return refusal(type).<Literal>map(Literal.Rejected::new).orElseGet(() -> new Literal.Type(type));
-    }
-
-    /// Why `@Facts` cannot ask for a type: an annotation interface, a type
-    /// that is not `public` or is nested in one, a class with `$` in its
-    /// simple name, a type in the unnamed package.
-    ///
-    /// @param type a class, interface, enum, record or annotation interface
-    /// @return the reason, a sentence about the type; empty if a metamodel can be asked for
-    static Optional<String> refusal(TypeElement type) {
-        if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
-            return Optional.of("annotation interface " + type.getQualifiedName() + " is not supported yet");
-        }
-        Optional<TypeElement> hidden = notPublic(type);
-        if (hidden.isPresent()) {
-            return Optional.of(
-                    hidden.get().equals(type)
-                            ? type.getQualifiedName() + " is not public"
-                            : type.getQualifiedName() + " is nested in "
-                                    + hidden.get().getQualifiedName() + ", which is not public");
-        }
-        if (dollar(type)) {
-            return Optional.of(type.getQualifiedName() + ": a class with $ in its simple name is not supported yet");
-        }
-        if (unnamedPackage(type)) {
-            return Optional.of(type.getQualifiedName()
-                    + " is in the unnamed package, which a metamodel in a named package cannot refer to");
-        }
-        return Optional.empty();
-    }
-
-    /// Whether a type and every type that encloses it are `public`: only
-    /// such a type can have a metamodel, which names it from another package.
-    ///
-    /// @param type a class, interface, enum, record or annotation interface
-    /// @return `true` if code of any package can name the type
-    static boolean isPublic(TypeElement type) {
-        return notPublic(type).isEmpty();
-    }
-
-    /// The innermost type of `type` and its enclosing types that is not public.
-    private static Optional<TypeElement> notPublic(TypeElement type) {
-        return enclosing(type)
-                .filter(element -> !element.getModifiers().contains(Modifier.PUBLIC))
-                .findFirst();
-    }
-
-    /// Whether the simple name of the type or of an enclosing type has a
-    /// `$`, which `java-file-api-core` reads as the separator of a member
-    /// type in a [java.lang.constant.ClassDesc].
-    private static boolean dollar(TypeElement type) {
-        return enclosing(type)
-                .anyMatch(element -> element.getSimpleName().toString().contains("$"));
-    }
-
-    private static boolean unnamedPackage(TypeElement type) {
-        return Stream.<Element>iterate(type, Element::getEnclosingElement)
-                .filter(PackageElement.class::isInstance)
-                .map(PackageElement.class::cast)
-                .findFirst()
-                .orElseThrow()
-                .isUnnamed();
-    }
-
-    /// `type` and the types that enclose it, the innermost first.
-    private static Stream<TypeElement> enclosing(TypeElement type) {
-        return Stream.<Element>iterate(type, element -> element instanceof TypeElement, Element::getEnclosingElement)
-                .map(TypeElement.class::cast);
+        return MirrorTranslator.refusal(type)
+                .<Literal>map(Literal.Rejected::new)
+                .orElseGet(() -> new Literal.Type(type));
     }
 
     /// The types one `@Facts` asks for.

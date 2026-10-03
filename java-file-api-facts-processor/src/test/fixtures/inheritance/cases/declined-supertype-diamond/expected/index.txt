@@ -1,0 +1,5 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> gen.facts.java.lang.Object_
+META-INF/javafile/metamodel/full/p.Kept -> gen.facts.p.Kept_
+META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_

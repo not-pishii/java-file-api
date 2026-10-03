@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.Kept: no facts of the public members inherited from p.BadMid, which has no full metamodel: the bounds of the type parameters of p.BadMid mention types that are not public: p.Secret

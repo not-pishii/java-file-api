@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.processor.TypeGraph.Node;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
+import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
@@ -197,10 +198,10 @@ final class Closure {
 
     /// What becomes of a supertype of a requested type that is not requested itself.
     private static Kin inherit(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
-        if (!Requests.isPublic(type)) {
+        if (!MirrorTranslator.isPublic(type)) {
             return new Kin.Hidden(name);
         }
-        Optional<String> refusal = Requests.refusal(type);
+        Optional<String> refusal = MirrorTranslator.refusal(type);
         if (refusal.isPresent()) {
             return new Kin.Declined(name, refusal.get());
         }
@@ -251,19 +252,27 @@ final class Closure {
         return switch (models.of(requested, MemberFilter.DECLARED_PUBLIC)) {
             case Translation.Deferred<TypeModel>(String unresolved) -> new Reading.Waiting(unresolved);
             case Translation.Unrepresentable<TypeModel>(String reason) -> new Reading.Unrepresentable(reason);
-            case Translation.Ok<TypeModel>(TypeModel full)
-            when !full.nonPublicBoundTypes().isEmpty() ->
-                new Reading.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
-                        + " mention types that are not public: " + String.join(", ", full.nonPublicBoundTypes()));
-            // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
             case Translation.Ok<TypeModel>(TypeModel full) ->
-                switch (models.sam(requested)) {
-                    case Translation.Ok<Optional<SamModel>>(var sam) ->
-                        read(requested, full, sam.stream().map(SamModel::method).flatMap(Mentions::of), models);
-                    case Translation.Deferred<Optional<SamModel>>(var unresolved) -> new Reading.Waiting(unresolved);
-                    case Translation.Unrepresentable<Optional<SamModel>> _ ->
-                        read(requested, full, Stream.empty(), models);
+                switch (models.translator().rejection(requested, full)) {
+                    case Translation.Ok<Optional<String>>(Optional<String> rejection) ->
+                        rejection
+                                .<Reading>map(Reading.Rejected::new)
+                                .orElseGet(() -> readSignatures(requested, full, models));
+                    case Translation.Deferred<Optional<String>>(String unresolved) -> new Reading.Waiting(unresolved);
+                    case Translation.Unrepresentable<Optional<String>>(String reason) ->
+                        new Reading.Unrepresentable(reason);
                 };
+        };
+    }
+
+    /// Reads what the signatures of a type mention, of which a full metamodel can be made.
+    private static Reading readSignatures(TypeElement requested, TypeModel full, Models models) {
+        // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
+        return switch (models.sam(requested)) {
+            case Translation.Ok<Optional<SamModel>>(var sam) ->
+                read(requested, full, sam.stream().map(SamModel::method).flatMap(Mentions::of), models);
+            case Translation.Deferred<Optional<SamModel>>(var unresolved) -> new Reading.Waiting(unresolved);
+            case Translation.Unrepresentable<Optional<SamModel>> _ -> read(requested, full, Stream.empty(), models);
         };
     }
 
@@ -279,20 +288,7 @@ final class Closure {
         if (!mentions.left().isEmpty()) {
             return new Reading.Waiting(mentions.left().getFirst());
         }
-        List<Mention> resolved = mentions.right();
-        Set<String> bounds =
-                Mentions.ofBounds(full.typeParams()).map(Models::binaryName).collect(Collectors.toSet());
-        return resolved.stream()
-                .flatMap(
-                        mention -> mention instanceof Mention.Unavailable unavailable && bounds.contains(mention.name())
-                                ? Stream.of(unavailable)
-                                : Stream.empty())
-                .findFirst()
-                .<Reading>map(unavailable ->
-                        new Reading.Rejected("the bounds of the type parameters of " + requested.getQualifiedName()
-                                + " mention " + unavailable.name() + ", which has no metamodel: "
-                                + unavailable.reason()))
-                .orElseGet(() -> new Reading.Ready(requested, resolved));
+        return new Reading.Ready(requested, mentions.right());
     }
 
     /// A type a signature mentions, or the type it is not read for yet.
