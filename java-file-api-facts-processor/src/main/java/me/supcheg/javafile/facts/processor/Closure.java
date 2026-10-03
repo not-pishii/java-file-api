@@ -108,7 +108,7 @@ final class Closure {
             String base,
             Elements elements) {
         SortedMap<String, TypeElement> family = requested.values().stream()
-                .flatMap(type -> Stream.concat(Stream.of(type), Inheritance.supertypes(type)))
+                .flatMap(type -> Stream.concat(Stream.of(type), Inheritance.supertypes(type, elements)))
                 .collect(Collectors.toMap(
                         models::binaryName, Function.identity(), (first, second) -> first, TreeMap::new));
         List<Kin> kin = family.entrySet().stream()
@@ -165,7 +165,7 @@ final class Closure {
                 .flatMap(entry -> entry.getValue().mentions().stream()
                         .map(mention -> new Edge.Signature(entry.getKey(), mention.name())));
         Stream<Edge> inheritance = family.entrySet().stream()
-                .flatMap(entry -> Inheritance.direct(entry.getValue())
+                .flatMap(entry -> Inheritance.direct(entry.getValue(), elements)
                         .map(supertype -> new Edge.Supertype(entry.getKey(), models.binaryName(supertype))));
         return TypeGraph.of(
                 Stream.concat(present.stream(), absent),
