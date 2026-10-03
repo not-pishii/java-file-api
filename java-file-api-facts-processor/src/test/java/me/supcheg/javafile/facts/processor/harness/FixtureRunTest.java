@@ -9,8 +9,11 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,6 +103,7 @@ class FixtureRunTest {
     }
 
     private static final String OUTPUT = "one: the output of the processor is expected/";
+    private static final String SHARED = "one: the metamodels of the JDK are expected-jdk/";
 
     @Test
     void theSnapshotIsComparedFileByFileAndLineByLine() throws IOException {
@@ -193,6 +197,7 @@ class FixtureRunTest {
 
         assertThat(outcomes.keySet())
                 .containsExactlyInAnyOrder(
+                        SHARED,
                         OUTPUT,
                         "one: the metamodels compile under -Xlint:all -Werror",
                         "one: use/ compiles under -Xlint:all -Werror",
@@ -232,6 +237,7 @@ class FixtureRunTest {
 
         assertThat(outcomes.keySet())
                 .containsExactlyInAnyOrder(
+                        SHARED,
                         OUTPUT,
                         "one: the metamodels compile under -Xlint:all -Werror",
                         "one: use/ compiles under -Xlint:all -Werror");
@@ -305,7 +311,7 @@ class FixtureRunTest {
                 """);
         update();
 
-        assertThat(run()).containsOnlyKeys(OUTPUT).containsValue(Optional.empty());
+        assertThat(run()).containsOnlyKeys(SHARED, OUTPUT).containsValue(Optional.empty());
         assertThat(Snapshot.read(fixtures.resolve("one/expected")).files())
                 .containsOnlyKeys("diagnostics.txt")
                 .containsValue("gen/G.java:4:1: error: p.Thing: no fact of method lost(p.Hidden), which mentions"
@@ -364,6 +370,132 @@ class FixtureRunTest {
                                         "warning: metamodel a.facts.p.Dep_ on the classpath is stale against p.Dep: it was"
                                                 + " generated from a different p.Dep; generating c.facts.p.Dep_"
                                                 + (char) 10));
+    }
+
+    private static Set<String> failed(Map<String, Optional<Throwable>> outcomes) {
+        return outcomes.entrySet().stream()
+                .filter(outcome -> outcome.getValue().isPresent())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    private static String message(Map<String, Optional<Throwable>> outcomes, String test) {
+        return outcomes.get(test).orElseThrow().getMessage();
+    }
+
+    @Test
+    void theMetamodelsOfTheJdkAreKeptOnceForTheFixtureAndAVariantStaysInItsCase() throws IOException {
+        file("jdk/lib/p/Thing.java", "package p; public class Thing { public Number any() { return null; } }");
+        // a and b mention Number: its metamodel is the token-only one
+        request("jdk/cases/a", "gen", "Thing");
+        request("jdk/cases/b", "gen", "Thing");
+        // c asks for Number: the full one, which differs
+        file("jdk/cases/c/request/gen/G.java", """
+                package gen;
+
+                @me.supcheg.javafile.facts.meta.Facts({p.Thing.class, Number.class})
+                class G {}
+                """);
+        String number = "gen/facts/java/lang/Number_.java";
+        String shared = "jdk: the metamodels of the JDK are expected-jdk/";
+        String a = "jdk/a: the output of the processor is expected/";
+        String b = "jdk/b: the output of the processor is expected/";
+        String c = "jdk/c: the output of the processor is expected/";
+        Path root = fixtures.resolve("jdk");
+
+        assertThat(update().values()).containsOnly(Optional.empty());
+        assertThat(run().values()).containsOnly(Optional.empty());
+        assertThat(Snapshot.read(root.resolve("expected-jdk")).files().keySet())
+                .contains(number)
+                .allMatch(Snapshot::platform);
+        assertThat(Snapshot.read(root.resolve("cases/a/expected")).files().keySet())
+                .containsExactlyInAnyOrder("gen/facts/p/Thing_.java", "index.txt");
+        assertThat(Snapshot.read(root.resolve("cases/c/expected")).files())
+                .containsKey(number)
+                .hasEntrySatisfying(
+                        "index.txt",
+                        index -> assertThat(index)
+                                .contains("full/java.lang.Number -> gen.facts.java.lang.Number_")
+                                .contains("full/p.Thing -> gen.facts.p.Thing_"));
+        assertThat(Snapshot.read(root.resolve("cases/a/expected")).files().get("index.txt"))
+                .contains("token/java.lang.Number -> gen.facts.java.lang.Number_");
+        assertThat(Text.read(root.resolve("cases/c/expected").resolve(number)))
+                .hasSizeGreaterThan(
+                        Text.read(root.resolve("expected-jdk").resolve(number)).length());
+
+        // the shared file is not what the output is: it fails for the cases that share it, and the shared test
+        Path sharedFile = root.resolve("expected-jdk").resolve(number);
+        Text.write(sharedFile, Text.read(sharedFile) + "// not so\n");
+        Map<String, Optional<Throwable>> outcomes = run();
+        assertThat(failed(outcomes)).containsExactlyInAnyOrder(shared, a, b);
+        assertThat(message(outcomes, a)).contains("--- expected: " + number).contains("\n- // not so\n");
+        assertThat(update().values()).containsOnly(Optional.empty());
+        assertThat(run().values()).containsOnly(Optional.empty());
+
+        // the variant of a case is its own: without it the case has the shared file, which differs
+        Path variant = root.resolve("cases/c/expected").resolve(number);
+        String text = Text.read(variant);
+        Files.delete(variant);
+        assertThat(failed(run())).containsExactly(c);
+        assertThat(update().values()).containsOnly(Optional.empty());
+        assertThat(Text.read(variant)).isEqualTo(text);
+
+        // a file of a case that is the shared one is one too many
+        Path same = root.resolve("cases/a/expected").resolve(number);
+        Text.write(same, Text.read(sharedFile));
+        outcomes = run();
+        assertThat(failed(outcomes)).containsExactly(a);
+        assertThat(message(outcomes, a)).contains("redundant: " + number);
+        assertThat(update().values()).containsOnly(Optional.empty());
+        assertThat(same).doesNotExist();
+
+        // a shared file no case writes is one too many
+        Path gone = root.resolve("expected-jdk/gen/facts/java/lang/Gone_.java");
+        Text.write(gone, "class Gone_ {}\n");
+        outcomes = run();
+        assertThat(failed(outcomes)).containsExactly(shared);
+        assertThat(message(outcomes, shared))
+                .contains("missing: gen/facts/java/lang/Gone_.java is expected and was not written");
+        assertThat(update().values()).containsOnly(Optional.empty());
+        assertThat(gone).doesNotExist();
+
+        // and without the shared file the cases that need it have none
+        Files.delete(sharedFile);
+        assertThat(failed(run())).containsExactlyInAnyOrder(shared, a, b);
+    }
+
+    @Test
+    void theSharedVariantIsTheMostCommonAndOnATieTheLeastWhateverTheOrder() {
+        String path = "gen/facts/java/lang/Number_.java";
+        Snapshot x = snapshot(Map.of(path, "x", "index.txt", "x\n"));
+        Snapshot y = snapshot(Map.of(path, "y", "index.txt", "y\n", "gen/facts/p/Thing_.java", "y"));
+
+        assertThat(Snapshot.common(List.of(x, y, y)).files()).containsExactly(Map.entry(path, "y"));
+        assertThat(Snapshot.common(List.of(y, x)).files()).containsExactly(Map.entry(path, "x"));
+        assertThat(Snapshot.common(List.of(x, y)).files())
+                .isEqualTo(Snapshot.common(List.of(y, x)).files());
+        assertThat(Snapshot.common(List.of()).files()).isEmpty();
+    }
+
+    @Test
+    void aSourceUnderJavaJavaxOrJdkOfTheBasePackageIsOneOfTheJdk() {
+        assertThat(Stream.of(
+                        "gen/facts/java/lang/String_.java",
+                        "gen/facts/javax/annotation/processing/Processor_.java",
+                        "com/acme/jdk/internal/Unsafe_.java",
+                        "java/util/List_.java"))
+                .allMatch(Snapshot::platform);
+        assertThat(Stream.of(
+                        "gen/facts/p/Thing_.java",
+                        "gen/facts/p/javafile/Thing_.java",
+                        "gen/facts/p/java_.java",
+                        "index.txt",
+                        "gen/facts/java/lang/String_.txt"))
+                .noneMatch(Snapshot::platform);
+    }
+
+    private static Snapshot snapshot(Map<String, String> files) {
+        return new Snapshot(new TreeMap<>(files));
     }
 
     @Test

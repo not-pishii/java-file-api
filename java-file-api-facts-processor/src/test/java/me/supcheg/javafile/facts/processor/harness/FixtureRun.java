@@ -31,10 +31,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/// The tests of a [Fixture]. Of every case, in this order:
+/// The tests of a [Fixture]: one for `expected-jdk/`, the metamodels of the
+/// JDK the cases share, see [Snapshot#common], and of every case, in this order:
 ///
 /// 1. the processor runs on `request/` against the library, and its output
-///    — sources, index, diagnostics — is the [Snapshot] in `expected/`;
+///    — sources, index, diagnostics — is the [Snapshot] in `expected/`,
+///    but for the files of the JDK that are those of `expected-jdk/`;
 /// 2. the generated sources compile on their own under `-Xlint:all -Werror`;
 /// 3. `use/` compiles against the metamodels under `-Xlint:all -Werror`,
 ///    and every check of it runs: a `public static void` method of a
@@ -52,6 +54,7 @@ public final class FixtureRun {
     private final Fixture fixture;
     private final Supplier<Path> library;
     private final Map<String, CaseRun> cases;
+    private final Supplier<Snapshot> common;
 
     private FixtureRun(Fixture fixture, Path work) {
         this.fixture = fixture;
@@ -61,6 +64,16 @@ public final class FixtureRun {
                 .collect(Collectors.toMap(
                         Fixture.Case::name,
                         each -> new CaseRun(each, work.resolve("cases").resolve(each.name()))));
+        this.common = Memo.of(() -> Snapshot.common(fixture.cases().stream()
+                .map(each -> cases.get(each.name()).processed.get().snapshot())
+                .toList()));
+    }
+
+    /// What the cases share: the files of the JDK as the cases write them
+    /// when the snapshots are accepted, and as `expected-jdk/` holds them
+    /// when they are compared — a case is compared on its own.
+    private Snapshot shared() {
+        return Snapshot.updating() ? common.get() : Snapshot.read(fixture.shared());
     }
 
     /// The tests of the fixtures of a directory: a container per
@@ -88,13 +101,19 @@ public final class FixtureRun {
         return Stream.of(DynamicContainer.dynamicContainer(
                 fixture.name(),
                 fixture.directory().toUri(),
-                fixture.single()
-                        ? wanted.stream().flatMap(each -> cases.get(each.name()).tests())
-                        : wanted.stream()
-                                .map(each -> DynamicContainer.dynamicContainer(
-                                        each.name(),
-                                        each.directory().toUri(),
-                                        cases.get(each.name()).tests()))));
+                Stream.concat(
+                        Stream.of(DynamicTest.dynamicTest(
+                                fixture.name() + ": the metamodels of the JDK are expected-jdk/",
+                                fixture.shared().toUri(),
+                                () -> common.get().verify(fixture.shared()))),
+                        fixture.single()
+                                ? wanted.stream()
+                                        .flatMap(each -> cases.get(each.name()).tests())
+                                : wanted.stream()
+                                        .map(each -> DynamicContainer.dynamicContainer(
+                                                each.name(),
+                                                each.directory().toUri(),
+                                                cases.get(each.name()).tests())))));
     }
 
     /// One case as it runs: every step is made once, by the first test that needs it.
@@ -132,7 +151,7 @@ public final class FixtureRun {
                     Stream.of(test(
                             "the output of the processor is expected/",
                             fixtureCase.expected(),
-                            () -> processed.get().snapshot().verify(fixtureCase.expected()))),
+                            () -> processed.get().snapshot().verify(fixtureCase.expected(), shared()))),
                     after(() -> processed.get().succeeded() ? afterTheMetamodels() : afterTheFailure()));
         }
 

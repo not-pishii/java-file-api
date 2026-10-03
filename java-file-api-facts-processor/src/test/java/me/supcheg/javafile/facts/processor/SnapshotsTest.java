@@ -24,14 +24,20 @@ class SnapshotsTest {
     /// `new Other_<…>(…)`: an instance of another generic metamodel.
     private static final Pattern INSTANCE_OF_ANOTHER = Pattern.compile("\\bnew \\w+_<");
 
-    /// The generated sources of every case of every fixture, by `fixture/case/path`.
+    /// The generated sources of every case of every fixture, and the metamodels of the JDK
+    /// the cases of a fixture share, by `fixture/case/path` and `fixture/expected-jdk/path`.
     private static Stream<Map.Entry<String, String>> sources() {
         return Fixture.all(FIXTURES).stream()
-                .flatMap(fixture -> fixture.cases().stream()
-                        .flatMap(each -> Snapshot.read(each.expected()).files().entrySet().stream()
-                                .filter(file -> file.getKey().endsWith(".java"))
-                                .map(file -> Map.entry(
-                                        fixture.name() + "/" + each.name() + "/" + file.getKey(), file.getValue()))));
+                .flatMap(fixture -> Stream.concat(
+                        sources(fixture.name() + "/expected-jdk", fixture.shared()),
+                        fixture.cases().stream()
+                                .flatMap(each -> sources(fixture.name() + "/" + each.name(), each.expected()))));
+    }
+
+    private static Stream<Map.Entry<String, String>> sources(String name, Path directory) {
+        return Snapshot.read(directory).files().entrySet().stream()
+                .filter(file -> file.getKey().endsWith(".java"))
+                .map(file -> Map.entry(name + "/" + file.getKey(), file.getValue()));
     }
 
     /// Mini-spec §2.6: the metamodels are leaves — a cycle of types is no
