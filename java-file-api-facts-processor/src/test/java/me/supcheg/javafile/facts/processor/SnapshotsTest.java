@@ -52,6 +52,17 @@ class SnapshotsTest {
                         .doesNotContainPattern(INSTANCE_OF_ANOTHER));
     }
 
+    /// The source of a metamodel is ASCII, so what the metamodel says is the same whatever `-encoding` it is
+    /// compiled with: a constant or a name that is not ASCII is written as an escape (fixture `encoding`).
+    @Test
+    void theSourceOfAMetamodelIsAscii() {
+        assertThat(sources())
+                .isNotEmpty()
+                .allSatisfy(source -> assertThat(source.getValue().chars().filter(c -> c >= 0x7f))
+                        .as(source.getKey())
+                        .isEmpty());
+    }
+
     /// Q13: `Base` gets its metamodel as a supertype of `Derived` in case
     /// `supertypes` and by request in case `declared`.
     @Test
