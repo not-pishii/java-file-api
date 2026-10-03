@@ -25,6 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// library is compiled, `@Facts` asks for some of its types, and the
 /// generated metamodels are compiled under every lint, loaded, and read back
 /// as the facts they hold.
+///
+/// To be removed (mini-spec §11, 9t): a fixture is a directory of
+/// `src/test/fixtures` now, see `README.md` there and [FixturesTest];
+/// nothing new is written against this class.
 abstract class FixtureSupport {
     @TempDir
     Path lib;

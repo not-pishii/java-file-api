@@ -1,0 +1,2 @@
+META-INF/javafile/metamodel/full/p.Fn -> gen.facts.p.Fn_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
