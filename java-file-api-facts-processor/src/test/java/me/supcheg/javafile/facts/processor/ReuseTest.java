@@ -1,6 +1,9 @@
 package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
+import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
@@ -17,6 +20,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
+import java.lang.constant.ConstantDescs;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -131,6 +135,79 @@ class ReuseTest {
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of format "
                         + (MetamodelFormat.VERSION - 1) + ", not of format " + MetamodelFormat.VERSION
                         + ", which this processor generates; generating b.facts.p.Dep_");
+    }
+
+    @Test
+    void aFullMetamodelMarkedBeforeFormatsWereRecordedIsNotReused() throws IOException {
+        // compiled against the marker of that time, which had no `format`: the class file has no such element
+        Path directory = Files.createDirectory(root.resolve("x"));
+        ProcessorHarness.library(directory, List.of(v1), """
+                package me.supcheg.javafile.facts.meta;
+                public @interface GeneratedMetamodel {
+                    Class<?> of();
+                    String fingerprint();
+                    boolean complete();
+                }
+                """, """
+                package x.facts.p;
+                @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Dep.class, fingerprint = "%s", complete = true)
+                public final class Dep_ {}
+                """.formatted(fingerprintOfDep(v1)));
+        Files.delete(directory.resolve("me/supcheg/javafile/facts/meta/GeneratedMetamodel.class"));
+        Path index = Files.createDirectories(directory.resolve("META-INF/javafile/metamodel/full"));
+        Files.writeString(index.resolve("p.Dep"), "x.facts.p.Dep_\n");
+
+        Compilation b = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(v1, directory), generator("b", "p.Dep.class")));
+        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
+                .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of an older format, not of format "
+                        + MetamodelFormat.VERSION + ", which this processor generates; generating b.facts.p.Dep_");
+    }
+
+    @Test
+    void aGenericFullMetamodelOfAnotherModuleIsReusedForTheTypesMadeOfIt() throws Exception {
+        Path generic = ProcessorHarness.library(Files.createDirectory(root.resolve("generic")), List.of(), """
+                package p;
+                public class Box<T extends Comparable<T>> {
+                    public T value;
+                    public Box(T value) {}
+                    public T[] all(T... more) { return more; }
+                    public <R> R as(R other) { return other; }
+                }
+                """, """
+                package p;
+                public class Uses {
+                    public Box<String> strings() { return null; }
+                    public Box<?> any(Box<Integer> integers) { return null; }
+                }
+                """);
+        Compilation a = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(generic), generator("a", "p.Box.class, String.class")));
+        Path boxes = ProcessorHarness.write(a, Files.createDirectory(root.resolve("boxes")));
+        assertThat(ProcessorHarness.generatedSources(a).get("a.facts.p.Box_"))
+                .contains("public final class Box_<T extends Comparable<T>> {");
+
+        Compilation b = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(generic, boxes), generator("b", "p.Uses.class")));
+        // Box_, String_ and Comparable_ are those of module a; Integer has no metamodel there
+        assertThat(ProcessorHarness.generatedSources(b))
+                .containsOnlyKeys("b.facts.p.Uses_", "b.facts.java.lang.Integer_");
+        assertThat(ProcessorHarness.generatedSources(b).get("b.facts.p.Uses_"))
+                .contains("a.facts.p.Box_")
+                .contains("a.facts.java.lang.String_");
+        assertThat(b.diagnostics()).isEmpty();
+
+        ClassLoader loader = ProcessorHarness.compileAndLoad(
+                b, Files.createDirectory(root.resolve("uses")), List.of(generic, boxes));
+        Object shape = loader.loadClass("a.facts.p.Box_$Data").getField("SHAPE").get(null);
+        Invocable strings = (Invocable)
+                loader.loadClass("b.facts.p.Uses_").getField("strings").get(null);
+        DeclaredToken<?> made = (DeclaredToken<?>) strings.resultType().orElseThrow();
+        assertThat(made.shape()).isSameAs(shape);
+        // the table of the other module's shape, under the type argument of this one
+        assertThat(made.methods().concreteMethods())
+                .contains(new MethodSignature("all", List.of(ConstantDescs.CD_String.arrayType())));
     }
 
     @Test
