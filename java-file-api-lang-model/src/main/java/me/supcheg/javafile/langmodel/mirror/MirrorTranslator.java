@@ -38,10 +38,7 @@ import javax.lang.model.util.Elements;
 import java.io.Serial;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +49,7 @@ import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Translates what an annotation processor sees through `javax.lang.model`
@@ -203,29 +201,31 @@ public final class MirrorTranslator {
     /// @param element the class, interface, enum or record
     /// @return the members, each a field, constructor or method
     public List<Element> members(TypeElement element) {
-        DeclaredType self = (DeclaredType) element.asType();
-        return Stream.<Element>concat(
-                        element.getEnclosedElements().stream()
-                                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
-                                .filter(member -> switch (member.getKind()) {
-                                    // enum constants are TypeModel.enumConstants; member types have models of
-                                    // their own
-                                    case FIELD, CONSTRUCTOR, METHOD -> true;
-                                    default -> false;
-                                }),
-                        adopted(element, self))
+        return Stream.concat(declared(element), adopted(element, (DeclaredType) element.asType()).stream())
                 .toList();
     }
 
+    /// The `public` fields, constructors and methods a type declares.
+    private static Stream<Element> declared(TypeElement element) {
+        return element.getEnclosedElements().stream()
+                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                .<Element>map(member -> member)
+                // enum constants are TypeModel.enumConstants; member types have models of their own
+                .filter(member -> switch (member.getKind()) {
+                    case FIELD, CONSTRUCTOR, METHOD -> true;
+                    default -> false;
+                });
+    }
+
     /// The members a type adopts, see [#members(TypeElement)]: those of the nearer supertype first.
-    private Stream<Element> adopted(TypeElement element, DeclaredType self) {
+    private List<Element> adopted(TypeElement element, DeclaredType self) {
         List<? extends Element> all = elements.getAllMembers(element);
         List<Element> had = had(element, all);
         if (had.isEmpty()) {
-            return Stream.empty();
+            return List.of();
         }
         // what a public supertype has of them, it tells: the type has them from that supertype
-        Set<Element> told = supertypesThrough(List.of(element), Set.of(), supertype -> true)
+        Set<Element> told = supertypesThrough(element, supertype -> true)
                 .filter(this::tells)
                 .flatMap(supertype -> had(supertype, elements.getAllMembers(supertype)).stream())
                 .collect(Collectors.toSet());
@@ -233,15 +233,17 @@ public final class MirrorTranslator {
         Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = ElementFilter.methodsIn(all).stream()
                 .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT))
                 .collect(Collectors.groupingBy(method -> signature(method, element, self)));
-        return had.stream().filter(member -> switch (member) {
-            case ExecutableElement method
-            when method.getModifiers().contains(Modifier.ABSTRACT) -> {
-                List<ExecutableElement> same = twins.get(signature(method, element, self));
-                yield same.stream().noneMatch(told::contains)
-                        && pick(same, self).equals(method);
-            }
-            default -> !told.contains(member);
-        });
+        return had.stream()
+                .filter(member -> switch (member) {
+                    case ExecutableElement method
+                    when method.getModifiers().contains(Modifier.ABSTRACT) -> {
+                        List<ExecutableElement> same = twins.get(signature(method, element, self));
+                        yield same.stream().noneMatch(told::contains)
+                                && pick(same, self).equals(method);
+                    }
+                    default -> !told.contains(member);
+                })
+                .toList();
     }
 
     /// The `public` fields and methods of the supertypes that are not
@@ -251,8 +253,8 @@ public final class MirrorTranslator {
     ///
     /// @param all every member of `element`, as `Elements.getAllMembers` gives them
     private List<Element> had(TypeElement element, List<? extends Element> all) {
-        List<TypeElement> hidden = supertypesThrough(List.of(element), Set.of(), supertype -> !isPublic(supertype))
-                .toList();
+        List<TypeElement> hidden =
+                supertypesThrough(element, supertype -> !isPublic(supertype)).toList();
         if (hidden.isEmpty()) {
             return List.of();
         }
@@ -430,26 +432,15 @@ public final class MirrorTranslator {
         return twins.size() == 1 ? twins.getFirst() : mostSpecific(twins, self);
     }
 
-    /// The supertypes `nearer` reach through supertypes that are `through`
+    /// The supertypes a type reaches through supertypes that are `through`
     /// alone, themselves `through`: each once, the nearer first.
-    private static Stream<TypeElement> supertypesThrough(
-            List<TypeElement> nearer, Set<TypeElement> seen, Predicate<TypeElement> through) {
-        List<TypeElement> next = nearer.stream()
-                .flatMap(type -> Stream.concat(Stream.of(type.getSuperclass()), type.getInterfaces().stream()))
-                .filter(supertype -> supertype.getKind() == TypeKind.DECLARED)
-                .map(supertype -> (TypeElement) ((DeclaredType) supertype).asElement())
-                .filter(through)
-                .distinct()
-                .filter(supertype -> !seen.contains(supertype))
-                .toList();
-        return next.isEmpty()
-                ? Stream.empty()
-                : Stream.concat(
-                        next.stream(),
-                        supertypesThrough(
-                                next,
-                                Stream.concat(seen.stream(), next.stream()).collect(Collectors.toSet()),
-                                through));
+    private static Stream<TypeElement> supertypesThrough(TypeElement type, Predicate<TypeElement> through) {
+        return Hierarchy.beyond(
+                List.of(type),
+                nearer -> Stream.concat(Stream.of(nearer.getSuperclass()), nearer.getInterfaces().stream())
+                        .filter(supertype -> supertype.getKind() == TypeKind.DECLARED)
+                        .map(supertype -> (TypeElement) ((DeclaredType) supertype).asElement())
+                        .filter(through));
     }
 
     /// Whether `type` has `other` in place of `member`: `other` hides it, or
@@ -506,13 +497,15 @@ public final class MirrorTranslator {
     ///         deferred if it mentions a type not generated yet
     public Translation<Optional<SamModel>> sam(TypeElement element) {
         try {
-            return readSam(element);
+            return readSam(element, () -> adopted(element, (DeclaredType) element.asType()));
         } catch (Unresolved unresolved) {
             return new Translation.Deferred<>(unresolved.type);
         }
     }
 
-    private Translation<Optional<SamModel>> readSam(TypeElement element) {
+    /// @param adopted the members the type adopts, see [#adopted]: asked for only where the method is
+    ///     not one the type declares
+    private Translation<Optional<SamModel>> readSam(TypeElement element, Supplier<List<Element>> adopted) {
         if (element.getKind() != ElementKind.INTERFACE || element.getModifiers().contains(Modifier.SEALED)) {
             return new Translation.Ok<>(Optional.empty());
         }
@@ -532,9 +525,9 @@ public final class MirrorTranslator {
         ExecutableElement method = mostSpecific(candidates, self);
         // declared, or adopted from a superinterface that is not public: a member the type has a fact of
         boolean declared = method.getEnclosingElement().equals(element)
-                || adopted(element, self)
-                        .anyMatch(member -> member instanceof ExecutableElement adopted
-                                && signature(adopted, element, self).equals(signature));
+                || adopted.get().stream()
+                        .anyMatch(member -> member instanceof ExecutableElement adoptedMethod
+                                && signature(adoptedMethod, element, self).equals(signature));
         return switch (method(element, self, method, functionThrows(candidates, self))) {
             case Read.Made(MemberModel model) ->
                 new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
@@ -588,17 +581,16 @@ public final class MirrorTranslator {
                     return clause;
                 })
                 .toList();
-        List<TypeMirror> thrown = new ArrayList<>();
-        for (List<? extends TypeMirror> clause : clauses) {
-            for (TypeMirror exception : clause) {
-                boolean everyClauseAllows = clauses.stream()
-                        .allMatch(other -> other.stream().anyMatch(allowed -> types.isSubtype(exception, allowed)));
-                if (everyClauseAllows && thrown.stream().noneMatch(found -> types.isSameType(found, exception))) {
-                    thrown.add(exception);
-                }
-            }
-        }
-        return thrown;
+        List<TypeMirror> allowed = clauses.stream()
+                .<TypeMirror>flatMap(List::stream)
+                .filter(exception -> clauses.stream()
+                        .allMatch(clause -> clause.stream().anyMatch(other -> types.isSubtype(exception, other))))
+                .toList();
+        // each once: the first of the exceptions that are the same type
+        return IntStream.range(0, allowed.size())
+                .filter(i -> IntStream.range(0, i).noneMatch(j -> types.isSameType(allowed.get(j), allowed.get(i))))
+                .mapToObj(allowed::get)
+                .toList();
     }
 
     private Translation<TypeModel> model(TypeElement element, MemberFilter filter) {
@@ -615,13 +607,25 @@ public final class MirrorTranslator {
                 .filter(e -> e.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(e -> e.getSimpleName().toString())
                 .toList();
-        List<Read> reads = filter == MemberFilter.DECLARED_PUBLIC
-                ? members(element).stream()
-                        .map(member -> read(element, self, member))
-                        .toList()
-                : List.of();
+        // a model with members reads what the type adopts once, for the members and for the sam
+        Supplier<List<Element>> adopted =
+                switch (filter) {
+                    case DECLARED_PUBLIC -> {
+                        List<Element> read = adopted(element, self);
+                        yield () -> read;
+                    }
+                    case NONE -> () -> adopted(element, self);
+                };
+        List<Read> reads =
+                switch (filter) {
+                    case DECLARED_PUBLIC ->
+                        Stream.concat(declared(element), adopted.get().stream())
+                                .map(member -> read(element, self, member))
+                                .toList();
+                    case NONE -> List.of();
+                };
         Optional<MethodModel> sam =
-                switch (readSam(element)) {
+                switch (readSam(element, adopted)) {
                     case Translation.Ok<Optional<SamModel>>(Optional<SamModel> found) -> found.map(SamModel::method);
                     case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
                         throw new IllegalStateException("a deferred sam is thrown, not returned: " + unresolved);
@@ -686,25 +690,38 @@ public final class MirrorTranslator {
     }
 
     private Supertypes supertypes(DeclaredType self, List<TypeParam> typeParams, Reading reading) {
-        Map<String, ParameterizedTypeRef> found = new TreeMap<>();
-        Set<Element> seen = new HashSet<>(Set.of(self.asElement()));
-        Deque<DeclaredType> pending = new ArrayDeque<>(List.of(self));
-        while (!pending.isEmpty()) {
-            DeclaredType type = pending.removeFirst();
-            // directSupertypes leaves out an interface not generated yet
-            ((TypeElement) type.asElement()).getInterfaces().forEach(MirrorTranslator::requireResolved);
-            for (TypeMirror supertype : types.directSupertypes(type)) {
-                DeclaredType declared = (DeclaredType) supertype;
-                if (seen.add(declared.asElement())) {
-                    if (declared(declared, reading) instanceof ParameterizedTypeRef parameterized) {
-                        found.put(binaryName(declared), parameterized);
-                    }
-                    pending.add(declared);
-                }
-            }
-        }
+        Map<String, ParameterizedTypeRef> found = Hierarchy.<Supertype>beyond(
+                        List.of(new Supertype(self)), supertype -> direct(supertype.type()))
+                .map(Supertype::type)
+                .flatMap(supertype -> declared(supertype, reading) instanceof ParameterizedTypeRef parameterized
+                        ? Stream.of(Map.entry(binaryName(supertype), parameterized))
+                        : Stream.empty())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
         return new Supertypes(
                 typeParams.stream().map(p -> new TypeVarRef(p.name())).toList(), List.copyOf(found.values()));
+    }
+
+    /// The direct supertypes of a type, in its terms.
+    private Stream<Supertype> direct(DeclaredType type) {
+        // directSupertypes leaves out an interface not generated yet
+        ((TypeElement) type.asElement()).getInterfaces().forEach(MirrorTranslator::requireResolved);
+        return types.directSupertypes(type).stream().map(supertype -> new Supertype((DeclaredType) supertype));
+    }
+
+    /// A supertype as one type among the supertypes of a type: by its
+    /// element, whatever its type arguments, so that each is met once.
+    private record Supertype(DeclaredType type) {
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof Supertype(DeclaredType otherType)
+                    && type.asElement().equals(otherType.asElement());
+        }
+
+        @Override
+        public int hashCode() {
+            return type.asElement().hashCode();
+        }
     }
 
     private MethodTableTemplate methods(TypeElement element, DeclaredType self) {
@@ -804,15 +821,12 @@ public final class MirrorTranslator {
         TypeRef type = type(types.asMemberOf(self, field), reading);
         Set<Modifier> modifiers = field.getModifiers();
         boolean isStatic = modifiers.contains(Modifier.STATIC);
-        Object constant = field.getConstantValue();
-        Mutability mutability;
-        if (!modifiers.contains(Modifier.FINAL)) {
-            mutability = Mutability.MUTABLE;
-        } else if (isStatic && constant != null) {
-            mutability = new Mutability.Constant(constant);
-        } else {
-            mutability = Mutability.FINAL;
-        }
+        Mutability mutability = !modifiers.contains(Modifier.FINAL)
+                ? Mutability.MUTABLE
+                : Optional.ofNullable(field.getConstantValue())
+                        .filter(_ -> isStatic)
+                        .<Mutability>map(Mutability.Constant::new)
+                        .orElse(Mutability.FINAL);
         String name = field.getSimpleName().toString();
         return rival(owner, field)
                 .<Read>map(rival -> new Read.Skipped(new SkippedMember(
@@ -868,16 +882,12 @@ public final class MirrorTranslator {
                 thrown.stream().map(t -> reference(t, reading)).toList();
         Set<Modifier> modifiers = method.getModifiers();
         boolean isStatic = modifiers.contains(Modifier.STATIC);
-        Overridability overridability;
-        if (isStatic
+        boolean isFinal = isStatic
                 || modifiers.contains(Modifier.FINAL)
-                || owner.getModifiers().contains(Modifier.FINAL)) {
-            overridability = Overridability.FINAL;
-        } else if (modifiers.contains(Modifier.ABSTRACT)) {
-            overridability = Overridability.ABSTRACT;
-        } else {
-            overridability = Overridability.OVERRIDABLE;
-        }
+                || owner.getModifiers().contains(Modifier.FINAL);
+        Overridability overridability = isFinal
+                ? Overridability.FINAL
+                : modifiers.contains(Modifier.ABSTRACT) ? Overridability.ABSTRACT : Overridability.OVERRIDABLE;
         String name = method.getSimpleName().toString();
         return Read.of(
                 reading,
