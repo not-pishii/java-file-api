@@ -5,6 +5,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
+import java.util.List;
 import java.util.Optional;
 
 /// Reports what the processor finds through javac's [Messager], each
@@ -15,7 +16,7 @@ final class Diagnostics {
     private final boolean strict;
 
     /// @param messager the messager of the compilation
-    /// @param strict whether a skipped member is an error, see [Options#strict()]
+    /// @param strict whether a member skipped in a type `@Facts` asks for is an error, see [Options#strict()]
     Diagnostics(Messager messager, boolean strict) {
         this.messager = messager;
         this.strict = strict;
@@ -58,13 +59,18 @@ final class Diagnostics {
                 () -> messager.printMessage(Diagnostic.Kind.WARNING, message));
     }
 
-    /// Reports that a member gets no fact (Q10): a warning, or an error
-    /// under `-Ajavafile.facts.strict=true`.
+    /// Reports that members of a type get no fact (Q10): a warning, or
+    /// under `-Ajavafile.facts.strict=true` an error if `@Facts` asks for
+    /// the type. Of a type that is in the graph only as a supertype of what
+    /// `@Facts` asks for it is a warning whatever the option (Q13): nobody
+    /// asked for the facts of that type, and nothing can be done about them
+    /// in `@Facts`.
     ///
-    /// @param element the `@Facts` that asked for the member's type
+    /// @param element the `@Facts` the type is there for
     /// @param message the message
-    void skipped(Optional<? extends Element> element, String message) {
-        if (strict) {
+    /// @param reasons why the type whose members have no fact is in the graph, see [TypeGraph#reasons]
+    void skipped(Optional<? extends Element> element, String message, List<TypeGraph.Reason> reasons) {
+        if (strict && reasons.stream().anyMatch(TypeGraph.Reason.Asked.class::isInstance)) {
             error(element, message);
         } else {
             warning(element, message);

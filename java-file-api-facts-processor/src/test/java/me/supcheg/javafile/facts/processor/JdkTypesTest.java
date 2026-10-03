@@ -103,6 +103,33 @@ class JdkTypesTest extends FixtureSupport {
                 """.formatted(types)));
     }
 
+    @Test
+    void underStrictTheSkippedMembersOfASupertypeThatIsNotAskedForAreWarnings() {
+        List<String> strict = List.of("-Ajavafile.facts.strict=true");
+        String generator = """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({%s})
+                class G {}
+                """;
+
+        // Map, which HashMap implements, has of(…) of more parameters than a fact can have
+        Compilation supertype = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(), strict, List.of(), generator.formatted("java.util.HashMap.class")));
+        assertThat(warnings(supertype))
+                .isNotEmpty()
+                .allMatch(warning -> warning.startsWith(
+                        "java.util.Map (a supertype of java.util.HashMap): no fact of method <K,V>of("));
+
+        // asked for, Map is held to strict, a supertype of HashMap though it is
+        Compilation asked = ProcessorHarness.process(
+                List.of(), strict, List.of(), generator.formatted("java.util.HashMap.class, java.util.Map.class"));
+        assertThat(asked.status()).isEqualTo(Compilation.Status.FAILURE);
+        assertThat(errors(asked))
+                .isNotEmpty()
+                .allMatch(error -> error.startsWith("java.util.Map: no fact of method <K,V>of("));
+        assertThat(warnings(asked)).isEmpty();
+    }
+
     /// The types with full metamodels among what a compilation generated, by binary name without `java.`.
     private static List<String> full(Compilation compilation) {
         return ProcessorHarness.resources(compilation).keySet().stream()

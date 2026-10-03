@@ -87,7 +87,10 @@ import java.util.stream.Stream;
 /// terms of its type parameters if it is generic —, whether `@Facts` asks
 /// for it or a requested type inherits from it. What is told of a type
 /// `@Facts` does not name says which request it is there for, and is
-/// reported on that `@Facts`.
+/// reported on that `@Facts`. A member without a fact is an error under
+/// `strict` only in a type `@Facts` asks for, which the reasons the type is
+/// in the graph for tell ([TypeGraph#reasons]): of a supertype nobody
+/// asked for it stays a warning.
 ///
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
@@ -266,7 +269,8 @@ public final class FactsProcessor extends AbstractProcessor {
                         first(sitesOf.apply(name), elements),
                         graph.roots(name).collect(Collectors.joining(", "))
                                 + ": no facts of the public members inherited from " + name
-                                + ", which has no full metamodel: " + reason);
+                                + ", which has no full metamodel: " + reason,
+                        graph.reasons(name).toList());
             }
         });
         Targets targets = new Targets(models, metamodels(graph, base, elements), unavailable(graph));
@@ -465,7 +469,9 @@ public final class FactsProcessor extends AbstractProcessor {
             MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
             plan.skipped()
                     .forEach(skip -> diagnostics.skipped(
-                            at, planned.subject() + ": no fact of " + skip.member() + ", which " + skip.reason()));
+                            at,
+                            planned.subject() + ": no fact of " + skip.member() + ", which " + skip.reason(),
+                            planned.reasons()));
             file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken);
         } else {
             file = MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets);
@@ -540,7 +546,8 @@ public final class FactsProcessor extends AbstractProcessor {
     /// @param stale why the metamodels of the type on the classpath were not reused
     /// @param subject the type as a diagnostic names it, see [#subject]
     /// @param reasons why the type is in the graph of the round, see [TypeGraph#reasons]: what the
-    ///     generated metamodel is to say of why it is there, and why it is full or token-only
+    ///     generated metamodel is to say of why it is there, and why it is full or token-only, and
+    ///     whether a member of it without a fact is an error under `strict`
     private record Planned(
             TypeElement type,
             String binaryName,
