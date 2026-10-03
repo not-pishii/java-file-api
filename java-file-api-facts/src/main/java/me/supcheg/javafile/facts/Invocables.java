@@ -2,8 +2,11 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.Identifiers;
 
+import java.lang.constant.ClassDesc;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /// Helpers of the generated arity families.
 final class Invocables {
@@ -11,6 +14,40 @@ final class Invocables {
 
     static String requireMethodName(String name) {
         return Identifiers.requireValid(name);
+    }
+
+    /// The type of a parameter in a fact.
+    static <T> TypeToken<T> token(FactParam<T> param) {
+        return switch (param) {
+            case TypeToken<T> token -> token;
+            case DeclaredParam<T>(TypeToken<T> token, MethodTableTemplate.Param _) -> token;
+        };
+    }
+
+    /// The parameters of a member of `owner` as it declares them. A
+    /// parameter declared by a type parameter of the type of `owner` must be
+    /// of the type `owner` gives for it.
+    static List<MethodTableTemplate.Param> declared(DeclaredToken<?> owner, FactParam<?>... params) {
+        return Stream.of(params).map(param -> declared(owner, param)).toList();
+    }
+
+    private static MethodTableTemplate.Param declared(DeclaredToken<?> owner, FactParam<?> param) {
+        return switch (param) {
+            case TypeToken<?> token -> new MethodTableTemplate.Fixed(token.erasure());
+            case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Fixed fixed) -> fixed;
+            case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
+                List<ClassDesc> arguments = owner.argumentErasures();
+                if (variable.index() >= arguments.size()
+                        || !variable.instantiate(arguments).equals(token.erasure())) {
+                    throw new IllegalArgumentException("a parameter declared " + variable + " of " + owner + " is "
+                            + (variable.index() < arguments.size()
+                                    ? TypeNames.describe(variable.instantiate(arguments))
+                                    : "of no type parameter")
+                            + ", not " + token);
+                }
+                yield variable;
+            }
+        };
     }
 
     static <F> InterfaceToken<F> requireSam(DeclaredToken<F> owner, Invocable method) {

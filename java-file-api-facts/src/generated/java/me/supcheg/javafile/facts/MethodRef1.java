@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class MethodRef1<O, R, A1> implements Invocable {
@@ -16,12 +17,15 @@ public final class MethodRef1<O, R, A1> implements Invocable {
 
     private final MemberTraits traits;
 
-    MethodRef1(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, MemberTraits traits) {
+    private final List<Param> declaredParams;
+
+    MethodRef1(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, MemberTraits traits, List<Param> declaredParams) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.result = result;
         this.param1 = param1;
         this.traits = traits;
+        this.declaredParams = declaredParams;
     }
 
     @Override
@@ -60,6 +64,11 @@ public final class MethodRef1<O, R, A1> implements Invocable {
     @Override
     public MemberTraits traits() {
         return this.traits;
+    }
+
+    @Override
+    public List<Param> declaredParams() {
+        return this.declaredParams;
     }
 
     @Override

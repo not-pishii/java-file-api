@@ -351,6 +351,28 @@ public final class UnsafeFacts extends InvocableFactories {
         return new TypeVarToken<>(typeRef, erasure);
     }
 
+    /// Vouches for how a method or constructor declares a parameter: by a
+    /// type variable, or an array of one, that `token` stands for in the
+    /// fact.
+    ///
+    /// - A parameter declared `T`, `T[]` or `T...` for the type parameter
+    ///   `T` of the owner's type is [MethodTableTemplate.Var]: `add(E)` of
+    ///   `List<E>` is `param(e, Param.var(0))`.
+    /// - A parameter declared by a type parameter of the method itself is
+    ///   [MethodTableTemplate.Fixed], the erasure of the declaration (JLS
+    ///   4.6): `<T> of(T)` is `param(t, Param.fixed(CD_Object))`.
+    ///
+    /// Any other parameter is declared as its token erases, and is the token
+    /// itself.
+    ///
+    /// @param token the type of the parameter in the fact
+    /// @param declared the parameter in the signature the member declares
+    /// @param <T> the type of the parameter in the fact
+    /// @return the parameter
+    public static <T> FactParam<T> param(TypeToken<T> token, MethodTableTemplate.Param declared) {
+        return new DeclaredParam<>(token, declared);
+    }
+
     /// Vouches that a type has a `final` instance field.
     ///
     /// @param owner the type owning the field

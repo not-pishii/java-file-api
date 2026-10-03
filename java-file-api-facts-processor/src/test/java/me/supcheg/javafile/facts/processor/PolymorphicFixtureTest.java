@@ -124,7 +124,10 @@ class PolymorphicFixtureTest extends FixtureSupport {
                 .isTrue();
         assertThat(sources(compilation).get(POLY))
                 .contains("public static <T> MethodRef1<Poly, T, T> id_T(RefToken<T> t) {")
-                .contains("return UnsafeFacts.method(TOKEN, \"id\", t, t, MemberTraits.OVERRIDABLE.withTypeArgs(t));");
+                // the parameter is declared by the type parameter of the method: it erases to Object
+                .contains("return UnsafeFacts.method(TOKEN, \"id\", t, "
+                        + "UnsafeFacts.param(t, Param.fixed(ClassDesc.of(\"java.lang.Object\"))), "
+                        + "MemberTraits.OVERRIDABLE.withTypeArgs(t));");
         // a type parameter that no parameter mentions is given explicitly all the same
         Invocable none = (Invocable) made(loader, POLY, null, "none", string);
         assertThat(none.params()).isEmpty();
@@ -279,7 +282,8 @@ class PolymorphicFixtureTest extends FixtureSupport {
         assertThat(sources(compilation).get(POLY))
                 .contains("public static <TOKEN, Gen> VoidMethodRef2<Poly, TOKEN, Gen> odd_TOKEN_Gen("
                         + "RefToken<TOKEN> tOKEN, RefToken<Gen> gen_) {")
-                .contains("return UnsafeFacts.voidMethod(TOKEN, \"odd\", tOKEN, gen_,");
+                .contains("return UnsafeFacts.voidMethod(TOKEN, \"odd\", UnsafeFacts.param(tOKEN, ")
+                .contains("UnsafeFacts.param(gen_, ");
         Invocable odd = (Invocable) made(loader, POLY, null, "odd_TOKEN_Gen", string, integer);
         assertThat(odd.owner()).isSameAs(token(loader, POLY));
         assertThat(odd.params()).containsExactly(string, integer);

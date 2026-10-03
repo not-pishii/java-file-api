@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts.jdk;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
@@ -24,7 +25,12 @@ public final class Comparable_<T> {
 
     private Comparable_(RefToken<T> compared) {
         this.token = Jdk.iface(Comparable.class, TokenArg.exact(compared));
-        this.compareTo = UnsafeFacts.method(token, "compareTo", PrimitiveToken.INT, compared, MemberTraits.ABSTRACT);
+        this.compareTo = UnsafeFacts.method(
+                token,
+                "compareTo",
+                PrimitiveToken.INT,
+                UnsafeFacts.param(compared, Param.var(0)),
+                MemberTraits.ABSTRACT);
     }
 
     /// Instantiates the facts.

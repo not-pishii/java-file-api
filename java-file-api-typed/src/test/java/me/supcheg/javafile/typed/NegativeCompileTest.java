@@ -171,7 +171,7 @@ class NegativeCompileTest {
                 """
                 void use() {
                     new MethodRef0<String, String>(
-                            String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT);
+                            String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT, List.of());
                 }
                 """,
                 "is not public in me.supcheg.javafile.facts.MethodRef0; cannot be accessed from outside package");
@@ -181,7 +181,7 @@ class NegativeCompileTest {
     void theFormerIntroduceFactoryIsGone() {
         assertRejected("ForgedByIntroduce", """
                 void use() {
-                    MethodRef0.introduce(String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT);
+                    MethodRef0.introduce(String_.TOKEN, "nonexistent", String_.TOKEN, MemberTraits.DEFAULT, List.of());
                 }
                 """, "cannot find symbol");
     }

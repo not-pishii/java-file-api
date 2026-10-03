@@ -313,7 +313,7 @@ class MirrorTranslatorTypeTest {
                 .doesNotContain(Signature.of("def", fixed(ConstantDescs.CD_String)));
         assertThat(table.concreteMethods())
                 .contains(
-                        Signature.of("prot", fixed(ConstantDescs.CD_Object.arrayType())),
+                        Signature.of("prot", var(0, 1)),
                         Signature.of(
                                 "pack",
                                 fixed(ConstantDescs.CD_int),
@@ -397,6 +397,7 @@ class MirrorTranslatorTypeTest {
                         Optional.of(Types.array(Types.of(ClassDesc.of("p.Day")))),
                         List.of(),
                         List.of(),
+                        List.of(),
                         Overridability.FINAL));
         assertThat(methods(model).get("valueOf").params()).containsExactly(Types.STRING);
         assertThat(methods(model).get("x").overridability()).isEqualTo(Overridability.FINAL);
@@ -460,10 +461,11 @@ class MirrorTranslatorTypeTest {
 
         assertThat(model.members())
                 .containsExactly(
-                        new CtorModel(List.of(), List.of(), List.of()),
+                        new CtorModel(List.of(), List.of(), List.of(), List.of()),
                         new CtorModel(
                                 List.of(new TypeParam("X", List.of(Types.of(CD_NUMBER)))),
                                 List.of(Types.typeVar("X"), Types.typeVar("T")),
+                                List.of(fixed(CD_NUMBER), var(0)),
                                 List.of(Types.of(IOException.class))));
     }
 
@@ -494,15 +496,24 @@ class MirrorTranslatorTypeTest {
                                 Optional.of(Types.typeVar("T")),
                                 List.of(),
                                 List.of(),
+                                List.of(),
                                 Overridability.ABSTRACT),
                         new MethodModel(
-                                "fin", false, List.of(), Optional.empty(), List.of(), List.of(), Overridability.FINAL),
+                                "fin",
+                                false,
+                                List.of(),
+                                Optional.empty(),
+                                List.of(),
+                                List.of(),
+                                List.of(),
+                                Overridability.FINAL),
                         new MethodModel(
                                 "stat",
                                 true,
                                 List.of(new TypeParam("S", List.of())),
                                 Optional.of(Types.typeVar("S")),
                                 List.of(Types.typeVar("S")),
+                                List.of(fixed(ConstantDescs.CD_Object)),
                                 List.of(),
                                 Overridability.FINAL),
                         new MethodModel(
@@ -511,6 +522,7 @@ class MirrorTranslatorTypeTest {
                                 List.of(),
                                 Optional.empty(),
                                 List.of(Types.array(Types.INT)),
+                                List.of(fixed(ConstantDescs.CD_int.arrayType())),
                                 List.of(),
                                 Overridability.OVERRIDABLE),
                         new MethodModel(
@@ -518,6 +530,7 @@ class MirrorTranslatorTypeTest {
                                 false,
                                 List.of(new TypeParam("X", List.of(Types.of(Exception.class)))),
                                 Optional.empty(),
+                                List.of(),
                                 List.of(),
                                 List.of(Types.typeVar("X"), Types.of(IOException.class)),
                                 Overridability.OVERRIDABLE));
@@ -565,7 +578,14 @@ class MirrorTranslatorTypeTest {
 
         assertThat(model.members())
                 .containsExactly(new MethodModel(
-                        "fine", false, List.of(), Optional.empty(), List.of(), List.of(), Overridability.OVERRIDABLE));
+                        "fine",
+                        false,
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Overridability.OVERRIDABLE));
         assertThat(model.skipped())
                 .containsExactly(
                         new SkippedMember("field field", "mentions types that are not public: p.Hidden"),
@@ -1063,6 +1083,7 @@ class MirrorTranslatorTypeTest {
                 List.of(),
                 Optional.of(Types.STRING),
                 List.of(Types.INT),
+                List.of(fixed(ConstantDescs.CD_int)),
                 List.of(Types.of(ClassDesc.of("java.io.IOException"))),
                 Overridability.ABSTRACT);
         assertThat(sams.get("declared")).contains(apply);

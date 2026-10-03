@@ -34,12 +34,30 @@ public interface Invocable {
     /// @return the parameter tokens
     List<TypeToken<?>> params();
 
+    /// The parameters as the member declares them, one per parameter of
+    /// [#params()]: those of its signature in the [MethodTableTemplate] of
+    /// the type of [#owner()].
+    ///
+    /// @return the declared parameters
+    List<MethodTableTemplate.Param> declaredParams();
+
     /// Throws-set, overridability, and explicit type arguments.
     ///
     /// @return the traits
     MemberTraits traits();
 
-    /// The erased signature of the member as a member of [#owner()].
+    /// The signature the member declares: its identity among the members of
+    /// the type of [#owner()], whatever the type arguments. The erased
+    /// [#signature()] is not one: `m(T)` of a `Box<String>` and its
+    /// `m(String)` erase alike.
+    ///
+    /// @return the signature in the method table template of the owner's type
+    default MethodTableTemplate.Signature declared() {
+        return new MethodTableTemplate.Signature(name(), declaredParams());
+    }
+
+    /// The erased signature of the member as a member of [#owner()]:
+    /// [#declared()] under the type arguments of the owner and of the member.
     ///
     /// @return the signature
     default MethodSignature signature() {

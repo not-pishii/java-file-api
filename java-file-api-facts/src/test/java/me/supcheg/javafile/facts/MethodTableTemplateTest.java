@@ -96,7 +96,57 @@ class MethodTableTemplateTest {
     }
 
     @Test
+    void anArrayOfAVariableIsAnArrayOfTheErasureAtItsIndex() {
+        // interface Arr<T, U> { T[] all(U... us); void grid(T[][] cells); }
+        MethodTableTemplate arrays = new MethodTableTemplate(
+                Set.of(Signature.of("all", Param.var(1, 1)), Signature.of("grid", Param.var(0, 2))),
+                Set.of(),
+                Set.of());
+
+        assertThat(arrays.typeParameterCount()).isEqualTo(2);
+        assertThat(arrays.instantiate(List.of(ConstantDescs.CD_String, ConstantDescs.CD_Integer))
+                        .abstractMethods())
+                .containsExactlyInAnyOrder(
+                        new MethodSignature("all", List.of(ConstantDescs.CD_Integer.arrayType())),
+                        new MethodSignature("grid", List.of(ConstantDescs.CD_String.arrayType(2))));
+        assertThat(Param.var(0)).isEqualTo(Param.var(0, 0)).isNotEqualTo(Param.var(0, 1));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Param.var(0, -1))
+                .withMessage("an array cannot have -1 dimensions");
+    }
+
+    @Test
+    void aSignatureIsInstantiatedOnItsOwn() {
+        Signature put = Signature.of("put", Param.fixed(ConstantDescs.CD_int), Param.var(1, 1));
+
+        assertThat(put.instantiate(List.of(ConstantDescs.CD_String, ConstantDescs.CD_Integer)))
+                .isEqualTo(new MethodSignature(
+                        "put", List.of(ConstantDescs.CD_int, ConstantDescs.CD_Integer.arrayType())));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> put.instantiate(List.of(ConstantDescs.CD_String)))
+                .withMessage("no type argument for type parameter #1, 1 are given");
+    }
+
+    @Test
+    void theConstructorsAreListedByTheTemplateOnly() {
+        // class Box<T> { Box(T); Box(String); }
+        MethodTableTemplate box = new MethodTableTemplate(
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box", Param.fixed(ConstantDescs.CD_String))));
+
+        assertThat(box.constructors()).hasSize(2);
+        assertThat(box.methods()).isEmpty();
+        assertThat(box.typeParameterCount()).isEqualTo(1);
+        assertThat(box.instantiate(List.of(ConstantDescs.CD_String))).isEqualTo(MethodTable.EMPTY);
+        assertThat(BOX.constructors()).isEmpty();
+        assertThat(BOX.methods()).hasSize(6);
+    }
+
+    @Test
     void signaturesReadAsDeclarations() {
+        assertThat(Signature.of("fill", Param.var(0, 2))).hasToString("fill(#0[][])");
         assertThat(Signature.of("put", Param.fixed(ClassDesc.of("java.lang.String")), Param.var(1)))
                 .hasToString("put(java.lang.String, #1)");
     }

@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 1
+/// javafile-facts-canonical 2
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
@@ -59,7 +59,13 @@ import java.util.stream.Stream;
 /// table abstract add(#0); get(int); size(); …
 /// table concrete equals(java.lang.Object); stream(); …
 /// table static copyOf(java.util.Collection); of(); of(java.lang.Object[]); …
+/// table ctor -
 /// ```
+///
+/// In the method table a parameter that is a type parameter of the type,
+/// or an array of one, is by position too, `add(#0)` and `toArray(#0[])`,
+/// and any other is erased; a constructor is under the simple name of its
+/// class: `table ctor ArrayList(); ArrayList(int)`.
 ///
 /// With [MemberFilter#DECLARED_PUBLIC], `members declared-public` is
 /// followed by a line per member:
@@ -84,7 +90,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 1";
+    public static final String HEADER = "javafile-facts-canonical 2";
 
     private final String text;
     private final String fingerprint;
@@ -123,6 +129,7 @@ public final class Canonical {
         lines.add("table abstract " + items(table(model.methods().abstractMethods())));
         lines.add("table concrete " + items(table(model.methods().concreteMethods())));
         lines.add("table static " + items(table(model.methods().staticMethods())));
+        lines.add("table ctor " + items(table(model.methods().constructors())));
         return new Canonical(String.join("\n", lines) + "\n");
     }
 
@@ -220,7 +227,8 @@ public final class Canonical {
                 .map(s -> s.params().stream()
                         .map(p -> switch (p) {
                             case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
-                            case MethodTableTemplate.Var(int index) -> "#" + index;
+                            case MethodTableTemplate.Var(int index, int dimensions) ->
+                                "#" + index + "[]".repeat(dimensions);
                         })
                         .collect(Collectors.joining(", ", s.name() + "(", ")"))));
     }

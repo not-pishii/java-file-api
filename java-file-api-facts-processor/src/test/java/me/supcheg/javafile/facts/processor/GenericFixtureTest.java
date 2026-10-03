@@ -155,7 +155,7 @@ class GenericFixtureTest extends FixtureSupport {
         ClassLoader loader = load(compilation);
 
         assertThat(sources(compilation).get(BOX))
-                .contains("complete = true, format = 2)")
+                .contains("complete = true, format = 3)")
                 .contains("public final class Box_<T> {");
         assertThat(ProcessorHarness.resources(compilation))
                 .containsEntry("META-INF/javafile/metamodel/full/p.Box", "gen.facts.p.Box_\n")
@@ -411,7 +411,8 @@ class GenericFixtureTest extends FixtureSupport {
         assertThat(inherited.method().traits()).isEqualTo(MemberTraits.ABSTRACT);
         assertThat(memberNames(loader, "gen.facts.p.Op_")).containsExactly("sam");
         assertThat(sources(compilation).get("gen.facts.p.Op_"))
-                .contains("this.sam = UnsafeFacts.sam(UnsafeFacts.method(token, \"apply\", t, t,"
+                .contains("this.sam = UnsafeFacts.sam(UnsafeFacts.method(token, \"apply\", t,"
+                        + " UnsafeFacts.param(t, Param.var(0)),"
                         + " MemberTraits.ABSTRACT));");
         // the types the inherited sam mentions are in the closure: none here but the type parameter
         assertThat(warnings(compilation)).isEmpty();

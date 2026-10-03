@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 public final class VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> implements Invocable {
@@ -26,7 +27,9 @@ public final class VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> implements Invo
 
     private final MemberTraits traits;
 
-    VoidMethodRef7(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, MemberTraits traits) {
+    private final List<Param> declaredParams;
+
+    VoidMethodRef7(DeclaredToken<O> owner, String name, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, MemberTraits traits, List<Param> declaredParams) {
         this.owner = owner;
         this.name = Invocables.requireMethodName(name);
         this.param1 = param1;
@@ -37,6 +40,7 @@ public final class VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> implements Invo
         this.param6 = param6;
         this.param7 = param7;
         this.traits = traits;
+        this.declaredParams = declaredParams;
     }
 
     @Override
@@ -95,6 +99,11 @@ public final class VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> implements Invo
     @Override
     public MemberTraits traits() {
         return this.traits;
+    }
+
+    @Override
+    public List<Param> declaredParams() {
+        return this.declaredParams;
     }
 
     @Override

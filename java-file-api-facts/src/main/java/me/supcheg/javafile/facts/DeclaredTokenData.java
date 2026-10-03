@@ -47,6 +47,10 @@ abstract class DeclaredTokenData {
         return raw ? Supertypes.NONE : shape.supertypes();
     }
 
+    public final List<ClassDesc> argumentErasures() {
+        return arguments;
+    }
+
     /// The shape's method table instantiated with the erasures of the type
     /// arguments, computed once it is known.
     public final MethodTable methods() {
