@@ -21,6 +21,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -88,6 +89,8 @@ public final class MirrorTranslator {
             MethodTableTemplate.Signature.of("equals", MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object)),
             MethodTableTemplate.Signature.of("hashCode"),
             MethodTableTemplate.Signature.of("toString"));
+
+    private static final String DOLLAR = "a class with $ in its simple name is not supported yet";
 
     private final Elements elements;
     private final javax.lang.model.util.Types types;
@@ -185,7 +188,15 @@ public final class MirrorTranslator {
     ///   type reaches through that supertype too — `X extends Mid`, where
     ///   both implement `Hidden`: the members of `Hidden` are told by `Mid`,
     ///   like the members `Mid` declares, and `X` has them from `Mid`. A
-    ///   member is told by one type, the farthest that has it.
+    ///   member is told by one type, the farthest that has it. `Mid` tells
+    ///   them if a full metamodel can be made of it ([#refusal(TypeElement)],
+    ///   [#rejection(TypeElement, TypeModel)]): which the type `Mid` alone
+    ///   decides, not who asks for it or where its metamodel comes from, so
+    ///   the members of `X`, and its [Canonical] form, are the same in
+    ///   every compilation that has the same types. If none can, `X` adopts
+    ///   them, or no fact would reach them. Whether `Mid` gets a fact of
+    ///   each is not asked: a member it adopts and skips is reported for
+    ///   `Mid`, as a member it declares and skips is.
     ///
     /// Constructors are not inherited, so none is adopted.
     ///
@@ -215,7 +226,7 @@ public final class MirrorTranslator {
         }
         // what a public supertype has of them, it tells: the type has them from that supertype
         Set<Element> told = supertypesThrough(List.of(element), Set.of(), supertype -> true)
-                .filter(MirrorTranslator::isPublic)
+                .filter(this::tells)
                 .flatMap(supertype -> had(supertype, elements.getAllMembers(supertype)).stream())
                 .collect(Collectors.toSet());
         // the abstract methods of one signature that the type has, whoever declares them, are one member of it
@@ -259,6 +270,160 @@ public final class MirrorTranslator {
                             && namesakes.stream().noneMatch(other -> replaces(other, member, element));
                 })
                 .toList();
+    }
+
+    /// Whether a supertype tells the members it adopts: it is `public`, and
+    /// a full metamodel can be made of it.
+    private boolean tells(TypeElement supertype) {
+        if (!isPublic(supertype) || refusal(supertype).isPresent()) {
+            return false;
+        }
+        return switch (type(supertype, MemberFilter.NONE)) {
+            case Translation.Ok<TypeModel>(TypeModel model) ->
+                switch (rejection(supertype, model)) {
+                    case Translation.Ok<Optional<String>>(Optional<String> reason) -> reason.isEmpty();
+                    case Translation.Deferred<Optional<String>>(String unresolved) -> throw new Unresolved(unresolved);
+                    case Translation.Unrepresentable<Optional<String>> _ -> false;
+                };
+            case Translation.Deferred<TypeModel>(String unresolved) -> throw new Unresolved(unresolved);
+            case Translation.Unrepresentable<TypeModel> _ -> false;
+        };
+    }
+
+    /// Why no metamodel can be made of a type, whatever it declares: it is
+    /// an annotation interface, it is not `public` or is nested in a type
+    /// that is not, its simple name or that of a type it is nested in has a
+    /// `$`, or it is in the unnamed package.
+    ///
+    /// @param type a class, interface, enum, record or annotation interface
+    /// @return the reason, a sentence about the type; empty if a metamodel can be asked for
+    public static Optional<String> refusal(TypeElement type) {
+        if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
+            return Optional.of("annotation interface " + type.getQualifiedName() + " is not supported yet");
+        }
+        Optional<TypeElement> hidden = enclosing(type)
+                .filter(element -> !element.getModifiers().contains(Modifier.PUBLIC))
+                .findFirst();
+        if (hidden.isPresent()) {
+            return Optional.of(
+                    hidden.get().equals(type)
+                            ? type.getQualifiedName() + " is not public"
+                            : type.getQualifiedName() + " is nested in "
+                                    + hidden.get().getQualifiedName() + ", which is not public");
+        }
+        if (dollar(type)) {
+            return Optional.of(type.getQualifiedName() + ": " + DOLLAR);
+        }
+        if (unnamedPackage(type)) {
+            return Optional.of(type.getQualifiedName()
+                    + " is in the unnamed package, which a metamodel in a named package cannot refer to");
+        }
+        return Optional.empty();
+    }
+
+    /// Why a type that has a model has no full metamodel all the same: a
+    /// bound of its type parameters mentions a type a metamodel cannot
+    /// declare the bound with — one that is not `public`, or that no
+    /// metamodel can refer to. Without the bound javac would accept a token
+    /// of a type argument the type does not.
+    ///
+    /// With [#refusal(TypeElement)] and a model that is
+    /// [Translation.Unrepresentable] it is all that keeps a `public` type
+    /// from a full metamodel, and all of it is read off the type: so the
+    /// `@Facts` processor and [#members(TypeElement)] agree on which
+    /// supertypes have one.
+    ///
+    /// @param type a class, interface, enum or record
+    /// @param model its model, with whatever members
+    /// @return the reason, a sentence; empty if a full metamodel can be made; deferred if a bound
+    ///         mentions a type not generated yet
+    public Translation<Optional<String>> rejection(TypeElement type, TypeModel model) {
+        if (!model.nonPublicBoundTypes().isEmpty()) {
+            return new Translation.Ok<>(Optional.of("the bounds of the type parameters of " + type.getQualifiedName()
+                    + " mention types that are not public: " + String.join(", ", model.nonPublicBoundTypes())));
+        }
+        try {
+            return new Translation.Ok<>(type.getTypeParameters().stream()
+                    .flatMap(parameter -> parameter.getBounds().stream())
+                    .flatMap(MirrorTranslator::declaredIn)
+                    .filter(mentioned -> !mentioned.equals(type))
+                    .collect(Collectors.toMap(
+                            mentioned -> elements.getBinaryName(mentioned).toString(),
+                            mentioned -> mentioned,
+                            (first, second) -> first,
+                            TreeMap::new))
+                    .entrySet()
+                    .stream()
+                    .flatMap(mentioned -> unmentionable(mentioned.getValue())
+                            .map(reason -> "the bounds of the type parameters of " + type.getQualifiedName()
+                                    + " mention " + mentioned.getKey() + ", which has no metamodel: " + reason)
+                            .stream())
+                    .findFirst());
+        } catch (Unresolved unresolved) {
+            return new Translation.Deferred<>(unresolved.type);
+        }
+    }
+
+    /// Why no metamodel can refer to a type a signature mentions.
+    private Optional<String> unmentionable(TypeElement type) {
+        if (unnamedPackage(type)) {
+            return Optional.of("a metamodel in a named package cannot refer to it");
+        }
+        if (dollar(type)) {
+            return Optional.of(DOLLAR);
+        }
+        return switch (type(type, MemberFilter.NONE)) {
+            case Translation.Ok<TypeModel> _ -> Optional.empty();
+            case Translation.Deferred<TypeModel>(String unresolved) -> throw new Unresolved(unresolved);
+            case Translation.Unrepresentable<TypeModel>(String reason) -> Optional.of(reason);
+        };
+    }
+
+    /// The classes and interfaces a type mentions, itself and in its type arguments.
+    private static Stream<TypeElement> declaredIn(TypeMirror mirror) {
+        return switch (mirror.getKind()) {
+            case DECLARED -> {
+                DeclaredType declared = (DeclaredType) mirror;
+                yield Stream.concat(
+                        Stream.of((TypeElement) declared.asElement()),
+                        declared.getTypeArguments().stream().flatMap(MirrorTranslator::declaredIn));
+            }
+            case ARRAY -> declaredIn(((ArrayType) mirror).getComponentType());
+            case WILDCARD -> {
+                WildcardType wildcard = (WildcardType) mirror;
+                yield Stream.of(wildcard.getExtendsBound(), wildcard.getSuperBound())
+                        .filter(bound -> bound != null)
+                        .flatMap(MirrorTranslator::declaredIn);
+            }
+            case INTERSECTION ->
+                ((IntersectionType) mirror).getBounds().stream().flatMap(MirrorTranslator::declaredIn);
+            case ERROR -> throw new Unresolved(mirror);
+            // a type variable is a type parameter of the type, whose bounds are read where it is declared
+            default -> Stream.empty();
+        };
+    }
+
+    /// Whether the simple name of the type or of an enclosing type has a
+    /// `$`, which `java-file-api-core` reads as the separator of a member
+    /// type in a [ClassDesc].
+    private static boolean dollar(TypeElement type) {
+        return enclosing(type)
+                .anyMatch(element -> element.getSimpleName().toString().contains("$"));
+    }
+
+    private static boolean unnamedPackage(TypeElement type) {
+        return Stream.<Element>iterate(type, Element::getEnclosingElement)
+                .filter(PackageElement.class::isInstance)
+                .map(PackageElement.class::cast)
+                .findFirst()
+                .orElseThrow()
+                .isUnnamed();
+    }
+
+    /// `type` and the types that enclose it, the innermost first.
+    private static Stream<TypeElement> enclosing(TypeElement type) {
+        return Stream.<Element>iterate(type, element -> element instanceof TypeElement, Element::getEnclosingElement)
+                .map(TypeElement.class::cast);
     }
 
     private ExecutableElement pick(List<ExecutableElement> twins, DeclaredType self) {
@@ -825,9 +990,13 @@ public final class MirrorTranslator {
         return new TypeVarRef(element.getSimpleName().toString());
     }
 
-    private static boolean isPublic(TypeElement element) {
-        return Stream.<Element>iterate(element, type -> type instanceof TypeElement, Element::getEnclosingElement)
-                .allMatch(type -> type.getModifiers().contains(Modifier.PUBLIC));
+    /// Whether a type and every type that encloses it are `public`: only
+    /// such a type can have a metamodel, which names it from another package.
+    ///
+    /// @param element a class, interface, enum, record or annotation interface
+    /// @return `true` if code of any package can name the type
+    public static boolean isPublic(TypeElement element) {
+        return enclosing(element).allMatch(type -> type.getModifiers().contains(Modifier.PUBLIC));
     }
 
     private ClassDesc desc(TypeElement element) {
@@ -939,8 +1108,12 @@ public final class MirrorTranslator {
         private final String type;
 
         Unresolved(TypeMirror type) {
-            super(type.toString(), null, false, false);
-            this.type = type.toString();
+            this(type.toString());
+        }
+
+        Unresolved(String type) {
+            super(type, null, false, false);
+            this.type = type;
         }
     }
 }
