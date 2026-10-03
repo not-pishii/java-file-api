@@ -103,6 +103,7 @@ import java.util.stream.Stream;
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
     private static final String FORMAT = "me.supcheg.javafile.facts.meta.MetamodelFormat";
+    private static final String GENERATED_METAMODEL = "me.supcheg.javafile.facts.meta.GeneratedMetamodel";
     private static final String UNRESOLVED = "a type in @Facts is not resolvable after all rounds";
 
     private @Nullable Diagnostics diagnostics;
@@ -120,7 +121,7 @@ public final class FactsProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Requests.FACTS);
+        return Set.of(Requests.FACTS, GENERATED_METAMODEL);
     }
 
     @Override
@@ -149,17 +150,30 @@ public final class FactsProcessor extends AbstractProcessor {
         }
     }
 
+    /// Claims the annotations the processor supports, which are its own:
+    /// `@Facts`, which it reads, and `@GeneratedMetamodel`, which only the
+    /// metamodels it writes have. An annotation nobody claims is a warning
+    /// of `-Xlint:processing`, an error under `-Werror`. Every other
+    /// annotation of the round goes on to the processors after this one —
+    /// `javax.annotation.processing.Generated` of the metamodels among
+    /// them, which is not this processor's to claim, so that lint still
+    /// names it.
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+        run(round);
+        return true;
+    }
+
+    private void run(RoundEnvironment round) {
         if (stopped || options == null || diagnostics == null) {
-            return false;
+            return;
         }
         Elements elements = processingEnv.getElementUtils();
         TypeElement facts = elements.getTypeElement(Requests.FACTS);
         List<Element> annotated = facts == null ? List.of() : List.copyOf(round.getElementsAnnotatedWith(facts));
         if (sites.isEmpty() && !annotated.isEmpty() && !formatMatches(elements, diagnostics)) {
             stopped = true;
-            return false;
+            return;
         }
         for (Element element : annotated) {
             Site site = Site.of(element, elements);
@@ -179,7 +193,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 case BasePackage.Ambiguous ambiguous -> {
                     diagnostics.error(sites.first().resolve(elements), ambiguous.message());
                     stopped = true;
-                    return false;
+                    return;
                 }
             }
         }
@@ -191,7 +205,6 @@ public final class FactsProcessor extends AbstractProcessor {
                                             element, literal.annotation(), literal.value(), UNRESOLVED)),
                             () -> diagnostics.error(UNRESOLVED)));
         }
-        return false;
     }
 
     private void read(Site site, Element element, Diagnostics diagnostics) {
@@ -270,15 +283,14 @@ public final class FactsProcessor extends AbstractProcessor {
                 SortedSet<String> told =
                         graph.roots(name).filter(dealtWith).collect(Collectors.toCollection(TreeSet::new));
                 if (!told.isEmpty()) {
-                    diagnostics.skipped(
+                    diagnostics.warning(
                             told.stream()
                                     .flatMap(root -> asked.get(root).sites().stream())
                                     .sorted()
                                     .findFirst()
                                     .flatMap(site -> site.resolve(elements)),
                             String.join(", ", told) + ": no facts of the public members inherited from " + name
-                                    + ", which has no full metamodel: " + reason,
-                            graph.reasons(name).toList());
+                                    + ", which has no full metamodel: " + reason);
                 }
             }
         });
@@ -297,7 +309,8 @@ public final class FactsProcessor extends AbstractProcessor {
                             .ifPresent(wait -> diagnostics.error(
                                     first(sitesOf.apply(node.name()), elements),
                                     "type " + subject(graph, node.name()) + " in @Facts is not resolvable after all"
-                                            + " rounds: it " + describe(wait))));
+                                            + " rounds: it "
+                                            + describe(wait, name -> elements.getTypeElement(name) != null))));
         }
     }
 
@@ -477,7 +490,7 @@ public final class FactsProcessor extends AbstractProcessor {
         if (elements.getTypeElement(name) != null) {
             diagnostics.error(
                     at,
-                    "metamodel " + name + " of " + planned.binaryName() + " already exists in a dependency; reuse it"
+                    "metamodel " + name + " of " + planned.subject() + " already exists in a dependency; reuse it"
                             + " (it does not match " + planned.binaryName() + " on this classpath) or choose another"
                             + " package with -A" + Options.PACKAGE + "=<package>");
             return;
@@ -505,7 +518,8 @@ public final class FactsProcessor extends AbstractProcessor {
                     .forEach(skip -> diagnostics.skipped(
                             at,
                             planned.subject() + ": no fact of " + skip.member() + ", which " + skip.reason(),
-                            planned.reasons()));
+                            planned.reasons(),
+                            skip.origin()));
             file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken);
         } else {
             file = MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets);
@@ -532,14 +546,22 @@ public final class FactsProcessor extends AbstractProcessor {
     /// wait for each other in turn, and the type that is missing at the end
     /// — or that none is, and the metamodels wait in a circle.
     ///
+    /// A type that is missing either does not exist — no processor generated
+    /// it — or exists, but cannot be named where it is mentioned: one that is
+    /// not `public` in another package, which javac reports itself.
+    ///
     /// @param wait what the type waits for
+    /// @param exists whether the compilation has a type of a name
     /// @return the rest of a sentence that starts with `it`
-    static String describe(TypeGraph.Wait wait) {
+    static String describe(TypeGraph.Wait wait, Predicate<String> exists) {
         return switch (wait) {
             case TypeGraph.Wait.Missing(List<String> chain) ->
                 Stream.concat(
                                 awaited(chain.subList(1, chain.size() - 1)),
-                                Stream.of("mentions " + chain.getLast() + ", which no processor generated"))
+                                Stream.of("mentions " + chain.getLast()
+                                        + (exists.test(chain.getLast())
+                                                ? ", which is not accessible there"
+                                                : ", which no processor generated")))
                         .collect(Collectors.joining(", which "));
             case TypeGraph.Wait.Cycle(List<String> chain) ->
                 awaited(chain.subList(1, chain.size())).collect(Collectors.joining(", which "))

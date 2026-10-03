@@ -54,6 +54,27 @@ class GeneratedCodeTest {
         }
     }
 
+    /// `-Xlint:processing` warns of an annotation no processor claims: the processor claims `@Facts` and the
+    /// `@GeneratedMetamodel` of what it writes, which are its own. `@Generated` of the JDK is not its to claim.
+    @Test
+    void theProcessorClaimsItsOwnAnnotations() {
+        Compiled compiled = Javac.facts()
+                .options("-Xlint:processing")
+                .compile("""
+                        package gen;
+
+                        import me.supcheg.javafile.facts.meta.Facts;
+
+                        @Facts(p.Small.class)
+                        class G {}
+                        """, "package p; public final class Small {}")
+                .orFail();
+
+        assertThat(compiled.warnings())
+                .containsExactly("No processor claimed any of these annotations:"
+                        + " java.compiler/javax.annotation.processing.Generated");
+    }
+
     private static TypeShape<?> shape(ClassLoader loader) throws ReflectiveOperationException {
         return (TypeShape<?>)
                 loader.loadClass("gen.facts.p.Wide_$Data").getField("SHAPE").get(null);

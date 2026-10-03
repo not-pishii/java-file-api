@@ -264,12 +264,15 @@ class TypeGraphTest {
 
     @Test
     void whatATypeWaitsForIsToldAsAChain() {
-        assertThat(FactsProcessor.describe(new Wait.Missing(List.of("p.A", "gen.Never"))))
+        assertThat(FactsProcessor.describe(new Wait.Missing(List.of("p.A", "gen.Never")), name -> false))
                 .isEqualTo("mentions gen.Never, which no processor generated");
-        assertThat(FactsProcessor.describe(new Wait.Missing(List.of("p.A", "p.B", "p.C", "gen.Never"))))
+        assertThat(FactsProcessor.describe(new Wait.Missing(List.of("p.A", "p.B", "p.C", "gen.Never")), name -> false))
                 .isEqualTo("waits for the metamodel of p.B, which waits for the metamodel of p.C, which mentions"
                         + " gen.Never, which no processor generated");
-        assertThat(FactsProcessor.describe(new Wait.Cycle(List.of("p.A", "p.B", "p.A"))))
+        // a type that exists, but cannot be named where it is mentioned
+        assertThat(FactsProcessor.describe(new Wait.Missing(List.of("p.A", "q.Hid")), "q.Hid"::equals))
+                .isEqualTo("mentions q.Hid, which is not accessible there");
+        assertThat(FactsProcessor.describe(new Wait.Cycle(List.of("p.A", "p.B", "p.A")), name -> false))
                 .isEqualTo("waits for the metamodel of p.B, which waits for the metamodel of p.A: these metamodels"
                         + " wait for each other, and no type is missing");
     }
