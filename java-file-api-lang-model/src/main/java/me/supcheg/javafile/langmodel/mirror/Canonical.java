@@ -119,14 +119,18 @@ public final class Canonical {
                                                 .toList()),
                                 "supertypes "
                                         + items(model.supertypes().supertypes().stream()
-                                                .map(scope::type).sorted().toList()),
+                                                .map(scope::type)
+                                                .sorted()
+                                                .toList()),
                                 "enum " + items(model.enumConstants()),
                                 "members "
                                         + switch (model.filter()) {
                                             case NONE -> "none";
                                             case DECLARED_PUBLIC -> "declared-public";
                                         }),
-                        model.members().stream().map(m -> member(m, model.typeParams())).sorted(),
+                        model.members().stream()
+                                .map(m -> member(m, model.typeParams()))
+                                .sorted(),
                         model
                                 .sam()
                                 .map(sam -> "sam " + sam.name() + params(sam.params(), scope) + " -> "
