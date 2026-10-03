@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.OverDollar: no facts of the public members inherited from p.Dol$lar, which has no full metamodel: p.Dol$lar: a class with $ in its simple name is not supported yet

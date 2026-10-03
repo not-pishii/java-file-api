@@ -1,0 +1,1 @@
+gen/G.java:13:1: warning: p.PubNest: no fact of method make() of p.HNest, which mentions types that are not public: p.HNest$In

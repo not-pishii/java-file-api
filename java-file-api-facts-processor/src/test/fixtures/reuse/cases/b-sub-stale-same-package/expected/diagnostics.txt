@@ -1,0 +1,1 @@
+a/G.java:7:1: error: metamodel a.facts.p.Dep_ of p.Dep (a supertype of q.Sub) already exists in a dependency; reuse it (it does not match p.Dep on this classpath) or choose another package with -Ajavafile.facts.package=<package>
