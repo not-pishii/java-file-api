@@ -29,21 +29,21 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Iface;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "6095858026527208afe382e87b6edbe5a08dc1440fb3c6e152c4d66eda728a30", complete = true, format = 4)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "084c045c4bb16a889e73aa29d9bf8ca5ab0dcd0dba5ec1d4abe663a90ef1ffee", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Iface_ {
     public static final class Data {
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "6095858026527208afe382e87b6edbe5a08dc1440fb3c6e152c4d66eda728a30", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "084c045c4bb16a889e73aa29d9bf8ca5ab0dcd0dba5ec1d4abe663a90ef1ffee", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Iface interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember field static constant int LIMIT = 10\nmember field static constant java.lang.String NAME = \"n\"\nmember method abstract run() -> void throws -\nmember method overridable size() -> int throws -\nmember method static empty() -> p.Iface throws -\nsam run() -> void throws -\ntable abstract run()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)\ntable static empty()\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Iface interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember field static constant int LIMIT = 10\nmember field static constant java.lang.String NAME = \"n\"\nmember method abstract run() -> void throws -\nmember method overridable size() -> int throws -\nmember method static empty() -> p.Iface throws -\nsam run() -> void throws -\ntable abstract run()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)\ntable static empty()\ntable ctor -\n";
 
         private Canonical() {
         }

@@ -60,7 +60,7 @@ class CanonicalTest {
         Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
 
         assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 3
+                        javafile-facts-canonical 4
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -123,7 +123,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 3
+                        javafile-facts-canonical 4
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -355,7 +355,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 3
+                        javafile-facts-canonical 4
                         type p.T interface sealed=no
                         tparams -
                         superclasses -
