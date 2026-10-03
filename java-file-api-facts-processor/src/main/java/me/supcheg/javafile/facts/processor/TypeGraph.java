@@ -52,15 +52,28 @@ import java.util.stream.Stream;
 /// asked for, it is a supertype of what is asked for, signatures mention
 /// it.
 ///
+/// The graph is complete ([#complete()]) once every type a full metamodel
+/// is wanted of is in it: every class literal of `@Facts` names a type that
+/// is there, and so does every type the requested types and their
+/// supertypes extend and implement. Until then a type that is missing may
+/// turn out to extend or implement any type of the graph, which is then
+/// wanted in full, though the graph has it as a type that is only mentioned
+/// or has it not at all. What a metamodel is — full or token-only, written
+/// or reused — is therefore final in a complete graph only, and nothing is
+/// written from one that is not.
+///
 /// The graph is a value: it is built once per round ([Closure]), nothing in
-/// it changes, and what the processor does in the round — which metamodels
-/// it writes, which wait, which are refused — is read from it. Nodes are
-/// sorted by name and edges by source, kind and target, so every answer
-/// comes in the same order however the graph was put together.
+/// it changes, and what the processor does in the round — whether it writes
+/// at all, which metamodels it writes, which wait, which are refused — is
+/// read from it. Nodes are sorted by name and edges by source, kind and
+/// target, so every answer comes in the same order however the graph was
+/// put together.
 ///
 /// @param nodes the types, by binary name
 /// @param edges the dependencies between them
-record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
+/// @param unresolved the `@Facts` with a class literal of a type that is not generated yet, by the
+///     name of the type or package each is on: javac gives no name of such a type
+record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, SortedSet<String> unresolved) {
 
     /// @throws IllegalArgumentException if a node is not under its own name, or an edge is from or
     ///                                  to a type that is not a node
@@ -82,9 +95,11 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
                 });
         nodes = Collections.unmodifiableSortedMap(sortedNodes);
         edges = Collections.unmodifiableSortedSet(sortedEdges);
+        unresolved = Collections.unmodifiableSortedSet(new TreeSet<>(unresolved));
     }
 
-    /// A graph of nodes and edges, in whatever order they come.
+    /// A graph of nodes and edges, in whatever order they come, in which
+    /// every class literal of `@Facts` names a type that is there.
     ///
     /// @param nodes the types
     /// @param edges the dependencies between them
@@ -92,6 +107,18 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
     /// @throws IllegalArgumentException if two nodes have the same name, or an edge is from or to a
     ///                                  type that is not a node
     static TypeGraph of(Stream<? extends Node> nodes, Stream<? extends Edge> edges) {
+        return of(nodes, edges, Stream.empty());
+    }
+
+    /// A graph of nodes and edges, in whatever order they come.
+    ///
+    /// @param nodes the types
+    /// @param edges the dependencies between them
+    /// @param unresolved the `@Facts` with a class literal of a type that is not generated yet
+    /// @return the graph
+    /// @throws IllegalArgumentException if two nodes have the same name, or an edge is from or to a
+    ///                                  type that is not a node
+    static TypeGraph of(Stream<? extends Node> nodes, Stream<? extends Edge> edges, Stream<String> unresolved) {
         return new TypeGraph(
                 nodes.collect(Collectors.toMap(
                         Node::name,
@@ -100,7 +127,30 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
                             throw new IllegalArgumentException("two nodes are named " + first.name());
                         },
                         TreeMap::new)),
-                edges.collect(Collectors.toCollection(() -> new TreeSet<>(Edge.ORDER))));
+                edges.collect(Collectors.toCollection(() -> new TreeSet<>(Edge.ORDER))),
+                unresolved.collect(Collectors.toCollection(TreeSet::new)));
+    }
+
+    /// Whether the graph has every type a full metamodel is wanted of, so
+    /// that what each metamodel is — full or token-only — is final: no
+    /// `@Facts` asks for a type that is not generated yet, and no type
+    /// extends or implements one ([#missingSupertypes()]). Such a type may
+    /// extend or implement any other once it is there, a type that is only
+    /// mentioned so far as much as one the graph does not have yet.
+    ///
+    /// @return `true` if the metamodels of the graph can be written
+    boolean complete() {
+        return unresolved.isEmpty() && missingSupertypes().findAny().isEmpty();
+    }
+
+    /// The supertypes that are not generated yet: the [Edge.Supertype] that
+    /// lead to a [Node.Absent], sorted.
+    ///
+    /// @return the edges, each from a requested type or a supertype of one to the missing type
+    Stream<Edge.Supertype> missingSupertypes() {
+        return edges.stream()
+                .flatMap(edge -> edge instanceof Edge.Supertype supertype ? Stream.of(supertype) : Stream.empty())
+                .filter(supertype -> nodes.get(supertype.to()) instanceof Node.Absent);
     }
 
     /// The edges of one kind that leave a type, sorted by target.
@@ -355,7 +405,9 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
         record Waiting() implements Plan {}
 
         /// An earlier round generated a token-only metamodel of the type, before `@Facts` asked for
-        /// it: a metamodel is written once, so there is no full one.
+        /// it: a metamodel is written once, so there is no full one. That is the case only of a
+        /// `@Facts` that was not there in that round, one another processor generated: the graph of
+        /// a round is complete as far as the `@Facts` of the round go, not for what is yet to ask.
         ///
         /// @param tokenOnly the metamodel class
         record Late(ClassDesc tokenOnly) implements Request {}
@@ -461,7 +513,8 @@ record TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges) {
         /// `from` extends or implements `to` directly.
         ///
         /// @param from a requested type or a supertype of one
-        /// @param to its superclass or a superinterface it names
+        /// @param to its superclass or a superinterface it names, a [Node.Absent] if that is not
+        ///     generated yet
         record Supertype(String from, String to) implements Edge {}
 
         /// The full metamodel of `from` is not written before `to` is there: `to` is not generated

@@ -51,6 +51,7 @@ final class GraphProbe extends AbstractProcessor {
                             models::binaryName, Function.identity(), (first, second) -> first, LinkedHashMap::new));
             graph = Optional.of(Closure.of(
                     types,
+                    Set.of(),
                     Map.of(),
                     models,
                     new ReuseIndex(processingEnv.getFiler(), elements),
