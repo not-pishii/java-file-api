@@ -1,0 +1,1 @@
+-Ajavafile.facts.package=com.1acme

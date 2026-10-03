@@ -1,0 +1,6 @@
+p/G.java:5:12: error: @Facts asks for classes, interfaces, enums and records, got int
+p/G.java:5:28: error: @Facts asks for classes, interfaces, enums and records, got java.lang.String[]
+p/G.java:5:40: error: @Facts asks for classes, interfaces, enums and records, got void
+p/G.java:5:54: error: annotation interface p.Marker is not supported yet
+p/G.java:5:70: error: p.Internal is not public
+p/G.java:5:91: error: p.Internal.Open is nested in p.Internal, which is not public

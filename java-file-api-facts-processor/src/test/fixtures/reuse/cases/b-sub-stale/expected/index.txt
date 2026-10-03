@@ -1,0 +1,2 @@
+META-INF/javafile/metamodel/full/p.Dep -> b.facts.p.Dep_
+META-INF/javafile/metamodel/full/q.Sub -> b.facts.q.Sub_

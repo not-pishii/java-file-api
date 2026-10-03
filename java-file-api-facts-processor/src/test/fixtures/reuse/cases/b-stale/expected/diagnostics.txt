@@ -1,0 +1,1 @@
+b/G.java:7:1: warning: metamodel a.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated from a different p.Dep; generating b.facts.p.Dep_

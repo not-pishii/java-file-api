@@ -1,0 +1,2 @@
+META-INF/javafile/metamodel/full/p.Other -> b.facts.p.Other_
+META-INF/javafile/metamodel/token/p.Dep -> b.facts.p.Dep_

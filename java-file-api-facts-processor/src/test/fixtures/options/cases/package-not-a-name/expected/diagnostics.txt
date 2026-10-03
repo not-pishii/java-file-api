@@ -1,0 +1,1 @@
+error: -Ajavafile.facts.package=com.1acme is not a package name

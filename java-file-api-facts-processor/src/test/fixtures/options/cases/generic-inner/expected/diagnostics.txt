@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: no metamodel of q.Outer$Inner: inner class q.Outer.Inner of generic class q.Outer can mention its type parameters
