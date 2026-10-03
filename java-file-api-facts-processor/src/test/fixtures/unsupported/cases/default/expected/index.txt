@@ -1,0 +1,10 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> gen.facts.java.lang.Object_
+META-INF/javafile/metamodel/full/p.Mix -> gen.facts.p.Mix_
+META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.Number -> gen.facts.java.lang.Number_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
+META-INF/javafile/metamodel/token/java.util.List -> gen.facts.java.util.List_
+META-INF/javafile/metamodel/token/java.util.Map -> gen.facts.java.util.Map_
+META-INF/javafile/metamodel/token/java.util.Set -> gen.facts.java.util.Set_
+META-INF/javafile/metamodel/token/java.util.function.Function -> gen.facts.java.util.function.Function_

@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: no metamodel of p.Gen$In: inner class p.Gen.In of generic class p.Gen can mention its type parameters
