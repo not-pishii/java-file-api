@@ -2,8 +2,8 @@ package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
 import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
-import me.supcheg.javafile.facts.processor.TypeGraph.Full;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
+import me.supcheg.javafile.facts.processor.TypeGraph.Reason;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,13 +13,15 @@ import org.junit.jupiter.api.io.TempDir;
 import javax.tools.Diagnostic;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/// Fixture `closure` (mini-spec §3, §9.2): a requested type gets its
-/// metamodel, and every class or interface its declared public signatures
-/// mention gets a token-only one — and nothing further; and the graph of
-/// the types of a round ([Closure], [TypeGraph]) that says so.
+/// Fixture `closure` (mini-spec §3, §9.2, Q13): a requested type gets its
+/// metamodel, every type it extends or implements gets a full one too, and
+/// every class or interface the public signatures of those mention gets a
+/// token-only one — and nothing further; and the graph of the types of a
+/// round ([Closure], [TypeGraph]) that says so.
 class ClosureTest {
     @TempDir
     Path lib;
@@ -73,7 +75,13 @@ class ClosureTest {
                 "package p; public interface Mid extends Top { void mid(); }",
                 "package p; public abstract class Root implements Mid { public void top() {}"
                         + " public void root() {} public static void stat() {} }",
-                "package p; public class Leaf extends Root { public void mid() {} public void root() {} }"));
+                "package p; public class Leaf extends Root { public void mid() {} public void root() {} }",
+                "package p; public class Sup { public Result result() { return null; } }",
+                "package p; public class Sub extends Sup { public Sup sup() { return null; } }",
+                "package p; abstract class HiddenBase extends Root { public Arg arg() { return null; } }",
+                "package p; public class OverHidden extends HiddenBase { public void mid() {} }",
+                "package p; public class Bounded<T extends Hidden> {}",
+                "package p; public class OverBounded extends Bounded { public Bounded<?> same() { return null; } }"));
     }
 
     /// The graph of a round in which `requested` are asked for, in that order.
@@ -95,8 +103,10 @@ class ClosureTest {
     @Test
     void theSignaturesOfTheRequestedTypeGetTokenOnlyMetamodelsToDepthOne() {
         Compilation compilation = generate("p.A.class");
+        // and A extends Object: its full metamodel, and tokens of what its signatures mention
         assertThat(ProcessorHarness.generatedSources(compilation).keySet())
-                .containsExactlyInAnyOrder(
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts",
                         "gen.facts.p.A_",
                         "gen.facts.p.Bound_",
                         "gen.facts.p.Param1_",
@@ -110,7 +120,7 @@ class ClosureTest {
                         "gen.facts.p.Elem_",
                         "gen.facts.java.util.List_",
                         "gen.facts.p.Lower_",
-                        "gen.facts.p.B_");
+                        "gen.facts.p.B_"));
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
                 .containsExactly(
                         "p.A: no fact of method dollar(), which mentions p.Dol$lar, which has no metamodel: a class"
@@ -119,8 +129,9 @@ class ClosureTest {
                                 + " annotation interface p.Marker is not supported yet",
                         "p.A: no fact of method hidden(), which mentions types that are not public: p.Hidden");
         assertThat(ProcessorHarness.resources(compilation))
-                .hasSize(14)
+                .hasSize(18)
                 .containsEntry("META-INF/javafile/metamodel/full/p.A", "gen.facts.p.A_\n")
+                .containsEntry("META-INF/javafile/metamodel/full/java.lang.Object", "gen.facts.java.lang.Object_\n")
                 .containsEntry("META-INF/javafile/metamodel/token/java.util.List", "gen.facts.java.util.List_\n");
         ProcessorHarness.compileAndLoad(compilation, out, classpath);
     }
@@ -154,7 +165,7 @@ class ClosureTest {
         assertThat(graph.nodes().get("p.B"))
                 .isInstanceOfSatisfying(
                         Node.Mentioned.class,
-                        mentioned -> assertThat(mentioned.token()).isInstanceOf(Token.Planned.class));
+                        mentioned -> assertThat(mentioned.mentioned()).isInstanceOf(Token.Planned.class));
         assertThat(graph.nodes().get("p.Marker"))
                 .isEqualTo(new Node.Mentioned(
                         "p.Marker", new Token.Unavailable("annotation interface p.Marker is not supported yet")));
@@ -174,61 +185,140 @@ class ClosureTest {
         assertThat(graph.nodes().get("p.B"))
                 .isInstanceOfSatisfying(
                         Node.Requested.class,
-                        requested -> assertThat(requested.request()).isInstanceOf(Request.Ready.class));
+                        requested -> assertThat(requested.asked()).isInstanceOf(Request.Ready.class));
         assertThat(graph.waitOf("p.A")).isEmpty();
         assertThat(graph.waitOf("p.B")).isEmpty();
     }
 
     @Test
-    void aSupertypeEdgeLeadsToEverySupertypeAndTellsWhetherMembersAreInheritedFromIt() {
+    void aSupertypeEdgeLeadsToWhatATypeExtendsAndImplementsAndEverySupertypeGetsAFullMetamodel() {
         TypeGraph graph = graph("p.Leaf", "p.CtorEx");
 
-        // Root declares top(), which hides that of Top, and stat(); Leaf declares mid() and root() again;
-        // Top still has dflt()
-        assertThat(graph.from("p.Leaf", Edge.Supertype.class))
+        assertThat(graph.from("p.Leaf", Edge.Supertype.class).map(Edge::to)).containsExactly("p.Root");
+        assertThat(graph.from("p.Root", Edge.Supertype.class).map(Edge::to))
+                .containsExactly("java.lang.Object", "p.Mid");
+        assertThat(graph.from("p.Mid", Edge.Supertype.class).map(Edge::to)).containsExactly("p.Top");
+        assertThat(graph.supertypes("p.Leaf")).containsExactly("java.lang.Object", "p.Mid", "p.Root", "p.Top");
+        assertThat(graph.supertypes("p.CtorEx"))
                 .containsExactly(
-                        new Edge.Supertype("p.Leaf", "java.lang.Object", true),
-                        new Edge.Supertype("p.Leaf", "p.Mid", false),
-                        new Edge.Supertype("p.Leaf", "p.Root", true),
-                        new Edge.Supertype("p.Leaf", "p.Top", true));
-        // Exception declares constructors only
-        assertThat(graph.from("p.CtorEx", Edge.Supertype.class))
-                .containsExactly(
-                        new Edge.Supertype("p.CtorEx", "java.io.Serializable", false),
-                        new Edge.Supertype("p.CtorEx", "java.lang.Exception", false),
-                        new Edge.Supertype("p.CtorEx", "java.lang.Object", true),
-                        new Edge.Supertype("p.CtorEx", "java.lang.Throwable", true));
-        assertThat(graph.inherited("p.Leaf"))
-                .containsExactly(
-                        new Node.Inherited("java.lang.Object", new Full.Askable()),
-                        new Node.Inherited("p.Root", new Full.Askable()),
-                        new Node.Inherited("p.Top", new Full.Askable()));
-        // a supertype gets no metamodel of its own
-        assertThat(graph.nodes().get("p.Root")).isEqualTo(new Node.Inherited("p.Root", new Full.Askable()));
+                        "java.io.Serializable", "java.lang.Exception", "java.lang.Object", "java.lang.Throwable");
+        // every supertype is read for a full metamodel, as if it were asked for
+        assertThat(Stream.of("p.Root", "p.Mid", "p.Top", "java.lang.Object", "java.lang.Throwable")
+                        .map(graph.nodes()::get))
+                .allSatisfy(node -> assertThat(node)
+                        .isInstanceOfSatisfying(
+                                Node.Inherited.class,
+                                inherited -> assertThat(inherited.plan()).isInstanceOf(Request.Ready.class)));
+        assertThat(graph.reasons("p.Root")).containsExactly(new Reason.Supertype("p.Leaf"));
+        assertThat(graph.reasons("java.lang.Object"))
+                .contains(new Reason.Supertype("p.CtorEx"), new Reason.Supertype("p.Leaf"));
+        assertThat(graph.roots("java.lang.Throwable")).containsExactly("p.CtorEx");
     }
 
     @Test
-    void aSupertypeThatIsRequestedOrMentionedIsThatNode() {
+    void theSignaturesOfASupertypeGetTokensButNoFurtherMetamodels() {
+        TypeGraph graph = graph("p.Sub");
+
+        // Sub extends Sup, whose signatures mention Result: a token of it, and nothing of what Result
+        // mentions (Deep) or extends
+        assertThat(graph.nodes().get("p.Sup")).isInstanceOf(Node.Inherited.class);
+        assertThat(graph.from("p.Sup", Edge.Signature.class).map(Edge::to)).containsExactly("p.Result");
+        assertThat(graph.nodes().get("p.Result"))
+                .isInstanceOfSatisfying(
+                        Node.Mentioned.class,
+                        mentioned -> assertThat(mentioned.mentioned()).isInstanceOf(Token.Planned.class));
+        assertThat(graph.reasons("p.Result")).containsExactly(new Reason.Mentioned("p.Sup"));
+        assertThat(graph.from("p.Result", Edge.class)).isEmpty();
+        assertThat(graph.nodes()).doesNotContainKey("p.Deep");
+        // what Sub mentions and also extends has a full metamodel, not a token-only one
+        assertThat(graph.from("p.Sub", Edge.Signature.class).map(Edge::to)).containsExactly("p.Sup");
+        assertThat(graph.reasons("p.Sup"))
+                .containsExactly(new Reason.Supertype("p.Sub"), new Reason.Mentioned("p.Sub"));
+    }
+
+    @Test
+    void aSupertypeThatIsNotPublicIsHiddenAndWhatItExtendsIsASupertypeToo() {
+        TypeGraph graph = graph("p.OverHidden");
+
+        assertThat(graph.nodes().get("p.HiddenBase")).isEqualTo(new Node.Hidden("p.HiddenBase"));
+        assertThat(graph.from("p.OverHidden", Edge.Supertype.class).map(Edge::to))
+                .containsExactly("p.HiddenBase");
+        assertThat(graph.from("p.HiddenBase", Edge.Supertype.class).map(Edge::to))
+                .containsExactly("p.Root");
+        assertThat(graph.supertypes("p.OverHidden"))
+                .containsExactly("java.lang.Object", "p.HiddenBase", "p.Mid", "p.Root", "p.Top");
+        assertThat(graph.nodes().get("p.Root")).isInstanceOf(Node.Inherited.class);
+        assertThat(graph.reasons("p.HiddenBase")).containsExactly(new Reason.Supertype("p.OverHidden"));
+        // the members OverHidden adopts from HiddenBase are its own: their signatures are mentioned by it
+        assertThat(graph.from("p.OverHidden", Edge.Signature.class).map(Edge::to))
+                .containsExactly("p.Arg");
+    }
+
+    @Test
+    void aSupertypeNoFullMetamodelCanBeMadeOfIsDeclinedAndKeepsItsToken() {
+        TypeGraph graph = graph("p.OverBounded");
+
+        // the bound of Bounded is not public: no full metamodel, but OverBounded mentions it, so a token
+        assertThat(graph.nodes().get("p.Bounded")).isInstanceOfSatisfying(Node.Declined.class, declined -> {
+            assertThat(declined.reason())
+                    .isEqualTo("the bounds of the type parameters of p.Bounded mention types that are not"
+                            + " public: p.Hidden");
+            assertThat(declined.mentioned()).containsInstanceOf(Token.Planned.class);
+        });
+        assertThat(graph.nodes().get("p.OverBounded"))
+                .isInstanceOfSatisfying(
+                        Node.Requested.class,
+                        requested -> assertThat(requested.asked()).isInstanceOf(Request.Ready.class));
+        assertThat(graph.supertypes("p.OverBounded")).containsExactly("java.lang.Object", "p.Bounded");
+    }
+
+    @Test
+    void aSupertypeThatIsRequestedIsThatNode() {
         TypeGraph graph = graph("p.Leaf", "p.Root", "p.CtorEx", "p.A");
 
-        assertThat(graph.inherited("p.Leaf").map(Node::full))
-                .containsExactly(new Full.Askable(), new Full.Asked(), new Full.Askable());
-        // Root, requested itself, has the supertypes of its own
-        assertThat(graph.from("p.Root", Edge.Supertype.class).map(Edge::to))
-                .containsExactly("java.lang.Object", "p.Mid", "p.Top");
+        assertThat(graph.nodes().get("p.Root")).isInstanceOf(Node.Requested.class);
+        assertThat(graph.reasons("p.Root")).containsExactly(new Reason.Asked(), new Reason.Supertype("p.Leaf"));
+        assertThat(graph.roots("p.Mid")).containsExactly("p.Leaf", "p.Root");
         assertThat(graph.from("p.A", Edge.Supertype.class).map(Edge::to)).containsExactly("java.lang.Object");
     }
 
     @Test
+    void typesThatMentionEachOtherThroughTheirSupertypesDoNotAwaitEachOther() {
+        // Enum<E extends Enum<E>> mentions itself, Comparable<T> mentions nothing, and every enum mentions
+        // its supertypes back
+        TypeGraph graph = graph("java.util.concurrent.TimeUnit", "java.lang.StringBuilder");
+
+        assertThat(graph.edges()).noneMatch(edge -> edge instanceof Edge.Awaits);
+        assertThat(graph.supertypes("java.util.concurrent.TimeUnit"))
+                .containsExactly(
+                        "java.io.Serializable",
+                        "java.lang.Comparable",
+                        "java.lang.Enum",
+                        "java.lang.Object",
+                        "java.lang.constant.Constable");
+        assertThat(graph.nodes().get("java.lang.Enum")).isInstanceOf(Node.Inherited.class);
+        assertThat(graph.nodes().get("java.lang.AbstractStringBuilder"))
+                .isEqualTo(new Node.Hidden("java.lang.AbstractStringBuilder"));
+        assertThat(graph.nodes().get("java.lang.CharSequence")).isInstanceOf(Node.Inherited.class);
+    }
+
+    @Test
     void theGraphDoesNotDependOnTheOrderTheTypesAreAskedForIn() {
-        TypeGraph forward = graph("p.A", "p.B", "p.CtorEx", "p.Leaf", "p.Root");
-        TypeGraph backward = graph("p.Root", "p.Leaf", "p.CtorEx", "p.B", "p.A");
+        TypeGraph forward = graph("p.A", "p.B", "p.CtorEx", "p.Leaf", "p.Root", "p.OverHidden", "p.OverBounded");
+        TypeGraph backward = graph("p.OverBounded", "p.OverHidden", "p.Root", "p.Leaf", "p.CtorEx", "p.B", "p.A");
 
         assertThat(List.copyOf(backward.edges())).isEqualTo(List.copyOf(forward.edges()));
         assertThat(List.copyOf(backward.nodes().keySet()))
                 .isEqualTo(List.copyOf(forward.nodes().keySet()));
-        assertThat(backward.nodes().values().stream().map(Node::full).toList())
-                .isEqualTo(forward.nodes().values().stream().map(Node::full).toList());
+        assertThat(backward.nodes().keySet().stream()
+                        .map(name -> backward.reasons(name).toList())
+                        .toList())
+                .isEqualTo(forward.nodes().keySet().stream()
+                        .map(name -> forward.reasons(name).toList())
+                        .toList());
+        assertThat(backward.nodes().values().stream().map(Object::getClass).toList())
+                .isEqualTo(
+                        forward.nodes().values().stream().map(Object::getClass).toList());
     }
 
     @Test
@@ -248,7 +338,7 @@ class ClosureTest {
         assertThat(ProcessorHarness.generatedSources(compilation).keySet())
                 .contains("gen.facts.p.A_", "gen.facts.p.B_", "gen.facts.p.Only_")
                 .doesNotContain("gen.facts.p.Deep_", "gen.facts.p.Prot_", "gen.facts.p.Pkg_");
-        assertThat(ProcessorHarness.resources(compilation)).hasSize(15);
+        assertThat(ProcessorHarness.resources(compilation)).hasSize(19);
     }
 
     @Test

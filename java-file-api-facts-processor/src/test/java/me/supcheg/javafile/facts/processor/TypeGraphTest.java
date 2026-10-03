@@ -1,8 +1,8 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
-import me.supcheg.javafile.facts.processor.TypeGraph.Full;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
+import me.supcheg.javafile.facts.processor.TypeGraph.Reason;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
 import me.supcheg.javafile.facts.processor.TypeGraph.Wait;
@@ -12,15 +12,16 @@ import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/// The graph of the types of a round as a value: its edges by kind, what a
-/// type waits for along them, and that nothing depends on the order the
-/// graph is put together in.
+/// The graph of the types of a round as a value: its edges by kind, the
+/// supertypes of a type and the requests it is there for along them, why a
+/// type is in the graph, what a type waits for, and that nothing depends on
+/// the order the graph is put together in.
 class TypeGraphTest {
     private static final ClassDesc METAMODEL = ClassDesc.of("gen.facts.p.T_");
 
@@ -28,8 +29,20 @@ class TypeGraphTest {
         return new Node.Requested(name, new Request.Waiting());
     }
 
+    private static Node inherited(String name) {
+        return new Node.Inherited(name, new Request.Waiting());
+    }
+
+    private static Node mentioned(String name) {
+        return new Node.Mentioned(name, new Token.Unavailable("no reason"));
+    }
+
     private static Node absent(String name) {
         return new Node.Absent(name);
+    }
+
+    private static Edge.Supertype extends_(String from, String to) {
+        return new Edge.Supertype(from, to);
     }
 
     private static Edge awaits(String from, String to) {
@@ -50,27 +63,26 @@ class TypeGraphTest {
                 List.of(
                         waiting("p.A"),
                         waiting("p.B"),
-                        new Node.Mentioned("p.M", new Token.Unavailable("no reason")),
-                        new Node.Inherited("p.S", new Full.Askable()),
-                        new Node.Inherited("p.T", new Full.Askable()),
+                        mentioned("p.M"),
+                        inherited("p.S"),
+                        inherited("p.T"),
                         absent("gen.Never")),
                 List.of(
                         new Edge.Signature("p.A", "p.M"),
                         new Edge.Signature("p.A", "p.B"),
                         new Edge.Signature("p.B", "p.M"),
-                        new Edge.Supertype("p.A", "p.T", false),
-                        new Edge.Supertype("p.A", "p.S", true),
+                        extends_("p.A", "p.T"),
+                        extends_("p.A", "p.S"),
                         awaits("p.A", "p.B"),
                         awaits("p.B", "gen.Never")));
 
         assertThat(graph.from("p.A", Edge.Signature.class))
                 .containsExactly(new Edge.Signature("p.A", "p.B"), new Edge.Signature("p.A", "p.M"));
         assertThat(graph.from("p.A", Edge.Supertype.class))
-                .containsExactly(new Edge.Supertype("p.A", "p.S", true), new Edge.Supertype("p.A", "p.T", false));
+                .containsExactly(extends_("p.A", "p.S"), extends_("p.A", "p.T"));
         assertThat(graph.from("p.A", Edge.Awaits.class)).containsExactly(new Edge.Awaits("p.A", "p.B"));
         assertThat(graph.from("p.M", Edge.class)).isEmpty();
         assertThat(graph.mentioners("p.M")).containsExactly("p.A", "p.B");
-        assertThat(graph.inherited("p.A")).containsExactly(new Node.Inherited("p.S", new Full.Askable()));
         assertThat(graph.waits("p.A")).isTrue();
         assertThat(graph.waits("p.M")).isFalse();
     }
@@ -82,8 +94,8 @@ class TypeGraphTest {
                 List.of(
                         awaits("p.B", "p.A"),
                         awaits("p.A", "p.C"),
-                        new Edge.Supertype("p.A", "p.C", false),
-                        new Edge.Supertype("p.A", "p.B", true),
+                        extends_("p.A", "p.C"),
+                        extends_("p.A", "p.B"),
                         new Edge.Signature("p.A", "p.C"),
                         new Edge.Signature("p.A", "p.B")));
 
@@ -91,8 +103,8 @@ class TypeGraphTest {
                 .containsExactly(
                         new Edge.Signature("p.A", "p.B"),
                         new Edge.Signature("p.A", "p.C"),
-                        new Edge.Supertype("p.A", "p.B", true),
-                        new Edge.Supertype("p.A", "p.C", false),
+                        extends_("p.A", "p.B"),
+                        extends_("p.A", "p.C"),
                         awaits("p.A", "p.C"),
                         awaits("p.B", "p.A"));
     }
@@ -107,7 +119,7 @@ class TypeGraphTest {
                 awaits("p.C", "p.D"),
                 awaits("p.D", "gen.X"),
                 new Edge.Signature("p.A", "p.D"),
-                new Edge.Supertype("p.B", "p.C", true));
+                extends_("p.B", "p.C"));
         TypeGraph expected = graph(nodes, edges);
 
         for (int seed = 0; seed < 20; seed++) {
@@ -122,6 +134,9 @@ class TypeGraphTest {
             assertThat(List.copyOf(shuffled.nodes().keySet())).containsExactly("gen.X", "p.A", "p.B", "p.C", "p.D");
             // of the two ways of the same length, the one through the first name
             assertThat(shuffled.waitOf("p.A")).contains(new Wait.Missing(List.of("p.A", "p.B", "p.D", "gen.X")));
+            assertThat(shuffled.supertypes("p.B")).containsExactly("p.C");
+            assertThat(shuffled.roots("p.C")).containsExactly("p.B", "p.C");
+            assertThat(shuffled.reasons("p.D")).containsExactly(new Reason.Asked(), new Reason.Mentioned("p.A"));
         }
     }
 
@@ -213,31 +228,96 @@ class TypeGraphTest {
     }
 
     // ------------------------------------------------------------------
-    // the full metamodel of a supertype
+    // supertypes, and why a type is in the graph
     // ------------------------------------------------------------------
 
+    /// `X` and `Y` are asked for; `X` extends the hidden `H`, which extends `S`, which implements `I`;
+    /// `Y` extends `S` too, and implements `D`, of which there is no full metamodel; the signatures of
+    /// `X` mention `M` and `D`, those of `S` mention `N` and `X`, and those of `I` mention `M`.
+    private static TypeGraph family() {
+        return graph(
+                List.of(
+                        new Node.Requested("p.X", new Request.Waiting()),
+                        new Node.Requested("p.Y", new Request.Waiting()),
+                        new Node.Hidden("p.H"),
+                        inherited("p.S"),
+                        inherited("p.I"),
+                        new Node.Declined("p.D", "p.D is odd", Optional.of(new Token.Unavailable("it is odd"))),
+                        mentioned("p.M"),
+                        mentioned("p.N")),
+                List.of(
+                        extends_("p.X", "p.H"),
+                        extends_("p.H", "p.S"),
+                        extends_("p.S", "p.I"),
+                        extends_("p.Y", "p.S"),
+                        extends_("p.Y", "p.D"),
+                        new Edge.Signature("p.X", "p.M"),
+                        new Edge.Signature("p.X", "p.D"),
+                        new Edge.Signature("p.S", "p.N"),
+                        new Edge.Signature("p.S", "p.X"),
+                        new Edge.Signature("p.I", "p.M")));
+    }
+
     @Test
-    void aNodeTellsWhatFullMetamodelThereIsOfItsType() {
-        assertThat(Stream.of(
-                                waiting("p.A"),
-                                new Node.Mentioned("p.B", new Token.OnClasspath(METAMODEL, true)),
-                                new Node.Mentioned("p.C", new Token.OnClasspath(METAMODEL, false)),
-                                new Node.Mentioned("p.D", new Token.Settled(new Done.Reused(METAMODEL, true))),
-                                new Node.Mentioned("p.E", new Token.Settled(new Done.Generated(METAMODEL, false))),
-                                new Node.Mentioned("p.F", new Token.Settled(new Done.Failed())),
-                                new Node.Mentioned("p.G", new Token.Unavailable("it is odd")),
-                                new Node.Inherited("p.H", new Full.Refused("p.H is not public")),
-                                absent("gen.Never"))
-                        .map(Node::full))
-                .containsExactly(
-                        new Full.Asked(),
-                        new Full.OnClasspath(),
-                        new Full.Askable(),
-                        new Full.OnClasspath(),
-                        new Full.Askable(),
-                        new Full.Askable(),
-                        new Full.Refused("p.G: it is odd"),
-                        new Full.Refused("p.H is not public"),
-                        new Full.Refused("gen.Never does not exist"));
+    void theSupertypesOfATypeAreAllItExtendsAndImplementsThroughOthers() {
+        TypeGraph graph = family();
+
+        assertThat(graph.from("p.X", Edge.Supertype.class).map(Edge::to)).containsExactly("p.H");
+        assertThat(graph.supertypes("p.X")).containsExactly("p.H", "p.I", "p.S");
+        assertThat(graph.supertypes("p.Y")).containsExactly("p.D", "p.I", "p.S");
+        assertThat(graph.supertypes("p.S")).containsExactly("p.I");
+        assertThat(graph.supertypes("p.I")).isEmpty();
+        // a signature leads no further: what a mentioned type extends is not followed
+        assertThat(graph.supertypes("p.M")).isEmpty();
+    }
+
+    @Test
+    void theRootsOfATypeAreTheRequestsItIsThereFor() {
+        TypeGraph graph = family();
+
+        assertThat(graph.roots("p.X")).containsExactly("p.X");
+        assertThat(graph.roots("p.H")).containsExactly("p.X");
+        assertThat(graph.roots("p.S")).containsExactly("p.X", "p.Y");
+        assertThat(graph.roots("p.I")).containsExactly("p.X", "p.Y");
+        assertThat(graph.roots("p.D")).containsExactly("p.Y");
+        // a type that is only mentioned is there for the types that mention it, not for a request of its own
+        assertThat(graph.roots("p.M")).isEmpty();
+        assertThat(graph.mentioners("p.M").flatMap(graph::roots).distinct()).containsExactly("p.X", "p.Y");
+    }
+
+    @Test
+    void aTypeIsInTheGraphForEveryReasonThereIs() {
+        TypeGraph graph = family();
+
+        // asked for, and mentioned by a supertype of its own
+        assertThat(graph.reasons("p.X")).containsExactly(new Reason.Asked(), new Reason.Mentioned("p.S"));
+        assertThat(graph.reasons("p.Y")).containsExactly(new Reason.Asked());
+        assertThat(graph.reasons("p.H")).containsExactly(new Reason.Supertype("p.X"));
+        assertThat(graph.reasons("p.S")).containsExactly(new Reason.Supertype("p.X"), new Reason.Supertype("p.Y"));
+        assertThat(graph.reasons("p.I")).containsExactly(new Reason.Supertype("p.X"), new Reason.Supertype("p.Y"));
+        assertThat(graph.reasons("p.D")).containsExactly(new Reason.Supertype("p.Y"), new Reason.Mentioned("p.X"));
+        assertThat(graph.reasons("p.M")).containsExactly(new Reason.Mentioned("p.I"), new Reason.Mentioned("p.X"));
+        assertThat(graph.reasons("p.N")).containsExactly(new Reason.Mentioned("p.S"));
+    }
+
+    @Test
+    void aNodeTellsWhatIsWantedOfItsType() {
+        TypeGraph graph = family();
+
+        // a full metamodel of what is asked for and of its public supertypes
+        assertThat(graph.nodes().get("p.X").request()).contains(new Request.Waiting());
+        assertThat(graph.nodes().get("p.S").request()).contains(new Request.Waiting());
+        assertThat(graph.nodes().get("p.X").token()).isEmpty();
+        // a token of what is mentioned, a declined supertype among it
+        assertThat(graph.nodes().get("p.M").token()).contains(new Token.Unavailable("no reason"));
+        assertThat(graph.nodes().get("p.M").request()).isEmpty();
+        assertThat(graph.nodes().get("p.D").token()).contains(new Token.Unavailable("it is odd"));
+        assertThat(graph.nodes().get("p.D").request()).isEmpty();
+        // nothing of a hidden supertype and of a type that is missing
+        assertThat(graph.nodes().get("p.H").request()).isEmpty();
+        assertThat(graph.nodes().get("p.H").token()).isEmpty();
+        assertThat(absent("gen.Never").request()).isEmpty();
+        assertThat(absent("gen.Never").token()).isEmpty();
+        assertThat(METAMODEL.displayName()).isEqualTo("T_");
     }
 }

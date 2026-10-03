@@ -225,7 +225,7 @@ class PlainFixtureTest extends FixtureSupport {
     void aFullMetamodelIsMarkedAsFullAndListedAsFull() {
         Compilation compilation = generate("p.Greeter.class", GREETER);
         assertThat(sources(compilation).get("gen.facts.p.Greeter_"))
-                .contains("complete = true, format = 3)")
+                .contains("complete = true, format = 4)")
                 .contains("public final class Greeter_ {")
                 .contains("@SuppressWarnings({")
                 .contains(
@@ -233,7 +233,7 @@ class PlainFixtureTest extends FixtureSupport {
         assertThat(ProcessorHarness.resources(compilation))
                 .containsEntry("META-INF/javafile/metamodel/full/p.Greeter", "gen.facts.p.Greeter_\n")
                 .doesNotContainKey("META-INF/javafile/metamodel/token/p.Greeter");
-        assertThat(sources(compilation).get("gen.facts.java.lang.String_")).contains("complete = false, format = 3)");
+        assertThat(sources(compilation).get("gen.facts.java.lang.String_")).contains("complete = false, format = 4)");
     }
 
     @Test

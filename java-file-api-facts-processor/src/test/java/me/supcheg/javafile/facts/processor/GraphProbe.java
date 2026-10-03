@@ -1,7 +1,5 @@
 package me.supcheg.javafile.facts.processor;
 
-import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -46,7 +44,7 @@ final class GraphProbe extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
         if (graph.isEmpty()) {
             Elements elements = processingEnv.getElementUtils();
-            Models models = new Models(elements, new MirrorTranslator(elements, processingEnv.getTypeUtils()));
+            Models models = new Models(elements, processingEnv.getTypeUtils());
             Map<String, TypeElement> types = requested.stream()
                     .map(elements::getTypeElement)
                     .collect(Collectors.toMap(
