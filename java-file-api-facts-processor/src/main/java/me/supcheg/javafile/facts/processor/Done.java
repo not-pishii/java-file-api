@@ -10,7 +10,8 @@ sealed interface Done {
     /// This compilation generated its metamodel.
     ///
     /// @param metamodel the metamodel class
-    /// @param full whether the metamodel is full, as `@Facts` asks for, rather than token-only
+    /// @param full whether the metamodel is full, as that of a type `@Facts` asks for or of a supertype of
+    ///     one, rather than token-only
     record Generated(ClassDesc metamodel, boolean full) implements Done {}
 
     /// A metamodel on the classpath is reused.

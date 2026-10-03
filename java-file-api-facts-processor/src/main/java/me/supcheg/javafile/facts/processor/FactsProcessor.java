@@ -6,8 +6,6 @@ import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
-import me.supcheg.routine.Either;
-import me.supcheg.routine.EitherCollectors;
 import me.supcheg.routine.Pair;
 import org.jspecify.annotations.Nullable;
 
@@ -38,8 +36,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// The `@Facts` processor: generates the metamodels of the types
-/// `@Facts` asks for, and token-only metamodels of the types their
-/// signatures mention (§5 of the main spec, the facts-processor mini-spec).
+/// `@Facts` asks for and of everything they need (§5 of the main spec, the
+/// facts-processor mini-spec, Q13): full metamodels of the requested types
+/// and of the types they extend and implement, and token-only metamodels of
+/// the types the signatures of those mention.
 ///
 /// It is an aggregating processor: what it writes depends on every
 /// `@Facts` of the compilation — one metamodel per type, one base package —
@@ -50,8 +50,8 @@ import java.util.stream.Stream;
 /// 1. reads the `@Facts` of the round, and again, by name, those with a
 ///    class literal of a type that did not exist yet (§8);
 /// 2. builds the graph of the types of the round ([Closure], [TypeGraph]):
-///    what `@Facts` asks for, what the signatures of those types mention,
-///    what they extend and implement, what is not generated yet;
+///    what `@Facts` asks for, what those types extend and implement, what
+///    the signatures mention, what is not generated yet;
 /// 3. reads from the graph what to do: which types have a metamodel on the
 ///    classpath to reuse, which have none and why, which full and token-only
 ///    metamodels to write, and which wait for a later round;
@@ -62,17 +62,20 @@ import java.util.stream.Stream;
 /// type waited for.
 ///
 /// Between rounds it keeps where `@Facts` is and what it asks for, what
-/// became of each type ([Done]) — a metamodel is written once — and, for the
-/// report of the last round, which types the latest graph left waiting.
-/// Everything else is read anew from the graph of each round.
+/// became of each type ([Done]) — a metamodel is written once —, which
+/// supertypes it told to have no full metamodel, and, for the report of the
+/// last round, which types the latest graph left waiting. Everything else is
+/// read anew from the graph of each round.
 ///
-/// A requested type gets a full metamodel, with a fact per member
-/// ([MemberPlan]) — in terms of its type parameters if it is generic.
+/// A type gets a full metamodel, with a fact per member ([MemberPlan]) — in
+/// terms of its type parameters if it is generic —, whether `@Facts` asks
+/// for it or a requested type inherits from it. What is told of a type
+/// `@Facts` does not name says which request it is there for, and is
+/// reported on that `@Facts`.
 ///
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
     private static final String FORMAT = "me.supcheg.javafile.facts.meta.MetamodelFormat";
-    private static final String OBJECT = "java.lang.Object";
 
     private @Nullable Diagnostics diagnostics;
     private @Nullable Options options;
@@ -83,6 +86,7 @@ public final class FactsProcessor extends AbstractProcessor {
     private final SortedMap<String, SortedSet<Site>> requested = new TreeMap<>();
     private final Map<String, Done> done = new HashMap<>();
     private final Map<ClassDesc, String> ownMetamodels = new HashMap<>();
+    private final SortedSet<String> declined = new TreeSet<>();
     private List<Stuck> stuck = List.of();
 
     /// Creates the processor; javac finds it through the service loader.
@@ -207,34 +211,58 @@ public final class FactsProcessor extends AbstractProcessor {
                 index,
                 base,
                 elements);
-        graph.nodes()
-                .values()
-                .forEach(node -> settled(node).ifPresent(settled -> {
-                    done.put(node.name(), settled.left());
-                    settled.right()
-                            .ifPresent(error -> diagnostics.error(
-                                    first(asked.get(node.name()).sites(), elements), error));
-                }));
+        // the `@Facts` a type is there for: those that ask for it, or else for the types that extend it
+        Function<String, SortedSet<Site>> sitesOf = name -> Optional.ofNullable(asked.get(name))
+                .map(Asked::sites)
+                .orElseGet(() -> graph.roots(name)
+                        .flatMap(root -> asked.get(root).sites().stream())
+                        .collect(Collectors.toCollection(TreeSet::new)));
+        graph.nodes().values().forEach(node -> {
+            settled(node).ifPresent(settled -> {
+                done.put(node.name(), settled.left());
+                settled.right()
+                        .ifPresent(error -> diagnostics.error(first(sitesOf.apply(node.name()), elements), error));
+            });
+            if (node instanceof TypeGraph.Node.Declined(String name, String reason, var _) && declined.add(name)) {
+                diagnostics.skipped(
+                        first(sitesOf.apply(name), elements),
+                        graph.roots(name).collect(Collectors.joining(", "))
+                                + ": no facts of the public members inherited from " + name
+                                + ", which has no full metamodel: " + reason);
+            }
+        });
         Targets targets = new Targets(models, metamodels(graph, base, elements), unavailable(graph));
-        planned(graph, asked)
+        planned(graph, sitesOf)
                 .toList()
                 .forEach(metamodel -> write(base, metamodel, models, targets, index, elements, diagnostics));
-        stuck = asked.values().stream()
-                .flatMap(type ->
-                        graph
-                                .waitOf(type.name())
-                                .map(wait -> new Stuck(type.name(), type.sites().first(), wait))
-                                .stream())
+        stuck = graph.nodes().values().stream()
+                .filter(node -> node.request().isPresent())
+                .flatMap(node -> graph
+                        .waitOf(node.name())
+                        .map(wait -> new Stuck(
+                                subject(graph, node.name()),
+                                sitesOf.apply(node.name()).first(),
+                                wait))
+                        .stream())
                 .toList();
+    }
+
+    /// A type as a diagnostic names it: by its binary name if `@Facts` asks
+    /// for it, and with the requests it is there for if it is a supertype
+    /// of what `@Facts` asks for — `java.lang.Object (a supertype of p.X)`.
+    private static String subject(TypeGraph graph, String name) {
+        return graph.nodes().get(name) instanceof TypeGraph.Node.Requested
+                ? name
+                : name + " (a supertype of " + graph.roots(name).collect(Collectors.joining(", ")) + ")";
     }
 
     /// What a round settles of a type without writing a metamodel: a
     /// metamodel on the classpath to reuse, or no metamodel at all, with the
     /// error to report.
     private static Optional<Pair<Done, Optional<String>>> settled(TypeGraph.Node node) {
-        return switch (node) {
-            case TypeGraph.Node.Requested(String name, TypeGraph.Request request) ->
-                switch (request) {
+        String name = node.name();
+        return node.request()
+                .flatMap(request -> switch (request) {
                     case TypeGraph.Request.Late(ClassDesc tokenOnly) ->
                         refused(name + " is requested after its token-only metamodel " + Models.binaryName(tokenOnly)
                                 + " was generated in an earlier round; request it with the types whose"
@@ -243,15 +271,19 @@ public final class FactsProcessor extends AbstractProcessor {
                         refused("no metamodel of " + name + ": " + reason);
                     case TypeGraph.Request.Rejected(String reason) ->
                         refused("no metamodel of " + name + ": " + reason);
-                    case TypeGraph.Request.OnClasspath(ClassDesc metamodel) ->
-                        Optional.of(Pair.pair(new Done.Reused(metamodel, true), Optional.empty()));
+                    case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> reused(metamodel, true);
                     case TypeGraph.Request.Settled _, TypeGraph.Request.Ready _, TypeGraph.Request.Waiting _ ->
                         Optional.empty();
-                };
-            case TypeGraph.Node.Mentioned(var _, TypeGraph.Token.OnClasspath(ClassDesc metamodel, boolean full)) ->
-                Optional.of(Pair.pair(new Done.Reused(metamodel, full), Optional.empty()));
-            case TypeGraph.Node.Mentioned _, TypeGraph.Node.Inherited _, TypeGraph.Node.Absent _ -> Optional.empty();
-        };
+                })
+                .or(() -> node.token()
+                        .flatMap(
+                                token -> token instanceof TypeGraph.Token.OnClasspath(ClassDesc metamodel, boolean full)
+                                        ? reused(metamodel, full)
+                                        : Optional.empty()));
+    }
+
+    private static Optional<Pair<Done, Optional<String>>> reused(ClassDesc metamodel, boolean full) {
+        return Optional.of(Pair.pair(new Done.Reused(metamodel, full), Optional.empty()));
     }
 
     private static Optional<Pair<Done, Optional<String>>> refused(String error) {
@@ -268,9 +300,8 @@ public final class FactsProcessor extends AbstractProcessor {
     }
 
     private static Optional<ClassDesc> metamodel(TypeGraph.Node node, String base, Elements elements) {
-        return switch (node) {
-            case TypeGraph.Node.Requested(var _, TypeGraph.Request request) ->
-                switch (request) {
+        return node.request()
+                .flatMap(request -> switch (request) {
                     case TypeGraph.Request.Settled(Done settled) -> metamodel(settled);
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> Optional.of(metamodel);
                     case TypeGraph.Request.Ready(TypeElement type, var _) ->
@@ -278,18 +309,15 @@ public final class FactsProcessor extends AbstractProcessor {
                     case TypeGraph.Request.Late _,
                             TypeGraph.Request.Waiting _,
                             TypeGraph.Request.Unrepresentable _,
-                            TypeGraph.Request.Rejected _ -> Optional.empty();
-                };
-            case TypeGraph.Node.Mentioned(var _, TypeGraph.Token token) ->
-                switch (token) {
+                            TypeGraph.Request.Rejected _ -> Optional.<ClassDesc>empty();
+                })
+                .or(() -> node.token().flatMap(token -> switch (token) {
                     case TypeGraph.Token.Settled(Done settled) -> metamodel(settled);
                     case TypeGraph.Token.OnClasspath(ClassDesc metamodel, var _) -> Optional.of(metamodel);
                     case TypeGraph.Token.Planned(TypeElement type, var _) ->
                         Optional.of(MetamodelNames.metamodel(base, type, elements));
-                    case TypeGraph.Token.Unavailable _ -> Optional.empty();
-                };
-            case TypeGraph.Node.Inherited _, TypeGraph.Node.Absent _ -> Optional.empty();
-        };
+                    case TypeGraph.Token.Unavailable _ -> Optional.<ClassDesc>empty();
+                }));
     }
 
     private static Optional<ClassDesc> metamodel(Done done) {
@@ -303,87 +331,63 @@ public final class FactsProcessor extends AbstractProcessor {
     /// Why the types of a round no metamodel can be made of have none, by binary name.
     private static Map<String, String> unavailable(TypeGraph graph) {
         return graph.nodes().values().stream()
-                .flatMap(node -> switch (node) {
-                    case TypeGraph.Node.Requested(String name, TypeGraph.Request.Unrepresentable(String reason)) ->
-                        Stream.of(Map.entry(name, reason));
-                    case TypeGraph.Node.Mentioned(String name, TypeGraph.Token.Unavailable(String reason)) ->
-                        Stream.of(Map.entry(name, reason));
-                    case TypeGraph.Node.Requested _,
-                            TypeGraph.Node.Mentioned _,
-                            TypeGraph.Node.Inherited _,
-                            TypeGraph.Node.Absent _ -> Stream.<Map.Entry<String, String>>empty();
-                })
+                .flatMap(node -> Stream.concat(
+                                node
+                                        .request()
+                                        .flatMap(request ->
+                                                request instanceof TypeGraph.Request.Unrepresentable(String reason)
+                                                        ? Optional.of(reason)
+                                                        : Optional.empty())
+                                        .stream(),
+                                node
+                                        .token()
+                                        .flatMap(token -> token instanceof TypeGraph.Token.Unavailable(String reason)
+                                                ? Optional.of(reason)
+                                                : Optional.empty())
+                                        .stream())
+                        .map(reason -> Map.entry(node.name(), reason)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    /// The metamodels a round writes: the full ones of the requested types that are read and await
-    /// nothing, then the token-only ones of the types their signatures mention.
-    private static Stream<Planned> planned(TypeGraph graph, SortedMap<String, Asked> asked) {
+    /// The metamodels a round writes: the full ones of the requested types
+    /// and of their supertypes that are read and await nothing, then the
+    /// token-only ones of the types their signatures mention. Each is
+    /// written for the `@Facts` that ask for the types it is there for.
+    private static Stream<Planned> planned(TypeGraph graph, Function<String, SortedSet<Site>> sitesOf) {
         return Stream.concat(
-                graph.nodes().values().stream().flatMap(node -> switch (node) {
-                    case TypeGraph.Node.Requested(
-                            String name,
-                            TypeGraph.Request.Ready(TypeElement type, List<String> stale))
-                    when !graph.waits(name) ->
-                        Stream.of(new Planned(
-                                type,
-                                name,
-                                true,
-                                asked.get(name).sites(),
-                                stale,
-                                inherited(graph, name).toList()));
-                    default -> Stream.<Planned>empty();
-                }),
-                graph.nodes().values().stream().flatMap(node -> switch (node) {
-                    case TypeGraph.Node.Mentioned(
-                            String name,
-                            TypeGraph.Token.Planned(TypeElement type, List<String> stale)) ->
-                        Stream.of(new Planned(
-                                type,
-                                name,
-                                false,
-                                graph.mentioners(name)
-                                        .flatMap(mentioner -> asked.get(mentioner).sites().stream())
-                                        .collect(Collectors.toCollection(TreeSet::new)),
-                                stale,
-                                List.of()));
-                    default -> Stream.<Planned>empty();
-                }));
-    }
-
-    /// What to tell of the `public` members a requested type inherits
-    /// (Q6(b)): they are facts of the metamodels of the supertypes that
-    /// declare them, so those are to be asked for too — and where `@Facts`
-    /// cannot ask for one, the members have no facts at all. Nothing is said
-    /// of `java.lang.Object`, which every type inherits from.
-    private static Stream<String> inherited(TypeGraph graph, String name) {
-        Pair<List<Pair<String, String>>, List<String>> supertypes = graph.inherited(name)
-                .filter(supertype -> !supertype.name().equals(OBJECT))
-                .flatMap(supertype -> switch (supertype.full()) {
-                    case TypeGraph.Full.Asked _, TypeGraph.Full.OnClasspath _ ->
-                        Stream.<Either<Pair<String, String>, String>>empty();
-                    case TypeGraph.Full.Askable _ ->
-                        Stream.<Either<Pair<String, String>, String>>of(Either.right(supertype.name()));
-                    case TypeGraph.Full.Refused(String reason) ->
-                        Stream.<Either<Pair<String, String>, String>>of(
-                                Either.left(Pair.pair(supertype.name(), reason)));
-                })
-                .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
-        List<Pair<String, String>> refused = supertypes.left();
-        List<String> askable = supertypes.right();
-        String members = name + ": no facts of the public members inherited from ";
-        return Stream.concat(
-                askable.isEmpty()
-                        ? Stream.empty()
-                        : Stream.of(members + String.join(", ", askable) + "; add "
-                                + (askable.size() == 1 ? "this type" : "these types")
-                                + " to @Facts to use the members"),
-                refused.isEmpty()
-                        ? Stream.empty()
-                        : Stream.of(members
-                                + refused.stream().map(Pair::left).collect(Collectors.joining(", "))
-                                + ", which @Facts cannot ask for: "
-                                + refused.stream().map(Pair::right).collect(Collectors.joining("; "))));
+                graph.nodes().values().stream()
+                        .flatMap(node -> node
+                                .request()
+                                .flatMap(request ->
+                                        request instanceof TypeGraph.Request.Ready ready && !graph.waits(node.name())
+                                                ? Optional.of(ready)
+                                                : Optional.empty())
+                                .map(ready -> new Planned(
+                                        ready.type(),
+                                        node.name(),
+                                        true,
+                                        sitesOf.apply(node.name()),
+                                        ready.stale(),
+                                        subject(graph, node.name()),
+                                        graph.reasons(node.name()).toList()))
+                                .stream()),
+                graph.nodes().values().stream()
+                        .flatMap(node -> node
+                                .token()
+                                .flatMap(token -> token instanceof TypeGraph.Token.Planned tokenOnly
+                                        ? Optional.of(tokenOnly)
+                                        : Optional.empty())
+                                .map(tokenOnly -> new Planned(
+                                        tokenOnly.type(),
+                                        node.name(),
+                                        false,
+                                        graph.mentioners(node.name())
+                                                .flatMap(mentioner -> sitesOf.apply(mentioner).stream())
+                                                .collect(Collectors.toCollection(TreeSet::new)),
+                                        tokenOnly.stale(),
+                                        node.name(),
+                                        graph.reasons(node.name()).toList()))
+                                .stream()));
     }
 
     private void write(
@@ -433,7 +437,7 @@ public final class FactsProcessor extends AbstractProcessor {
             MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
             plan.skipped()
                     .forEach(skip -> diagnostics.skipped(
-                            at, planned.binaryName() + ": no fact of " + skip.member() + ", which " + skip.reason()));
+                            at, planned.subject() + ": no fact of " + skip.member() + ", which " + skip.reason()));
             file = MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken);
         } else {
             file = MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets);
@@ -461,7 +465,8 @@ public final class FactsProcessor extends AbstractProcessor {
                 diagnostics.error(site.resolve(elements), "a type in @Facts is not resolvable after all rounds"));
         stuck.forEach(type -> diagnostics.error(
                 type.site().resolve(elements),
-                "type " + type.name() + " in @Facts is not resolvable after all rounds: it " + describe(type.cause())));
+                "type " + type.subject() + " in @Facts is not resolvable after all rounds: it "
+                        + describe(type.cause())));
     }
 
     /// What a type waits for, as a diagnostic tells it: the metamodels that
@@ -502,23 +507,28 @@ public final class FactsProcessor extends AbstractProcessor {
     ///
     /// @param type the type
     /// @param binaryName the binary name of the type
-    /// @param full whether `@Facts` asks for the type, rather than a signature mentioning it: the
-    ///     metamodel is full then, with a fact per member, and token-only otherwise
-    /// @param requesters the `@Facts` the metamodel is generated for
+    /// @param full whether the metamodel is full, with a fact per member — that of a type `@Facts`
+    ///     asks for or a requested type inherits from — rather than token-only, that of a type
+    ///     signatures mention
+    /// @param requesters the `@Facts` the metamodel is generated for: those that ask for the type, for
+    ///     its subtypes, or for the types whose signatures mention it
     /// @param stale why the metamodels of the type on the classpath were not reused
-    /// @param inherited what to tell of the members a requested type inherits
+    /// @param subject the type as a diagnostic names it, see [#subject]
+    /// @param reasons why the type is in the graph of the round, see [TypeGraph#reasons]: what the
+    ///     generated metamodel is to say of why it is there, and why it is full or token-only
     private record Planned(
             TypeElement type,
             String binaryName,
             boolean full,
             SortedSet<Site> requesters,
             List<String> stale,
-            List<String> inherited) {}
+            String subject,
+            List<TypeGraph.Reason> reasons) {}
 
-    /// A requested type whose metamodel the latest round did not write.
+    /// A type whose full metamodel the latest round did not write.
     ///
-    /// @param name the binary name
-    /// @param site the first `@Facts` that asks for it
+    /// @param subject the type as a diagnostic names it, see [#subject]
+    /// @param site the first `@Facts` that asks for it, or for a subtype of it
     /// @param cause what it waits for
-    private record Stuck(String name, Site site, TypeGraph.Wait cause) {}
+    private record Stuck(String subject, Site site, TypeGraph.Wait cause) {}
 }
