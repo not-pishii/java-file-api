@@ -101,6 +101,22 @@ final class ProcessorHarness {
         return sources;
     }
 
+    /// The metamodels every compilation generates besides those of its
+    /// own types, unless it reuses them: the full one of `java.lang.Object`,
+    /// which every requested type extends, and the token-only ones of the
+    /// types the signatures of `Object` mention.
+    ///
+    /// @param base the base of the mirror packages
+    /// @param others more metamodels, by qualified name
+    /// @return `others` and those of `Object`
+    static List<String> withObject(String base, String... others) {
+        return Stream.concat(
+                        Stream.of(others),
+                        Stream.of("Object_", "Class_", "InterruptedException_", "String_")
+                                .map(name -> base + ".java.lang." + name))
+                .toList();
+    }
+
     /// The resources a compilation wrote to the class output, by path.
     static Map<String, String> resources(Compilation compilation) {
         Map<String, String> resources = new TreeMap<>();

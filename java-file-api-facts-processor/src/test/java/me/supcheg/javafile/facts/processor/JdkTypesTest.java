@@ -95,6 +95,96 @@ class JdkTypesTest extends FixtureSupport {
                 .doesNotContain("length");
     }
 
+    private static Compilation compile(String types) {
+        return ProcessorHarness.succeeded(ProcessorHarness.process(List.of(), """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({%s})
+                class G {}
+                """.formatted(types)));
+    }
+
+    /// The types with full metamodels among what a compilation generated, by binary name without `java.`.
+    private static List<String> full(Compilation compilation) {
+        return ProcessorHarness.resources(compilation).keySet().stream()
+                .filter(path -> path.startsWith("META-INF/javafile/metamodel/full/java."))
+                .map(path -> path.substring("META-INF/javafile/metamodel/full/java.".length()))
+                .toList();
+    }
+
+    @Test
+    void aStringBuilderHasTheMembersOfItsHiddenSuperclassAndItsSupertypesAreFull() throws Exception {
+        Compilation compilation = compile("java.lang.StringBuilder.class");
+        ClassLoader loader = ProcessorHarness.compileAndLoad(compilation, out, List.of());
+
+        // AbstractStringBuilder is not public: no metamodel, and its members are those of StringBuilder
+        assertThat(full(compilation))
+                .containsExactly(
+                        "io.Serializable",
+                        "lang.Appendable",
+                        "lang.CharSequence",
+                        "lang.Comparable",
+                        "lang.Object",
+                        "lang.StringBuilder");
+        assertThat(sources(compilation)).doesNotContainKey("gen.facts.java.lang.AbstractStringBuilder_");
+        String builder = "gen.facts.java.lang.StringBuilder_";
+        assertThat(factNames(loader, builder))
+                .contains("capacity", "setLength_int", "ensureCapacity_int", "trimToSize", "charAt_int", "length")
+                .contains("append_String", "reverse", "toString", "new_");
+        assertThat(((Invocable) fact(loader, builder, "capacity")).owner()).isEqualTo(token(loader, builder));
+        assertThat(((Invocable) fact(loader, builder, "capacity")).traits()).isEqualTo(MemberTraits.FINAL);
+        // what StringBuilder overrides with its own type is its own, not the one that returns the hidden type
+        assertThat(((Invocable) fact(loader, builder, "append_String"))
+                        .resultType()
+                        .orElseThrow())
+                .isEqualTo(token(loader, builder));
+        // and length() is there for any CharSequence without anybody asking for CharSequence
+        assertThat(factNames(loader, "gen.facts.java.lang.CharSequence_"))
+                .contains("length", "charAt_int", "subSequence_int_int", "isEmpty");
+        assertThat(factNames(loader, "gen.facts.java.lang.Object_")).contains("toString", "equals_Object", "hashCode");
+        assertThat(warnings(compilation)).isEmpty();
+    }
+
+    @Test
+    void theSupertypesOfACollectionAnEnumARecordAndAFunctionalInterfaceAreFull() throws Exception {
+        Compilation compilation = generate(
+                "java.util.ArrayList.class, java.util.concurrent.TimeUnit.class, p.Point.class,"
+                        + " java.util.function.UnaryOperator.class, java.util.function.BinaryOperator.class",
+                "package p; public record Point(int x, int y) {}");
+        ClassLoader loader = load(compilation);
+
+        assertThat(full(compilation))
+                .contains(
+                        // ArrayList: its abstract superclasses are public
+                        "util.AbstractList",
+                        "util.AbstractCollection",
+                        "util.List",
+                        "util.SequencedCollection",
+                        "util.Collection",
+                        "lang.Iterable",
+                        "util.RandomAccess",
+                        "lang.Cloneable",
+                        "io.Serializable",
+                        // an enum and a record
+                        "lang.Enum",
+                        "lang.Comparable",
+                        "lang.constant.Constable",
+                        "lang.Record",
+                        // the interfaces the operators have their methods from
+                        "util.function.Function",
+                        "util.function.BiFunction",
+                        "lang.Object");
+        assertThat(memberNames(loader, "gen.facts.java.util.AbstractCollection_"))
+                .contains("isEmpty", "size");
+        assertThat(memberNames(loader, "gen.facts.java.util.Collection_")).contains("stream", "add_E");
+        assertThat(memberNames(loader, "gen.facts.java.lang.Enum_")).contains("name", "ordinal", "compareTo_E");
+        assertThat(memberNames(loader, "gen.facts.java.lang.Record_"))
+                .contains("equals_Object", "hashCode", "toString");
+        assertThat(memberNames(loader, "gen.facts.java.util.function.BiFunction_"))
+                .contains("apply_T_U", "andThen_Function", "sam");
+        assertThat(factNames(loader, "gen.facts.p.Point_")).contains("new_int_int", "x", "y");
+        assertThat(warnings(compilation)).isEmpty();
+    }
+
     private static final String GENERIC_TYPES = "java.util.List.class, java.util.Map.class, java.util.Map.Entry.class,"
             + " java.util.Optional.class, java.util.function.Function.class, java.util.function.UnaryOperator.class,"
             + " java.lang.Comparable.class, java.util.Comparator.class, java.util.stream.Stream.class,"

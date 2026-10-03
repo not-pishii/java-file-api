@@ -102,15 +102,51 @@ class ReuseTest {
 
     @Test
     void aMatchingFullMetamodelIsReusedForARequestAndForAToken() throws IOException {
+        // the hand-made module has no metamodel of Object, which Dep extends: that one is generated
         Path full = fullMetamodel(fingerprintOfDep(v1), MetamodelFormat.VERSION);
         Compilation requested =
                 ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
-        assertThat(ProcessorHarness.generatedSources(requested)).isEmpty();
+        assertThat(ProcessorHarness.generatedSources(requested))
+                .containsOnlyKeys(ProcessorHarness.withObject("b.facts"));
         assertThat(requested.diagnostics()).isEmpty();
         Compilation mentioned = ProcessorHarness.succeeded(
                 ProcessorHarness.process(List.of(v1, full), generator("b", "p.Other.class")));
-        assertThat(ProcessorHarness.generatedSources(mentioned)).containsOnlyKeys("b.facts.p.Other_");
+        assertThat(ProcessorHarness.generatedSources(mentioned))
+                .containsOnlyKeys(ProcessorHarness.withObject("b.facts", "b.facts.p.Other_"));
         assertThat(mentioned.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void theFullMetamodelOfASupertypeOnTheClasspathIsReused() throws IOException {
+        String sub = "package q; public class Sub extends p.Dep { public void sub() {} }";
+        Path subV1 = ProcessorHarness.library(Files.createDirectory(root.resolve("sub1")), List.of(v1), sub);
+        Compilation a =
+                ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1), generator("a", "p.Dep.class")));
+        Path deps = ProcessorHarness.write(a, Files.createDirectory(root.resolve("deps")));
+
+        // Dep_ and Object_ of module a are full: Sub, which extends Dep, needs nothing more
+        Compilation b = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(v1, subV1, deps), generator("b", "q.Sub.class")));
+        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.q.Sub_");
+        assertThat(ProcessorHarness.resources(b)).containsOnlyKeys("META-INF/javafile/metamodel/full/q.Sub");
+        assertThat(b.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aStaleFullMetamodelOfASupertypeIsGeneratedAgainWithAWarning() throws IOException {
+        String sub = "package q; public class Sub extends p.Dep { public void sub() {} }";
+        Path subV2 = ProcessorHarness.library(Files.createDirectory(root.resolve("sub2")), List.of(v2), sub);
+        Compilation a =
+                ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1), generator("a", "p.Dep.class")));
+        Path deps = ProcessorHarness.write(a, Files.createDirectory(root.resolve("deps")));
+
+        Compilation b = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(v2, subV2, deps), generator("b", "q.Sub.class")));
+        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.q.Sub_", "b.facts.p.Dep_");
+        assertThat(ProcessorHarness.generatedSources(b).get("b.facts.p.Dep_")).contains("complete = true");
+        assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
+                .containsExactly("metamodel a.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated"
+                        + " from a different p.Dep; generating b.facts.p.Dep_");
     }
 
     @Test
@@ -118,7 +154,8 @@ class ReuseTest {
         Path full = fullMetamodel(fingerprintOfDep(v2), MetamodelFormat.VERSION);
         Compilation b =
                 ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
-        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(ProcessorHarness.generatedSources(b))
+                .containsOnlyKeys(ProcessorHarness.withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated"
                         + " from a different p.Dep; generating b.facts.p.Dep_");
@@ -130,7 +167,8 @@ class ReuseTest {
         Path full = fullMetamodel(fingerprintOfDep(v1), MetamodelFormat.VERSION - 1);
         Compilation b =
                 ProcessorHarness.succeeded(ProcessorHarness.process(List.of(v1, full), generator("b", "p.Dep.class")));
-        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(ProcessorHarness.generatedSources(b))
+                .containsOnlyKeys(ProcessorHarness.withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of format "
                         + (MetamodelFormat.VERSION - 1) + ", not of format " + MetamodelFormat.VERSION
@@ -159,7 +197,8 @@ class ReuseTest {
 
         Compilation b = ProcessorHarness.succeeded(
                 ProcessorHarness.process(List.of(v1, directory), generator("b", "p.Dep.class")));
-        assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(ProcessorHarness.generatedSources(b))
+                .containsOnlyKeys(ProcessorHarness.withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(ProcessorHarness.messages(b, Diagnostic.Kind.WARNING))
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of an older format, not of format "
                         + MetamodelFormat.VERSION + ", which this processor generates; generating b.facts.p.Dep_");

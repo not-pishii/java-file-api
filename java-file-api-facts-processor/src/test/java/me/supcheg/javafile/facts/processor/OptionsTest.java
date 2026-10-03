@@ -57,11 +57,14 @@ class OptionsTest {
         Compilation compilation = ProcessorHarness.succeeded(
                 ProcessorHarness.process(classpath, generator("com.acme.gen", "p.Svc.class")));
         assertThat(ProcessorHarness.generatedSources(compilation))
-                .containsOnlyKeys("com.acme.gen.facts.p.Svc_", "com.acme.gen.facts.p.Dep_");
+                .containsOnlyKeys(ProcessorHarness.withObject(
+                        "com.acme.gen.facts", "com.acme.gen.facts.p.Svc_", "com.acme.gen.facts.p.Dep_"));
         assertThat(ProcessorHarness.resources(compilation))
                 .containsEntry("META-INF/javafile/metamodel/full/p.Svc", "com.acme.gen.facts.p.Svc_\n")
                 .containsEntry("META-INF/javafile/metamodel/token/p.Dep", "com.acme.gen.facts.p.Dep_\n")
-                .hasSize(2);
+                .containsEntry(
+                        "META-INF/javafile/metamodel/full/java.lang.Object", "com.acme.gen.facts.java.lang.Object_\n")
+                .hasSize(6);
     }
 
     @Test
@@ -72,7 +75,8 @@ class OptionsTest {
                 package com.acme.gen;
                 """, generator("com.acme.gen", "p.Dep.class")));
         assertThat(ProcessorHarness.generatedSources(compilation))
-                .containsOnlyKeys("com.acme.gen.facts.p.Svc_", "com.acme.gen.facts.p.Dep_");
+                .containsOnlyKeys(ProcessorHarness.withObject(
+                        "com.acme.gen.facts", "com.acme.gen.facts.p.Svc_", "com.acme.gen.facts.p.Dep_"));
     }
 
     @Test
@@ -93,7 +97,8 @@ class OptionsTest {
                 generator("com.acme.a", "p.Svc.class"),
                 generator("com.acme.b", "p.Dep.class")));
         assertThat(ProcessorHarness.generatedSources(compilation))
-                .containsOnlyKeys("com.acme.metamodel.p.Svc_", "com.acme.metamodel.p.Dep_");
+                .containsOnlyKeys(ProcessorHarness.withObject(
+                        "com.acme.metamodel", "com.acme.metamodel.p.Svc_", "com.acme.metamodel.p.Dep_"));
     }
 
     @Test

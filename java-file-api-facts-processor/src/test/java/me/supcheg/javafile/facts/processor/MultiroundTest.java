@@ -59,6 +59,35 @@ class MultiroundTest {
         return ProcessorHarness.process(List.of(), List.of(), List.of(new Generating()), sources);
     }
 
+    /// Generates `gen.Late`, which extends `p.Base`, in its first round.
+    private static final class GeneratingASubtype extends AbstractProcessor {
+        private boolean done;
+
+        @Override
+        public Set<String> getSupportedAnnotationTypes() {
+            return Set.of("*");
+        }
+
+        @Override
+        public SourceVersion getSupportedSourceVersion() {
+            return SourceVersion.latestSupported();
+        }
+
+        @Override
+        public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+            if (!done) {
+                done = true;
+                try (Writer writer =
+                        processingEnv.getFiler().createSourceFile("gen.Late").openWriter()) {
+                    writer.write("package gen; public class Late extends p.Base { public void late() {} }");
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+            return false;
+        }
+    }
+
     /// The errors of the last round about the requested types that never became ready, in order.
     private static List<String> unresolvable(Compilation compilation) {
         return ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR).stream()
@@ -76,12 +105,13 @@ class MultiroundTest {
                 """, "package p; public class Uses { public gen.Missing missing() { return null; } }"));
         Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
         assertThat(sources.keySet())
-                .containsExactlyInAnyOrder(
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts",
                         "gen.Missing",
                         "gen.Other",
                         "gen.facts.gen.Missing_",
                         "gen.facts.p.Uses_",
-                        "gen.facts.gen.Other_");
+                        "gen.facts.gen.Other_"));
         assertThat(sources.get("gen.facts.gen.Missing_")).contains("OpenClassToken<Missing> TOKEN");
     }
 
@@ -93,7 +123,76 @@ class MultiroundTest {
                 package gen;
                 """, "package p; public class Uses { public gen.Missing missing() { return null; } }"));
         assertThat(ProcessorHarness.generatedSources(compilation).keySet())
-                .containsExactlyInAnyOrder("gen.Missing", "gen.Other", "gen.facts.p.Uses_", "gen.facts.gen.Missing_");
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts", "gen.Missing", "gen.Other", "gen.facts.p.Uses_", "gen.facts.gen.Missing_"));
+    }
+
+    @Test
+    void aSupertypeGeneratedByAnotherProcessorGetsItsFullMetamodelInTheNextRound() {
+        Compilation compilation = ProcessorHarness.succeeded(
+                process("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
+                class G {}
+                """, "package p; public class Sub extends gen.Missing { public void sub() {} }"));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // Sub waits for its superclass; then Missing, which is not asked for, is read as a supertype, and
+        // Other, which Missing mentions, gets a token
+        assertThat(sources.keySet())
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts",
+                        "gen.Missing",
+                        "gen.Other",
+                        "gen.facts.p.Sub_",
+                        "gen.facts.gen.Missing_",
+                        "gen.facts.gen.Other_"));
+        assertThat(sources.get("gen.facts.gen.Missing_"))
+                .contains("complete = true")
+                .contains("MethodRef0<Missing, Other> other");
+        assertThat(sources.get("gen.facts.gen.Other_")).contains("complete = false");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aSupertypeThatMentionsATypeThatNeverAppearsIsToldWithTheRequestItIsThereFor() {
+        Compilation compilation = process("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
+                class G {}
+                """, "package p; public class Sub extends Sup { public void sub() {} }", """
+                package p;
+                public class Sup { public gen.Never never() { return null; } }
+                """);
+
+        // Sub does not wait for the metamodel of its supertype: only Sup is stuck
+        assertThat(unresolvable(compilation))
+                .containsExactly("type p.Sup (a supertype of p.Sub) in @Facts is not resolvable after all rounds: it"
+                        + " mentions gen.Never, which no processor generated");
+    }
+
+    @Test
+    void aSupertypeWhoseTokenOnlyMetamodelWasWrittenBeforeItsSubtypeAppearedHasNoFullOne() {
+        Compilation compilation = ProcessorHarness.succeeded(ProcessorHarness.process(
+                List.of(),
+                List.of(),
+                List.of(new GeneratingASubtype()),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
+                class G {}
+                """,
+                "package p; public class Holder { public Base base() { return null; } }",
+                "package p; public class Base { public void inherited() {} }"));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // round 1 knows Base only as a type Holder mentions; round 2 finds it to be a supertype too
+        assertThat(sources.get("gen.facts.p.Base_")).contains("complete = false");
+        assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
+                .containsExactly("gen.Late: no facts of the public members inherited from p.Base, which has no full"
+                        + " metamodel: its token-only metamodel gen.facts.p.Base_ was generated in an earlier round,"
+                        + " before a type that extends or implements p.Base was asked for");
     }
 
     @Test

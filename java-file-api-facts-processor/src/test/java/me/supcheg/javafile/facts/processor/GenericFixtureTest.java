@@ -155,7 +155,7 @@ class GenericFixtureTest extends FixtureSupport {
         ClassLoader loader = load(compilation);
 
         assertThat(sources(compilation).get(BOX))
-                .contains("complete = true, format = 3)")
+                .contains("complete = true, format = 4)")
                 .contains("public final class Box_<T> {");
         assertThat(ProcessorHarness.resources(compilation))
                 .containsEntry("META-INF/javafile/metamodel/full/p.Box", "gen.facts.p.Box_\n")
