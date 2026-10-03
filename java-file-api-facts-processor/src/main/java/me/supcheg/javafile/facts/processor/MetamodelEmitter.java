@@ -127,7 +127,7 @@ final class MetamodelEmitter {
     /// @param targets the types of the round, which tell a raw type in a bound of a type parameter
     /// @return the source file
     static JavaFile tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets) {
-        return emit(metamodel, model, canonical, targets, Optional.empty());
+        return emit(metamodel, model, canonical, targets, Optional.empty()).file();
     }
 
     /// The full metamodel of a type: its shape and token, and a fact per
@@ -148,7 +148,8 @@ final class MetamodelEmitter {
             MemberPlan plan,
             Targets targets,
             Set<String> taken) {
-        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))));
+        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))))
+                .file();
     }
 
     /// The names a fact of the full metamodel of a type may not have, beyond
@@ -164,6 +165,11 @@ final class MetamodelEmitter {
     /// method — is not among them: it hides no fact where a fact is read, and
     /// is itself named after the facts are.
     ///
+    /// Nor are the type parameters of the metamodel: a type and a field of
+    /// one name do not hide each other (JLS 6.4.2), and a type parameter is
+    /// named where only a type can be. The fact of a field `T` of a `Box<T>`
+    /// is `T`, whatever the type parameters of `Box` are called.
+    ///
     /// @param metamodel the metamodel class
     /// @param model the type, read with its declared public members
     /// @param canonical the canonical form of `model`
@@ -172,11 +178,11 @@ final class MetamodelEmitter {
     /// @return the names
     static Set<String> takenNames(
             ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan probe, Targets targets) {
-        String source = emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())))
-                .render();
-        Set<String> names = SourceNames.inBodyOf(metamodel.displayName(), source);
-        names.removeIf(name -> name.startsWith(MemberPlan.PROBE));
-        return names;
+        Emitted emitted = emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())));
+        return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render())
+                .filter(name -> !name.startsWith(MemberPlan.PROBE))
+                .filter(name -> !emitted.typeParameters().contains(name))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /// The source of a metamodel, in ASCII: every other character is a
@@ -207,7 +213,13 @@ final class MetamodelEmitter {
     ///     where what is local has a name no member has
     private record Full(MemberPlan plan, Optional<Set<String>> taken) {}
 
-    private static JavaFile emit(
+    /// A metamodel as written.
+    ///
+    /// @param file the source file
+    /// @param typeParameters the type parameters of the metamodel class, as it names them
+    private record Emitted(JavaFile file, List<String> typeParameters) {}
+
+    private static Emitted emit(
             ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, Optional<Full> full) {
         Token token = Token.of(model.kind());
         // without its bounds a type parameter would take a token of any type: no type parameters then
@@ -232,9 +244,14 @@ final class MetamodelEmitter {
                         infrastructure(token).stream())
                 .flatMap(Function.identity())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        var typeNames = Stream.concat(
+        // a type parameter hides a class of its name, and a package: `java.util.List` is then a
+        // member `util` of the type parameter `java`
+        var typeNames = Stream.of(
                         referenced.stream().flatMap(MetamodelEmitter::simpleNames),
+                        Stream.concat(referenced.stream(), Stream.of(metamodel))
+                                .flatMap(MetamodelEmitter::outermostPackage),
                         Stream.of(metamodel.displayName(), MetamodelNames.DATA, MetamodelNames.CANONICAL))
+                .flatMap(Function.identity())
                 .collect(Collectors.toSet());
         List<String> names = MetamodelNames.typeParameters(declared, typeNames);
         Map<String, String> renaming = new HashMap<>();
@@ -263,7 +280,7 @@ final class MetamodelEmitter {
         ClassDesc data = metamodel.nested(MetamodelNames.DATA);
         ClassDesc canonicalClass = metamodel.nested(MetamodelNames.CANONICAL);
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
-        return JavaFile.class_(metamodel, cb -> {
+        JavaFile file = JavaFile.class_(metamodel, cb -> {
             cb.withModifiers(Modifier.FINAL)
                     .withAnnotation(CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                     .withAnnotation(
@@ -346,6 +363,7 @@ final class MetamodelEmitter {
                 }
             }
         });
+        return new Emitted(file, names);
     }
 
     /// Whether a type mentions a generic type without type arguments.
@@ -697,6 +715,14 @@ final class MetamodelEmitter {
                 CD_PARAMETERIZED,
                 CD_PRIMITIVE,
                 ConstantDescs.CD_String);
+    }
+
+    /// The first name of the package of a class, which its qualified name starts with; none for
+    /// a class of the unnamed package.
+    private static Stream<String> outermostPackage(ClassDesc desc) {
+        return Stream.of(desc.packageName())
+                .filter(name -> !name.isEmpty())
+                .map(name -> name.substring(0, name.indexOf('.') < 0 ? name.length() : name.indexOf('.')));
     }
 
     /// The simple names a class may be written by: its own and those of the classes it is nested in.
