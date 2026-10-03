@@ -174,10 +174,27 @@ class TypeGraphTest {
         assertThat(extendsMissing.missingSupertypes())
                 .containsExactly(extends_("p.A", "gen.Missing"), extends_("p.H", "gen.Other"));
 
-        TypeGraph asksForMissing = TypeGraph.of(Stream.of(mentioned("p.M")), Stream.empty(), Stream.of("gen.G"));
-        assertThat(asksForMissing.unresolved()).containsExactly("gen.G");
+        TypeGraph asksForMissing =
+                TypeGraph.of(Stream.of(mentioned("p.M")), Stream.empty(), TypeGraph.Asked.SOME_MISSING);
         assertThat(asksForMissing.complete()).isFalse();
         assertThat(family().complete()).isTrue();
+    }
+
+    @Test
+    void aTokenOnlyMetamodelIsHeldBackOnlyWhileATypeIsMissing() {
+        Node held = new Node.Mentioned("p.M", new Token.Held(null, List.of()));
+
+        TypeGraph asksForMissing =
+                TypeGraph.of(Stream.of(held, mentioned("p.N")), Stream.empty(), TypeGraph.Asked.SOME_MISSING);
+        assertThat(asksForMissing.held()).containsExactly("p.M");
+        TypeGraph extendsMissing =
+                graph(List.of(waiting("p.A"), held, absent("gen.Missing")), List.of(extends_("p.A", "gen.Missing")));
+        assertThat(extendsMissing.held()).containsExactly("p.M");
+
+        assertThat(family().held()).isEmpty();
+        assertThatThrownBy(() -> graph(List.of(held), List.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("the token-only metamodel of p.M is held back, but no type is missing");
     }
 
     // ------------------------------------------------------------------
