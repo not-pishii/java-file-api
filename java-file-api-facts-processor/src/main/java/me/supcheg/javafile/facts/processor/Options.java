@@ -12,16 +12,18 @@ import java.util.stream.Stream;
 /// - [#PACKAGE] — the base of the mirror packages, `<base>.p.q.T_` for
 ///   `p.q.T`; without it, see [BasePackage];
 /// - [#STRICT] — `true` makes a member skipped for want of a fact an error
-///   instead of a warning (Q10).
+///   instead of a warning (Q10), in the types `@Facts` asks for: in a
+///   supertype of one, which gets its metamodel without being asked for, it
+///   stays a warning (Q13).
 ///
 /// @param basePackage the base of the mirror packages, if given
-/// @param strict whether a skipped member is an error
+/// @param strict whether a member skipped in a type `@Facts` asks for is an error
 record Options(Optional<String> basePackage, boolean strict) {
 
     /// The option naming the base of the mirror packages.
     static final String PACKAGE = "javafile.facts.package";
 
-    /// The option turning skipped members into errors.
+    /// The option turning the members skipped in the types `@Facts` asks for into errors.
     static final String STRICT = "javafile.facts.strict";
 
     /// Reads the options javac passes to the processor.

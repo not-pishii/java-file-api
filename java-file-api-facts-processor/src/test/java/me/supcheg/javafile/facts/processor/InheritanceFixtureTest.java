@@ -446,14 +446,40 @@ class InheritanceFixtureTest extends FixtureSupport {
                 .containsKey("META-INF/javafile/metamodel/token/p.Bounded")
                 .doesNotContainKey("META-INF/javafile/metamodel/full/p.Bounded");
 
-        // under strict it is an error, as any member without a fact
-        assertThat(errors(ProcessorHarness.process(
-                        List.of(lib), List.of("-Ajavafile.facts.strict=true"), List.of(), """
+        // nor under strict: Bounded is not asked for
+        Compilation strict = ProcessorHarness.succeeded(
+                ProcessorHarness.process(List.of(lib), List.of("-Ajavafile.facts.strict=true"), List.of(), """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts(p.Over.class)
                 class G {}
-                """)))
-                .containsExactly(declined);
+                """));
+        assertThat(warnings(strict)).containsExactly(declined);
+    }
+
+    @Test
+    void underStrictAMemberWithoutAFactIsAnErrorOnlyInATypeThatIsAskedFor() {
+        String[] library = {
+            "package p; public class Sub extends Sup implements Api { public void sub() {} }",
+            "package p; public class Sup { public void lost(Secret s) {} }",
+            "package p; public interface Api { default void gone(Secret s) {} }",
+            "package p; class Secret {}"
+        };
+        List<String> strict = List.of("-Ajavafile.facts.strict=true");
+        String lost = "p.Sup (a supertype of p.Sub): no fact of method lost(p.Secret), which mentions types that are"
+                + " not public: p.Secret";
+        String gone = "p.Api (a supertype of p.Sub): no fact of method gone(p.Secret), which mentions types that are"
+                + " not public: p.Secret";
+
+        // Sup and Api get their metamodels as supertypes of Sub: nobody asked for their members
+        Compilation supertypes = generate(strict, "p.Sub.class", library);
+        assertThat(warnings(supertypes)).containsExactlyInAnyOrder(lost, gone);
+
+        // Sup is asked for, though it is a supertype of Sub too: strict is about it
+        Compilation asked = attempt(strict, "p.Sub.class, p.Sup.class", library);
+        assertThat(errors(asked))
+                .containsExactly("p.Sup: no fact of method lost(p.Secret), which mentions types that are not public:"
+                        + " p.Secret");
+        assertThat(warnings(asked)).containsExactly(gone);
     }
 
     // ------------------------------------------------------------------
