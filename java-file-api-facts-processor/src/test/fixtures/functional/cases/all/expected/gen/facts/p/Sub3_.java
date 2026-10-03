@@ -24,21 +24,21 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Sub3;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub3.class, fingerprint = "7db5c455d781623ee43f443c64a7a8f6d94e42b5a61459a807814a2cd9ea7086", complete = true, format = 4)
+@GeneratedMetamodel(of = Sub3.class, fingerprint = "34ad53357cfba55b895c5c1d08b9df5e305fe8bf705e333d63a8216f3bcb89af", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Sub3_ {
     public static final class Data {
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub3_"), "7db5c455d781623ee43f443c64a7a8f6d94e42b5a61459a807814a2cd9ea7086", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub3"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub3_"), "34ad53357cfba55b895c5c1d08b9df5e305fe8bf705e333d63a8216f3bcb89af", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub3"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Sub3 interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract get() -> java.lang.String throws -\nsam get() -> java.lang.String throws -\ntable abstract get()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Sub3 interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract get() -> java.lang.String throws -\nsam get() -> java.lang.String throws -\ntable abstract get()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

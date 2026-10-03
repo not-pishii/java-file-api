@@ -30,21 +30,21 @@ import me.supcheg.javafile.type.Types;
 import p.Sorted;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sorted.class, fingerprint = "103196c41eaf26796adbc5ad041b557f6164b615dfc543cf34466ff3a96f2b9d", complete = true, format = 4)
+@GeneratedMetamodel(of = Sorted.class, fingerprint = "4226dff27970b622664f47a08676e95a2d03a8c90f57001f8486b6f07848202e", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Sorted_<T extends Comparable<T>> {
     public static final class Data {
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sorted_"), "103196c41eaf26796adbc5ad041b557f6164b615dfc543cf34466ff3a96f2b9d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sorted"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("max"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("with", Param.var(0))), Set.of(), Set.of(Signature.of("Sorted", Param.var(0)))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sorted_"), "4226dff27970b622664f47a08676e95a2d03a8c90f57001f8486b6f07848202e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sorted"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("max"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("with", Param.var(0))), Set.of(), Set.of(Signature.of("Sorted", Param.var(0)))), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Sorted open-class sealed=no\ntparams #0 extends java.lang.Comparable<#0>\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember method overridable max() -> #0 throws -\nmember method overridable with(#0) -> p.Sorted<#0> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); max(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); with(#0)\ntable static -\ntable ctor Sorted(#0)\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Sorted open-class sealed=no\ntparams #0 extends java.lang.Comparable<#0>\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember method overridable max() -> #0 throws -\nmember method overridable with(#0) -> p.Sorted<#0> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); max(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); with(#0)\ntable static -\ntable ctor Sorted(#0)\n";
 
         private Canonical() {
         }

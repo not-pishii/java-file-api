@@ -28,21 +28,21 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Text;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "8bcb3504bf9924f491f143cda793cdc0c12ea11532fe4e53c23e500d482575aa", complete = true, format = 4)
+@GeneratedMetamodel(of = Text.class, fingerprint = "60b91bb483bf04820abc14c67b1aa1c74188700617322f9255eb4f31a49d8968", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Text_ {
     public static final class Data {
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "8bcb3504bf9924f491f143cda793cdc0c12ea11532fe4e53c23e500d482575aa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "60b91bb483bf04820abc14c67b1aa1c74188700617322f9255eb4f31a49d8968", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text"))), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Text open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int \u0447\u0438\u0441\u043b\u043e\nmember field static constant char CHAR = '\\u044f'\nmember field static constant char DELETE = '\\u007f'\nmember field static constant char LONE_CHAR = '\\ud800'\nmember field static constant java.lang.String CYRILLIC = \"\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f\"\nmember field static constant java.lang.String ESCAPES = \"\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022\"\nmember field static constant java.lang.String LONE_HIGH = \"a\\ud800b\"\nmember field static constant java.lang.String LONE_LOW = \"\\udc00\"\nmember field static constant java.lang.String PAIR = \"\\ud83d\\ude00\"\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Text()\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Text open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int \u0447\u0438\u0441\u043b\u043e\nmember field static constant char CHAR = '\\u044f'\nmember field static constant char DELETE = '\\u007f'\nmember field static constant char LONE_CHAR = '\\ud800'\nmember field static constant java.lang.String CYRILLIC = \"\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f\"\nmember field static constant java.lang.String ESCAPES = \"\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022\"\nmember field static constant java.lang.String LONE_HIGH = \"a\\ud800b\"\nmember field static constant java.lang.String LONE_LOW = \"\\udc00\"\nmember field static constant java.lang.String PAIR = \"\\ud83d\\ude00\"\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Text()\n";
 
         private Canonical() {
         }

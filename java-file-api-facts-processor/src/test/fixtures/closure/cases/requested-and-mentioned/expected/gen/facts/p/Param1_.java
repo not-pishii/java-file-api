@@ -21,21 +21,21 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Param1;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Param1.class, fingerprint = "1b19043f36ed70dce543d6a9c3ca01922638e914a0a0f14d4971ee0cda13d821", complete = false, format = 4)
+@GeneratedMetamodel(of = Param1.class, fingerprint = "0141f220177cabe25dab792bc25b6267dd3fcf2041cd0cc4d9eb9082960def84", complete = false, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Param1_ {
     public static final class Data {
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Param1_"), "1b19043f36ed70dce543d6a9c3ca01922638e914a0a0f14d4971ee0cda13d821", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Param1"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Param1"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Param1_"), "0141f220177cabe25dab792bc25b6267dd3fcf2041cd0cc4d9eb9082960def84", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Param1"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Param1"))), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Param1 open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Param1()\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Param1 open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Param1()\n";
 
         private Canonical() {
         }

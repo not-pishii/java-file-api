@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 3
+/// javafile-facts-canonical 4
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
@@ -94,7 +94,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 3";
+    public static final String HEADER = "javafile-facts-canonical 4";
 
     private final String text;
     private final String fingerprint;

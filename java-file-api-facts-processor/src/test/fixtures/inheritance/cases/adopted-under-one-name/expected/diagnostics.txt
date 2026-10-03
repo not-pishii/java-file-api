@@ -1,1 +1,2 @@
-gen/G.java:7:1: warning: p.Both: no fact of field K of p.One, field K of p.Other, which would all be named K
+gen/G.java:7:1: warning: p.Both: no fact of field K of p.One, which is ambiguous in p.Both with field K of p.Other
+gen/G.java:7:1: warning: p.Both: no fact of field K of p.Other, which is ambiguous in p.Both with field K of p.One

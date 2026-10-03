@@ -30,21 +30,21 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Rec;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Rec.class, fingerprint = "7987ed8594cd8779f42d79afa2eec991b25290a8444b638bb264761a5771810c", complete = true, format = 4)
+@GeneratedMetamodel(of = Rec.class, fingerprint = "e7cdc9c76c5e4bd3582c947f80225ccf6cb193c7aa0d08e97b41714ce1b1c656", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Rec_ {
     public static final class Data {
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Rec_"), "7987ed8594cd8779f42d79afa2eec991b25290a8444b638bb264761a5771810c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Rec"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(Signature.of("of")), Set.of(Signature.of("Rec", Param.fixed(ConstantDescs.CD_int)), Signature.of("Rec", Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Rec_"), "e7cdc9c76c5e4bd3582c947f80225ccf6cb193c7aa0d08e97b41714ce1b1c656", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Rec"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(Signature.of("of")), Set.of(Signature.of("Rec", Param.fixed(ConstantDescs.CD_int)), Signature.of("Rec", Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Rec final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int) throws -\nmember ctor(int, java.lang.String) throws -\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final label() -> java.lang.String throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\nmember method static of() -> p.Rec throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()\ntable static of()\ntable ctor Rec(int); Rec(int, java.lang.String)\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Rec final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int) throws -\nmember ctor(int, java.lang.String) throws -\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final label() -> java.lang.String throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\nmember method static of() -> p.Rec throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()\ntable static of()\ntable ctor Rec(int); Rec(int, java.lang.String)\n";
 
         private Canonical() {
         }

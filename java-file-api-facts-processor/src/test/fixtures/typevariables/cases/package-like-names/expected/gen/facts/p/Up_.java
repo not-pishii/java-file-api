@@ -28,21 +28,21 @@ import me.supcheg.javafile.type.Types;
 import p.Up;
 
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Up.class, fingerprint = "9957b82a5da33a004f590c236096c1d0992991a9e0d3f48864d0238b584b5d41", complete = true, format = 4)
+@GeneratedMetamodel(of = Up.class, fingerprint = "60b4f748a9734619a7a6e73f3553a7dddb2345b1d119097fd3fa667fe78c8977", complete = true, format = 5)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Up_<Gen, Java> {
     public static final class Data {
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Up_"), "9957b82a5da33a004f590c236096c1d0992991a9e0d3f48864d0238b584b5d41", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Up"), List.of(new TypeParam("Gen", List.of()), new TypeParam("Java", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("Gen"), Types.typeVar("Java")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Up"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Up_"), "60b4f748a9734619a7a6e73f3553a7dddb2345b1d119097fd3fa667fe78c8977", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Up"), List.of(new TypeParam("Gen", List.of()), new TypeParam("Java", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("Gen"), Types.typeVar("Java")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Up"))), List.of(), false);
 
         private Data() {
         }
     }
 
     static final class Canonical {
-        static final String TEXT = "javafile-facts-canonical 3\ntype p.Up open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0> each(^0) -> java.util.Set<^0> throws -\nmember method overridable all(#1) -> java.util.Set<#0> throws -\ntable abstract -\ntable concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Up()\n";
+        static final String TEXT = "javafile-facts-canonical 4\ntype p.Up open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0> each(^0) -> java.util.Set<^0> throws -\nmember method overridable all(#1) -> java.util.Set<#0> throws -\ntable abstract -\ntable concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Up()\n";
 
         private Canonical() {
         }

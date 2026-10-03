@@ -1,0 +1,3 @@
+gen/G.java:8:1: warning: p.Impl: no fact of field K of p.HConst, which is ambiguous in p.Impl with field K of p.PubConst
+gen/G.java:8:1: warning: p.Impl: no fact of field name of p.HConst, which is ambiguous in p.Impl with field name of p.PubConst
+gen/G.java:8:1: warning: p.Impl2: no fact of field K of p.HIface, which is ambiguous in p.Impl2 with field K of p.PubBase

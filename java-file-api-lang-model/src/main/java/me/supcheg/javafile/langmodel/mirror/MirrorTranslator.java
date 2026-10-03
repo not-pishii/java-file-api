@@ -169,9 +169,17 @@ public final class MirrorTranslator {
     ///
     /// - not a method a nearer type overrides or implements, nor a field or
     ///   a `static` method a nearer type hides;
+    /// - a field only if the type has no other field of its name: where a
+    ///   `public` supertype has one too, or two hidden supertypes each have
+    ///   one, the name is ambiguous in the type, and the field is a
+    ///   [SkippedMember];
     /// - not a `static` method of an interface, which is not inherited;
-    /// - of several abstract methods of the same signature one, that of the
-    ///   most specific result, as for a `sam`;
+    /// - of the abstract methods of one signature the type has — those of its
+    ///   `public` supertypes among them — the one of the most specific
+    ///   result, as for a `sam`, and none if a `public` supertype declares
+    ///   that one: its metamodel tells the method as javac sees it on the
+    ///   type, `String get()` of a `public` interface beside `Object get()`
+    ///   of a hidden one;
     /// - each once, however many ways lead to the supertype that declares it;
     /// - not one a `public` supertype of the type has adopted, which the
     ///   type reaches through that supertype too — `X extends Mid`, where
@@ -200,22 +208,23 @@ public final class MirrorTranslator {
 
     /// The members a type adopts, see [#members(TypeElement)]: those of the nearer supertype first.
     private Stream<Element> adopted(TypeElement element, DeclaredType self) {
-        List<Element> had = had(element);
+        List<? extends Element> all = elements.getAllMembers(element);
+        List<Element> had = had(element, all);
         if (had.isEmpty()) {
             return Stream.empty();
         }
         // what a public supertype has of them, it tells: the type has them from that supertype
         Set<Element> told = supertypesThrough(List.of(element), Set.of(), supertype -> true)
                 .filter(MirrorTranslator::isPublic)
-                .flatMap(supertype -> had(supertype).stream())
+                .flatMap(supertype -> had(supertype, elements.getAllMembers(supertype)).stream())
                 .collect(Collectors.toSet());
-        // abstract methods of one signature that do not override each other are one member of the type
-        Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = had.stream()
-                .filter(member -> member.getKind() == ElementKind.METHOD)
-                .map(ExecutableElement.class::cast)
+        // the abstract methods of one signature that the type has, whoever declares them, are one member of it
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = ElementFilter.methodsIn(all).stream()
+                .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT))
                 .collect(Collectors.groupingBy(method -> signature(method, element, self)));
         return had.stream().filter(member -> switch (member) {
-            case ExecutableElement method -> {
+            case ExecutableElement method
+            when method.getModifiers().contains(Modifier.ABSTRACT) -> {
                 List<ExecutableElement> same = twins.get(signature(method, element, self));
                 yield same.stream().noneMatch(told::contains)
                         && pick(same, self).equals(method);
@@ -228,13 +237,15 @@ public final class MirrorTranslator {
     /// `public` which a type has through such supertypes alone: those of
     /// the nearer supertype first, and none that a nearer type replaces. A
     /// `public` supertype that has one of them too is not looked at here.
-    private List<Element> had(TypeElement element) {
+    ///
+    /// @param all every member of `element`, as `Elements.getAllMembers` gives them
+    private List<Element> had(TypeElement element, List<? extends Element> all) {
         List<TypeElement> hidden = supertypesThrough(List.of(element), Set.of(), supertype -> !isPublic(supertype))
                 .toList();
         if (hidden.isEmpty()) {
             return List.of();
         }
-        Map<String, List<Element>> inherited = elements.getAllMembers(element).stream()
+        Map<String, List<Element>> inherited = all.stream()
                 .<Element>map(member -> member)
                 .filter(member -> member.getKind() == ElementKind.FIELD || member.getKind() == ElementKind.METHOD)
                 .collect(Collectors.groupingBy(member -> member.getSimpleName().toString()));
@@ -638,7 +649,26 @@ public final class MirrorTranslator {
             mutability = Mutability.FINAL;
         }
         String name = field.getSimpleName().toString();
-        return Read.of(reading, 0, "field " + name, () -> new FieldModel(name, isStatic, type, mutability));
+        return rival(owner, field)
+                .<Read>map(rival -> new Read.Skipped(new SkippedMember(
+                        "field " + name,
+                        "is ambiguous in " + owner.getQualifiedName() + " with field " + name + " of "
+                                + ((TypeElement) rival.getEnclosingElement()).getQualifiedName())))
+                .orElseGet(() ->
+                        Read.of(reading, 0, "field " + name, () -> new FieldModel(name, isStatic, type, mutability)));
+    }
+
+    /// Another field of a type under the name of a field of it, which the
+    /// field does not hide: the type inherits both — a constant of an
+    /// interface beside a field of the superclass —, so javac takes the
+    /// name for neither (JLS 8.3.3.3), and nor can a fact, which is read
+    /// through the type.
+    private Optional<VariableElement> rival(TypeElement owner, VariableElement field) {
+        return ElementFilter.fieldsIn(elements.getAllMembers(owner)).stream()
+                .filter(other -> !other.equals(field)
+                        && other.getSimpleName().contentEquals(field.getSimpleName())
+                        && !elements.hides(field, other))
+                .findFirst();
     }
 
     private Read constructor(TypeElement owner, DeclaredType self, ExecutableElement constructor) {

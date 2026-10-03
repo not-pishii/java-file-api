@@ -21,12 +21,18 @@ package me.supcheg.javafile.facts.meta;
 /// - 4: a metamodel has the facts of the `public` members its type inherits
 ///   from supertypes that are not `public`, as members of the type; the
 ///   supertypes of a requested type have full metamodels of their own.
+/// - 5: of several abstract methods of one signature a type adopts one only
+///   if no `public` supertype declares the most specific; an adopted field
+///   that is ambiguous in the type has no fact; a member a `public` supertype
+///   without a full metamodel shares with the type stays a fact of the type;
+///   `java.lang.Object` is a supertype of an interface too, so it gets a full
+///   metamodel wherever an interface is asked for.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     private MetamodelFormat() {}
 }
