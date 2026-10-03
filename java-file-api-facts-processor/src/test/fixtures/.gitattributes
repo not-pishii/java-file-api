@@ -1,0 +1,2 @@
+# the fixtures are compared as text: the same line ends on every platform
+* text eol=lf
