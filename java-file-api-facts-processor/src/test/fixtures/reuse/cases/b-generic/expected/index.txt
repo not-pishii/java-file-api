@@ -1,0 +1,2 @@
+META-INF/javafile/metamodel/full/p.Uses -> b.facts.p.Uses_
+META-INF/javafile/metamodel/token/java.lang.Integer -> b.facts.java.lang.Integer_

@@ -1,0 +1,1 @@
+META-INF/javafile/metamodel/full/p.Other -> b.facts.p.Other_

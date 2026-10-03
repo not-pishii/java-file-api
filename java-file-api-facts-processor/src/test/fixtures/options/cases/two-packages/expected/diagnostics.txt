@@ -1,0 +1,1 @@
+com/acme/a/G.java:7:1: error: @Facts is used in several packages [com.acme.a, com.acme.b]; choose the package of the metamodels with -Ajavafile.facts.package=<package>

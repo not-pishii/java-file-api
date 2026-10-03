@@ -1,0 +1,79 @@
+package a.facts.java.lang;
+
+import a.facts.java.lang.Object_.Canonical;
+import a.facts.java.lang.Object_.Data;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
+import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodRef0;
+import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
+import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.Prim.Bool;
+import me.supcheg.javafile.facts.Prim.Int;
+import me.supcheg.javafile.facts.Prim.Long;
+import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.TokenArg;
+import me.supcheg.javafile.facts.TypeShape;
+import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.VoidMethodRef0;
+import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.facts.VoidMethodRef2;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+
+@Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
+@GeneratedMetamodel(of = Object.class, fingerprint = "7b7afefa6c165031913419c2815c027e5ea39345e02d08b25f25735c1533a192", complete = true, format = 4)
+@SuppressWarnings({
+    "deprecation",
+    "removal"
+})
+public final class Object_ {
+    public static final class Data {
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("a.facts.java.lang.Object_"), "7b7afefa6c165031913419c2815c027e5ea39345e02d08b25f25735c1533a192", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), List.of(), false);
+
+        private Data() {
+        }
+    }
+
+    static final class Canonical {
+        static final String TEXT = "javafile-facts-canonical 3\ntype java.lang.Object open-class sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method final getClass() -> java.lang.Class<?> throws -\nmember method final notify() -> void throws -\nmember method final notifyAll() -> void throws -\nmember method final wait() -> void throws java.lang.InterruptedException\nmember method final wait(long) -> void throws java.lang.InterruptedException\nmember method final wait(long, int) -> void throws java.lang.InterruptedException\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Object()\n";
+
+        private Canonical() {
+        }
+    }
+
+    public static final OpenClassToken<Object> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
+
+    public static final CtorRef0<Object> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+
+    public static final MethodRef1<Object, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, MemberTraits.OVERRIDABLE);
+
+    public static final MethodRef0<Object, Class<?>> getClass = UnsafeFacts.method(TOKEN, "getClass", UnsafeFacts.<Class<?>>finalClassToken(Class_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
+
+    public static final MethodRef0<Object, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+
+    public static final VoidMethodRef0<Object> notify = UnsafeFacts.voidMethod(TOKEN, "notify", MemberTraits.FINAL);
+
+    public static final VoidMethodRef0<Object> notifyAll = UnsafeFacts.voidMethod(TOKEN, "notifyAll", MemberTraits.FINAL);
+
+    public static final MethodRef0<Object, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+
+    public static final VoidMethodRef0<Object> wait = UnsafeFacts.voidMethod(TOKEN, "wait", MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+
+    public static final VoidMethodRef1<Object, Long> wait_long = UnsafeFacts.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+
+    public static final VoidMethodRef2<Object, Long, Int> wait_long_int = UnsafeFacts.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+
+    private Object_() {
+    }
+}

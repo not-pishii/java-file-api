@@ -1,0 +1,1 @@
+META-INF/javafile/metamodel/full/q.Sub -> b.facts.q.Sub_

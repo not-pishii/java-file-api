@@ -1,0 +1,6 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> com.acme.metamodel.java.lang.Object_
+META-INF/javafile/metamodel/full/p.Dep -> com.acme.metamodel.p.Dep_
+META-INF/javafile/metamodel/full/p.Svc -> com.acme.metamodel.p.Svc_
+META-INF/javafile/metamodel/token/java.lang.Class -> com.acme.metamodel.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> com.acme.metamodel.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.String -> com.acme.metamodel.java.lang.String_

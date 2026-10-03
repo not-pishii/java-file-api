@@ -1,0 +1,55 @@
+package b.facts.q;
+
+import b.facts.q.Sub_.Canonical;
+import b.facts.q.Sub_.Data;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
+import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
+import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.TypeShape;
+import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.VoidMethodRef0;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import q.Sub;
+
+@Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
+@GeneratedMetamodel(of = Sub.class, fingerprint = "8c736e994cb1d6c939100764332ca496436524a0a4102dd068c8ff040b42e40b", complete = true, format = 4)
+@SuppressWarnings({
+    "deprecation",
+    "removal"
+})
+public final class Sub_ {
+    public static final class Data {
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.q.Sub_"), "8c736e994cb1d6c939100764332ca496436524a0a4102dd068c8ff040b42e40b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("q.Sub"), List.of(), List.of(ClassDesc.of("p.Dep"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("sub"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Sub"))), List.of(), false);
+
+        private Data() {
+        }
+    }
+
+    static final class Canonical {
+        static final String TEXT = "javafile-facts-canonical 3\ntype q.Sub open-class sealed=no\ntparams -\nsuperclasses p.Dep; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable sub() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); sub(); toString(); wait(); wait(long); wait(long, int); x(); y()\ntable static -\ntable ctor Sub()\n";
+
+        private Canonical() {
+        }
+    }
+
+    public static final OpenClassToken<Sub> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
+
+    public static final CtorRef0<Sub> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+
+    public static final VoidMethodRef0<Sub> sub = UnsafeFacts.voidMethod(TOKEN, "sub", MemberTraits.OVERRIDABLE);
+
+    private Sub_() {
+    }
+}

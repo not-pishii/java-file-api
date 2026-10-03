@@ -1,0 +1,1 @@
+-Ajavafile.facts.strict=yes
