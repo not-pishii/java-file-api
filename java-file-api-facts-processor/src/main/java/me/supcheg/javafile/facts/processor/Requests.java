@@ -79,26 +79,35 @@ final class Requests {
     }
 
     private static Literal declared(TypeElement type) {
+        return refusal(type).<Literal>map(Literal.Rejected::new).orElseGet(() -> new Literal.Type(type));
+    }
+
+    /// Why `@Facts` cannot ask for a type: an annotation interface, a type
+    /// that is not `public` or is nested in one, a class with `$` in its
+    /// simple name, a type in the unnamed package.
+    ///
+    /// @param type a class, interface, enum, record or annotation interface
+    /// @return the reason, a sentence about the type; empty if a metamodel can be asked for
+    static Optional<String> refusal(TypeElement type) {
         if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
-            return new Literal.Rejected("annotation interface " + type.getQualifiedName() + " is not supported yet");
+            return Optional.of("annotation interface " + type.getQualifiedName() + " is not supported yet");
         }
         Optional<TypeElement> hidden = notPublic(type);
         if (hidden.isPresent()) {
-            return new Literal.Rejected(
+            return Optional.of(
                     hidden.get().equals(type)
                             ? type.getQualifiedName() + " is not public"
                             : type.getQualifiedName() + " is nested in "
                                     + hidden.get().getQualifiedName() + ", which is not public");
         }
         if (dollar(type)) {
-            return new Literal.Rejected(
-                    type.getQualifiedName() + ": a class with $ in its simple name is not supported yet");
+            return Optional.of(type.getQualifiedName() + ": a class with $ in its simple name is not supported yet");
         }
         if (unnamedPackage(type)) {
-            return new Literal.Rejected(type.getQualifiedName()
+            return Optional.of(type.getQualifiedName()
                     + " is in the unnamed package, which a metamodel in a named package cannot refer to");
         }
-        return new Literal.Type(type);
+        return Optional.empty();
     }
 
     /// The innermost type of `type` and its enclosing types that is not public.
