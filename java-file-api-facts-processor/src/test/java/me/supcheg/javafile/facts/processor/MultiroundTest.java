@@ -1,7 +1,10 @@
 package me.supcheg.javafile.facts.processor;
 
 import com.google.testing.compile.Compilation;
+import com.google.testing.compile.Compiler;
+import com.google.testing.compile.JavaFileObjects;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -11,17 +14,30 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/// Fixture `multiround` (mini-spec §8, §9.2): types another processor
+/// Fixture `multiround` (mini-spec §8, §9.2, Q13): types another processor
 /// generates, requested in `@Facts` or mentioned by a requested type, get
-/// their metamodels in a later round; a type that never appears is an
-/// error in the last round, which tells what each type waited for.
+/// their metamodels in a later round; no metamodel is written before every
+/// requested type and every supertype of one is there, so a type is known
+/// to be a supertype before its metamodel is written; a type that never
+/// appears is an error in the last round, which tells what each type
+/// waited for.
 class MultiroundTest {
+    @TempDir
+    Path classes;
+
+    @TempDir
+    Path rendered;
+
     /// Generates `gen.Missing` and `gen.Other` in its first round.
     private static final class Generating extends AbstractProcessor {
         private boolean done;
@@ -59,9 +75,15 @@ class MultiroundTest {
         return ProcessorHarness.process(List.of(), List.of(), List.of(new Generating()), sources);
     }
 
-    /// Generates `gen.Late`, which extends `p.Base`, in its first round.
-    private static final class GeneratingASubtype extends AbstractProcessor {
-        private boolean done;
+    /// Generates sources round by round: those of the first map in its first round, of the second
+    /// in its second, and so on.
+    private static final class InRounds extends AbstractProcessor {
+        private final Iterator<Map<String, String>> rounds;
+
+        /// @param rounds the sources of each round, by qualified name
+        InRounds(List<Map<String, String>> rounds) {
+            this.rounds = rounds.iterator();
+        }
 
         @Override
         public Set<String> getSupportedAnnotationTypes() {
@@ -75,17 +97,30 @@ class MultiroundTest {
 
         @Override
         public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-            if (!done) {
-                done = true;
-                try (Writer writer =
-                        processingEnv.getFiler().createSourceFile("gen.Late").openWriter()) {
-                    writer.write("package gen; public class Late extends p.Base { public void late() {} }");
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+            if (!round.processingOver() && rounds.hasNext()) {
+                rounds.next().forEach((name, source) -> {
+                    try (Writer writer =
+                            processingEnv.getFiler().createSourceFile(name).openWriter()) {
+                        writer.write(source);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
             }
             return false;
         }
+    }
+
+    private static final String LATE = "package gen; public class Late extends p.Base { public void late() {} }";
+    private static final String HOLDER = "package p; public class Holder { public Base base() { return null; }"
+            + " public Other other() { return null; } }";
+    private static final String BASE = "package p; public class Base { public int inherited() { return 7; } }";
+    private static final String OTHER = "package p; public class Other { public void other() {} }";
+    private static final String HELD =
+            "; no metamodel is written before that type is there, which may extend or" + " implement any other";
+
+    private static Compilation process(InRounds generating, String... sources) {
+        return ProcessorHarness.process(List.of(), List.of(), List.of(generating), sources);
     }
 
     /// The errors of the last round about the requested types that never became ready, in order.
@@ -172,21 +207,241 @@ class MultiroundTest {
     }
 
     @Test
-    void aSupertypeWhoseTokenOnlyMetamodelWasWrittenBeforeItsSubtypeAppearedHasNoFullOne() {
-        Compilation compilation = ProcessorHarness.succeeded(ProcessorHarness.process(
-                List.of(),
-                List.of(),
-                List.of(new GeneratingASubtype()),
-                """
+    void aTypeMentionedBeforeARequestedTypeThatExtendsItAppearsGetsItsFullMetamodel() throws Exception {
+        Compilation compilation = ProcessorHarness.succeeded(
+                process(new InRounds(List.of(Map.of("gen.Late", LATE))), """
                 package gen;
                 @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
                 class G {}
-                """,
-                "package p; public class Holder { public Base base() { return null; } }",
-                "package p; public class Base { public void inherited() {} }"));
+                """, HOLDER, BASE, OTHER, """
+                package use;
+
+                import gen.facts.gen.Late_;
+                import gen.facts.p.Base_;
+                import java.lang.constant.ClassDesc;
+                import me.supcheg.javafile.facts.PrimitiveToken;
+                import me.supcheg.javafile.typed.TypedClassBuilder;
+                import me.supcheg.javafile.typed.TypedJavaFile;
+
+                import static me.supcheg.javafile.typed.Expressions.call;
+
+                public final class Run {
+                    public static String inherited() {
+                        return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                                    @Override
+                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                        cb.staticMethod(
+                                                "go",
+                                                PrimitiveToken.INT,
+                                                Late_.TOKEN,
+                                                (b, late) -> b.return_(call(late, Base_.inherited)));
+                                    }
+                                })
+                                .render();
+                    }
+                }
+                """));
         Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
 
-        // round 1 knows Base only as a type Holder mentions; round 2 finds it to be a supertype too
+        // round 1 has Base as a type Holder mentions, and writes nothing: gen.Late is not there; round 2
+        // finds Base to be a supertype of it, and writes its full metamodel
+        assertThat(sources.keySet())
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts",
+                        "gen.Late",
+                        "gen.facts.gen.Late_",
+                        "gen.facts.p.Holder_",
+                        "gen.facts.p.Base_",
+                        "gen.facts.p.Other_"));
+        assertThat(sources.get("gen.facts.p.Base_"))
+                .contains("complete = true")
+                .contains("MethodRef0<Base, Int> inherited");
+        assertThat(sources.get("gen.facts.p.Other_")).contains("complete = false");
+        assertThat(sources.get("gen.facts.gen.Late_"))
+                .contains("complete = true")
+                .contains("VoidMethodRef0<Late> late")
+                .doesNotContain("> inherited");
+        assertThat(sources.get("gen.facts.p.Holder_")).contains("Base_.Data.SHAPE");
+        assertThat(ProcessorHarness.resources(compilation))
+                .containsKey("META-INF/javafile/metamodel/full/p.Base")
+                .doesNotContainKey("META-INF/javafile/metamodel/token/p.Base");
+        assertThat(compilation.diagnostics()).isEmpty();
+
+        // the member Late inherits is called through the metamodel of Base
+        ProcessorHarness.write(compilation, classes);
+        String source;
+        try (URLClassLoader run =
+                new URLClassLoader(new URL[] {classes.toUri().toURL()}, MultiroundTest.class.getClassLoader())) {
+            source = (String) run.loadClass("use.Run").getMethod("inherited").invoke(null);
+        }
+        Compilation out = Compiler.javac()
+                .withClasspath(List.of(classes.toFile()))
+                .withOptions("-proc:none", "-Xlint:all", "-Werror")
+                .compile(JavaFileObjects.forSourceString("out.Out", source));
+        assertThat(out.status()).as("%s%n%s", out.diagnostics(), source).isEqualTo(Compilation.Status.SUCCESS);
+        ProcessorHarness.write(out, rendered);
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[] {rendered.toUri().toURL(), classes.toUri().toURL()}, null)) {
+            Class<?> late = loader.loadClass("gen.Late");
+            assertThat(loader.loadClass("out.Out")
+                            .getMethod("go", late)
+                            .invoke(null, late.getConstructor().newInstance()))
+                    .isEqualTo(7);
+        }
+    }
+
+    @Test
+    void nothingIsWrittenBeforeTheLastOfTheRequestedTypesIsThere() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                new InRounds(List.of(
+                        Map.of("gen.Late", LATE),
+                        Map.of("gen.Later", "package gen; public class Later extends p.Other {}"))),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class, gen.Later.class})
+                class G {}
+                """,
+                HOLDER,
+                BASE,
+                OTHER));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // round 2 has gen.Late, and Base as its supertype, but not gen.Later yet, which extends Other
+        assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
+        assertThat(sources.get("gen.facts.p.Other_"))
+                .contains("complete = true")
+                .contains("VoidMethodRef0<Other> other");
+        assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
+        assertThat(sources.get("gen.facts.gen.Later_")).contains("complete = true");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void nothingIsWrittenBeforeTheSupertypeOfARequestedTypeIsThere() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                new InRounds(List.of(Map.of("gen.Late", LATE))),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
+                class G {}
+                """,
+                HOLDER,
+                BASE,
+                OTHER,
+                "package p; public class Sub extends gen.Late {}"));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // gen.Late is not asked for; what it extends is not known before it is there
+        assertThat(sources.get("gen.facts.p.Base_")).contains("complete = true");
+        assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
+        assertThat(sources.get("gen.facts.p.Other_")).contains("complete = false");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void theGraphOfARoundIsNotCompleteWhileASupertypeIsMissing() {
+        GraphProbe probe = new GraphProbe("p.Sub", "p.Holder");
+        ProcessorHarness.succeeded(ProcessorHarness.process(
+                List.of(),
+                List.of(),
+                List.of(new InRounds(List.of(Map.of("gen.Late", LATE))), probe),
+                "package gen; class G {}",
+                HOLDER,
+                BASE,
+                OTHER,
+                "package p; public class Sub extends gen.Late {}"));
+        TypeGraph graph = probe.graph();
+
+        assertThat(graph.complete()).isFalse();
+        assertThat(graph.missingSupertypes()).containsExactly(new TypeGraph.Edge.Supertype("p.Sub", "gen.Late"));
+        assertThat(graph.nodes().get("gen.Late")).isEqualTo(new TypeGraph.Node.Absent("gen.Late"));
+        // Base is only mentioned as far as this round knows
+        assertThat(graph.nodes().get("p.Base")).isInstanceOf(TypeGraph.Node.Mentioned.class);
+    }
+
+    @Test
+    void aTypeThatIsOnlyMentionedWhenEveryRequestedTypeIsThereKeepsItsTokenOnlyMetamodel() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                new InRounds(List.of(Map.of("gen.Unrelated", "package gen; public class Unrelated extends p.Base {}"))),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Holder.class)
+                class G {}
+                """,
+                HOLDER,
+                BASE,
+                OTHER));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // a type another processor generates that nothing asks for changes nothing
+        assertThat(sources.keySet())
+                .containsExactlyInAnyOrderElementsOf(ProcessorHarness.withObject(
+                        "gen.facts",
+                        "gen.Unrelated",
+                        "gen.facts.p.Holder_",
+                        "gen.facts.p.Base_",
+                        "gen.facts.p.Other_"));
+        assertThat(sources.get("gen.facts.p.Base_")).contains("complete = false");
+        assertThat(sources.get("gen.facts.p.Other_")).contains("complete = false");
+        assertThat(ProcessorHarness.resources(compilation)).containsKey("META-INF/javafile/metamodel/token/p.Base");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aRequestedTypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
+        Compilation compilation = process(new InRounds(List.of()), """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, gen.Late.class})
+                class G {}
+                """, HOLDER, BASE, OTHER);
+
+        // javac tells that gen.Late is missing, the processor that it waited for it: no metamodel is
+        // written that would name another that is not, so nothing else is told
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+                .containsExactly(
+                        "cannot find symbol\n  symbol:   class Late\n  location: package gen",
+                        "a type in @Facts is not resolvable after all rounds" + HELD);
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
+                .isEmpty();
+    }
+
+    @Test
+    void aSupertypeThatNeverAppearsIsOneErrorAndNoMetamodelIsWritten() {
+        Compilation compilation = process(
+                new InRounds(List.of()), """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Sub.class})
+                class G {}
+                """, HOLDER, BASE, OTHER, "package p; public class Sub extends gen.Late {}");
+
+        assertThat(unresolvable(compilation))
+                .containsExactly("type p.Sub in @Facts is not resolvable after all rounds: it mentions gen.Late,"
+                        + " which no processor generated" + HELD);
+        assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
+                .hasSize(2)
+                .noneMatch(message -> message.contains("_"));
+    }
+
+    @Test
+    void aFactsAnotherProcessorGeneratesCannotMakeAMetamodelThatIsWrittenFull() {
+        Compilation compilation = ProcessorHarness.succeeded(process(
+                new InRounds(List.of(Map.of(
+                        "gen.Late",
+                        LATE,
+                        "gen.More",
+                        "package gen; @me.supcheg.javafile.facts.meta.Facts(gen.Late.class) class More {}"))),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Holder.class)
+                class G {}
+                """,
+                HOLDER,
+                BASE,
+                OTHER));
+        Map<String, String> sources = ProcessorHarness.generatedSources(compilation);
+
+        // the graph of round 1 is complete for the @Facts there is, so Base, which Holder mentions, gets
+        // its token-only metamodel; the @Facts of round 2 is the first to ask for a subtype of Base
         assertThat(sources.get("gen.facts.p.Base_")).contains("complete = false");
         assertThat(sources.get("gen.facts.gen.Late_")).contains("complete = true");
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.WARNING))
@@ -203,7 +458,7 @@ class MultiroundTest {
                 class G {}
                 """);
         assertThat(ProcessorHarness.messages(compilation, Diagnostic.Kind.ERROR))
-                .contains("a type in @Facts is not resolvable after all rounds");
+                .contains("a type in @Facts is not resolvable after all rounds" + HELD);
     }
 
     @Test

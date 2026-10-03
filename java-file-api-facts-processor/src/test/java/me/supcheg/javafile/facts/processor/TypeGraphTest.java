@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -148,6 +149,35 @@ class TypeGraphTest {
         assertThatThrownBy(() -> graph(List.of(waiting("p.A"), absent("p.A")), List.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("two nodes are named p.A");
+    }
+
+    // ------------------------------------------------------------------
+    // whether every type is there
+    // ------------------------------------------------------------------
+
+    @Test
+    void aGraphIsCompleteUnlessARequestedTypeOrASupertypeIsMissing() {
+        // a type a signature mentions that is not generated yet makes a type wait, but adds no supertype
+        TypeGraph mentionsMissing =
+                graph(List.of(waiting("p.A"), absent("gen.Missing")), List.of(awaits("p.A", "gen.Missing")));
+        assertThat(mentionsMissing.complete()).isTrue();
+        assertThat(mentionsMissing.missingSupertypes()).isEmpty();
+
+        TypeGraph extendsMissing = graph(
+                List.of(waiting("p.A"), new Node.Hidden("p.H"), absent("gen.Missing"), absent("gen.Other")),
+                List.of(
+                        extends_("p.A", "p.H"),
+                        extends_("p.H", "gen.Other"),
+                        extends_("p.A", "gen.Missing"),
+                        awaits("p.A", "gen.Missing")));
+        assertThat(extendsMissing.complete()).isFalse();
+        assertThat(extendsMissing.missingSupertypes())
+                .containsExactly(extends_("p.A", "gen.Missing"), extends_("p.H", "gen.Other"));
+
+        TypeGraph asksForMissing = TypeGraph.of(Stream.of(mentioned("p.M")), Stream.empty(), Stream.of("gen.G"));
+        assertThat(asksForMissing.unresolved()).containsExactly("gen.G");
+        assertThat(asksForMissing.complete()).isFalse();
+        assertThat(family().complete()).isTrue();
     }
 
     // ------------------------------------------------------------------

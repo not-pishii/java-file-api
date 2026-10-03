@@ -20,11 +20,14 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.lang.constant.ConstantDescs;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +100,50 @@ class ReuseTest {
         Compilation b = ProcessorHarness.succeeded(
                 ProcessorHarness.process(List.of(v1, moduleA), generator("b", "p.Dep.class")));
         assertThat(ProcessorHarness.generatedSources(b)).containsOnlyKeys("b.facts.p.Dep_");
+        assertThat(b.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aTokenOnlyMetamodelIsNotReusedForATypeThatTurnsOutToBeASupertype() {
+        AbstractProcessor generating = new AbstractProcessor() {
+            private boolean done;
+
+            @Override
+            public Set<String> getSupportedAnnotationTypes() {
+                return Set.of("*");
+            }
+
+            @Override
+            public SourceVersion getSupportedSourceVersion() {
+                return SourceVersion.latestSupported();
+            }
+
+            @Override
+            public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+                if (!done) {
+                    done = true;
+                    try (Writer writer = processingEnv
+                            .getFiler()
+                            .createSourceFile("gen.Late")
+                            .openWriter()) {
+                        writer.write("package gen; public class Late extends p.Dep {}");
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                return false;
+            }
+        };
+        Compilation b = ProcessorHarness.succeeded(ProcessorHarness.process(
+                List.of(v1, moduleA), List.of(), List.of(generating), generator("b", "p.Other.class, gen.Late.class")));
+        Map<String, String> sources = ProcessorHarness.generatedSources(b);
+
+        // round 1 would reuse the token-only a.facts.p.Dep_ for Other, but settles nothing: gen.Late is
+        // not there; round 2 finds Dep to be a supertype, and every metamodel refers to its full one
+        assertThat(sources.keySet())
+                .containsExactlyInAnyOrder("gen.Late", "b.facts.p.Other_", "b.facts.p.Dep_", "b.facts.gen.Late_");
+        assertThat(sources.get("b.facts.p.Dep_")).contains("complete = true");
+        assertThat(sources.get("b.facts.p.Other_")).contains("Dep_.Data.SHAPE").doesNotContain("a.facts");
         assertThat(b.diagnostics()).isEmpty();
     }
 

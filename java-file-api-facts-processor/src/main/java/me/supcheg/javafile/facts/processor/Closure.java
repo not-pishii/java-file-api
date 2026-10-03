@@ -66,7 +66,14 @@ import java.util.stream.Stream;
 ///   that waits is on a way to one.
 ///
 /// Every type of the family — the requested types and their supertypes —
-/// has a [Edge.Supertype] to each type it extends or implements directly.
+/// has a [Edge.Supertype] to each type it extends or implements directly,
+/// one that is not generated yet among them: what such a type extends and
+/// implements in turn is not known, so the family is not all there, and nor
+/// is it while a class literal of `@Facts` names a type that is not
+/// generated yet. The graph tells so ([TypeGraph#complete()]), and nothing
+/// is written from it: once the missing type is there, a type this round
+/// has as only mentioned, or has not at all, may be a supertype of it, of
+/// which a full metamodel is wanted.
 ///
 /// A generic type is rejected if a bound of its type parameters mentions a
 /// type the metamodel cannot declare the bound with — one that is not
@@ -83,6 +90,8 @@ final class Closure {
     /// The graph of a round.
     ///
     /// @param requested the types `@Facts` asks for, by binary name
+    /// @param unresolved the `@Facts` with a class literal of a type that is not generated yet, by the
+    ///     name of the type or package each is on
     /// @param done what became of types in earlier rounds, by binary name
     /// @param models the models of the round
     /// @param index the metamodels on the classpath
@@ -91,6 +100,7 @@ final class Closure {
     /// @return the graph
     static TypeGraph of(
             Map<String, TypeElement> requested,
+            Set<String> unresolved,
             Map<String, Done> done,
             Models models,
             ReuseIndex index,
@@ -110,7 +120,7 @@ final class Closure {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
         SortedMap<String, String> waiting = kin.stream()
-                .flatMap(type -> type.unresolved().map(unresolved -> Map.entry(type.name(), unresolved)).stream())
+                .flatMap(type -> type.unresolved().map(awaited -> Map.entry(type.name(), awaited)).stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
         // a type of which a full metamodel is wanted needs no token-only one, and a hidden type has none
@@ -141,9 +151,14 @@ final class Closure {
                 .<Node>flatMap(Function.identity())
                 .toList();
         Set<String> names = present.stream().map(Node::name).collect(Collectors.toSet());
-        Stream<Node> absent = waiting.values().stream()
+        List<Edge.Supertype> missing = family.entrySet().stream()
+                .flatMap(entry -> Inheritance.missing(entry.getValue())
+                        .map(supertype -> new Edge.Supertype(entry.getKey(), supertype)))
+                .toList();
+        Stream<Node> absent = Stream.concat(
+                        waiting.values().stream(), missing.stream().map(Edge::to))
                 .distinct()
-                .filter(unresolved -> !names.contains(unresolved))
+                .filter(name -> !names.contains(name))
                 .map(Node.Absent::new);
         Stream<Edge> signatures = ready.entrySet().stream()
                 .flatMap(entry -> entry.getValue().mentions().stream()
@@ -153,8 +168,9 @@ final class Closure {
                         .map(supertype -> new Edge.Supertype(entry.getKey(), models.binaryName(supertype))));
         return TypeGraph.of(
                 Stream.concat(present.stream(), absent),
-                Stream.of(signatures, inheritance, awaits(ready, waiting, models, base, elements))
-                        .flatMap(Function.identity()));
+                Stream.of(signatures, inheritance, missing.stream(), awaits(ready, waiting, models, base, elements))
+                        .flatMap(Function.identity()),
+                unresolved.stream());
     }
 
     /// What becomes of a requested type in this round.

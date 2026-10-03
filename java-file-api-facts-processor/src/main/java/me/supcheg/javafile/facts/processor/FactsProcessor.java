@@ -52,14 +52,30 @@ import java.util.stream.Stream;
 /// 2. builds the graph of the types of the round ([Closure], [TypeGraph]):
 ///    what `@Facts` asks for, what those types extend and implement, what
 ///    the signatures mention, what is not generated yet;
-/// 3. reads from the graph what to do: which types have a metamodel on the
-///    classpath to reuse, which have none and why, which full and token-only
-///    metamodels to write, and which wait for a later round;
-/// 4. writes the metamodels and lists them in the resource index
+/// 3. reads from the graph whether it is complete
+///    ([TypeGraph#complete()]): while `@Facts` asks for a type that is not
+///    generated yet, or a type extends or implements one, the round writes
+///    and settles nothing, for that type may extend or implement any other
+///    once it is there, of which a full metamodel is then wanted, and a
+///    metamodel is written once;
+/// 4. reads from a complete graph what to do: which types have a metamodel
+///    on the classpath to reuse, which have none and why, which full and
+///    token-only metamodels to write, and which wait for a later round;
+/// 5. writes the metamodels and lists them in the resource index
 ///    ([ReuseIndex]).
 ///
 /// In the last round it reports what never became ready, with what each
-/// type waited for.
+/// type waited for. It writes nothing then: javac compiles a file of the
+/// last round, but no longer finds its class for the files of the rounds
+/// before, which import it.
+///
+/// So a type is known for what it is — asked for, a supertype, only
+/// mentioned — before its metamodel is written, as far as the `@Facts` of
+/// the compilation go. Only a `@Facts` another processor generates, in a
+/// round after the metamodels were written, can ask for more of a type than
+/// its metamodel has: a type that has a token-only metamodel by then gets
+/// no full one ([TypeGraph.Request.Late], [TypeGraph.Node.Declined]). To
+/// cover that the processor would have to write in the last round.
 ///
 /// Between rounds it keeps where `@Facts` is and what it asks for, what
 /// became of each type ([Done]) — a metamodel is written once —, which
@@ -76,6 +92,8 @@ import java.util.stream.Stream;
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
     private static final String FORMAT = "me.supcheg.javafile.facts.meta.MetamodelFormat";
+    private static final String HELD =
+            "; no metamodel is written before that type is there, which may extend or" + " implement any other";
 
     private @Nullable Diagnostics diagnostics;
     private @Nullable Options options;
@@ -206,6 +224,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 .collect(Collectors.toMap(Asked::name, Function.identity(), (first, second) -> first, TreeMap::new));
         TypeGraph graph = Closure.of(
                 asked.values().stream().collect(Collectors.toMap(Asked::name, Asked::type)),
+                unresolvedSites.stream().map(Site::name).collect(Collectors.toSet()),
                 Map.copyOf(done),
                 models,
                 index,
@@ -217,6 +236,25 @@ public final class FactsProcessor extends AbstractProcessor {
                 .orElseGet(() -> graph.roots(name)
                         .flatMap(root -> asked.get(root).sites().stream())
                         .collect(Collectors.toCollection(TreeSet::new)));
+        Set<String> missingSupertypes =
+                graph.missingSupertypes().map(TypeGraph.Edge::to).collect(Collectors.toSet());
+        stuck = graph.nodes().values().stream()
+                .filter(node -> node.request().isPresent())
+                .flatMap(node -> graph
+                        .waitOf(node.name())
+                        .map(wait -> new Stuck(
+                                sitesOf.apply(node.name()).first(),
+                                "type " + subject(graph, node.name()) + " in @Facts is not resolvable after all"
+                                        + " rounds: it " + describe(wait)
+                                        + (wait instanceof TypeGraph.Wait.Missing(List<String> chain)
+                                                        && missingSupertypes.contains(chain.getLast())
+                                                ? HELD
+                                                : "")))
+                        .stream())
+                .toList();
+        if (!graph.complete()) {
+            return;
+        }
         graph.nodes().values().forEach(node -> {
             settled(node).ifPresent(settled -> {
                 done.put(node.name(), settled.left());
@@ -235,16 +273,6 @@ public final class FactsProcessor extends AbstractProcessor {
         planned(graph, sitesOf)
                 .toList()
                 .forEach(metamodel -> write(base, metamodel, models, targets, index, elements, diagnostics));
-        stuck = graph.nodes().values().stream()
-                .filter(node -> node.request().isPresent())
-                .flatMap(node -> graph
-                        .waitOf(node.name())
-                        .map(wait -> new Stuck(
-                                subject(graph, node.name()),
-                                sitesOf.apply(node.name()).first(),
-                                wait))
-                        .stream())
-                .toList();
     }
 
     /// A type as a diagnostic names it: by its binary name if `@Facts` asks
@@ -461,12 +489,9 @@ public final class FactsProcessor extends AbstractProcessor {
     }
 
     private void reportUnfinished(Elements elements, Diagnostics diagnostics) {
-        unresolvedSites.forEach(site ->
-                diagnostics.error(site.resolve(elements), "a type in @Facts is not resolvable after all rounds"));
-        stuck.forEach(type -> diagnostics.error(
-                type.site().resolve(elements),
-                "type " + type.subject() + " in @Facts is not resolvable after all rounds: it "
-                        + describe(type.cause())));
+        unresolvedSites.forEach(site -> diagnostics.error(
+                site.resolve(elements), "a type in @Facts is not resolvable after all rounds" + HELD));
+        stuck.forEach(type -> diagnostics.error(type.site().resolve(elements), type.error()));
     }
 
     /// What a type waits for, as a diagnostic tells it: the metamodels that
@@ -525,10 +550,9 @@ public final class FactsProcessor extends AbstractProcessor {
             String subject,
             List<TypeGraph.Reason> reasons) {}
 
-    /// A type whose full metamodel the latest round did not write.
+    /// A type whose full metamodel the latest round did not write because the type waits.
     ///
-    /// @param subject the type as a diagnostic names it, see [#subject]
     /// @param site the first `@Facts` that asks for it, or for a subtype of it
-    /// @param cause what it waits for
-    private record Stuck(String subject, Site site, TypeGraph.Wait cause) {}
+    /// @param error what the last round is to tell of it: what it waits for
+    private record Stuck(Site site, String error) {}
 }
