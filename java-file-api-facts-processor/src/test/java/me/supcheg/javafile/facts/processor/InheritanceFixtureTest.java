@@ -398,6 +398,104 @@ class InheritanceFixtureTest extends FixtureSupport {
         assertThat(twin.traits()).isEqualTo(MemberTraits.ABSTRACT);
     }
 
+    private static final String[] RHOMBUS = {
+        """
+        package p;
+        public class X extends Mid implements HiddenI, Own {
+            public String more() { return "x"; }
+        }
+        """,
+        "package p; public class Mid implements HiddenI { public void mid() {} }",
+        """
+        package p;
+        interface HiddenI {
+            String K = "k";
+            default String run() { return "run"; }
+            default String more() { return "more"; }
+        }
+        """,
+        "package p; interface Own { int OWN = 2; default void own() {} }"
+    };
+
+    @Test
+    void aMemberThePublicSupertypeHasAdoptedIsAFactOfThatSupertypeAlone() throws Exception {
+        Compilation compilation = generate("p.X.class", RHOMBUS);
+        ClassLoader loader = load(compilation);
+
+        assertThat(warnings(compilation)).isEmpty();
+        // Mid, which X extends, implements HiddenI too: one member, one fact; more() is X's own
+        assertThat(factNames(loader, "gen.facts.p.Mid_")).containsExactly("K", "mid", "more", "new_", "run");
+        assertThat(factNames(loader, "gen.facts.p.X_")).containsExactly("OWN", "more", "new_", "own");
+        assertThat(((Invocable) fact(loader, "gen.facts.p.X_", "more")).owner())
+                .isSameAs(token(loader, "gen.facts.p.X_"));
+        // the table of X has every method a call on X may resolve to, and its canonical form the facts it has
+        assertThat(token(loader, "gen.facts.p.X_").methods().concreteMethods())
+                .contains(
+                        new MethodSignature("run", List.of()),
+                        new MethodSignature("more", List.of()),
+                        new MethodSignature("mid", List.of()),
+                        new MethodSignature("own", List.of()));
+        assertThat(sources(compilation).get("gen.facts.p.X_"))
+                .contains("member method overridable more() -> java.lang.String throws -")
+                .doesNotContain("member method overridable run()")
+                .doesNotContain("java.lang.String K = ");
+        assertThat(sources(compilation).get("gen.facts.p.Mid_"))
+                .contains("member method overridable run() -> java.lang.String throws -")
+                .contains("member field static constant java.lang.String K = ");
+    }
+
+    @Test
+    void aMemberThePublicSupertypeHasAdoptedIsCalledOnTheSubtypeThroughThatSupertype() throws Exception {
+        String use = """
+                package use;
+
+                import gen.facts.java.lang.String_;
+                import gen.facts.p.Mid_;
+                import gen.facts.p.X_;
+                import java.lang.constant.ClassDesc;
+                import java.util.function.Function;
+                import me.supcheg.javafile.facts.TypeToken;
+                import me.supcheg.javafile.typed.Expr;
+                import me.supcheg.javafile.typed.TypedClassBuilder;
+                import me.supcheg.javafile.typed.TypedJavaFile;
+
+                import static me.supcheg.javafile.typed.Expressions.call;
+                import static me.supcheg.javafile.typed.Expressions.staticField;
+
+                public final class Run {
+                    private static <R, P> String render(
+                            TypeToken<R> result, TypeToken<P> param, Function<Expr<P>, Expr<R>> body) {
+                        return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                                    @Override
+                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                        cb.staticMethod("go", result, param, (b, p) -> b.return_(body.apply(p)));
+                                    }
+                                })
+                                .render();
+                    }
+
+                    public static String methodOfTheHiddenInterface() {
+                        return render(String_.TOKEN, X_.TOKEN, x -> call(x, Mid_.run));
+                    }
+
+                    public static String constantOfTheHiddenInterface() {
+                        return render(String_.TOKEN, X_.TOKEN, x -> staticField(Mid_.K));
+                    }
+
+                    public static String overriddenInTheSubtype() {
+                        return render(String_.TOKEN, X_.TOKEN, x -> call(x, X_.more));
+                    }
+                }
+                """;
+
+        assertThat(ranOn("p.X.class", RHOMBUS, use, "methodOfTheHiddenInterface", "p.X"))
+                .isEqualTo("run");
+        assertThat(ranOn("p.X.class", RHOMBUS, use, "constantOfTheHiddenInterface", "p.X"))
+                .isEqualTo("k");
+        assertThat(ranOn("p.X.class", RHOMBUS, use, "overriddenInTheSubtype", "p.X"))
+                .isEqualTo("x");
+    }
+
     @Test
     void theSamOfAnInterfaceThatAdoptsItsMethodIsThatFact() throws Exception {
         Compilation compilation = generate(
@@ -597,8 +695,13 @@ class InheritanceFixtureTest extends FixtureSupport {
     /// What `out.Out.go`, as a method of the generator renders it, returns for a new instance of
     /// `receiver`: the rendered source is compiled in a package of its own, against the library alone.
     private Object ranOn(String method, String receiver) throws Exception {
-        ClassLoader metamodels = load(generate("p.Derived.class, p.Pub.class", concat(LIBRARY, HIDDEN)));
-        Compilation use = use(USE);
+        return ranOn("p.Derived.class, p.Pub.class", concat(LIBRARY, HIDDEN), USE, method, receiver);
+    }
+
+    /// The same for a generator `user`, the source of class `use.Run`, of the metamodels of `facts` of `library`.
+    private Object ranOn(String facts, String[] library, String user, String method, String receiver) throws Exception {
+        ClassLoader metamodels = load(generate(facts, library));
+        Compilation use = use(user);
         assertThat(use.status()).as("%s", use.diagnostics()).isEqualTo(Compilation.Status.SUCCESS);
         ProcessorHarness.write(use, generator);
         String source;

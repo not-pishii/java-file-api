@@ -1057,6 +1057,86 @@ class MirrorTranslatorTypeTest {
                 .containsExactly("new of Impl", "more of Hidden");
     }
 
+    private static final String RHOMBUS = """
+            package p;
+            public class X extends Mid implements Hidden, Own {
+                public String more() { return "x"; }
+            }
+            interface Hidden {
+                int K = 1;
+                default String run() { return "run"; }
+                default String more() { return "more"; }
+                static void istatic() {}
+            }
+            interface Own { int OWN = 2; default void own() {} }
+            """;
+    private static final String MID = "package p; public class Mid implements Hidden { public void mid() {} }";
+
+    @Test
+    void aMemberAPublicSupertypeHasAdoptedIsNotAdoptedAgain() {
+        // K and run() of Hidden are told by Mid, which X extends; more() is X's own, and Own is its alone
+        assertThat(memberElements("p.X", RHOMBUS, MID))
+                .containsExactly("new of X", "more of X", "OWN of Own", "own of Own");
+        assertThat(memberElements("p.Mid", RHOMBUS, MID))
+                .containsExactly("new of Mid", "mid of Mid", "K of Hidden", "run of Hidden", "more of Hidden");
+    }
+
+    @Test
+    void aMemberToldByAPublicSupertypeIsStillInTheMethodTableAndNotInTheCanonicalForm() {
+        TypeModel model = full("p.X", RHOMBUS, MID);
+
+        assertThat(methods(model).keySet()).containsExactlyInAnyOrder("more", "own");
+        assertThat(model.skipped()).isEmpty();
+        assertThat(model.methods().concreteMethods())
+                .contains(Signature.of("run"), Signature.of("more"), Signature.of("mid"), Signature.of("own"));
+        // the canonical form has the members that have facts, and the whole table
+        assertThat(Canonical.of(model).text().lines().filter(line -> line.startsWith("member ")))
+                .containsExactly(
+                        "member ctor() throws -",
+                        "member field static constant int OWN = 2",
+                        "member method overridable more() -> java.lang.String throws -",
+                        "member method overridable own() -> void throws -");
+        assertThat(Canonical.of(model).text()).contains("run()");
+    }
+
+    @Test
+    void aMemberToldByAPublicSupertypeBeyondOneThatIsNotPublicIsNotAdopted() {
+        // Y reaches Hidden through Between, which is not public, and through Mid, which tells its members
+        assertThat(memberElements("p.Y", """
+                        package p;
+                        public class Y extends Between implements Hidden {}
+                        class Between extends Mid implements Hidden { public void between() {} }
+                        """, RHOMBUS, MID)).containsExactly("new of Y", "between of Between");
+    }
+
+    @Test
+    void anAbstractMethodAPublicSupertypeHasAdoptedIsNotAdoptedWithItsTwins() {
+        String sources = """
+                package p;
+                public abstract class Both extends Half implements Loose, Tight {}
+                interface Loose { Object twin(); }
+                interface Tight { String twin(); void tight(); }
+                """;
+        String half = "package p; public abstract class Half implements Loose {}";
+
+        // twin() is one member of Both, which Half tells already, as a method of Loose
+        assertThat(memberElements("p.Both", sources, half)).containsExactly("new of Both", "tight of Tight");
+        assertThat(memberElements("p.Half", sources, half)).containsExactly("new of Half", "twin of Loose");
+    }
+
+    @Test
+    void theSamAPublicSuperinterfaceHasAdoptedIsInherited() {
+        String hidden = "package p; interface HiddenFn { String apply(String s); }";
+        String pub = "package p; public interface PubFn extends HiddenFn {}";
+        String fn = "package p; public interface Fn extends PubFn, HiddenFn {}";
+
+        assertThat(memberElements("p.Fn", fn, pub, hidden)).isEmpty();
+        SamModel sam = samOf("p.Fn", fn, pub, hidden);
+        assertThat(sam.declared()).isFalse();
+        assertThat(sam.method().name()).isEqualTo("apply");
+        assertThat(samOf("p.PubFn", fn, pub, hidden).declared()).isTrue();
+    }
+
     // ---- sam(TypeElement)
 
     private static Translation<Optional<SamModel>> sam(String name, String... sources) {
