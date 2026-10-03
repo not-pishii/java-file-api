@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /// The names a rendered class starts a name with in its body: every
 /// identifier that does not follow a `.` — a class or field by its simple
@@ -17,9 +18,9 @@ final class SourceNames {
     ///
     /// @param type the simple name of the top-level class of the source
     /// @param source the source file
-    /// @return the names, in a set of its own
+    /// @return the names, each once
     /// @throws IllegalArgumentException if the source does not declare the class
-    static Set<String> inBodyOf(String type, String source) {
+    static Stream<String> inBodyOf(String type, String source) {
         Set<String> names = new HashSet<>();
         Place place = Place.BEFORE;
         boolean afterDot = false;
@@ -69,7 +70,7 @@ final class SourceNames {
         if (place != Place.BODY) {
             throw new IllegalArgumentException("no body of class " + type);
         }
-        return names;
+        return names.stream();
     }
 
     /// The index after the string or character literal that starts at `start`.
