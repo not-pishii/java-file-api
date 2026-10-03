@@ -1,0 +1,1 @@
+gen/G.java:8:1: error: the metamodels of q.Map$Entry and q.Map_Entry would both be gen.facts.q.Map_Entry_
