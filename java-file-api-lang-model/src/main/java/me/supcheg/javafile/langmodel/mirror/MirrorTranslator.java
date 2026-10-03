@@ -48,6 +48,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -171,7 +172,12 @@ public final class MirrorTranslator {
     /// - not a `static` method of an interface, which is not inherited;
     /// - of several abstract methods of the same signature one, that of the
     ///   most specific result, as for a `sam`;
-    /// - each once, however many ways lead to the supertype that declares it.
+    /// - each once, however many ways lead to the supertype that declares it;
+    /// - not one a `public` supertype of the type has adopted, which the
+    ///   type reaches through that supertype too — `X extends Mid`, where
+    ///   both implement `Hidden`: the members of `Hidden` are told by `Mid`,
+    ///   like the members `Mid` declares, and `X` has them from `Mid`. A
+    ///   member is told by one type, the farthest that has it.
     ///
     /// Constructors are not inherited, so none is adopted.
     ///
@@ -194,15 +200,45 @@ public final class MirrorTranslator {
 
     /// The members a type adopts, see [#members(TypeElement)]: those of the nearer supertype first.
     private Stream<Element> adopted(TypeElement element, DeclaredType self) {
-        List<TypeElement> hidden = hiddenSupertypes(List.of(element), Set.of()).toList();
-        if (hidden.isEmpty()) {
+        List<Element> had = had(element);
+        if (had.isEmpty()) {
             return Stream.empty();
+        }
+        // what a public supertype has of them, it tells: the type has them from that supertype
+        Set<Element> told = supertypesThrough(List.of(element), Set.of(), supertype -> true)
+                .filter(MirrorTranslator::isPublic)
+                .flatMap(supertype -> had(supertype).stream())
+                .collect(Collectors.toSet());
+        // abstract methods of one signature that do not override each other are one member of the type
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = had.stream()
+                .filter(member -> member.getKind() == ElementKind.METHOD)
+                .map(ExecutableElement.class::cast)
+                .collect(Collectors.groupingBy(method -> signature(method, element, self)));
+        return had.stream().filter(member -> switch (member) {
+            case ExecutableElement method -> {
+                List<ExecutableElement> same = twins.get(signature(method, element, self));
+                yield same.stream().noneMatch(told::contains)
+                        && pick(same, self).equals(method);
+            }
+            default -> !told.contains(member);
+        });
+    }
+
+    /// The `public` fields and methods of the supertypes that are not
+    /// `public` which a type has through such supertypes alone: those of
+    /// the nearer supertype first, and none that a nearer type replaces. A
+    /// `public` supertype that has one of them too is not looked at here.
+    private List<Element> had(TypeElement element) {
+        List<TypeElement> hidden = supertypesThrough(List.of(element), Set.of(), supertype -> !isPublic(supertype))
+                .toList();
+        if (hidden.isEmpty()) {
+            return List.of();
         }
         Map<String, List<Element>> inherited = elements.getAllMembers(element).stream()
                 .<Element>map(member -> member)
                 .filter(member -> member.getKind() == ElementKind.FIELD || member.getKind() == ElementKind.METHOD)
                 .collect(Collectors.groupingBy(member -> member.getSimpleName().toString()));
-        List<Element> had = hidden.stream()
+        return hidden.stream()
                 .<Element>flatMap(supertype -> supertype.getEnclosedElements().stream())
                 .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
                 .filter(member -> {
@@ -212,29 +248,21 @@ public final class MirrorTranslator {
                             && namesakes.stream().noneMatch(other -> replaces(other, member, element));
                 })
                 .toList();
-        // abstract methods of one signature that do not override each other are one member of the type
-        Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = had.stream()
-                .filter(member -> member.getKind() == ElementKind.METHOD)
-                .map(ExecutableElement.class::cast)
-                .collect(Collectors.groupingBy(method -> signature(method, element, self)));
-        return had.stream()
-                .filter(member -> !(member instanceof ExecutableElement method)
-                        || pick(twins.get(signature(method, element, self)), self)
-                                .equals(method));
     }
 
     private ExecutableElement pick(List<ExecutableElement> twins, DeclaredType self) {
         return twins.size() == 1 ? twins.getFirst() : mostSpecific(twins, self);
     }
 
-    /// The supertypes that are not `public` which `nearer` reach through
-    /// such supertypes alone: each once, the nearer first.
-    private static Stream<TypeElement> hiddenSupertypes(List<TypeElement> nearer, Set<TypeElement> seen) {
+    /// The supertypes `nearer` reach through supertypes that are `through`
+    /// alone, themselves `through`: each once, the nearer first.
+    private static Stream<TypeElement> supertypesThrough(
+            List<TypeElement> nearer, Set<TypeElement> seen, Predicate<TypeElement> through) {
         List<TypeElement> next = nearer.stream()
                 .flatMap(type -> Stream.concat(Stream.of(type.getSuperclass()), type.getInterfaces().stream()))
                 .filter(supertype -> supertype.getKind() == TypeKind.DECLARED)
                 .map(supertype -> (TypeElement) ((DeclaredType) supertype).asElement())
-                .filter(supertype -> !isPublic(supertype))
+                .filter(through)
                 .distinct()
                 .filter(supertype -> !seen.contains(supertype))
                 .toList();
@@ -242,9 +270,10 @@ public final class MirrorTranslator {
                 ? Stream.empty()
                 : Stream.concat(
                         next.stream(),
-                        hiddenSupertypes(
+                        supertypesThrough(
                                 next,
-                                Stream.concat(seen.stream(), next.stream()).collect(Collectors.toSet())));
+                                Stream.concat(seen.stream(), next.stream()).collect(Collectors.toSet()),
+                                through));
     }
 
     /// Whether `type` has `other` in place of `member`: `other` hides it, or
