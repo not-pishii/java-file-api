@@ -20,13 +20,13 @@ import java.lang.constant.ClassDesc;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The canonical form of a [TypeModel] and its fingerprint: the SHA-256 of
@@ -107,30 +107,40 @@ public final class Canonical {
     /// @throws IllegalArgumentException if the model mentions a type variable it does not declare
     public static Canonical of(TypeModel model) {
         Scope scope = new Scope(model.typeParams(), List.of());
-        List<String> lines = new ArrayList<>();
-        lines.add(HEADER);
-        lines.add("type " + binaryName(model.desc()) + " " + kind(model.kind()) + " sealed="
-                + (model.sealed() ? "yes" : "no"));
-        lines.add("tparams " + items(typeParams(model.typeParams(), "#", scope)));
-        lines.add("superclasses "
-                + items(model.superclasses().stream().map(Canonical::binaryName).toList()));
-        lines.add("supertypes "
-                + items(sorted(model.supertypes().supertypes().stream().map(scope::type))));
-        lines.add("enum " + items(model.enumConstants()));
-        lines.add("members "
-                + switch (model.filter()) {
-                    case NONE -> "none";
-                    case DECLARED_PUBLIC -> "declared-public";
-                });
-        lines.addAll(sorted(model.members().stream().map(m -> member(m, model.typeParams()))));
-        model.sam()
-                .ifPresent(sam -> lines.add("sam " + sam.name() + params(sam.params(), scope) + " -> "
-                        + sam.result().map(scope::type).orElse("void") + throwsClause(sam.throwsTypes(), scope)));
-        lines.add("table abstract " + items(table(model.methods().abstractMethods())));
-        lines.add("table concrete " + items(table(model.methods().concreteMethods())));
-        lines.add("table static " + items(table(model.methods().staticMethods())));
-        lines.add("table ctor " + items(table(model.methods().constructors())));
-        return new Canonical(String.join("\n", lines) + "\n");
+        String text = Stream.of(
+                        Stream.of(
+                                HEADER,
+                                "type " + binaryName(model.desc()) + " " + kind(model.kind()) + " sealed="
+                                        + (model.sealed() ? "yes" : "no"),
+                                "tparams " + items(typeParams(model.typeParams(), "#", scope)),
+                                "superclasses "
+                                        + items(model.superclasses().stream()
+                                                .map(Canonical::binaryName)
+                                                .toList()),
+                                "supertypes "
+                                        + items(sorted(model.supertypes().supertypes().stream()
+                                                .map(scope::type))),
+                                "enum " + items(model.enumConstants()),
+                                "members "
+                                        + switch (model.filter()) {
+                                            case NONE -> "none";
+                                            case DECLARED_PUBLIC -> "declared-public";
+                                        }),
+                        sorted(model.members().stream().map(m -> member(m, model.typeParams()))).stream(),
+                        model
+                                .sam()
+                                .map(sam -> "sam " + sam.name() + params(sam.params(), scope) + " -> "
+                                        + sam.result().map(scope::type).orElse("void")
+                                        + throwsClause(sam.throwsTypes(), scope))
+                                .stream(),
+                        Stream.of(
+                                "table abstract " + items(table(model.methods().abstractMethods())),
+                                "table concrete " + items(table(model.methods().concreteMethods())),
+                                "table static " + items(table(model.methods().staticMethods())),
+                                "table ctor " + items(table(model.methods().constructors()))))
+                .flatMap(lines -> lines)
+                .collect(Collectors.joining("\n", "", "\n"));
+        return new Canonical(text);
     }
 
     /// The canonical form.
@@ -186,8 +196,8 @@ public final class Canonical {
                 String prefix = "member field " + (field.isStatic() ? "static " : "instance ");
                 String declaration = new Scope(typeTypeParams, List.of()).type(field.type()) + " " + field.name();
                 yield switch (field.mutability()) {
-                    case Mutability.Mutable ignored -> prefix + "mutable " + declaration;
-                    case Mutability.Final ignored -> prefix + "final " + declaration;
+                    case Mutability.Mutable _ -> prefix + "mutable " + declaration;
+                    case Mutability.Final _ -> prefix + "final " + declaration;
                     case Mutability.Constant(Object value) ->
                         prefix + "constant " + declaration + " = " + literal(value);
                 };
@@ -202,13 +212,13 @@ public final class Canonical {
     }
 
     private static List<String> typeParams(List<TypeParam> typeParams, String prefix, Scope scope) {
-        List<String> rendered = new ArrayList<>();
-        for (int i = 0; i < typeParams.size(); i++) {
-            List<String> bounds =
-                    typeParams.get(i).bounds().stream().map(scope::type).toList();
-            rendered.add(prefix + i + (bounds.isEmpty() ? "" : " extends " + String.join(" & ", bounds)));
-        }
-        return rendered;
+        return IntStream.range(0, typeParams.size())
+                .mapToObj(i -> {
+                    List<String> bounds =
+                            typeParams.get(i).bounds().stream().map(scope::type).toList();
+                    return prefix + i + (bounds.isEmpty() ? "" : " extends " + String.join(" & ", bounds));
+                })
+                .toList();
     }
 
     private static String params(List<TypeRef> params, Scope scope) {
@@ -235,11 +245,11 @@ public final class Canonical {
 
     private static String kind(DeclaredKind kind) {
         return switch (kind) {
-            case DeclaredKind.FinalClass ignored -> "final-class";
-            case DeclaredKind.OpenClass ignored -> "open-class";
-            case DeclaredKind.AbstractClass ignored -> "abstract-class";
-            case DeclaredKind.Interface ignored -> "interface";
-            case DeclaredKind.EnumClass ignored -> "enum";
+            case DeclaredKind.FinalClass _ -> "final-class";
+            case DeclaredKind.OpenClass _ -> "open-class";
+            case DeclaredKind.AbstractClass _ -> "abstract-class";
+            case DeclaredKind.Interface _ -> "interface";
+            case DeclaredKind.EnumClass _ -> "enum";
         };
     }
 
@@ -313,7 +323,7 @@ public final class Canonical {
                 case ExactTypeArg exact -> type(exact.type());
                 case ExtendsTypeArg bound -> "? extends " + type(bound.bound());
                 case SuperTypeArg bound -> "? super " + type(bound.bound());
-                case UnboundedTypeArg ignored -> "?";
+                case UnboundedTypeArg _ -> "?";
             };
         }
 
@@ -325,12 +335,10 @@ public final class Canonical {
         }
 
         private static Optional<Integer> position(List<TypeParam> typeParams, String name) {
-            for (int i = 0; i < typeParams.size(); i++) {
-                if (typeParams.get(i).name().equals(name)) {
-                    return Optional.of(i);
-                }
-            }
-            return Optional.empty();
+            return IntStream.range(0, typeParams.size())
+                    .filter(i -> typeParams.get(i).name().equals(name))
+                    .boxed()
+                    .findFirst();
         }
     }
 }

@@ -40,7 +40,6 @@ import java.lang.constant.ConstantDescs;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /// Translates what an annotation processor sees through `javax.lang.model`
 /// into the model of generated code: a [TypeModel] of a declared type, or a
@@ -161,21 +162,21 @@ public final class MirrorTranslator {
     /// @throws IllegalArgumentException if `member` is not a field, constructor or method
     public Translation<MemberModel> member(TypeElement owner, Element member) {
         DeclaredType self = (DeclaredType) owner.asType();
-        List<MemberModel> members = new ArrayList<>();
-        List<SkippedMember> skipped = new ArrayList<>();
         try {
-            switch (member.getKind()) {
-                case FIELD -> field(owner, self, (VariableElement) member, members, skipped);
-                case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member, members, skipped);
-                case METHOD -> method(owner, self, (ExecutableElement) member, members, skipped);
-                default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
-            }
+            Read read =
+                    switch (member.getKind()) {
+                        case FIELD -> field(owner, self, (VariableElement) member);
+                        case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member);
+                        case METHOD -> method(owner, self, (ExecutableElement) member);
+                        default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
+                    };
+            return switch (read) {
+                case Read.Made(MemberModel model) -> new Translation.Ok<>(model);
+                case Read.Skipped(SkippedMember skip) -> new Translation.Unrepresentable<>(skip.reason());
+            };
         } catch (Unresolved unresolved) {
             return new Translation.Deferred<>(unresolved.type);
         }
-        return members.isEmpty()
-                ? new Translation.Unrepresentable<>(skipped.getFirst().reason())
-                : new Translation.Ok<>(members.getFirst());
     }
 
     /// The single abstract method of a functional interface (JLS 9.8), as a
@@ -225,15 +226,12 @@ public final class MirrorTranslator {
         }
         ExecutableElement method = mostSpecific(candidates, self);
         boolean declared = method.getEnclosingElement().equals(element);
-        List<MemberModel> members = new ArrayList<>();
-        List<SkippedMember> skipped = new ArrayList<>();
-        method(element, self, method, functionThrows(candidates, self), members, skipped);
-        if (members.isEmpty()) {
-            return declared
-                    ? new Translation.Ok<>(Optional.empty())
-                    : new Translation.Unrepresentable<>(skipped.getFirst().reason());
-        }
-        return new Translation.Ok<>(Optional.of(new SamModel((MethodModel) members.getFirst(), declared)));
+        return switch (method(element, self, method, functionThrows(candidates, self))) {
+            case Read.Made(MemberModel model) ->
+                new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
+            case Read.Skipped(SkippedMember skip) ->
+                declared ? new Translation.Ok<>(Optional.empty()) : new Translation.Unrepresentable<>(skip.reason());
+        };
     }
 
     /// The method whose result is a subtype of the results of the others, as
@@ -273,12 +271,14 @@ public final class MirrorTranslator {
     /// 9.9): every exception of one of their `throws` clauses that is a
     /// subtype of an exception of each clause.
     private List<TypeMirror> functionThrows(List<ExecutableElement> candidates, DeclaredType self) {
-        List<List<? extends TypeMirror>> clauses = new ArrayList<>();
-        for (ExecutableElement candidate : candidates) {
-            List<? extends TypeMirror> clause = ((ExecutableType) types.asMemberOf(self, candidate)).getThrownTypes();
-            clause.forEach(MirrorTranslator::requireResolved);
-            clauses.add(clause);
-        }
+        List<List<? extends TypeMirror>> clauses = candidates.stream()
+                .<List<? extends TypeMirror>>map(candidate -> {
+                    List<? extends TypeMirror> clause =
+                            ((ExecutableType) types.asMemberOf(self, candidate)).getThrownTypes();
+                    clause.forEach(MirrorTranslator::requireResolved);
+                    return clause;
+                })
+                .toList();
         List<TypeMirror> thrown = new ArrayList<>();
         for (List<? extends TypeMirror> clause : clauses) {
             for (TypeMirror exception : clause) {
@@ -306,17 +306,13 @@ public final class MirrorTranslator {
                 .filter(e -> e.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(e -> e.getSimpleName().toString())
                 .toList();
-        List<MemberModel> members = new ArrayList<>();
-        List<SkippedMember> skipped = new ArrayList<>();
-        if (filter == MemberFilter.DECLARED_PUBLIC) {
-            members(element, self, members, skipped);
-        }
+        List<Read> reads = filter == MemberFilter.DECLARED_PUBLIC ? members(element, self) : List.of();
         Optional<MethodModel> sam =
                 switch (readSam(element)) {
                     case Translation.Ok<Optional<SamModel>>(Optional<SamModel> found) -> found.map(SamModel::method);
                     case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
                         throw new IllegalStateException("a deferred sam is thrown, not returned: " + unresolved);
-                    case Translation.Unrepresentable<Optional<SamModel>> ignored -> Optional.empty();
+                    case Translation.Unrepresentable<Optional<SamModel>> _ -> Optional.empty();
                 };
         shape.problems.addAll(bounds.problems);
         if (!shape.problems.isEmpty()) {
@@ -334,20 +330,19 @@ public final class MirrorTranslator {
                 element.getModifiers().contains(Modifier.SEALED),
                 sam,
                 filter,
-                members,
-                skipped));
+                reads.stream().flatMap(Read::models).toList(),
+                reads.stream().flatMap(Read::skips).toList()));
     }
 
     private static Optional<TypeElement> genericOuter(TypeElement element) {
-        TypeElement type = element;
-        while (type.getNestingKind() == NestingKind.MEMBER
-                && !type.getModifiers().contains(Modifier.STATIC)) {
-            type = (TypeElement) type.getEnclosingElement();
-            if (!type.getTypeParameters().isEmpty()) {
-                return Optional.of(type);
-            }
-        }
-        return Optional.empty();
+        return Stream.iterate(
+                        element,
+                        type -> type.getNestingKind() == NestingKind.MEMBER
+                                && !type.getModifiers().contains(Modifier.STATIC),
+                        type -> (TypeElement) type.getEnclosingElement())
+                .map(type -> (TypeElement) type.getEnclosingElement())
+                .filter(outer -> !outer.getTypeParameters().isEmpty())
+                .findFirst();
     }
 
     private static DeclaredKind kind(TypeElement element) {
@@ -366,15 +361,15 @@ public final class MirrorTranslator {
     }
 
     private List<ClassDesc> superclasses(TypeElement element) {
-        List<ClassDesc> chain = new ArrayList<>();
-        TypeMirror superclass = element.getSuperclass();
-        while (superclass.getKind() != TypeKind.NONE) {
-            requireResolved(superclass);
-            TypeElement type = (TypeElement) ((DeclaredType) superclass).asElement();
-            chain.add(desc(type));
-            superclass = type.getSuperclass();
-        }
-        return chain;
+        return Stream.iterate(
+                        element.getSuperclass(),
+                        superclass -> superclass.getKind() != TypeKind.NONE,
+                        superclass -> ((TypeElement) ((DeclaredType) superclass).asElement()).getSuperclass())
+                .map(superclass -> {
+                    requireResolved(superclass);
+                    return desc((TypeElement) ((DeclaredType) superclass).asElement());
+                })
+                .toList();
     }
 
     private Supertypes supertypes(DeclaredType self, List<TypeParam> typeParams, Reading reading) {
@@ -400,30 +395,26 @@ public final class MirrorTranslator {
     }
 
     private MethodTableTemplate methods(TypeElement element, DeclaredType self) {
-        Map<MethodTableTemplate.Signature, Category> table = new HashMap<>();
-        for (ExecutableElement method : ElementFilter.methodsIn(elements.getAllMembers(element))) {
-            Set<Modifier> modifiers = method.getModifiers();
-            if (modifiers.contains(Modifier.PRIVATE)) {
-                continue;
-            }
-            MethodTableTemplate.Signature signature = signature(method, element, self);
-            Category category = modifiers.contains(Modifier.STATIC)
-                    ? Category.STATIC
-                    : modifiers.contains(Modifier.ABSTRACT) ? Category.ABSTRACT : Category.CONCRETE;
-            table.merge(signature, category, Category::stronger);
-        }
-        if (element.getKind() == ElementKind.INTERFACE) {
-            // an interface that redeclares a public method of Object abstract does not ask its
-            // implementations for it: every class has it from Object
-            for (MethodTableTemplate.Signature signature : OBJECT_METHODS) {
-                table.computeIfPresent(
-                        signature, (key, category) -> category == Category.ABSTRACT ? Category.CONCRETE : category);
-            }
-        }
+        Map<MethodTableTemplate.Signature, Category> table =
+                ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
+                        .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
+                        .collect(Collectors.toMap(
+                                method -> signature(method, element, self),
+                                method -> category(method.getModifiers()),
+                                Category::stronger));
+        boolean isInterface = element.getKind() == ElementKind.INTERFACE;
+        Map<Category, Set<MethodTableTemplate.Signature>> parts = table.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        // an interface that redeclares a public method of Object abstract does not ask its
+                        // implementations for it: every class has it from Object
+                        e -> isInterface && e.getValue() == Category.ABSTRACT && OBJECT_METHODS.contains(e.getKey())
+                                ? Category.CONCRETE
+                                : e.getValue(),
+                        Collectors.mapping(Map.Entry::getKey, Collectors.toUnmodifiableSet())));
         return new MethodTableTemplate(
-                signatures(table, Category.ABSTRACT),
-                signatures(table, Category.CONCRETE),
-                signatures(table, Category.STATIC),
+                parts.getOrDefault(Category.ABSTRACT, Set.of()),
+                parts.getOrDefault(Category.CONCRETE, Set.of()),
+                parts.getOrDefault(Category.STATIC, Set.of()),
                 ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
                         .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
                         .map(constructor -> new MethodTableTemplate.Signature(
@@ -444,12 +435,10 @@ public final class MirrorTranslator {
         return type.getParameterTypes().stream().map(p -> param(p, owner)).toList();
     }
 
-    private static Set<MethodTableTemplate.Signature> signatures(
-            Map<MethodTableTemplate.Signature, Category> table, Category category) {
-        return table.entrySet().stream()
-                .filter(e -> e.getValue() == category)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toUnmodifiableSet());
+    private static Category category(Set<Modifier> modifiers) {
+        return modifiers.contains(Modifier.STATIC)
+                ? Category.STATIC
+                : modifiers.contains(Modifier.ABSTRACT) ? Category.ABSTRACT : Category.CONCRETE;
     }
 
     /// The erasure of a parameter in the template of the method table: a
@@ -488,29 +477,20 @@ public final class MirrorTranslator {
         };
     }
 
-    private void members(
-            TypeElement element, DeclaredType self, List<MemberModel> members, List<SkippedMember> skipped) {
-        for (Element member : element.getEnclosedElements()) {
-            if (!member.getModifiers().contains(Modifier.PUBLIC)) {
-                continue;
-            }
-            switch (member.getKind()) {
-                case FIELD -> field(element, self, (VariableElement) member, members, skipped);
-                case CONSTRUCTOR -> constructor(element, self, (ExecutableElement) member, members, skipped);
-                case METHOD -> method(element, self, (ExecutableElement) member, members, skipped);
-                default -> {
+    private List<Read> members(TypeElement element, DeclaredType self) {
+        return element.getEnclosedElements().stream()
+                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                .flatMap(member -> switch (member.getKind()) {
+                    case FIELD -> Stream.of(field(element, self, (VariableElement) member));
+                    case CONSTRUCTOR -> Stream.of(constructor(element, self, (ExecutableElement) member));
+                    case METHOD -> Stream.of(method(element, self, (ExecutableElement) member));
                     // enum constants are TypeModel.enumConstants; member types have models of their own
-                }
-            }
-        }
+                    default -> Stream.<Read>empty();
+                })
+                .toList();
     }
 
-    private void field(
-            TypeElement owner,
-            DeclaredType self,
-            VariableElement field,
-            List<MemberModel> members,
-            List<SkippedMember> skipped) {
+    private Read field(TypeElement owner, DeclaredType self, VariableElement field) {
         Reading reading = new Reading(VarScope.of(owner));
         TypeRef type = type(types.asMemberOf(self, field), reading);
         Set<Modifier> modifiers = field.getModifiers();
@@ -525,48 +505,30 @@ public final class MirrorTranslator {
             mutability = Mutability.FINAL;
         }
         String name = field.getSimpleName().toString();
-        reading.skipReason(0)
-                .ifPresentOrElse(
-                        reason -> skipped.add(new SkippedMember("field " + name, reason)),
-                        () -> members.add(new FieldModel(name, isStatic, type, mutability)));
+        return Read.of(reading, 0, "field " + name, () -> new FieldModel(name, isStatic, type, mutability));
     }
 
-    private void constructor(
-            TypeElement owner,
-            DeclaredType self,
-            ExecutableElement constructor,
-            List<MemberModel> members,
-            List<SkippedMember> skipped) {
+    private Read constructor(TypeElement owner, DeclaredType self, ExecutableElement constructor) {
         Reading reading = new Reading(VarScope.of(constructor));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, constructor);
         List<TypeParam> typeParams = typeParams(type, reading);
         List<TypeRef> params = params(type, reading);
         List<ClassOrInterfaceTypeRef> throwsTypes = throwsTypes(type, reading);
-        reading.skipReason(params.size())
-                .ifPresentOrElse(
-                        reason -> skipped.add(new SkippedMember("constructor " + constructor, reason)),
-                        () -> members.add(
-                                new CtorModel(typeParams, params, declared(constructor, owner, self), throwsTypes)));
+        return Read.of(
+                reading,
+                params.size(),
+                "constructor " + constructor,
+                () -> new CtorModel(typeParams, params, declared(constructor, owner, self), throwsTypes));
     }
 
-    private void method(
-            TypeElement owner,
-            DeclaredType self,
-            ExecutableElement method,
-            List<MemberModel> members,
-            List<SkippedMember> skipped) {
+    private Read method(TypeElement owner, DeclaredType self, ExecutableElement method) {
         List<? extends TypeMirror> thrown = ((ExecutableType) types.asMemberOf(self, method)).getThrownTypes();
-        method(owner, self, method, thrown, members, skipped);
+        return method(owner, self, method, thrown);
     }
 
     /// A method that throws `thrown`, whatever its own `throws` clause says.
-    private void method(
-            TypeElement owner,
-            DeclaredType self,
-            ExecutableElement method,
-            List<? extends TypeMirror> thrown,
-            List<MemberModel> members,
-            List<SkippedMember> skipped) {
+    private Read method(
+            TypeElement owner, DeclaredType self, ExecutableElement method, List<? extends TypeMirror> thrown) {
         Reading reading = new Reading(VarScope.of(owner, method));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
         List<TypeParam> typeParams = typeParams(type, reading);
@@ -589,18 +551,19 @@ public final class MirrorTranslator {
             overridability = Overridability.OVERRIDABLE;
         }
         String name = method.getSimpleName().toString();
-        reading.skipReason(params.size())
-                .ifPresentOrElse(
-                        reason -> skipped.add(new SkippedMember("method " + method, reason)),
-                        () -> members.add(new MethodModel(
-                                name,
-                                isStatic,
-                                typeParams,
-                                result,
-                                params,
-                                declared(method, owner, self),
-                                throwsTypes,
-                                overridability)));
+        return Read.of(
+                reading,
+                params.size(),
+                "method " + method,
+                () -> new MethodModel(
+                        name,
+                        isStatic,
+                        typeParams,
+                        result,
+                        params,
+                        declared(method, owner, self),
+                        throwsTypes,
+                        overridability));
     }
 
     private List<TypeParam> typeParams(ExecutableType type, Reading reading) {
@@ -662,13 +625,15 @@ public final class MirrorTranslator {
         }
         List<TypeArg> args =
                 type.getTypeArguments().stream().map(a -> argument(a, reading)).toList();
-        for (TypeMirror outer = type.getEnclosingType();
-                outer.getKind() == TypeKind.DECLARED;
-                outer = ((DeclaredType) outer).getEnclosingType()) {
-            if (!((DeclaredType) outer).getTypeArguments().isEmpty()) {
-                return reading.unrepresentable(
-                        "member class " + element.getQualifiedName() + " of parameterized type " + outer);
-            }
+        Optional<TypeMirror> parameterizedOuter = Stream.iterate(
+                        type.getEnclosingType(),
+                        outer -> outer.getKind() == TypeKind.DECLARED,
+                        outer -> ((DeclaredType) outer).getEnclosingType())
+                .filter(outer -> !((DeclaredType) outer).getTypeArguments().isEmpty())
+                .findFirst();
+        if (parameterizedOuter.isPresent()) {
+            return reading.unrepresentable("member class " + element.getQualifiedName() + " of parameterized type "
+                    + parameterizedOuter.get());
         }
         ClassDesc desc = desc(element);
         return args.isEmpty() ? new ClassTypeRef(desc) : new ParameterizedTypeRef(desc, args);
@@ -698,14 +663,8 @@ public final class MirrorTranslator {
     }
 
     private static boolean isPublic(TypeElement element) {
-        Element type = element;
-        while (type instanceof TypeElement) {
-            if (!type.getModifiers().contains(Modifier.PUBLIC)) {
-                return false;
-            }
-            type = type.getEnclosingElement();
-        }
-        return true;
+        return Stream.<Element>iterate(element, type -> type instanceof TypeElement, Element::getEnclosingElement)
+                .allMatch(type -> type.getModifiers().contains(Modifier.PUBLIC));
     }
 
     private ClassDesc desc(TypeElement element) {
@@ -719,6 +678,44 @@ public final class MirrorTranslator {
     private static void requireResolved(TypeMirror type) {
         if (type.getKind() == TypeKind.ERROR) {
             throw new Unresolved(type);
+        }
+    }
+
+    /// What reading a member found: its model, or why it has none.
+    private sealed interface Read {
+        /// The model of a member, or the reason it is skipped, by what its reading found.
+        static Read of(Reading reading, int arity, String member, Supplier<MemberModel> model) {
+            return reading.skipReason(arity)
+                    .<Read>map(reason -> new Skipped(new SkippedMember(member, reason)))
+                    .orElseGet(() -> new Made(model.get()));
+        }
+
+        Stream<MemberModel> models();
+
+        Stream<SkippedMember> skips();
+
+        record Made(MemberModel model) implements Read {
+            @Override
+            public Stream<MemberModel> models() {
+                return Stream.of(model);
+            }
+
+            @Override
+            public Stream<SkippedMember> skips() {
+                return Stream.empty();
+            }
+        }
+
+        record Skipped(SkippedMember skipped) implements Read {
+            @Override
+            public Stream<MemberModel> models() {
+                return Stream.empty();
+            }
+
+            @Override
+            public Stream<SkippedMember> skips() {
+                return Stream.of(skipped);
+            }
         }
     }
 

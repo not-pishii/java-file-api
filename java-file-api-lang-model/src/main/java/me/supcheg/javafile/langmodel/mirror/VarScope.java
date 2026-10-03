@@ -3,8 +3,8 @@ package me.supcheg.javafile.langmodel.mirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /// The type variables a type mirror may mention, for
 /// [MirrorTranslator#typeRef]: those of a type, or of a method or
@@ -35,9 +35,10 @@ public final class VarScope {
     /// @param executable the method or constructor
     /// @return the scope
     public static VarScope of(ExecutableElement executable) {
-        List<TypeParameterElement> variables = new ArrayList<>(executable.getTypeParameters());
-        variables.addAll(((TypeElement) executable.getEnclosingElement()).getTypeParameters());
-        return new VarScope(variables);
+        return new VarScope(Stream.concat(
+                        executable.getTypeParameters().stream(),
+                        ((TypeElement) executable.getEnclosingElement()).getTypeParameters().stream())
+                .toList());
     }
 
     /// The type parameters of a method and of a type that has it as a
@@ -49,9 +50,8 @@ public final class VarScope {
     /// @param executable a method or constructor of `owner`, declared or inherited
     /// @return the scope
     static VarScope of(TypeElement owner, ExecutableElement executable) {
-        List<TypeParameterElement> variables = new ArrayList<>(executable.getTypeParameters());
-        variables.addAll(owner.getTypeParameters());
-        return new VarScope(variables);
+        return new VarScope(Stream.concat(executable.getTypeParameters().stream(), owner.getTypeParameters().stream())
+                .toList());
     }
 
     /// Whether a type variable is in scope.
