@@ -135,7 +135,7 @@ class TypeGraphTest {
             assertThat(List.copyOf(shuffled.nodes().keySet())).containsExactly("gen.X", "p.A", "p.B", "p.C", "p.D");
             // of the two ways of the same length, the one through the first name
             assertThat(shuffled.waitOf("p.A")).contains(new Wait.Missing(List.of("p.A", "p.B", "p.D", "gen.X")));
-            assertThat(shuffled.supertypes("p.B")).containsExactly("p.C");
+            assertThat(GraphProbe.supertypes(shuffled, "p.B")).containsExactly("p.C");
             assertThat(shuffled.roots("p.C")).containsExactly("p.B", "p.C");
             assertThat(shuffled.reasons("p.D")).containsExactly(new Reason.Asked(), new Reason.Mentioned("p.A"));
         }
@@ -313,12 +313,12 @@ class TypeGraphTest {
         TypeGraph graph = family();
 
         assertThat(graph.from("p.X", Edge.Supertype.class).map(Edge::to)).containsExactly("p.H");
-        assertThat(graph.supertypes("p.X")).containsExactly("p.H", "p.I", "p.S");
-        assertThat(graph.supertypes("p.Y")).containsExactly("p.D", "p.I", "p.S");
-        assertThat(graph.supertypes("p.S")).containsExactly("p.I");
-        assertThat(graph.supertypes("p.I")).isEmpty();
+        assertThat(GraphProbe.supertypes(graph, "p.X")).containsExactly("p.H", "p.I", "p.S");
+        assertThat(GraphProbe.supertypes(graph, "p.Y")).containsExactly("p.D", "p.I", "p.S");
+        assertThat(GraphProbe.supertypes(graph, "p.S")).containsExactly("p.I");
+        assertThat(GraphProbe.supertypes(graph, "p.I")).isEmpty();
         // a signature leads no further: what a mentioned type extends is not followed
-        assertThat(graph.supertypes("p.M")).isEmpty();
+        assertThat(GraphProbe.supertypes(graph, "p.M")).isEmpty();
     }
 
     @Test

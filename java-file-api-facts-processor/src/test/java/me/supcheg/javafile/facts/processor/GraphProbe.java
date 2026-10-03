@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.langmodel.mirror.Hierarchy;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -12,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /// A processor that builds the [TypeGraph] of its first round as
 /// [FactsProcessor] does, for types given by name in whatever order, and
@@ -23,6 +26,18 @@ final class GraphProbe extends AbstractProcessor {
     /// @param requested the canonical names of the types to ask for, in the order to ask in
     GraphProbe(String... requested) {
         this.requested = List.of(requested);
+    }
+
+    /// The types a type of a graph extends or implements, directly or through others, sorted.
+    ///
+    /// @param graph the graph
+    /// @param name the binary name of the type
+    /// @return the binary names of its supertypes
+    static Stream<String> supertypes(TypeGraph graph, String name) {
+        return Hierarchy.<String>beyond(
+                        List.of(name),
+                        type -> graph.from(type, TypeGraph.Edge.Supertype.class).map(TypeGraph.Edge::to))
+                .sorted();
     }
 
     /// The graph of the first round.
