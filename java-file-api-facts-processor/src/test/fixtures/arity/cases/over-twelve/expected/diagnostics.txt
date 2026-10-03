@@ -1,0 +1,3 @@
+gen/G.java:7:1: warning: p.Big: no fact of constructor Big(int,int,int,int,int,int,int,int,int,int,int,int,int), which has 13 parameters, more than 12
+gen/G.java:7:1: warning: p.Big: no fact of method thirteen(int,int,int,int,int,int,int,int,int,int,int,int,int), which has 13 parameters, more than 12
+gen/G.java:7:1: warning: p.Big: no fact of method staticThirteen(int,int,int,int,int,int,int,int,int,int,int,int,int), which has 13 parameters, more than 12

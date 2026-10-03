@@ -1,0 +1,5 @@
+gen/G.java:7:1: error: p.Mix: no fact of constructor <T>Mix(T,int), which is a generic constructor, whose type arguments a fact cannot give explicitly
+gen/G.java:7:1: error: p.Mix: no fact of method dollar(), which mentions p.Dol$lar, which has no metamodel: a class with $ in its simple name is not supported yet
+gen/G.java:7:1: error: p.Mix: no fact of method marker(), which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
+gen/G.java:7:1: error: p.Mix: no fact of method markers(), which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
+gen/G.java:7:1: error: p.Mix: no fact of method <T>marked(T), which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet

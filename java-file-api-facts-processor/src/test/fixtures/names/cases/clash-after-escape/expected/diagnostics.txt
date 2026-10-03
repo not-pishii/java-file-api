@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.Sh: no fact of field x_, method <T>x(), which would all be named x_

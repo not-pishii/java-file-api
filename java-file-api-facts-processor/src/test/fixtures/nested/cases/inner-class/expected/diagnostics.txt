@@ -1,0 +1,2 @@
+gen/G.java:7:1: warning: p.Outer$NonStatic: no fact of constructor NonStatic(), which is the constructor of an inner class, which needs an enclosing instance
+gen/G.java:7:1: warning: p.Outer$NonStatic: no fact of constructor NonStatic(int), which is the constructor of an inner class, which needs an enclosing instance

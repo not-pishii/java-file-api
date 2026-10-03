@@ -1,0 +1,1 @@
+gen/G.java:8:1: warning: p.Tk: no fact of field Other, which would be named Other_, a name the metamodel itself uses

@@ -1,0 +1,2 @@
+gen/G.java:34:1: warning: p.Hid: no fact of method s(), which mentions types that are not public: p.Secret
+gen/G.java:34:1: warning: p.Hid2: no fact of the single abstract method, which mentions types that are not public: p.Secret

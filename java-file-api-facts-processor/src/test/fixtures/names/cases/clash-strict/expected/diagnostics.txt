@@ -1,0 +1,1 @@
+gen/G.java:7:1: error: p.Cf: no fact of method x(), method x_(), which would all be named x_

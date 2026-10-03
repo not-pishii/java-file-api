@@ -1,0 +1,2 @@
+gen/G.java:7:1: warning: p.Ov: no fact of method m(java.util.List<p.Hidden>), which mentions types that are not public: p.Hidden
+gen/G.java:7:1: warning: p.Ov: no fact of constructor Ov(java.util.List<p.Hidden>), which mentions types that are not public: p.Hidden

@@ -1,0 +1,7 @@
+gen/G.java:7:1: error: p.Vis: no fact of field hf, which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of field hl, which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of constructor Vis(p.Hidden), which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of method hidden(), which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of method takes(p.Hidden), which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of method arr(), which mentions types that are not public: p.Hidden
+gen/G.java:7:1: error: p.Vis: no fact of method nested(p.Outer.PkgNested), which mentions types that are not public: p.Outer$PkgNested
