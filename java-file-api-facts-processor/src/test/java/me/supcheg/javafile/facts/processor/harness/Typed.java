@@ -17,6 +17,19 @@ import java.util.function.Function;
 /// ```
 public interface Typed {
 
+    /// The source [#apply] compiles: class `out.Out` with `public static R go(P p)`
+    /// that returns `body` of its parameter. Nothing is compiled or run, so the
+    /// source can be asserted on, and a fact the typed layer rejects — one that
+    /// javac would resolve to another member — fails here, with its exception.
+    ///
+    /// @param result the type of the result
+    /// @param parameter the type of the parameter
+    /// @param body the expression of the parameter to return
+    /// @param <R> the type of the result
+    /// @param <P> the type of the parameter
+    /// @return the source
+    <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body);
+
     /// Renders class `out.Out` with `public static R go(P p)` that returns
     /// `body` of its parameter, compiles it under every lint with warnings
     /// as errors against the library of the fixture alone — it is code of

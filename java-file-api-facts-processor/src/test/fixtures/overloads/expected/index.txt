@@ -1,0 +1,13 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> gen.facts.java.lang.Object_
+META-INF/javafile/metamodel/full/p.Abs -> gen.facts.p.Abs_
+META-INF/javafile/metamodel/full/p.Ov -> gen.facts.p.Ov_
+META-INF/javafile/metamodel/full/p.Ov2 -> gen.facts.p.Ov2_
+META-INF/javafile/metamodel/full/p.SubOv -> gen.facts.p.SubOv_
+META-INF/javafile/metamodel/full/p.T2 -> gen.facts.p.T2_
+META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.Comparable -> gen.facts.java.lang.Comparable_
+META-INF/javafile/metamodel/token/java.lang.Integer -> gen.facts.java.lang.Integer_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
+META-INF/javafile/metamodel/token/java.lang.StringBuilder -> gen.facts.java.lang.StringBuilder_
+META-INF/javafile/metamodel/token/java.util.Optional -> gen.facts.java.util.Optional_
