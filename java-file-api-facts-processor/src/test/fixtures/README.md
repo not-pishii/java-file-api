@@ -14,6 +14,7 @@ harness is `src/test/java/…/processor/harness` (`FixtureRun` makes the tests).
   request/options.txt           optional: javac options, one per line, # comments
   request/classpath.txt         optional: sibling cases whose output is on the classpath
   expected/…                    the snapshot of the output, written by -Pfixtures.update
+  expected-jdk/…                the metamodels of JDK types, once for the fixture (see below)
   use/*.java                    code against the metamodels: compiled and run
   use-fails/*.java              code against the metamodels that must not compile
 ```
@@ -44,7 +45,28 @@ Exactly what the processor wrote, nothing masked (fingerprints and the format nu
   `gen/G.java:7:1: warning: p.Pub: no fact of method self() of p.Far, …` (file, line, column of
   the `@Facts` it is reported on; `error: …` alone for one that points nowhere).
 
-A file that would be empty is absent: no `diagnostics.txt` means no diagnostics. If the processor
+A file that would be empty is absent: no `diagnostics.txt` means no diagnostics.
+
+### `expected-jdk/`
+
+The metamodels of the types of the JDK (`gen/facts/java/lang/String_.java`: every source under
+`java/`, `javax/` or `jdk/` of the base package) are the same in most cases of a fixture, and a
+full `String_` is 18 KB. They are kept **once per fixture**, at the same paths, in
+`expected-jdk/` (a fixture with a single `request/` has it too, for the same layout); `index.txt`
+of a case still tells which metamodels, JDK ones included, the case has. A case is compared so:
+
+- a JDK file the case writes and `expected/` does not hold must equal the one of `expected-jdk/`;
+- a JDK file `expected/` of the case holds is that case's own variant (a full `Object_` where the
+  others have a token-only one, another base package) and takes priority — it must differ from the
+  shared one, or it is "redundant";
+- the shared file of a path is the text most cases write, the least of the texts on a tie, so
+  `-Pfixtures.update` gives the same whatever the order of the cases;
+- a file of `expected-jdk/` that is not the shared one fails the test `<fixture>: the metamodels of
+  the JDK are expected-jdk/`, and `-Pfixtures.update` deletes it. Nothing a case writes is left
+  unchecked.
+
+With `-Pfixtures.update` every case of the fixture is run, also when `-Pfixtures.only` names one
+case, as the shared files depend on all of them. If the processor
 fails, javac keeps no output: `expected/` is `diagnostics.txt` alone, and the case has neither
 `use/` nor `use-fails/`.
 

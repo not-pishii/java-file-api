@@ -57,6 +57,15 @@ public record Fixture(String name, Path directory, List<Case> cases) {
         return directory.resolve("lib");
     }
 
+    /// The metamodels of the types of the JDK, which the cases of the
+    /// fixture write alike: kept here once instead of in `expected/` of
+    /// every case, see [Snapshot#common].
+    ///
+    /// @return `expected-jdk/`
+    public Path shared() {
+        return directory.resolve("expected-jdk");
+    }
+
     /// Whether the fixture is its only case: it has `request/` itself.
     ///
     /// @return whether there is no `cases/`

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,12 @@ import java.util.stream.Stream;
 /// A file that would be empty is not there. Nothing is masked: the
 /// fingerprints and the format number are the real ones.
 ///
+/// The metamodels of the types of the JDK — the sources under `java/`,
+/// `javax/` or `jdk/` of the base package, see [#platform] — are the same
+/// in most cases of a fixture, and a fixture keeps them once, in a snapshot
+/// of its own that the cases share: see [#common], and [#verify(Path, Snapshot)]
+/// for what a case expects then.
+///
 /// @param files the texts by path, with `/` between the names and `\n` between the lines
 public record Snapshot(SortedMap<String, String> files) {
 
@@ -46,6 +53,8 @@ public record Snapshot(SortedMap<String, String> files) {
     public Snapshot {
         files = Collections.unmodifiableSortedMap(new TreeMap<>(files));
     }
+
+    private static final Pattern PLATFORM = Pattern.compile("(?:.*/)?(?:java|javax|jdk)/.*\\.java");
 
     static Snapshot of(Compiled compiled) {
         return new Snapshot(Stream.concat(
@@ -127,6 +136,30 @@ public record Snapshot(SortedMap<String, String> files) {
                 .toList();
     }
 
+    /// How this snapshot differs from the one expected when the files of
+    /// the JDK that the latter does not hold are those of `shared`: the files
+    /// that differ, and the files it holds that are the shared ones and so
+    /// need not be there.
+    ///
+    /// @param expected the snapshot the directory of the case holds
+    /// @param shared the files the snapshots of the fixture share
+    /// @return the differences, in the order of their paths
+    public List<Difference> differences(Snapshot expected, Snapshot shared) {
+        Snapshot effective = new Snapshot(Stream.concat(
+                        shared.files.entrySet().stream()
+                                .filter(file -> platform(file.getKey()) && files.containsKey(file.getKey())),
+                        expected.files.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (_, own) -> own, TreeMap::new)));
+        return Stream.concat(
+                        differences(effective).stream(),
+                        expected.files.entrySet().stream()
+                                .filter(file -> platform(file.getKey())
+                                        && file.getValue().equals(shared.files.get(file.getKey())))
+                                .map(file -> new Difference.Redundant(file.getKey())))
+                .sorted(Comparator.comparing(Difference::path))
+                .toList();
+    }
+
     private static Optional<Difference> difference(String path, Optional<String> expected, Optional<String> actual) {
         return actual.map(text -> expected.<Optional<Difference>>map(wanted -> wanted.equals(text)
                                 ? Optional.empty()
@@ -141,12 +174,25 @@ public record Snapshot(SortedMap<String, String> files) {
     ///
     /// @param directory the directory of the snapshot expected
     public void verify(Path directory) {
+        verify(directory, new Snapshot(new TreeMap<>()));
+    }
+
+    /// The same for a snapshot that shares its [#platform] files with
+    /// others: a file of the JDK that the directory does not hold is
+    /// expected to be the one of `shared`, and one the directory holds is
+    /// expected to differ from that one — it is the variant of this snapshot
+    /// alone. An update writes the directory without the files that are
+    /// those of `shared`.
+    ///
+    /// @param directory the directory of the snapshot expected
+    /// @param shared the files the snapshots of the same fixture share, see [#common]
+    public void verify(Path directory, Snapshot shared) {
         if (updating()) {
-            write(directory);
+            without(shared).write(directory);
             return;
         }
         Snapshot expected = read(directory);
-        List<Difference> differences = differences(expected);
+        List<Difference> differences = differences(expected, shared);
         if (!differences.isEmpty()) {
             throw new AssertionFailedError(
                     "the output is not what " + Text.path(directory) + " holds: " + differences.size()
@@ -156,6 +202,54 @@ public record Snapshot(SortedMap<String, String> files) {
                     expected.concatenated(),
                     concatenated());
         }
+    }
+
+    /// Whether a path is that of the metamodel of a type of the JDK, which
+    /// a fixture keeps once for its cases: a source under `java`, `javax`
+    /// or `jdk` of the base package, `gen/facts/java/lang/String_.java`.
+    ///
+    /// @param path the path in a snapshot
+    /// @return whether it is a source of such a directory
+    public static boolean platform(String path) {
+        return PLATFORM.matcher(path).matches();
+    }
+
+    /// The files of the JDK that the snapshots of the cases of a fixture
+    /// share: for each path the text most of them write, and where as many
+    /// write one as another, the least of the texts — so that which of the
+    /// variants is the shared one does not depend on the order of the cases.
+    ///
+    /// @param outputs the snapshots of the cases
+    /// @return the snapshot of the shared files
+    public static Snapshot common(List<Snapshot> outputs) {
+        return new Snapshot(outputs.stream()
+                .flatMap(output -> output.files.entrySet().stream())
+                .filter(file -> platform(file.getKey()))
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        TreeMap::new,
+                        Collectors.groupingBy(Map.Entry::getValue, Collectors.counting())))
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        file -> file.getValue().entrySet().stream()
+                                .min(Comparator.<Map.Entry<String, Long>>comparingLong(variant -> -variant.getValue())
+                                        .thenComparing(Map.Entry::getKey))
+                                .orElseThrow()
+                                .getKey(),
+                        (a, _) -> a,
+                        TreeMap::new)));
+    }
+
+    /// This snapshot without the files that are those of another.
+    ///
+    /// @param shared the files the snapshots share
+    /// @return the files that are in this snapshot alone, or differ from the shared ones
+    public Snapshot without(Snapshot shared) {
+        return new Snapshot(files.entrySet().stream()
+                .filter(file -> !file.getValue().equals(shared.files.get(file.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, _) -> a, TreeMap::new)));
     }
 
     /// Whether [#verify] accepts the output instead of comparing it.
@@ -216,6 +310,11 @@ public record Snapshot(SortedMap<String, String> files) {
         /// @param actual the text in the output
         record Changed(String path, String expected, String actual) implements Difference {}
 
+        /// The file is in the snapshot of the case and is the shared one.
+        ///
+        /// @param path the path in the snapshot
+        record Redundant(String path) implements Difference {}
+
         /// The difference as the failure of a test tells it: for a file
         /// that changed, the lines that differ, as `diff -u` prints them.
         ///
@@ -223,6 +322,8 @@ public record Snapshot(SortedMap<String, String> files) {
         default String render() {
             return switch (this) {
                 case Missing(String path) -> "missing: " + path + " is expected and was not written\n";
+                case Redundant(String path) ->
+                    "redundant: " + path + " is the shared one, which the case need not hold\n";
                 case Unexpected(String path, String actual) ->
                     "unexpected: " + path + " was written and is not expected ("
                             + actual.lines().count() + " lines)\n";
