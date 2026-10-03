@@ -658,6 +658,25 @@ class MultiroundTest {
     }
 
     @Test
+    void aTypeThatExistsButCannotBeNamedWhereItIsMentionedIsNotSaidToBeGeneratedByNoProcessor() {
+        Compiled compilation = Javac.facts()
+                .compile(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Broken.class)
+                class G {}
+                """,
+                        "package p; public class Broken { public q.Hid hid() { return null; } }",
+                        "package q; class Hid {}");
+
+        assertThat(compilation.errors())
+                .containsExactly(
+                        "q.Hid is not public in q; cannot be accessed from outside package",
+                        "type p.Broken in @Facts is not resolvable after all rounds: it mentions q.Hid, which is not"
+                                + " accessible there");
+    }
+
+    @Test
     void aFullMetamodelWaitsForTheMetamodelOfARequestedTypeItMentions() {
         Compiled compilation = process(
                         """

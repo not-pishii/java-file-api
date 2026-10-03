@@ -75,7 +75,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     ///
     /// @param name the name of the fact
     /// @param model the member
-    record Fact(String name, MemberModel model) {}
+    /// @param origin where the type has the member from: it declares it, or adopts it
+    record Fact(String name, MemberModel model, Origin origin) {}
 
     /// The fact of the single abstract method.
     ///
@@ -88,7 +89,41 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     ///
     /// @param member what it is, such as `method greet(p.Hidden)`
     /// @param reason why it has none, for a diagnostic
-    record Skip(String member, String reason) {}
+    /// @param origin where the type has the member from; of several members that would share a name,
+    ///     that the type declares one if it does, and else where it adopts the first from
+    record Skip(String member, String reason, Origin origin) {}
+
+    /// Where a type has a member from. Only a member the type declares itself is one its author can
+    /// do something about, so only the lack of a fact of such a member is an error under `strict`;
+    /// and a fact tells where its member is declared.
+    sealed interface Origin {
+
+        /// Where a type has a field, constructor or method [MirrorTranslator#members] gives for it.
+        ///
+        /// @param type the type
+        /// @param member the member, declared or adopted
+        /// @return the origin
+        static Origin of(TypeElement type, Element member) {
+            return member.getEnclosingElement().equals(type)
+                    ? new Declared()
+                    : new Adopted(((TypeElement) member.getEnclosingElement())
+                            .getQualifiedName()
+                            .toString());
+        }
+
+        /// The type declares the member.
+        record Declared() implements Origin {}
+
+        /// The type adopts the member from a supertype that is not `public`, which has no metamodel
+        /// to tell it.
+        ///
+        /// @param from the canonical name of the supertype that declares the member
+        record Adopted(String from) implements Origin {}
+
+        /// The type inherits the member from a supertype that has a metamodel of its own: the single
+        /// abstract method of a functional interface, the one inherited member a type has a fact of.
+        record Inherited() implements Origin {}
+    }
 
     /// The start of the names of the facts of a [#probe]: no member has such a name.
     static final String PROBE = "fact$";
@@ -119,14 +154,21 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         conflict.getValue().stream()
                                 .map(member -> describe(type, member))
                                 .collect(Collectors.joining(", ")),
-                        "would all be named " + conflict.getKey()))
+                        "would all be named " + conflict.getKey(),
+                        conflict.getValue().stream()
+                                .map(member -> Origin.of(type, member))
+                                .filter(Origin.Declared.class::isInstance)
+                                .findFirst()
+                                .orElseGet(() ->
+                                        Origin.of(type, conflict.getValue().getFirst()))))
                 .toList();
         Pair<List<Skip>, Map<Element, String>> named = names.names().entrySet().stream()
                 .filter(entry -> live.contains(entry.getKey()))
                 .<Either<Skip, Map.Entry<Element, String>>>map(entry -> taken.contains(entry.getValue())
                         ? Either.left(new Skip(
                                 describe(type, entry.getKey()),
-                                "would be named " + entry.getValue() + ", a name the metamodel itself uses"))
+                                "would be named " + entry.getValue() + ", a name the metamodel itself uses",
+                                Origin.of(type, entry.getKey())))
                         : Either.right(entry))
                 .collect(EitherCollectors.groupingTo(
                         Collectors.toList(),
@@ -142,7 +184,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 .toList();
         List<Fact> members = candidates.members().entrySet().stream()
                 .filter(entry -> factNames.containsKey(entry.getKey()))
-                .map(entry -> new Fact(factNames.get(entry.getKey()), entry.getValue()))
+                .map(entry ->
+                        new Fact(factNames.get(entry.getKey()), entry.getValue(), Origin.of(type, entry.getKey())))
                 .toList();
         Optional<Either<Skip, SamFact>> sam = sam(type, models, targets, members);
         return new MemberPlan(
@@ -174,9 +217,13 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         PROBE + "e" + i,
                         candidates.enumConstants().get(i).getSimpleName().toString()))
                 .toList();
-        List<MemberModel> memberModels = List.copyOf(candidates.members().values());
-        List<Fact> members = IntStream.range(0, memberModels.size())
-                .mapToObj(i -> new Fact(PROBE + i, memberModels.get(i)))
+        List<Map.Entry<Element, MemberModel>> found =
+                List.copyOf(candidates.members().entrySet());
+        List<Fact> members = IntStream.range(0, found.size())
+                .mapToObj(i -> new Fact(
+                        PROBE + i,
+                        found.get(i).getValue(),
+                        Origin.of(type, found.get(i).getKey())))
                 .toList();
         return new MemberPlan(
                 enums, members, sam(type, models, targets, members).flatMap(either -> either.right()), List.of());
@@ -256,15 +303,15 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
                         : unsupported(model, targets);
                 yield unsupported
-                        .<Either<Skip, Map.Entry<Element, MemberModel>>>map(
-                                reason -> Either.left(new Skip(describe(type, member), reason)))
+                        .<Either<Skip, Map.Entry<Element, MemberModel>>>map(reason ->
+                                Either.left(new Skip(describe(type, member), reason, Origin.of(type, member))))
                         .orElseGet(() -> Either.right(Map.entry(member, model)));
             }
             case Translation.Deferred<MemberModel>(String unresolved) ->
                 throw new IllegalStateException(
                         describe(type, member) + " was read, but mentions " + unresolved + " now");
             case Translation.Unrepresentable<MemberModel>(String reason) ->
-                Either.left(new Skip(describe(type, member), reason));
+                Either.left(new Skip(describe(type, member), reason, Origin.of(type, member)));
         };
     }
 
@@ -283,7 +330,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
                 throw new IllegalStateException("the single abstract method was read, but mentions " + unresolved);
             case Translation.Unrepresentable<Optional<SamModel>>(String reason) ->
-                Optional.of(Either.left(new Skip("the single abstract method", reason)));
+                Optional.of(Either.left(new Skip("the single abstract method", reason, new Origin.Inherited())));
         };
     }
 
@@ -293,8 +340,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         if (unsupported.isPresent()) {
             return found.declared()
                     ? Optional.empty()
-                    : Optional.of(
-                            Either.left(new Skip("the single abstract method " + method.name(), unsupported.get())));
+                    : Optional.of(Either.left(new Skip(
+                            "the single abstract method " + method.name(), unsupported.get(), new Origin.Inherited())));
         }
         Optional<String> declared = members.stream()
                 .filter(f -> f.model() instanceof MethodModel other
@@ -331,8 +378,9 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                     case CONSTRUCTOR -> "constructor " + member;
                     default -> "method " + member;
                 };
-        return member.getEnclosingElement().equals(type)
-                ? described
-                : described + " of " + ((TypeElement) member.getEnclosingElement()).getQualifiedName();
+        return switch (Origin.of(type, member)) {
+            case Origin.Declared _, Origin.Inherited _ -> described;
+            case Origin.Adopted(String from) -> described + " of " + from;
+        };
     }
 }
