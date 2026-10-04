@@ -4,6 +4,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
 import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.render.SourceRenderer;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -28,9 +29,24 @@ public final class JavaFileWriter {
     /// @param originatingElements the elements that caused this file to be generated
     /// @throws IOException if the filer cannot create or write the source file
     public static void writeTo(RenderableFile file, Filer filer, Element... originatingElements) throws IOException {
+        writeTo(file, SourceRenderer.standardFormat(), filer, originatingElements);
+    }
+
+    /// Writes `file` through `filer` in the given format: its indentation,
+    /// line separator and syntax of documentation comments, such as
+    /// `SourceRenderer.standardFormat(DocStyle.MARKDOWN)`.
+    ///
+    /// @param file the source file to write
+    /// @param format the format of the source
+    /// @param filer the filer to write through
+    /// @param originatingElements the elements that caused this file to be generated
+    /// @throws IOException if the filer cannot create or write the source file
+    public static void writeTo(
+            RenderableFile file, SourceRenderer.Format format, Filer filer, Element... originatingElements)
+            throws IOException {
         var source = filer.createSourceFile(qualifiedName(file), originatingElements);
         try (var writer = source.openWriter()) {
-            writer.write(file.render());
+            writer.write(file.render(format));
         }
     }
 

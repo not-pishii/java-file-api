@@ -11,6 +11,7 @@ import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.Optional;
 
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
@@ -97,8 +98,8 @@ class EnumBuilderTest {
     @Test
     void preBuiltConstantIsAddedDirectly() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
-        EnumConstant constant =
-                new EnumConstant("CLUBS", java.util.List.of(), java.util.List.of(), java.util.List.of());
+        EnumConstant constant = new EnumConstant(
+                "CLUBS", java.util.List.of(), java.util.List.of(), java.util.List.of(), Optional.empty());
 
         builder.withConstant(constant);
 
@@ -175,7 +176,11 @@ class EnumBuilderTest {
     void acceptAppendsAPreBuiltMember() {
         EnumBuilder builder = new EnumBuilder(ClassDesc.of("me.supcheg.example", "Suit"));
         EnumConstructorDecl member = new EnumConstructorDecl(
-                java.util.List.of(), java.util.List.of(), me.supcheg.javafile.code.CodeBody.EMPTY, java.util.List.of());
+                java.util.List.of(),
+                java.util.List.of(),
+                me.supcheg.javafile.code.CodeBody.EMPTY,
+                java.util.List.of(),
+                Optional.empty());
 
         builder.accept(member);
 

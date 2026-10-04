@@ -2,6 +2,7 @@ package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
@@ -22,6 +23,7 @@ import java.util.Set;
 /// @param modifiers the modifiers on the method declaration
 /// @param throwsTypes the checked exception types declared in the method's
 ///                     `throws` clause
+/// @param doc the documentation comment, if any
 public record AbstractMethodDecl(
         String name,
         Optional<TypeRef> returnType,
@@ -29,7 +31,8 @@ public record AbstractMethodDecl(
         List<Param> params,
         List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
-        List<ClassOrInterfaceTypeRef> throwsTypes)
+        List<ClassOrInterfaceTypeRef> throwsTypes,
+        Optional<DocComment> doc)
         implements InterfaceMember, ClassMember, EnumMember {
     public AbstractMethodDecl {
         name = Identifiers.requireValid(name);

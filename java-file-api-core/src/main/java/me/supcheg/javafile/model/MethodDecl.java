@@ -3,6 +3,7 @@ package me.supcheg.javafile.model;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
@@ -23,6 +24,7 @@ import java.util.Set;
 /// @param body the method's body
 /// @param throwsTypes the checked exception types declared in the method's
 ///                     `throws` clause
+/// @param doc the documentation comment, if any
 public record MethodDecl(
         String name,
         Optional<TypeRef> returnType,
@@ -31,7 +33,8 @@ public record MethodDecl(
         List<TypeParam> typeParams,
         List<Param> params,
         CodeBody body,
-        List<ClassOrInterfaceTypeRef> throwsTypes)
+        List<ClassOrInterfaceTypeRef> throwsTypes,
+        Optional<DocComment> doc)
         implements ClassMember, RecordMember, EnumMember, EnumConstantMember {
     public MethodDecl {
         name = Identifiers.requireValid(name);

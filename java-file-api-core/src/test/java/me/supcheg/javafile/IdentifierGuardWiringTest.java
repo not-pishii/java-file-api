@@ -83,8 +83,13 @@ class IdentifierGuardWiringTest {
     static Stream<Arguments> constructionSites() {
         return Stream.of(
                 Arguments.of("Param", (ThrowingCallable) () -> new Param(BAD_NAME, STRING_TYPE)),
-                Arguments.of("FieldDecl", (ThrowingCallable) () ->
-                        new FieldDecl(BAD_NAME, STRING_TYPE, List.of(), Set.of(Modifier.PRIVATE), Optional.empty())),
+                Arguments.of("FieldDecl", (ThrowingCallable) () -> new FieldDecl(
+                        BAD_NAME,
+                        STRING_TYPE,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE),
+                        Optional.empty(),
+                        Optional.empty())),
                 Arguments.of("MethodDecl", (ThrowingCallable) () -> new MethodDecl(
                         BAD_NAME,
                         Optional.of(STRING_TYPE),
@@ -93,7 +98,8 @@ class IdentifierGuardWiringTest {
                         List.of(),
                         List.of(),
                         CodeBody.EMPTY,
-                        List.of())),
+                        List.of(),
+                        Optional.empty())),
                 Arguments.of("AbstractMethodDecl", (ThrowingCallable) () -> new AbstractMethodDecl(
                         BAD_NAME,
                         Optional.of(STRING_TYPE),
@@ -101,7 +107,8 @@ class IdentifierGuardWiringTest {
                         List.of(),
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                        List.of())),
+                        List.of(),
+                        Optional.empty())),
                 Arguments.of("DefaultMethodDecl", (ThrowingCallable) () -> new DefaultMethodDecl(
                         BAD_NAME,
                         Optional.of(STRING_TYPE),
@@ -109,7 +116,8 @@ class IdentifierGuardWiringTest {
                         List.of(),
                         List.of(),
                         CodeBody.EMPTY,
-                        List.of())),
+                        List.of(),
+                        Optional.empty())),
                 Arguments.of("StaticMethodDecl", (ThrowingCallable) () -> new StaticMethodDecl(
                         BAD_NAME,
                         Optional.of(STRING_TYPE),
@@ -117,15 +125,16 @@ class IdentifierGuardWiringTest {
                         List.of(),
                         List.of(),
                         CodeBody.EMPTY,
-                        List.of())),
-                Arguments.of("ConstantDecl", (ThrowingCallable)
-                        () -> new ConstantDecl(BAD_NAME, STRING_TYPE, List.of(), new StringLiteral("x"))),
-                Arguments.of("StaticFieldDecl", (ThrowingCallable)
-                        () -> new StaticFieldDecl(BAD_NAME, STRING_TYPE, List.of(), new StringLiteral("x"))),
+                        List.of(),
+                        Optional.empty())),
+                Arguments.of("ConstantDecl", (ThrowingCallable) () ->
+                        new ConstantDecl(BAD_NAME, STRING_TYPE, List.of(), new StringLiteral("x"), Optional.empty())),
+                Arguments.of("StaticFieldDecl", (ThrowingCallable) () -> new StaticFieldDecl(
+                        BAD_NAME, STRING_TYPE, List.of(), new StringLiteral("x"), Optional.empty())),
                 Arguments.of("RecordComponent", (ThrowingCallable)
                         () -> new RecordComponent(BAD_NAME, PrimitiveTypeRef.INT)),
                 Arguments.of("EnumConstant", (ThrowingCallable)
-                        () -> new EnumConstant(BAD_NAME, List.of(), List.of(), List.of())),
+                        () -> new EnumConstant(BAD_NAME, List.of(), List.of(), List.of(), Optional.empty())),
                 Arguments.of("CatchClause", (ThrowingCallable) () ->
                         new CatchClause(NonEmptyList.copyOf(List.of(IO_EXCEPTION_TYPE)), BAD_NAME, CodeBody.EMPTY)),
                 Arguments.of("LocalVarDeclStmt.Typed", (ThrowingCallable)
@@ -160,7 +169,7 @@ class IdentifierGuardWiringTest {
                         () -> new LabeledStmt(BAD_NAME, new BreakStmt(Optional.empty()))),
                 Arguments.of("BreakStmt", (ThrowingCallable) () -> new BreakStmt(Optional.of(BAD_NAME))),
                 Arguments.of("ContinueStmt", (ThrowingCallable) () -> new ContinueStmt(Optional.of(BAD_NAME))),
-                Arguments.of("AnnotationElementDecl", (ThrowingCallable)
-                        () -> new AnnotationElementDecl(BAD_NAME, PrimitiveTypeRef.INT, Optional.empty())));
+                Arguments.of("AnnotationElementDecl", (ThrowingCallable) () ->
+                        new AnnotationElementDecl(BAD_NAME, PrimitiveTypeRef.INT, Optional.empty(), Optional.empty())));
     }
 }

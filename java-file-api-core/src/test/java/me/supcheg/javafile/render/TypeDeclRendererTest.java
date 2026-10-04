@@ -311,7 +311,8 @@ class TypeDeclRendererTest {
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                java.util.List.of());
+                java.util.List.of(),
+                java.util.Optional.empty());
         builder.withModifiers(Modifier.ABSTRACT).accept(abstractMethod);
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -334,7 +335,8 @@ class TypeDeclRendererTest {
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                java.util.List.of());
+                java.util.List.of(),
+                java.util.Optional.empty());
         builder.accept(abstractMethod);
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -584,16 +586,22 @@ class TypeDeclRendererTest {
                 PrimitiveTypeRef.INT,
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PRIVATE),
-                java.util.Optional.of(new me.supcheg.javafile.code.IntLiteral(0)));
+                java.util.Optional.of(new me.supcheg.javafile.code.IntLiteral(0)),
+                java.util.Optional.empty());
         var constant = new me.supcheg.javafile.model.EnumConstant(
-                "A", java.util.List.of(), java.util.List.of(), java.util.List.of(fieldMember));
+                "A",
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(fieldMember),
+                java.util.Optional.empty());
         var enumDecl = new me.supcheg.javafile.model.EnumDecl(
                 ClassDesc.of("me.supcheg.example", "WithField"),
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC),
                 java.util.List.of(constant),
                 java.util.List.of(),
-                java.util.List.of());
+                java.util.List.of(),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 enumDecl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -657,7 +665,8 @@ class TypeDeclRendererTest {
                         PrimitiveTypeRef.INT,
                         java.util.List.of(
                                 new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
-                        new me.supcheg.javafile.code.IntLiteral(10)));
+                        new me.supcheg.javafile.code.IntLiteral(10),
+                        java.util.Optional.empty()));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -685,7 +694,8 @@ class TypeDeclRendererTest {
                 "ORIGIN",
                 PrimitiveTypeRef.INT,
                 java.util.List.of(new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
-                new me.supcheg.javafile.code.IntLiteral(0)));
+                new me.supcheg.javafile.code.IntLiteral(0),
+                java.util.Optional.empty()));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -709,7 +719,8 @@ class TypeDeclRendererTest {
                         java.util.List.of(
                                 new me.supcheg.javafile.annotation.AnnotationUse(nullable, java.util.List.of())),
                         java.util.List.of(),
-                        java.util.List.of()));
+                        java.util.List.of(),
+                        java.util.Optional.empty()));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -784,7 +795,8 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         ClassDecl decl = new ClassDecl(
                 outer,
                 List.of(),
@@ -793,7 +805,8 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of(nested));
+                List.of(nested),
+                Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -812,9 +825,17 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         var decl = new me.supcheg.javafile.model.InterfaceDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -838,9 +859,17 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         var decl = new me.supcheg.javafile.model.RecordDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -864,10 +893,18 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
-        var constant = new me.supcheg.javafile.model.EnumConstant("A", List.of(), List.of(), List.of());
+                List.of(),
+                Optional.empty());
+        var constant = new me.supcheg.javafile.model.EnumConstant(
+                "A", List.of(), List.of(), List.of(), java.util.Optional.empty());
         var decl = new me.supcheg.javafile.model.EnumDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(constant), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(constant),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -893,10 +930,18 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
-        var constant = new me.supcheg.javafile.model.EnumConstant("A", List.of(), List.of(), List.of(nested));
+                List.of(),
+                Optional.empty());
+        var constant = new me.supcheg.javafile.model.EnumConstant(
+                "A", List.of(), List.of(), List.of(nested), java.util.Optional.empty());
         var decl = new me.supcheg.javafile.model.EnumDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(constant), List.of(), List.of());
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(constant),
+                List.of(),
+                List.of(),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -939,7 +984,8 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         ClassDecl decl = new ClassDecl(
                 outer,
                 List.of(),
@@ -948,7 +994,8 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of(nested));
+                List.of(nested),
+                Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -972,9 +1019,17 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         var decl = new me.supcheg.javafile.model.InterfaceDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -998,9 +1053,17 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         var decl = new me.supcheg.javafile.model.RecordDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(), List.of(), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -1024,10 +1087,18 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
-        var constant = new me.supcheg.javafile.model.EnumConstant("A", List.of(), List.of(), List.of());
+                List.of(),
+                Optional.empty());
+        var constant = new me.supcheg.javafile.model.EnumConstant(
+                "A", List.of(), List.of(), List.of(), java.util.Optional.empty());
         var decl = new me.supcheg.javafile.model.EnumDecl(
-                outer, List.of(), Set.of(Modifier.PUBLIC), List.of(constant), List.of(), List.of(nested));
+                outer,
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(constant),
+                List.of(),
+                List.of(nested),
+                java.util.Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
@@ -1046,7 +1117,11 @@ class TypeDeclRendererTest {
     void rendersStaticNestedAnnotationTypeUsingTheLeafSimpleNameOfARealNestedClassDesc() {
         ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
         var nested = new me.supcheg.javafile.model.AnnotationTypeDecl(
-                outer.nested("Marker"), List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of());
+                outer.nested("Marker"),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
+                java.util.Optional.empty());
         ClassDecl decl = new ClassDecl(
                 outer,
                 List.of(),
@@ -1055,7 +1130,8 @@ class TypeDeclRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of(nested));
+                List.of(nested),
+                Optional.empty());
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
                 decl, Context.of(standardFormat(), new ImportManager("me.supcheg.example")));

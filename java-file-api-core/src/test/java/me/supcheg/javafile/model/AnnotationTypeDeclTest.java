@@ -14,9 +14,14 @@ class AnnotationTypeDeclTest {
 
     @Test
     void holdsElementsWithAndWithoutDefaults() {
-        AnnotationElementDecl value = new AnnotationElementDecl("value", PrimitiveTypeRef.INT, Optional.empty());
+        AnnotationElementDecl value =
+                new AnnotationElementDecl("value", PrimitiveTypeRef.INT, Optional.empty(), Optional.empty());
         AnnotationTypeDecl decl = new AnnotationTypeDecl(
-                ClassDesc.of("me.supcheg.example", "MaxLength"), List.of(), Set.of(Modifier.PUBLIC), List.of(value));
+                ClassDesc.of("me.supcheg.example", "MaxLength"),
+                List.of(),
+                Set.of(Modifier.PUBLIC),
+                List.of(value),
+                Optional.empty());
 
         assertThat(decl.elements()).containsExactly(value);
         assertThat((TypeDecl) decl).isInstanceOf(JavaFileElement.class);

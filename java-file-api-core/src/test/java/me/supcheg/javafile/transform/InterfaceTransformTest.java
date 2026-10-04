@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +19,8 @@ class InterfaceTransformTest {
     @Test
     void acceptCanPassAMemberThroughToTheBuilder() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("p", "I"));
-        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
+        ConstantDecl constant =
+                new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1), Optional.empty());
 
         InterfaceTransform passThrough = (b, member) -> b.accept(member);
         passThrough.accept(builder, constant);
@@ -30,7 +32,8 @@ class InterfaceTransformTest {
     void andThenInvokesBothTransformsInOrderAgainstTheSameMember() {
         List<String> callOrder = new ArrayList<>();
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("p", "I"));
-        ConstantDecl constant = new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
+        ConstantDecl constant =
+                new ConstantDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1), Optional.empty());
 
         InterfaceTransform first = (b, member) -> {
             callOrder.add("first");

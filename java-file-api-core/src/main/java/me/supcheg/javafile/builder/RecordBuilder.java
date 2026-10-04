@@ -4,6 +4,8 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
@@ -17,6 +19,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class RecordBuilder implements Consumer<RecordMember> {
 
+    private @Nullable DocComment doc;
     private final ClassDesc desc;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
@@ -83,6 +87,24 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     public RecordBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
         return this;
+    }
+
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public RecordBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public RecordBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
     }
 
     /// Adds the given modifiers to the declaration.
@@ -191,7 +213,8 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         for (ClassDesc type : throwsTypes) {
             normalizedThrows.add(Types.of(type));
         }
-        members.add(new CompactConstructorDecl(List.of(), Set.copyOf(modifiers), cb.build(), normalizedThrows));
+        members.add(new CompactConstructorDecl(
+                List.of(), Set.copyOf(modifiers), cb.build(), normalizedThrows, Optional.empty()));
         return this;
     }
 
@@ -209,7 +232,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         CodeBuilder cb = new CodeBuilder();
         spec.accept(cb);
         members.add(new CanonicalConstructorDecl(
-                List.of(), Set.of(Modifier.PUBLIC), List.copyOf(params), cb.build(), List.of()));
+                List.of(), Set.of(Modifier.PUBLIC), List.copyOf(params), cb.build(), List.of(), Optional.empty()));
         return this;
     }
 
@@ -245,7 +268,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param initializer the initializer expression
     /// @return this builder
     public RecordBuilder withStaticField(String name, TypeRef type, Expr initializer) {
-        members.add(new StaticFieldDecl(name, type, List.of(), initializer));
+        members.add(new StaticFieldDecl(name, type, List.of(), initializer, Optional.empty()));
         return this;
     }
 
@@ -265,7 +288,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         FieldDecl fd = fb.build();
         Expr initializer = fd.initializer()
                 .orElseThrow(() -> new IllegalStateException("static field " + name + " requires an initializer"));
-        members.add(new StaticFieldDecl(fd.name(), fd.type(), fd.annotations(), initializer));
+        members.add(new StaticFieldDecl(fd.name(), fd.type(), fd.annotations(), initializer, fd.doc()));
         return this;
     }
 
@@ -348,6 +371,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
                 List.copyOf(typeParams),
                 List.copyOf(components),
                 List.copyOf(interfaces),
-                List.copyOf(members));
+                List.copyOf(members),
+                Optional.ofNullable(doc));
     }
 }

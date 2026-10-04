@@ -1,11 +1,13 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /// An enum declaration.
@@ -19,13 +21,15 @@ import java.util.Set;
 /// @param interfaces the interfaces the enum implements
 /// @param members the members of the enum body, rendered after the constant
 ///                 list
+/// @param doc the documentation comment, if any
 public record EnumDecl(
         ClassDesc desc,
         List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
         List<EnumConstant> constants,
         List<ClassOrInterfaceTypeRef> interfaces,
-        List<EnumMember> members)
+        List<EnumMember> members,
+        Optional<DocComment> doc)
         implements TypeDecl {
     public EnumDecl {
         modifiers = ModifierValidation.requireValidTopLevel(

@@ -1,12 +1,14 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /// An interface declaration. It is rendered `sealed` when [#permits] is not
@@ -22,6 +24,7 @@ import java.util.Set;
 /// @param permits the subtypes named in a `permits` clause; a non-empty list
 ///                causes the interface to render as `sealed`
 /// @param members the members of the interface body
+/// @param doc the documentation comment, if any
 public record InterfaceDecl(
         ClassDesc desc,
         List<AnnotationUse> annotations,
@@ -29,7 +32,8 @@ public record InterfaceDecl(
         List<TypeParam> typeParams,
         List<ClassOrInterfaceTypeRef> extendsInterfaces,
         List<ClassDesc> permits,
-        List<InterfaceMember> members)
+        List<InterfaceMember> members,
+        Optional<DocComment> doc)
         implements TypeDecl {
     public InterfaceDecl {
         modifiers = ModifierValidation.requireValidTopLevel(

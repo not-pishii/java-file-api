@@ -3,6 +3,8 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.model.DefaultMethodDecl;
@@ -14,6 +16,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class InterfaceBuilder implements Consumer<InterfaceMember> {
 
+    private @Nullable DocComment doc;
     private final ClassDesc desc;
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<AnnotationUse> annotations = new ArrayList<>();
@@ -80,6 +84,24 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     public InterfaceBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
         return this;
+    }
+
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public InterfaceBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public InterfaceBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
     }
 
     /// Adds the given modifiers to the declaration.
@@ -169,7 +191,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of()));
+                List.of(),
+                Optional.empty()));
         return this;
     }
 
@@ -186,7 +209,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of()));
+                List.of(),
+                Optional.empty()));
         return this;
     }
 
@@ -233,7 +257,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 mb.typeParams(),
                 mb.params(),
                 mb.body(),
-                mb.throwsTypes()));
+                mb.throwsTypes(),
+                mb.doc()));
         return this;
     }
 
@@ -253,7 +278,8 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 mb.typeParams(),
                 mb.params(),
                 mb.body(),
-                mb.throwsTypes()));
+                mb.throwsTypes(),
+                mb.doc()));
         return this;
     }
 
@@ -264,7 +290,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
     /// @param initializer the initializer expression
     /// @return this builder
     public InterfaceBuilder withConstant(String name, TypeRef type, Expr initializer) {
-        members.add(new ConstantDecl(name, type, List.of(), initializer));
+        members.add(new ConstantDecl(name, type, List.of(), initializer, Optional.empty()));
         return this;
     }
 
@@ -362,6 +388,7 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 List.copyOf(typeParams),
                 List.copyOf(extendsInterfaces),
                 List.copyOf(permittedSubtypes),
-                List.copyOf(members));
+                List.copyOf(members),
+                Optional.ofNullable(doc));
     }
 }

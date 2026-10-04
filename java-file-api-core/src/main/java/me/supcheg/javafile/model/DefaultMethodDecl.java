@@ -3,6 +3,7 @@ package me.supcheg.javafile.model;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
@@ -20,6 +21,7 @@ import java.util.Optional;
 /// @param body the method's body
 /// @param throwsTypes the checked exception types declared in the method's
 ///                     `throws` clause
+/// @param doc the documentation comment, if any
 public record DefaultMethodDecl(
         String name,
         Optional<TypeRef> returnType,
@@ -27,7 +29,8 @@ public record DefaultMethodDecl(
         List<TypeParam> typeParams,
         List<Param> params,
         CodeBody body,
-        List<ClassOrInterfaceTypeRef> throwsTypes)
+        List<ClassOrInterfaceTypeRef> throwsTypes,
+        Optional<DocComment> doc)
         implements InterfaceMember {
     public DefaultMethodDecl {
         name = Identifiers.requireValid(name);

@@ -4,15 +4,19 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.EnumConstructorDecl;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /// Configures an enum constructor.
@@ -23,6 +27,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class EnumConstructorBuilder {
 
+    private @Nullable DocComment doc;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final List<Param> params = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
@@ -58,6 +63,24 @@ public final class EnumConstructorBuilder {
     public EnumConstructorBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
         return this;
+    }
+
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public EnumConstructorBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public EnumConstructorBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
     }
 
     /// Adds a parameter to the constructor's parameter list.
@@ -112,6 +135,11 @@ public final class EnumConstructorBuilder {
     }
 
     EnumConstructorDecl build() {
-        return new EnumConstructorDecl(List.copyOf(annotations), List.copyOf(params), body, List.copyOf(throwsTypes));
+        return new EnumConstructorDecl(
+                List.copyOf(annotations),
+                List.copyOf(params),
+                body,
+                List.copyOf(throwsTypes),
+                Optional.ofNullable(doc));
     }
 }

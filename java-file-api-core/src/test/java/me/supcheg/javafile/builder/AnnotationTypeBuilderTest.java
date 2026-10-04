@@ -76,15 +76,19 @@ class AnnotationTypeBuilderTest {
 
         assertThat(decl.elements())
                 .containsExactly(
-                        new AnnotationElementDecl("plain", PrimitiveTypeRef.INT, Optional.empty()),
+                        new AnnotationElementDecl("plain", PrimitiveTypeRef.INT, Optional.empty(), Optional.empty()),
                         new AnnotationElementDecl(
-                                "withDefault", PrimitiveTypeRef.INT, Optional.of(AnnotationValues.literal(1))));
+                                "withDefault",
+                                PrimitiveTypeRef.INT,
+                                Optional.of(AnnotationValues.literal(1)),
+                                Optional.empty()));
     }
 
     @Test
     void acceptAppendsAPreBuiltElement() {
         AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("ast", "Marker"));
-        AnnotationElementDecl element = new AnnotationElementDecl("value", PrimitiveTypeRef.INT, Optional.empty());
+        AnnotationElementDecl element =
+                new AnnotationElementDecl("value", PrimitiveTypeRef.INT, Optional.empty(), Optional.empty());
 
         builder.accept(element);
 

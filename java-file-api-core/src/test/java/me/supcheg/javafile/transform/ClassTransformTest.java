@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -29,7 +30,12 @@ class ClassTransformTest {
 
         ClassTransform combined = first.andThen(second);
         FieldDecl field = new FieldDecl(
-                "count", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.FINAL), java.util.Optional.empty());
+                "count",
+                PrimitiveTypeRef.INT,
+                List.of(),
+                Set.of(Modifier.FINAL),
+                java.util.Optional.empty(),
+                Optional.empty());
         combined.accept(builder, field);
 
         assertThat(callOrder).containsExactly("first", "second");

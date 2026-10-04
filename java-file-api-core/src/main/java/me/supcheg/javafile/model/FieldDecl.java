@@ -3,6 +3,7 @@ package me.supcheg.javafile.model;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.util.EnumSet;
@@ -17,8 +18,14 @@ import java.util.Set;
 /// @param annotations the annotations declared on the field
 /// @param modifiers the modifiers on the field declaration
 /// @param initializer the field's initializer expression, if any
+/// @param doc the documentation comment, if any
 public record FieldDecl(
-        String name, TypeRef type, List<AnnotationUse> annotations, Set<Modifier> modifiers, Optional<Expr> initializer)
+        String name,
+        TypeRef type,
+        List<AnnotationUse> annotations,
+        Set<Modifier> modifiers,
+        Optional<Expr> initializer,
+        Optional<DocComment> doc)
         implements ClassMember, EnumMember, EnumConstantMember {
     public FieldDecl {
         name = Identifiers.requireValid(name);

@@ -2,10 +2,12 @@ package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /// A class constructor. Enum constructors are [EnumConstructorDecl].
@@ -16,12 +18,14 @@ import java.util.Set;
 /// @param body the constructor's body
 /// @param throwsTypes the checked exception types declared in the
 ///                     constructor's `throws` clause
+/// @param doc the documentation comment, if any
 public record ConstructorDecl(
         List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
         List<Param> params,
         CodeBody body,
-        List<ClassOrInterfaceTypeRef> throwsTypes)
+        List<ClassOrInterfaceTypeRef> throwsTypes,
+        Optional<DocComment> doc)
         implements ClassMember {
     public ConstructorDecl {
         annotations = List.copyOf(annotations);

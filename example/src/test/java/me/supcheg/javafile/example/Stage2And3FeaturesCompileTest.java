@@ -196,7 +196,7 @@ class Stage2And3FeaturesCompileTest {
                 java.util.Set<Modifier> mods = new java.util.LinkedHashSet<>(f.modifiers());
                 mods.add(Modifier.FINAL);
                 builder.accept(new me.supcheg.javafile.model.FieldDecl(
-                        f.name(), f.type(), f.annotations(), mods, f.initializer()));
+                        f.name(), f.type(), f.annotations(), mods, f.initializer(), java.util.Optional.empty()));
             } else {
                 builder.accept(member);
             }

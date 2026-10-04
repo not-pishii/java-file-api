@@ -21,12 +21,22 @@ import java.util.Set;
 // before anything is rendered: within the file the name means that type, so
 // another type of the same simple name is written qualified. It is imported
 // only if something refers to it.
+//
+// A documentation comment claims nothing (`mention`): it names a type by its
+// simple name only where the code of the file gives the name that meaning, so
+// a comment adds no import — an import of a type that is not accessible does
+// not compile — and never makes the code write another type qualified. What
+// the code claims is known once the file is rendered, and a comment comes
+// before the code it documents, so a file with a mention is rendered twice:
+// the second time over the claims of the first, which the code repeats as
+// they are.
 final class ImportManager implements TypeContext {
 
     private final String currentPackage;
     private final Map<String, ClassDesc> claims = new LinkedHashMap<>();
 
     private final Set<ClassDesc> unreferencedDeclared = new HashSet<>();
+    private boolean mentioned;
 
     ImportManager(String currentPackage) {
         this(currentPackage, List.of());
@@ -60,6 +70,28 @@ final class ImportManager implements TypeContext {
 
         String dotted = ClassDescNames.qualifiedByDots(desc);
         return sameScopeAsCurrentFile && chain.size() > 1 ? dotted : packageName + "." + dotted;
+    }
+
+    @Override
+    public String mention(ClassDesc desc) {
+        mentioned = true;
+        ClassDesc claimed = claims.get(ClassDescNames.leafSimpleName(desc));
+        boolean bySimpleName = claimed == null ? visibleWithoutImport(desc) : claimed.equals(desc);
+        return bySimpleName ? ClassDescNames.leafSimpleName(desc) : qualified(desc);
+    }
+
+    // Whether a documentation comment named a type: the name depends on what the whole file claims.
+    boolean mentioned() {
+        return mentioned;
+    }
+
+    private String qualified(ClassDesc desc) {
+        String dotted = ClassDescNames.qualifiedByDots(desc);
+        String packageName = desc.packageName();
+        boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
+        return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()
+                ? dotted
+                : packageName + "." + dotted;
     }
 
     List<String> sortedImports() {

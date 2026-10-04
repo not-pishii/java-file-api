@@ -1,15 +1,17 @@
 package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.doc.DocStyle;
 
 /// Turns a file into source text with custom formatting.
 ///
 /// [me.supcheg.javafile.RenderableFile#render()] uses 4-space indentation and
-/// `\n` line breaks. For other settings, render through [StandardRenderer]:
+/// `\n` line breaks, and writes documentation comments as traditional ones,
+/// `/** ... */`. For other settings, render with another format:
 ///
 /// ```java
-/// String source = StandardRenderer.instance()
-///         .render(file.renderMeta(), SourceRenderer.format("\t", "\r\n"));
+/// String tabs = file.render(SourceRenderer.format("\t", "\r\n"));
+/// String markdown = file.render(SourceRenderer.standardFormat(DocStyle.MARKDOWN));
 /// ```
 public interface SourceRenderer {
 
@@ -20,7 +22,8 @@ public interface SourceRenderer {
     /// @return the complete source text
     String render(RenderableFile.Meta meta, Format format);
 
-    /// Formatting settings: indentation and line separator. Create one with
+    /// Formatting settings: indentation, line separator and the syntax of
+    /// documentation comments. Create one with [#format(String,String,DocStyle)],
     /// [#format(String,String)] or [#standardFormat()].
     interface Format {
         /// The current indentation, already repeated to the current nesting depth.
@@ -34,33 +37,60 @@ public interface SourceRenderer {
 
         /// A copy of this format at the top nesting level (no indentation).
         Format withoutPad();
+
+        /// The syntax documentation comments are written in.
+        ///
+        /// @return the syntax; [DocStyle#TRADITIONAL] unless the format says otherwise
+        default DocStyle docStyle() {
+            return DocStyle.TRADITIONAL;
+        }
     }
 
     /// The default format: 4-space indentation, `\n` line separator.
     ///
     /// @return the default format
     static Format standardFormat() {
-        return format(" ".repeat(4), "\n");
+        return standardFormat(DocStyle.TRADITIONAL);
     }
 
-    /// Creates a format with custom indentation and line separator.
+    /// The default format with documentation comments in the given syntax.
+    ///
+    /// @param docStyle the syntax of documentation comments
+    /// @return the format
+    static Format standardFormat(DocStyle docStyle) {
+        return format(" ".repeat(4), "\n", docStyle);
+    }
+
+    /// Creates a format with custom indentation and line separator, and
+    /// traditional documentation comments.
     ///
     /// @param padUnit one level of indentation, e.g. `"\t"` or `"  "`
     /// @param lineSeparator the line separator, e.g. `"\n"` or `"\r\n"`
     /// @return the format
     static Format format(String padUnit, String lineSeparator) {
-        record Impl(String padUnit, String pad, String newline) implements Format {
+        return format(padUnit, lineSeparator, DocStyle.TRADITIONAL);
+    }
+
+    /// Creates a format with custom indentation, line separator and syntax
+    /// of documentation comments.
+    ///
+    /// @param padUnit one level of indentation, e.g. `"\t"` or `"  "`
+    /// @param lineSeparator the line separator, e.g. `"\n"` or `"\r\n"`
+    /// @param docStyle the syntax of documentation comments
+    /// @return the format
+    static Format format(String padUnit, String lineSeparator, DocStyle docStyle) {
+        record Impl(String padUnit, String pad, String newline, DocStyle docStyle) implements Format {
             @Override
             public Format withIncreasedPad() {
-                return new Impl(padUnit, pad + padUnit, newline);
+                return new Impl(padUnit, pad + padUnit, newline, docStyle);
             }
 
             @Override
             public Format withoutPad() {
-                return new Impl(padUnit, "", newline);
+                return new Impl(padUnit, "", newline, docStyle);
             }
         }
 
-        return new Impl(padUnit, "", lineSeparator);
+        return new Impl(padUnit, "", lineSeparator, docStyle);
     }
 }

@@ -78,7 +78,12 @@ class AnonymousClassBuilderTest {
     @Test
     void acceptAppendsAPrebuiltMember() {
         FieldDecl field = new FieldDecl(
-                "seen", PrimitiveTypeRef.INT, List.of(), java.util.Set.of(Modifier.PRIVATE), Optional.empty());
+                "seen",
+                PrimitiveTypeRef.INT,
+                List.of(),
+                java.util.Set.of(Modifier.PRIVATE),
+                Optional.empty(),
+                Optional.empty());
 
         AnonymousClassBuilder acb = new AnonymousClassBuilder();
         acb.accept(field);

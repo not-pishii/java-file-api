@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static me.supcheg.javafile.code.Exprs.call;
@@ -91,8 +92,8 @@ class RecordBuilderTest {
     @Test
     void acceptAppendsAPreBuiltMember() {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
-        StaticFieldDecl member =
-                new StaticFieldDecl("ORIGIN", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(0));
+        StaticFieldDecl member = new StaticFieldDecl(
+                "ORIGIN", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(0), Optional.empty());
 
         builder.accept(member);
 

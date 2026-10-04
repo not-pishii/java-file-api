@@ -29,7 +29,8 @@ class VarargsParamTest {
                         List.of(),
                         List.of(varargsFirst, normalSecond),
                         me.supcheg.javafile.code.CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,7 +46,8 @@ class VarargsParamTest {
                         List.of(),
                         List.of(varargsFirst, normalSecond),
                         me.supcheg.javafile.code.CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -61,7 +63,8 @@ class VarargsParamTest {
                         List.of(),
                         List.of(varargsFirst, normalSecond),
                         me.supcheg.javafile.code.CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -74,7 +77,8 @@ class VarargsParamTest {
                         List.of(),
                         List.of(varargsFirst, normalSecond),
                         me.supcheg.javafile.code.CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -84,7 +88,11 @@ class VarargsParamTest {
         Param varargsLast = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
 
         EnumConstructorDecl decl = new EnumConstructorDecl(
-                List.of(), List.of(normalFirst, varargsLast), me.supcheg.javafile.code.CodeBody.EMPTY, List.of());
+                List.of(),
+                List.of(normalFirst, varargsLast),
+                me.supcheg.javafile.code.CodeBody.EMPTY,
+                List.of(),
+                Optional.empty());
 
         assertThat(decl.params()).containsExactly(normalFirst, varargsLast);
     }

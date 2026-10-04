@@ -27,7 +27,8 @@ class ModifierValidationTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("abstract");
     }
@@ -42,7 +43,8 @@ class ModifierValidationTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -56,7 +58,8 @@ class ModifierValidationTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("more than one access modifier");
     }
@@ -71,7 +74,8 @@ class ModifierValidationTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -84,7 +88,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -97,21 +102,34 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void enumRejectsAbstract() {
         assertThatThrownBy(() -> new EnumDecl(
-                        DESC, List.of(), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of(), List.of(), List.of()))
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void enumRejectsFinal() {
         assertThatThrownBy(() -> new EnumDecl(
-                        DESC, List.of(), Set.of(Modifier.PUBLIC, Modifier.FINAL), List.of(), List.of(), List.of()))
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.FINAL),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -124,7 +142,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -137,7 +156,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -150,7 +170,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -163,21 +184,34 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void enumAllowsStaticForNestedMember() {
         assertThatCode(() -> new EnumDecl(
-                        DESC, List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of(), List.of(), List.of()))
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void enumAllowsPrivateForNestedMember() {
         assertThatCode(() -> new EnumDecl(
-                        DESC, List.of(), Set.of(Modifier.PRIVATE, Modifier.STATIC), List.of(), List.of(), List.of()))
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -188,6 +222,7 @@ class ModifierValidationTest {
                         PrimitiveTypeRef.INT,
                         List.of(),
                         Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
+                        Optional.empty(),
                         Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -199,6 +234,7 @@ class ModifierValidationTest {
                         PrimitiveTypeRef.INT,
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.PRIVATE),
+                        Optional.empty(),
                         Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -210,6 +246,7 @@ class ModifierValidationTest {
                         PrimitiveTypeRef.INT,
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+                        Optional.empty(),
                         Optional.empty()))
                 .doesNotThrowAnyException();
     }
@@ -224,7 +261,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -238,41 +276,57 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         CodeBody.EMPTY,
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void constructorRejectsStatic() {
         assertThatThrownBy(() -> new ConstructorDecl(
-                        List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), List.of(), CodeBody.EMPTY, List.of()))
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void constructorRejectsAbstract() {
         assertThatThrownBy(() -> new ConstructorDecl(
-                        List.of(), Set.of(Modifier.PUBLIC, Modifier.ABSTRACT), List.of(), CodeBody.EMPTY, List.of()))
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void constructorAllowsProtected() {
         assertThatCode(() -> new ConstructorDecl(
-                        List.of(), Set.of(Modifier.PROTECTED), List.of(), CodeBody.EMPTY, List.of()))
+                        List.of(), Set.of(Modifier.PROTECTED), List.of(), CodeBody.EMPTY, List.of(), Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void compactConstructorRejectsStatic() {
         assertThatThrownBy(() -> new CompactConstructorDecl(
-                        List.of(), Set.of(Modifier.PUBLIC, Modifier.STATIC), CodeBody.EMPTY, List.of()))
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void compactConstructorAllowsPublic() {
-        assertThatCode(() -> new CompactConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), CodeBody.EMPTY, List.of()))
+        assertThatCode(() -> new CompactConstructorDecl(
+                        List.of(), Set.of(Modifier.PUBLIC), CodeBody.EMPTY, List.of(), Optional.empty()))
                 .doesNotThrowAnyException();
     }
 
@@ -285,7 +339,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -298,7 +353,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.FINAL),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -311,7 +367,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.STATIC),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -324,7 +381,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                        List.of()))
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 

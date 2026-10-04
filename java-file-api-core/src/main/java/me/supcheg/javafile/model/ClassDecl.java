@@ -1,6 +1,7 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -23,6 +24,7 @@ import java.util.Set;
 /// @param permits the subtypes named in a `permits` clause; a non-empty list
 ///                causes the class to render as `sealed`
 /// @param members the members of the class body
+/// @param doc the documentation comment, if any
 public record ClassDecl(
         ClassDesc desc,
         List<AnnotationUse> annotations,
@@ -31,7 +33,8 @@ public record ClassDecl(
         Optional<ClassOrInterfaceTypeRef> superclass,
         List<ClassOrInterfaceTypeRef> interfaces,
         List<ClassDesc> permits,
-        List<ClassMember> members)
+        List<ClassMember> members,
+        Optional<DocComment> doc)
         implements TypeDecl {
     public ClassDecl {
         // STATIC, PRIVATE, and PROTECTED are not legal on an actual top-level class, but

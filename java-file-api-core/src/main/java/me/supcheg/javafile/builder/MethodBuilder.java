@@ -4,6 +4,8 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -11,6 +13,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class MethodBuilder {
 
+    private @Nullable DocComment doc;
     private final String name;
     private final Optional<TypeRef> returnType;
     private final List<AnnotationUse> annotations = new ArrayList<>();
@@ -78,6 +82,24 @@ public final class MethodBuilder {
     public MethodBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
         return this;
+    }
+
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public MethodBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public MethodBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
     }
 
     /// Adds the given modifiers to the method declaration.
@@ -195,6 +217,10 @@ public final class MethodBuilder {
         return List.copyOf(throwsTypes);
     }
 
+    Optional<DocComment> doc() {
+        return Optional.ofNullable(doc);
+    }
+
     MethodDecl build() {
         return new MethodDecl(
                 name,
@@ -204,6 +230,7 @@ public final class MethodBuilder {
                 List.copyOf(typeParams),
                 List.copyOf(params),
                 body,
-                List.copyOf(throwsTypes));
+                List.copyOf(throwsTypes),
+                Optional.ofNullable(doc));
     }
 }

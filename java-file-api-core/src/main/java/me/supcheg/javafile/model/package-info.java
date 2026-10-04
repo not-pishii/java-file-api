@@ -9,7 +9,7 @@
 /// file.transformClass((builder, member) -> {
 ///     if (member instanceof FieldDecl f) {
 ///         builder.accept(new FieldDecl(f.name(), f.type(), f.annotations(),
-///                 EnumSet.of(Modifier.PRIVATE, Modifier.FINAL), f.initializer()));
+///                 EnumSet.of(Modifier.PRIVATE, Modifier.FINAL), f.initializer(), f.doc()));
 ///     } else {
 ///         builder.accept(member);
 ///     }
