@@ -1,7 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
-import me.supcheg.javafile.langmodel.mirror.Canonical;
+import me.supcheg.javafile.langmodel.mirror.Conformance;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
@@ -36,7 +36,8 @@ import java.util.stream.Stream;
 ///
 /// A metamodel found on the classpath is reused only if the fingerprint in
 /// its [me.supcheg.javafile.facts.meta.GeneratedMetamodel] matches the type
-/// on the current classpath: a library may ship metamodels generated
+/// on the current classpath — the fast path of [Conformance], which the
+/// check against the target classpath starts with too: a library may ship metamodels generated
 /// against another version of a type. Nor is one of another
 /// [MetamodelFormat#VERSION] reused: which members have a fact is decided
 /// by the format, not by the type alone. Javac finds the first resource of a
@@ -148,14 +149,13 @@ final class ReuseIndex {
         }
         MemberFilter filter = complete ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE;
         return switch (models.of(type, filter)) {
-            case Translation.Ok<TypeModel>(TypeModel model) -> {
-                String expected = Canonical.of(model).fingerprint();
-                Object recorded = marker.get().get("fingerprint");
-                yield expected.equals(recorded)
+            // a metamodel is reused for the type it was generated from alone: one that still holds of a
+            // changed type lacks the facts of what the type has added
+            case Translation.Ok<TypeModel>(TypeModel model) ->
+                marker.get().get("fingerprint") instanceof String recorded && Conformance.unchanged(recorded, model)
                         ? new Candidate.Matching(ClassDesc.of(listed), directory)
                         : new Candidate.Stale("metamodel " + listed + " on the classpath is stale against " + binaryName
                                 + ": it was generated from a different " + binaryName);
-            }
             case Translation.Deferred<TypeModel>(String unresolved) ->
                 new Candidate.Stale(binaryName + " mentions " + unresolved + ", which does not exist yet");
             case Translation.Unrepresentable<TypeModel>(String reason) -> new Candidate.Stale(reason);

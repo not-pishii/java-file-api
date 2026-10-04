@@ -5,6 +5,7 @@ import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.type.TypeRef;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -38,7 +39,7 @@ final class Harness {
     private Harness() {}
 
     /// What an action sees in a round.
-    record Env(MirrorTranslator translator, Elements elements, Types types) {
+    record Env(MirrorTranslator translator, Elements elements, Types types, ProcessingEnvironment processing) {
 
         TypeElement element(String canonicalName) {
             return Objects.requireNonNull(elements.getTypeElement(canonicalName), canonicalName);
@@ -75,8 +76,14 @@ final class Harness {
     /// Runs `action` in the first round of a successful compilation of
     /// `sources`, or of an empty class for none.
     static <R> R run(Function<Env, R> action, String... sources) {
+        return run(List.of(), action, sources);
+    }
+
+    /// Runs `action` in the first round of a successful compilation of
+    /// `sources` under the options of javac, such as `--release`.
+    static <R> R run(List<String> options, Function<Env, R> action, String... sources) {
         List<R> results = new ArrayList<>();
-        Compilation compilation = compile(action, results, List.of(), sources);
+        Compilation compilation = compile(options, action, results, List.of(), sources);
         assertThat(compilation.status()).as("%s", compilation.diagnostics()).isEqualTo(Compilation.Status.SUCCESS);
         return results.getFirst();
     }
@@ -118,13 +125,18 @@ final class Harness {
 
     private static <R> Compilation compile(
             Function<Env, R> action, List<R> sink, List<Processor> others, String... sources) {
+        return compile(List.of(), action, sink, others, sources);
+    }
+
+    private static <R> Compilation compile(
+            List<String> options, Function<Env, R> action, List<R> sink, List<Processor> others, String... sources) {
         List<JavaFileObject> files = new ArrayList<>();
         for (String source : sources.length == 0 ? new String[] {"package p; class Empty {}"} : sources) {
             files.add(source(source));
         }
         List<Processor> processors = new ArrayList<>(others);
         processors.add(new Probe<>(action, sink));
-        return javac().withProcessors(processors).compile(files);
+        return javac().withOptions(options).withProcessors(processors).compile(files);
     }
 
     private static final class Probe<R> extends AbstractProcessor {
@@ -152,7 +164,8 @@ final class Harness {
                 sink.add(action.apply(new Env(
                         new MirrorTranslator(processingEnv.getElementUtils(), processingEnv.getTypeUtils()),
                         processingEnv.getElementUtils(),
-                        processingEnv.getTypeUtils())));
+                        processingEnv.getTypeUtils(),
+                        processingEnv)));
             }
             return false;
         }

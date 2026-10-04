@@ -89,4 +89,27 @@ public record TypeModel(
             throw new IllegalArgumentException("a model without members has members " + members + " " + skipped);
         }
     }
+
+    /// The type without its members, as [MemberFilter#NONE] gives it: what a
+    /// token-only metamodel is generated from. The rest of the model does
+    /// not depend on the filter.
+    ///
+    /// @return the model with no members, of [MemberFilter#NONE]
+    public TypeModel withoutMembers() {
+        return new TypeModel(
+                desc,
+                kind,
+                typeParams,
+                nonPublicBoundTypes,
+                superclasses,
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed,
+                sam,
+                MemberFilter.NONE,
+                List.of(),
+                List.of());
+    }
 }
