@@ -77,10 +77,11 @@ class JdkTypesTest {
         return processor().compile(generator(types)).orFail();
     }
 
-    /// The metamodels of a run of the processor, compiled under every lint with nothing to say, and loaded.
+    /// The metamodels of a run of the processor, compiled under every lint and every check of their
+    /// documentation comments with nothing to say, and loaded.
     private Loaded load(Compiled compiled, Path... libraries) throws IOException {
         Path directory = Javac.plain()
-                .linted()
+                .documented()
                 .classpath(libraries)
                 .compile(compiled.generated())
                 .clean()

@@ -101,6 +101,17 @@ public record Javac(
         return options("-Xlint:all", "-Werror");
     }
 
+    /// [#linted()], and with every check of doclint on what is `public` or
+    /// `protected`: a link of a documentation comment that does not
+    /// resolve, markup that is not well-formed, a declaration or a parameter
+    /// without a comment — javac must have nothing to say about the comments
+    /// either. What a generated metamodel must pass.
+    ///
+    /// @return the description
+    public Javac documented() {
+        return linted().options("-Xdoclint:all/protected");
+    }
+
     /// With more processors, which run before [FactsProcessor].
     ///
     /// @param more the processors, each good for one run

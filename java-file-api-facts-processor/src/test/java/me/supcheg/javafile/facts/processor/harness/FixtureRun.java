@@ -37,7 +37,9 @@ import java.util.stream.Stream;
 /// 1. the processor runs on `request/` against the library, and its output
 ///    — sources, index, diagnostics — is the [Snapshot] in `expected/`,
 ///    but for the files of the JDK that are those of `expected-jdk/`;
-/// 2. the generated sources compile on their own under `-Xlint:all -Werror`;
+/// 2. the generated sources compile on their own under `-Xlint:all
+///    -Xdoclint:all/protected -Werror`: every link of their comments
+///    resolves, and nothing `public` is without one;
 /// 3. `use/` compiles against the metamodels under `-Xlint:all -Werror`,
 ///    and every check of it runs: a `public static void` method of a
 ///    `public` class, without parameters or with one [Typed], that fails
@@ -159,7 +161,7 @@ public final class FixtureRun {
             List<Source> use = Source.in(fixtureCase.use());
             return Stream.of(
                             Stream.of(test(
-                                    "the metamodels compile under -Xlint:all -Werror",
+                                    "the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
                                     fixtureCase.expected(),
                                     metamodels::get)),
                             use.isEmpty()
@@ -277,14 +279,15 @@ public final class FixtureRun {
 
         /// The class output of the case as the jar of its module would
         /// hold it — the index and the metamodels — with the metamodels
-        /// compiled again, on their own and with every lint on.
+        /// compiled again, on their own, with every lint and every check of
+        /// their documentation comments on.
         private Path compileMetamodels() {
             Compiled output = processed.get().orFail();
             Path directory = output.writeTo(work.resolve("metamodels"));
             return output.generated().isEmpty()
                     ? directory
                     : Javac.plain()
-                            .linted()
+                            .documented()
                             .classpath(libraries())
                             .compile(output.generated())
                             .clean()
