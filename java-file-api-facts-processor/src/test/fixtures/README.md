@@ -123,7 +123,7 @@ class ATokenOfATypeArgumentOutOfBounds {
 
 In the IDE run `FixturesTest` (working directory: the module) and re-run one fixture, case or
 test from the tree. The tests of a case, in order: `the output of the processor is expected/`,
-`the metamodels compile under -Xlint:all -Werror`, `use/ compiles …`, `use/<Class>.<method>` …,
+`the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror`, `use/ compiles …`, `use/<Class>.<method>` …,
 `use-fails/<File>.java` ….
 
 ## Accepting a new output
@@ -142,6 +142,10 @@ committing** — that review is the test. Without the flag a missing or an extra
 fails the test. Line ends: files are compared with `\n` and written with `\n`;
 `.gitattributes` here keeps them so at checkout. Spotless does not touch this directory.
 
+The comment of a metamodel class names the types it is there for — the requested types it is a supertype
+of, the types whose signatures mention it —, so the metamodel of a JDK type (`Object_`, `String_`) differs
+between the cases that ask for different types, and more cases keep a variant of their own in `expected/`.
+
 To answer "did the output of any test change?" for the tests that keep no snapshot, dump the
 output of every run of the processor before and after a change and compare:
 
@@ -159,6 +163,8 @@ diff -r java-file-api-facts-processor/build/dump/before java-file-api-facts-proc
 |---|---|
 | which metamodels are generated, full or token-only | `expected/` (the files and `index.txt`) |
 | which facts a metamodel has, their names and order; anything asserted on the source text | `expected/` |
+| what the comment of a metamodel says: why it is full or token-only, which members have no fact, the member a fact is of | `expected/` |
+| every link of a comment resolves, nothing `public` is without a comment | the test `the metamodels compile under …` of every case: doclint is on |
 | warnings and errors, their text and count; "no warnings" | `expected/diagnostics.txt` (or its absence) |
 | the output is deterministic | `expected/` (it must match on every run) |
 | the family and type arguments of a fact (`isInstanceOf(StaticFieldRef.class)`, casts) | `use/`: `StaticFieldRef<Prim.Int> n = Greeter_.N;` |

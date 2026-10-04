@@ -214,7 +214,7 @@ class FixtureRunTest {
                 .containsExactlyInAnyOrder(
                         SHARED,
                         OUTPUT,
-                        "one: the metamodels compile under -Xlint:all -Werror",
+                        "one: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
                         "one: use/ compiles under -Xlint:all -Werror",
                         "one: use/Checks.holds",
                         "one: use/Checks.doesNotHold",
@@ -259,7 +259,7 @@ class FixtureRunTest {
                 .containsExactlyInAnyOrder(
                         SHARED,
                         OUTPUT,
-                        "one: the metamodels compile under -Xlint:all -Werror",
+                        "one: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
                         "one: use/ compiles under -Xlint:all -Werror");
         assertThat(outcomes.get("one: use/ compiles under -Xlint:all -Werror"))
                 .get()
@@ -376,7 +376,7 @@ class FixtureRunTest {
                 .containsKeys(
                         "reuse/a: the output of the processor is expected/",
                         "reuse/b: use/Checks.theMetamodelOfTheOtherModuleIsTheOneUsed",
-                        "reuse/c: the metamodels compile under -Xlint:all -Werror");
+                        "reuse/c: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror");
         Path cases = fixtures.resolve("reuse/cases");
         assertThat(Snapshot.read(cases.resolve("a/expected")).files()).containsKey("a/facts/p/Dep_.java");
         assertThat(Snapshot.read(cases.resolve("b/expected")).files())
