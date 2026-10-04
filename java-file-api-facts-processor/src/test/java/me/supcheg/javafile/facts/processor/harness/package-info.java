@@ -8,6 +8,9 @@
 /// write there. [me.supcheg.javafile.facts.processor.harness.Fixture] reads
 /// `src/test/fixtures` (see its `README.md`) and
 /// [me.supcheg.javafile.facts.processor.harness.FixtureRun] makes the tests
-/// of a fixture; [me.supcheg.javafile.facts.processor.harness.InCompilation]
+/// of a fixture, with [me.supcheg.javafile.facts.processor.harness.Typed]
+/// for the checks that go through the typed layer, against the library or
+/// another version of it as the target classpath;
+/// [me.supcheg.javafile.facts.processor.harness.InCompilation]
 /// gives a unit test the `Elements` and `Types` of a compilation.
 package me.supcheg.javafile.facts.processor.harness;

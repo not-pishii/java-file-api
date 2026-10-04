@@ -1,6 +1,11 @@
 package me.supcheg.javafile.facts.processor.harness;
 
+import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TargetReader;
+import me.supcheg.javafile.facts.TargetType;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
 import me.supcheg.javafile.typed.Expr;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
@@ -10,6 +15,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.function.Executable;
 import org.opentest4j.AssertionFailedError;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.constant.ClassDesc;
@@ -26,6 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -43,7 +50,9 @@ import java.util.stream.Stream;
 /// 3. `use/` compiles against the metamodels under `-Xlint:all -Werror`,
 ///    and every check of it runs: a `public static void` method of a
 ///    `public` class, without parameters or with one [Typed], that fails
-///    by throwing;
+///    by throwing; the typed layer of a [Typed] renders against the
+///    library of the case as the target classpath, or against another
+///    version of it, a directory of `targets/`;
 /// 4. every file of `use-fails/` does not compile, with the errors its
 ///    comments tell, see [Rejection].
 ///
@@ -198,7 +207,7 @@ public final class FixtureRun {
         /// The checks of `use/`: one test per method, named `Class.method`.
         private Stream<DynamicNode> checks(List<Source> use) {
             ClassLoader loader = used.get();
-            Typed typed = new ThroughTyped(caseLibrary, work);
+            Typed typed = new ThroughTyped(caseLibrary, work, this::against, false);
             List<DynamicNode> checks = use.stream()
                     .flatMap(source -> {
                         Class<?> type = load(loader, source.name());
@@ -246,14 +255,28 @@ public final class FixtureRun {
                 return library.get();
             }
             return Javac.plain()
-                    .compile(Stream.concat(own.stream(), Source.in(fixture.lib()).stream())
-                            .collect(Collectors.toMap(Source::name, Function.identity(), (first, _) -> first))
-                            .values()
-                            .stream()
-                            .sorted(Comparator.comparing(Source::name))
-                            .toList())
+                    .compile(Source.overlaid(fixtureCase.lib(), fixture.lib()))
                     .orFail()
                     .writeTo(work.resolve("lib"));
+        }
+
+        /// [Typed] against `targets/<version>/` of the case: the library
+        /// with the files of the version instead of its own.
+        private Typed against(String version) {
+            Path target = fixtureCase.target(version);
+            if (!Files.isDirectory(target)) {
+                throw new IllegalStateException("case " + fixtureCase.name() + " of fixture " + fixture.name()
+                        + " has no targets/" + version + "/");
+            }
+            Path directory = work.resolve("targets").resolve(version);
+            return new ThroughTyped(
+                    Memo.of(() -> Javac.plain()
+                            .compile(Source.overlaid(target, fixtureCase.lib(), fixture.lib()))
+                            .orFail()
+                            .writeTo(directory.resolve("lib"))),
+                    directory,
+                    this::against,
+                    true);
         }
 
         /// What the processor runs against: the library, and the output of
@@ -313,26 +336,93 @@ public final class FixtureRun {
 
     /// [Typed] for the checks of a case.
     ///
-    /// @param library the library of the case, compiled
+    /// @param library the library the typed layer renders against, compiled
     /// @param work where the rendered classes are compiled into
-    private record ThroughTyped(Supplier<Path> library, Path work) implements Typed {
+    /// @param versions the typed layer against another version of the library, by its name
+    /// @param another whether `library` is another version than the one the checks were compiled with
+    private record ThroughTyped(Supplier<Path> library, Path work, Function<String, Typed> versions, boolean another)
+            implements Typed {
+
+        /// What came of rendering: the source, or why the typed layer
+        /// rejected the facts, and what the target classpath was asked.
+        private sealed interface Rendering {
+            List<String> verified();
+
+            record Rendered(String source, List<String> verified) implements Rendering {}
+
+            record Rejected(RuntimeException reason, List<String> verified) implements Rendering {}
+        }
+
+        /// Renders in a compilation that has the library alone, against
+        /// its target classpath.
+        private <R, P> Rendering rendering(
+                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
+            return Javac.plain()
+                    .alone()
+                    .classpath(library.get())
+                    .inFirstRound(processing -> render(processing, result, parameter, body));
+        }
+
+        private static <R, P> Rendering render(
+                ProcessingEnvironment processing,
+                TypeToken<R> result,
+                TypeToken<P> parameter,
+                Function<Expr<P>, Expr<R>> body) {
+            List<String> verified = new CopyOnWriteArrayList<>();
+            TargetReader reader = TargetClasspaths.reader(processing.getElementUtils(), processing.getTypeUtils());
+            TargetClasspath target = UnsafeFacts.targetClasspath((shape, origin) -> {
+                TargetType found = reader.read(shape, origin);
+                verified.add(shape.desc().packageName() + "." + shape.desc().displayName() + ": "
+                        + switch (found) {
+                            case TargetType.Unchanged _ -> "unchanged";
+                            case TargetType.Changed _ -> "changed";
+                            case TargetType.Mismatched _ -> "mismatched";
+                        });
+                return found;
+            });
+            try {
+                String source = TypedJavaFile.class_(
+                                target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                                    @Override
+                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                        cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
+                                    }
+                                })
+                        .render();
+                return new Rendering.Rendered(source, List.copyOf(verified));
+            } catch (RuntimeException rejected) {
+                return new Rendering.Rejected(rejected, List.copyOf(verified));
+            }
+        }
+
         @Override
         public <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
-            return TypedJavaFile.class_(
-                            me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(),
-                            ClassDesc.of("out", "Out"),
-                            new TypedJavaFile.TypedClassSpec() {
-                                @Override
-                                public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
-                                }
-                            })
-                    .render();
+            return switch (rendering(result, parameter, body)) {
+                case Rendering.Rendered(String source, List<String> _) -> source;
+                case Rendering.Rejected(RuntimeException reason, List<String> _) -> throw reason;
+            };
+        }
+
+        @Override
+        public <R, P> List<String> verified(
+                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
+            return rendering(result, parameter, body).verified();
+        }
+
+        @Override
+        public Typed against(String version) {
+            return versions.apply(version);
         }
 
         @Override
         public <R, P> Object apply(
                 TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body, P argument) {
+            ClassLoader ofTheArgument = argument.getClass().getClassLoader();
+            if (another && ofTheArgument != null && ofTheArgument != ClassLoader.getPlatformClassLoader()) {
+                throw new IllegalArgumentException("an argument of another version of the library than "
+                        + argument.getClass().getName() + " is needed: against a version, give an argument of the"
+                        + " JDK and make what the body needs of the library in the body");
+            }
             String source = render(result, parameter, body);
             Compiled compiled = Javac.plain()
                     .alone()
@@ -347,9 +437,8 @@ public final class FixtureRun {
                 Files.createDirectories(work);
                 Path directory = compiled.writeTo(Files.createTempDirectory(work, "typed"));
                 // the library too: the parent of the loader of an argument of the JDK sees none of it
-                try (URLClassLoader loader = new URLClassLoader(
-                        new URL[] {url(directory), url(library.get())},
-                        argument.getClass().getClassLoader())) {
+                try (URLClassLoader loader =
+                        new URLClassLoader(new URL[] {url(directory), url(library.get())}, ofTheArgument)) {
                     return Arrays.stream(loader.loadClass("out.Out").getMethods())
                             .filter(method -> method.getName().equals("go"))
                             .findFirst()

@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts.processor.harness;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /// [Javac#documented()] is what the metamodels of every fixture are compiled
 /// with: it must fail on what a comment of a metamodel may get wrong.
@@ -10,6 +11,25 @@ class JavacTest {
 
     private static Compiled documented(String source) {
         return Javac.plain().alone().documented().compile(source);
+    }
+
+    @Test
+    void anActionRunsInTheFirstRoundOfACompilationOfTheDescription() {
+        // the types are those of the classpath and the options: an older release has no SequencedCollection
+        String name = "java.util.SequencedCollection";
+
+        assertThat(Javac.plain()
+                        .<Boolean>inFirstRound(env -> env.getElementUtils().getTypeElement(name) != null))
+                .isTrue();
+        assertThat(Javac.plain()
+                        .options("--release", "17")
+                        .<Boolean>inFirstRound(env -> env.getElementUtils().getTypeElement(name) != null))
+                .isFalse();
+        assertThatIllegalStateException()
+                .isThrownBy(() -> Javac.plain().inFirstRound(env -> {
+                    throw new IllegalStateException("thrown in the round");
+                }))
+                .withMessage("thrown in the round");
     }
 
     @Test

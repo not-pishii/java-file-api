@@ -17,6 +17,7 @@ harness is `src/test/java/…/processor/harness` (`FixtureRun` makes the tests).
   expected-jdk/…                the metamodels of JDK types, once for the fixture (see below)
   use/*.java                    code against the metamodels: compiled and run
   use-fails/*.java              code against the metamodels that must not compile
+  targets/<version>/p/…         optional: another version of the library, for the typed layer of use/
 ```
 
 A fixture with several requests keeps one `lib/` and has a directory per request instead:
@@ -24,7 +25,7 @@ A fixture with several requests keeps one `lib/` and has a directory per request
 ```
 <fixture>/
   lib/…
-  cases/<case>/request/…  expected/…  use/…  use-fails/…  [lib/…]
+  cases/<case>/request/…  expected/…  use/…  use-fails/…  [lib/…]  [targets/<version>/…]
 ```
 
 It is one or the other: `request/` next to `cases/` is an error. A case may have a `lib/` of its
@@ -100,6 +101,40 @@ a check on the source, and where the typed layer must reject a fact (`FactLookup
 library is on the classpath of what runs, so an argument of the JDK (a `String`) may be given to a
 class of the library.
 
+The typed layer renders **inside a compilation whose classpath is the library alone**, against the
+target classpath of that compilation (`TargetClasspaths.of(processingEnv)`), as a generator that is
+an annotation processor does: every metamodel the body uses is checked against the library, and
+none of them may fail it — they were generated from it.
+`typed.verified(result, parameter, body)` tells what was checked while rendering: a line per
+metamodel read, in order, `p.Svc: unchanged` (the fingerprint matched), `p.Svc: changed` (another
+type, of which the metamodel still holds) or `p.Svc: mismatched`.
+
+### `targets/`
+
+`typed.against("added-overload")` is the typed layer against **another version of the library**:
+`targets/added-overload/`, whose files replace those of the library of the case with the same path
+or add to it; an empty file takes the file of its path out of the library (a type that is removed).
+The metamodels stay the ones generated from the library; what is rendered is checked against the
+version, compiled against it and run with it — a generator compiled against v1 of a library, run in
+a compilation that has v2:
+
+```java
+public static void anOverloadIsAdded(Typed typed) {
+    Typed added = typed.against("added-overload");
+    assertThat(added.verified(String_.TOKEN, String_.TOKEN, Versions::only)).contains("p.Svc: changed");
+    assertThat(added.render(String_.TOKEN, String_.TOKEN, Versions::only)).contains(".only((Object) v0)");
+    assertThat(added.apply(String_.TOKEN, String_.TOKEN, Versions::only, "a")).isEqualTo("only(Object) a");
+    assertThatExceptionOfType(TargetClasspathMismatchException.class)
+            .isThrownBy(() -> typed.against("removed-method").render(String_.TOKEN, String_.TOKEN, Versions::m))
+            .withMessageContaining("missing: method overridable m(java.lang.String)");
+}
+```
+
+Against a version, the argument of `apply` is of the JDK: an object of the library the checks were
+compiled with is of the other version. Make what the body needs of the library in the body
+(`new_(Svc_.new_)`). A version is compiled on first use; one that is not a directory of `targets/`
+fails the check that asks for it. The fixture `target` is the table of such changes.
+
 ### `use-fails/`
 
 Each file is compiled on its own and must be rejected **for the reasons its comments tell**: a
@@ -170,6 +205,8 @@ diff -r java-file-api-facts-processor/build/dump/before java-file-api-facts-proc
 | the family and type arguments of a fact (`isInstanceOf(StaticFieldRef.class)`, casts) | `use/`: `StaticFieldRef<Prim.Int> n = Greeter_.N;` |
 | what a fact says at run time: `constantValue()`, `typeRef()`, `owner()`, `traits()`, method tables, shapes | `use/` with AssertJ |
 | end to end through the typed layer | `use/` with a `Typed` parameter |
+| what the typed layer makes of the metamodels against another version of the library: a mismatch, a cast kept, a fact rejected | `use/` with `typed.against("<version>")` and `targets/<version>/` |
+| which metamodels the target classpath read, and by which path | `use/` with `typed.verified(…)` |
 | a member has no fact; a token out of bounds; a fact is not of a mutable family | `use-fails/` (the absence is in `expected/` too) |
 | a rule of every generated source; two cases that must agree | `SnapshotsTest` |
 | the metamodel of a type of the JDK, whose members are many | `JdkTypesTest` (no snapshot: it is tied to the JDK) |
@@ -197,7 +234,10 @@ compiled.snapshot().verify(Path.of("src/test/snapshots/MultiroundTest/late"));  
 ```
 
 `Javac` is an immutable description (`plain()` or `facts()`, then `classpath`, `options`,
-`linted()` for `-Xlint:all -Werror`, `alone()` to drop the test classpath, `with(processors)`);
+`linted()` for `-Xlint:all -Werror`, `alone()` to drop the test classpath, `with(processors)`;
+`inFirstRound(env -> …)` runs an action inside a compilation of the description and gives it the
+`ProcessingEnvironment` — for `TargetClasspaths.of(env)` under a classpath and options of the test's
+choosing, such as `--release 17`);
 `Compiled` is a value (`succeeded`, `diagnostics`, `generated`, `classOutput`; `orFail()`,
 `clean()`, `errors()`, `warnings()`, `sources()`, `resources()`, `snapshot()`, `writeTo(dir)`).
 Snapshots of such tests live under `src/test/snapshots/`, never under `src/test/fixtures/`
@@ -206,7 +246,10 @@ Snapshots of such tests live under `src/test/snapshots/`, never under `src/test/
 A processor written in the test to get at `Elements` is a unit test with `@ExtendWith(InCompilation.class)` and
 `@InCompilation.Sources(…)`; its parameters are `Elements`, `Types`, `ProcessingEnvironment`, `RoundEnvironment`.
 A library the test builds from a file of a fixture — `Source.in(Path.of("src/test/fixtures/reuse/lib"))` — is
-the way a scenario test and a fixture share sources instead of writing them twice.
+the way a scenario test and a fixture share sources instead of writing them twice;
+`Source.overlaid(fixture.resolve("targets/added-overload"), fixture.resolve("lib"))` is a version of it
+(`GeneratorAgainstAnotherVersionTest`: a generator compiled against the library, run as a processor of a
+compilation that has the version).
 
 ## Adding a fixture or a case
 
@@ -231,6 +274,9 @@ the way a scenario test and a fixture share sources instead of writing them twic
    `typed.apply(…)` (renders, compiles and runs), `typed.render(…)` where the check is on the rendered source or on
    the typed layer rejecting a fact.
 5. **`use-fails/`.** A member that has no fact; a token out of bounds.
+6. **`targets/`.** A version per change of the library a check is about, named after the change, with the changed
+   files alone. The checks of `use/` compile against the library, so a version cannot be named in `use/` by its
+   types: build its objects in the body.
 
 Pitfalls:
 

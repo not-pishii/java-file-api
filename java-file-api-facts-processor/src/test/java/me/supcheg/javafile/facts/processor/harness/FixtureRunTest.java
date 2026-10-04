@@ -392,6 +392,117 @@ class FixtureRunTest {
                                                 + (char) 10));
     }
 
+    @Test
+    void theTypedLayerRendersAgainstTheLibraryOrAgainstAVersionOfIt() {
+        file("one/lib/p/Thing.java", THING);
+        file("one/lib/p/Dep.java", DEP);
+        file("one/lib/p/Extra.java", "package p; public class Extra {}");
+        request("one", "gen", "Dep");
+        // a version replaces a file of the library, adds one, and takes one out with an empty file
+        file("one/targets/more/p/Dep.java", DEP_V2);
+        file("one/targets/more/p/Added.java", "package p; public class Added {}");
+        file("one/targets/more/p/Extra.java", "");
+        file("one/targets/less/p/Dep.java", "package p; public class Dep {}");
+        file("one/use/Checks.java", """
+                import gen.facts.java.lang.Object_;
+                import gen.facts.p.Dep_;
+                import me.supcheg.javafile.facts.PrimitiveToken;
+                import me.supcheg.javafile.facts.Prim;
+                import me.supcheg.javafile.facts.TargetClasspathMismatchException;
+                import me.supcheg.javafile.facts.processor.harness.Typed;
+                import me.supcheg.javafile.typed.Expr;
+                import p.Dep;
+
+                import static me.supcheg.javafile.typed.Expressions.call;
+                import static me.supcheg.javafile.typed.Expressions.new_;
+                import static org.assertj.core.api.Assertions.assertThat;
+                import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+                import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+                import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
+                public final class Checks {
+                    private static Expr<Prim.Int> x(Expr<Dep> dep) {
+                        return call(dep, Dep_.x);
+                    }
+
+                    public static void theLibraryIsTheTargetClasspath(Typed typed) {
+                        assertThat(typed.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
+                                .containsExactly("p.Dep: unchanged");
+                        assertThat(typed.apply(PrimitiveToken.INT, Dep_.TOKEN, Checks::x, new Dep())).isEqualTo(0);
+                    }
+
+                    public static void aVersionIsTheLibraryWithItsFiles(Typed typed) {
+                        Typed more = typed.against("more");
+
+                        assertThat(more.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
+                                .containsExactly("p.Dep: changed");
+                        assertThat(more.render(PrimitiveToken.INT, Dep_.TOKEN, Checks::x)).contains("return v0.x();");
+                        assertThat(more.apply(PrimitiveToken.INT, Object_.TOKEN, o -> x(new_(Dep_.new_)), "a"))
+                                .isEqualTo(0);
+                    }
+
+                    public static void aVersionTheMetamodelDoesNotHoldOfRejectsTheFact(Typed typed) {
+                        Typed less = typed.against("less");
+
+                        assertThat(less.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
+                                .containsExactly("p.Dep: mismatched");
+                        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                                .isThrownBy(() -> less.render(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
+                                .withMessageContaining("missing: method overridable x() -> int throws -");
+                    }
+
+                    public static void anArgumentOfTheLibraryIsNotOfTheVersion(Typed typed) {
+                        assertThatIllegalArgumentException()
+                                .isThrownBy(() -> typed.against("more")
+                                        .apply(PrimitiveToken.INT, Dep_.TOKEN, Checks::x, new Dep()))
+                                .withMessageContaining("give an argument of the JDK");
+                    }
+
+                    public static void aVersionIsADirectoryOfTargets(Typed typed) {
+                        assertThatIllegalStateException()
+                                .isThrownBy(() -> typed.against("none"))
+                                .withMessage("case one of fixture one has no targets/none/");
+                    }
+
+                    public static void expectsWhatTheVersionDoesNotGive(Typed typed) {
+                        assertThat(typed.against("less").verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
+                                .containsExactly("p.Dep: unchanged");
+                    }
+                }
+                """);
+        update();
+
+        Map<String, Optional<Throwable>> outcomes = run();
+
+        assertThat(failed(outcomes)).containsExactly("one: use/Checks.expectsWhatTheVersionDoesNotGive");
+        assertThat(message(outcomes, "one: use/Checks.expectsWhatTheVersionDoesNotGive"))
+                .contains("p.Dep: mismatched");
+        assertThat(outcomes)
+                .containsKeys(
+                        "one: use/Checks.theLibraryIsTheTargetClasspath",
+                        "one: use/Checks.aVersionIsTheLibraryWithItsFiles",
+                        "one: use/Checks.aVersionTheMetamodelDoesNotHoldOfRejectsTheFact",
+                        "one: use/Checks.anArgumentOfTheLibraryIsNotOfTheVersion",
+                        "one: use/Checks.aVersionIsADirectoryOfTargets");
+        // the version was compiled with its files: Added is there, Extra is not
+        assertThat(compiledClasses("targets/more/lib"))
+                .contains("p/Added.class", "p/Dep.class", "p/Thing.class")
+                .doesNotContain("p/Extra.class");
+    }
+
+    /// The class files under the directories of the work directory that end with `suffix`, by their paths in it.
+    private List<String> compiledClasses(String suffix) {
+        try (Stream<Path> files = Files.walk(work)) {
+            return files.filter(Files::isRegularFile)
+                    .map(file -> Text.path(work.relativize(file)))
+                    .filter(path -> path.contains(suffix + "/") && path.endsWith(".class"))
+                    .map(path -> path.substring(path.indexOf(suffix + "/") + suffix.length() + 1))
+                    .toList();
+        } catch (IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+    }
+
     private static Set<String> failed(Map<String, Optional<Throwable>> outcomes) {
         return outcomes.entrySet().stream()
                 .filter(outcome -> outcome.getValue().isPresent())
