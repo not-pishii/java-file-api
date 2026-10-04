@@ -23,6 +23,9 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import q.Sub;
 
+/// The full metamodel of [Sub], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Sub] inherits has its fact in the metamodel of the supertype that declares it: [b.facts.p.Dep_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Sub.class, fingerprint = "a84eb75c22b5c8ab740d10023f122793b803abad819c512c990747a83e1f9e7d", complete = true, format = 5)
 @SuppressWarnings({
@@ -30,24 +33,31 @@ import q.Sub;
     "removal"
 })
 public final class Sub_ {
+    /// The shape of [Sub] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Sub] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.q.Sub_"), "a84eb75c22b5c8ab740d10023f122793b803abad819c512c990747a83e1f9e7d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("q.Sub"), List.of(), List.of(ClassDesc.of("p.Dep"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("sub"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Sub"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Sub], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Sub].
         static final String TEXT = "javafile-facts-canonical 4\ntype q.Sub open-class sealed=no\ntparams -\nsuperclasses p.Dep; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable sub() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); sub(); toString(); wait(); wait(long); wait(long, int); x(); y()\ntable static -\ntable ctor Sub()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Sub].
     public static final OpenClassToken<Sub> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
+    /// The fact of [Sub#Sub()].
     public static final CtorRef0<Sub> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
+    /// The fact of [Sub#sub()].
     public static final VoidMethodRef0<Sub> sub = UnsafeFacts.voidMethod(TOKEN, "sub", MemberTraits.OVERRIDABLE);
 
     private Sub_() {

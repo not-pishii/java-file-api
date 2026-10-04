@@ -28,6 +28,11 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Lists;
 
+/// The full metamodel of [Lists], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Lists] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// @param <T> a type argument of [Lists]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Lists.class, fingerprint = "dad7a5c8cac50c0de7318c7b28e6a32f228fe27095993cf277f7728c3c4fc5e9", complete = true, format = 5)
 @SuppressWarnings({
@@ -35,34 +40,49 @@ import p.Lists;
     "removal"
 })
 public final class Lists_<T> {
+    /// The shape of [Lists] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Lists] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lists_"), "dad7a5c8cac50c0de7318c7b28e6a32f228fe27095993cf277f7728c3c4fc5e9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Lists"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;")), Param.var(0, 1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Lists"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Lists], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Lists].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Lists open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0 extends java.lang.Number> all(^0[], #0[]) -> void throws -\ntable abstract -\ntable concrete all(java.lang.Number[], #0[]); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Lists()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Lists] with a wildcard for every type argument.
     public static final OpenClassToken<Lists<?>> ANY = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.unbounded());
 
+    /// The token of [Lists] with the type arguments of this metamodel.
     public final OpenClassToken<Lists<T>> token;
 
+    /// The fact of [Lists#Lists()].
     public final CtorRef0<Lists<T>> new_;
 
     private final RefToken<T> t;
 
+    /// The metamodel of [Lists] with the type arguments the tokens give.
+    ///
+    /// @param t the token of the type argument `T`
     public Lists_(RefToken<T> t) {
         this.t = t;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
     }
 
+    /// The fact of [Lists#all(Number\[\], Object\[\])], for the type arguments the tokens give.
+    ///
+    /// @param <U> a type argument of the method
+    /// @param u the token of the type argument `U`
+    /// @return the fact
     public <U extends Number> VoidMethodRef2<Lists<T>, U[], T[]> all_UArray_TArray(RefToken<U> u) {
         return UnsafeFacts.voidMethod(token, "all", UnsafeFacts.param(ArrayToken.of(u), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;"))), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
     }

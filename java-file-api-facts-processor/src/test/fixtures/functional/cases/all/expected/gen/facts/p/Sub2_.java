@@ -23,6 +23,9 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Sub2;
 
+/// The full metamodel of [Sub2], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Sub2] inherits has its fact in the metamodel of the supertype that declares it: [Sub_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Sub2.class, fingerprint = "8205337dd69b70992e5dd9024942a20f8b0def2f129093809e18c5e06248f98d", complete = true, format = 5)
 @SuppressWarnings({
@@ -30,24 +33,31 @@ import p.Sub2;
     "removal"
 })
 public final class Sub2_ {
+    /// The shape of [Sub2] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Sub2] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "8205337dd69b70992e5dd9024942a20f8b0def2f129093809e18c5e06248f98d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Sub2], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Sub2].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Sub2 interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method overridable twice(java.lang.String) -> java.lang.String throws -\nsam apply(java.lang.String) -> java.lang.String throws -\ntable abstract apply(java.lang.String)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); twice(java.lang.String); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Sub2].
     public static final InterfaceToken<Sub2> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of [Sub2#twice(String)].
     public static final MethodRef1<Sub2, String, String> twice_String = UnsafeFacts.method(TOKEN, "twice", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
+    /// The fact of the single abstract method [p.Fn#apply(String)], which a lambda implements.
     public static final Sam1<Sub2, String, String> sam = UnsafeFacts.sam(UnsafeFacts.method(TOKEN, "apply", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT));
 
     private Sub2_() {

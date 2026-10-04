@@ -27,6 +27,11 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.X;
 
+/// The full metamodel of [X], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [X] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [Mid_].
+///
+/// `p.Own`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = X.class, fingerprint = "bc0d95a433c6ae4929ab3bb51f6823871faeacded9cd9ab87eb386a4ab5377d9", complete = true, format = 5)
 @SuppressWarnings({
@@ -34,28 +39,37 @@ import p.X;
     "removal"
 })
 public final class X_ {
+    /// The shape of [X] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [X] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.X_"), "bc0d95a433c6ae4929ab3bb51f6823871faeacded9cd9ab87eb386a4ab5377d9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.X"), List.of(), List.of(ClassDesc.of("p.Mid"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("X"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [X], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [X].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.X open-class sealed=no\ntparams -\nsuperclasses p.Mid; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant int OWN = 2\nmember method overridable more() -> java.lang.String throws -\nmember method overridable own() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); own(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor X()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [X].
     public static final OpenClassToken<X> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
+    /// The fact of [X#OWN], declared in `p.Own`, which is not `public`.
     public static final StaticFieldRef<Int> OWN = UnsafeFacts.constantField(TOKEN, "OWN", PrimitiveToken.INT, 2);
 
+    /// The fact of [X#X()].
     public static final CtorRef0<X> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
+    /// The fact of [X#more()].
     public static final MethodRef0<X, String> more = UnsafeFacts.method(TOKEN, "more", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
+    /// The fact of [X#own()], declared in `p.Own`, which is not `public`.
     public static final VoidMethodRef0<X> own = UnsafeFacts.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
 
     private X_() {

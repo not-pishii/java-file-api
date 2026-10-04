@@ -22,6 +22,11 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
+/// The full metamodel of [Runnable]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [Runnable]: it is here as a supertype of [p.Tok], whose inherited members are called through this metamodel.
+///
+/// A member [Runnable] inherits has its fact in the metamodel of the supertype that declares it: [Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Runnable.class, fingerprint = "f86bee602e0839cfe0d1ae3c06c8687abb268a44c8eaff2f5cbfbacb44093f98", complete = true, format = 5)
 @SuppressWarnings({
@@ -29,24 +34,31 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
     "removal"
 })
 public final class Runnable_ {
+    /// The shape of [Runnable] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Runnable] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Runnable_"), "f86bee602e0839cfe0d1ae3c06c8687abb268a44c8eaff2f5cbfbacb44093f98", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Runnable"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Runnable], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Runnable].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Runnable interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract run() -> void throws -\nsam run() -> void throws -\ntable abstract run()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Runnable].
     public static final InterfaceToken<Runnable> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of [Runnable#run()].
     public static final VoidMethodRef0<Runnable> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
 
+    /// The fact of the single abstract method [Runnable#run()], which a lambda implements.
     public static final VoidSam0<Runnable> sam = UnsafeFacts.voidSam(run);
 
     private Runnable_() {

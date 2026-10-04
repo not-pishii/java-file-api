@@ -18,6 +18,10 @@ abstract class Far<T> {
         return this;
     }
 
+    public <R> R pick(R other) {
+        return other;
+    }
+
     public String overridden() {
         return "far";
     }

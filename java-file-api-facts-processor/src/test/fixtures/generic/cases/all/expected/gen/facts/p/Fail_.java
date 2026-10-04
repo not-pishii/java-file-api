@@ -27,6 +27,11 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Fail;
 
+/// The full metamodel of [Fail], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Fail] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// @param <X> a type argument of [Fail]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Fail.class, fingerprint = "865c845f095685d45833d7841bc57ce6ffff32373d9511f893b01883340d8a82", complete = true, format = 5)
 @SuppressWarnings({
@@ -34,28 +39,39 @@ import p.Fail;
     "removal"
 })
 public final class Fail_<X extends Exception> {
+    /// The shape of [Fail] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Fail] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fail_"), "865c845f095685d45833d7841bc57ce6ffff32373d9511f893b01883340d8a82", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Fail"), List.of(new TypeParam("X", List.of(Types.of(ClassDesc.of("java.lang.Exception"))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("X")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Fail"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Fail], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Fail].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Fail open-class sealed=no\ntparams #0 extends java.lang.Exception\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable run() -> void throws #0\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Fail()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Fail] with a wildcard for every type argument.
     public static final OpenClassToken<Fail<?>> ANY = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.unbounded());
 
+    /// The token of [Fail] with the type arguments of this metamodel.
     public final OpenClassToken<Fail<X>> token;
 
+    /// The fact of [Fail#Fail()].
     public final CtorRef0<Fail<X>> new_;
 
+    /// The fact of [Fail#run()].
     public final VoidMethodRef0<Fail<X>> run;
 
+    /// The metamodel of [Fail] with the type arguments the tokens give.
+    ///
+    /// @param x the token of the type argument `X`
     public Fail_(RefToken<X> x) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(x));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);

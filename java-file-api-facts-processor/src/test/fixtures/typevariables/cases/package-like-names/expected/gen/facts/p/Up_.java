@@ -27,6 +27,12 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Up;
 
+/// The full metamodel of [Up], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Up] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// @param <Gen> a type argument of [Up]
+/// @param <Java> a type argument of [Up]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Up.class, fingerprint = "60b4f748a9734619a7a6e73f3553a7dddb2345b1d119097fd3fa667fe78c8977", complete = true, format = 5)
 @SuppressWarnings({
@@ -34,32 +40,44 @@ import p.Up;
     "removal"
 })
 public final class Up_<Gen, Java> {
+    /// The shape of [Up] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Up] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Up_"), "60b4f748a9734619a7a6e73f3553a7dddb2345b1d119097fd3fa667fe78c8977", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Up"), List.of(new TypeParam("Gen", List.of()), new TypeParam("Java", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("Gen"), Types.typeVar("Java")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Up"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Up], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Up].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Up open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0> each(^0) -> java.util.Set<^0> throws -\nmember method overridable all(#1) -> java.util.Set<#0> throws -\ntable abstract -\ntable concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Up()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Up] with a wildcard for every type argument.
     public static final OpenClassToken<Up<?, ?>> ANY = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.unbounded(), TokenArg.unbounded());
 
+    /// The token of [Up] with the type arguments of this metamodel.
     public final OpenClassToken<Up<Gen, Java>> token;
 
+    /// The fact of [Up#Up()].
     public final CtorRef0<Up<Gen, Java>> new_;
 
+    /// The fact of [Up#all(Object)].
     public final MethodRef1<Up<Gen, Java>, Set<Gen>, Java> all_Java;
 
     private final RefToken<Gen> gen_;
 
     private final RefToken<Java> java;
 
+    /// The metamodel of [Up] with the type arguments the tokens give.
+    ///
+    /// @param gen_ the token of the type argument `Gen`
+    /// @param java the token of the type argument `Java`
     public Up_(RefToken<Gen> gen_, RefToken<Java> java) {
         this.gen_ = gen_;
         this.java = java;
@@ -68,6 +86,11 @@ public final class Up_<Gen, Java> {
         this.all_Java = UnsafeFacts.method(token, "all", UnsafeFacts.<Set<Gen>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen_)), UnsafeFacts.param(java, Param.var(1)), MemberTraits.OVERRIDABLE);
     }
 
+    /// The fact of [Up#each(Object)], for the type arguments the tokens give.
+    ///
+    /// @param <Me> a type argument of the method
+    /// @param me the token of the type argument `Me`
+    /// @return the fact
     public <Me> MethodRef1<Up<Gen, Java>, Set<Me>, Me> each_Me(RefToken<Me> me) {
         return UnsafeFacts.method(token, "each", UnsafeFacts.<Set<Me>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(me)), UnsafeFacts.param(me, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(me));
     }

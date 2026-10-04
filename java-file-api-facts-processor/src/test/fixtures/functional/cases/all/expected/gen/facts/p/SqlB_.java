@@ -24,6 +24,11 @@ import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.SqlB;
 
+/// The full metamodel of [SqlB]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [SqlB]: it is here as a supertype of [p.Disjoint], whose inherited members are called through this metamodel.
+///
+/// A member [SqlB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = SqlB.class, fingerprint = "31c199d0bd0f114ad7498385c6444a214adea635e14bf11b1c3efbfde2180e22", complete = true, format = 5)
 @SuppressWarnings({
@@ -31,24 +36,31 @@ import p.SqlB;
     "removal"
 })
 public final class SqlB_ {
+    /// The shape of [SqlB] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [SqlB] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "31c199d0bd0f114ad7498385c6444a214adea635e14bf11b1c3efbfde2180e22", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [SqlB], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [SqlB].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.SqlB interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m() -> void throws java.sql.SQLException\nsam m() -> void throws java.sql.SQLException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [SqlB].
     public static final InterfaceToken<SqlB> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of [SqlB#m()].
     public static final VoidMethodRef0<SqlB> m = UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<SQLException>openClassToken(gen.facts.java.sql.SQLException_.Data.SHAPE)));
 
+    /// The fact of the single abstract method [SqlB#m()], which a lambda implements.
     public static final VoidSam0<SqlB> sam = UnsafeFacts.voidSam(m);
 
     private SqlB_() {
