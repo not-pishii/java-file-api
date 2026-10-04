@@ -376,6 +376,93 @@ public class UserController {
 }
 ```
 
+### Documentation comments
+
+Every declaration builder takes a comment with `withDoc`. A `DocComment` holds what the comment says —
+paragraphs and lists of text, code and links to program elements, block tags — not how it is written: the same
+comment renders as a traditional comment (`/** ... */`, the default) or as a Markdown one (`///`, Java 23+).
+Plain text is escaped for the syntax it is written in, so no text ends the comment or is read as markup.
+
+```java
+JavaFile greeter = JavaFile.class_(ClassDesc.of("com.example", "Greeter"), cb -> cb
+        .withDoc(d -> d
+                .paragraph("Greets people by name.")
+                .paragraph(DocText.of(t -> t
+                        .text("The greeting is formatted with ")
+                        .link(DocRef.method(CD_String, "format", LOCALE, CD_String, CD_Object.arrayType()))
+                        .text(", so ")
+                        .code("%s")
+                        .text(" & co. work in <templates>.")))
+                .since("1.0"))
+        .withModifiers(Modifier.FINAL)
+        .withMethod("greet", Types.STRING, mb -> mb
+                .withDoc(d -> d
+                        .paragraph("Greets one person.")
+                        .param("name", "who is greeted")
+                        .returns(DocText.of(t -> t.text("the greeting, never ").code("null")))
+                        .see(DocRef.type(LOCALE)))
+                .withParam("name", Types.STRING)
+                .withBody(b -> b.return_(literal("Hello, ").call("concat", field("name"))))));
+
+String traditional = greeter.render();
+String markdown = greeter.render(SourceRenderer.standardFormat(DocStyle.MARKDOWN));
+```
+
+<table>
+<tr><th><code>greeter.render()</code></th><th><code>DocStyle.MARKDOWN</code></th></tr>
+<tr><td>
+
+```java
+/**
+ * Greets people by name.
+ *
+ * <p>The greeting is formatted with {@link String#format(java.util.Locale, String, Object[])}, so {@code %s} &amp; co. work in &lt;templates&gt;.
+ *
+ * @since 1.0
+ */
+public final class Greeter {
+    /**
+     * Greets one person.
+     *
+     * @param name who is greeted
+     * @return the greeting, never {@code null}
+     * @see java.util.Locale
+     */
+    public String greet(String name) {
+        return "Hello, ".concat(name);
+    }
+}
+```
+
+</td><td>
+
+```java
+/// Greets people by name.
+///
+/// The greeting is formatted with [String#format(java.util.Locale, String, Object\[\])], so `%s` &amp; co. work in &lt;templates>.
+///
+/// @since 1.0
+public final class Greeter {
+    /// Greets one person.
+    ///
+    /// @param name who is greeted
+    /// @return the greeting, never `null`
+    /// @see java.util.Locale
+    public String greet(String name) {
+        return "Hello, ".concat(name);
+    }
+}
+```
+
+</td></tr>
+</table>
+
+A link names its target as the code of the file does: by the simple name where the file imports or declares the
+type, qualified otherwise (`java.util.Locale` above). A comment never adds an import. The parameters of a method
+reference are `ClassDesc`s — the erased parameter types, as javadoc matches overloads. Transforms keep the comments
+of the declarations they pass on; `PackageInfoFile.withDoc` and `ModuleBuilder.withDoc` document a package and a
+module.
+
 ### Transforming an existing declaration
 
 A transform is a `(builder, member)` function applied to every member, like `ClassTransform` in the ClassFile API.
@@ -393,7 +480,7 @@ JavaFile cleaned = original.transformClass((builder, member) -> {
     switch (member) {
         case FieldDecl f -> builder.accept(new FieldDecl(
                 f.name(), f.type(), f.annotations(), EnumSet.of(Modifier.PRIVATE, Modifier.FINAL),
-                f.initializer()));
+                f.initializer(), f.doc()));
         case MethodDecl m when m.name().startsWith("debug") -> {} // drop
         default -> builder.accept(member);
     }
