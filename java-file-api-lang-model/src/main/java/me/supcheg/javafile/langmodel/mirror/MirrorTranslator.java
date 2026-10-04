@@ -121,7 +121,7 @@ public final class MirrorTranslator {
     }
 
     /// Translates a declared type: its shape — kind, type parameters,
-    /// superclasses, parameterized supertypes, method table, enum
+    /// superclasses, interfaces, parameterized supertypes, method table, enum
     /// constants, `sealed`, the single abstract method — and the members `filter` selects, as members
     /// of the type (`Types.asMemberOf`). The members are those of `filter`
     /// only, out of [#members(TypeElement)]; the method table is complete
@@ -601,6 +601,7 @@ public final class MirrorTranslator {
                 .toList();
         Reading shape = new Reading(VarScope.of(element));
         List<ClassDesc> superclasses = superclasses(element);
+        List<ClassDesc> interfaces = interfaces(self);
         Supertypes supertypes = supertypes(self, typeParams, shape);
         MethodTableTemplate methods = methods(element, self);
         List<String> enumConstants = element.getEnclosedElements().stream()
@@ -641,6 +642,7 @@ public final class MirrorTranslator {
                 typeParams,
                 List.copyOf(bounds.nonPublic),
                 superclasses,
+                interfaces,
                 supertypes,
                 methods,
                 enumConstants,
@@ -689,10 +691,25 @@ public final class MirrorTranslator {
                 .toList();
     }
 
+    /// The interfaces among the supertypes of a type, erased and sorted by binary name.
+    private List<ClassDesc> interfaces(DeclaredType self) {
+        return supertypes(self)
+                .map(supertype -> (TypeElement) supertype.asElement())
+                .filter(supertype -> supertype.getKind().isInterface())
+                .map(supertype -> elements.getBinaryName(supertype).toString())
+                .sorted()
+                .map(ClassDesc::of)
+                .toList();
+    }
+
+    /// Every supertype of a type, in its terms: each class and interface once, the nearer first.
+    private Stream<DeclaredType> supertypes(DeclaredType self) {
+        return Hierarchy.<Supertype>beyond(List.of(new Supertype(self)), supertype -> direct(supertype.type()))
+                .map(Supertype::type);
+    }
+
     private Supertypes supertypes(DeclaredType self, List<TypeParam> typeParams, Reading reading) {
-        Map<String, ParameterizedTypeRef> found = Hierarchy.<Supertype>beyond(
-                        List.of(new Supertype(self)), supertype -> direct(supertype.type()))
-                .map(Supertype::type)
+        Map<String, ParameterizedTypeRef> found = supertypes(self)
                 .flatMap(supertype -> declared(supertype, reading) instanceof ParameterizedTypeRef parameterized
                         ? Stream.of(Map.entry(binaryName(supertype), parameterized))
                         : Stream.empty())

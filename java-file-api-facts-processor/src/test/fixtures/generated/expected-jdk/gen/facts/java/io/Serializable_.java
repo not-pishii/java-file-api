@@ -26,7 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// A member [Serializable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Serializable.class, fingerprint = "76ac3d2240e9de42f65ecba9c6614d5238921d23f628d6146cc7e54565b5f51c", complete = true, format = 5)
+@GeneratedMetamodel(of = Serializable.class, fingerprint = "03a63b9d24070b81a702f1a06b12a4e3753cf13088dd6557ea41c6efd1159a3f", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class Serializable_ {
     /// The shape of [Serializable] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Serializable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "76ac3d2240e9de42f65ecba9c6614d5238921d23f628d6146cc7e54565b5f51c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "03a63b9d24070b81a702f1a06b12a4e3753cf13088dd6557ea41c6efd1159a3f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class Serializable_ {
     /// The canonical form of [Serializable], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Serializable].
-        static final String TEXT = "javafile-facts-canonical 4\ntype java.io.Serializable interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype java.io.Serializable interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

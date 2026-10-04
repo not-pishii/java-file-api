@@ -34,7 +34,7 @@ import p.Spread;
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "435eb6f5cf9c17bae99bef0237cad404f555a5a889523ffabce037b02e587316", complete = true, format = 5)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "9fbfca8061908810945305582161bd2f91ae4c22096b667d3f63ce04c976aac1", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Spread_<T> {
     /// The shape of [Spread] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Spread] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "435eb6f5cf9c17bae99bef0237cad404f555a5a889523ffabce037b02e587316", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "9fbfca8061908810945305582161bd2f91ae4c22096b667d3f63ce04c976aac1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -52,7 +52,7 @@ public final class Spread_<T> {
     /// The canonical form of [Spread], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Spread].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Spread interface sealed=no\ntparams #0\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract accept(#0[]) -> void throws -\nsam accept(#0[]) -> void throws -\ntable abstract accept(#0[])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Spread interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract accept(#0[]) -> void throws -\nsam accept(#0[]) -> void throws -\ntable abstract accept(#0[])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

@@ -268,6 +268,49 @@ class MirrorTranslatorTypeTest {
                 """);
 
         assertThat(model.supertypes()).isEqualTo(Supertypes.NONE);
+        // but the interfaces it implements are, erased
+        assertThat(model.interfaces())
+                .extracting(ClassDesc::displayName)
+                .containsExactly(
+                        "Serializable",
+                        "Cloneable",
+                        "Iterable",
+                        "Collection",
+                        "List",
+                        "RandomAccess",
+                        "SequencedCollection");
+    }
+
+    @Test
+    void theInterfacesAreEveryInterfaceTheTypeImplementsSortedByBinaryName() {
+        TypeModel model = full("p.Impl", """
+                package p;
+                public class Impl extends Base implements Runnable, Comparable<Impl> {
+                    public void run() {}
+                    public int compareTo(Impl other) { return 0; }
+                }
+                """, """
+                package p;
+                public class Base implements Outer.Marker, java.util.function.Supplier<String> {
+                    public String get() { return ""; }
+                    public void close() {}
+                }
+                """, """
+                package p;
+                public interface Outer { interface Marker extends java.io.Closeable {} }
+                """);
+
+        assertThat(model.superclasses()).containsExactly(ClassDesc.of("p.Base"), ConstantDescs.CD_Object);
+        assertThat(model.interfaces())
+                .containsExactly(
+                        ClassDesc.of("java.io.Closeable"),
+                        ClassDesc.of("java.lang.AutoCloseable"),
+                        ClassDesc.of("java.lang.Comparable"),
+                        ClassDesc.of("java.lang.Runnable"),
+                        ClassDesc.of("java.util.function.Supplier"),
+                        ClassDesc.of("p.Outer$Marker"));
+        assertThat(full("p.Outer", "package p; public interface Outer {}").interfaces())
+                .isEmpty();
     }
 
     @Test

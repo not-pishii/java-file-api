@@ -30,7 +30,7 @@ import p.SqlB;
 ///
 /// A member [SqlB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SqlB.class, fingerprint = "31c199d0bd0f114ad7498385c6444a214adea635e14bf11b1c3efbfde2180e22", complete = true, format = 5)
+@GeneratedMetamodel(of = SqlB.class, fingerprint = "52c856a57d74ed922b7b2dd19688cc72d2b8d9ee07605280719ce9b4a359dc94", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class SqlB_ {
     /// The shape of [SqlB] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [SqlB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "31c199d0bd0f114ad7498385c6444a214adea635e14bf11b1c3efbfde2180e22", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "52c856a57d74ed922b7b2dd19688cc72d2b8d9ee07605280719ce9b4a359dc94", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class SqlB_ {
     /// The canonical form of [SqlB], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [SqlB].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.SqlB interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m() -> void throws java.sql.SQLException\nsam m() -> void throws java.sql.SQLException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.SqlB interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m() -> void throws java.sql.SQLException\nsam m() -> void throws java.sql.SQLException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

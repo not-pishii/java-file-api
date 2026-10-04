@@ -24,7 +24,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// `@Facts` does not ask for [ConstantDesc]: it is only mentioned in the signatures of [java.lang.constant.Constable]. For the facts of its members add `ConstantDesc.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "4e70a032c739772906ded6464333899722a6319092b8e1da2fed616f6c398f7b", complete = false, format = 5)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "7ff6b10ac57dd7a91b3b7be3ef600b58e1ab270c291fe45190e21935e4ea0914", complete = false, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -33,7 +33,7 @@ public final class ConstantDesc_ {
     /// The shape of [ConstantDesc] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "4e70a032c739772906ded6464333899722a6319092b8e1da2fed616f6c398f7b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), true);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "7ff6b10ac57dd7a91b3b7be3ef600b58e1ab270c291fe45190e21935e4ea0914", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), true);
 
         private Data() {
         }
@@ -42,7 +42,7 @@ public final class ConstantDesc_ {
     /// The canonical form of [ConstantDesc], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [ConstantDesc].
-        static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.constant.ConstantDesc interface sealed=yes\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers none\ntable abstract resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.constant.ConstantDesc interface sealed=yes\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

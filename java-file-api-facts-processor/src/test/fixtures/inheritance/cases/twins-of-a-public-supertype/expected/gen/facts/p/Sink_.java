@@ -26,7 +26,7 @@ import p.Sink;
 ///
 /// A member [Sink] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sink.class, fingerprint = "94fec02c2f6a6f753e7d65acca036396779841fda59965af881ac108358a2d6e", complete = true, format = 5)
+@GeneratedMetamodel(of = Sink.class, fingerprint = "b3a33e9e931864939d1a658cbf2716e52e2f83c0f83bba2dcb371d364f71e480", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class Sink_ {
     /// The shape of [Sink] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Sink] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sink_"), "94fec02c2f6a6f753e7d65acca036396779841fda59965af881ac108358a2d6e", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Sink"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sink_"), "b3a33e9e931864939d1a658cbf2716e52e2f83c0f83bba2dcb371d364f71e480", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Sink"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class Sink_ {
     /// The canonical form of [Sink], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Sink].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Sink final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember method static take(java.lang.Object) -> java.lang.String throws -\nmember method static take(java.lang.String) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static take(java.lang.Object); take(java.lang.String)\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Sink final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method static take(java.lang.Object) -> java.lang.String throws -\nmember method static take(java.lang.String) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static take(java.lang.Object); take(java.lang.String)\ntable ctor -\n";
 
         private Canonical() {
         }

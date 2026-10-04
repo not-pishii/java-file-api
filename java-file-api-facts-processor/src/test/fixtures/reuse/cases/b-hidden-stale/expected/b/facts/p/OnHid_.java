@@ -31,7 +31,7 @@ import p.OnHid;
 ///
 /// `p.HidBase`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OnHid.class, fingerprint = "0186ba774a998b92577bd307c7ba007fdecea6da09fec81fcc086904701495e3", complete = true, format = 5)
+@GeneratedMetamodel(of = OnHid.class, fingerprint = "c1f27101f6f5bdf8ca1f2675b77dd1d97703d8ff9ba0d66486691f4330cca932", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class OnHid_ {
     /// The shape of [OnHid] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [OnHid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.p.OnHid_"), "0186ba774a998b92577bd307c7ba007fdecea6da09fec81fcc086904701495e3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OnHid"), List.of(), List.of(ClassDesc.of("p.HidBase"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("renamed"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OnHid"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.p.OnHid_"), "c1f27101f6f5bdf8ca1f2675b77dd1d97703d8ff9ba0d66486691f4330cca932", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OnHid"), List.of(), List.of(ClassDesc.of("p.HidBase"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("renamed"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OnHid"))), List.of(), false);
 
         private Data() {
         }
@@ -49,7 +49,7 @@ public final class OnHid_ {
     /// The canonical form of [OnHid], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [OnHid].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.OnHid open-class sealed=no\ntparams -\nsuperclasses p.HidBase; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable renamed() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); renamed(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor OnHid()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.OnHid open-class sealed=no\ntparams -\nsuperclasses p.HidBase; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable renamed() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); renamed(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor OnHid()\n";
 
         private Canonical() {
         }

@@ -37,7 +37,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "ee873e7af14eadda67d3784609a37b4ed0738d2402976106d00c73a7d2103c73", complete = true, format = 5)
+@GeneratedMetamodel(of = Object.class, fingerprint = "ea3c6d6aeef2c5bd56e0e3e86435a24a5542f67713dc7acd1f5a7ee4729421d1", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Object_ {
     /// The shape of [Object] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Object] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.java.lang.Object_"), "ee873e7af14eadda67d3784609a37b4ed0738d2402976106d00c73a7d2103c73", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.java.lang.Object_"), "ea3c6d6aeef2c5bd56e0e3e86435a24a5542f67713dc7acd1f5a7ee4729421d1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), List.of(), false);
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class Object_ {
     /// The canonical form of [Object], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Object].
-        static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Object open-class sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method final getClass() -> java.lang.Class<?> throws -\nmember method final notify() -> void throws -\nmember method final notifyAll() -> void throws -\nmember method final wait() -> void throws java.lang.InterruptedException\nmember method final wait(long) -> void throws java.lang.InterruptedException\nmember method final wait(long, int) -> void throws java.lang.InterruptedException\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Object()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Object open-class sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method final getClass() -> java.lang.Class<?> throws -\nmember method final notify() -> void throws -\nmember method final notifyAll() -> void throws -\nmember method final wait() -> void throws java.lang.InterruptedException\nmember method final wait(long) -> void throws java.lang.InterruptedException\nmember method final wait(long, int) -> void throws java.lang.InterruptedException\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Object()\n";
 
         private Canonical() {
         }

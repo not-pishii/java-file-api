@@ -33,7 +33,7 @@ import p.PubSame;
 ///
 /// `p.HSame`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubSame.class, fingerprint = "54b87bcf6434e071bbf128b5c7630be89bd991470a559a69f3751e70b9a311f0", complete = true, format = 5)
+@GeneratedMetamodel(of = PubSame.class, fingerprint = "0b69cbd9d14cd3f5a32cf871da1a4260699e380bf3d3ec8093728baa46fb73a3", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class PubSame_ {
     /// The shape of [PubSame] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [PubSame] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubSame_"), "54b87bcf6434e071bbf128b5c7630be89bd991470a559a69f3751e70b9a311f0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubSame"), List.of(), List.of(ClassDesc.of("p.HSame"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("tag"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("tag", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("PubSame"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubSame_"), "0b69cbd9d14cd3f5a32cf871da1a4260699e380bf3d3ec8093728baa46fb73a3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubSame"), List.of(), List.of(ClassDesc.of("p.HSame"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("tag"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("tag", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("PubSame"))), List.of(), false);
 
         private Data() {
         }
@@ -51,7 +51,7 @@ public final class PubSame_ {
     /// The canonical form of [PubSame], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [PubSame].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.PubSame open-class sealed=no\ntparams -\nsuperclasses p.HSame; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant java.lang.String TAG = \"field\"\nmember method overridable tag() -> java.lang.String throws -\nmember method static tag(int) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); tag(); toString(); wait(); wait(long); wait(long, int)\ntable static tag(int)\ntable ctor PubSame()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubSame open-class sealed=no\ntparams -\nsuperclasses p.HSame; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant java.lang.String TAG = \"field\"\nmember method overridable tag() -> java.lang.String throws -\nmember method static tag(int) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); tag(); toString(); wait(); wait(long); wait(long, int)\ntable static tag(int)\ntable ctor PubSame()\n";
 
         private Canonical() {
         }

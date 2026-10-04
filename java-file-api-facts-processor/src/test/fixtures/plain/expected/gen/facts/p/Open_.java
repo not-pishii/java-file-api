@@ -26,7 +26,7 @@ import p.Open;
 ///
 /// A member [Open] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Open.class, fingerprint = "27087cd3fa0fcf61234464b99da3ddad654bd5f1baef2807d26b0cd04a52be5d", complete = true, format = 5)
+@GeneratedMetamodel(of = Open.class, fingerprint = "95a1979089d7dfa7c747bbb022b432b2055a4a54752870f6e6ce8960678aba4f", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class Open_ {
     /// The shape of [Open] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Open] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "27087cd3fa0fcf61234464b99da3ddad654bd5f1baef2807d26b0cd04a52be5d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "95a1979089d7dfa7c747bbb022b432b2055a4a54752870f6e6ce8960678aba4f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class Open_ {
     /// The canonical form of [Open], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Open].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Open open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(java.lang.String) throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Open(java.lang.String)\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Open open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(java.lang.String) throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Open(java.lang.String)\n";
 
         private Canonical() {
         }

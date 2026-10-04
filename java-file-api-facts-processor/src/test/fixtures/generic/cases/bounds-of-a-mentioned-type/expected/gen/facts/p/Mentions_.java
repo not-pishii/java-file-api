@@ -31,7 +31,7 @@ import p.Mentions;
 ///
 /// A member [Mentions] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mentions.class, fingerprint = "1aa73f43710011d497393cd472e86214490cdcbd30c785ca0c7325d5f0325c71", complete = true, format = 5)
+@GeneratedMetamodel(of = Mentions.class, fingerprint = "50dfdf7e14bf31485a9368a42c6b7c2ea07a196f6b838daf88316b92789c7fa5", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Mentions_ {
     /// The shape of [Mentions] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Mentions] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "1aa73f43710011d497393cd472e86214490cdcbd30c785ca0c7325d5f0325c71", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "50dfdf7e14bf31485a9368a42c6b7c2ea07a196f6b838daf88316b92789c7fa5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions"))), List.of(), false);
 
         private Data() {
         }
@@ -49,7 +49,7 @@ public final class Mentions_ {
     /// The canonical form of [Mentions], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Mentions].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Mentions open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable dollar() -> p.ByDollar<?> throws -\nmember method overridable hidden() -> p.ByHidden<?> throws -\nmember method overridable marker() -> p.ByMarker<?> throws -\ntable abstract -\ntable concrete clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); marker(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Mentions()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Mentions open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable dollar() -> p.ByDollar<?> throws -\nmember method overridable hidden() -> p.ByHidden<?> throws -\nmember method overridable marker() -> p.ByMarker<?> throws -\ntable abstract -\ntable concrete clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); marker(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Mentions()\n";
 
         private Canonical() {
         }

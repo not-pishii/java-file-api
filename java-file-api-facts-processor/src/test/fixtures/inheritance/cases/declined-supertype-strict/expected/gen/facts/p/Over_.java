@@ -31,7 +31,7 @@ import p.Over;
 ///
 /// The members inherited from `p.Bounded`, which has no full metamodel, have no facts: the bounds of the type parameters of p.Bounded mention types that are not public: p.Secret.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Over.class, fingerprint = "646483b2f8018fe713459910d7baeaca7456220597f8fe459c5b41ba43b963e1", complete = true, format = 5)
+@GeneratedMetamodel(of = Over.class, fingerprint = "dd27f8138d04797def57b0c417024712e762879604584d76da2ab76f441b6f94", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Over_ {
     /// The shape of [Over] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Over] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Over_"), "646483b2f8018fe713459910d7baeaca7456220597f8fe459c5b41ba43b963e1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Over"), List.of(), List.of(ClassDesc.of("p.Bounded"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Bounded"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("same"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Over"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Over_"), "dd27f8138d04797def57b0c417024712e762879604584d76da2ab76f441b6f94", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Over"), List.of(), List.of(ClassDesc.of("p.Bounded"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Bounded"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("same"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Over"))), List.of(), false);
 
         private Data() {
         }
@@ -49,7 +49,7 @@ public final class Over_ {
     /// The canonical form of [Over], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Over].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Over open-class sealed=no\ntparams -\nsuperclasses p.Bounded; java.lang.Object\nsupertypes p.Bounded<p.Secret>\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable same() -> p.Bounded<?> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lost(); notify(); notifyAll(); same(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Over()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Over open-class sealed=no\ntparams -\nsuperclasses p.Bounded; java.lang.Object\ninterfaces -\nsupertypes p.Bounded<p.Secret>\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable same() -> p.Bounded<?> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lost(); notify(); notifyAll(); same(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Over()\n";
 
         private Canonical() {
         }

@@ -27,7 +27,7 @@ import p.PolyFn;
 ///
 /// A member [PolyFn] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PolyFn.class, fingerprint = "3b85a15bb46c17c8fcbd4bc9e74ebfc2a259fc774d0b0089e41939be89fc1a09", complete = true, format = 5)
+@GeneratedMetamodel(of = PolyFn.class, fingerprint = "6357566de017921a40b513e7ed503914cf6fda097341438a4d09078823dbc7fe", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -36,7 +36,7 @@ public final class PolyFn_ {
     /// The shape of [PolyFn] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [PolyFn] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PolyFn_"), "3b85a15bb46c17c8fcbd4bc9e74ebfc2a259fc774d0b0089e41939be89fc1a09", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PolyFn"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PolyFn_"), "6357566de017921a40b513e7ed503914cf6fda097341438a4d09078823dbc7fe", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PolyFn"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -45,7 +45,7 @@ public final class PolyFn_ {
     /// The canonical form of [PolyFn], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [PolyFn].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.PolyFn interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract <^0> apply(^0) -> ^0 throws -\ntable abstract apply(java.lang.Object)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.PolyFn interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract <^0> apply(^0) -> ^0 throws -\ntable abstract apply(java.lang.Object)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

@@ -32,7 +32,7 @@ import p.Named;
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "6c35d5adecbb94898509b6672cc329b6b1321d930bdf8daa9adaced6444b1fec", complete = true, format = 5)
+@GeneratedMetamodel(of = Named.class, fingerprint = "9e0dd569d0b67662be2f9e3e8bd3c950e0274e326373630ee10481ae5f7a2bcc", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class Named_<Data_, String_, Int> {
     /// The shape of [Named] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Named] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "6c35d5adecbb94898509b6672cc329b6b1321d930bdf8daa9adaced6444b1fec", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "9e0dd569d0b67662be2f9e3e8bd3c950e0274e326373630ee10481ae5f7a2bcc", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -50,7 +50,7 @@ public final class Named_<Data_, String_, Int> {
     /// The canonical form of [Named], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Named].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Named interface sealed=no\ntparams #0; #1; #2\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Named interface sealed=no\ntparams #0; #1; #2\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

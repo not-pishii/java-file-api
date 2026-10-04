@@ -30,7 +30,7 @@ import p.Ov2;
 ///
 /// A member [Ov2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov2.class, fingerprint = "d63b0bedf4e00d41dcc876175050ab900ddb2d3fec00753bd7d51b1cb8d3cb26", complete = true, format = 5)
+@GeneratedMetamodel(of = Ov2.class, fingerprint = "bc749ab7c8747278d03e6fbfc20ed9b3776a61a8d97bfe8593d02821d967f319", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Ov2_ {
     /// The shape of [Ov2] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Ov2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov2_"), "d63b0bedf4e00d41dcc876175050ab900ddb2d3fec00753bd7d51b1cb8d3cb26", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov2"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Ov2"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov2_"), "bc749ab7c8747278d03e6fbfc20ed9b3776a61a8d97bfe8593d02821d967f319", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov2"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Ov2"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Ov2_ {
     /// The canonical form of [Ov2], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Ov2].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Ov2 open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method static <^0> wrap(^0) -> java.util.Optional<^0> throws -\nmember method static wrap(java.lang.String) -> java.lang.StringBuilder throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static wrap(java.lang.Object); wrap(java.lang.String)\ntable ctor Ov2()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Ov2 open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method static <^0> wrap(^0) -> java.util.Optional<^0> throws -\nmember method static wrap(java.lang.String) -> java.lang.StringBuilder throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static wrap(java.lang.Object); wrap(java.lang.String)\ntable ctor Ov2()\n";
 
         private Canonical() {
         }
