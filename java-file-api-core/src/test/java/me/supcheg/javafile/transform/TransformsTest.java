@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,8 @@ class TransformsTest {
             if (member instanceof FieldDecl f && !f.modifiers().contains(Modifier.FINAL)) {
                 Set<Modifier> mods = new LinkedHashSet<>(f.modifiers());
                 mods.add(Modifier.FINAL);
-                builder.accept(new FieldDecl(f.name(), f.type(), f.annotations(), mods, f.initializer()));
+                builder.accept(
+                        new FieldDecl(f.name(), f.type(), f.annotations(), mods, f.initializer(), Optional.empty()));
             } else {
                 builder.accept(member);
             }
@@ -186,7 +188,8 @@ class TransformsTest {
         assertThat(result.permits()).isEqualTo(original.permits());
         assertThat(result.members()).isEqualTo(original.members());
         assertThat(result.members())
-                .containsExactly(new ConstantDecl("MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1)));
+                .containsExactly(new ConstantDecl(
+                        "MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1), Optional.empty()));
     }
 
     @Test
@@ -225,8 +228,8 @@ class TransformsTest {
         assertThat(result.interfaces()).isEqualTo(original.interfaces());
         assertThat(result.members()).isEqualTo(original.members());
         assertThat(result.members())
-                .containsExactly(
-                        new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1)));
+                .containsExactly(new StaticFieldDecl(
+                        "MAX", PrimitiveTypeRef.INT, java.util.List.of(), new IntLiteral(1), Optional.empty()));
     }
 
     @Test
@@ -385,8 +388,10 @@ class TransformsTest {
                         new AnnotationElementDecl(
                                 "value",
                                 PrimitiveTypeRef.INT,
-                                java.util.Optional.of(me.supcheg.javafile.annotation.AnnotationValues.literal(42))),
-                        new AnnotationElementDecl("plain", PrimitiveTypeRef.INT, java.util.Optional.empty()));
+                                java.util.Optional.of(me.supcheg.javafile.annotation.AnnotationValues.literal(42)),
+                                Optional.empty()),
+                        new AnnotationElementDecl(
+                                "plain", PrimitiveTypeRef.INT, java.util.Optional.empty(), Optional.empty()));
     }
 
     @Test

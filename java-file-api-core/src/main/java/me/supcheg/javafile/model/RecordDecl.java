@@ -1,12 +1,14 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /// A record declaration.
@@ -21,6 +23,7 @@ import java.util.Set;
 ///                    constructor parameters and accessors
 /// @param interfaces the interfaces the record implements
 /// @param members the members of the record body
+/// @param doc the documentation comment, if any
 public record RecordDecl(
         ClassDesc desc,
         List<AnnotationUse> annotations,
@@ -28,7 +31,8 @@ public record RecordDecl(
         List<TypeParam> typeParams,
         List<RecordComponent> components,
         List<ClassOrInterfaceTypeRef> interfaces,
-        List<RecordMember> members)
+        List<RecordMember> members,
+        Optional<DocComment> doc)
         implements TypeDecl {
     public RecordDecl {
         modifiers = ModifierValidation.requireValidTopLevel(

@@ -9,6 +9,7 @@ import me.supcheg.javafile.type.PrimitiveTypeRef;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.Optional;
 
 import static me.supcheg.javafile.code.Exprs.literal;
 import static me.supcheg.javafile.code.Exprs.literalNull;
@@ -107,7 +108,11 @@ class InterfaceBuilderTest {
     void acceptAppendsAPreBuiltMember() {
         InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("ast", "Node"));
         ConstantDecl member = new ConstantDecl(
-                "MAX", PrimitiveTypeRef.INT, java.util.List.of(), new me.supcheg.javafile.code.IntLiteral(10));
+                "MAX",
+                PrimitiveTypeRef.INT,
+                java.util.List.of(),
+                new me.supcheg.javafile.code.IntLiteral(10),
+                Optional.empty());
 
         builder.accept(member);
 

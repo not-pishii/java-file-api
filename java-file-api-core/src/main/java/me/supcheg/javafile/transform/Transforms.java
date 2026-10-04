@@ -43,6 +43,7 @@ public final class Transforms {
     /// @return a new class declaration
     public static ClassDecl transform(ClassDecl decl, ClassTransform transform) {
         ClassBuilder builder = new ClassBuilder(decl.desc());
+        decl.doc().ifPresent(builder::withDoc);
         decl.annotations().forEach(builder::withAnnotation);
         builder.withExactModifiers(decl.modifiers());
         decl.typeParams().forEach(builder::withTypeParam);
@@ -64,6 +65,7 @@ public final class Transforms {
     ///         (e.g. a constructor) while processing a constant's body
     public static EnumDecl transform(EnumDecl decl, EnumTransform transform) {
         EnumBuilder builder = new EnumBuilder(decl.desc());
+        decl.doc().ifPresent(builder::withDoc);
         decl.annotations().forEach(builder::withAnnotation);
         builder.withExactModifiers(decl.modifiers());
         for (EnumConstant constant : decl.constants()) {
@@ -91,7 +93,7 @@ public final class Transforms {
         for (EnumConstantMember member : constant.body()) {
             transform.accept(sink, (EnumMember) member);
         }
-        return new EnumConstant(constant.name(), constant.annotations(), constant.args(), newBody);
+        return new EnumConstant(constant.name(), constant.annotations(), constant.args(), newBody, constant.doc());
     }
 
     /// Rebuilds an interface declaration, passing each member through `transform`.
@@ -101,6 +103,7 @@ public final class Transforms {
     /// @return a new interface declaration
     public static InterfaceDecl transform(InterfaceDecl decl, InterfaceTransform transform) {
         InterfaceBuilder builder = new InterfaceBuilder(decl.desc());
+        decl.doc().ifPresent(builder::withDoc);
         decl.annotations().forEach(builder::withAnnotation);
         builder.withExactModifiers(decl.modifiers());
         decl.typeParams().forEach(builder::withTypeParam);
@@ -119,6 +122,7 @@ public final class Transforms {
     /// @return a new record declaration
     public static RecordDecl transform(RecordDecl decl, RecordTransform transform) {
         RecordBuilder builder = new RecordBuilder(decl.desc());
+        decl.doc().ifPresent(builder::withDoc);
         decl.annotations().forEach(builder::withAnnotation);
         builder.withExactModifiers(decl.modifiers());
         decl.typeParams().forEach(builder::withTypeParam);
@@ -137,6 +141,7 @@ public final class Transforms {
     /// @return a new annotation type declaration
     public static AnnotationTypeDecl transform(AnnotationTypeDecl decl, AnnotationTypeTransform transform) {
         AnnotationTypeBuilder builder = new AnnotationTypeBuilder(decl.desc());
+        decl.doc().ifPresent(builder::withDoc);
         decl.annotations().forEach(builder::withAnnotation);
         builder.withExactModifiers(decl.modifiers());
         for (AnnotationElementDecl element : decl.elements()) {

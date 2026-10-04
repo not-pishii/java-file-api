@@ -3,10 +3,13 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValue;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.AnnotationElementDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.type.TypeRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDecl> {
 
+    private @Nullable DocComment doc;
     private final ClassDesc desc;
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<AnnotationUse> annotations = new ArrayList<>();
@@ -72,6 +76,24 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         return this;
     }
 
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public AnnotationTypeBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public AnnotationTypeBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
+    }
+
     /// Adds the given modifiers to the declaration.
     ///
     /// Adds to the modifiers already set, which start as `public`. To remove
@@ -104,7 +126,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     /// @param type the element's declared type
     /// @return this builder
     public AnnotationTypeBuilder withElement(String name, TypeRef type) {
-        elements.add(new AnnotationElementDecl(name, type, Optional.empty()));
+        elements.add(new AnnotationElementDecl(name, type, Optional.empty(), Optional.empty()));
         return this;
     }
 
@@ -115,13 +137,36 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     /// @param defaultValue the element's default value
     /// @return this builder
     public AnnotationTypeBuilder withElement(String name, TypeRef type, AnnotationValue defaultValue) {
-        elements.add(new AnnotationElementDecl(name, type, Optional.of(defaultValue)));
+        elements.add(new AnnotationElementDecl(name, type, Optional.of(defaultValue), Optional.empty()));
         return this;
     }
 
     /// Adds a ready-made element, e.g. one passed to a transform.
     ///
     /// @param element the element to append
+    /// Adds a documented element without a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param doc the documentation comment of the element
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(String name, TypeRef type, DocComment doc) {
+        elements.add(new AnnotationElementDecl(name, type, Optional.empty(), Optional.of(doc)));
+        return this;
+    }
+
+    /// Adds a documented element with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param defaultValue the element's default value
+    /// @param doc the documentation comment of the element
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(String name, TypeRef type, AnnotationValue defaultValue, DocComment doc) {
+        elements.add(new AnnotationElementDecl(name, type, Optional.of(defaultValue), Optional.of(doc)));
+        return this;
+    }
+
     @Override
     public void accept(AnnotationElementDecl element) {
         elements.add(element);
@@ -131,6 +176,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     ///
     /// @return the finished annotation type declaration
     public AnnotationTypeDecl build() {
-        return new AnnotationTypeDecl(desc, List.copyOf(annotations), Set.copyOf(modifiers), List.copyOf(elements));
+        return new AnnotationTypeDecl(
+                desc, List.copyOf(annotations), Set.copyOf(modifiers), List.copyOf(elements), Optional.ofNullable(doc));
     }
 }

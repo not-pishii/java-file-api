@@ -27,6 +27,7 @@ class AnonymousBodyTest {
                 PrimitiveTypeRef.INT,
                 List.of(),
                 Set.of(me.supcheg.javafile.model.Modifier.PRIVATE),
+                Optional.empty(),
                 Optional.empty());
         NewExpr expr = new NewExpr(
                 new TypedNewTarget(Types.of(ClassDesc.of("java.lang", "Object"))),

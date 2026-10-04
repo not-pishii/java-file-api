@@ -22,7 +22,8 @@ class LocalTypeDeclStmtTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
         LocalTypeDeclStmt stmt = new LocalTypeDeclStmt(decl);
         assertThat(stmt.decl()).isEqualTo(decl);
     }

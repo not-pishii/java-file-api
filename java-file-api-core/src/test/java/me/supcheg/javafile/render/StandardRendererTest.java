@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Optional;
 
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,7 +108,10 @@ class StandardRendererTest {
     @Test
     void dispatchesToModuleDirectiveRenderingForAModuleMeta() {
         var meta = new ModuleFile.Meta(
-                false, "me.supcheg.example", List.of(new RequiresDirective("java.base", false, false)));
+                false,
+                "me.supcheg.example",
+                List.of(new RequiresDirective("java.base", false, false)),
+                Optional.empty());
 
         String rendered = renderer.render(meta, standardFormat());
 
@@ -121,7 +125,10 @@ class StandardRendererTest {
     @Test
     void aCustomFormatIsHonoredWhenRenderingAModuleMeta() {
         var meta = new ModuleFile.Meta(
-                true, "me.supcheg.example", List.of(new RequiresDirective("java.base", false, false)));
+                true,
+                "me.supcheg.example",
+                List.of(new RequiresDirective("java.base", false, false)),
+                Optional.empty());
 
         String rendered = renderer.render(meta, SourceRenderer.format("  ", "\r\n"));
 
@@ -132,7 +139,7 @@ class StandardRendererTest {
     void dispatchesToPackageAnnotationRenderingForAPackageInfoMeta() {
         var nonNullByDefault =
                 new AnnotationUse(ClassDesc.of("javax.annotation", "ParametersAreNonnullByDefault"), List.of());
-        var meta = new PackageInfoFile.Meta("me.supcheg.example", List.of(nonNullByDefault));
+        var meta = new PackageInfoFile.Meta("me.supcheg.example", List.of(nonNullByDefault), Optional.empty());
 
         String rendered = renderer.render(meta, standardFormat());
 

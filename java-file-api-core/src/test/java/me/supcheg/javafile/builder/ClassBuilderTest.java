@@ -12,6 +12,7 @@ import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.Optional;
 
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
@@ -156,7 +157,8 @@ class ClassBuilderTest {
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                java.util.List.of());
+                java.util.List.of(),
+                Optional.empty());
 
         builder.accept(member);
 

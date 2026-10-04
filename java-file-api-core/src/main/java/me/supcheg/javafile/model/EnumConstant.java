@@ -3,8 +3,10 @@ package me.supcheg.javafile.model;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
 
 import java.util.List;
+import java.util.Optional;
 
 /// An enum constant, e.g. `RED`, `PLUS("+")`, or `PLUS("+") { ... }`.
 ///
@@ -17,8 +19,13 @@ import java.util.List;
 ///             constant
 /// @param body the constant-specific class body members, empty if the
 ///             constant has no body
+/// @param doc the documentation comment, if any
 public record EnumConstant(
-        String name, List<AnnotationUse> annotations, List<Expr> args, List<EnumConstantMember> body) {
+        String name,
+        List<AnnotationUse> annotations,
+        List<Expr> args,
+        List<EnumConstantMember> body,
+        Optional<DocComment> doc) {
     public EnumConstant {
         name = Identifiers.requireValid(name);
         annotations = List.copyOf(annotations);

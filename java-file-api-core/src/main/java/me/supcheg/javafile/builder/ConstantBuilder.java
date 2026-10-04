@@ -3,6 +3,8 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.ConstantDecl;
 import me.supcheg.javafile.type.TypeRef;
 import org.jspecify.annotations.Nullable;
@@ -10,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /// Configures an interface constant, which is always `public static final`,
@@ -20,6 +23,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class ConstantBuilder {
 
+    private @Nullable DocComment doc;
     private final String name;
     private final TypeRef type;
     private final List<AnnotationUse> annotations = new ArrayList<>();
@@ -60,6 +64,24 @@ public final class ConstantBuilder {
         return this;
     }
 
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public ConstantBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public ConstantBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
+    }
+
     /// Sets the constant's initializer expression.
     ///
     /// @param initializer the initializer expression
@@ -73,6 +95,6 @@ public final class ConstantBuilder {
         if (initializer == null) {
             throw new IllegalStateException("interface constant " + name + " requires an initializer");
         }
-        return new ConstantDecl(name, type, List.copyOf(annotations), initializer);
+        return new ConstantDecl(name, type, List.copyOf(annotations), initializer, Optional.ofNullable(doc));
     }
 }

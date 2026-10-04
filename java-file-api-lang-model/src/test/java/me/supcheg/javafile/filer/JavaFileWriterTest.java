@@ -4,6 +4,10 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
 import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocStyle;
+import me.supcheg.javafile.render.SourceRenderer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,5 +56,20 @@ class JavaFileWriterTest {
 
         assertThat(qualifiedNameCaptor.getValue()).isEqualTo(expectedQualifiedName);
         assertThat(buffer.toString()).isEqualTo(file.render());
+    }
+
+    @Test
+    void writesTheSourceInTheGivenFormat() throws Exception {
+        JavaFile file = JavaFile.class_(
+                ClassDesc.of("me.supcheg.example", "Documented"), cb -> cb.withDoc(DocComment.of("Documented.")));
+        var buffer = new StringWriter();
+        var sourceFile = mock(JavaFileObject.class);
+        when(sourceFile.openWriter()).thenReturn(buffer);
+        var filer = mock(Filer.class);
+        when(filer.createSourceFile("me.supcheg.example.Documented")).thenReturn(sourceFile);
+
+        JavaFileWriter.writeTo(file, SourceRenderer.standardFormat(DocStyle.MARKDOWN), filer);
+
+        assertThat(buffer.toString()).contains("/// Documented.\n").doesNotContain("/**");
     }
 }

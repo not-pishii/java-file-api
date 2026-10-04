@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.doc.DocStyle;
 import me.supcheg.javafile.render.SourceRenderer.Format;
 
 import java.lang.constant.ClassDesc;
@@ -34,8 +35,18 @@ interface Context extends Format, TypeContext {
             }
 
             @Override
+            public DocStyle docStyle() {
+                return format.docStyle();
+            }
+
+            @Override
             public String reference(ClassDesc desc) {
                 return type.reference(desc);
+            }
+
+            @Override
+            public String mention(ClassDesc desc) {
+                return type.mention(desc);
             }
         }
 

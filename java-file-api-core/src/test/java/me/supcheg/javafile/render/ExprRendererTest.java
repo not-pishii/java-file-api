@@ -894,7 +894,9 @@ class ExprRendererTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of(new FieldDecl("value", PrimitiveTypeRef.INT, List.of(), Set.of(), Optional.of(literal(0)))));
+                List.of(new FieldDecl(
+                        "value", PrimitiveTypeRef.INT, List.of(), Set.of(), Optional.of(literal(0)), Optional.empty())),
+                Optional.empty());
         Stmt stmt = new LocalTypeDeclStmt(localCounter);
 
         String rendered = ExprRenderer.renderStmt(

@@ -4,6 +4,8 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ClassMember;
@@ -42,6 +44,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class ClassBuilder implements Consumer<ClassMember> {
 
+    private @Nullable DocComment doc;
     private final ClassDesc desc;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
@@ -86,6 +89,24 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     public ClassBuilder withAnnotation(AnnotationUse annotation) {
         annotations.add(annotation);
         return this;
+    }
+
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public ClassBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public ClassBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
     }
 
     /// Adds the given modifiers to the declaration.
@@ -191,7 +212,8 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of()));
+                List.of(),
+                Optional.empty()));
         return this;
     }
 
@@ -208,7 +230,8 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 List.of(params),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of()));
+                List.of(),
+                Optional.empty()));
         return this;
     }
 
@@ -409,6 +432,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
                 Optional.ofNullable(superclass),
                 List.copyOf(interfaces),
                 List.copyOf(permits),
-                List.copyOf(members));
+                List.copyOf(members),
+                Optional.ofNullable(doc));
     }
 }

@@ -1,18 +1,23 @@
 package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.ExportsDirective;
 import me.supcheg.javafile.model.ModuleDirective;
 import me.supcheg.javafile.model.OpensDirective;
 import me.supcheg.javafile.model.ProvidesDirective;
 import me.supcheg.javafile.model.RequiresDirective;
 import me.supcheg.javafile.model.UsesDirective;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /// Adds directives to a `module-info.java`.
 ///
@@ -23,9 +28,35 @@ public final class ModuleBuilder {
 
     private final List<ModuleDirective> directives = new ArrayList<>();
     private boolean open;
+    private @Nullable DocComment doc;
 
     /// Creates an empty module builder.
     public ModuleBuilder() {}
+
+    /// Sets the documentation comment of the module.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public ModuleBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment of the module, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public ModuleBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
+    }
+
+    /// The documentation comment of the module.
+    ///
+    /// @return the comment, if one is set
+    public Optional<DocComment> doc() {
+        return Optional.ofNullable(doc);
+    }
 
     /// Marks the module as `open`.
     ///

@@ -109,8 +109,8 @@ class ExprsTest {
 
     @Test
     void newAnonymousCarriesTheAnonymousBodyMembers() {
-        FieldDecl field =
-                new FieldDecl("seen", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.PRIVATE), Optional.empty());
+        FieldDecl field = new FieldDecl(
+                "seen", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.PRIVATE), Optional.empty(), Optional.empty());
 
         assertThat(Exprs.newAnonymous(Types.of(STRING), List.of(), b -> b.accept(field)))
                 .isEqualTo(new NewExpr(new TypedNewTarget(Types.of(STRING)), List.of(), Optional.of(List.of(field))));

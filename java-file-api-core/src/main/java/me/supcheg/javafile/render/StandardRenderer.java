@@ -21,6 +21,11 @@ import java.util.stream.Stream;
 /// imported unless another type with the same simple name already is, in
 /// which case it is written fully qualified. `java.lang` and same-package
 /// types are never imported.
+///
+/// A documentation comment is written in the syntax of the format
+/// ([SourceRenderer.Format#docStyle()]) and adds no import: it names a type
+/// by its simple name where the code of the file imports or declares the
+/// type or the type needs no import, and by its qualified name otherwise.
 public final class StandardRenderer implements SourceRenderer {
 
     private static final StandardRenderer INSTANCE = new StandardRenderer();
@@ -48,7 +53,9 @@ public final class StandardRenderer implements SourceRenderer {
         collectDeclared(meta.typeDecl(), declared);
         var imports = new ImportManager(meta.packageName(), declared);
         Context ctx = Context.of(format, imports);
-        String body = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
+        String first = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
+        // how a comment names a type depends on what the code after it claims: see ImportManager
+        String body = imports.mentioned() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : first;
 
         StringBuilder out = new StringBuilder();
         out.append("package ")
@@ -108,6 +115,8 @@ public final class StandardRenderer implements SourceRenderer {
         String annotationsText = AnnotationRenderer.renderAnnotations(meta.annotations(), ctx);
 
         StringBuilder out = new StringBuilder();
+        // after the annotations, whose types alone are imported: the comment names a type as they do
+        out.append(DocRenderer.render(meta.doc(), ctx));
         out.append(annotationsText);
         out.append("package ").append(meta.packageName()).append(";").append(ctx.newline());
 
@@ -122,7 +131,8 @@ public final class StandardRenderer implements SourceRenderer {
     }
 
     private String renderModuleInfo(ModuleFile.Meta meta, Format format) {
-        StringBuilder sb = new StringBuilder();
+        // a module declaration has no imports: a comment names every type outside java.lang qualified
+        StringBuilder sb = new StringBuilder(DocRenderer.render(meta.doc(), Context.of(format, new ImportManager(""))));
         if (meta.open()) {
             sb.append("open ");
         }

@@ -3,6 +3,8 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.type.TypeRef;
@@ -24,6 +26,7 @@ import java.util.function.Consumer;
 /// Instances are not thread-safe.
 public final class FieldBuilder {
 
+    private @Nullable DocComment doc;
     private final String name;
     private final TypeRef type;
     private final List<AnnotationUse> annotations = new ArrayList<>();
@@ -65,6 +68,24 @@ public final class FieldBuilder {
         return this;
     }
 
+    /// Sets the documentation comment.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    public FieldBuilder withDoc(DocComment doc) {
+        this.doc = doc;
+        return this;
+    }
+
+    /// Sets the documentation comment, populated via a [DocCommentBuilder].
+    ///
+    /// @param spec receives the builder to populate the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if `spec` adds neither a description nor a tag
+    public FieldBuilder withDoc(Consumer<? super DocCommentBuilder> spec) {
+        return withDoc(DocComment.of(spec));
+    }
+
     /// Adds the given modifiers to the field declaration.
     ///
     /// @param mods the modifiers to add
@@ -86,6 +107,11 @@ public final class FieldBuilder {
     FieldDecl build() {
         Set<Modifier> effectiveModifiers = modifiers.isEmpty() ? Set.of(Modifier.PUBLIC) : Set.copyOf(modifiers);
         return new FieldDecl(
-                name, type, List.copyOf(annotations), effectiveModifiers, Optional.ofNullable(initializer));
+                name,
+                type,
+                List.copyOf(annotations),
+                effectiveModifiers,
+                Optional.ofNullable(initializer),
+                Optional.ofNullable(doc));
     }
 }

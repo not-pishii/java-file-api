@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +19,8 @@ class RecordTransformTest {
     @Test
     void acceptCanPassAMemberThroughToTheBuilder() {
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("p", "R"));
-        StaticFieldDecl field = new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
+        StaticFieldDecl field =
+                new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1), Optional.empty());
 
         RecordTransform passThrough = (b, member) -> b.accept(member);
         passThrough.accept(builder, field);
@@ -30,7 +32,8 @@ class RecordTransformTest {
     void andThenInvokesBothTransformsInOrderAgainstTheSameMember() {
         List<String> callOrder = new ArrayList<>();
         RecordBuilder builder = new RecordBuilder(ClassDesc.of("p", "R"));
-        StaticFieldDecl field = new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1));
+        StaticFieldDecl field =
+                new StaticFieldDecl("MAX", PrimitiveTypeRef.INT, List.of(), new IntLiteral(1), Optional.empty());
 
         RecordTransform first = (b, member) -> {
             callOrder.add("first");

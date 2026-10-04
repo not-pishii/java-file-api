@@ -29,8 +29,8 @@ class EnumTransformTest {
         EnumTransform second = (b, member) -> callOrder.add("second");
 
         EnumTransform combined = first.andThen(second);
-        FieldDecl field =
-                new FieldDecl("symbol", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.FINAL), Optional.empty());
+        FieldDecl field = new FieldDecl(
+                "symbol", PrimitiveTypeRef.INT, List.of(), Set.of(Modifier.FINAL), Optional.empty(), Optional.empty());
         combined.accept(builder, field);
 
         assertThat(callOrder).containsExactly("first", "second");

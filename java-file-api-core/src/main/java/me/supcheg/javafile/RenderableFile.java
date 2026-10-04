@@ -18,7 +18,16 @@ public sealed interface RenderableFile permits JavaFile, PackageInfoFile, Module
     ///
     /// @return the complete source text, including the package and imports
     default String render() {
-        return StandardRenderer.instance().render(renderMeta(), SourceRenderer.standardFormat());
+        return render(SourceRenderer.standardFormat());
+    }
+
+    /// Returns the file's source code in the given format: its indentation,
+    /// line separator and syntax of documentation comments.
+    ///
+    /// @param format the format, see [SourceRenderer#format(String,String,me.supcheg.javafile.doc.DocStyle)]
+    /// @return the complete source text, including the package and imports
+    default String render(SourceRenderer.Format format) {
+        return StandardRenderer.instance().render(renderMeta(), format);
     }
 
     /// Writes the file into the source directory `outputDir`, e.g.

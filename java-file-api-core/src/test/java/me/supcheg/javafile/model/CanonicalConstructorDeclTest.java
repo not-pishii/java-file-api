@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
@@ -24,7 +25,8 @@ class CanonicalConstructorDeclTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(new Param("x", PrimitiveTypeRef.INT)),
                 CodeBody.EMPTY,
-                List.of());
+                List.of(),
+                Optional.empty());
         RecordDecl decl = new RecordDecl(
                 ClassDesc.of("geom", "Point"),
                 List.of(),
@@ -32,7 +34,8 @@ class CanonicalConstructorDeclTest {
                 List.of(),
                 List.of(x),
                 List.of(),
-                List.of(ctor));
+                List.of(ctor),
+                Optional.empty());
 
         assertThat(decl.members()).containsExactly(ctor);
     }
@@ -45,7 +48,8 @@ class CanonicalConstructorDeclTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(new Param("wrongName", PrimitiveTypeRef.INT)),
                 CodeBody.EMPTY,
-                List.of());
+                List.of(),
+                Optional.empty());
         RecordDecl decl = new RecordDecl(
                 ClassDesc.of("geom", "Point"),
                 List.of(),
@@ -53,7 +57,8 @@ class CanonicalConstructorDeclTest {
                 List.of(),
                 List.of(x),
                 List.of(),
-                List.of(ctor));
+                List.of(ctor),
+                Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta("geom", decl), standardFormat()))
@@ -68,7 +73,8 @@ class CanonicalConstructorDeclTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(new Param("x", PrimitiveTypeRef.INT), new Param("y", PrimitiveTypeRef.INT)),
                 CodeBody.EMPTY,
-                List.of());
+                List.of(),
+                Optional.empty());
         RecordDecl decl = new RecordDecl(
                 ClassDesc.of("geom", "Point"),
                 List.of(),
@@ -76,7 +82,8 @@ class CanonicalConstructorDeclTest {
                 List.of(),
                 List.of(x),
                 List.of(),
-                List.of(ctor));
+                List.of(ctor),
+                Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta("geom", decl), standardFormat()))
@@ -93,7 +100,8 @@ class CanonicalConstructorDeclTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(new Param("x", PrimitiveTypeRef.LONG)),
                 CodeBody.EMPTY,
-                List.of());
+                List.of(),
+                Optional.empty());
         RecordDecl decl = new RecordDecl(
                 ClassDesc.of("geom", "Point"),
                 List.of(),
@@ -101,7 +109,8 @@ class CanonicalConstructorDeclTest {
                 List.of(),
                 List.of(x),
                 List.of(),
-                List.of(ctor));
+                List.of(ctor),
+                Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta("geom", decl), standardFormat()))
@@ -127,7 +136,8 @@ class CanonicalConstructorDeclTest {
                 Set.of(Modifier.PUBLIC),
                 List.of(new Param("values", intArray, List.of(), true)),
                 CodeBody.EMPTY,
-                List.of());
+                List.of(),
+                Optional.empty());
         RecordDecl decl = new RecordDecl(
                 ClassDesc.of("geom", "Nums"),
                 List.of(),
@@ -135,7 +145,8 @@ class CanonicalConstructorDeclTest {
                 List.of(),
                 List.of(values),
                 List.of(),
-                List.of(ctor));
+                List.of(ctor),
+                Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta("geom", decl), standardFormat()))

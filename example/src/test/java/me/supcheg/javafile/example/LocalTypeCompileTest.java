@@ -27,7 +27,8 @@ class LocalTypeCompileTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
-                List.of());
+                List.of(),
+                Optional.empty());
 
         JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Runner"),

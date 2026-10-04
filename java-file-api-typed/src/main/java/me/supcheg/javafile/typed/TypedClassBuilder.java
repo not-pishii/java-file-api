@@ -186,7 +186,8 @@ public final class TypedClassBuilder<Self> {
                 type.typeRef(),
                 List.of(),
                 modifiers,
-                Optional.of(new Lowering().lowerInitializer(initializer.node(), type))));
+                Optional.of(new Lowering().lowerInitializer(initializer.node(), type)),
+                Optional.empty()));
     }
 
     // ------------------------------------------------------------------
@@ -808,7 +809,8 @@ public final class TypedClassBuilder<Self> {
         CodeBody code = lowering.lowerBlock(root.instrs());
         List<AnnotationUse> annotations = slot.overrides ? List.of(new AnnotationUse(OVERRIDE, List.of())) : List.of();
         return switch (fact.kind()) {
-            case CONSTRUCTOR -> new ConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), coreParams, code, List.of());
+            case CONSTRUCTOR ->
+                new ConstructorDecl(List.of(), Set.of(Modifier.PUBLIC), coreParams, code, List.of(), Optional.empty());
             case INSTANCE_METHOD ->
                 new MethodDecl(
                         fact.name(),
@@ -818,7 +820,8 @@ public final class TypedClassBuilder<Self> {
                         List.of(),
                         coreParams,
                         code,
-                        List.of());
+                        List.of(),
+                        Optional.empty());
             case STATIC_METHOD ->
                 new MethodDecl(
                         fact.name(),
@@ -828,7 +831,8 @@ public final class TypedClassBuilder<Self> {
                         List.of(),
                         coreParams,
                         code,
-                        List.of());
+                        List.of(),
+                        Optional.empty());
         };
     }
 
