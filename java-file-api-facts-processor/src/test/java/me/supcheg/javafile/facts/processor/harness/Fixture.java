@@ -132,6 +132,18 @@ public record Fixture(String name, Path directory, List<Case> cases) {
         public Path useFails() {
             return directory.resolve("use-fails");
         }
+
+        /// `targets/<version>/`: another version of the library, for the
+        /// code the typed layer renders to be checked against, compiled
+        /// against and run with — its files replace those of the library
+        /// of the case with the same path, or add to it, and an empty one
+        /// takes the file of its path out.
+        ///
+        /// @param version the name of the version
+        /// @return the directory, which may not exist
+        public Path target(String version) {
+            return directory.resolve("targets").resolve(version);
+        }
     }
 
     private static Stream<Path> directories(Path parent) {

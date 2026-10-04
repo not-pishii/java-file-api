@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// A Java source file to compile.
@@ -59,6 +62,24 @@ public record Source(String name, String text) {
     /// The path of the file in its source root, `p/q/T.java`.
     ///
     /// @return the path, with `/` between its names
+    /// The sources of several directories as one library, a version of
+    /// it laid over it: of the files of one path the one of the earlier
+    /// directory, and none if that one is empty — a type the version has
+    /// taken out.
+    ///
+    /// @param directories the directories, the version first and the library last
+    /// @return the sources, sorted by name
+    public static List<Source> overlaid(Path... directories) {
+        return Stream.of(directories)
+                .flatMap(directory -> in(directory).stream())
+                .collect(Collectors.toMap(Source::name, Function.identity(), (first, _) -> first))
+                .values()
+                .stream()
+                .filter(source -> !source.text().isBlank())
+                .sorted(Comparator.comparing(Source::name))
+                .toList();
+    }
+
     public String path() {
         return name.replace('.', '/') + ".java";
     }

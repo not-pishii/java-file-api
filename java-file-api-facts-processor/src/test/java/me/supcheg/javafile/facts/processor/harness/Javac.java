@@ -2,11 +2,22 @@ package me.supcheg.javafile.facts.processor.harness;
 
 import com.google.testing.compile.Compiler;
 import me.supcheg.javafile.facts.processor.FactsProcessor;
+import org.opentest4j.AssertionFailedError;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -148,6 +159,61 @@ public record Javac(
             Dump.configured().ifPresent(dump -> dump.write(compiled.snapshot()));
         }
         return compiled;
+    }
+
+    /// Runs javac on a source of no interest and gives `action` what a
+    /// processor of this description has in its first round: the types of
+    /// this classpath under these options, through the environment. For
+    /// what needs a compilation to run in, as a generator that is an
+    /// annotation processor does — a target classpath above all.
+    ///
+    /// ```java
+    /// String source = Javac.plain().alone().classpath(lib)
+    ///         .inFirstRound(env -> render(TargetClasspaths.of(env)));
+    /// ```
+    ///
+    /// @param action what to do in the round
+    /// @param <T> what it gives
+    /// @return what `action` returned; what it threw is thrown here, as it is
+    public <T> T inFirstRound(Function<? super ProcessingEnvironment, ? extends T> action) {
+        AtomicReference<Optional<Supplier<T>>> ran = new AtomicReference<>(Optional.empty());
+        Compiled compiled = with(new AbstractProcessor() {
+                    @Override
+                    public Set<String> getSupportedAnnotationTypes() {
+                        return Set.of("*");
+                    }
+
+                    @Override
+                    public SourceVersion getSupportedSourceVersion() {
+                        return SourceVersion.latestSupported();
+                    }
+
+                    @Override
+                    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+                        if (ran.get().isEmpty()) {
+                            ran.set(Optional.of(attempted(() -> action.apply(processingEnv))));
+                        }
+                        return false;
+                    }
+                })
+                .compile(List.of(new Source("probe.Probe", "package probe; class Probe {}")));
+        return ran.get()
+                .orElseThrow(
+                        () -> new AssertionFailedError("javac did not get to its processors:\n" + compiled.rendered()))
+                .get();
+    }
+
+    /// What an action came to, to be told once javac is done: its result,
+    /// or what it threw.
+    private static <T> Supplier<T> attempted(Supplier<? extends T> action) {
+        try {
+            T result = action.get();
+            return () -> result;
+        } catch (RuntimeException | Error thrown) {
+            return () -> {
+                throw thrown;
+            };
+        }
     }
 
     /// The classpath of the tests: the facts, the typed layer and the

@@ -12,11 +12,18 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.Sam2;
+import me.supcheg.javafile.facts.ShapeOrigin;
 import me.supcheg.javafile.facts.StaticFieldRef;
+import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TargetClasspathMismatchException;
+import me.supcheg.javafile.facts.TargetReader;
+import me.supcheg.javafile.facts.TargetType;
+import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.processor.harness.Compiled;
 import me.supcheg.javafile.facts.processor.harness.Javac;
+import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.TypeRef;
@@ -24,10 +31,12 @@ import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
@@ -37,9 +46,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /// The processor on types of the JDK, whose members are many and odd: the generated metamodels compile under every
 /// lint and their facts describe the members. A scenario test and not a fixture: the metamodels of the JDK types are
@@ -107,6 +119,16 @@ class JdkTypesTest {
 
         static Object fact(Object instance, String field) throws ReflectiveOperationException {
             return instance.getClass().getField(field).get(instance);
+        }
+
+        /// The shape a metamodel holds, in its class `Data`.
+        TypeShape<?> shape(String metamodel) {
+            try {
+                return (TypeShape<?>)
+                        loader.loadClass(metamodel + "$Data").getField("SHAPE").get(null);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException(e);
+            }
         }
 
         DeclaredToken<?> token(String metamodel) throws ReflectiveOperationException {
@@ -189,6 +211,100 @@ class JdkTypesTest {
         assertThat(((EnumConstant<?>) loaded.fact("gen.facts.java.time.DayOfWeek_", "MONDAY")).name())
                 .isEqualTo("MONDAY");
         assertThat(loaded.fact("gen.facts.java.lang.Runnable_", "sam")).isInstanceOf(VoidSam0.class);
+    }
+
+    /// The check against the target classpath on the metamodels of the JDK, used with the JDK they were generated
+    /// from: every one of them — full and token-only, of a class, an interface, an enum, a member type, a generic
+    /// type — is found unchanged by its fingerprint, the fast path. Whatever the translator reads off a type of the
+    /// platform when a generator runs is what it read when the metamodel was generated.
+    @Test
+    void theMetamodelsOfTheJdkAreUnchangedOnTheJdkTheyWereGeneratedFrom() throws Exception {
+        for (String types : List.of(TYPES, GENERIC_TYPES)) {
+            Compiled compiled = processed(types);
+            Loaded loaded = load(compiled);
+            List<TypeShape<?>> shapes = compiled.sources().keySet().stream()
+                    .<TypeShape<?>>map(loaded::shape)
+                    .toList();
+
+            Map<String, String> found = Javac.plain().alone().inFirstRound(env -> {
+                TargetReader reader = TargetClasspaths.reader(env.getElementUtils(), env.getTypeUtils());
+                return shapes.stream()
+                        .collect(Collectors.toMap(
+                                shape -> shape.desc().descriptorString(),
+                                shape -> reader.read(shape, (ShapeOrigin.Metamodel) shape.origin())
+                                        .toString()));
+            });
+
+            assertThat(found).hasSizeGreaterThan(40);
+            assertThat(found.values()).containsOnly(TargetType.UNCHANGED.toString());
+        }
+    }
+
+    /// A metamodel of this JDK used under `--release 17`: `String` had no `indexOf(int, int, int)` then, and the
+    /// class that calls it is not rendered — the same check, as the types of the platform are what the compilation
+    /// sees of them.
+    @Test
+    void aMetamodelOfThisJdkDoesNotHoldUnderAnOlderRelease() throws Exception {
+        Compiled compilation =
+                processor().compile(generator("java.lang.String.class"), """
+                package use;
+
+                import gen.facts.java.lang.String_;
+                import java.lang.constant.ClassDesc;
+                import me.supcheg.javafile.facts.PrimitiveToken;
+                import me.supcheg.javafile.facts.TargetClasspath;
+                import me.supcheg.javafile.typed.TypedClassBuilder;
+                import me.supcheg.javafile.typed.TypedJavaFile;
+
+                import static me.supcheg.javafile.typed.Expressions.call;
+                import static me.supcheg.javafile.typed.Expressions.literal;
+
+                public final class Run {
+                    public static String source(TargetClasspath target) {
+                        return TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                                    @Override
+                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                        cb.staticMethod(
+                                                "go",
+                                                PrimitiveToken.INT,
+                                                String_.TOKEN,
+                                                (b, s) -> b.return_(call(
+                                                        s,
+                                                        String_.indexOf_int_int_int,
+                                                        literal(1),
+                                                        literal(2),
+                                                        literal(3))));
+                                    }
+                                })
+                                .render();
+                    }
+                }
+                """).orFail();
+        Method source = new URLClassLoader(
+                        new URL[] {
+                            compilation.writeTo(out.resolve("run")).toUri().toURL()
+                        },
+                        JdkTypesTest.class.getClassLoader())
+                .loadClass("use.Run")
+                .getMethod("source", TargetClasspath.class);
+        Function<ProcessingEnvironment, String> rendered = env -> {
+            try {
+                return (String) source.invoke(null, TargetClasspaths.of(env));
+            } catch (InvocationTargetException e) {
+                throw (RuntimeException) e.getCause();
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
+        };
+
+        assertThat(Javac.plain().alone().inFirstRound(rendered)).contains("return v0.indexOf(1, 2, 3);");
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(
+                        () -> Javac.plain().alone().options("--release", "17").inFirstRound(rendered))
+                .withMessageStartingWith(
+                        "metamodel gen.facts.java.lang.String_ does not match java.lang.String on the target classpath:")
+                .withMessageContaining("\n  missing: method final indexOf(int, int, int) -> int throws -\n")
+                .withMessageEndingWith("rebuild the generator against it, or align the versions.");
     }
 
     @Test
