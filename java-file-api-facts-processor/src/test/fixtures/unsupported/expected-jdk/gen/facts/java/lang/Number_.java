@@ -19,6 +19,9 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
+/// The token-only metamodel of [Number]: its shape and its token, no facts of its members.
+///
+/// `@Facts` does not ask for [Number]: it is only mentioned in the signatures of [p.Mix]. For the facts of its members add `Number.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Number.class, fingerprint = "782a0355a2565a3597cb11c03f89e1f32c89702adbabf65831660430ee864a7b", complete = false, format = 5)
 @SuppressWarnings({
@@ -26,20 +29,25 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
     "removal"
 })
 public final class Number_ {
+    /// The shape of [Number] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Number] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "782a0355a2565a3597cb11c03f89e1f32c89702adbabf65831660430ee864a7b", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Number], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Number].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Number abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Number()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Number].
     public static final AbstractClassToken<Number> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     private Number_() {

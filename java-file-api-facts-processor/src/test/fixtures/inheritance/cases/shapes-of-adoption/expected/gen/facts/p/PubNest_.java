@@ -23,6 +23,15 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.PubNest;
 
+/// The full metamodel of [PubNest], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [PubNest] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// `p.HNest`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// These members have no fact:
+///
+/// - `method make() of p.HNest`, which mentions types that are not public: p.HNest$In
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = PubNest.class, fingerprint = "ca33302cb4bff5fa6667ed6f2e2d38ac0f65c7fd427285a77bd6ad62706da715", complete = true, format = 5)
 @SuppressWarnings({
@@ -30,24 +39,31 @@ import p.PubNest;
     "removal"
 })
 public final class PubNest_ {
+    /// The shape of [PubNest] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [PubNest] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubNest_"), "ca33302cb4bff5fa6667ed6f2e2d38ac0f65c7fd427285a77bd6ad62706da715", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubNest"), List.of(), List.of(ClassDesc.of("p.HNest"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("make"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubNest"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [PubNest], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [PubNest].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.PubNest open-class sealed=no\ntparams -\nsuperclasses p.HNest; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable plain() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); make(); notify(); notifyAll(); plain(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubNest()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [PubNest].
     public static final OpenClassToken<PubNest> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
+    /// The fact of [PubNest#PubNest()].
     public static final CtorRef0<PubNest> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
+    /// The fact of [PubNest#plain()], declared in `p.HNest`, which is not `public`.
     public static final MethodRef0<PubNest, String> plain = UnsafeFacts.method(TOKEN, "plain", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private PubNest_() {

@@ -27,6 +27,9 @@ import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
 import p.Day;
 
+/// The full metamodel of [Day], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Day] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Day.class, fingerprint = "17b5f7c1f1fa423fabb60c2fa14f3f8b80da4f0367ee2b9e2b3749190b5bf9bf", complete = true, format = 5)
 @SuppressWarnings({
@@ -34,28 +37,37 @@ import p.Day;
     "removal"
 })
 public final class Day_ {
+    /// The shape of [Day] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Day] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Day_"), "17b5f7c1f1fa423fabb60c2fa14f3f8b80da4f0367ee2b9e2b3749190b5bf9bf", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Day"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Day"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of()), List.of("MON", "TUE"), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Day], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Day].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Day enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\nsupertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>\nenum MON; TUE\nmembers declared-public\nmember method static valueOf(java.lang.String) -> p.Day throws -\nmember method static values() -> p.Day[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Day); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Day].
     public static final EnumToken<Day> TOKEN = UnsafeFacts.enumToken(Data.SHAPE);
 
+    /// The fact of [Day#MON].
     public static final EnumConstant<Day> MON = TOKEN.constant("MON");
 
+    /// The fact of [Day#TUE].
     public static final EnumConstant<Day> TUE = TOKEN.constant("TUE");
 
+    /// The fact of [Day#valueOf(String)].
     public static final StaticMethodRef1<Day, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
+    /// The fact of [Day#values()].
     public static final StaticMethodRef0<Day[]> values = UnsafeFacts.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
 
     private Day_() {

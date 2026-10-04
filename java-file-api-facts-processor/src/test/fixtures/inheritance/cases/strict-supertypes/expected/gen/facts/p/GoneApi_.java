@@ -20,6 +20,15 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.GoneApi;
 
+/// The full metamodel of [GoneApi]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [GoneApi]: it is here as a supertype of [p.Sub], whose inherited members are called through this metamodel.
+///
+/// A member [GoneApi] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// These members have no fact:
+///
+/// - `method gone(p.Secret)`, which mentions types that are not public: p.Secret
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = GoneApi.class, fingerprint = "8fb014e5a4519379d0ff574907495a59549bc538a5b4b3941bc94d1aa704b0aa", complete = true, format = 5)
 @SuppressWarnings({
@@ -27,20 +36,25 @@ import p.GoneApi;
     "removal"
 })
 public final class GoneApi_ {
+    /// The shape of [GoneApi] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [GoneApi] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.GoneApi_"), "8fb014e5a4519379d0ff574907495a59549bc538a5b4b3941bc94d1aa704b0aa", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.GoneApi"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("gone", Param.fixed(ClassDesc.of("p.Secret"))), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [GoneApi], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [GoneApi].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.GoneApi interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); gone(p.Secret); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [GoneApi].
     public static final InterfaceToken<GoneApi> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     private GoneApi_() {

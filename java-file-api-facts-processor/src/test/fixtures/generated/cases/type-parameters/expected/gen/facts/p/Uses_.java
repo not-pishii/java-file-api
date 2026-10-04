@@ -27,6 +27,11 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Uses;
 
+/// The full metamodel of [Uses], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Uses] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// @param <T> a type argument of [Uses]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Uses.class, fingerprint = "ef02bd057b6e88349fad1d1b9856bdf51ff984c5c0f66731c845f60a11b0026c", complete = true, format = 5)
 @SuppressWarnings({
@@ -34,26 +39,36 @@ import p.Uses;
     "removal"
 })
 public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
+    /// The shape of [Uses] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Uses] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "ef02bd057b6e88349fad1d1b9856bdf51ff984c5c0f66731c845f60a11b0026c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Data")), new ParameterizedTypeRef(ClassDesc.of("p.Canonical"), List.of(Types.exact(Types.of(ClassDesc.of("p.Data")))))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Uses], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Uses].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Uses open-class sealed=no\ntparams #0 extends p.Data & p.Canonical<p.Data>\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Uses()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Uses] with a wildcard for every type argument.
     public static final OpenClassToken<Uses<?>> ANY = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.unbounded());
 
+    /// The token of [Uses] with the type arguments of this metamodel.
     public final OpenClassToken<Uses<T>> token;
 
+    /// The fact of [Uses#Uses()].
     public final CtorRef0<Uses<T>> new_;
 
+    /// The metamodel of [Uses] with the type arguments the tokens give.
+    ///
+    /// @param t the token of the type argument `T`
     public Uses_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);

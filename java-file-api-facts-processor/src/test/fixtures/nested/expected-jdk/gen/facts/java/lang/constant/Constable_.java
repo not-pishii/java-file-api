@@ -26,6 +26,11 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
+/// The full metamodel of [Constable]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [Constable]: it is here as a supertype of [p.Outer.E], whose inherited members are called through this metamodel.
+///
+/// A member [Constable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Constable.class, fingerprint = "5d6555f45ea5772a85a764c9cb27c561279db161604805254a0a0b6e8b7f567e", complete = true, format = 5)
 @SuppressWarnings({
@@ -33,24 +38,31 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
     "removal"
 })
 public final class Constable_ {
+    /// The shape of [Constable] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Constable] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "5d6555f45ea5772a85a764c9cb27c561279db161604805254a0a0b6e8b7f567e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Constable], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Constable].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.constant.Constable interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -\nsam describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -\ntable abstract describeConstable()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Constable].
     public static final InterfaceToken<Constable> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of [Constable#describeConstable()].
     public static final MethodRef0<Constable, Optional<? extends ConstantDesc>> describeConstable = UnsafeFacts.method(TOKEN, "describeConstable", UnsafeFacts.<Optional<? extends ConstantDesc>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.extendsBound(UnsafeFacts.<ConstantDesc>interfaceToken(ConstantDesc_.Data.SHAPE))), MemberTraits.ABSTRACT);
 
+    /// The fact of the single abstract method [Constable#describeConstable()], which a lambda implements.
     public static final Sam0<Constable, Optional<? extends ConstantDesc>> sam = UnsafeFacts.sam(describeConstable);
 
     private Constable_() {

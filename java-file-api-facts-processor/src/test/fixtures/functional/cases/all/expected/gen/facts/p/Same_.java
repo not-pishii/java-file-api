@@ -23,6 +23,9 @@ import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Same;
 
+/// The full metamodel of [Same], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Same] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [IoB_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Same.class, fingerprint = "930fcbdc105f1d2c9bbdd1d51eba0bb1dc21f37ff32b324aa58f8037d62226ed", complete = true, format = 5)
 @SuppressWarnings({
@@ -30,22 +33,28 @@ import p.Same;
     "removal"
 })
 public final class Same_ {
+    /// The shape of [Same] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Same] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Same_"), "930fcbdc105f1d2c9bbdd1d51eba0bb1dc21f37ff32b324aa58f8037d62226ed", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Same"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Same], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Same].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Same interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nsam m() -> void throws java.io.IOException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Same].
     public static final InterfaceToken<Same> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of the single abstract method [p.IoA#m()], which a lambda implements.
     public static final VoidSam0<Same> sam = UnsafeFacts.voidSam(UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE))));
 
     private Same_() {

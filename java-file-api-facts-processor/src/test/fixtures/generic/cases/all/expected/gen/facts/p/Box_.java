@@ -42,6 +42,11 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Box;
 
+/// The full metamodel of [Box], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Box] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Box.class, fingerprint = "1aaca98c5b5391c883091662a84b7d952cfa737ef4e4e711bc73522aaf5e215a", complete = true, format = 5)
 @SuppressWarnings({
@@ -50,64 +55,93 @@ import p.Box;
     "removal"
 })
 public final class Box_<T> {
+    /// The shape of [Box] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Box] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "1aaca98c5b5391c883091662a84b7d952cfa737ef4e4e711bc73522aaf5e215a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Box], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Box].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Box open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember ctor() throws -\nmember field instance final #0 initial\nmember field instance mutable #0 value\nmember field static constant java.lang.String NAME = \"box\"\nmember field static mutable int count\nmember method overridable addAll(java.util.Collection<? extends #0>) -> void throws -\nmember method overridable asList() -> java.util.List<#0> throws -\nmember method overridable drainTo(java.util.Collection<? super #0>) -> void throws -\nmember method overridable get() -> #0 throws -\nmember method overridable ints() -> int[] throws -\nmember method overridable nested() -> p.Box<p.Box<#0>> throws -\nmember method overridable raw(java.util.Map) -> java.util.List throws -\nmember method overridable rawSelf() -> p.Box throws -\nmember method overridable sameAs(p.Box<?>) -> boolean throws -\nmember method overridable self() -> p.Box<#0> throws -\nmember method overridable set(#0) -> void throws -\nmember method overridable toArray(#0[]) -> #0[] throws -\nmember method static ofString() -> p.Box<java.lang.String> throws -\nmember method static size(p.Box<?>) -> int throws -\ntable abstract -\ntable concrete addAll(java.util.Collection); asList(); clone(); drainTo(java.util.Collection); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); ints(); nested(); notify(); notifyAll(); raw(java.util.Map); rawSelf(); sameAs(p.Box); self(); set(#0); toArray(#0[]); toString(); wait(); wait(long); wait(long, int)\ntable static ofString(); size(p.Box)\ntable ctor Box(#0); Box()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Box] with a wildcard for every type argument.
     public static final OpenClassToken<Box<?>> ANY = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.unbounded());
 
+    /// The fact of [Box#NAME].
     public static final StaticFieldRef<String> NAME = UnsafeFacts.constantField(ANY, "NAME", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "box");
 
+    /// The fact of [Box#count].
     public static final MutableStaticFieldRef<Int> count = UnsafeFacts.mutableStaticField(ANY, "count", PrimitiveToken.INT);
 
+    /// The fact of [Box#ofString()].
     public static final StaticMethodRef0<Box<String>> ofString = UnsafeFacts.staticMethod(ANY, "ofString", UnsafeFacts.<Box<String>>openClassToken(Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.FINAL);
 
+    /// The fact of [Box#size(Box)].
     public static final StaticMethodRef1<Int, Box<?>> size_Box = UnsafeFacts.staticMethod(ANY, "size", PrimitiveToken.INT, UnsafeFacts.<Box<?>>openClassToken(Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
 
+    /// The token of [Box] with the type arguments of this metamodel.
     public final OpenClassToken<Box<T>> token;
 
+    /// The fact of [Box#initial].
     public final FieldRef<Box<T>, T> initial;
 
+    /// The fact of [Box#value].
     public final MutableFieldRef<Box<T>, T> value;
 
+    /// The fact of [Box#Box()].
     public final CtorRef0<Box<T>> new_;
 
+    /// The fact of [Box#Box(Object)].
     public final CtorRef1<Box<T>, T> new_T;
 
+    /// The fact of [Box#addAll(Collection)].
     public final VoidMethodRef1<Box<T>, Collection<? extends T>> addAll_Collection;
 
+    /// The fact of [Box#asList()].
     public final MethodRef0<Box<T>, List<T>> asList;
 
+    /// The fact of [Box#drainTo(Collection)].
     public final VoidMethodRef1<Box<T>, Collection<? super T>> drainTo_Collection;
 
+    /// The fact of [Box#get()].
     public final MethodRef0<Box<T>, T> get;
 
+    /// The fact of [Box#ints()].
     public final MethodRef0<Box<T>, int[]> ints;
 
+    /// The fact of [Box#nested()].
     public final MethodRef0<Box<T>, Box<Box<T>>> nested;
 
+    /// The fact of [Box#rawSelf()].
     public final MethodRef0<Box<T>, Box> rawSelf;
 
+    /// The fact of [Box#raw(Map)].
     public final MethodRef1<Box<T>, List, Map> raw_Map;
 
+    /// The fact of [Box#sameAs(Box)].
     public final MethodRef1<Box<T>, Bool, Box<?>> sameAs_Box;
 
+    /// The fact of [Box#self()].
     public final MethodRef0<Box<T>, Box<T>> self;
 
+    /// The fact of [Box#set(Object)].
     public final VoidMethodRef1<Box<T>, T> set_T;
 
+    /// The fact of [Box#toArray(Object\[\])].
     public final MethodRef1<Box<T>, T[], T[]> toArray_TArray;
 
+    /// The metamodel of [Box] with the type arguments the tokens give.
+    ///
+    /// @param t the token of the type argument `T`
     public Box_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.initial = UnsafeFacts.field(token, "initial", t);

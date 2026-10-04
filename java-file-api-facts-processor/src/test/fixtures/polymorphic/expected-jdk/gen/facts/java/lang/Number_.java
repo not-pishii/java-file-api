@@ -29,6 +29,11 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
+/// The full metamodel of [Number]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [Number]: it is here as a supertype of [p.Num], whose inherited members are called through this metamodel.
+///
+/// A member [Number] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_] and [Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Number.class, fingerprint = "2109f00f9d995c02841b62678a8ce65deaeb4de810a43f65b3f918c6c69e6fd3", complete = true, format = 5)
 @SuppressWarnings({
@@ -36,34 +41,46 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
     "removal"
 })
 public final class Number_ {
+    /// The shape of [Number] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Number] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "2109f00f9d995c02841b62678a8ce65deaeb4de810a43f65b3f918c6c69e6fd3", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Number], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Number].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Number abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method abstract doubleValue() -> double throws -\nmember method abstract floatValue() -> float throws -\nmember method abstract intValue() -> int throws -\nmember method abstract longValue() -> long throws -\nmember method overridable byteValue() -> byte throws -\nmember method overridable shortValue() -> short throws -\ntable abstract doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Number()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Number].
     public static final AbstractClassToken<Number> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
+    /// The fact of [Number#Number()].
     public static final AbstractCtorRef0<Number> super_ = UnsafeFacts.abstractCtor(TOKEN, MemberTraits.FINAL);
 
+    /// The fact of [Number#byteValue()].
     public static final MethodRef0<Number, Byte> byteValue = UnsafeFacts.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.OVERRIDABLE);
 
+    /// The fact of [Number#doubleValue()].
     public static final MethodRef0<Number, Double> doubleValue = UnsafeFacts.method(TOKEN, "doubleValue", PrimitiveToken.DOUBLE, MemberTraits.ABSTRACT);
 
+    /// The fact of [Number#floatValue()].
     public static final MethodRef0<Number, Float> floatValue = UnsafeFacts.method(TOKEN, "floatValue", PrimitiveToken.FLOAT, MemberTraits.ABSTRACT);
 
+    /// The fact of [Number#intValue()].
     public static final MethodRef0<Number, Int> intValue = UnsafeFacts.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
+    /// The fact of [Number#longValue()].
     public static final MethodRef0<Number, Long> longValue = UnsafeFacts.method(TOKEN, "longValue", PrimitiveToken.LONG, MemberTraits.ABSTRACT);
 
+    /// The fact of [Number#shortValue()].
     public static final MethodRef0<Number, Short> shortValue = UnsafeFacts.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.OVERRIDABLE);
 
     private Number_() {

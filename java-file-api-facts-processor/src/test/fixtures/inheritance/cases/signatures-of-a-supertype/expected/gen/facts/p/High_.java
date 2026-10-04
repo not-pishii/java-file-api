@@ -24,6 +24,11 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.High;
 import p.Seen;
 
+/// The full metamodel of [High]: a fact of every `public` member the type declares.
+///
+/// `@Facts` does not ask for [High]: it is here as a supertype of [p.Low], whose inherited members are called through this metamodel.
+///
+/// A member [High] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = High.class, fingerprint = "b95b718992b592f63aba85920e5092eaed910ad33bade65b60f0c813864b33d1", complete = true, format = 5)
 @SuppressWarnings({
@@ -31,24 +36,31 @@ import p.Seen;
     "removal"
 })
 public final class High_ {
+    /// The shape of [High] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [High] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.High_"), "b95b718992b592f63aba85920e5092eaed910ad33bade65b60f0c813864b33d1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.High"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("High"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [High], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [High].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.High open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable seen() -> p.Seen throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); seen(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor High()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [High].
     public static final OpenClassToken<High> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
+    /// The fact of [High#High()].
     public static final CtorRef0<High> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
+    /// The fact of [High#seen()].
     public static final MethodRef0<High, Seen> seen = UnsafeFacts.method(TOKEN, "seen", UnsafeFacts.<Seen>openClassToken(Seen_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private High_() {

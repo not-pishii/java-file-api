@@ -22,6 +22,15 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import p.Impl2;
 
+/// The full metamodel of [Impl2], which `@Facts` asks for: a fact of every `public` member the type declares.
+///
+/// A member [Impl2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PubBase_].
+///
+/// `p.HIface`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// These members have no fact:
+///
+/// - `field K of p.HIface`, which is ambiguous in p.Impl2 with field K of p.PubBase
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Impl2.class, fingerprint = "897c73485e637b2a07be5d73b5d93052d085756a7c05963d14efbf43050305d9", complete = true, format = 5)
 @SuppressWarnings({
@@ -29,22 +38,28 @@ import p.Impl2;
     "removal"
 })
 public final class Impl2_ {
+    /// The shape of [Impl2] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Impl2] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Impl2_"), "897c73485e637b2a07be5d73b5d93052d085756a7c05963d14efbf43050305d9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Impl2"), List.of(), List.of(ClassDesc.of("p.PubBase"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Impl2"))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Impl2], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Impl2].
         static final String TEXT = "javafile-facts-canonical 4\ntype p.Impl2 open-class sealed=no\ntparams -\nsuperclasses p.PubBase; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Impl2()\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Impl2].
     public static final OpenClassToken<Impl2> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
+    /// The fact of [Impl2#Impl2()].
     public static final CtorRef0<Impl2> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     private Impl2_() {

@@ -19,6 +19,9 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
+/// The token-only metamodel of [Exception]: its shape and its token, no facts of its members.
+///
+/// `@Facts` does not ask for [Exception]: it is only mentioned in the signatures of [p.Fail]. For the facts of its members add `Exception.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Exception.class, fingerprint = "9f6cf9d362fe2dd71eedf54b9701c53b378a7875ef73f32d04c529cd4517f515", complete = false, format = 5)
 @SuppressWarnings({
@@ -26,20 +29,25 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
     "removal"
 })
 public final class Exception_ {
+    /// The shape of [Exception] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Exception] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Exception_"), "9f6cf9d362fe2dd71eedf54b9701c53b378a7875ef73f32d04c529cd4517f515", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Exception"), List.of(), List.of(ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("addSuppressed", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("fillInStackTrace"), Signature.of("finalize"), Signature.of("getCause"), Signature.of("getClass"), Signature.of("getLocalizedMessage"), Signature.of("getMessage"), Signature.of("getStackTrace"), Signature.of("getSuppressed"), Signature.of("hashCode"), Signature.of("initCause", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("printStackTrace"), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintStream"))), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintWriter"))), Signature.of("setCause", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("setStackTrace", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/StackTraceElement;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Exception"), Signature.of("Exception", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Exception", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("Exception", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.lang.Throwable")), Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("Exception", Param.fixed(ClassDesc.of("java.lang.Throwable"))))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Exception], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Exception].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Exception open-class sealed=no\ntparams -\nsuperclasses java.lang.Throwable; java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setCause(java.lang.Throwable); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Exception(); Exception(java.lang.String); Exception(java.lang.String, java.lang.Throwable); Exception(java.lang.String, java.lang.Throwable, boolean, boolean); Exception(java.lang.Throwable)\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Exception].
     public static final OpenClassToken<Exception> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     private Exception_() {

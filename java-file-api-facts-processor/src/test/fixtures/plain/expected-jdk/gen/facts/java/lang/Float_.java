@@ -21,6 +21,9 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
 
+/// The token-only metamodel of [Float]: its shape and its token, no facts of its members.
+///
+/// `@Facts` does not ask for [Float]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Float.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = Float.class, fingerprint = "3a9876345463627eabd0536586f52fc73a1f428f83a9b46825415201b49686f9", complete = false, format = 5)
 @SuppressWarnings({
@@ -28,20 +31,25 @@ import me.supcheg.javafile.type.Types;
     "removal"
 })
 public final class Float_ {
+    /// The shape of [Float] as plain data: initializing it touches no other metamodel.
     public static final class Data {
+        /// What [Float] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Float_"), "3a9876345463627eabd0536586f52fc73a1f428f83a9b46825415201b49686f9", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Float"), List.of(), List.of(ClassDesc.of("java.lang.Number"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Float"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Float"))), Signature.of("describeConstable"), Signature.of("doubleValue"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("floatValue"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("intValue"), Signature.of("isInfinite"), Signature.of("isNaN"), Signature.of("longValue"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup"))), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_float), Param.fixed(ConstantDescs.CD_float)), Signature.of("float16ToFloat", Param.fixed(ConstantDescs.CD_short)), Signature.of("floatToFloat16", Param.fixed(ConstantDescs.CD_float)), Signature.of("floatToIntBits", Param.fixed(ConstantDescs.CD_float)), Signature.of("floatToRawIntBits", Param.fixed(ConstantDescs.CD_float)), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_float)), Signature.of("intBitsToFloat", Param.fixed(ConstantDescs.CD_int)), Signature.of("isFinite", Param.fixed(ConstantDescs.CD_float)), Signature.of("isInfinite", Param.fixed(ConstantDescs.CD_float)), Signature.of("isNaN", Param.fixed(ConstantDescs.CD_float)), Signature.of("max", Param.fixed(ConstantDescs.CD_float), Param.fixed(ConstantDescs.CD_float)), Signature.of("min", Param.fixed(ConstantDescs.CD_float), Param.fixed(ConstantDescs.CD_float)), Signature.of("parseFloat", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("sum", Param.fixed(ConstantDescs.CD_float), Param.fixed(ConstantDescs.CD_float)), Signature.of("toHexString", Param.fixed(ConstantDescs.CD_float)), Signature.of("toString", Param.fixed(ConstantDescs.CD_float)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_float)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Float", Param.fixed(ConstantDescs.CD_double)), Signature.of("Float", Param.fixed(ConstantDescs.CD_float)), Signature.of("Float", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
 
         private Data() {
         }
     }
 
+    /// The canonical form of [Float], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
+        /// The canonical form of [Float].
         static final String TEXT = "javafile-facts-canonical 4\ntype java.lang.Float final-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\nsupertypes java.lang.Comparable<java.lang.Float>\nenum -\nmembers none\ntable abstract -\ntable concrete byteValue(); clone(); compareTo(java.lang.Float); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); isInfinite(); isNaN(); longValue(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static compare(float, float); float16ToFloat(short); floatToFloat16(float); floatToIntBits(float); floatToRawIntBits(float); hashCode(float); intBitsToFloat(int); isFinite(float); isInfinite(float); isNaN(float); max(float, float); min(float, float); parseFloat(java.lang.String); sum(float, float); toHexString(float); toString(float); valueOf(float); valueOf(java.lang.String)\ntable ctor Float(double); Float(float); Float(java.lang.String)\n";
 
         private Canonical() {
         }
     }
 
+    /// The token of [Float].
     public static final FinalClassToken<Float> TOKEN = UnsafeFacts.finalClassToken(Data.SHAPE);
 
     private Float_() {
