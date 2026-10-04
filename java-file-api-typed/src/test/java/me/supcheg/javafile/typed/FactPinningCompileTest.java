@@ -76,7 +76,7 @@ class FactPinningCompileTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Pinned");
 
     private static CompiledClasses compile(TypedJavaFile.TypedClassSpec spec) {
-        JavaFile file = TypedJavaFile.class_(DESC, spec);
+        JavaFile file = TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, spec);
         return CompiledClasses.of(file, Fixtures.SOURCES);
     }
 

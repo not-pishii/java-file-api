@@ -318,12 +318,15 @@ public final class FixtureRun {
     private record ThroughTyped(Supplier<Path> library, Path work) implements Typed {
         @Override
         public <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
-            return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
-                        }
-                    })
+            return TypedJavaFile.class_(
+                            me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(),
+                            ClassDesc.of("out", "Out"),
+                            new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
+                                }
+                            })
                     .render();
         }
 

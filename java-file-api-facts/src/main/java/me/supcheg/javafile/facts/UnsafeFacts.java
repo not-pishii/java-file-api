@@ -449,6 +449,34 @@ public final class UnsafeFacts extends InvocableFactories {
         return new MutableStaticFieldRef<>(owner, name, type);
     }
 
+    /// Vouches for a reader of the target classpath (§5): what `reader`
+    /// answers decides which metamodels the typed layer takes for true, so
+    /// one that does not look at the target vouches for them all.
+    ///
+    /// The reader of a compilation is made by
+    /// `me.supcheg.javafile.langmodel.mirror.TargetClasspaths` of
+    /// `java-file-api-lang-model`; a generator calls that, not this.
+    ///
+    /// @param reader reads the types of the target classpath, once per shape
+    /// @return the target classpath, for one compilation
+    public static TargetClasspath targetClasspath(TargetReader reader) {
+        return new TargetClasspath(reader);
+    }
+
+    /// A target classpath that checks nothing: every metamodel is taken for
+    /// true of the code the typed layer renders, as a fact made by hand is.
+    ///
+    /// For where there is no compilation to check against — the tests of a
+    /// generator, code rendered outside javac — and under the same audit as
+    /// every other use of this class: with it, a metamodel generated against
+    /// another version of a library renders code that does not compile, or
+    /// that calls another overload.
+    ///
+    /// @return the target classpath
+    public static TargetClasspath unverifiedClasspath() {
+        return new TargetClasspath((shape, origin) -> TargetType.UNCHANGED);
+    }
+
     /// Vouches for a runtime fact source (§3.8): every member `resolver`
     /// proves becomes a fact of `token`.
     ///

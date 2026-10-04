@@ -16,6 +16,7 @@ import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
+import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
@@ -106,10 +107,11 @@ import java.util.function.Supplier;
 /// the arity families analogous to `java-file-api-facts`'s `FactsCodegen`.
 ///
 /// @param <Self> the brand of the class being declared, unique to one
-///     [TypedJavaFile#class_(java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call
+///     [TypedJavaFile#class_(TargetClasspath, java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call
 public final class TypedClassBuilder<Self> {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
 
+    private final TargetClasspath target;
     private final String described;
     private final FinalClassToken<Self> self;
     private final SignatureRegistry registry;
@@ -118,7 +120,8 @@ public final class TypedClassBuilder<Self> {
     private @Nullable MethodTable methods;
     private boolean complete;
 
-    TypedClassBuilder(ClassDesc desc) {
+    TypedClassBuilder(TargetClasspath target, ClassDesc desc) {
+        this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
         this.self = UnsafeFacts.finalClassToken(
                 new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), this::methodTable);
@@ -186,7 +189,7 @@ public final class TypedClassBuilder<Self> {
                 type.typeRef(),
                 List.of(),
                 modifiers,
-                Optional.of(new Lowering().lowerInitializer(initializer.node(), type)),
+                Optional.of(new Lowering(target).lowerInitializer(initializer.node(), type)),
                 Optional.empty()));
     }
 
@@ -791,16 +794,16 @@ public final class TypedClassBuilder<Self> {
     /// Builds `root` — the root of its scope tree — from `bodyFn`, and
     /// returns the lowering of the member it is the body of, run on
     /// [#complete()].
-    private static <R, B extends Block<R, B>> Supplier<ClassMember> member(
+    private <R, B extends Block<R, B>> Supplier<ClassMember> member(
             Slot slot, B root, List<Var<?>> params, Function<? super B, Terminated<R>> bodyFn) {
         Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
         Block.requireIssuedBy(terminated, root);
         return () -> lower(slot, root, params);
     }
 
-    private static ClassMember lower(Slot slot, Block<?, ?> root, List<Var<?>> params) {
+    private ClassMember lower(Slot slot, Block<?, ?> root, List<Var<?>> params) {
         Invocable fact = slot.fact();
-        Lowering lowering = new Lowering(fact.resultType().orElse(null));
+        Lowering lowering = new Lowering(target, fact.resultType().orElse(null));
         List<Param> coreParams = new ArrayList<>(params.size());
         for (Var<?> param : params) {
             coreParams.add(

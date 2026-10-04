@@ -139,8 +139,7 @@ public final class Expressions {
     /// @param <T> the type
     /// @return the literal
     public static <T> Expr<T> literalNull(RefToken<T> type) {
-        return Expr.of(
-                new Node.Cast(type.typeRef(), new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull())), type);
+        return Expr.of(new Node.Cast(type, new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull())), type);
     }
 
     // ------------------------------------------------------------------
@@ -515,17 +514,17 @@ public final class Expressions {
 
     /// Widening, `(long) operand`; it never loses information.
     public static Expr<Prim.Long> widenIntToLong(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.LONG.typeRef(), operand.node()), PrimitiveToken.LONG);
+        return Expr.of(new Node.Cast(PrimitiveToken.LONG, operand.node()), PrimitiveToken.LONG);
     }
 
     /// Widening, `(double) operand`; it never loses information.
     public static Expr<Prim.Double> widenIntToDouble(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE.typeRef(), operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Widening, `(double) operand`; it may round a large value (JLS 5.1.2).
     public static Expr<Prim.Double> widenLongToDouble(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE.typeRef(), operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Checked narrowing, `Math.toIntExact(operand)`: throws
@@ -537,13 +536,13 @@ public final class Expressions {
     /// Truncating narrowing, `(int) operand`: keeps the low 32 bits of a
     /// value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingLongToInt(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.INT.typeRef(), operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Cast(PrimitiveToken.INT, operand.node()), PrimitiveToken.INT);
     }
 
     /// Truncating narrowing, `(int) operand`: rounds toward zero and clamps
     /// a value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingDoubleToInt(Expr<Prim.Double> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.INT.typeRef(), operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Cast(PrimitiveToken.INT, operand.node()), PrimitiveToken.INT);
     }
 
     // ------------------------------------------------------------------
@@ -570,7 +569,7 @@ public final class Expressions {
             // `(T) operand` would be a redundant cast (javac -Xlint:cast).
             return Expr.of(operand.node(), type);
         }
-        return Expr.of(new Node.Cast(type.typeRef(), operand.node()), type);
+        return Expr.of(new Node.Cast(type, operand.node()), type);
     }
 
     // ------------------------------------------------------------------
@@ -671,6 +670,6 @@ public final class Expressions {
                     + ": cond does not mix primitive and reference branches, which Java would box, unbox or"
                     + " promote implicitly (JLS 15.25); box or unbox the branch explicitly");
         }
-        return Tokens.sameType(branch.type(), type) ? branch.node() : new Node.Cast(type.typeRef(), branch.node());
+        return Tokens.sameType(branch.type(), type) ? branch.node() : new Node.Cast(type, branch.node());
     }
 }

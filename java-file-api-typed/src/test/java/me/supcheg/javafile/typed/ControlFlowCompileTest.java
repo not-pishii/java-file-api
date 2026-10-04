@@ -5,6 +5,7 @@ import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.Integer_;
 import me.supcheg.javafile.facts.jdk.NumberFormatException_;
 import me.supcheg.javafile.facts.jdk.PrintStream_;
@@ -47,76 +48,81 @@ class ControlFlowCompileTest {
 
     @Test
     void terminatingFormsRenderAndCompile() {
-        JavaFile file = TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-            @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
-                // while (true) { if (flag) { return 1; } } — no return after it
-                cb.staticMethod(
-                        "forever",
-                        PrimitiveToken.INT,
-                        PrimitiveToken.BOOLEAN,
-                        (b, flag) -> b.loopForever(loop -> loop.if_(flag, t -> t.return_(literal(1)))));
-
-                // try { return Integer.parseInt(s); } catch (NumberFormatException e) { return -1; }
-                // finally { System.out.println(); }
-                cb.staticMethod(
-                        "parse",
-                        PrimitiveToken.INT,
-                        String_.TOKEN,
-                        (b, s) -> b.tryTerminated(
-                                t -> t.return_(staticCall(Integer_.parseInt, s)),
-                                h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
-                                        .finally_(f ->
-                                                f.exec(voidCall(staticField(System_.out), PrintStream_.println)))));
-
-                // if (flag) {} else { return; } — a void body may fall off the end
-                cb.voidStaticMethod(
-                        "maybe", PrimitiveToken.BOOLEAN, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
-
-                // a try_ statement whose catch completes normally is continued
-                cb.staticMethod(
-                        "recover",
-                        PrimitiveToken.INT,
-                        b -> b.try_(
-                                        t -> t.return_(literal(1)),
-                                        h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))))
-                                .return_(literal(2)));
-
-                // while (true) { if (i >= n) break; i = i + 1; } return i;
-                cb.staticMethod(
-                        "count",
-                        PrimitiveToken.INT,
-                        PrimitiveToken.INT,
-                        (b, n) -> b.letVar(
+        JavaFile file =
+                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                        // while (true) { if (flag) { return 1; } } — no return after it
+                        cb.staticMethod(
+                                "forever",
                                 PrimitiveToken.INT,
-                                literal(0),
-                                i -> b.while_(
-                                                literal(true),
-                                                (loop, ctl) -> loop.if_(geInt(i, n), t -> t.break_(ctl))
-                                                        .exec(assign(i, addInt(i, literal(1)))))
-                                        .return_(i)));
+                                PrimitiveToken.BOOLEAN,
+                                (b, flag) -> b.loopForever(loop -> loop.if_(flag, t -> t.return_(literal(1)))));
 
-                // outer: while (flag) { while (true) { break outer; } } return 0;
-                cb.staticMethod(
-                        "labeled",
-                        PrimitiveToken.INT,
-                        PrimitiveToken.BOOLEAN,
-                        (b, flag) -> b.while_(
-                                        flag, (outer, outerCtl) -> outer.loopForever(inner -> inner.break_(outerCtl)))
-                                .return_(literal(0)));
+                        // try { return Integer.parseInt(s); } catch (NumberFormatException e) { return -1; }
+                        // finally { System.out.println(); }
+                        cb.staticMethod(
+                                "parse",
+                                PrimitiveToken.INT,
+                                String_.TOKEN,
+                                (b, s) -> b.tryTerminated(
+                                        t -> t.return_(staticCall(Integer_.parseInt, s)),
+                                        h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
+                                                .finally_(f -> f.exec(
+                                                        voidCall(staticField(System_.out), PrintStream_.println)))));
 
-                // do { if (flag) continue; println(1); } while (flag); return 0;
-                cb.staticMethod(
-                        "doLoop",
-                        PrimitiveToken.INT,
-                        PrimitiveToken.BOOLEAN,
-                        (b, flag) -> b.doWhile(
-                                        (loop, ctl) -> loop.if_(flag, t -> t.continue_(ctl))
-                                                .exec(print(literal(1))),
-                                        flag)
-                                .return_(literal(0)));
-            }
-        });
+                        // if (flag) {} else { return; } — a void body may fall off the end
+                        cb.voidStaticMethod(
+                                "maybe",
+                                PrimitiveToken.BOOLEAN,
+                                (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
+
+                        // a try_ statement whose catch completes normally is continued
+                        cb.staticMethod(
+                                "recover",
+                                PrimitiveToken.INT,
+                                b -> b.try_(
+                                                t -> t.return_(literal(1)),
+                                                h -> h.catch_(
+                                                        RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))))
+                                        .return_(literal(2)));
+
+                        // while (true) { if (i >= n) break; i = i + 1; } return i;
+                        cb.staticMethod(
+                                "count",
+                                PrimitiveToken.INT,
+                                PrimitiveToken.INT,
+                                (b, n) -> b.letVar(
+                                        PrimitiveToken.INT,
+                                        literal(0),
+                                        i -> b.while_(
+                                                        literal(true),
+                                                        (loop, ctl) -> loop.if_(geInt(i, n), t -> t.break_(ctl))
+                                                                .exec(assign(i, addInt(i, literal(1)))))
+                                                .return_(i)));
+
+                        // outer: while (flag) { while (true) { break outer; } } return 0;
+                        cb.staticMethod(
+                                "labeled",
+                                PrimitiveToken.INT,
+                                PrimitiveToken.BOOLEAN,
+                                (b, flag) -> b.while_(
+                                                flag,
+                                                (outer, outerCtl) -> outer.loopForever(inner -> inner.break_(outerCtl)))
+                                        .return_(literal(0)));
+
+                        // do { if (flag) continue; println(1); } while (flag); return 0;
+                        cb.staticMethod(
+                                "doLoop",
+                                PrimitiveToken.INT,
+                                PrimitiveToken.BOOLEAN,
+                                (b, flag) -> b.doWhile(
+                                                (loop, ctl) -> loop.if_(flag, t -> t.continue_(ctl))
+                                                        .exec(print(literal(1))),
+                                                flag)
+                                        .return_(literal(0)));
+                    }
+                });
 
         Compilation compilation = compile(file);
 
@@ -126,43 +132,50 @@ class ControlFlowCompileTest {
 
     @Test
     void legalNestedScopingRendersAndCompiles() {
-        JavaFile file = TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-            @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.staticMethod(
-                        "nested",
-                        PrimitiveToken.INT,
-                        PrimitiveToken.INT,
-                        (b, n) -> b.let(
+        JavaFile file =
+                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                        cb.staticMethod(
+                                "nested",
                                 PrimitiveToken.INT,
-                                addInt(n, literal(1)),
-                                a -> b
-                                        // an outer variable in a nested block, and a nested variable in its own block
-                                        .if_(
-                                                gtInt(a, literal(0)),
-                                                t -> t.let(
+                                PrimitiveToken.INT,
+                                (b, n) -> b.let(
+                                        PrimitiveToken.INT,
+                                        addInt(n, literal(1)),
+                                        a -> b
+                                                // an outer variable in a nested block, and a nested variable in its own
+                                                // block
+                                                .if_(
+                                                        gtInt(a, literal(0)),
+                                                        t -> t.let(
+                                                                PrimitiveToken.INT,
+                                                                addInt(a, literal(1)),
+                                                                x -> t.if_(
+                                                                        ltInt(x, literal(10)), u -> u.exec(print(x)))))
+                                                // sibling blocks each declare a variable
+                                                .if_(
+                                                        gtInt(a, literal(1)),
+                                                        t -> t.let(
+                                                                PrimitiveToken.INT, literal(2), x -> t.exec(print(x))),
+                                                        e -> e.let(
+                                                                PrimitiveToken.INT, literal(3), x -> e.exec(print(x))))
+                                                // the loop variable in the condition, the update, and the body
+                                                .for_(
                                                         PrimitiveToken.INT,
-                                                        addInt(a, literal(1)),
-                                                        x -> t.if_(ltInt(x, literal(10)), u -> u.exec(print(x)))))
-                                        // sibling blocks each declare a variable
-                                        .if_(
-                                                gtInt(a, literal(1)),
-                                                t -> t.let(PrimitiveToken.INT, literal(2), x -> t.exec(print(x))),
-                                                e -> e.let(PrimitiveToken.INT, literal(3), x -> e.exec(print(x))))
-                                        // the loop variable in the condition, the update, and the body
-                                        .for_(
-                                                PrimitiveToken.INT,
-                                                literal(0),
-                                                i -> ltInt(i, a),
-                                                i -> assign(i, addInt(i, literal(1))),
-                                                (loop, i, _) -> loop.let(
-                                                        PrimitiveToken.INT, addInt(i, a), y -> loop.exec(print(y))))
-                                        .ifElse(
-                                                gtInt(a, n),
-                                                t -> t.return_(a),
-                                                e -> e.let(PrimitiveToken.INT, literal(4), e::return_))));
-            }
-        });
+                                                        literal(0),
+                                                        i -> ltInt(i, a),
+                                                        i -> assign(i, addInt(i, literal(1))),
+                                                        (loop, i, _) -> loop.let(
+                                                                PrimitiveToken.INT,
+                                                                addInt(i, a),
+                                                                y -> loop.exec(print(y))))
+                                                .ifElse(
+                                                        gtInt(a, n),
+                                                        t -> t.return_(a),
+                                                        e -> e.let(PrimitiveToken.INT, literal(4), e::return_))));
+                    }
+                });
 
         assertThat(compile(file)).succeededWithoutWarnings();
     }

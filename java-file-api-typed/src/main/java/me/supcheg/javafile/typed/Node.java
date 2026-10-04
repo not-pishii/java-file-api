@@ -10,9 +10,9 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
-import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
 import java.util.Optional;
@@ -101,13 +101,14 @@ sealed interface Node {
     record Unary(UnaryOp op, Node operand, TypeToken<?> type) implements Node {}
 
     /// A cast.
-    record Cast(TypeRef type, Node operand) implements Node {}
+    record Cast(TypeToken<?> type, Node operand) implements Node {}
 
     /// An `instanceof` test without a binding.
-    record InstanceOf(Node operand, TypeRef type) implements Node {}
+    record InstanceOf(Node operand, RefToken<?> type) implements Node {}
 
-    /// A lambda expression typed by a functional interface fact.
-    record Lambda(TypeRef iface, Invocable sam, List<Var<?>> params, LambdaBody body) implements Node {}
+    /// A lambda expression typed by a functional interface fact: `sam` is
+    /// the single abstract method of the interface, its owner.
+    record Lambda(Invocable sam, List<Var<?>> params, LambdaBody body) implements Node {}
 
     /// A `switch` expression over an enum.
     record Switch(Node selector, EnumToken<?> enumType, List<Case> cases, Optional<Node> otherwise) implements Node {}

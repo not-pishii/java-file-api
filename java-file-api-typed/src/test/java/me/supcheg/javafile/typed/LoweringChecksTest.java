@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.Object_;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class LoweringChecksTest {
         // escaped the lambda that was supposed to be its only scope) is not
         // in that Lowering's NameEnv.
         Var<Prim.Int> escaped = Var.param(PrimitiveToken.INT, Body.root("elsewhere"));
-        Lowering lowering = new Lowering();
+        Lowering lowering = new Lowering(UnsafeFacts.unverifiedClasspath());
 
         assertThrows(IllegalStateException.class, () -> lowering.lowerExpr(new Node.Local(escaped)));
     }
@@ -49,12 +50,11 @@ class LoweringChecksTest {
     void aLambdaBodySeesTheEnclosingVariables() {
         Body<Prim.Int> root = Body.root("root");
         Var<Prim.Int> outer = Var.param(PrimitiveToken.INT, root);
-        Lowering lowering = new Lowering();
+        Lowering lowering = new Lowering(UnsafeFacts.unverifiedClasspath());
         String outerName = lowering.declareUpfront(outer);
         Body<Prim.Int> lambdaBody = Body.lambdaBody(root);
         Scopes.within(lambdaBody, () -> lambdaBody.return_(outer));
-        Node lambda = new Node.Lambda(
-                Object_.TOKEN.typeRef(), Object_.hashCode, List.of(), new Node.LambdaBody.Block(lambdaBody));
+        Node lambda = new Node.Lambda(Object_.hashCode, List.of(), new Node.LambdaBody.Block(lambdaBody));
 
         assertThat(lowering.lowerExpr(lambda).toString()).contains(outerName);
     }

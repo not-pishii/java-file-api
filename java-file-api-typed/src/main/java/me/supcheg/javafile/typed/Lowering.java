@@ -33,11 +33,15 @@ import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FactLookupException;
+import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.StaticFieldRef;
+import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.model.Param;
@@ -112,7 +116,9 @@ import java.util.stream.Stream;
 /// - **Receivers of fields.** A field read or assigned through a receiver
 ///   whose static type is not the field's owner is qualified by a cast,
 ///   `((Owner) recv).f`, so a field of the receiver's type hiding it (JLS
-///   8.3) is never picked.
+///   8.3) is never picked, and a name the receiver's type has from two
+///   supertypes (JLS 8.3.3.3) is not ambiguous; a static field is qualified
+///   by its owner, `Owner.f`, for the same reasons.
 /// - **Inexact expressions** ([Node#isExact(Node)]). A call through a
 ///   receiver of a subtype of its owner may be typed narrower by javac than
 ///   by its fact; where the type matters — as an argument, a receiver, a
@@ -131,12 +137,24 @@ import java.util.stream.Stream;
 ///   type — and the class is generic; everywhere else the type arguments
 ///   are explicit, `new ArrayList<String>()`.
 ///
+/// **Lowering checks the facts against the target classpath** (§5). The
+/// metamodels a generator uses were generated against the classpath the
+/// generator was compiled with; the code is compiled against another one.
+/// Every type lowering renders code of — the owner, the parameters, the
+/// result and the exceptions of a member, the type of a receiver and of an
+/// argument, of a variable, a cast, a `catch` — is verified with the
+/// [TargetClasspath] when it is first met, and the method tables that decide
+/// the casts above are read through it: an overload the target has added is
+/// a candidate here as it is to javac. A metamodel that does not hold is a
+/// [TargetClasspathMismatchException].
+///
 /// The casts that depend on nothing but the expression itself — `((T)
 /// null)`, the branches of `cond` — are part of the node already, built by
 /// [Expressions], so that constant folding ([Constants]) sees the tree javac
 /// sees; the ones decided here are never in a constant expression.
 final class Lowering {
 
+    private final TargetClasspath target;
     private final NameEnv names = new NameEnv();
     private Deque<LoopCtl> loopStack = new ArrayDeque<>();
     private final Map<LoopCtl, String> loopLabelNames = new HashMap<>();
@@ -148,20 +166,35 @@ final class Lowering {
     private @Nullable TypeToken<?> result;
 
     /// A lowering of a `void` body or of a standalone expression.
-    Lowering() {
-        this(null);
+    ///
+    /// @param target the classpath the lowered code is compiled against
+    Lowering(TargetClasspath target) {
+        this(target, null);
     }
 
     /// A lowering of a body whose `return` statements return `result`.
     ///
+    /// @param target the classpath the lowered code is compiled against
     /// @param result the result type, or `null` for a `void` body
-    Lowering(@Nullable TypeToken<?> result) {
+    /// @throws TargetClasspathMismatchException if a metamodel of `result` does not hold on `target`
+    Lowering(TargetClasspath target, @Nullable TypeToken<?> result) {
+        this.target = target;
         this.result = result;
+        if (result != null) {
+            target.verify(result);
+        }
     }
 
     /// Declares a variable up front (e.g. a method parameter) so the body can
     /// reference it before lowering the body itself.
     String declareUpfront(Var<?> var) {
+        return declare(var);
+    }
+
+    /// Declares a variable in the innermost scope: its type is one the
+    /// lowered code names.
+    private String declare(Var<?> var) {
+        target.verify(var.type());
         return names.declare(var);
     }
 
@@ -171,9 +204,10 @@ final class Lowering {
     }
 
     /// Lowers the initializer of a variable or field declared of type
-    /// `target`, where the diamond may stand.
-    Expr lowerInitializer(Node node, TypeToken<?> target) {
-        return initializer(node, target);
+    /// `declared`, where the diamond may stand.
+    Expr lowerInitializer(Node node, TypeToken<?> declared) {
+        target.verify(declared);
+        return initializer(node, declared);
     }
 
     /// Lowers a sequence of statements into a `core` method/constructor/loop
@@ -199,7 +233,7 @@ final class Lowering {
         return switch (instr) {
             case Instr.Let(var v, var init) -> {
                 Expr initExpr = initializer(init, v.type());
-                String name = names.declare(v);
+                String name = declare(v);
                 yield new LocalVarDeclStmt.Typed(v.type().typeRef(), name, Optional.of(initExpr));
             }
             case Instr.Exec(var effect) -> effectStmt(effect);
@@ -212,7 +246,8 @@ final class Lowering {
                 Expr condition;
                 CodeBody thenCode;
                 try {
-                    condition = operandExpr.instanceOf(type.typeRef(), names.declare(binding));
+                    target.verify(type);
+                    condition = operandExpr.instanceOf(type.typeRef(), declare(binding));
                     thenCode = lowerBlock(then.instrs());
                 } finally {
                     names.pop();
@@ -237,8 +272,7 @@ final class Lowering {
                 Stmt updateStmt;
                 CodeBody bodyCode;
                 try {
-                    initStmt = new LocalVarDeclStmt.Typed(
-                            var_.type().typeRef(), names.declare(var_), Optional.of(initExpr));
+                    initStmt = new LocalVarDeclStmt.Typed(var_.type().typeRef(), declare(var_), Optional.of(initExpr));
                     conditionExpr = expr(condition);
                     updateStmt = effectStmt(update);
                     bodyCode = withLoop(ctl, body);
@@ -256,7 +290,7 @@ final class Lowering {
                 String name;
                 CodeBody bodyCode;
                 try {
-                    name = names.declare(var_);
+                    name = declare(var_);
                     bodyCode = withLoop(ctl, body);
                 } finally {
                     names.pop();
@@ -264,7 +298,10 @@ final class Lowering {
                 yield labeled(ctl, new EnhancedForStmt(var_.type().typeRef(), name, iterableExpr, bodyCode));
             }
             case Instr.Return(var value) -> new ReturnStmt(value.map(this::returned));
-            case Instr.Throw(var value, var ignoredType) -> new ThrowStmt(expr(value));
+            case Instr.Throw(var value, var type) -> {
+                target.verify(type);
+                yield new ThrowStmt(expr(value));
+            }
             case Instr.Break(var ctl) -> breakOrContinue(ctl, true);
             case Instr.Continue(var ctl) -> breakOrContinue(ctl, false);
             case Instr.Try(var body, var catches, var finallyBlock) -> tryStmt(body, catches, finallyBlock);
@@ -313,7 +350,8 @@ final class Lowering {
         for (Instr.Catch c : catches) {
             names.push();
             try {
-                String name = names.declare(c.var());
+                target.verify(c.type());
+                String name = declare(c.var());
                 CodeBody catchBody = lowerBlock(c.body().instrs());
                 coreCatches.add(
                         new CatchClause(NonEmptyList.copyOf(List.of(c.type().typeRef())), name, catchBody));
@@ -344,18 +382,21 @@ final class Lowering {
 
     private Stmt assignStmt(Node.Assign assign) {
         Expr value = expr(assign.value());
-        AssignTarget target =
+        AssignTarget assigned =
                 switch (assign.target()) {
                     case Node.Target.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
                     case Node.Target.Field(var t, var field) ->
-                        new FieldAccessExpr(Optional.of(fieldReceiver(t, field.owner())), field.name());
+                        new FieldAccessExpr(Optional.of(fieldReceiver(t, field)), field.name());
                     case Node.Target.StaticField(var field) ->
-                        new StaticFieldAccessExpr(raw(field.owner()), field.name());
+                        new StaticFieldAccessExpr(staticOwner(field), field.name());
                     case Node.Target.Element(var array, var index) ->
                         expr(array).arrayAccess(expr(index));
-                    case Node.Target.Init(var field) -> new FieldAccessExpr(Optional.of(new ThisExpr()), field.name());
+                    case Node.Target.Init(var field) -> {
+                        uses(field);
+                        yield new FieldAccessExpr(Optional.of(new ThisExpr()), field.name());
+                    }
                 };
-        return new AssignStmt(target, AssignOp.ASSIGN, value);
+        return new AssignStmt(assigned, AssignOp.ASSIGN, value);
     }
 
     // ------------------------------------------------------------------
@@ -377,18 +418,24 @@ final class Lowering {
             case Node.Box(var type, var operand) ->
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());
-            case Node.Call(var target, var method, var args) -> call(target, method, args, pin);
+            case Node.Call(var receiver, var method, var args) -> call(receiver, method, args, pin);
             case Node.StaticCall(var method, var args) ->
                 new StaticMethodCallExpr(
                         raw(method.owner()), method.name(), arguments(method, null, args), typeArgs(method));
             case Node.New(var ctor, var args) -> Exprs.new_(ctor.owner().typeRef(), arguments(ctor, null, args));
-            case Node.FieldGet(var target, var field) ->
-                fieldReceiver(target, field.owner()).field(field.name());
-            case Node.StaticFieldGet(var field) -> Exprs.staticField(raw(field.owner()), field.name());
-            case Node.EnumConst(var constant) -> Exprs.staticField(raw(constant.owner()), constant.name());
+            case Node.FieldGet(var receiver, var field) ->
+                fieldReceiver(receiver, field).field(field.name());
+            case Node.StaticFieldGet(var field) -> Exprs.staticField(staticOwner(field), field.name());
+            case Node.EnumConst(var constant) -> {
+                target.verify(constant.owner());
+                yield Exprs.staticField(raw(constant.owner()), constant.name());
+            }
             case Node.ArrayAt(var array, var index) -> expr(array, pin).arrayAccess(expr(index));
             case Node.ArrayLength(var array) -> expr(array).field("length");
-            case Node.NewArray(var component, var length) -> Exprs.newArray(component.typeRef(), expr(length));
+            case Node.NewArray(var component, var length) -> {
+                target.verify(component);
+                yield Exprs.newArray(component.typeRef(), expr(length));
+            }
             // Each branch is of the conditional's type already (Expressions.cond); pinned, the
             // conditional is of exactly that type (JLS 15.25).
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
@@ -396,9 +443,15 @@ final class Lowering {
             case Node.Binary(var op, var left, var right, var ignoredType) ->
                 new BinaryExpr(expr(left), op, expr(right));
             case Node.Unary(var op, var operand, var ignoredType) -> new UnaryExpr(op, expr(operand));
-            case Node.Cast(var type, var operand) -> Exprs.cast(type, expr(operand));
-            case Node.InstanceOf(var operand, var type) -> expr(operand).instanceOf(type);
-            case Node.Lambda(var ignoredIface, var sam, var params, var body) -> lambda(sam, params, body);
+            case Node.Cast(var type, var operand) -> {
+                target.verify(type);
+                yield Exprs.cast(type.typeRef(), expr(operand));
+            }
+            case Node.InstanceOf(var operand, var type) -> {
+                target.verify(type);
+                yield expr(operand).instanceOf(type.typeRef());
+            }
+            case Node.Lambda(var sam, var params, var body) -> lambda(sam, params, body);
             case Node.Switch ignored ->
                 throw new UnsupportedOperationException(
                         "typed switch expressions are not implemented yet (phase 2 — exhaustive enum switch, §3.5/§9)");
@@ -418,12 +471,12 @@ final class Lowering {
         return result == null ? expr(value) : initializer(value, result);
     }
 
-    /// An expression whose target type is `target`, in an assignment
-    /// context: the diamond infers exactly `target` there (JLS 15.9.1).
-    private Expr initializer(Node node, TypeToken<?> target) {
+    /// An expression whose target type is `declared`, in an assignment
+    /// context: the diamond infers exactly `declared` there (JLS 15.9.1).
+    private Expr initializer(Node node, TypeToken<?> declared) {
         if (node instanceof Node.New(var ctor, var args)
                 && ctor.owner().typeRef() instanceof ParameterizedTypeRef
-                && Tokens.sameType(ctor.owner(), target)) {
+                && Tokens.sameType(ctor.owner(), declared)) {
             return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, null, args));
         }
         return expr(node);
@@ -434,18 +487,19 @@ final class Lowering {
     /// where the subtype has an overload that erases as the method does
     /// ([#hasTwin]); otherwise it is pinned itself where its type decides the
     /// overload.
-    private Expr call(Node.Operand target, Invocable method, List<Node.Operand> args, boolean pin) {
+    private Expr call(Node.Operand receiving, Invocable method, List<Node.Operand> args, boolean pin) {
         DeclaredToken<?> owner = method.owner();
+        target.verify(receiving.type());
         Expr receiver;
         TypeToken<?> searched;
-        if ((pin && !Tokens.sameType(target.type(), owner)) || hasTwin(target.type(), method)) {
-            receiver = Exprs.cast(owner.typeRef(), expr(target.node()));
+        if ((pin && !Tokens.sameType(receiving.type(), owner)) || hasTwin(receiving.type(), method)) {
+            receiver = Exprs.cast(owner.typeRef(), expr(receiving.node()));
             searched = owner;
         } else {
             boolean settled = IntStream.range(0, args.size())
                     .allMatch(i -> settled(args.get(i), method.params().get(i)));
-            receiver = expr(target.node(), pin || !settled);
-            searched = target.type();
+            receiver = expr(receiving.node(), pin || !settled);
+            searched = receiving.type();
         }
         return new MethodCallExpr(
                 Optional.of(receiver), method.name(), arguments(method, searched, args), typeArgs(method));
@@ -457,6 +511,8 @@ final class Lowering {
     ///
     /// @throws FactLookupException if no arguments make javac resolve `member`, see [#requireDistinct]
     private List<Expr> arguments(Invocable member, @Nullable TypeToken<?> searched, List<Node.Operand> args) {
+        uses(member);
+        args.forEach(arg -> target.verify(arg.type()));
         requireDistinct(member);
         boolean onlyCandidate = onlyCandidate(searched, member);
         List<TypeToken<?>> params = member.params();
@@ -491,12 +547,12 @@ final class Lowering {
     /// signature the fact declares; in a subtype, whose template lists the
     /// method in terms of its own type parameters, if it erases as the fact
     /// does.
-    private static boolean onlyCandidate(@Nullable TypeToken<?> searched, Invocable method) {
+    private boolean onlyCandidate(@Nullable TypeToken<?> searched, Invocable method) {
         if (!(searched instanceof DeclaredToken<?> declared)) {
             return false;
         }
         List<MethodTableTemplate.Signature> candidates =
-                candidates(declared.shape().methods(), method).toList();
+                candidates(target.methods(declared.shape()), method).toList();
         if (candidates.size() != 1) {
             return false;
         }
@@ -517,7 +573,7 @@ final class Lowering {
     ///
     /// A type variable does not say what its bounds add: it may have such
     /// an overload of any method that takes arguments.
-    private static boolean hasTwin(TypeToken<?> searched, Invocable method) {
+    private boolean hasTwin(TypeToken<?> searched, Invocable method) {
         DeclaredToken<?> owner = method.owner();
         return switch (searched) {
             case DeclaredToken<?> declared when declared.shape() == owner.shape() -> false;
@@ -525,7 +581,7 @@ final class Lowering {
                 MethodSignature erased = method.signature();
                 int itself =
                         method.declared().instantiate(owner.argumentErasures()).equals(erased) ? 1 : 0;
-                yield candidates(declared.shape().methods(), method)
+                yield candidates(target.methods(declared.shape()), method)
                                 .filter(s -> s.instantiate(declared.argumentErasures())
                                         .equals(erased))
                                 .count()
@@ -557,7 +613,7 @@ final class Lowering {
     /// proves nothing.
     ///
     /// @throws FactLookupException if the owner of `member` has such a member
-    private static void requireDistinct(Invocable member) {
+    private void requireDistinct(Invocable member) {
         DeclaredToken<?> owner = member.owner();
         List<ClassDesc> arguments = owner.argumentErasures();
         MethodTableTemplate.Signature declared = member.declared();
@@ -566,7 +622,7 @@ final class Lowering {
             return;
         }
         List<MethodTableTemplate.Signature> candidates =
-                candidates(owner.shape().methods(), member).toList();
+                candidates(target.methods(owner.shape()), member).toList();
         if (!candidates.contains(declared)) {
             return;
         }
@@ -584,13 +640,46 @@ final class Lowering {
         }
     }
 
-    /// The receiver of a field of `owner`: cast to `owner` if it is of
-    /// another type, so no field hiding it is picked.
-    private Expr fieldReceiver(Node.Operand target, DeclaredToken<?> owner) {
-        if (!Tokens.sameType(target.type(), owner)) {
-            return Exprs.cast(owner.typeRef(), expr(target.node()));
+    /// The receiver of an instance field: cast to the owner of the field
+    /// if it is of another type, so javac looks the field up in the owner —
+    /// not in a subtype that hides it with a field of its own, or that has
+    /// the name from two supertypes and so for neither (JLS 8.3, 8.3.3.3).
+    private Expr fieldReceiver(Node.Operand receiving, FieldRef<?, ?> field) {
+        uses(field);
+        target.verify(receiving.type());
+        DeclaredToken<?> owner = field.owner();
+        if (!Tokens.sameType(receiving.type(), owner)) {
+            return Exprs.cast(owner.typeRef(), expr(receiving.node()));
         }
-        return expr(target.node(), true);
+        return expr(receiving.node(), true);
+    }
+
+    /// The raw type qualifying a static field: its owner, whatever type the
+    /// generator reached the fact through, so no field of a subtype hides
+    /// it and no other supertype of one makes the name ambiguous.
+    private ClassTypeRef staticOwner(StaticFieldRef<?> field) {
+        target.verify(field.owner());
+        target.verify(field.type());
+        return raw(field.owner());
+    }
+
+    /// A method or constructor fact the lowered code calls: the types of
+    /// its signature are ones javac resolves the call by.
+    private void uses(Invocable member) {
+        Stream.of(
+                        Stream.of(member.owner()),
+                        member.params().stream(),
+                        member.resultType().stream(),
+                        member.traits().throwsTypes().stream(),
+                        member.traits().typeArgs().stream())
+                .<TypeToken<?>>flatMap(types -> types)
+                .forEach(target::verify);
+    }
+
+    /// An instance field fact the lowered code reads or assigns.
+    private void uses(FieldRef<?, ?> field) {
+        target.verify(field.owner());
+        target.verify(field.type());
     }
 
     /// The raw type qualifying a static member of `owner`: `List`, never
@@ -611,6 +700,7 @@ final class Lowering {
     /// `return` statements return the result of the functional interface's
     /// method.
     private Expr lambda(Invocable sam, List<Var<?>> params, Node.LambdaBody body) {
+        uses(sam);
         Deque<LoopCtl> enclosingLoops = loopStack;
         TypeToken<?> enclosingResult = result;
         loopStack = new ArrayDeque<>();
@@ -619,7 +709,7 @@ final class Lowering {
         try {
             List<Param> coreParams = new ArrayList<>(params.size());
             for (Var<?> param : params) {
-                coreParams.add(new Param(names.declare(param), param.type().typeRef()));
+                coreParams.add(new Param(declare(param), param.type().typeRef()));
             }
             return switch (body) {
                 case Node.LambdaBody.Value(var ignoredScope, var value) -> Exprs.typedLambda(coreParams, expr(value));

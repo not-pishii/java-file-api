@@ -64,7 +64,7 @@ class NegativeCompileTest {
     private static String inClass(String statement) {
         return """
                 void use() {
-                    TypedJavaFile.class_(ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassSpec() {
+                    TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassSpec() {
                         public <Self> void build(TypedClassBuilder<Self> cb) {
                             %s
                         }
@@ -344,10 +344,10 @@ class NegativeCompileTest {
                 "ForeignThis",
                 """
                 void use() {
-                    TypedJavaFile.class_(ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
+                    TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
                         public <A> void build(TypedClassBuilder<A> a) {
                             var x = a.field("x", PrimitiveToken.INT, literal(1));
-                            TypedJavaFile.class_(ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
+                            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
                                 public <B> void build(TypedClassBuilder<B> b) {
                                     b.method("m", PrimitiveToken.INT, (body, self) -> body.return_(field(self, x)));
                                 }
@@ -368,10 +368,10 @@ class NegativeCompileTest {
                 "ForeignDefine",
                 """
                 void use() {
-                    TypedJavaFile.class_(ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
+                    TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
                         public <A> void build(TypedClassBuilder<A> a) {
                             var m = a.declareMethod("m", PrimitiveToken.INT);
-                            TypedJavaFile.class_(ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
+                            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
                                 public <B> void build(TypedClassBuilder<B> b) {
                                     b.define(m, (body, self) -> body.return_(literal(1)));
                                 }

@@ -6,6 +6,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.String_;
 import org.junit.jupiter.api.Test;
 
@@ -56,8 +57,10 @@ class DeclarationsCompileTest {
 
     @Test
     void mutuallyRecursiveMethodsRenderCompileAndRun() throws Exception {
-        JavaFile file =
-                TypedJavaFile.class_(ClassDesc.of("me.supcheg.example", "Parity"), new TypedJavaFile.TypedClassSpec() {
+        JavaFile file = TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("me.supcheg.example", "Parity"),
+                new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         var isEven = cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
@@ -96,8 +99,10 @@ class DeclarationsCompileTest {
     void constructorFieldsAndThisRenderCompileAndRun() throws Exception {
         AtomicReference<FinalClassToken<?>> selfToken = new AtomicReference<>();
 
-        JavaFile file =
-                TypedJavaFile.class_(ClassDesc.of("me.supcheg.example", "Counter"), new TypedJavaFile.TypedClassSpec() {
+        JavaFile file = TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("me.supcheg.example", "Counter"),
+                new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         selfToken.set(cb.self());

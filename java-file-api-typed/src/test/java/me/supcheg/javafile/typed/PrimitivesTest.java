@@ -100,7 +100,9 @@ class PrimitivesTest {
         ArrayToken<String[], String> strings = ArrayToken.of(String_.TOKEN);
 
         JavaFile file = TypedJavaFile.class_(
-                ClassDesc.of("me.supcheg.example", "Primitives"), new TypedJavaFile.TypedClassSpec() {
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("me.supcheg.example", "Primitives"),
+                new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         cb.staticMethod(

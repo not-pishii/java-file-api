@@ -93,7 +93,7 @@ final class ScopeCheck {
             case Node.Unary(var ignored, var operand, var ignoredType) -> node(operand, use, where);
             case Node.Cast(var ignored, var operand) -> node(operand, use, where);
             case Node.InstanceOf(var operand, var ignored) -> node(operand, use, where);
-            case Node.Lambda(var ignoredIface, var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
+            case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
             case Node.Switch(var selector, var ignored, var cases, var otherwise) -> {
                 node(selector, use, where);
                 for (Node.Case c : cases) {
