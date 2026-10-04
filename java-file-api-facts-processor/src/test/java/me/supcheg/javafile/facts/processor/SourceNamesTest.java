@@ -64,4 +64,34 @@ class SourceNamesTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("no body of class Other_");
     }
+
+    /// The comments of a metamodel tell of its type in prose: a word of them is no name, and
+    /// `class Thing_ {` in one does not start the body.
+    @Test
+    void aWordOfACommentIsNoName() {
+        String source = """
+                package gen.facts.p;
+
+                /// The full metamodel of [Thing]: class Thing_ { is what follows, like String_.
+                final class Thing_ {
+                    /// The fact of [Thing#size()], declared in `p.Hidden`, which is not `public`.
+                    static final int SIZE = 1; // trailing words
+                    /* a block
+                       of words */ static final int COUNT = 4 / 2;
+                    /** traditional {@link Other} */
+                    static final String SLASHES = "// no comment /* either */";
+                }
+                """;
+
+        assertThat(SourceNames.inBodyOf("Thing_", source))
+                .containsExactlyInAnyOrder("static", "final", "int", "SIZE", "COUNT", "String", "SLASHES");
+    }
+
+    @Test
+    void aCommentThatDoesNotEndGoesOnToTheEndOfTheSource() {
+        assertThat(SourceNames.inBodyOf("Thing_", "final class Thing_ { int a; /* words"))
+                .containsExactlyInAnyOrder("int", "a");
+        assertThat(SourceNames.inBodyOf("Thing_", "final class Thing_ { int a; // words"))
+                .containsExactlyInAnyOrder("int", "a");
+    }
 }

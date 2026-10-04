@@ -6,6 +6,8 @@ import me.supcheg.javafile.annotation.SingleAnnotationValue;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocStyle;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Supertypes;
@@ -14,6 +16,7 @@ import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.render.SourceRenderer;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
@@ -77,6 +80,12 @@ import java.util.stream.Stream;
 /// The nested classes come first: the `Data` of the metamodel has claimed
 /// its simple name by the time a fact names the `Data` of another.
 ///
+/// Every declaration of a metamodel has a documentation comment
+/// ([MetamodelDocs], mini-spec Q14): that of the class tells why the
+/// metamodel is full or token-only and which members have no fact, that of
+/// a fact links to its member. The comments are Markdown ones: a metamodel
+/// is compiled by the JDK that generates it.
+///
 /// The source is ASCII ([#source]): whatever `-encoding` it is compiled
 /// with, a name or a constant is what the type has.
 final class MetamodelEmitter {
@@ -111,6 +120,9 @@ final class MetamodelEmitter {
     /// in: far below the 65535 of a constant.
     static final int TEXT_PART = 15000;
 
+    /// How a metamodel is written: its comments in Markdown.
+    private static final SourceRenderer.Format FORMAT = SourceRenderer.standardFormat(DocStyle.MARKDOWN);
+
     /// The `value` of `@Generated`.
     static final String GENERATOR = "me.supcheg.javafile.facts.processor.FactsProcessor";
 
@@ -123,9 +135,12 @@ final class MetamodelEmitter {
     /// @param model the type, read with no members
     /// @param canonical the canonical form of `model`
     /// @param targets the types of the round, which tell a raw type in a bound of a type parameter
+    /// @param about why the metamodel is token-only, for its comment
     /// @return the source file
-    static JavaFile tokenOnly(ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets) {
-        return emit(metamodel, model, canonical, targets, Optional.empty()).file();
+    static JavaFile tokenOnly(
+            ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, MetamodelDocs.About about) {
+        return emit(metamodel, model, canonical, targets, Optional.empty(), about)
+                .file();
     }
 
     /// The full metamodel of a type: its shape and token, and a fact per
@@ -138,6 +153,7 @@ final class MetamodelEmitter {
     /// @param targets the metamodels of the types the signatures mention
     /// @param taken the names the body of the metamodel starts a name with, see [#takenNames]: no
     ///     parameter is named so
+    /// @param about why the metamodel is there and where the inherited members are, for its comment
     /// @return the source file
     static JavaFile full(
             ClassDesc metamodel,
@@ -145,8 +161,9 @@ final class MetamodelEmitter {
             Canonical canonical,
             MemberPlan plan,
             Targets targets,
-            Set<String> taken) {
-        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))))
+            Set<String> taken,
+            MetamodelDocs.About.Full about) {
+        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))), about)
                 .file();
     }
 
@@ -158,7 +175,8 @@ final class MetamodelEmitter {
     ///
     /// The names are read off the source of the metamodel itself, written
     /// with every candidate of a fact, so they are what the metamodel says,
-    /// however the core renderer imports and qualifies. What is local to a
+    /// however the core renderer imports and qualifies. Its comments are
+    /// written too and are no names ([SourceNames]). What is local to a
     /// method or to the constructor — a parameter, a type parameter of a
     /// method — is not among them: it hides no fact where a fact is read, and
     /// is itself named after the facts are.
@@ -173,11 +191,18 @@ final class MetamodelEmitter {
     /// @param canonical the canonical form of `model`
     /// @param probe every member that may get a fact, see [MemberPlan#probe]
     /// @param targets the metamodels of the types the signatures mention
+    /// @param about why the metamodel is there, for its comment
     /// @return the names
     static Set<String> takenNames(
-            ClassDesc metamodel, TypeModel model, Canonical canonical, MemberPlan probe, Targets targets) {
-        Emitted emitted = emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())));
-        return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render())
+            ClassDesc metamodel,
+            TypeModel model,
+            Canonical canonical,
+            MemberPlan probe,
+            Targets targets,
+            MetamodelDocs.About.Full about) {
+        Emitted emitted =
+                emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())), about);
+        return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render(FORMAT))
                 .filter(name -> !name.startsWith(MemberPlan.PROBE))
                 .filter(name -> !emitted.typeParameters().contains(name))
                 .collect(Collectors.toUnmodifiableSet());
@@ -186,12 +211,15 @@ final class MetamodelEmitter {
     /// The source of a metamodel, in ASCII: every other character is a
     /// Unicode escape, which Java reads the same anywhere in a source file.
     /// The renderer leaves no `\` before such a character but in a string
-    /// literal, where it writes them in pairs, so the escape is one (JLS 3.3).
+    /// literal, where it writes them in pairs, so the escape is one (JLS 3.3):
+    /// a comment has a `\` only before the `[` and `]` of an array in a link,
+    /// which `,` or `)` follows. javac reads the escapes of a comment as it
+    /// does those of the code, so a link to a member of such a name resolves.
     ///
     /// @param file the metamodel
     /// @return the source
     static String source(JavaFile file) {
-        String rendered = file.render();
+        String rendered = file.render(FORMAT);
         StringBuilder ascii = new StringBuilder(rendered.length());
         for (int i = 0; i < rendered.length(); i++) {
             char c = rendered.charAt(i);
@@ -218,7 +246,12 @@ final class MetamodelEmitter {
     private record Emitted(JavaFile file, List<String> typeParameters) {}
 
     private static Emitted emit(
-            ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, Optional<Full> full) {
+            ClassDesc metamodel,
+            TypeModel model,
+            Canonical canonical,
+            Targets targets,
+            Optional<Full> full,
+            MetamodelDocs.About about) {
         Token token = Token.of(model.kind());
         // without its bounds a type parameter would take a token of any type: no type parameters then
         List<ClassDesc> inBounds = Mentions.ofBounds(model.typeParams()).toList();
@@ -279,8 +312,10 @@ final class MetamodelEmitter {
         ClassDesc data = metamodel.nested(MetamodelNames.DATA);
         ClassDesc canonicalClass = metamodel.nested(MetamodelNames.CANONICAL);
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
+        MetamodelDocs.Generics generics = raw ? MetamodelDocs.Generics.RAW : MetamodelDocs.Generics.DECLARED;
         JavaFile file = JavaFile.class_(metamodel, cb -> {
-            cb.withModifiers(Modifier.FINAL)
+            cb.withDoc(MetamodelDocs.type(model.desc(), names, generics, about, full.map(Full::plan)))
+                    .withModifiers(Modifier.FINAL)
                     .withAnnotation(CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                     .withAnnotation(
                             CD_GENERATED_METAMODEL,
@@ -304,37 +339,43 @@ final class MetamodelEmitter {
             }
             cb.withNestedClass(
                     data,
-                    dc -> dc.withModifiers(Modifier.STATIC, Modifier.FINAL)
+                    dc -> dc.withDoc(MetamodelDocs.data(model.desc()))
+                            .withModifiers(Modifier.STATIC, Modifier.FINAL)
                             .withField(
                                     MetamodelNames.SHAPE,
                                     Types.parameterized(CD_TYPE_SHAPE, Types.of(token.kindClass())),
-                                    fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                    fb -> fb.withDoc(MetamodelDocs.shape(model.desc()))
+                                            .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                             .withInitializer(shape(metamodel, model, canonical, token, canonicalClass)))
                             .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)));
             cb.withNestedClass(
                     canonicalClass,
-                    kc -> kc.withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
+                    kc -> kc.withDoc(MetamodelDocs.canonical(model.desc()))
+                            .withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
                             .withField(
                                     MetamodelNames.TEXT,
                                     Types.STRING,
-                                    fb -> fb.withModifiers(Modifier.STATIC, Modifier.FINAL)
+                                    fb -> fb.withDoc(MetamodelDocs.canonicalText(model.desc()))
+                                            .withModifiers(Modifier.STATIC, Modifier.FINAL)
                                             .withInitializer(text(canonical)))
                             .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)));
             if (typeParams.isEmpty()) {
                 cb.withField(
                         MetamodelNames.TOKEN,
                         Types.parameterized(token.tokenClass(), Types.of(model.desc())),
-                        fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        fb -> fb.withDoc(MetamodelDocs.token(model.desc(), generics))
+                                .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                 .withInitializer(Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), shape)));
             } else {
                 any(cb, model, token, names, shape);
             }
             for (MemberFacts.Spec spec : specs) {
-                if (spec instanceof MemberFacts.Spec.Constant(String name, TypeRef type, Expr init)) {
+                if (spec instanceof MemberFacts.Spec.Constant(String name, TypeRef type, Expr init, DocComment doc)) {
                     cb.withField(
                             name,
                             type,
-                            fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            fb -> fb.withDoc(doc)
+                                    .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                                     .withInitializer(init));
                 }
             }
@@ -346,7 +387,7 @@ final class MetamodelEmitter {
             for (MemberFacts.Spec spec : specs) {
                 if (spec instanceof MemberFacts.Spec.Factory factory) {
                     cb.withMethod(factory.name(), factory.type(), mb -> {
-                        mb.withModifiers(Modifier.PUBLIC);
+                        mb.withDoc(factory.doc()).withModifiers(Modifier.PUBLIC);
                         if (factory.isStatic()) {
                             mb.withModifiers(Modifier.STATIC);
                         }
@@ -393,7 +434,8 @@ final class MetamodelEmitter {
                         new ParameterizedTypeRef(
                                 model.desc(),
                                 names.stream().map(_ -> Types.unbounded()).toList())),
-                fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                fb -> fb.withDoc(MetamodelDocs.any(model.desc()))
+                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                         .withInitializer(Exprs.staticCall(CD_UNSAFE_FACTS, token.factory(), anyArgs)));
     }
 
@@ -416,13 +458,17 @@ final class MetamodelEmitter {
         cb.withField(
                 MetamodelNames.INSTANCE_TOKEN,
                 Types.parameterized(token.tokenClass(), self),
-                fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
+                fb -> fb.withDoc(MetamodelDocs.instanceToken(model.desc()))
+                        .withModifiers(Modifier.PUBLIC, Modifier.FINAL));
         List<MemberFacts.Spec.Assigned> assigned = specs.stream()
                 .filter(MemberFacts.Spec.Assigned.class::isInstance)
                 .map(MemberFacts.Spec.Assigned.class::cast)
                 .toList();
         for (MemberFacts.Spec.Assigned field : assigned) {
-            cb.withField(field.name(), field.type(), fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.FINAL));
+            cb.withField(
+                    field.name(),
+                    field.type(),
+                    fb -> fb.withDoc(field.doc()).withModifiers(Modifier.PUBLIC, Modifier.FINAL));
         }
         if (keepWitnesses) {
             for (int i = 0; i < names.size(); i++) {
@@ -433,7 +479,8 @@ final class MetamodelEmitter {
             }
         }
         cb.withConstructor(ctor -> {
-            ctor.withModifiers(Modifier.PUBLIC);
+            ctor.withDoc(MetamodelDocs.constructor(model.desc(), names, witnesses))
+                    .withModifiers(Modifier.PUBLIC);
             for (int i = 0; i < names.size(); i++) {
                 ctor.withParam(witnesses.get(i), Types.parameterized(CD_REF_TOKEN, Types.typeVar(names.get(i))));
             }

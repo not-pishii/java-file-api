@@ -5,8 +5,10 @@ import me.supcheg.javafile.facts.processor.harness.Snapshot;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,16 +66,55 @@ class SnapshotsTest {
     }
 
     /// Q13: `Base` gets its metamodel as a supertype of `Derived` in case
-    /// `supertypes` and by request in case `declared`.
+    /// `supertypes` and by request in case `declared`. The code of the two
+    /// is the same; the comment of the class tells which it is (Q14), and
+    /// nothing else differs.
     @Test
     void theMetamodelOfASupertypeNobodyAskedForIsTheOneARequestGives() {
         Path cases = FIXTURES.resolve("inheritance/cases");
         String base = "gen/facts/p/Base_.java";
+        String asSupertype =
+                Snapshot.read(cases.resolve("supertypes/expected")).files().get(base);
+        String asRequested =
+                Snapshot.read(cases.resolve("declared/expected")).files().get(base);
 
-        assertThat(Snapshot.read(cases.resolve("supertypes/expected")).files().get(base))
-                .isNotNull()
-                .isEqualTo(Snapshot.read(cases.resolve("declared/expected"))
-                        .files()
-                        .get(base));
+        assertThat(asSupertype).isNotNull();
+        assertThat(code(asSupertype)).isEqualTo(code(asRequested));
+        assertThat(comments(asSupertype))
+                .filteredOn(line -> !comments(asRequested).contains(line))
+                .containsExactly(
+                        "/// The full metamodel of [Base]: a fact of every `public` member the type declares.",
+                        "/// `@Facts` does not ask for [Base]: it is here as a supertype of [p.Derived], whose"
+                                + " inherited members are called through this metamodel.");
+        assertThat(comments(asRequested))
+                .filteredOn(line -> !comments(asSupertype).contains(line))
+                .containsExactly("/// The full metamodel of [Base], which `@Facts` asks for: a fact of every `public`"
+                        + " member the type declares.");
+    }
+
+    /// Every metamodel has documentation comments, and no other comment: a line is a comment or code, so
+    /// what holds of the lines that are no comments holds of the code.
+    @Test
+    void theCommentsOfAMetamodelAreDocumentationCommentsOnLinesOfTheirOwn() {
+        assertThat(sources()).isNotEmpty().allSatisfy(source -> {
+            assertThat(comments(source.getValue())).as(source.getKey()).isNotEmpty();
+            assertThat(code(source.getValue()))
+                    .as(source.getKey())
+                    .doesNotContain("//")
+                    .doesNotContain("/*");
+        });
+    }
+
+    /// The lines of a source that are not documentation comments.
+    private static String code(String source) {
+        return source.lines().filter(line -> !line.strip().startsWith("///")).collect(Collectors.joining("\n"));
+    }
+
+    /// The documentation comments of a source, line by line.
+    private static List<String> comments(String source) {
+        return source.lines()
+                .map(String::strip)
+                .filter(line -> line.startsWith("///"))
+                .toList();
     }
 }

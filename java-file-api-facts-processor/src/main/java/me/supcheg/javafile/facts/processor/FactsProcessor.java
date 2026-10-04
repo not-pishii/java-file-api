@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
+import me.supcheg.javafile.facts.processor.MetamodelDocs.About;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
@@ -14,6 +15,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
@@ -99,6 +101,12 @@ import java.util.stream.Stream;
 /// `strict` only in a type `@Facts` asks for, which the reasons the type is
 /// in the graph for tell ([TypeGraph#reasons]): of a supertype nobody
 /// asked for it stays a warning.
+///
+/// What the processor knows of a metamodel and its reader does not, the
+/// comment of the metamodel class tells (Q14, [MetamodelDocs]): why it is
+/// full or token-only — the same reasons —, where the facts of the inherited
+/// members are, and which members have no fact, in the words of the
+/// warnings. The comment of a fact links to the member the fact is of.
 ///
 /// Options: see [Options].
 public final class FactsProcessor extends AbstractProcessor {
@@ -292,7 +300,8 @@ public final class FactsProcessor extends AbstractProcessor {
                 .forEach(name -> done.put(
                         name, new Done.Held(graph.mentioners(name).collect(Collectors.toCollection(TreeSet::new)))));
         Targets targets = new Targets(models, metamodels(graph, base, elements), unavailable(graph));
-        List<Planned> planned = planned(graph, sitesOf, when, base, elements).toList();
+        List<Planned> planned =
+                planned(graph, sitesOf, when, base, elements, models).toList();
         // a metamodel is of the first type that claims its name, among those written before and now
         Map<ClassDesc, String> owners = Stream.concat(
                         done.entrySet().stream().flatMap(entry -> switch (entry.getValue()) {
@@ -455,7 +464,12 @@ public final class FactsProcessor extends AbstractProcessor {
     /// held back, unless the round is the last. Each is written for the
     /// `@Facts` that ask for the types it is there for.
     private static Stream<Planned> planned(
-            TypeGraph graph, Function<String, SortedSet<Site>> sitesOf, Round when, String base, Elements elements) {
+            TypeGraph graph,
+            Function<String, SortedSet<Site>> sitesOf,
+            Round when,
+            String base,
+            Elements elements,
+            Models models) {
         return Stream.concat(
                 graph.nodes().values().stream()
                         .flatMap(node -> node.request().stream()
@@ -470,8 +484,11 @@ public final class FactsProcessor extends AbstractProcessor {
                                                         sitesOf.apply(node.name()),
                                                         stale,
                                                         subject(graph, node.name()),
-                                                        graph.reasons(node.name())
-                                                                .toList()))
+                                                        new About.Full(
+                                                                graph.reasons(node.name())
+                                                                        .toList(),
+                                                                supertypes(graph, node.name(), base, elements, models),
+                                                                protectedMembers(type))))
                                                 : Stream.empty())),
                 graph.nodes().values().stream()
                         .flatMap(node -> node.token().stream()
@@ -499,7 +516,75 @@ public final class FactsProcessor extends AbstractProcessor {
                                                 .collect(Collectors.toCollection(TreeSet::new)),
                                         tokenOnly.right(),
                                         node.name(),
-                                        graph.reasons(node.name()).toList()))));
+                                        node instanceof TypeGraph.Node.Declined(var _, String reason, var _)
+                                                ? new About.Declined(
+                                                        graph.reasons(node.name())
+                                                                .toList(),
+                                                        reason)
+                                                : new About.Mentioned(graph.reasons(node.name())
+                                                        .toList())))));
+    }
+
+    /// The `public` supertypes nearest to a type — those it extends and
+    /// implements itself, and those a supertype that is not `public` does
+    /// in its place — with what the round has for a full metamodel of each,
+    /// sorted by name: what the comment of the metamodel of the type tells of
+    /// the members it inherits.
+    private static List<About.Supertype> supertypes(
+            TypeGraph graph, String name, String base, Elements elements, Models models) {
+        return nearestPublic(graph, name)
+                .distinct()
+                .sorted()
+                .map(supertype -> supertype(graph.nodes().get(supertype), base, elements, models))
+                .toList();
+    }
+
+    private static Stream<String> nearestPublic(TypeGraph graph, String name) {
+        return graph.from(name, TypeGraph.Edge.Supertype.class)
+                .map(TypeGraph.Edge::to)
+                .flatMap(supertype -> graph.nodes().get(supertype) instanceof TypeGraph.Node.Hidden
+                        ? nearestPublic(graph, supertype)
+                        : Stream.of(supertype));
+    }
+
+    private static About.Supertype supertype(TypeGraph.Node node, String base, Elements elements, Models models) {
+        String name = node.name();
+        if (node instanceof TypeGraph.Node.Declined(var _, String reason, var _)) {
+            return new About.Supertype.None(name, reason);
+        }
+        return node.request()
+                .map(request -> switch (request) {
+                    case TypeGraph.Request.Settled(Done.GeneratedFull(ClassDesc metamodel)) ->
+                        new About.Supertype.Full(metamodel);
+                    case TypeGraph.Request.Settled(Done.ReusedFull(ClassDesc metamodel)) ->
+                        new About.Supertype.Full(metamodel);
+                    case TypeGraph.Request.Settled _ ->
+                        new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
+                    case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+                    case TypeGraph.Request.Ready(TypeElement type, var _) ->
+                        new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements));
+                    // a later round writes it, under the name it has now
+                    case TypeGraph.Request.Waiting _ ->
+                        models.element(ClassDesc.of(name))
+                                .<About.Supertype>map(type ->
+                                        new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements)))
+                                .orElseGet(() -> new About.Supertype.None(name, name + " is not generated yet"));
+                    case TypeGraph.Request.Late _ ->
+                        new About.Supertype.None(
+                                name, "the token-only metamodel of " + name + " was generated in an earlier round");
+                    case TypeGraph.Request.Unrepresentable(String reason) -> new About.Supertype.None(name, reason);
+                    case TypeGraph.Request.Rejected(String reason) -> new About.Supertype.None(name, reason);
+                })
+                .orElseGet(() -> new About.Supertype.None(name, name + " has no full metamodel"));
+    }
+
+    /// Whether a type declares `protected` fields, constructors or methods: they have no facts (Q3).
+    private static About.Protected protectedMembers(TypeElement type) {
+        return type.getEnclosedElements().stream()
+                        .anyMatch(member ->
+                                member.getModifiers().contains(Modifier.PROTECTED) && !(member instanceof TypeElement))
+                ? About.Protected.SOME
+                : About.Protected.NONE;
     }
 
     /// Writes a metamodel.
@@ -550,25 +635,28 @@ public final class FactsProcessor extends AbstractProcessor {
                 .toArray(Element[]::new);
         Canonical canonical = Canonical.of(model);
         JavaFile file =
-                switch (planned.completeness()) {
-                    case FULL -> {
+                switch (planned.about()) {
+                    case About.Full about -> {
                         Set<String> taken = MetamodelEmitter.takenNames(
                                 metamodel,
                                 model,
                                 canonical,
                                 MemberPlan.probe(planned.type(), models, targets),
-                                targets);
+                                targets,
+                                about);
                         MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
                         plan.skipped()
                                 .forEach(skip -> diagnostics.skipped(
                                         at,
-                                        planned.subject() + ": no fact of " + skip.member() + ", which "
-                                                + skip.reason(),
-                                        planned.reasons(),
+                                        planned.subject() + ": no fact of " + skip.told(),
+                                        about.reasons(),
                                         skip.origin()));
-                        yield MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken);
+                        yield MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken, about);
                     }
-                    case TOKEN -> MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets);
+                    case About.Mentioned about ->
+                        MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about);
+                    case About.Declined about ->
+                        MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about);
                 };
         try {
             try (Writer writer = processingEnv
@@ -638,9 +726,10 @@ public final class FactsProcessor extends AbstractProcessor {
     ///     its subtypes, or for the types whose signatures mention it
     /// @param stale why the metamodels of the type on the classpath were not reused
     /// @param subject the type as a diagnostic names it, see [#subject]
-    /// @param reasons why the type is in the graph of the round, see [TypeGraph#reasons]: what the
-    ///     generated metamodel is to say of why it is there, and why it is full or token-only, and
-    ///     whether a member of it without a fact is an error under `strict`
+    /// @param about what the comment of the generated metamodel says of why it is there, and why it is
+    ///     full or token-only ([MetamodelDocs]); its reasons, why the type is in the graph of the
+    ///     round ([TypeGraph#reasons]), also tell whether a member without a fact is an error under
+    ///     `strict`
     private record Planned(
             TypeElement type,
             String binaryName,
@@ -649,7 +738,7 @@ public final class FactsProcessor extends AbstractProcessor {
             SortedSet<Site> requesters,
             List<String> stale,
             String subject,
-            List<TypeGraph.Reason> reasons) {}
+            About about) {}
 
     /// What a round settles of a type without writing a metamodel.
     private sealed interface Settlement {
