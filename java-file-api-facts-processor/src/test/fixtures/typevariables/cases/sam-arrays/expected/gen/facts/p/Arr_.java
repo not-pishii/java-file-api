@@ -34,7 +34,7 @@ import p.Arr;
 ///
 /// @param <T> a type argument of [Arr]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Arr.class, fingerprint = "830b7421249200e311ee161ed432d847c2ca6058e96e77f15f9fbe4ba21226de", complete = true, format = 5)
+@GeneratedMetamodel(of = Arr.class, fingerprint = "1f4cd0dd8690e92db529d9c26c0166c02add4f7974c88408c388789985f31c2e", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Arr_<T> {
     /// The shape of [Arr] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Arr] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Arr_"), "830b7421249200e311ee161ed432d847c2ca6058e96e77f15f9fbe4ba21226de", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Arr"), List.of(new TypeParam("T", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("m", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Arr_"), "1f4cd0dd8690e92db529d9c26c0166c02add4f7974c88408c388789985f31c2e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Arr"), List.of(new TypeParam("T", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("m", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -52,7 +52,7 @@ public final class Arr_<T> {
     /// The canonical form of [Arr], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Arr].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Arr interface sealed=no\ntparams #0\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m(#0[]) -> #0[] throws -\nsam m(#0[]) -> #0[] throws -\ntable abstract m(#0[])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Arr interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m(#0[]) -> #0[] throws -\nsam m(#0[]) -> #0[] throws -\ntable abstract m(#0[])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

@@ -31,7 +31,7 @@ import p.Marker;
 ///
 /// @param <T> a type argument of [ByMarker]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByMarker.class, fingerprint = "1e6e3d994eb52f106fe65c559548ccf8a06ed88ad7e95990a11822aaae82a6a0", complete = false, format = 5)
+@GeneratedMetamodel(of = ByMarker.class, fingerprint = "7e0190ee9dd9d2be6e04d7d4b90176c8b2f5928efc817f32c2f3525cbe109b4b", complete = false, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class ByMarker_<T extends Marker> {
     /// The shape of [ByMarker] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [ByMarker] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByMarker_"), "1e6e3d994eb52f106fe65c559548ccf8a06ed88ad7e95990a11822aaae82a6a0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByMarker"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Marker"))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByMarker"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByMarker_"), "7e0190ee9dd9d2be6e04d7d4b90176c8b2f5928efc817f32c2f3525cbe109b4b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByMarker"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Marker"))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByMarker"))), List.of(), false);
 
         private Data() {
         }
@@ -49,7 +49,7 @@ public final class ByMarker_<T extends Marker> {
     /// The canonical form of [ByMarker], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [ByMarker].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.ByMarker open-class sealed=no\ntparams #0 extends p.Marker\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor ByMarker()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.ByMarker open-class sealed=no\ntparams #0 extends p.Marker\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor ByMarker()\n";
 
         private Canonical() {
         }

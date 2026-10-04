@@ -26,7 +26,7 @@ import p.Dep;
 ///
 /// A member [Dep] inherits has its fact in the metamodel of the supertype that declares it: [com.acme.metamodel.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Dep.class, fingerprint = "f2188126932f0a0f569cf96a6a9cde6335ca9abe1be119fdf1d943649734f8b0", complete = true, format = 5)
+@GeneratedMetamodel(of = Dep.class, fingerprint = "6a0f3de063cbb715ef94fd70bc99381482e4a47d6e3c7ce0fcd4122db09e5ae3", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class Dep_ {
     /// The shape of [Dep] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Dep] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.p.Dep_"), "f2188126932f0a0f569cf96a6a9cde6335ca9abe1be119fdf1d943649734f8b0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Dep"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Dep"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.p.Dep_"), "6a0f3de063cbb715ef94fd70bc99381482e4a47d6e3c7ce0fcd4122db09e5ae3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Dep"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Dep"))), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class Dep_ {
     /// The canonical form of [Dep], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Dep].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Dep open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Dep()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Dep open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Dep()\n";
 
         private Canonical() {
         }

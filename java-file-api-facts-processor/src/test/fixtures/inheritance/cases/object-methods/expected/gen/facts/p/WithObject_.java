@@ -32,7 +32,7 @@ import p.WithObject;
 ///
 /// A member [WithObject] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithObject.class, fingerprint = "2a3bb3bf372136406876a35f7611dcaabb21ea4443b169c682e4970294b34cc6", complete = true, format = 5)
+@GeneratedMetamodel(of = WithObject.class, fingerprint = "1608db34426fdf645826fb5390f285f099274659bfb77aa9ff6970e569a10981", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class WithObject_ {
     /// The shape of [WithObject] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [WithObject] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithObject_"), "2a3bb3bf372136406876a35f7611dcaabb21ea4443b169c682e4970294b34cc6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.WithObject"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("WithObject"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithObject_"), "1608db34426fdf645826fb5390f285f099274659bfb77aa9ff6970e569a10981", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.WithObject"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("WithObject"))), List.of(), false);
 
         private Data() {
         }
@@ -50,7 +50,7 @@ public final class WithObject_ {
     /// The canonical form of [WithObject], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [WithObject].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.WithObject open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable plain() -> void throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); plain(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor WithObject()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.WithObject open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable plain() -> void throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); plain(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor WithObject()\n";
 
         private Canonical() {
         }

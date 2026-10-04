@@ -24,7 +24,7 @@ import p.Old;
 ///
 /// `@Facts` does not ask for [Old]: it is only mentioned in the signatures of [p.Uses]. For the facts of its members add `Old.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Old.class, fingerprint = "5ee4910f718aeaf12d9baedcedb24f0ccc6c1803ff0f67dd4bc831677e08ea19", complete = false, format = 5)
+@GeneratedMetamodel(of = Old.class, fingerprint = "7c6f8595c4f62768d030eb5260dc7062337c855f1e1607e3d8f7a9e64f12d0a9", complete = false, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -33,7 +33,7 @@ public final class Old_ {
     /// The shape of [Old] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Old] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Old_"), "5ee4910f718aeaf12d9baedcedb24f0ccc6c1803ff0f67dd4bc831677e08ea19", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Old"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Old"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Old_"), "7c6f8595c4f62768d030eb5260dc7062337c855f1e1607e3d8f7a9e64f12d0a9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Old"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Old"))), List.of(), false);
 
         private Data() {
         }
@@ -42,7 +42,7 @@ public final class Old_ {
     /// The canonical form of [Old], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Old].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Old open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Old()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Old open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Old()\n";
 
         private Canonical() {
         }

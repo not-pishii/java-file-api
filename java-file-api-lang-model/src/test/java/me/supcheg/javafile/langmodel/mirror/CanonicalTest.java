@@ -60,10 +60,11 @@ class CanonicalTest {
         Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
 
         assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 4
+                        javafile-facts-canonical 5
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
+                        interfaces java.lang.Comparable; java.lang.Runnable
                         supertypes java.lang.Comparable<p.T<#0>>
                         enum -
                         members declared-public
@@ -123,10 +124,12 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 4
+                        javafile-facts-canonical 5
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
+                        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; \
+                        java.util.function.Supplier
                         supertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>; \
                         java.util.function.Supplier<java.lang.String>
                         enum MONDAY; SUNDAY
@@ -355,10 +358,11 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 4
+                        javafile-facts-canonical 5
                         type p.T interface sealed=no
                         tparams -
                         superclasses -
+                        interfaces p.A; p.B
                         supertypes -
                         enum -
                         members none
@@ -412,6 +416,32 @@ class CanonicalTest {
     }
 
     @Test
+    void anInterfaceWithoutTypeArgumentsIsInTheTextAndTheFingerprint() {
+        String marker = "package p; public interface Marker {}";
+        Canonical marked =
+                canonical("p.T", MemberFilter.NONE, "package p; public class T implements Marker {}", marker);
+        Canonical plain = canonical("p.T", MemberFilter.NONE, "package p; public class T {}", marker);
+
+        // nothing else of the type tells that it is a Marker: no member, no parameterized supertype
+        assertThat(marked.text()).contains("\ninterfaces p.Marker\nsupertypes -\n");
+        assertThat(plain.text()).contains("\ninterfaces -\nsupertypes -\n");
+        assertThat(marked.fingerprint()).isNotEqualTo(plain.fingerprint());
+    }
+
+    @Test
+    void theInterfacesOfARawSupertypeAreInTheText() {
+        Canonical raw = canonical(
+                "p.Raw",
+                MemberFilter.NONE,
+                "package p; @SuppressWarnings(\"rawtypes\") public abstract class Raw implements java.util.List {}");
+
+        // raw, the supertypes have no type arguments to tell
+        assertThat(raw.text())
+                .contains("\ninterfaces java.lang.Iterable; java.util.Collection; java.util.List;"
+                        + " java.util.SequencedCollection\nsupertypes -\n");
+    }
+
+    @Test
     void theFilterIsHashed() {
         assertThat(canonical("p.T", MemberFilter.NONE, BASE).fingerprint())
                 .isNotEqualTo(
@@ -426,6 +456,7 @@ class CanonicalTest {
                 ClassDesc.of("p.T"),
                 DeclaredKind.INTERFACE,
                 List.of(new TypeParam("E", List.of())),
+                List.of(),
                 List.of(),
                 List.of(),
                 Supertypes.NONE,
@@ -458,6 +489,7 @@ class CanonicalTest {
                 List.of(new TypeParam("E", List.of())),
                 List.of(),
                 List.of(ClassDesc.of("java.lang.Object")),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),

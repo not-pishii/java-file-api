@@ -31,6 +31,7 @@ class ModelTest {
                 List.of(),
                 List.of(),
                 List.of(),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
@@ -52,6 +53,7 @@ class ModelTest {
         return new TypeModel(
                 ClassDesc.of("p.T"),
                 kind,
+                List.of(),
                 List.of(),
                 List.of(),
                 List.of(),

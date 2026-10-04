@@ -29,7 +29,7 @@ import p.Pub2;
 ///
 /// `p.HBetween`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub2.class, fingerprint = "23e2b30f41e36769c000eb8a004b6ce19bc7dfc94cda3337a8c33d45c8f49a63", complete = true, format = 5)
+@GeneratedMetamodel(of = Pub2.class, fingerprint = "e5a0a4f62a01e8c797c480d894bc9db1150a87e297bebb574fca3cddb5e0c19c", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -38,7 +38,7 @@ public final class Pub2_ {
     /// The shape of [Pub2] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Pub2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub2_"), "23e2b30f41e36769c000eb8a004b6ce19bc7dfc94cda3337a8c33d45c8f49a63", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub2"), List.of(), List.of(ClassDesc.of("p.HBetween"), ClassDesc.of("p.Pub1"), ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("between"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("two"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub2"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub2_"), "e5a0a4f62a01e8c797c480d894bc9db1150a87e297bebb574fca3cddb5e0c19c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub2"), List.of(), List.of(ClassDesc.of("p.HBetween"), ClassDesc.of("p.Pub1"), ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("between"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("two"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub2"))), List.of(), false);
 
         private Data() {
         }
@@ -47,7 +47,7 @@ public final class Pub2_ {
     /// The canonical form of [Pub2], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Pub2].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Pub2 open-class sealed=no\ntparams -\nsuperclasses p.HBetween; p.Pub1; p.H0; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable between() -> java.lang.String throws -\nmember method overridable two() -> java.lang.String throws -\ntable abstract -\ntable concrete between(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); two(); wait(); wait(long); wait(long, int); zero()\ntable static -\ntable ctor Pub2()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pub2 open-class sealed=no\ntparams -\nsuperclasses p.HBetween; p.Pub1; p.H0; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable between() -> java.lang.String throws -\nmember method overridable two() -> java.lang.String throws -\ntable abstract -\ntable concrete between(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); two(); wait(); wait(long); wait(long, int); zero()\ntable static -\ntable ctor Pub2()\n";
 
         private Canonical() {
         }

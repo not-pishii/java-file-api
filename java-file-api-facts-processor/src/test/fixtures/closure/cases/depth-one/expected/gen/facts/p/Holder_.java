@@ -30,7 +30,7 @@ import p.Holder;
 ///
 /// @param <E> a type argument of [Holder]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Holder.class, fingerprint = "2f765db054d05485ed599474d601c6bdb76104046db69b25dddc417bc30b5c30", complete = false, format = 5)
+@GeneratedMetamodel(of = Holder.class, fingerprint = "f754da7b3c6c6b6706f4711ead8fe1eb7c9a99d75fabbcc2aa067d97c2b626a4", complete = false, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Holder_<E> {
     /// The shape of [Holder] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Holder] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Holder_"), "2f765db054d05485ed599474d601c6bdb76104046db69b25dddc417bc30b5c30", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Holder"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Holder"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Holder_"), "f754da7b3c6c6b6706f4711ead8fe1eb7c9a99d75fabbcc2aa067d97c2b626a4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Holder"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Holder"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Holder_<E> {
     /// The canonical form of [Holder], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Holder].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Holder open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Holder()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Holder open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Holder()\n";
 
         private Canonical() {
         }

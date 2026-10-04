@@ -26,7 +26,7 @@ import p.PubAbs;
 ///
 /// A member [PubAbs] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PStr_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubAbs.class, fingerprint = "b2aa06f6513b7abbf0215250aeda7ba1f2c5c00927c89efe86be64622a474c83", complete = true, format = 5)
+@GeneratedMetamodel(of = PubAbs.class, fingerprint = "eef718bc37226c0a4eea8e548e25b8eb6ffa4f8f4d190bc954f5cbfffdf60435", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class PubAbs_ {
     /// The shape of [PubAbs] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [PubAbs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "b2aa06f6513b7abbf0215250aeda7ba1f2c5c00927c89efe86be64622a474c83", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "eef718bc37226c0a4eea8e548e25b8eb6ffa4f8f4d190bc954f5cbfffdf60435", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class PubAbs_ {
     /// The canonical form of [PubAbs], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [PubAbs].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.PubAbs abstract-class sealed=no\ntparams -\nsuperclasses p.HAbs; java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract get()\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubAbs()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubAbs abstract-class sealed=no\ntparams -\nsuperclasses p.HAbs; java.lang.Object\ninterfaces p.PStr\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract get()\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubAbs()\n";
 
         private Canonical() {
         }

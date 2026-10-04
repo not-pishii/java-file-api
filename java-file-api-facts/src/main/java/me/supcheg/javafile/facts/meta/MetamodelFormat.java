@@ -27,12 +27,16 @@ package me.supcheg.javafile.facts.meta;
 ///   without a full metamodel shares with the type stays a fact of the type;
 ///   `java.lang.Object` is a supertype of an interface too, so it gets a full
 ///   metamodel wherever an interface is asked for.
+/// - 6: the canonical form of a type, and so its fingerprint, tells every
+///   interface the type implements, not the parameterized ones alone: a
+///   type that no longer implements one is another type to the check against
+///   the target classpath.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 5;
+    public static final int VERSION = 6;
 
     private MetamodelFormat() {}
 }

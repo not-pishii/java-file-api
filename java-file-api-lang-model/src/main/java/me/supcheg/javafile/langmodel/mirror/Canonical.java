@@ -43,16 +43,21 @@ import java.util.stream.Stream;
 ///   order of declarations and of `Elements` does not matter;
 /// - the superclass chain, type parameters and enum constants keep their
 ///   order, which has meaning;
+/// - `superclasses` and `interfaces` are every type a value of the type is
+///   assignable to, erased — what the compiler of a generator relied on
+///   where it took an expression of the type for one of a supertype —, and
+///   `supertypes` the parameterized ones in terms of the type parameters;
 /// - [TypeModel#skipped()] and [TypeModel#nonPublicBoundTypes()] are left
 ///   out: they follow from the rest.
 ///
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 4
+/// javafile-facts-canonical 5
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
+/// interfaces java.lang.Iterable; java.util.Collection; java.util.SequencedCollection
 /// supertypes java.lang.Iterable<#0>; java.util.Collection<#0>; java.util.SequencedCollection<#0>
 /// enum -
 /// members none
@@ -94,7 +99,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 4";
+    public static final String HEADER = "javafile-facts-canonical 5";
 
     private final String text;
     private final String fingerprint;
@@ -119,6 +124,10 @@ public final class Canonical {
                                 "tparams " + items(typeParams(model.typeParams(), "#", scope)),
                                 "superclasses "
                                         + items(model.superclasses().stream()
+                                                .map(Canonical::binaryName)
+                                                .toList()),
+                                "interfaces "
+                                        + items(model.interfaces().stream()
                                                 .map(Canonical::binaryName)
                                                 .toList()),
                                 "supertypes "

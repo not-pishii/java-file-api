@@ -31,7 +31,7 @@ import p.Tk;
 ///
 /// A member [Tk] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tk.class, fingerprint = "53f2d9dcde8911187550a99a90eb719d92c2c4a5bb0d0a383457f2d80106da61", complete = true, format = 5)
+@GeneratedMetamodel(of = Tk.class, fingerprint = "f5fbe7bd49ddedbc7cd7c6fc68760f88d1139e433be4c99d9897f8c3057f236c", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Tk_ {
     /// The shape of [Tk] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Tk] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "53f2d9dcde8911187550a99a90eb719d92c2c4a5bb0d0a383457f2d80106da61", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "f5fbe7bd49ddedbc7cd7c6fc68760f88d1139e433be4c99d9897f8c3057f236c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), List.of(), false);
 
         private Data() {
         }
@@ -49,7 +49,7 @@ public final class Tk_ {
     /// The canonical form of [Tk], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Tk].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Tk open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int Float\nmember field instance mutable int MemberTraits\nmember field instance mutable int Other_\nmember field instance mutable int UnsafeFacts\nmember field instance mutable int fine\nmember method overridable other() -> p.Other throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Tk()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Tk open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int Float\nmember field instance mutable int MemberTraits\nmember field instance mutable int Other_\nmember field instance mutable int UnsafeFacts\nmember field instance mutable int fine\nmember method overridable other() -> p.Other throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Tk()\n";
 
         private Canonical() {
         }

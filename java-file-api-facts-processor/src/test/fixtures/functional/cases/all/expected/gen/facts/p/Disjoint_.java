@@ -26,7 +26,7 @@ import p.Disjoint;
 ///
 /// A member [Disjoint] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [SqlB_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Disjoint.class, fingerprint = "37f53199f98cf3f49c3cedaf3946bead0cde2ac70849748e2456184e3ba1d4c8", complete = true, format = 5)
+@GeneratedMetamodel(of = Disjoint.class, fingerprint = "f2b9feaab018801b1e9d0a07e5f2605c90b1119c84ffa4a8bb9626efe6c869cb", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -35,7 +35,7 @@ public final class Disjoint_ {
     /// The shape of [Disjoint] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Disjoint] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "37f53199f98cf3f49c3cedaf3946bead0cde2ac70849748e2456184e3ba1d4c8", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "f2b9feaab018801b1e9d0a07e5f2605c90b1119c84ffa4a8bb9626efe6c869cb", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -44,7 +44,7 @@ public final class Disjoint_ {
     /// The canonical form of [Disjoint], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Disjoint].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Disjoint interface sealed=no\ntparams -\nsuperclasses -\nsupertypes -\nenum -\nmembers declared-public\nsam m() -> void throws -\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Disjoint interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.IoA; p.SqlB\nsupertypes -\nenum -\nmembers declared-public\nsam m() -> void throws -\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
 
         private Canonical() {
         }

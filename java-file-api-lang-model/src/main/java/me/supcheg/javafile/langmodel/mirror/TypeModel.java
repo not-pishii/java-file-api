@@ -26,6 +26,8 @@ import java.util.Optional;
 ///                            declare such a bound, so the type is usable only raw
 /// @param superclasses the erased superclass chain, the direct superclass first and `Object`
 ///                     last; empty for `Object` and an interface
+/// @param interfaces every interface the type implements or extends, transitively, erased and sorted
+///                   by binary name: with `superclasses`, every type a value of the type is assignable to
 /// @param supertypes every parameterized supertype, transitively, sorted by binary name
 /// @param methods every non-`private` method a call on the type may resolve to: declared and
 ///                inherited instance methods, and the `static` methods of the type and its
@@ -45,6 +47,7 @@ public record TypeModel(
         List<TypeParam> typeParams,
         List<String> nonPublicBoundTypes,
         List<ClassDesc> superclasses,
+        List<ClassDesc> interfaces,
         Supertypes supertypes,
         MethodTableTemplate methods,
         List<String> enumConstants,
@@ -65,6 +68,7 @@ public record TypeModel(
         typeParams = List.copyOf(typeParams);
         nonPublicBoundTypes = List.copyOf(nonPublicBoundTypes);
         superclasses = List.copyOf(superclasses);
+        interfaces = List.copyOf(interfaces);
         enumConstants = List.copyOf(enumConstants);
         members = List.copyOf(members);
         skipped = List.copyOf(skipped);

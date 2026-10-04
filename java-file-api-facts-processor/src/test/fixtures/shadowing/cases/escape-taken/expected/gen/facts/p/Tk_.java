@@ -35,7 +35,7 @@ import p.Tk;
 ///
 /// - `field Other`, which would be named Other_, a name the metamodel itself uses
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tk.class, fingerprint = "ae2fc43598be26652144e68b3e03bd8274c733fce86a65e484fe5320c6456c9e", complete = true, format = 5)
+@GeneratedMetamodel(of = Tk.class, fingerprint = "1199c9aa8bd6e8e870e42ca722936767e3f4b6a56257e07623ee2107201a31fb", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Tk_ {
     /// The shape of [Tk] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Tk] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "ae2fc43598be26652144e68b3e03bd8274c733fce86a65e484fe5320c6456c9e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "1199c9aa8bd6e8e870e42ca722936767e3f4b6a56257e07623ee2107201a31fb", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), List.of(), false);
 
         private Data() {
         }
@@ -53,7 +53,7 @@ public final class Tk_ {
     /// The canonical form of [Tk], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Tk].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Tk open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int Other\nmember field instance mutable int fine\nmember method overridable other() -> p.Other throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Tk()\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Tk open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int Other\nmember field instance mutable int fine\nmember method overridable other() -> p.Other throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Tk()\n";
 
         private Canonical() {
         }

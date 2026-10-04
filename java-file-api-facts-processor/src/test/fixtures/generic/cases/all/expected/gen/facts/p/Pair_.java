@@ -36,7 +36,7 @@ import p.Pair;
 /// @param <A> a type argument of [Pair]
 /// @param <B> a type argument of [Pair]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pair.class, fingerprint = "487a1fcee9609e0a65ea0dcd348dee9fab9f03de1579c625dc7c9d81a6237cc8", complete = true, format = 5)
+@GeneratedMetamodel(of = Pair.class, fingerprint = "d72968332e4cd71dd3c957d0f7a29cda88888f49c6210bbd31844ed959e6b3e1", complete = true, format = 6)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Pair_<A, B> {
     /// The shape of [Pair] as plain data: initializing it touches no other metamodel.
     public static final class Data {
         /// What [Pair] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pair_"), "487a1fcee9609e0a65ea0dcd348dee9fab9f03de1579c625dc7c9d81a6237cc8", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Pair"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("entry"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("swap"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Pair", Param.var(0), Param.var(1)))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pair_"), "d72968332e4cd71dd3c957d0f7a29cda88888f49c6210bbd31844ed959e6b3e1", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Pair"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("entry"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("swap"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Pair", Param.var(0), Param.var(1)))), List.of(), false);
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Pair_<A, B> {
     /// The canonical form of [Pair], loaded only to compare the type with the one on the target classpath.
     static final class Canonical {
         /// The canonical form of [Pair].
-        static final String TEXT = "javafile-facts-canonical 4\ntype p.Pair final-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0, #1) throws -\nmember field instance final #0 first\nmember field instance final #1 second\nmember method final entry() -> java.util.Map$Entry<#0, #1> throws -\nmember method final swap() -> p.Pair<#1, #0> throws -\ntable abstract -\ntable concrete clone(); entry(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); swap(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Pair(#0, #1)\n";
+        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pair final-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0, #1) throws -\nmember field instance final #0 first\nmember field instance final #1 second\nmember method final entry() -> java.util.Map$Entry<#0, #1> throws -\nmember method final swap() -> p.Pair<#1, #0> throws -\ntable abstract -\ntable concrete clone(); entry(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); swap(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Pair(#0, #1)\n";
 
         private Canonical() {
         }
