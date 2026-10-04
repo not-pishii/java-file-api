@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.doc.DocRef;
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
 import me.supcheg.javafile.langmodel.mirror.MemberModel;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
@@ -24,6 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -76,14 +78,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @param name the name of the fact
     /// @param model the member
     /// @param origin where the type has the member from: it declares it, or adopts it
-    record Fact(String name, MemberModel model, Origin origin) {}
+    /// @param member the member as the comment of the fact links to it, see [Models#reference]
+    record Fact(String name, MemberModel model, Origin origin, DocRef member) {}
 
     /// The fact of the single abstract method.
     ///
     /// @param method the method, as a member of the interface
     /// @param reuse the name of the fact of the same method if the interface declares it; empty for an
     ///     inherited method, whose fact the `sam` makes on the spot
-    record SamFact(MethodModel method, Optional<String> reuse) {}
+    /// @param member the method as the comment of `sam` links to it, in the type that declares it, see
+    ///     [Models#samReference]
+    record SamFact(MethodModel method, Optional<String> reuse, DocRef member) {}
 
     /// Members that get no fact, or `sam`.
     ///
@@ -91,7 +96,18 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @param reason why it has none, for a diagnostic
     /// @param origin where the type has the member from; of several members that would share a name,
     ///     that the type declares one if it does, and else where it adopts the first from
-    record Skip(String member, String reason, Origin origin) {}
+    record Skip(String member, String reason, Origin origin) {
+        /// What joins the member and the reason: `method greet(p.Hidden), which mentions …`.
+        static final String WHICH = ", which ";
+
+        /// The member and why it has no fact, as the warning of the processor and the comment of the
+        /// metamodel tell it.
+        ///
+        /// @return `member`, [#WHICH], `reason`
+        String told() {
+            return member + WHICH + reason;
+        }
+    }
 
     /// Where a type has a member from. Only a member the type declares itself is one its author can
     /// do something about, so only the lack of a fact of such a member is an error under `strict`;
@@ -184,8 +200,11 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 .toList();
         List<Fact> members = candidates.members().entrySet().stream()
                 .filter(entry -> factNames.containsKey(entry.getKey()))
-                .map(entry ->
-                        new Fact(factNames.get(entry.getKey()), entry.getValue(), Origin.of(type, entry.getKey())))
+                .map(entry -> new Fact(
+                        factNames.get(entry.getKey()),
+                        entry.getValue(),
+                        Origin.of(type, entry.getKey()),
+                        models.reference(type, entry.getKey())))
                 .toList();
         Optional<Either<Skip, SamFact>> sam = sam(type, models, targets, members);
         return new MemberPlan(
@@ -223,7 +242,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 .mapToObj(i -> new Fact(
                         PROBE + i,
                         found.get(i).getValue(),
-                        Origin.of(type, found.get(i).getKey())))
+                        Origin.of(type, found.get(i).getKey()),
+                        models.reference(type, found.get(i).getKey())))
                 .toList();
         return new MemberPlan(
                 enums, members, sam(type, models, targets, members).flatMap(either -> either.right()), List.of());
@@ -326,7 +346,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             TypeElement type, Models models, Targets targets, List<Fact> members) {
         return switch (models.sam(type)) {
             case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
-                sam.flatMap(found -> samFact(found, targets, members));
+                sam.flatMap(found -> samFact(found, targets, members, () -> models.samReference(type, found.method())));
             case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
                 throw new IllegalStateException("the single abstract method was read, but mentions " + unresolved);
             case Translation.Unrepresentable<Optional<SamModel>>(String reason) ->
@@ -334,7 +354,9 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         };
     }
 
-    private static Optional<Either<Skip, SamFact>> samFact(SamModel found, Targets targets, List<Fact> members) {
+    /// @param member the method as the comment of `sam` links to it, asked for only if there is a fact
+    private static Optional<Either<Skip, SamFact>> samFact(
+            SamModel found, Targets targets, List<Fact> members, Supplier<DocRef> member) {
         MethodModel method = found.method();
         Optional<String> unsupported = unsupported(method, targets);
         if (unsupported.isPresent()) {
@@ -351,7 +373,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                         && other.params().equals(method.params()))
                 .map(Fact::name)
                 .findFirst();
-        return Optional.of(Either.right(new SamFact(method, declared)));
+        return Optional.of(Either.right(new SamFact(method, declared, member.get())));
     }
 
     /// Why a member cannot have a fact, though the translator read it.

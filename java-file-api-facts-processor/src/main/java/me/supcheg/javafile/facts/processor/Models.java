@@ -1,20 +1,28 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.doc.DocRef;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
+import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +95,78 @@ final class Models {
         return member instanceof ExecutableElement
                 ? ((ExecutableType) types.asMemberOf((DeclaredType) owner.asType(), member)).getParameterTypes()
                 : List.of();
+    }
+
+    /// A member of a type as the comment of its fact links to it: through
+    /// the type that declares it, by the erasures of the parameter types it
+    /// declares, as javadoc tells overloads apart. A member declared in a
+    /// type that generated code cannot name — one that is not `public`,
+    /// whose `public` members the type adopts — is linked through `owner`,
+    /// which inherits it: javadoc finds an inherited member through the
+    /// subtype, and a link to the declaring type would not resolve from
+    /// another package.
+    ///
+    /// @param owner the type the fact is a fact of
+    /// @param member a field, enum constant, constructor or method `owner` declares or inherits
+    /// @return the reference
+    DocRef reference(TypeElement owner, Element member) {
+        TypeElement declaring = (TypeElement) member.getEnclosingElement();
+        ClassDesc through = ClassDesc.of(binaryName(
+                MirrorTranslator.isPublic(declaring)
+                                && element(ClassDesc.of(binaryName(declaring))).isPresent()
+                        ? declaring
+                        : owner));
+        return switch (member) {
+            case ExecutableElement constructor
+            when constructor.getKind() == ElementKind.CONSTRUCTOR ->
+                new DocRef.Constructor(through, erasedParameters(constructor));
+            case ExecutableElement method ->
+                new DocRef.Method(through, method.getSimpleName().toString(), erasedParameters(method));
+            default -> DocRef.field(through, member.getSimpleName().toString());
+        };
+    }
+
+    /// The single abstract method of a functional interface as the comment
+    /// of `sam` links to it: the abstract method of the name and the number
+    /// of parameters of the model that the interface declares, or else the
+    /// one it inherits — of several that are override-equivalent, that of
+    /// the supertype first by name.
+    ///
+    /// @param type the functional interface
+    /// @param sam its single abstract method, see [#sam(TypeElement)]
+    /// @return the reference
+    DocRef samReference(TypeElement type, MethodModel sam) {
+        return ElementFilter.methodsIn(elements.getAllMembers(type)).stream()
+                .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT)
+                        && method.getSimpleName().contentEquals(sam.name())
+                        && method.getParameters().size() == sam.params().size())
+                .min(Comparator.comparing((ExecutableElement method) ->
+                                !method.getEnclosingElement().equals(type))
+                        .thenComparing(method -> binaryName((TypeElement) method.getEnclosingElement())))
+                .map(method -> reference(type, method))
+                .orElseThrow(() -> new IllegalStateException(
+                        binaryName(type) + " has no abstract method " + sam.name() + " to link `sam` to"));
+    }
+
+    private List<ClassDesc> erasedParameters(ExecutableElement executable) {
+        return executable.getParameters().stream()
+                .map(parameter -> erasure(types.erasure(parameter.asType())))
+                .toList();
+    }
+
+    private ClassDesc erasure(TypeMirror erased) {
+        return switch (erased.getKind()) {
+            case BOOLEAN -> ConstantDescs.CD_boolean;
+            case BYTE -> ConstantDescs.CD_byte;
+            case SHORT -> ConstantDescs.CD_short;
+            case INT -> ConstantDescs.CD_int;
+            case LONG -> ConstantDescs.CD_long;
+            case CHAR -> ConstantDescs.CD_char;
+            case FLOAT -> ConstantDescs.CD_float;
+            case DOUBLE -> ConstantDescs.CD_double;
+            case ARRAY -> erasure(((ArrayType) erased).getComponentType()).arrayType();
+            default -> ClassDesc.of(binaryName((TypeElement) ((DeclaredType) erased).asElement()));
+        };
     }
 
     /// The binary name of a type, `java.util.Map$Entry`.

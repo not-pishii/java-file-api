@@ -10,7 +10,9 @@ import java.util.stream.Stream;
 /// with such a name would hide what the name stands for.
 ///
 /// The source is that of the core renderer for a metamodel: string and
-/// character literals, no comments and no text blocks.
+/// character literals, comments, no text blocks. A word of a comment is no
+/// name: the comments of a metamodel tell of its type in prose, and what
+/// they say names no fact.
 final class SourceNames {
     private SourceNames() {}
 
@@ -30,6 +32,12 @@ final class SourceNames {
             if (c == '"' || c == '\'') {
                 i = afterLiteral(source, i);
                 afterDot = false;
+            } else if (c == '/' && source.startsWith("//", i)) {
+                int end = source.indexOf('\n', i);
+                i = end < 0 ? source.length() : end;
+            } else if (c == '/' && source.startsWith("/*", i)) {
+                int end = source.indexOf("*/", i + 2);
+                i = end < 0 ? source.length() : end + 2;
             } else if (Character.isJavaIdentifierStart(c)) {
                 int end = i;
                 while (end < source.length() && Character.isJavaIdentifierPart(source.charAt(end))) {

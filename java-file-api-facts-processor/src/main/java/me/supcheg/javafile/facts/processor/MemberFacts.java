@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts.processor;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -88,7 +89,8 @@ final class MemberFacts {
         /// @param name the name of the fact
         /// @param type the type of the field
         /// @param init the initializer
-        record Constant(String name, TypeRef type, Expr init) implements Spec {}
+        /// @param doc the comment: the member the fact is of
+        record Constant(String name, TypeRef type, Expr init, DocComment doc) implements Spec {}
 
         /// A `public final` field of a generic metamodel, assigned by its
         /// constructor.
@@ -96,7 +98,8 @@ final class MemberFacts {
         /// @param name the name of the fact
         /// @param type the type of the field
         /// @param init what the constructor assigns, in terms of its parameters
-        record Assigned(String name, TypeRef type, Expr init) implements Spec {}
+        /// @param doc the comment: the member the fact is of
+        record Assigned(String name, TypeRef type, Expr init, DocComment doc) implements Spec {}
 
         /// A method that makes the fact of a generic method from a token per
         /// type parameter.
@@ -107,13 +110,15 @@ final class MemberFacts {
         /// @param witnesses the parameters: a token per type parameter
         /// @param type the type of the fact
         /// @param result the fact, in terms of the parameters
+        /// @param doc the comment: the method the fact is of, and what its parameters are
         record Factory(
                 String name,
                 boolean isStatic,
                 List<TypeParam> typeParams,
                 List<Witness> witnesses,
                 TypeRef type,
-                Expr result)
+                Expr result,
+                DocComment doc)
                 implements Spec {}
     }
 
@@ -234,14 +239,15 @@ final class MemberFacts {
                                         constant.name(),
                                         parameterized(family("EnumConstant"), Types.of(self.desc())),
                                         Exprs.field(MetamodelNames.TOKEN)
-                                                .call("constant", Exprs.literal(constant.constant())))),
+                                                .call("constant", Exprs.literal(constant.constant())),
+                                        MetamodelDocs.enumConstant(self.desc(), constant.constant()))),
                         plan.members().stream()
                                 .sorted(Comparator.comparingInt(MemberFacts::group)
                                         .thenComparing(MemberPlan.Fact::name))
                                 .map(fact -> switch (fact.model()) {
-                                    case FieldModel field -> field(fact.name(), field);
-                                    case CtorModel ctor -> ctor(fact.name(), ctor);
-                                    case MethodModel method -> method(fact.name(), method);
+                                    case FieldModel field -> field(fact, field);
+                                    case CtorModel ctor -> ctor(fact, ctor);
+                                    case MethodModel method -> method(fact, method);
                                 }),
                         plan.sam().stream().map(this::sam))
                 .flatMap(Function.identity())
@@ -321,13 +327,15 @@ final class MemberFacts {
 
     /// A field for a member without type parameters of its own: assigned by
     /// the constructor for an instance member of a generic type.
-    private Spec value(String name, TypeRef type, Expr init, Scope scope) {
-        return scope.instance() ? new Spec.Assigned(name, type, init) : new Spec.Constant(name, type, init);
+    private Spec value(String name, TypeRef type, Expr init, Scope scope, DocComment doc) {
+        return scope.instance() ? new Spec.Assigned(name, type, init, doc) : new Spec.Constant(name, type, init, doc);
     }
 
     // ---- fields
 
-    private Spec field(String name, FieldModel field) {
+    private Spec field(MemberPlan.Fact fact, FieldModel field) {
+        String name = fact.name();
+        DocComment doc = MetamodelDocs.fact(fact);
         Scope scope = scope(field.isStatic());
         TypeRef type = phantom(field.type(), scope);
         TypeRef owner = ownerType();
@@ -341,19 +349,22 @@ final class MemberFacts {
                             name,
                             parameterized(family("StaticFieldRef"), type),
                             unsafe("constantField", owned, nameLiteral, token, constantValue(constant.value())),
-                            scope);
+                            scope,
+                            doc);
                 case FieldModel.Mutability.Final _ ->
                     value(
                             name,
                             parameterized(family("StaticFieldRef"), type),
                             unsafe("staticField", owned, nameLiteral, token),
-                            scope);
+                            scope,
+                            doc);
                 case FieldModel.Mutability.Mutable _ ->
                     value(
                             name,
                             parameterized(family("MutableStaticFieldRef"), type),
                             unsafe("mutableStaticField", owned, nameLiteral, token),
-                            scope);
+                            scope,
+                            doc);
             };
         }
         return switch (field.mutability()) {
@@ -362,13 +373,15 @@ final class MemberFacts {
                         name,
                         parameterized(family("MutableFieldRef"), owner, type),
                         unsafe("mutableField", owned, nameLiteral, token),
-                        scope);
+                        scope,
+                        doc);
             case FieldModel.Mutability.Final _ ->
                 value(
                         name,
                         parameterized(family("FieldRef"), owner, type),
                         unsafe("field", owned, nameLiteral, token),
-                        scope);
+                        scope,
+                        doc);
             case FieldModel.Mutability.Constant _ ->
                 throw new IllegalStateException("an instance field is not a constant: " + field.name());
         };
@@ -400,7 +413,8 @@ final class MemberFacts {
 
     // ---- constructors and methods
 
-    private Spec ctor(String name, CtorModel ctor) {
+    private Spec ctor(MemberPlan.Fact fact, CtorModel ctor) {
+        String name = fact.name();
         if (!ctor.typeParams().isEmpty()) {
             throw new IllegalStateException("a generic constructor has no fact: " + name);
         }
@@ -421,13 +435,20 @@ final class MemberFacts {
                 name,
                 parameterized(family(family), typeArgs),
                 unsafe(isAbstract ? "abstractCtor" : "ctor", args),
-                scope);
+                scope,
+                MetamodelDocs.fact(fact));
     }
 
-    private Spec method(String name, MethodModel method) {
+    private Spec method(MemberPlan.Fact fact, MethodModel method) {
+        String name = fact.name();
         if (method.typeParams().isEmpty()) {
             Scope scope = scope(method.isStatic());
-            return value(name, methodType(method, scope), methodFact(method, List.of(), scope), scope);
+            return value(
+                    name,
+                    methodType(method, scope),
+                    methodFact(method, List.of(), scope),
+                    scope,
+                    MetamodelDocs.fact(fact));
         }
         Scope outer = scope(method.isStatic());
         List<String> declared =
@@ -474,7 +495,8 @@ final class MemberFacts {
                 typeParams,
                 witnesses,
                 methodType(method, scope),
-                methodFact(method, witnessTokens, scope));
+                methodFact(method, witnessTokens, scope),
+                MetamodelDocs.factory(fact, names, local.witnesses()));
     }
 
     /// The names of the type parameters of a generic method and of its parameters.
@@ -556,7 +578,12 @@ final class MemberFacts {
         String family =
                 (isVoid ? "VoidSam" : "Sam") + requireArity(method.params().size());
         Expr fact = sam.reuse().<Expr>map(Exprs::field).orElseGet(() -> methodFact(method, List.of(), scope));
-        return value("sam", parameterized(family(family), typeArgs), unsafe(isVoid ? "voidSam" : "sam", fact), scope);
+        return value(
+                "sam",
+                parameterized(family(family), typeArgs),
+                unsafe(isVoid ? "voidSam" : "sam", fact),
+                scope,
+                MetamodelDocs.sam(sam));
     }
 
     private static int requireArity(int arity) {
