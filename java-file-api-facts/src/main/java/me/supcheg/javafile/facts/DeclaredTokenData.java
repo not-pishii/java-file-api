@@ -13,18 +13,25 @@ abstract class DeclaredTokenData {
     private final TypeShape<?> shape;
     private final ClassOrInterfaceTypeRef typeRef;
     private final List<ClassDesc> arguments;
+    private final List<TokenArg> typeArguments;
     private volatile @Nullable MethodTable methods;
 
     DeclaredTokenData(TypeShape<?> shape, List<TokenArg> args) {
-        this(shape, shape.typeRef(args), shape.erasures(args));
+        this(shape, shape.typeRef(args), shape.erasures(args), args);
     }
 
     /// @param typeRef the shape's type, raw or with one type argument per type parameter
     /// @param arguments the erasures the shape's method table is instantiated with
     DeclaredTokenData(TypeShape<?> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+        this(shape, typeRef, arguments, List.of());
+    }
+
+    private DeclaredTokenData(
+            TypeShape<?> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments, List<TokenArg> args) {
         this.shape = shape;
         this.typeRef = typeRef;
         this.arguments = List.copyOf(arguments);
+        this.typeArguments = List.copyOf(args);
     }
 
     public final TypeShape<?> shape() {
@@ -49,6 +56,10 @@ abstract class DeclaredTokenData {
 
     public final List<ClassDesc> argumentErasures() {
         return arguments;
+    }
+
+    public final List<TokenArg> typeArguments() {
+        return typeArguments;
     }
 
     /// The shape's method table instantiated with the erasures of the type

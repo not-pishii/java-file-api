@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.Integer_;
 import me.supcheg.javafile.facts.jdk.Object_;
 import me.supcheg.javafile.facts.jdk.PrintStream_;
@@ -40,7 +41,7 @@ class ScopeChecksTest {
     /// A class with one method `int m(boolean flag)`; `flag` is a condition
     /// javac cannot fold.
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Prim.Bool>, Terminated<Prim.Int>> body) {
-        return TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 cb.method("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN, (b, _, flag) -> body.apply(b, flag));
@@ -95,16 +96,17 @@ class ScopeChecksTest {
             List<Var<Prim.Int>> host = new ArrayList<>();
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
-                                host.add(p);
-                                return b.return_(p);
-                            });
-                            cb.method("b", PrimitiveToken.INT, (b, _) -> b.return_(host.getFirst()));
-                        }
-                    }))
+                    .isThrownBy(() -> TypedJavaFile.class_(
+                            UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
+                                        host.add(p);
+                                        return b.return_(p);
+                                    });
+                                    cb.method("b", PrimitiveToken.INT, (b, _) -> b.return_(host.getFirst()));
+                                }
+                            }))
                     .withMessageContaining("parameter of type int declared in the body of method a is used in the"
                             + " body of method b");
         }
@@ -114,16 +116,17 @@ class ScopeChecksTest {
             List<Var<Prim.Int>> host = new ArrayList<>();
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
-                                host.add(p);
-                                return b.return_(p);
-                            });
-                            cb.field("f", PrimitiveToken.INT, host.getFirst());
-                        }
-                    }))
+                    .isThrownBy(() -> TypedJavaFile.class_(
+                            UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
+                                        host.add(p);
+                                        return b.return_(p);
+                                    });
+                                    cb.field("f", PrimitiveToken.INT, host.getFirst());
+                                }
+                            }))
                     .withMessageContaining("is used in the initializer of field f");
         }
 
@@ -226,10 +229,7 @@ class ScopeChecksTest {
                             lambdaBody.set(lambda);
                         });
                         Node lambda = new Node.Lambda(
-                                Object_.TOKEN.typeRef(),
-                                Object_.hashCode,
-                                List.of(),
-                                new Node.LambdaBody.Block(lambdaBody.get()));
+                                Object_.hashCode, List.of(), new Node.LambdaBody.Block(lambdaBody.get()));
                         return root.let(Object_.TOKEN, Expr.of(lambda, Object_.TOKEN), _ -> root);
                     }))
                     .withMessageContaining("a lambda built in the then-branch of if_ in body of method m is used in"
@@ -455,16 +455,17 @@ class ScopeChecksTest {
             AtomicReference<Terminated<Prim.Int>> other = new AtomicReference<>();
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method("a", PrimitiveToken.INT, (b, _) -> {
-                                other.set(b.return_(literal(1)));
-                                return other.get();
-                            });
-                            cb.method("b", PrimitiveToken.INT, (_, _) -> other.get());
-                        }
-                    }))
+                    .isThrownBy(() -> TypedJavaFile.class_(
+                            UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    cb.method("a", PrimitiveToken.INT, (b, _) -> {
+                                        other.set(b.return_(literal(1)));
+                                        return other.get();
+                                    });
+                                    cb.method("b", PrimitiveToken.INT, (_, _) -> other.get());
+                                }
+                            }))
                     .withMessageContaining("handed back for the body of method b was issued by the body of method a");
         }
     }
@@ -477,7 +478,9 @@ class ScopeChecksTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod((b, _) -> {
                         TypedJavaFile.class_(
-                                ClassDesc.of("me.supcheg.example", "Inner"), new TypedJavaFile.TypedClassSpec() {
+                                UnsafeFacts.unverifiedClasspath(),
+                                ClassDesc.of("me.supcheg.example", "Inner"),
+                                new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {}
                                 });
@@ -490,21 +493,22 @@ class ScopeChecksTest {
         @Test
         void aMemberDeclaredInsideAMethodBodyIsRejected() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            cb.method(
-                                    "outer",
-                                    PrimitiveToken.INT,
-                                    (b, _) -> b.if_(
-                                                    literal(true),
-                                                    _ -> cb.method(
-                                                            "inner",
-                                                            PrimitiveToken.INT,
-                                                            (x, _) -> x.return_(literal(1))))
-                                            .return_(literal(0)));
-                        }
-                    }))
+                    .isThrownBy(() -> TypedJavaFile.class_(
+                            UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    cb.method(
+                                            "outer",
+                                            PrimitiveToken.INT,
+                                            (b, _) -> b.if_(
+                                                            literal(true),
+                                                            _ -> cb.method(
+                                                                    "inner",
+                                                                    PrimitiveToken.INT,
+                                                                    (x, _) -> x.return_(literal(1))))
+                                                    .return_(literal(0)));
+                                }
+                            }))
                     .withMessageContaining("cannot declare int me.supcheg.example.Probe.inner()")
                     .withMessageContaining("while the then-branch of if_ in body of method outer is being built");
         }
@@ -512,7 +516,7 @@ class ScopeChecksTest {
         @Test
         void aMemberDeclaredAfterTheClassWasBuiltIsRejected() {
             List<TypedClassBuilder<?>> leaked = new ArrayList<>();
-            TypedJavaFile.class_(DESC, leaked::add);
+            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, leaked::add);
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> leaked.getFirst().field("late", PrimitiveToken.INT, literal(1)))

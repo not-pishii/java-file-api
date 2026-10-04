@@ -4,6 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -23,19 +24,21 @@ class PointCompileTest {
 
     @Test
     void typedPointClassRendersAndCompiles() {
-        JavaFile file = TypedJavaFile.class_(POINT, new TypedJavaFile.TypedClassSpec() {
-            @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
-                var x = cb.field("x", PrimitiveToken.INT, literal(1));
-                var y = cb.field("y", PrimitiveToken.INT, literal(2));
+        JavaFile file =
+                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), POINT, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                        var x = cb.field("x", PrimitiveToken.INT, literal(1));
+                        var y = cb.field("y", PrimitiveToken.INT, literal(2));
 
-                cb.method(
-                        "sumOfSquares",
-                        PrimitiveToken.INT,
-                        (body, self) -> body.return_(addInt(
-                                mulInt(field(self, x), field(self, x)), mulInt(field(self, y), field(self, y)))));
-            }
-        });
+                        cb.method(
+                                "sumOfSquares",
+                                PrimitiveToken.INT,
+                                (body, self) -> body.return_(addInt(
+                                        mulInt(field(self, x), field(self, x)),
+                                        mulInt(field(self, y), field(self, y)))));
+                    }
+                });
 
         Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
 

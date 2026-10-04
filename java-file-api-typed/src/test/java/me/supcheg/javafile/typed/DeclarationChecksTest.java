@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.jdk.Math_;
 import me.supcheg.javafile.facts.jdk.Object_;
 import me.supcheg.javafile.facts.jdk.String_;
@@ -26,7 +27,7 @@ class DeclarationChecksTest {
 
     /// Declares the class `Probe` with the given members.
     private static void declare(Consumer<TypedClassBuilder<?>> members) {
-        TypedJavaFile.class_(DESC, members::accept);
+        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
     }
 
     @Nested
@@ -69,16 +70,17 @@ class DeclarationChecksTest {
         @Test
         void aDefinitionInsideAMethodBodyIsRejected() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> TypedJavaFile.class_(DESC, new TypedJavaFile.TypedClassSpec() {
-                        @Override
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                            var late = cb.declareVoidMethod("late");
-                            cb.voidMethod("outer", (b, _) -> {
-                                cb.define(late, (x, _) -> x.end());
-                                return b.end();
-                            });
-                        }
-                    }))
+                    .isThrownBy(() -> TypedJavaFile.class_(
+                            UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                                @Override
+                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    var late = cb.declareVoidMethod("late");
+                                    cb.voidMethod("outer", (b, _) -> {
+                                        cb.define(late, (x, _) -> x.end());
+                                        return b.end();
+                                    });
+                                }
+                            }))
                     .withMessageContaining("cannot declare void me.supcheg.example.Probe.late() while the body of"
                             + " method outer is being built");
         }
@@ -202,7 +204,9 @@ class DeclarationChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> TypedJavaFile.class_(
-                            ClassDesc.of("me.supcheg.example", "Other"), new TypedJavaFile.TypedClassSpec() {
+                            UnsafeFacts.unverifiedClasspath(),
+                            ClassDesc.of("me.supcheg.example", "Other"),
+                            new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     cb.method(

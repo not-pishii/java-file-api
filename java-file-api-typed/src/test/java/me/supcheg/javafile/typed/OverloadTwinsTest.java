@@ -131,12 +131,15 @@ class OverloadTwinsTest {
 
     /// Renders `static String call(R receiver) { return <body>; }`.
     private static <R> String render(RefToken<R> receiver, Function<Expr<R>, Expr<String>> body) {
-        return TypedJavaFile.class_(ClassDesc.of("me.supcheg.example", "Twins"), new TypedJavaFile.TypedClassSpec() {
-                    @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.staticMethod("call", String_.TOKEN, receiver, (b, r) -> b.return_(body.apply(r)));
-                    }
-                })
+        return TypedJavaFile.class_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        ClassDesc.of("me.supcheg.example", "Twins"),
+                        new TypedJavaFile.TypedClassSpec() {
+                            @Override
+                            public <Self> void build(TypedClassBuilder<Self> cb) {
+                                cb.staticMethod("call", String_.TOKEN, receiver, (b, r) -> b.return_(body.apply(r)));
+                            }
+                        })
                 .render();
     }
 

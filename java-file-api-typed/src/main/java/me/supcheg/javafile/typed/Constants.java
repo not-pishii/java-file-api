@@ -34,7 +34,7 @@ final class Constants {
             case Node.Binary(var op, var left, var right, var ignored) -> binary(op, fold(left), fold(right));
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 cond(fold(condition), fold(whenTrue), fold(whenFalse));
-            case Node.Cast(var type, var operand) -> cast(type, fold(operand));
+            case Node.Cast(var type, var operand) -> cast(type.typeRef(), fold(operand));
             default -> null;
         };
     }

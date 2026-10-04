@@ -39,6 +39,14 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     /// @return the erasures, empty for a type that is not generic
     List<ClassDesc> argumentErasures();
 
+    /// The type arguments the token applies [#shape()] to, as tokens: what
+    /// [TargetClasspath#verify(TypeToken)] reaches the metamodels of the
+    /// type arguments through.
+    ///
+    /// @return the type arguments, one per type parameter; empty for a type that is not generic, for a
+    ///         raw type, and for a token vouched for by a type reference, which has no tokens of them
+    List<TokenArg> typeArguments();
+
     /// The methods of the type, instance and `static`, declared and inherited, as runtime
     /// data for the completeness checks of lowering.
     ///

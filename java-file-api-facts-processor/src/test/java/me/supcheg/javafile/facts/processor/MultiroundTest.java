@@ -294,7 +294,8 @@ class MultiroundTest {
 
                 public final class Run {
                     public static String inherited() {
-                        return TypedJavaFile.class_(ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                        return TypedJavaFile.class_(
+                    me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {
                                         cb.staticMethod(
