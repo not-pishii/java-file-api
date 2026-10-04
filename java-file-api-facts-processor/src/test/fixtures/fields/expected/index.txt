@@ -1,0 +1,9 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> gen.facts.java.lang.Object_
+META-INF/javafile/metamodel/full/p.Impl -> gen.facts.p.Impl_
+META-INF/javafile/metamodel/full/p.PubA -> gen.facts.p.PubA_
+META-INF/javafile/metamodel/full/p.PubB -> gen.facts.p.PubB_
+META-INF/javafile/metamodel/full/p.Sub -> gen.facts.p.Sub_
+META-INF/javafile/metamodel/full/p.Super -> gen.facts.p.Super_
+META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
