@@ -284,8 +284,8 @@ class ScopeChecksTest {
         void aTryWhoseBranchesAllEndIsRejectedWithATryTerminatedHint() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod((b, _) -> b.try_(
-                                    t -> t.return_(literal(1)),
-                                    h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.return_(literal(2))))
+                                    h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                                    t -> t.return_(literal(1)))
                             .return_(literal(3))))
                     .withMessageContaining("cannot complete normally")
                     .withMessageContaining("build it with tryTerminated");
@@ -295,7 +295,7 @@ class ScopeChecksTest {
         void aTryWhoseFinallyEndsIsRejected() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod((b, _) -> b.try_(
-                                    t -> t.exec(print(literal(1))), h -> h.finally_(f -> f.return_(literal(2))))
+                                    h -> h.finally_(f -> f.return_(literal(2))), t -> t.exec(print(literal(1))))
                             .return_(literal(3))))
                     .withMessageContaining("build it with tryTerminated");
         }
@@ -356,7 +356,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> intMethod((b, _) -> b.while_(
                                     literal(true),
                                     (loop, ctl) -> loop.tryTerminated(
-                                            t -> t.break_(ctl), h -> h.finally_(f -> f.continue_(ctl))))
+                                            h -> h.finally_(f -> f.continue_(ctl)), t -> t.break_(ctl)))
                             .return_(literal(0))))
                     .withMessageContaining("loopForever");
         }
@@ -396,8 +396,8 @@ class ScopeChecksTest {
         @Test
         void aSecondFinallyIsRejected() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> intMethod(
-                            (b, _) -> b.try_(_ -> {}, h -> h.finally_(_ -> {}).finally_(_ -> {}))
+                    .isThrownBy(() ->
+                            intMethod((b, _) -> b.try_(h -> h.finally_(_ -> {}).finally_(_ -> {}), _ -> {})
                                     .return_(literal(0))))
                     .withMessageContaining("already has a finally_ block");
         }

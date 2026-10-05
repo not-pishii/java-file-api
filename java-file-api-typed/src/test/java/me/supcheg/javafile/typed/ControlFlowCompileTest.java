@@ -66,10 +66,10 @@ class ControlFlowCompileTest {
                                 PrimitiveToken.INT,
                                 String_.TOKEN,
                                 (b, s) -> b.tryTerminated(
-                                        t -> t.return_(staticCall(Integer_.parseInt_String, s)),
                                         h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
                                                 .finally_(f -> f.exec(
-                                                        voidCall(staticField(System_.out), PrintStream_.println)))));
+                                                        voidCall(staticField(System_.out), PrintStream_.println))),
+                                        t -> t.return_(staticCall(Integer_.parseInt_String, s))));
 
                         // if (flag) {} else { return; } — a void body may fall off the end
                         cb.voidStaticMethod(
@@ -82,9 +82,9 @@ class ControlFlowCompileTest {
                                 "recover",
                                 PrimitiveToken.INT,
                                 b -> b.try_(
-                                                t -> t.return_(literal(1)),
                                                 h -> h.catch_(
-                                                        RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))))
+                                                        RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))),
+                                                t -> t.return_(literal(1)))
                                         .return_(literal(2)));
 
                         // while (true) { if (i >= n) break; i = i + 1; } return i;

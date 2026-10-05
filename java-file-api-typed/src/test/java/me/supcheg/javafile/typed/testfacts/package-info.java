@@ -16,7 +16,8 @@
     Stream.class,
     String.class,
     StringReader.class,
-    System.class
+    System.class,
+    UnsupportedEncodingException.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -25,6 +26,7 @@ import me.supcheg.javafile.facts.meta.Facts;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

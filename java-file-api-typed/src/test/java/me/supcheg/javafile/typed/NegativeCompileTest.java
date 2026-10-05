@@ -302,8 +302,8 @@ class NegativeCompileTest {
         assertRejected(
                 "TryBlockNotEnding",
                 inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
-                        + "t -> t.exec(call(literal(\"x\"), String_.length)),"
-                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1)))));"),
+                        + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1))),"
+                        + " t -> t.exec(call(literal(\"x\"), String_.length))));"),
                 "bad return type in lambda expression");
     }
 
@@ -312,9 +312,9 @@ class NegativeCompileTest {
         assertRejected(
                 "CatchNotEnding",
                 inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
-                        + "t -> t.return_(literal(1)),"
-                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
-                        + " String_.length)))));"),
+                        + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
+                        + " String_.length))),"
+                        + " t -> t.return_(literal(1))));"),
                 "bad return type in lambda expression");
     }
 
@@ -448,7 +448,7 @@ class NegativeCompileTest {
     void aCatchOfWhatIsNotThrowableDoesNotCompile() {
         assertRejected(
                 "CatchOfAString",
-                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(t -> {}, h -> h.catch_(String_.TOKEN, (c, e) -> {}))"
+                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(h -> h.catch_(String_.TOKEN, (c, e) -> {}), t -> {})"
                         + ".end());"),
                 "method catch_ in class me.supcheg.javafile.typed.Handlers<B> cannot be applied to given types",
                 "upper bounds: java.lang.Throwable");
@@ -469,9 +469,48 @@ class NegativeCompileTest {
         assertRejected(
                 "CaughtType",
                 inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
-                        + "t -> t.return_(literal(1)),"
-                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_("
-                        + "call(e, Integer_.intValue)))));"),
+                        + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_("
+                        + "call(e, Integer_.intValue))),"
+                        + " t -> t.return_(literal(1))));"),
                 "no suitable method found for call(me.supcheg.javafile.typed.Var<java.lang.RuntimeException>");
+    }
+
+    @Test
+    void theHandlersOfATryComeBeforeItsTryBlock() {
+        // the order of the parameters is the order of building
+        assertRejected(
+                "TryBlockFirst",
+                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(t -> {}, h -> h.finally_(f -> {})).end());"),
+                "cannot find symbol",
+                "location: variable h of type me.supcheg.javafile.typed.VoidBody");
+    }
+
+    @Test
+    void aThrowsClauseDeclaresMembersAndDefinesNone() {
+        // throwing(...) gives the declarations of methods and constructors alone
+        assertRejected(
+                "ThrowingDefines",
+                inClass("var m = cb.declareVoidStaticMethod(\"m\");"
+                        + " cb.throwing(RuntimeException_.TOKEN).define(m, VoidBody::end);"),
+                "cannot find symbol",
+                "symbol:   method define(");
+    }
+
+    @Test
+    void aThrowsClauseDeclaresNoField() {
+        assertRejected(
+                "ThrowingField",
+                inClass("cb.throwing(RuntimeException_.TOKEN).field(\"f\", PrimitiveToken.INT, literal(1));"),
+                "cannot find symbol",
+                "symbol:   method field(");
+    }
+
+    @Test
+    void aThrowsClauseIsGivenAtOnce() {
+        assertRejected(
+                "ThrowingTwice",
+                inClass("cb.throwing(RuntimeException_.TOKEN).throwing(RuntimeException_.TOKEN);"),
+                "cannot find symbol",
+                "symbol:   method throwing(");
     }
 }
