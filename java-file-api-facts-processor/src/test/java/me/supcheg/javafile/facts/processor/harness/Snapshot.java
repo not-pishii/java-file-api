@@ -42,7 +42,9 @@ public record Snapshot(SortedMap<String, String> files) {
 
     /// The system property that makes [#verify] accept the output: `true`,
     /// or set to nothing, as `-Pfixtures.update` of the build sets it.
-    public static final String UPDATE = "fixtures.update";
+    public static final String UPDATE_FLAG = "fixtures.update";
+
+    public static final ScopedValue<Boolean> UPDATE = ScopedValue.newInstance();
 
     /// The file of the resources.
     public static final String INDEX = "index.txt";
@@ -169,7 +171,7 @@ public record Snapshot(SortedMap<String, String> files) {
     }
 
     /// Compares this snapshot with the one a directory holds and fails the
-    /// test with the difference — or, if the system property [#UPDATE] is
+    /// test with the difference — or, if the system property [#UPDATE_FLAG] is
     /// set, makes the directory hold this snapshot.
     ///
     /// @param directory the directory of the snapshot expected
@@ -197,7 +199,7 @@ public record Snapshot(SortedMap<String, String> files) {
             throw new AssertionFailedError(
                     "the output is not what " + Text.path(directory) + " holds: " + differences.size()
                             + (differences.size() == 1 ? " file differs" : " files differ")
-                            + "; if the new output is right, accept it with -P" + UPDATE + "\n\n"
+                            + "; if the new output is right, accept it with -P" + UPDATE_FLAG + "\n\n"
                             + differences.stream().map(Difference::render).collect(Collectors.joining("\n")),
                     expected.concatenated(),
                     concatenated());
@@ -254,11 +256,9 @@ public record Snapshot(SortedMap<String, String> files) {
 
     /// Whether [#verify] accepts the output instead of comparing it.
     ///
-    /// @return whether the system property [#UPDATE] is set
+    /// @return whether the system property [#UPDATE_FLAG] is set
     public static boolean updating() {
-        return Optional.ofNullable(System.getProperty(UPDATE))
-                .filter(value -> !value.equals("false"))
-                .isPresent();
+        return UPDATE.isBound() ? UPDATE.get() : System.getProperty(UPDATE_FLAG) != null;
     }
 
     /// Every file after its path: what a diff viewer shows of the snapshot.

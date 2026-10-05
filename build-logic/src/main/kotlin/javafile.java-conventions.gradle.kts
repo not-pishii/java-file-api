@@ -36,6 +36,8 @@ tasks {
         jvmArgumentProviders.add(objects.newInstance<MockitoAgentProvider>().apply {
             path = mockitoAgent.asFileTree.singleFile
         })
+        systemProperty("junit.jupiter.execution.parallel.enabled", true)
+        systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
     }
 }
 
