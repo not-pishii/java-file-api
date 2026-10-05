@@ -3,8 +3,8 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.PrimitiveToken;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 import org.jspecify.annotations.Nullable;
 
 /// Constant folding of JLS 15.29, for reachability (JLS 14.22): a loop

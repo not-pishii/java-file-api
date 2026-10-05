@@ -32,10 +32,10 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
-import me.supcheg.javafile.facts.jdk.Math_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
+import me.supcheg.javafile.typed.jdk.facts.java.lang.Math_;
+import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -530,7 +530,7 @@ public final class Expressions {
     /// Checked narrowing, `Math.toIntExact(operand)`: throws
     /// `ArithmeticException` at run time for a value out of the `int` range.
     public static Expr<Prim.Int> narrowCheckedLongToInt(Expr<Prim.Long> operand) {
-        return staticCall(Math_.toIntExact, operand);
+        return staticCall(Math_.toIntExact_long, operand);
     }
 
     /// Truncating narrowing, `(int) operand`: keeps the low 32 bits of a
