@@ -10,10 +10,13 @@ import java.util.stream.Stream;
 /// with such a name would hide what the name stands for.
 ///
 /// The source is that of the core renderer for a metamodel: string and
-/// character literals, comments, no text blocks. A word of a comment is no
+/// character literals, text blocks, comments. A word of a comment is no
 /// name: the comments of a metamodel tell of its type in prose, and what
-/// they say names no fact.
+/// they say names no fact. Nor is a word of a text block: the canonical form
+/// of the type is one.
 final class SourceNames {
+    private static final String TEXT_BLOCK = "\"\"\"";
+
     private SourceNames() {}
 
     /// The names in the body of a class.
@@ -81,14 +84,14 @@ final class SourceNames {
         return names.stream();
     }
 
-    /// The index after the string or character literal that starts at `start`.
+    /// The index after the string or character literal or the text block that starts at `start`.
     private static int afterLiteral(String source, int start) {
-        char quote = source.charAt(start);
-        int i = start + 1;
-        while (source.charAt(i) != quote) {
+        String quote = source.startsWith(TEXT_BLOCK, start) ? TEXT_BLOCK : source.substring(start, start + 1);
+        int i = start + quote.length();
+        while (!source.startsWith(quote, i)) {
             i += source.charAt(i) == '\\' ? 2 : 1;
         }
-        return i + 1;
+        return i + quote.length();
     }
 
     /// Where in the source of a class a character is.
