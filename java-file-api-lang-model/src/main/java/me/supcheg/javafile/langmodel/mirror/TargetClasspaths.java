@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
 ///         try {
 ///             JavaFile file = TypedJavaFile.class_(target, desc, spec);
 ///             JavaFileWriter.writeTo(file, processingEnv.getFiler(), element);
-///         } catch (TargetClasspathMismatchException e) {
+///         } catch (FactException e) {
+///             // a metamodel that does not hold of this compilation, or a fact lowering rejects there
 ///             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), element);
 ///         }
 ///         …

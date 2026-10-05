@@ -7,6 +7,7 @@ import gen.facts.p.Lib_;
 import gen.facts.p.Svc_;
 import java.lang.constant.ClassDesc;
 import java.util.function.Function;
+import me.supcheg.javafile.facts.FactException;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
@@ -232,6 +233,33 @@ public final class Versions {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> rendered(added, put))
                 .withMessageContaining("put(java.lang.String)");
+    }
+
+    public static void aMismatchAndARejectedFactAreCaughtAsOneAndToldApart(Typed typed) {
+        Box_<String> box = new Box_<>(String_.TOKEN);
+        Function<Expr<String>, Expr<String>> put = s -> call(new_(box.new_), box.put_T, s);
+
+        assertThat(caught(() -> rendered(typed.against("removed-method"), Versions::m)))
+                .isEqualTo("mismatch of Svc: 1");
+        assertThat(caught(() -> rendered(typed.against("added-twin"), put)))
+                .isEqualTo("lookup: [put(java.lang.String)]");
+        assertThat(caught(() -> rendered(typed, Versions::m))).isEqualTo("rendered");
+    }
+
+    /// What a generator that catches the one exception of the facts makes
+    /// of each kind of it: the switch has no default.
+    private static String caught(Runnable rendering) {
+        try {
+            rendering.run();
+            return "rendered";
+        } catch (FactException e) {
+            return switch (e) {
+                case FactLookupException lookup -> "lookup: " + lookup.similar();
+                case TargetClasspathMismatchException mismatch ->
+                    "mismatch of " + mismatch.type().displayName() + ": "
+                            + mismatch.differences().size();
+            };
+        }
     }
 
     public static void aMetamodelThatIsNotUsedIsNotChecked(Typed typed) {
