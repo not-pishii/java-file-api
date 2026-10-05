@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor.harness;
 
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.typed.Expr;
+import me.supcheg.javafile.typed.TypedJavaFile;
 
 import java.util.List;
 import java.util.function.Function;
@@ -37,6 +38,15 @@ public interface Typed {
     /// @param <P> the type of the parameter
     /// @return the source
     <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body);
+
+    /// The source of class `out.Out` as `spec` declares it, rendered as [#render(TypeToken, TypeToken,
+    /// Function)] renders: against the target classpath of a compilation that has the library alone.
+    /// For what one static method that returns an expression does not show — a `throws` clause, a
+    /// `try`.
+    ///
+    /// @param spec declares the members of the class
+    /// @return the source
+    String render(TypedJavaFile.TypedClassSpec spec);
 
     /// Renders class `out.Out` with `public static R go(P p)` that returns
     /// `body` of its parameter, compiles it under every lint with warnings
