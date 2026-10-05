@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [EnumDesc]: its shape and its token, no facts of its members.
 ///
@@ -37,6 +38,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Enum_EnumDesc_<E extends Enum<E>> {
     /// The shape of [EnumDesc] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,20 @@ public final class Enum_EnumDesc_<E extends Enum<E>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [EnumDesc].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Enum$EnumDesc final-class sealed=no\ntparams #0 extends java.lang.Enum<#0>\nsuperclasses java.lang.constant.DynamicConstantDesc; java.lang.Object\ninterfaces java.lang.constant.ConstantDesc\nsupertypes java.lang.constant.DynamicConstantDesc<#0>\nenum -\nmembers none\ntable abstract -\ntable concrete bootstrapArgs(); bootstrapArgsList(); bootstrapMethod(); clone(); constantName(); constantType(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.constant.ClassDesc, java.lang.String); of(java.lang.constant.DirectMethodHandleDesc); of(java.lang.constant.DirectMethodHandleDesc, java.lang.constant.ConstantDesc[]); ofCanonical(java.lang.constant.DirectMethodHandleDesc, java.lang.String, java.lang.constant.ClassDesc, java.lang.constant.ConstantDesc[]); ofNamed(java.lang.constant.DirectMethodHandleDesc, java.lang.String, java.lang.constant.ClassDesc, java.lang.constant.ConstantDesc[])\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Enum$EnumDesc final-class sealed=no
+        tparams #0 extends java.lang.Enum<#0>
+        superclasses java.lang.constant.DynamicConstantDesc; java.lang.Object
+        interfaces java.lang.constant.ConstantDesc
+        supertypes java.lang.constant.DynamicConstantDesc<#0>
+        enum -
+        members none
+        table abstract -
+        table concrete bootstrapArgs(); bootstrapArgsList(); bootstrapMethod(); clone(); constantName(); constantType(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); toString(); wait(); wait(long); wait(long, int)
+        table static of(java.lang.constant.ClassDesc, java.lang.String); of(java.lang.constant.DirectMethodHandleDesc); of(java.lang.constant.DirectMethodHandleDesc, java.lang.constant.ConstantDesc[]); ofCanonical(java.lang.constant.DirectMethodHandleDesc, java.lang.String, java.lang.constant.ClassDesc, java.lang.constant.ConstantDesc[]); ofNamed(java.lang.constant.DirectMethodHandleDesc, java.lang.String, java.lang.constant.ClassDesc, java.lang.constant.ConstantDesc[])
+        table ctor -
+        """;
 
         private Canonical() {
         }

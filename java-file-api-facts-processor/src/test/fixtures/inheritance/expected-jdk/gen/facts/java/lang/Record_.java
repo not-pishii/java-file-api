@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Record]: a fact of every `public` member the type declares.
 ///
@@ -39,6 +40,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Record_ {
     /// The shape of [Record] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,23 @@ public final class Record_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Record].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Record abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract equals(java.lang.Object) -> boolean throws -\nmember method abstract hashCode() -> int throws -\nmember method abstract toString() -> java.lang.String throws -\ntable abstract equals(java.lang.Object); hashCode(); toString()\ntable concrete clone(); finalize(); getClass(); notify(); notifyAll(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Record()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Record abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract equals(java.lang.Object) -> boolean throws -
+        member method abstract hashCode() -> int throws -
+        member method abstract toString() -> java.lang.String throws -
+        table abstract equals(java.lang.Object); hashCode(); toString()
+        table concrete clone(); finalize(); getClass(); notify(); notifyAll(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Record()
+        """;
 
         private Canonical() {
         }

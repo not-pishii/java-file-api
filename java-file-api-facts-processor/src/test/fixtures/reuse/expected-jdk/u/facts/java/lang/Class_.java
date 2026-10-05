@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import u.facts.java.lang.Class_.Canonical;
 import u.facts.java.lang.Class_.Data;
 
@@ -36,6 +37,7 @@ import u.facts.java.lang.Class_.Data;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Class_<T> {
     /// The shape of [Class] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,20 @@ public final class Class_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Class].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Class final-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable; java.lang.constant.Constable; java.lang.invoke.TypeDescriptor; java.lang.invoke.TypeDescriptor$OfField; java.lang.reflect.AnnotatedElement; java.lang.reflect.GenericDeclaration; java.lang.reflect.Type\nsupertypes java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<?>>\nenum -\nmembers none\ntable abstract -\ntable concrete accessFlags(); arrayType(); asSubclass(java.lang.Class); casAnnotationType(sun.reflect.annotation.AnnotationType, sun.reflect.annotation.AnnotationType); cast(java.lang.Object); clone(); componentType(); describeConstable(); descriptorString(); desiredAssertionStatus(); enumConstantDirectory(); equals(java.lang.Object); finalize(); findMethod(boolean, java.lang.String, java.lang.Class[]); getAnnotatedInterfaces(); getAnnotatedSuperclass(); getAnnotation(java.lang.Class); getAnnotationType(); getAnnotations(); getAnnotationsByType(java.lang.Class); getCanonicalName(); getClass(); getClassData(); getClassFileVersion(); getClassLoader(); getClassLoader0(); getClasses(); getComponentType(); getConstantPool(); getConstructor(java.lang.Class[]); getConstructors(); getDeclaredAnnotation(java.lang.Class); getDeclaredAnnotationMap(); getDeclaredAnnotations(); getDeclaredAnnotationsByType(java.lang.Class); getDeclaredClasses(); getDeclaredConstructor(java.lang.Class[]); getDeclaredConstructors(); getDeclaredField(java.lang.String); getDeclaredFields(); getDeclaredMethod(java.lang.String, java.lang.Class[]); getDeclaredMethods(); getDeclaredPublicMethods(java.lang.String, java.lang.Class[]); getDeclaringClass(); getEnclosingClass(); getEnclosingConstructor(); getEnclosingMethod(); getEnumConstants(); getEnumConstantsShared(); getField(java.lang.String); getFields(); getGenericInterfaces(); getGenericSuperclass(); getInterfaces(); getMethod(java.lang.String, java.lang.Class[]); getMethods(); getModifiers(); getModule(); getName(); getNestHost(); getNestMembers(); getPackage(); getPackageName(); getPermittedSubclasses(); getProtectionDomain(); getRawAnnotations(); getRawTypeAnnotations(); getRecordComponents(); getResource(java.lang.String); getResourceAsStream(java.lang.String); getSigners(); getSimpleName(); getSuperclass(); getTypeName(); getTypeParameters(); hashCode(); isAnnotation(); isAnnotationPresent(java.lang.Class); isAnonymousClass(); isArray(); isAssignableFrom(java.lang.Class); isEnum(); isHidden(); isInstance(java.lang.Object); isInterface(); isLocalClass(); isMemberClass(); isNestmateOf(java.lang.Class); isPrimitive(); isRecord(); isSealed(); isSynthetic(); newInstance(); notify(); notifyAll(); setSigners(java.lang.Object[]); toGenericString(); toString(); wait(); wait(long); wait(long, int)\ntable static forName(java.lang.Module, java.lang.String); forName(java.lang.String); forName(java.lang.String, boolean, java.lang.ClassLoader); forPrimitiveName(java.lang.String); getExecutableTypeAnnotationBytes(java.lang.reflect.Executable); getPrimitiveClass(java.lang.String); typeVarBounds(java.lang.reflect.TypeVariable)\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Class final-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces java.io.Serializable; java.lang.constant.Constable; java.lang.invoke.TypeDescriptor; java.lang.invoke.TypeDescriptor$OfField; java.lang.reflect.AnnotatedElement; java.lang.reflect.GenericDeclaration; java.lang.reflect.Type
+        supertypes java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<?>>
+        enum -
+        members none
+        table abstract -
+        table concrete accessFlags(); arrayType(); asSubclass(java.lang.Class); casAnnotationType(sun.reflect.annotation.AnnotationType, sun.reflect.annotation.AnnotationType); cast(java.lang.Object); clone(); componentType(); describeConstable(); descriptorString(); desiredAssertionStatus(); enumConstantDirectory(); equals(java.lang.Object); finalize(); findMethod(boolean, java.lang.String, java.lang.Class[]); getAnnotatedInterfaces(); getAnnotatedSuperclass(); getAnnotation(java.lang.Class); getAnnotationType(); getAnnotations(); getAnnotationsByType(java.lang.Class); getCanonicalName(); getClass(); getClassData(); getClassFileVersion(); getClassLoader(); getClassLoader0(); getClasses(); getComponentType(); getConstantPool(); getConstructor(java.lang.Class[]); getConstructors(); getDeclaredAnnotation(java.lang.Class); getDeclaredAnnotationMap(); getDeclaredAnnotations(); getDeclaredAnnotationsByType(java.lang.Class); getDeclaredClasses(); getDeclaredConstructor(java.lang.Class[]); getDeclaredConstructors(); getDeclaredField(java.lang.String); getDeclaredFields(); getDeclaredMethod(java.lang.String, java.lang.Class[]); getDeclaredMethods(); getDeclaredPublicMethods(java.lang.String, java.lang.Class[]); getDeclaringClass(); getEnclosingClass(); getEnclosingConstructor(); getEnclosingMethod(); getEnumConstants(); getEnumConstantsShared(); getField(java.lang.String); getFields(); getGenericInterfaces(); getGenericSuperclass(); getInterfaces(); getMethod(java.lang.String, java.lang.Class[]); getMethods(); getModifiers(); getModule(); getName(); getNestHost(); getNestMembers(); getPackage(); getPackageName(); getPermittedSubclasses(); getProtectionDomain(); getRawAnnotations(); getRawTypeAnnotations(); getRecordComponents(); getResource(java.lang.String); getResourceAsStream(java.lang.String); getSigners(); getSimpleName(); getSuperclass(); getTypeName(); getTypeParameters(); hashCode(); isAnnotation(); isAnnotationPresent(java.lang.Class); isAnonymousClass(); isArray(); isAssignableFrom(java.lang.Class); isEnum(); isHidden(); isInstance(java.lang.Object); isInterface(); isLocalClass(); isMemberClass(); isNestmateOf(java.lang.Class); isPrimitive(); isRecord(); isSealed(); isSynthetic(); newInstance(); notify(); notifyAll(); setSigners(java.lang.Object[]); toGenericString(); toString(); wait(); wait(long); wait(long, int)
+        table static forName(java.lang.Module, java.lang.String); forName(java.lang.String); forName(java.lang.String, boolean, java.lang.ClassLoader); forPrimitiveName(java.lang.String); getExecutableTypeAnnotationBytes(java.lang.reflect.Executable); getPrimitiveClass(java.lang.String); typeVarBounds(java.lang.reflect.TypeVariable)
+        table ctor -
+        """;
 
         private Canonical() {
         }

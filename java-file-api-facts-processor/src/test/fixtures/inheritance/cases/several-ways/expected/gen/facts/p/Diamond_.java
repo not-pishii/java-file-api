@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Diamond;
 
 /// The full metamodel of [Diamond], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -38,6 +39,7 @@ import p.Diamond;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Diamond_ {
     /// The shape of [Diamond] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -53,7 +55,23 @@ public final class Diamond_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Diamond].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Diamond open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces p.Left; p.Right; p.Root\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant int ROOT = 1\nmember method overridable root() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); root(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Diamond()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Diamond open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces p.Left; p.Right; p.Root
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant int ROOT = 1
+        member method overridable root() -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); root(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Diamond()
+        """;
 
         private Canonical() {
         }

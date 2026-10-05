@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.PolyFn;
 
 /// The full metamodel of [PolyFn], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -33,6 +34,7 @@ import p.PolyFn;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PolyFn_ {
     /// The shape of [PolyFn] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -48,7 +50,21 @@ public final class PolyFn_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PolyFn].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PolyFn interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract <^0> apply(^0) -> ^0 throws -\ntable abstract apply(java.lang.Object)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PolyFn interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract <^0> apply(^0) -> ^0 throws -
+        table abstract apply(java.lang.Object)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

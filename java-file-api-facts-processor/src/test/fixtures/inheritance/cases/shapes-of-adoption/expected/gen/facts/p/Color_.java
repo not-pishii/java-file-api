@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Color;
 
 /// The full metamodel of [Color], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.Color;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Color_ {
     /// The shape of [Color] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,24 @@ public final class Color_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Color].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Color enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; p.HLabel\nsupertypes java.lang.Comparable<p.Color>; java.lang.Enum<p.Color>\nenum RED; GREEN\nmembers declared-public\nmember field static constant java.lang.String NAME = \"name\"\nmember method final label() -> java.lang.String throws -\nmember method static valueOf(java.lang.String) -> p.Color throws -\nmember method static values() -> p.Color[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Color); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); label(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Color enum sealed=no
+        tparams -
+        superclasses java.lang.Enum; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; p.HLabel
+        supertypes java.lang.Comparable<p.Color>; java.lang.Enum<p.Color>
+        enum RED; GREEN
+        members declared-public
+        member field static constant java.lang.String NAME = "name"
+        member method final label() -> java.lang.String throws -
+        member method static valueOf(java.lang.String) -> p.Color throws -
+        member method static values() -> p.Color[] throws -
+        table abstract -
+        table concrete clone(); compareTo(p.Color); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); label(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
+        table static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()
+        table ctor -
+        """;
 
         private Canonical() {
         }

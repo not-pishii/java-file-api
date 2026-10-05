@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Day;
 
 /// The full metamodel of [Day], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.Day;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Day_ {
     /// The shape of [Day] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,25 @@ public final class Day_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Day].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Day enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>\nenum MON; TUE; WED\nmembers declared-public\nmember field static constant int COUNT = 3\nmember method final next() -> p.Day throws -\nmember method static of(int) -> p.Day throws -\nmember method static valueOf(java.lang.String) -> p.Day throws -\nmember method static values() -> p.Day[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Day); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); next(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static of(int); valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Day enum sealed=no
+        tparams -
+        superclasses java.lang.Enum; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>
+        enum MON; TUE; WED
+        members declared-public
+        member field static constant int COUNT = 3
+        member method final next() -> p.Day throws -
+        member method static of(int) -> p.Day throws -
+        member method static valueOf(java.lang.String) -> p.Day throws -
+        member method static values() -> p.Day[] throws -
+        table abstract -
+        table concrete clone(); compareTo(p.Day); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); next(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
+        table static of(int); valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()
+        table ctor -
+        """;
 
         private Canonical() {
         }

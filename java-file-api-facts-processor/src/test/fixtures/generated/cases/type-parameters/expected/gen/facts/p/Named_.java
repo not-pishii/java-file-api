@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Named;
 
 /// The full metamodel of [Named], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -38,6 +39,7 @@ import p.Named;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Named_<Data_, String_, Int> {
     /// The shape of [Named] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -53,7 +55,20 @@ public final class Named_<Data_, String_, Int> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Named].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Named interface sealed=no\ntparams #0; #1; #2\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Named interface sealed=no
+        tparams #0; #1; #2
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        table abstract -
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

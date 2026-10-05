@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.ByHidden;
 
 /// The token-only metamodel of [ByHidden]: its shape and its token, no facts of its members.
@@ -35,6 +36,7 @@ import p.ByHidden;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class ByHidden_ {
     /// The shape of [ByHidden] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,20 @@ public final class ByHidden_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [ByHidden].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.ByHidden open-class sealed=no\ntparams #0 extends p.Hidden\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor ByHidden()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.ByHidden open-class sealed=no
+        tparams #0 extends p.Hidden
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor ByHidden()
+        """;
 
         private Canonical() {
         }

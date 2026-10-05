@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Entry]: its shape and its token, no facts of its members.
 ///
@@ -37,6 +38,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Map_Entry_<K, V> {
     /// The shape of [Entry] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,20 @@ public final class Map_Entry_<K, V> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Entry].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.Map$Entry interface sealed=no\ntparams #0; #1\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract getKey(); getValue(); setValue(#1)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static comparingByKey(); comparingByKey(java.util.Comparator); comparingByValue(); comparingByValue(java.util.Comparator); copyOf(java.util.Map$Entry)\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.Map$Entry interface sealed=no
+        tparams #0; #1
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract getKey(); getValue(); setValue(#1)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static comparingByKey(); comparingByKey(java.util.Comparator); comparingByValue(); comparingByValue(java.util.Comparator); copyOf(java.util.Map$Entry)
+        table ctor -
+        """;
 
         private Canonical() {
         }

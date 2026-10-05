@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Coll;
 
 /// The full metamodel of [Coll]: a fact of every `public` member the type declares.
@@ -43,6 +44,7 @@ import p.Coll;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Coll_<E> {
     /// The shape of [Coll] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,22 @@ public final class Coll_<E> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Coll].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Coll interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract add(#0) -> boolean throws -\nsam add(#0) -> boolean throws -\ntable abstract add(#0)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Coll interface sealed=no
+        tparams #0
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract add(#0) -> boolean throws -
+        sam add(#0) -> boolean throws -
+        table abstract add(#0)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.SubOv;
 
 /// The full metamodel of [SubOv], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -33,6 +34,7 @@ import p.SubOv;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class SubOv_ {
     /// The shape of [SubOv] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -48,7 +50,22 @@ public final class SubOv_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [SubOv].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.SubOv open-class sealed=no\ntparams -\nsuperclasses p.Ov; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable solo(java.lang.String) -> java.lang.String throws -\ntable abstract -\ntable concrete c(java.lang.Comparable); c(java.lang.String); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(java.lang.Object); m(java.lang.String); notify(); notifyAll(); solo(java.lang.Object); solo(java.lang.String); toString(); wait(); wait(long); wait(long, int)\ntable static s(java.lang.Integer); s(java.lang.Object)\ntable ctor SubOv()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.SubOv open-class sealed=no
+        tparams -
+        superclasses p.Ov; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable solo(java.lang.String) -> java.lang.String throws -
+        table abstract -
+        table concrete c(java.lang.Comparable); c(java.lang.String); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(java.lang.Object); m(java.lang.String); notify(); notifyAll(); solo(java.lang.Object); solo(java.lang.String); toString(); wait(); wait(long); wait(long, int)
+        table static s(java.lang.Integer); s(java.lang.Object)
+        table ctor SubOv()
+        """;
 
         private Canonical() {
         }

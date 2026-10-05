@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.T2;
 
 /// The full metamodel of [T2], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.T2;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class T2_<T> {
     /// The shape of [T2] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,27 @@ public final class T2_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [T2].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.T2 open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember ctor() throws -\nmember ctor(java.lang.String) throws -\nmember field instance final java.lang.String made\nmember method overridable m(#0) -> java.lang.String throws -\nmember method overridable m(java.lang.String) -> java.lang.String throws -\nmember method overridable one(#0) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(#0); m(java.lang.String); notify(); notifyAll(); one(#0); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor T2(#0); T2(); T2(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.T2 open-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0) throws -
+        member ctor() throws -
+        member ctor(java.lang.String) throws -
+        member field instance final java.lang.String made
+        member method overridable m(#0) -> java.lang.String throws -
+        member method overridable m(java.lang.String) -> java.lang.String throws -
+        member method overridable one(#0) -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(#0); m(java.lang.String); notify(); notifyAll(); one(#0); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor T2(#0); T2(); T2(java.lang.String)
+        """;
 
         private Canonical() {
         }

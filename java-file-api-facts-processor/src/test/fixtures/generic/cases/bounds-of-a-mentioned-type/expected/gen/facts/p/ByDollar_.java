@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.ByDollar;
 
 /// The token-only metamodel of [ByDollar]: its shape and its token, no facts of its members.
@@ -36,6 +37,7 @@ import p.ByDollar;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class ByDollar_ {
     /// The shape of [ByDollar] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,20 @@ public final class ByDollar_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [ByDollar].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.ByDollar open-class sealed=no\ntparams #0 extends java.util.List<p.Dol$lar>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor ByDollar()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.ByDollar open-class sealed=no
+        tparams #0 extends java.util.List<p.Dol$lar>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor ByDollar()
+        """;
 
         private Canonical() {
         }

@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Outer.Pub;
 import p.Vis;
 
@@ -51,6 +52,7 @@ import p.Vis;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Vis_ {
     /// The shape of [Vis] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -66,7 +68,25 @@ public final class Vis_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Vis].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Vis open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int pub\nmember method overridable ok() -> p.Outer$Pub throws -\nmember method overridable pubM() -> void throws -\nmember method static sPub() -> void throws -\ntable abstract -\ntable concrete arr(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); nested(p.Outer$PkgNested); notify(); notifyAll(); ok(); pkgM(); protM(); pubM(); takes(p.Hidden); toString(); wait(); wait(long); wait(long, int)\ntable static sPub()\ntable ctor Vis(); Vis(int); Vis(java.lang.String); Vis(p.Hidden)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Vis open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable int pub
+        member method overridable ok() -> p.Outer$Pub throws -
+        member method overridable pubM() -> void throws -
+        member method static sPub() -> void throws -
+        table abstract -
+        table concrete arr(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); nested(p.Outer$PkgNested); notify(); notifyAll(); ok(); pkgM(); protM(); pubM(); takes(p.Hidden); toString(); wait(); wait(long); wait(long, int)
+        table static sPub()
+        table ctor Vis(); Vis(int); Vis(java.lang.String); Vis(p.Hidden)
+        """;
 
         private Canonical() {
         }

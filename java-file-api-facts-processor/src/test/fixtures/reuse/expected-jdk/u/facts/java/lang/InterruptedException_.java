@@ -17,6 +17,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import u.facts.java.lang.InterruptedException_.Canonical;
 import u.facts.java.lang.InterruptedException_.Data;
 
@@ -29,6 +30,7 @@ import u.facts.java.lang.InterruptedException_.Data;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class InterruptedException_ {
     /// The shape of [InterruptedException] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -44,7 +46,20 @@ public final class InterruptedException_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [InterruptedException].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.InterruptedException open-class sealed=no\ntparams -\nsuperclasses java.lang.Exception; java.lang.Throwable; java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setCause(java.lang.Throwable); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor InterruptedException(); InterruptedException(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.InterruptedException open-class sealed=no
+        tparams -
+        superclasses java.lang.Exception; java.lang.Throwable; java.lang.Object
+        interfaces java.io.Serializable
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setCause(java.lang.Throwable); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor InterruptedException(); InterruptedException(java.lang.String)
+        """;
 
         private Canonical() {
         }

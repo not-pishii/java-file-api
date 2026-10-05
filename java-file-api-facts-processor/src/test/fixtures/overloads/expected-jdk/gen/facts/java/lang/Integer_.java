@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Integer]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Integer_ {
     /// The shape of [Integer] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Integer_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Integer].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Integer final-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; java.lang.constant.ConstantDesc\nsupertypes java.lang.Comparable<java.lang.Integer>\nenum -\nmembers none\ntable abstract -\ntable concrete byteValue(); clone(); compareTo(java.lang.Integer); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static bitCount(int); compare(int, int); compareUnsigned(int, int); compress(int, int); decode(java.lang.String); divideUnsigned(int, int); expand(int, int); getInteger(java.lang.String); getInteger(java.lang.String, int); getInteger(java.lang.String, java.lang.Integer); hashCode(int); highestOneBit(int); lowestOneBit(int); max(int, int); min(int, int); numberOfLeadingZeros(int); numberOfTrailingZeros(int); parseInt(java.lang.CharSequence, int, int, int); parseInt(java.lang.String); parseInt(java.lang.String, int); parseUnsignedInt(java.lang.CharSequence, int, int, int); parseUnsignedInt(java.lang.String); parseUnsignedInt(java.lang.String, int); remainderUnsigned(int, int); reverse(int); reverseBytes(int); rotateLeft(int, int); rotateRight(int, int); signum(int); sum(int, int); toBinaryString(int); toHexString(int); toOctalString(int); toString(int); toString(int, int); toUnsignedLong(int); toUnsignedString(int); toUnsignedString(int, int); valueOf(int); valueOf(java.lang.String); valueOf(java.lang.String, int)\ntable ctor Integer(int); Integer(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Integer final-class sealed=no
+        tparams -
+        superclasses java.lang.Number; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; java.lang.constant.ConstantDesc
+        supertypes java.lang.Comparable<java.lang.Integer>
+        enum -
+        members none
+        table abstract -
+        table concrete byteValue(); clone(); compareTo(java.lang.Integer); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static bitCount(int); compare(int, int); compareUnsigned(int, int); compress(int, int); decode(java.lang.String); divideUnsigned(int, int); expand(int, int); getInteger(java.lang.String); getInteger(java.lang.String, int); getInteger(java.lang.String, java.lang.Integer); hashCode(int); highestOneBit(int); lowestOneBit(int); max(int, int); min(int, int); numberOfLeadingZeros(int); numberOfTrailingZeros(int); parseInt(java.lang.CharSequence, int, int, int); parseInt(java.lang.String); parseInt(java.lang.String, int); parseUnsignedInt(java.lang.CharSequence, int, int, int); parseUnsignedInt(java.lang.String); parseUnsignedInt(java.lang.String, int); remainderUnsigned(int, int); reverse(int); reverseBytes(int); rotateLeft(int, int); rotateRight(int, int); signum(int); sum(int, int); toBinaryString(int); toHexString(int); toOctalString(int); toString(int); toString(int, int); toUnsignedLong(int); toUnsignedString(int); toUnsignedString(int, int); valueOf(int); valueOf(java.lang.String); valueOf(java.lang.String, int)
+        table ctor Integer(int); Integer(java.lang.String)
+        """;
 
         private Canonical() {
         }

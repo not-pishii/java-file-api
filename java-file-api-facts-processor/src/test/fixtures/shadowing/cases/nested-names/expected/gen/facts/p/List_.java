@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.List;
 
 /// The full metamodel of [List], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.List;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class List_ {
     /// The shape of [List] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,26 @@ public final class List_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [List].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.List open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int Supertypes\nmember field instance mutable int java\nmember field instance mutable int p\nmember method overridable canonical(p.Data) -> p.Canonical throws -\nmember method overridable load() -> p.Data throws -\ntable abstract -\ntable concrete canonical(p.Data); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); load(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor List()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.List open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable int Supertypes
+        member field instance mutable int java
+        member field instance mutable int p
+        member method overridable canonical(p.Data) -> p.Canonical throws -
+        member method overridable load() -> p.Data throws -
+        table abstract -
+        table concrete canonical(p.Data); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); load(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor List()
+        """;
 
         private Canonical() {
         }

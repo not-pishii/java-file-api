@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Dep;
 import p.Svc;
 
@@ -39,6 +40,7 @@ import p.Svc;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Svc_ {
     /// The shape of [Svc] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,26 @@ public final class Svc_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Svc].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Svc open-class sealed=no\ntparams -\nsuperclasses p.Base; java.lang.Object\ninterfaces p.Marker\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant int LIMIT = 3\nmember method overridable close() -> void throws -\nmember method overridable dep() -> p.Dep throws -\nmember method overridable m(java.lang.String) -> java.lang.String throws -\nmember method overridable only(java.lang.Object) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); close(); dep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); inherited(); m(java.lang.String); notify(); notifyAll(); only(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Svc()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Svc open-class sealed=no
+        tparams -
+        superclasses p.Base; java.lang.Object
+        interfaces p.Marker
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant int LIMIT = 3
+        member method overridable close() -> void throws -
+        member method overridable dep() -> p.Dep throws -
+        member method overridable m(java.lang.String) -> java.lang.String throws -
+        member method overridable only(java.lang.Object) -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); close(); dep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); inherited(); m(java.lang.String); notify(); notifyAll(); only(java.lang.Object); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Svc()
+        """;
 
         private Canonical() {
         }

@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.PBox;
 
 /// The full metamodel of [PBox], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -43,6 +44,7 @@ import p.PBox;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PBox_<T> {
     /// The shape of [PBox] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,27 @@ public final class PBox_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PBox].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PBox open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable #0 t\nmember method overridable <^0 extends #0> put(^0) -> void throws -\nmember method overridable <^0> map(java.util.function.Function<? super #0, ? extends ^0>) -> p.PBox<^0> throws -\nmember method overridable <^0> shadow(^0) -> ^0 throws -\nmember method static <^0 extends java.lang.Enum<^0>> ofEnum(java.lang.Class<^0>) -> p.PBox<^0> throws -\nmember method static <^0> of(^0) -> p.PBox<^0> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); map(java.util.function.Function); notify(); notifyAll(); put(java.lang.Object); shadow(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object); ofEnum(java.lang.Class)\ntable ctor PBox()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PBox open-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable #0 t
+        member method overridable <^0 extends #0> put(^0) -> void throws -
+        member method overridable <^0> map(java.util.function.Function<? super #0, ? extends ^0>) -> p.PBox<^0> throws -
+        member method overridable <^0> shadow(^0) -> ^0 throws -
+        member method static <^0 extends java.lang.Enum<^0>> ofEnum(java.lang.Class<^0>) -> p.PBox<^0> throws -
+        member method static <^0> of(^0) -> p.PBox<^0> throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); map(java.util.function.Function); notify(); notifyAll(); put(java.lang.Object); shadow(java.lang.Object); toString(); wait(); wait(long); wait(long, int)
+        table static of(java.lang.Object); ofEnum(java.lang.Class)
+        table ctor PBox()
+        """;
 
         private Canonical() {
         }

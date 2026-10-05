@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [List]: its shape and its token, no facts of its members.
 ///
@@ -36,6 +37,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class List_<E> {
     /// The shape of [List] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,20 @@ public final class List_<E> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [List].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.List interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces java.lang.Iterable; java.util.Collection; java.util.SequencedCollection\nsupertypes java.lang.Iterable<#0>; java.util.Collection<#0>; java.util.SequencedCollection<#0>\nenum -\nmembers none\ntable abstract add(#0); add(int, #0); addAll(int, java.util.Collection); addAll(java.util.Collection); clear(); contains(java.lang.Object); containsAll(java.util.Collection); get(int); indexOf(java.lang.Object); isEmpty(); iterator(); lastIndexOf(java.lang.Object); listIterator(); listIterator(int); remove(int); remove(java.lang.Object); removeAll(java.util.Collection); retainAll(java.util.Collection); set(int, #0); size(); subList(int, int); toArray(); toArray(java.lang.Object[])\ntable concrete addFirst(#0); addLast(#0); equals(java.lang.Object); forEach(java.util.function.Consumer); getClass(); getFirst(); getLast(); hashCode(); notify(); notifyAll(); parallelStream(); removeFirst(); removeIf(java.util.function.Predicate); removeLast(); replaceAll(java.util.function.UnaryOperator); reversed(); sort(java.util.Comparator); spliterator(); stream(); toArray(java.util.function.IntFunction); toString(); wait(); wait(long); wait(long, int)\ntable static copyOf(java.util.Collection); of(); of(java.lang.Object); of(java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object[])\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.List interface sealed=no
+        tparams #0
+        superclasses -
+        interfaces java.lang.Iterable; java.util.Collection; java.util.SequencedCollection
+        supertypes java.lang.Iterable<#0>; java.util.Collection<#0>; java.util.SequencedCollection<#0>
+        enum -
+        members none
+        table abstract add(#0); add(int, #0); addAll(int, java.util.Collection); addAll(java.util.Collection); clear(); contains(java.lang.Object); containsAll(java.util.Collection); get(int); indexOf(java.lang.Object); isEmpty(); iterator(); lastIndexOf(java.lang.Object); listIterator(); listIterator(int); remove(int); remove(java.lang.Object); removeAll(java.util.Collection); retainAll(java.util.Collection); set(int, #0); size(); subList(int, int); toArray(); toArray(java.lang.Object[])
+        table concrete addFirst(#0); addLast(#0); equals(java.lang.Object); forEach(java.util.function.Consumer); getClass(); getFirst(); getLast(); hashCode(); notify(); notifyAll(); parallelStream(); removeFirst(); removeIf(java.util.function.Predicate); removeLast(); replaceAll(java.util.function.UnaryOperator); reversed(); sort(java.util.Comparator); spliterator(); stream(); toArray(java.util.function.IntFunction); toString(); wait(); wait(long); wait(long, int)
+        table static copyOf(java.util.Collection); of(); of(java.lang.Object); of(java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object[])
+        table ctor -
+        """;
 
         private Canonical() {
         }

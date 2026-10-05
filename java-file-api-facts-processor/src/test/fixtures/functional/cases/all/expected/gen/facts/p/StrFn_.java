@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.StrFn;
 
 /// The full metamodel of [StrFn], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -34,6 +35,7 @@ import p.StrFn;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class StrFn_ {
     /// The shape of [StrFn] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -49,7 +51,21 @@ public final class StrFn_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [StrFn].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.StrFn interface sealed=no\ntparams -\nsuperclasses -\ninterfaces java.util.function.Function\nsupertypes java.util.function.Function<java.lang.String, java.lang.String>\nenum -\nmembers declared-public\nsam apply(java.lang.String) -> java.lang.String throws -\ntable abstract apply(java.lang.String)\ntable concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.StrFn interface sealed=no
+        tparams -
+        superclasses -
+        interfaces java.util.function.Function
+        supertypes java.util.function.Function<java.lang.String, java.lang.String>
+        enum -
+        members declared-public
+        sam apply(java.lang.String) -> java.lang.String throws -
+        table abstract apply(java.lang.String)
+        table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

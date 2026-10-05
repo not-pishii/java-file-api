@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.X;
 
 /// The full metamodel of [X], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.X;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class X_ {
     /// The shape of [X] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,24 @@ public final class X_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [X].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.X open-class sealed=no\ntparams -\nsuperclasses p.Mid; java.lang.Object\ninterfaces p.HiddenI; p.Own\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant int OWN = 2\nmember method overridable more() -> java.lang.String throws -\nmember method overridable own() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); own(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor X()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.X open-class sealed=no
+        tparams -
+        superclasses p.Mid; java.lang.Object
+        interfaces p.HiddenI; p.Own
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant int OWN = 2
+        member method overridable more() -> java.lang.String throws -
+        member method overridable own() -> void throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); own(); run(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor X()
+        """;
 
         private Canonical() {
         }

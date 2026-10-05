@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Outer.Deep.Deeper;
 
 /// The full metamodel of [Deeper], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -32,6 +33,7 @@ import p.Outer.Deep.Deeper;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Outer_Deep_Deeper_ {
     /// The shape of [Deeper] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,21 @@ public final class Outer_Deep_Deeper_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Deeper].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer$Deep$Deeper open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Outer$Deep$Deeper()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Outer$Deep$Deeper open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Outer$Deep$Deeper()
+        """;
 
         private Canonical() {
         }

@@ -31,6 +31,7 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Object]: a fact of every `public` member the type declares.
 ///
@@ -43,6 +44,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Object_ {
     /// The shape of [Object] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,30 @@ public final class Object_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Object].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Object open-class sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method final getClass() -> java.lang.Class<?> throws -\nmember method final notify() -> void throws -\nmember method final notifyAll() -> void throws -\nmember method final wait() -> void throws java.lang.InterruptedException\nmember method final wait(long) -> void throws java.lang.InterruptedException\nmember method final wait(long, int) -> void throws java.lang.InterruptedException\nmember method overridable equals(java.lang.Object) -> boolean throws -\nmember method overridable hashCode() -> int throws -\nmember method overridable toString() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Object()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Object open-class sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method final getClass() -> java.lang.Class<?> throws -
+        member method final notify() -> void throws -
+        member method final notifyAll() -> void throws -
+        member method final wait() -> void throws java.lang.InterruptedException
+        member method final wait(long) -> void throws java.lang.InterruptedException
+        member method final wait(long, int) -> void throws java.lang.InterruptedException
+        member method overridable equals(java.lang.Object) -> boolean throws -
+        member method overridable hashCode() -> int throws -
+        member method overridable toString() -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Object()
+        """;
 
         private Canonical() {
         }

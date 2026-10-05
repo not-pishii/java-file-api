@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Comp;
 
 /// The full metamodel of [Comp], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.Comp;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Comp_ {
     /// The shape of [Comp] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,24 @@ public final class Comp_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Comp].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Comp interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract compareTo(p.Comp) -> int throws -\nmember method abstract hashCode() -> int throws -\nmember method abstract toString() -> java.lang.String throws -\nsam compareTo(p.Comp) -> int throws -\ntable abstract compareTo(p.Comp)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Comp interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract compareTo(p.Comp) -> int throws -
+        member method abstract hashCode() -> int throws -
+        member method abstract toString() -> java.lang.String throws -
+        sam compareTo(p.Comp) -> int throws -
+        table abstract compareTo(p.Comp)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

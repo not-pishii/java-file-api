@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Function]: a fact of every `public` member the type declares.
 ///
@@ -43,6 +44,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Function_<T, R> {
     /// The shape of [Function] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,25 @@ public final class Function_<T, R> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Function].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.function.Function interface sealed=no\ntparams #0; #1\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract apply(#0) -> #1 throws -\nmember method overridable <^0> andThen(java.util.function.Function<? super #1, ? extends ^0>) -> java.util.function.Function<#0, ^0> throws -\nmember method overridable <^0> compose(java.util.function.Function<? super ^0, ? extends #0>) -> java.util.function.Function<^0, #1> throws -\nmember method static <^0> identity() -> java.util.function.Function<^0, ^0> throws -\nsam apply(#0) -> #1 throws -\ntable abstract apply(#0)\ntable concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static identity()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.function.Function interface sealed=no
+        tparams #0; #1
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract apply(#0) -> #1 throws -
+        member method overridable <^0> andThen(java.util.function.Function<? super #1, ? extends ^0>) -> java.util.function.Function<#0, ^0> throws -
+        member method overridable <^0> compose(java.util.function.Function<? super ^0, ? extends #0>) -> java.util.function.Function<^0, #1> throws -
+        member method static <^0> identity() -> java.util.function.Function<^0, ^0> throws -
+        sam apply(#0) -> #1 throws -
+        table abstract apply(#0)
+        table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static identity()
+        table ctor -
+        """;
 
         private Canonical() {
         }

@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.A;
 import p.Arg;
 import p.B;
@@ -62,6 +63,7 @@ import p.Result;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class A_<T extends Bound> {
     /// The shape of [A] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -77,7 +79,28 @@ public final class A_<T extends Bound> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [A].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.A open-class sealed=no\ntparams #0 extends p.Bound\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(p.Param1) throws p.CtorEx\nmember field static final p.Field1 F\nmember method overridable <^0 extends p.MBound> g(java.util.List<? super p.Lower>) -> p.Holder<p.Elem> throws -\nmember method overridable arr() -> p.Arg[] throws -\nmember method overridable b() -> p.B throws -\nmember method overridable dollar() -> p.Dol$lar throws -\nmember method overridable m(p.Arg) -> p.Result throws p.Ex\nmember method overridable marker() -> p.Marker throws -\ntable abstract -\ntable concrete arr(); b(); clone(); dollar(); equals(java.lang.Object); finalize(); g(java.util.List); getClass(); hashCode(); hidden(); m(p.Arg); marker(); notify(); notifyAll(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor A(p.Param1)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.A open-class sealed=no
+        tparams #0 extends p.Bound
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(p.Param1) throws p.CtorEx
+        member field static final p.Field1 F
+        member method overridable <^0 extends p.MBound> g(java.util.List<? super p.Lower>) -> p.Holder<p.Elem> throws -
+        member method overridable arr() -> p.Arg[] throws -
+        member method overridable b() -> p.B throws -
+        member method overridable dollar() -> p.Dol$lar throws -
+        member method overridable m(p.Arg) -> p.Result throws p.Ex
+        member method overridable marker() -> p.Marker throws -
+        table abstract -
+        table concrete arr(); b(); clone(); dollar(); equals(java.lang.Object); finalize(); g(java.util.List); getClass(); hashCode(); hidden(); m(p.Arg); marker(); notify(); notifyAll(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor A(p.Param1)
+        """;
 
         private Canonical() {
         }

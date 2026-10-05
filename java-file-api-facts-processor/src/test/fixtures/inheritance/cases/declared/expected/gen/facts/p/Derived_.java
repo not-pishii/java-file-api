@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Derived;
 
 /// The full metamodel of [Derived], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -35,6 +36,7 @@ import p.Derived;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Derived_ {
     /// The shape of [Derived] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,26 @@ public final class Derived_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Derived].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Derived open-class sealed=no\ntparams -\nsuperclasses p.Base; java.lang.Object\ninterfaces p.Api\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable abs() -> void throws -\nmember method overridable hidden(java.lang.Object) -> void throws -\nmember method overridable over() -> void throws -\nmember method overridable own() -> void throws -\nmember method static dstatic() -> void throws -\ntable abstract -\ntable concrete abs(); clone(); dflt(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); hidden(java.lang.Object); inherited(); notify(); notifyAll(); over(); own(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)\ntable static dstatic(); hidden(java.lang.String); sbase()\ntable ctor Derived()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Derived open-class sealed=no
+        tparams -
+        superclasses p.Base; java.lang.Object
+        interfaces p.Api
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable abs() -> void throws -
+        member method overridable hidden(java.lang.Object) -> void throws -
+        member method overridable over() -> void throws -
+        member method overridable own() -> void throws -
+        member method static dstatic() -> void throws -
+        table abstract -
+        table concrete abs(); clone(); dflt(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); hidden(java.lang.Object); inherited(); notify(); notifyAll(); over(); own(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)
+        table static dstatic(); hidden(java.lang.String); sbase()
+        table ctor Derived()
+        """;
 
         private Canonical() {
         }

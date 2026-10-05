@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Float]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Float_ {
     /// The shape of [Float] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Float_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Float].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Float final-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; java.lang.constant.ConstantDesc\nsupertypes java.lang.Comparable<java.lang.Float>\nenum -\nmembers none\ntable abstract -\ntable concrete byteValue(); clone(); compareTo(java.lang.Float); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); isInfinite(); isNaN(); longValue(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static compare(float, float); float16ToFloat(short); floatToFloat16(float); floatToIntBits(float); floatToRawIntBits(float); hashCode(float); intBitsToFloat(int); isFinite(float); isInfinite(float); isNaN(float); max(float, float); min(float, float); parseFloat(java.lang.String); sum(float, float); toHexString(float); toString(float); valueOf(float); valueOf(java.lang.String)\ntable ctor Float(double); Float(float); Float(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Float final-class sealed=no
+        tparams -
+        superclasses java.lang.Number; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; java.lang.constant.ConstantDesc
+        supertypes java.lang.Comparable<java.lang.Float>
+        enum -
+        members none
+        table abstract -
+        table concrete byteValue(); clone(); compareTo(java.lang.Float); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); isInfinite(); isNaN(); longValue(); notify(); notifyAll(); resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static compare(float, float); float16ToFloat(short); floatToFloat16(float); floatToIntBits(float); floatToRawIntBits(float); hashCode(float); intBitsToFloat(int); isFinite(float); isInfinite(float); isNaN(float); max(float, float); min(float, float); parseFloat(java.lang.String); sum(float, float); toHexString(float); toString(float); valueOf(float); valueOf(java.lang.String)
+        table ctor Float(double); Float(float); Float(java.lang.String)
+        """;
 
         private Canonical() {
         }

@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.GoneApi;
 
 /// The full metamodel of [GoneApi]: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.GoneApi;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class GoneApi_ {
     /// The shape of [GoneApi] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,20 @@ public final class GoneApi_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [GoneApi].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.GoneApi interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); gone(p.Secret); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.GoneApi interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        table abstract -
+        table concrete equals(java.lang.Object); getClass(); gone(p.Secret); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

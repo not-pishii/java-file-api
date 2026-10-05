@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Pub1;
 
 /// The full metamodel of [Pub1]: a fact of every `public` member the type declares.
@@ -37,6 +38,7 @@ import p.Pub1;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Pub1_ {
     /// The shape of [Pub1] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,23 @@ public final class Pub1_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Pub1].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pub1 open-class sealed=no\ntparams -\nsuperclasses p.H0; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable one() -> java.lang.String throws -\nmember method overridable zero() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); wait(); wait(long); wait(long, int); zero()\ntable static -\ntable ctor Pub1()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Pub1 open-class sealed=no
+        tparams -
+        superclasses p.H0; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable one() -> java.lang.String throws -
+        member method overridable zero() -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); wait(); wait(long); wait(long, int); zero()
+        table static -
+        table ctor Pub1()
+        """;
 
         private Canonical() {
         }

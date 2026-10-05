@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Op;
 
 /// The full metamodel of [Op], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.Op;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Op_ {
     /// The shape of [Op] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,24 @@ public final class Op_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Op].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Op enum sealed=yes\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Op>; java.lang.Enum<p.Op>\nenum ADD; SUB\nmembers declared-public\nmember method abstract apply(int, int) -> int throws -\nmember method overridable twice(int) -> int throws -\nmember method static valueOf(java.lang.String) -> p.Op throws -\nmember method static values() -> p.Op[] throws -\ntable abstract apply(int, int)\ntable concrete clone(); compareTo(p.Op); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); twice(int); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Op enum sealed=yes
+        tparams -
+        superclasses java.lang.Enum; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<p.Op>; java.lang.Enum<p.Op>
+        enum ADD; SUB
+        members declared-public
+        member method abstract apply(int, int) -> int throws -
+        member method overridable twice(int) -> int throws -
+        member method static valueOf(java.lang.String) -> p.Op throws -
+        member method static values() -> p.Op[] throws -
+        table abstract apply(int, int)
+        table concrete clone(); compareTo(p.Op); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); twice(int); wait(); wait(long); wait(long, int)
+        table static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()
+        table ctor -
+        """;
 
         private Canonical() {
         }

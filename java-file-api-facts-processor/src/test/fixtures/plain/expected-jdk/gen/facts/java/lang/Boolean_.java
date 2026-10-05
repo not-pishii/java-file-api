@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Boolean]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Boolean_ {
     /// The shape of [Boolean] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Boolean_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Boolean].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Boolean final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<java.lang.Boolean>\nenum -\nmembers none\ntable abstract -\ntable concrete booleanValue(); clone(); compareTo(java.lang.Boolean); describeConstable(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static compare(boolean, boolean); getBoolean(java.lang.String); hashCode(boolean); logicalAnd(boolean, boolean); logicalOr(boolean, boolean); logicalXor(boolean, boolean); parseBoolean(java.lang.String); toString(boolean); valueOf(boolean); valueOf(java.lang.String)\ntable ctor Boolean(boolean); Boolean(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Boolean final-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<java.lang.Boolean>
+        enum -
+        members none
+        table abstract -
+        table concrete booleanValue(); clone(); compareTo(java.lang.Boolean); describeConstable(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static compare(boolean, boolean); getBoolean(java.lang.String); hashCode(boolean); logicalAnd(boolean, boolean); logicalOr(boolean, boolean); logicalXor(boolean, boolean); parseBoolean(java.lang.String); toString(boolean); valueOf(boolean); valueOf(java.lang.String)
+        table ctor Boolean(boolean); Boolean(java.lang.String)
+        """;
 
         private Canonical() {
         }

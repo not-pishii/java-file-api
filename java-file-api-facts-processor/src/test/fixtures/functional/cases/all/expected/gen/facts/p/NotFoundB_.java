@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.NotFoundB;
 
 /// The full metamodel of [NotFoundB]: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.NotFoundB;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class NotFoundB_ {
     /// The shape of [NotFoundB] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,22 @@ public final class NotFoundB_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [NotFoundB].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.NotFoundB interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m() -> void throws java.io.FileNotFoundException\nsam m() -> void throws java.io.FileNotFoundException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.NotFoundB interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract m() -> void throws java.io.FileNotFoundException
+        sam m() -> void throws java.io.FileNotFoundException
+        table abstract m()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

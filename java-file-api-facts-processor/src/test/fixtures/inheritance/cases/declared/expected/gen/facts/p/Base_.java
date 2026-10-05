@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Base;
 
 /// The full metamodel of [Base], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Base;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Base_ {
     /// The shape of [Base] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,26 @@ public final class Base_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Base].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Base open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable f() -> int throws -\nmember method overridable inherited() -> void throws -\nmember method overridable over() -> void throws -\nmember method static hidden(java.lang.String) -> void throws -\nmember method static sbase() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); inherited(); notify(); notifyAll(); over(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)\ntable static hidden(java.lang.String); sbase()\ntable ctor Base()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Base open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable f() -> int throws -
+        member method overridable inherited() -> void throws -
+        member method overridable over() -> void throws -
+        member method static hidden(java.lang.String) -> void throws -
+        member method static sbase() -> int throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); inherited(); notify(); notifyAll(); over(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)
+        table static hidden(java.lang.String); sbase()
+        table ctor Base()
+        """;
 
         private Canonical() {
         }

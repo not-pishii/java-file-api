@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Op;
 
 /// The full metamodel of [Op], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Op;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Op_<T> {
     /// The shape of [Op] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,21 @@ public final class Op_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Op].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Op interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces java.util.function.Function\nsupertypes java.util.function.Function<#0, #0>\nenum -\nmembers declared-public\nsam apply(#0) -> #0 throws -\ntable abstract apply(#0)\ntable concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Op interface sealed=no
+        tparams #0
+        superclasses -
+        interfaces java.util.function.Function
+        supertypes java.util.function.Function<#0, #0>
+        enum -
+        members declared-public
+        sam apply(#0) -> #0 throws -
+        table abstract apply(#0)
+        table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

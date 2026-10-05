@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Short]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Short_ {
     /// The shape of [Short] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Short_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Short].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Short final-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<java.lang.Short>\nenum -\nmembers none\ntable abstract -\ntable concrete byteValue(); clone(); compareTo(java.lang.Short); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static compare(short, short); compareUnsigned(short, short); decode(java.lang.String); hashCode(short); parseShort(java.lang.String); parseShort(java.lang.String, int); reverseBytes(short); toString(short); toUnsignedInt(short); toUnsignedLong(short); valueOf(java.lang.String); valueOf(java.lang.String, int); valueOf(short)\ntable ctor Short(java.lang.String); Short(short)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Short final-class sealed=no
+        tparams -
+        superclasses java.lang.Number; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<java.lang.Short>
+        enum -
+        members none
+        table abstract -
+        table concrete byteValue(); clone(); compareTo(java.lang.Short); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static compare(short, short); compareUnsigned(short, short); decode(java.lang.String); hashCode(short); parseShort(java.lang.String); parseShort(java.lang.String, int); reverseBytes(short); toString(short); toUnsignedInt(short); toUnsignedLong(short); valueOf(java.lang.String); valueOf(java.lang.String, int); valueOf(short)
+        table ctor Short(java.lang.String); Short(short)
+        """;
 
         private Canonical() {
         }

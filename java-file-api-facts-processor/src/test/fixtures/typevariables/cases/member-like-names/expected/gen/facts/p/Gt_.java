@@ -33,6 +33,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Gt;
 
 /// The full metamodel of [Gt], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -47,6 +48,7 @@ import p.Gt;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Gt_<T, E> {
     /// The shape of [Gt] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -62,7 +64,28 @@ public final class Gt_<T, E> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Gt].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Gt open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0, #1) throws -\nmember field instance mutable #0 value\nmember field instance mutable #1 U\nmember field static constant int T = 1\nmember field static mutable int E\nmember method overridable <^0> E(^0, #0) -> ^0 throws -\nmember method overridable T(#1) -> #0 throws -\nmember method static <^0, ^1> of(^0, ^1) -> p.Gt<^0, ^1> throws -\ntable abstract -\ntable concrete E(java.lang.Object, #0); T(#1); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object, java.lang.Object)\ntable ctor Gt(#0, #1)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Gt open-class sealed=no
+        tparams #0; #1
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0, #1) throws -
+        member field instance mutable #0 value
+        member field instance mutable #1 U
+        member field static constant int T = 1
+        member field static mutable int E
+        member method overridable <^0> E(^0, #0) -> ^0 throws -
+        member method overridable T(#1) -> #0 throws -
+        member method static <^0, ^1> of(^0, ^1) -> p.Gt<^0, ^1> throws -
+        table abstract -
+        table concrete E(java.lang.Object, #0); T(#1); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static of(java.lang.Object, java.lang.Object)
+        table ctor Gt(#0, #1)
+        """;
 
         private Canonical() {
         }

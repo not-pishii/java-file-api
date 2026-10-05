@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Low;
 
 /// The full metamodel of [Low], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -46,6 +47,7 @@ import p.Low;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Low_<gen_, java_, me_, p_> {
     /// The shape of [Low] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -61,7 +63,26 @@ public final class Low_<gen_, java_, me_, p_> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Low].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Low open-class sealed=no\ntparams #0; #1; #2; #3\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable #0 first\nmember method overridable <^0, ^1> pick(^1, java.util.Set<#3>) -> ^0 throws -\nmember method overridable <^0> each(java.util.Set<^0>) -> void throws -\nmember method overridable all(#1, #2, #3) -> java.util.Set<#0> throws -\nmember method static <^0, ^1, ^2, ^3> of(^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws -\ntable abstract -\ntable concrete all(#1, #2, #3); clone(); each(java.util.Set); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); pick(java.lang.Object, java.util.Set); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)\ntable ctor Low()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Low open-class sealed=no
+        tparams #0; #1; #2; #3
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable #0 first
+        member method overridable <^0, ^1> pick(^1, java.util.Set<#3>) -> ^0 throws -
+        member method overridable <^0> each(java.util.Set<^0>) -> void throws -
+        member method overridable all(#1, #2, #3) -> java.util.Set<#0> throws -
+        member method static <^0, ^1, ^2, ^3> of(^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws -
+        table abstract -
+        table concrete all(#1, #2, #3); clone(); each(java.util.Set); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); pick(java.lang.Object, java.util.Set); toString(); wait(); wait(long); wait(long, int)
+        table static of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)
+        table ctor Low()
+        """;
 
         private Canonical() {
         }

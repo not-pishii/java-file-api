@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Text;
 
 /// The full metamodel of [Text], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -37,6 +38,7 @@ import p.Text;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Text_ {
     /// The shape of [Text] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,30 @@ public final class Text_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Text].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Text open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int \u0447\u0438\u0441\u043b\u043e\nmember field static constant char CHAR = '\\u044f'\nmember field static constant char DELETE = '\\u007f'\nmember field static constant char LONE_CHAR = '\\ud800'\nmember field static constant java.lang.String CYRILLIC = \"\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f\"\nmember field static constant java.lang.String ESCAPES = \"\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022\"\nmember field static constant java.lang.String LONE_HIGH = \"a\\ud800b\"\nmember field static constant java.lang.String LONE_LOW = \"\\udc00\"\nmember field static constant java.lang.String PAIR = \"\\ud83d\\ude00\"\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Text()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Text open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable int \u0447\u0438\u0441\u043b\u043e
+        member field static constant char CHAR = '\\u044f'
+        member field static constant char DELETE = '\\u007f'
+        member field static constant char LONE_CHAR = '\\ud800'
+        member field static constant java.lang.String CYRILLIC = "\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f"
+        member field static constant java.lang.String ESCAPES = "\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022"
+        member field static constant java.lang.String LONE_HIGH = "a\\ud800b"
+        member field static constant java.lang.String LONE_LOW = "\\udc00"
+        member field static constant java.lang.String PAIR = "\\ud83d\\ude00"
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Text()
+        """;
 
         private Canonical() {
         }

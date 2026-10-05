@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Impl;
 
 /// The full metamodel of [Impl], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -32,6 +33,7 @@ import p.Impl;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Impl_ {
     /// The shape of [Impl] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,21 @@ public final class Impl_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Impl].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Impl open-class sealed=no\ntparams -\nsuperclasses p.PubA; java.lang.Object\ninterfaces p.PubB\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Impl()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Impl open-class sealed=no
+        tparams -
+        superclasses p.PubA; java.lang.Object
+        interfaces p.PubB
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Impl()
+        """;
 
         private Canonical() {
         }

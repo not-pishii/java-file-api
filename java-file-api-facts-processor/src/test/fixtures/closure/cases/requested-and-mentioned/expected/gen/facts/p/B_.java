@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.A;
 import p.B;
 import p.Only;
@@ -36,6 +37,7 @@ import p.Only;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class B_ {
     /// The shape of [B] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,23 @@ public final class B_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [B].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.B open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable a() -> p.A<?> throws -\nmember method overridable only() -> p.Only throws -\ntable abstract -\ntable concrete a(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); only(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor B()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.B open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable a() -> p.A<?> throws -
+        member method overridable only() -> p.Only throws -
+        table abstract -
+        table concrete a(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); only(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor B()
+        """;
 
         private Canonical() {
         }

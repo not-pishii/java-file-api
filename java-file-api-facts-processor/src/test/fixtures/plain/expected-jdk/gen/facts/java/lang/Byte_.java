@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Byte]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Byte_ {
     /// The shape of [Byte] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Byte_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Byte].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Byte final-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<java.lang.Byte>\nenum -\nmembers none\ntable abstract -\ntable concrete byteValue(); clone(); compareTo(java.lang.Byte); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static compare(byte, byte); compareUnsigned(byte, byte); decode(java.lang.String); hashCode(byte); parseByte(java.lang.String); parseByte(java.lang.String, int); toString(byte); toUnsignedInt(byte); toUnsignedLong(byte); valueOf(byte); valueOf(java.lang.String); valueOf(java.lang.String, int)\ntable ctor Byte(byte); Byte(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Byte final-class sealed=no
+        tparams -
+        superclasses java.lang.Number; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<java.lang.Byte>
+        enum -
+        members none
+        table abstract -
+        table concrete byteValue(); clone(); compareTo(java.lang.Byte); describeConstable(); doubleValue(); equals(java.lang.Object); finalize(); floatValue(); getClass(); hashCode(); intValue(); longValue(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static compare(byte, byte); compareUnsigned(byte, byte); decode(java.lang.String); hashCode(byte); parseByte(java.lang.String); parseByte(java.lang.String, int); toString(byte); toUnsignedInt(byte); toUnsignedLong(byte); valueOf(byte); valueOf(java.lang.String); valueOf(java.lang.String, int)
+        table ctor Byte(byte); Byte(java.lang.String)
+        """;
 
         private Canonical() {
         }

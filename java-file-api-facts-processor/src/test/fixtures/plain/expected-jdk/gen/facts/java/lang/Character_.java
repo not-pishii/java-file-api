@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Character]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Character_ {
     /// The shape of [Character] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class Character_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Character].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Character final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<java.lang.Character>\nenum -\nmembers none\ntable abstract -\ntable concrete charValue(); clone(); compareTo(java.lang.Character); describeConstable(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static charCount(int); codePointAt(char[], int); codePointAt(char[], int, int); codePointAt(java.lang.CharSequence, int); codePointAtImpl(char[], int, int); codePointBefore(char[], int); codePointBefore(char[], int, int); codePointBefore(java.lang.CharSequence, int); codePointBeforeImpl(char[], int, int); codePointCount(char[], int, int); codePointCount(java.lang.CharSequence, int, int); codePointCountImpl(char[], int, int); codePointOf(java.lang.String); compare(char, char); digit(char, int); digit(int, int); forDigit(int, int); getDirectionality(char); getDirectionality(int); getName(int); getNumericValue(char); getNumericValue(int); getType(char); getType(int); hashCode(char); highSurrogate(int); isAlphabetic(int); isBmpCodePoint(int); isDefined(char); isDefined(int); isDigit(char); isDigit(int); isEmoji(int); isEmojiComponent(int); isEmojiModifier(int); isEmojiModifierBase(int); isEmojiPresentation(int); isExtendedPictographic(int); isHighSurrogate(char); isISOControl(char); isISOControl(int); isIdentifierIgnorable(char); isIdentifierIgnorable(int); isIdeographic(int); isJavaIdentifierPart(char); isJavaIdentifierPart(int); isJavaIdentifierStart(char); isJavaIdentifierStart(int); isJavaLetter(char); isJavaLetterOrDigit(char); isLetter(char); isLetter(int); isLetterOrDigit(char); isLetterOrDigit(int); isLowSurrogate(char); isLowerCase(char); isLowerCase(int); isMirrored(char); isMirrored(int); isSpace(char); isSpaceChar(char); isSpaceChar(int); isSupplementaryCodePoint(int); isSurrogate(char); isSurrogatePair(char, char); isTitleCase(char); isTitleCase(int); isUnicodeIdentifierPart(char); isUnicodeIdentifierPart(int); isUnicodeIdentifierStart(char); isUnicodeIdentifierStart(int); isUpperCase(char); isUpperCase(int); isValidCodePoint(int); isWhitespace(char); isWhitespace(int); lowSurrogate(int); offsetByCodePoints(char[], int, int, int, int); offsetByCodePoints(java.lang.CharSequence, int, int); offsetByCodePointsImpl(char[], int, int, int, int); reverseBytes(char); toChars(int); toChars(int, char[], int); toCodePoint(char, char); toLowerCase(char); toLowerCase(int); toString(char); toString(int); toSurrogates(int, char[], int); toTitleCase(char); toTitleCase(int); toUpperCase(char); toUpperCase(int); toUpperCaseCharArray(int); toUpperCaseEx(int); valueOf(char)\ntable ctor Character(char)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Character final-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<java.lang.Character>
+        enum -
+        members none
+        table abstract -
+        table concrete charValue(); clone(); compareTo(java.lang.Character); describeConstable(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static charCount(int); codePointAt(char[], int); codePointAt(char[], int, int); codePointAt(java.lang.CharSequence, int); codePointAtImpl(char[], int, int); codePointBefore(char[], int); codePointBefore(char[], int, int); codePointBefore(java.lang.CharSequence, int); codePointBeforeImpl(char[], int, int); codePointCount(char[], int, int); codePointCount(java.lang.CharSequence, int, int); codePointCountImpl(char[], int, int); codePointOf(java.lang.String); compare(char, char); digit(char, int); digit(int, int); forDigit(int, int); getDirectionality(char); getDirectionality(int); getName(int); getNumericValue(char); getNumericValue(int); getType(char); getType(int); hashCode(char); highSurrogate(int); isAlphabetic(int); isBmpCodePoint(int); isDefined(char); isDefined(int); isDigit(char); isDigit(int); isEmoji(int); isEmojiComponent(int); isEmojiModifier(int); isEmojiModifierBase(int); isEmojiPresentation(int); isExtendedPictographic(int); isHighSurrogate(char); isISOControl(char); isISOControl(int); isIdentifierIgnorable(char); isIdentifierIgnorable(int); isIdeographic(int); isJavaIdentifierPart(char); isJavaIdentifierPart(int); isJavaIdentifierStart(char); isJavaIdentifierStart(int); isJavaLetter(char); isJavaLetterOrDigit(char); isLetter(char); isLetter(int); isLetterOrDigit(char); isLetterOrDigit(int); isLowSurrogate(char); isLowerCase(char); isLowerCase(int); isMirrored(char); isMirrored(int); isSpace(char); isSpaceChar(char); isSpaceChar(int); isSupplementaryCodePoint(int); isSurrogate(char); isSurrogatePair(char, char); isTitleCase(char); isTitleCase(int); isUnicodeIdentifierPart(char); isUnicodeIdentifierPart(int); isUnicodeIdentifierStart(char); isUnicodeIdentifierStart(int); isUpperCase(char); isUpperCase(int); isValidCodePoint(int); isWhitespace(char); isWhitespace(int); lowSurrogate(int); offsetByCodePoints(char[], int, int, int, int); offsetByCodePoints(java.lang.CharSequence, int, int); offsetByCodePointsImpl(char[], int, int, int, int); reverseBytes(char); toChars(int); toChars(int, char[], int); toCodePoint(char, char); toLowerCase(char); toLowerCase(int); toString(char); toString(int); toSurrogates(int, char[], int); toTitleCase(char); toTitleCase(int); toUpperCase(char); toUpperCase(int); toUpperCaseCharArray(int); toUpperCaseEx(int); valueOf(char)
+        table ctor Character(char)
+        """;
 
         private Canonical() {
         }

@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Boxes;
 
 /// The full metamodel of [Boxes], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Boxes;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Boxes_ {
     /// The shape of [Boxes] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,24 @@ public final class Boxes_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Boxes].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Boxes open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant double D = 1.0\nmember method overridable box(double, java.lang.Long, long, java.lang.Float, float, java.lang.Byte, byte, java.lang.Short, short, java.lang.Integer, int, java.lang.Character) -> java.lang.Double throws -\nmember method overridable flags(char, java.lang.Boolean, boolean) -> java.lang.Boolean throws -\ntable abstract -\ntable concrete box(double, java.lang.Long, long, java.lang.Float, float, java.lang.Byte, byte, java.lang.Short, short, java.lang.Integer, int, java.lang.Character); clone(); equals(java.lang.Object); finalize(); flags(char, java.lang.Boolean, boolean); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Boxes()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Boxes open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant double D = 1.0
+        member method overridable box(double, java.lang.Long, long, java.lang.Float, float, java.lang.Byte, byte, java.lang.Short, short, java.lang.Integer, int, java.lang.Character) -> java.lang.Double throws -
+        member method overridable flags(char, java.lang.Boolean, boolean) -> java.lang.Boolean throws -
+        table abstract -
+        table concrete box(double, java.lang.Long, long, java.lang.Float, float, java.lang.Byte, byte, java.lang.Short, short, java.lang.Integer, int, java.lang.Character); clone(); equals(java.lang.Object); finalize(); flags(char, java.lang.Boolean, boolean); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Boxes()
+        """;
 
         private Canonical() {
         }

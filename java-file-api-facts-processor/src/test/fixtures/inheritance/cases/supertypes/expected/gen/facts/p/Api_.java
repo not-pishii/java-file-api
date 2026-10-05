@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Api;
 
 /// The full metamodel of [Api]: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.Api;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Api_ {
     /// The shape of [Api] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,24 @@ public final class Api_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Api].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Api interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract abs() -> void throws -\nmember method overridable dflt() -> void throws -\nmember method static iface() -> void throws -\nsam abs() -> void throws -\ntable abstract abs()\ntable concrete dflt(); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static iface()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Api interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract abs() -> void throws -
+        member method overridable dflt() -> void throws -
+        member method static iface() -> void throws -
+        sam abs() -> void throws -
+        table abstract abs()
+        table concrete dflt(); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static iface()
+        table ctor -
+        """;
 
         private Canonical() {
         }

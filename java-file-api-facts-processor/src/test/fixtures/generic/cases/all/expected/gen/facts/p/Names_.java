@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Names;
 
 /// The full metamodel of [Names], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -43,6 +44,7 @@ import p.Names;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Names_<List__, UnsafeFacts_, Token> {
     /// The shape of [Names] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,25 @@ public final class Names_<List__, UnsafeFacts_, Token> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Names].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Names open-class sealed=no\ntparams #0; #1; #2\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable #0 first\nmember field instance mutable #2 token\nmember method overridable <^0> data(^0) -> ^0 throws -\nmember method overridable all() -> java.util.List<#1> throws -\ntable abstract -\ntable concrete all(); clone(); data(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Names()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Names open-class sealed=no
+        tparams #0; #1; #2
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable #0 first
+        member field instance mutable #2 token
+        member method overridable <^0> data(^0) -> ^0 throws -
+        member method overridable all() -> java.util.List<#1> throws -
+        table abstract -
+        table concrete all(); clone(); data(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Names()
+        """;
 
         private Canonical() {
         }

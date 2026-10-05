@@ -56,7 +56,7 @@ class GeneratedCodeTest {
 
     /// `-Xlint:processing` warns of an annotation no processor claims: the processor claims `@Facts` and the
     /// `@GeneratedMetamodel` and `@GeneratedMetamodelPart` of what it writes, which are its own. `@Generated` of
-    /// the JDK is not its to claim.
+    /// the JDK and `@NullMarked` of JSpecify are not its to claim.
     @Test
     void theProcessorClaimsItsOwnAnnotations() {
         Compiled compiled = Javac.facts()
@@ -73,7 +73,7 @@ class GeneratedCodeTest {
 
         assertThat(compiled.warnings())
                 .containsExactly("No processor claimed any of these annotations:"
-                        + " java.compiler/javax.annotation.processing.Generated");
+                        + " java.compiler/javax.annotation.processing.Generated,/org.jspecify.annotations.NullMarked");
     }
 
     private static TypeShape<?> shape(ClassLoader loader) throws ReflectiveOperationException {

@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Cf;
 
 /// The full metamodel of [Cf], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Cf;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Cf_ {
     /// The shape of [Cf] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,25 @@ public final class Cf_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Cf].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Cf open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int x\nmember method overridable other() -> void throws -\nmember method overridable x() -> void throws -\nmember method overridable x_() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int); x(); x_()\ntable static -\ntable ctor Cf()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Cf open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable int x
+        member method overridable other() -> void throws -
+        member method overridable x() -> void throws -
+        member method overridable x_() -> void throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int); x(); x_()
+        table static -
+        table ctor Cf()
+        """;
 
         private Canonical() {
         }

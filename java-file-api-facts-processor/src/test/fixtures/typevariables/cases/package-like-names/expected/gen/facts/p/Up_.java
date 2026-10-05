@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Up;
 
 /// The full metamodel of [Up], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Up;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Up_<Gen, Java> {
     /// The shape of [Up] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,23 @@ public final class Up_<Gen, Java> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Up].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Up open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0> each(^0) -> java.util.Set<^0> throws -\nmember method overridable all(#1) -> java.util.Set<#0> throws -\ntable abstract -\ntable concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Up()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Up open-class sealed=no
+        tparams #0; #1
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable <^0> each(^0) -> java.util.Set<^0> throws -
+        member method overridable all(#1) -> java.util.Set<#0> throws -
+        table abstract -
+        table concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Up()
+        """;
 
         private Canonical() {
         }

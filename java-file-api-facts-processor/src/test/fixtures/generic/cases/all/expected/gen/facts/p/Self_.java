@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Self;
 
 /// The full metamodel of [Self], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -43,6 +44,7 @@ import p.Self;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Self_<S extends Self<S>> {
     /// The shape of [Self] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,23 @@ public final class Self_<S extends Self<S>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Self].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Self abstract-class sealed=no\ntparams #0 extends p.Self<#0>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method abstract me() -> #0 throws -\nmember method overridable compare(#0) -> int throws -\ntable abstract me()\ntable concrete clone(); compare(#0); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Self()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Self abstract-class sealed=no
+        tparams #0 extends p.Self<#0>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method abstract me() -> #0 throws -
+        member method overridable compare(#0) -> int throws -
+        table abstract me()
+        table concrete clone(); compare(#0); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Self()
+        """;
 
         private Canonical() {
         }

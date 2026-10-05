@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Tok;
 
 /// The full metamodel of [Tok], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -38,6 +39,7 @@ import p.Tok;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Tok_ {
     /// The shape of [Tok] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -53,7 +55,23 @@ public final class Tok_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Tok].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Tok enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.Runnable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Tok>; java.lang.Enum<p.Tok>\nenum TOKEN; sam; token\nmembers declared-public\nmember method final run() -> void throws -\nmember method static valueOf(java.lang.String) -> p.Tok throws -\nmember method static values() -> p.Tok[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Tok); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Tok enum sealed=no
+        tparams -
+        superclasses java.lang.Enum; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.Runnable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<p.Tok>; java.lang.Enum<p.Tok>
+        enum TOKEN; sam; token
+        members declared-public
+        member method final run() -> void throws -
+        member method static valueOf(java.lang.String) -> p.Tok throws -
+        member method static values() -> p.Tok[] throws -
+        table abstract -
+        table concrete clone(); compareTo(p.Tok); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); run(); toString(); wait(); wait(long); wait(long, int)
+        table static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()
+        table ctor -
+        """;
 
         private Canonical() {
         }

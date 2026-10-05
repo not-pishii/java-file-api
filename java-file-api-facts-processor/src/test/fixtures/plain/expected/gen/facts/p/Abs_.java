@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Abs;
 
 /// The full metamodel of [Abs], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Abs;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Abs_ {
     /// The shape of [Abs] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,25 @@ public final class Abs_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Abs].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Abs abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember ctor(java.lang.String, int) throws -\nmember method abstract run() -> void throws -\nmember method overridable done() -> void throws -\nmember method static make() -> p.Abs throws -\ntable abstract run()\ntable concrete clone(); done(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static make()\ntable ctor Abs(); Abs(java.lang.String, int); Abs(long)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Abs abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member ctor(java.lang.String, int) throws -
+        member method abstract run() -> void throws -
+        member method overridable done() -> void throws -
+        member method static make() -> p.Abs throws -
+        table abstract run()
+        table concrete clone(); done(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static make()
+        table ctor Abs(); Abs(java.lang.String, int); Abs(long)
+        """;
 
         private Canonical() {
         }

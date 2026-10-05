@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Abs;
 
 /// The full metamodel of [Abs], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -32,6 +33,7 @@ import p.Abs;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Abs_ {
     /// The shape of [Abs] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,21 @@ public final class Abs_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Abs].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Abs abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Abs()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Abs abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Abs()
+        """;
 
         private Canonical() {
         }

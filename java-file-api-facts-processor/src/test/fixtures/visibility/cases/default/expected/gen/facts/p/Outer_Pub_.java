@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Outer.Pub;
 
 /// The token-only metamodel of [Pub]: its shape and its token, no facts of its members.
@@ -30,6 +31,7 @@ import p.Outer.Pub;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Outer_Pub_ {
     /// The shape of [Pub] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -45,7 +47,20 @@ public final class Outer_Pub_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Pub].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer$Pub open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Outer$Pub()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Outer$Pub open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Outer$Pub()
+        """;
 
         private Canonical() {
         }

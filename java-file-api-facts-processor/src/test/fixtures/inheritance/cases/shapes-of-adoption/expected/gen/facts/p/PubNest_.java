@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.PubNest;
 
 /// The full metamodel of [PubNest], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.PubNest;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PubNest_ {
     /// The shape of [PubNest] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,22 @@ public final class PubNest_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubNest].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubNest open-class sealed=no\ntparams -\nsuperclasses p.HNest; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable plain() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); make(); notify(); notifyAll(); plain(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubNest()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PubNest open-class sealed=no
+        tparams -
+        superclasses p.HNest; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable plain() -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); make(); notify(); notifyAll(); plain(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor PubNest()
+        """;
 
         private Canonical() {
         }

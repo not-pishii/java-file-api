@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Pub2;
 
 /// The full metamodel of [Pub2], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -35,6 +36,7 @@ import p.Pub2;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Pub2_ {
     /// The shape of [Pub2] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,23 @@ public final class Pub2_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Pub2].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pub2 open-class sealed=no\ntparams -\nsuperclasses p.HBetween; p.Pub1; p.H0; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable between() -> java.lang.String throws -\nmember method overridable two() -> java.lang.String throws -\ntable abstract -\ntable concrete between(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); two(); wait(); wait(long); wait(long, int); zero()\ntable static -\ntable ctor Pub2()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Pub2 open-class sealed=no
+        tparams -
+        superclasses p.HBetween; p.Pub1; p.H0; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable between() -> java.lang.String throws -
+        member method overridable two() -> java.lang.String throws -
+        table abstract -
+        table concrete between(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); one(); toString(); two(); wait(); wait(long); wait(long, int); zero()
+        table static -
+        table ctor Pub2()
+        """;
 
         private Canonical() {
         }

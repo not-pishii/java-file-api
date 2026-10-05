@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Uses;
 
 /// The full metamodel of [Uses], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Uses;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
     /// The shape of [Uses] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,21 @@ public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Uses].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Uses open-class sealed=no\ntparams #0 extends p.Data & p.Canonical<p.Data>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Uses()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Uses open-class sealed=no
+        tparams #0 extends p.Data & p.Canonical<p.Data>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Uses()
+        """;
 
         private Canonical() {
         }

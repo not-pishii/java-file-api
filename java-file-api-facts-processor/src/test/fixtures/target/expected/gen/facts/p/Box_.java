@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Box;
 
 /// The full metamodel of [Box], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Box;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Box_<T> {
     /// The shape of [Box] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,22 @@ public final class Box_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Box].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Box open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable put(#0) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); put(#0); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Box()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Box open-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable put(#0) -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); put(#0); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Box()
+        """;
 
         private Canonical() {
         }

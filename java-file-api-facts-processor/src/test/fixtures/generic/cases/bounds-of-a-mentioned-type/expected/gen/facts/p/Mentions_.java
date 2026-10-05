@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.ByDollar;
 import p.ByHidden;
 import p.ByMarker;
@@ -37,6 +38,7 @@ import p.Mentions;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Mentions_ {
     /// The shape of [Mentions] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,24 @@ public final class Mentions_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Mentions].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Mentions open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable dollar() -> p.ByDollar<?> throws -\nmember method overridable hidden() -> p.ByHidden<?> throws -\nmember method overridable marker() -> p.ByMarker<?> throws -\ntable abstract -\ntable concrete clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); marker(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Mentions()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Mentions open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable dollar() -> p.ByDollar<?> throws -
+        member method overridable hidden() -> p.ByHidden<?> throws -
+        member method overridable marker() -> p.ByMarker<?> throws -
+        table abstract -
+        table concrete clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); marker(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Mentions()
+        """;
 
         private Canonical() {
         }
