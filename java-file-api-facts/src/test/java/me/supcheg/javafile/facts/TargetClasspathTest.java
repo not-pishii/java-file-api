@@ -168,7 +168,10 @@ class TargetClasspathTest {
                         new Difference.ChangedFact(
                                 "method final o() -> void throws -",
                                 "method final o() -> void throws java.io.IOException"),
-                        new Difference.ChangedData("superclasses", "java.lang.Object", "p.Base; java.lang.Object")))));
+                        new Difference.ChangedData("superclasses", "java.lang.Object", "p.Base; java.lang.Object"),
+                        new Difference.MissingInterface("java.lang.Runnable"),
+                        new Difference.ChangedSupertype(
+                                "java.lang.Comparable<java.lang.String>", "java.lang.Comparable<java.lang.Object>")))));
         TargetClasspath target = UnsafeFacts.targetClasspath(asked);
         OpenClassToken<Object> svc = UnsafeFacts.openClassToken(SVC);
 
@@ -177,7 +180,7 @@ class TargetClasspathTest {
                 .satisfies(e -> {
                     assertThat(e.metamodel()).isSameAs(SVC.origin());
                     assertThat(e.type()).isEqualTo(ClassDesc.of("p", "Svc"));
-                    assertThat(e.differences()).hasSize(4);
+                    assertThat(e.differences()).hasSize(6);
                 })
                 .withMessage("""
                         metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath:
@@ -189,6 +192,9 @@ class TargetClasspathTest {
                           changed: superclasses
                             generated against: java.lang.Object
                             target: p.Base; java.lang.Object
+                          missing: interface java.lang.Runnable
+                          changed: supertype java.lang.Comparable<java.lang.String>
+                            found: java.lang.Comparable<java.lang.Object>
                         The generator was compiled against another p.Svc than this compilation has (another version\
                          of its library, or another --release). Generate the metamodels against this version: rebuild\
                          the generator against it, or align the versions.""");

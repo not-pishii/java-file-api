@@ -8,12 +8,16 @@ import java.util.List;
 /// - [Unchanged] — the type is the one the metamodel was generated from:
 ///   every fact of the metamodel holds, and so does its [TypeShape].
 /// - [Changed] — the type is another, yet every fact of the metamodel
-///   holds of it and the data of its shape is the same, but for the methods:
-///   members were added. The method table is that of the target, so an
-///   overload added there is a candidate lowering knows of.
+///   holds of it and the data of its shape is the same, but for what was
+///   added: members, and interfaces the type implements. The method table
+///   is that of the target, so an overload added there — by the type or by
+///   an interface it has got — is a candidate lowering knows of; an added
+///   interface takes nothing away, as a value of the type is still one of
+///   every supertype the metamodel tells.
 /// - [Mismatched] — a fact of the metamodel does not hold of the type, the
-///   data of its shape differs, or the type is not there: the metamodel is
-///   of no use to this compilation.
+///   data of its shape differs, a supertype the metamodel tells is not one
+///   of the type, or the type is not there: the metamodel is of no use to
+///   this compilation.
 public sealed interface TargetType permits TargetType.Holds, TargetType.Mismatched {
 
     /// The type is the one the metamodel was generated from.
@@ -54,7 +58,9 @@ public sealed interface TargetType permits TargetType.Holds, TargetType.Mismatch
                     Difference.OtherFormat,
                     Difference.MissingFact,
                     Difference.ChangedFact,
-                    Difference.ChangedData {
+                    Difference.ChangedData,
+                    Difference.MissingInterface,
+                    Difference.ChangedSupertype {
 
         /// The lines of a message that tell the difference, the first of
         /// them naming it.
@@ -118,8 +124,8 @@ public sealed interface TargetType permits TargetType.Holds, TargetType.Mismatch
             }
         }
 
-        /// Data of the [TypeShape] differs: the kind of the type, its type
-        /// parameters, superclasses, supertypes or enum constants.
+        /// Data of the [TypeShape] that is to be the same differs: the kind
+        /// of the type, its type parameters, superclasses or enum constants.
         ///
         /// @param what which data, as the canonical form names it
         /// @param generated the data of the metamodel
@@ -128,6 +134,33 @@ public sealed interface TargetType permits TargetType.Holds, TargetType.Mismatch
             @Override
             public List<String> lines() {
                 return List.of("changed: " + what, "  generated against: " + generated, "  target: " + target);
+            }
+        }
+
+        /// An interface the metamodel tells the type implements or extends,
+        /// itself or through a supertype, is not one of the type: an
+        /// expression of the type the compiler of the generator took for
+        /// one of the interface is none here.
+        ///
+        /// @param name the interface, by binary name
+        record MissingInterface(String name) implements Difference {
+            @Override
+            public List<String> lines() {
+                return List.of("missing: interface " + name);
+            }
+        }
+
+        /// A parameterized supertype the metamodel tells is a supertype of
+        /// the type with other type arguments, or with none: `Comparable<String>`
+        /// where the type is a `Comparable<Object>`.
+        ///
+        /// @param supertype the supertype, as the canonical form of the metamodel tells it
+        /// @param found the supertype of that class or interface the type has, as its canonical form tells
+        ///              it; the name alone if the type has it without type arguments
+        record ChangedSupertype(String supertype, String found) implements Difference {
+            @Override
+            public List<String> lines() {
+                return List.of("changed: supertype " + supertype, "  found: " + found);
             }
         }
     }

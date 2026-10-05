@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.TargetType.Difference;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// Whether a metamodel holds of a type as a classpath has it: the
@@ -14,7 +15,8 @@ import java.util.stream.Stream;
 /// one comparison of the `@Facts` processor, which reuses a metamodel of
 /// another module only for an unchanged type, and of the check against the
 /// target classpath, which lets a changed type through where the metamodel
-/// still holds.
+/// still holds: where the type has everything the metamodel tells of it,
+/// whatever else it has got.
 ///
 /// **The fast path** ([#unchanged]): the fingerprint is that of the model.
 /// Nothing of the metamodel but the fingerprint is read.
@@ -25,18 +27,30 @@ import java.util.stream.Stream;
 /// | Lines | Compared | Why |
 /// |---|---|---|
 /// | the format | equal, or nothing else is compared | the lines of another format mean something else |
-/// | `type`, `tparams`, `superclasses`, `interfaces`, `supertypes`, `enum` | equal | the data of the shape of the
-/// metamodel, which the typed layer decided by: the token class, checked exceptions, checked casts, what an
-/// expression of the type is assignable to |
+/// | `type`, `tparams`, `superclasses`, `enum` | equal | the data of the shape of the metamodel, which the typed
+/// layer decided by: the token class, checked exceptions, the constants of an enum |
+/// | `interfaces`, `supertypes` | each of the metamodel is one of the type | what the compiler of the generator took
+/// an expression of the type for, and the checked casts; an interface the type has got takes none away |
 /// | `member` | each of the metamodel is one of the type | a fact of the metamodel names the member; a member the
 /// type has added takes none away |
 /// | `sam`, of a full metamodel | that of the metamodel is that of the type | the `sam` fact; a token-only
 /// metamodel has none |
 /// | `table` | not compared: the table is taken from the type | an overload the type has added is a candidate
 /// javac chooses among |
+///
+/// **The supertypes.** A form tells every interface of its type, however
+/// the type comes by it, so the comparison does not depend on where an
+/// interface is declared: one the type implemented itself and now has
+/// through another interface or a superclass is there as before, and one
+/// that only a supertype of the type has lost is missing. `interfaces` are
+/// erased, and `supertypes` tells the type arguments: a `Comparable<String>`
+/// of the metamodel is not the `Comparable<Object>` of the type. The chain
+/// of `superclasses` is compared whole, as it is what tells a checked
+/// exception from an unchecked one.
 public final class Conformance {
-    private static final List<String> DATA =
-            List.of("type", "tparams", "superclasses", "interfaces", "supertypes", "enum");
+    private static final String SUPERCLASSES = "superclasses";
+    private static final String INTERFACES = "interfaces";
+    private static final String SUPERTYPES = "supertypes";
     private static final String MEMBER = "member ";
     private static final String SAM = "sam ";
     private static final String FULL = "members declared-public";
@@ -89,15 +103,57 @@ public final class Conformance {
                 : new TargetType.Mismatched(differences);
     }
 
-    /// The data of the shape that differs.
+    /// The data of the shape that differs, in the order of the form.
     private static Stream<Difference> data(List<String> generated, List<String> target) {
-        return DATA.stream().flatMap(what -> {
-            String recorded = value(generated, what);
-            String found = value(target, what);
-            return recorded.equals(found)
-                    ? Stream.empty()
-                    : Stream.of(new Difference.ChangedData(what, recorded, found));
-        });
+        return Stream.of(
+                        equal("type", generated, target),
+                        equal("tparams", generated, target),
+                        equal(SUPERCLASSES, generated, target),
+                        interfaces(generated, target),
+                        supertypes(generated, target),
+                        equal("enum", generated, target))
+                .flatMap(differences -> differences);
+    }
+
+    /// The data that is to be the same, if it is not.
+    private static Stream<Difference> equal(String what, List<String> generated, List<String> target) {
+        String recorded = value(generated, what);
+        String found = value(target, what);
+        return recorded.equals(found) ? Stream.empty() : Stream.of(new Difference.ChangedData(what, recorded, found));
+    }
+
+    /// The interfaces of a metamodel that the type does not have.
+    private static Stream<Difference> interfaces(List<String> generated, List<String> target) {
+        Set<String> there = Set.copyOf(items(target, INTERFACES));
+        return items(generated, INTERFACES).stream()
+                .filter(name -> !there.contains(name))
+                .map(Difference.MissingInterface::new);
+    }
+
+    /// The parameterized supertypes of a metamodel that the type has
+    /// otherwise: with other type arguments, or with none. One whose class
+    /// or interface is no supertype of the type at all is told by its name
+    /// already: an interface as missing, a class by the superclasses.
+    private static Stream<Difference> supertypes(List<String> generated, List<String> target) {
+        List<String> found = items(target, SUPERTYPES);
+        Set<String> there = Set.copyOf(found);
+        Set<String> erased = Stream.of(SUPERCLASSES, INTERFACES)
+                .flatMap(what -> items(target, what).stream())
+                .collect(Collectors.toSet());
+        return items(generated, SUPERTYPES).stream()
+                .filter(supertype -> !there.contains(supertype) && erased.contains(erasure(supertype)))
+                .map(supertype -> new Difference.ChangedSupertype(
+                        supertype,
+                        found.stream()
+                                .filter(other -> erasure(other).equals(erasure(supertype)))
+                                .findFirst()
+                                .orElse(erasure(supertype))));
+    }
+
+    /// The class or interface of a parameterized supertype, as a form
+    /// tells one: `java.util.Map` of `java.util.Map<#0, java.util.List<#1>>`.
+    private static String erasure(String supertype) {
+        return supertype.substring(0, supertype.indexOf('<'));
     }
 
     /// The line of a form that tells `what`, without the word.
@@ -107,6 +163,12 @@ public final class Conformance {
                 .map(line -> line.substring(what.length() + 1))
                 .findFirst()
                 .orElse("");
+    }
+
+    /// What the line of a form that tells `what` lists: `-` is nothing.
+    private static List<String> items(List<String> lines, String what) {
+        String value = value(lines, what);
+        return value.isEmpty() || value.equals("-") ? List.of() : List.of(value.split("; "));
     }
 
     /// The lines of a form that tell what a metamodel has facts of.
