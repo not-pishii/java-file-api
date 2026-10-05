@@ -59,30 +59,20 @@ class FixtureRunTest {
 
     /// Runs the tests of the fixtures, in order, each to its failure if it has one.
     private Map<String, Optional<Throwable>> run() {
-        return run(Optional.empty());
+        return run(false);
     }
 
     /// The same with the snapshots accepted, as `-Pfixtures.update` does.
     private Map<String, Optional<Throwable>> update() {
-        return run(Optional.of(""));
+        return run(true);
     }
 
-    /// Runs the tests with the system property [Snapshot#UPDATE] as given, whatever the build has set it to.
-    private Map<String, Optional<Throwable>> run(Optional<String> update) {
-        Optional<String> before = Optional.ofNullable(System.getProperty(Snapshot.UPDATE));
-        set(update);
-        try {
-            return outcomes(FixtureRun.tests(
-                            fixtures, work.resolve(String.valueOf(System.nanoTime())), Optional.empty()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        } finally {
-            set(before);
-        }
-    }
-
-    private static void set(Optional<String> update) {
-        update.ifPresentOrElse(
-                value -> System.setProperty(Snapshot.UPDATE, value), () -> System.clearProperty(Snapshot.UPDATE));
+    /// Runs the tests with the system property [Snapshot#UPDATE_FLAG] as given, whatever the build has set it to.
+    private Map<String, Optional<Throwable>> run(boolean update) {
+        return ScopedValue.where(Snapshot.UPDATE, update)
+                .call(() -> outcomes(FixtureRun.tests(
+                                fixtures, work.resolve(String.valueOf(System.nanoTime())), Optional.empty()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     private static Stream<Map.Entry<String, Optional<Throwable>>> outcomes(Stream<? extends DynamicNode> nodes) {
