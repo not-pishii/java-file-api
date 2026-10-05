@@ -6,10 +6,12 @@ import gen.facts.p.Failure_;
 import gen.facts.p.Io_;
 import java.lang.constant.ClassDesc;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
+import me.supcheg.javafile.typed.VoidBody;
 import p.Io;
 
 import static me.supcheg.javafile.typed.Expressions.call;
@@ -17,6 +19,7 @@ import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /// The `throws` clause of a fact is what the typed layer checks a call of the member by: a checked exception of
@@ -53,6 +56,25 @@ public final class Checked {
                 .isEqualTo(0);
     }
 
+    /// `static void declares() throws Failure {}`: nothing but the `throws` clause names `Failure`.
+    private static final TypedJavaFile.TypedClassSpec DECLARES_FAILURE = new TypedJavaFile.TypedClassSpec() {
+        @Override
+        public <Self> void build(TypedClassBuilder<Self> cb) {
+            cb.throwing(Failure_.TOKEN).voidStaticMethod("declares", VoidBody::end);
+        }
+    };
+
+    public static void theThrowsClauseOfADeclaredMemberIsCheckedAgainstTheTargetClasspath(Typed typed) {
+        assertThat(typed.render(DECLARES_FAILURE)).contains("public static void declares() throws Failure {");
+    }
+
+    public static void theThrowsClauseOfADeclaredMemberDoesNotHoldWhereTheExceptionIsAnotherClass(Typed typed) {
+        // targets/unchecked-failure: Failure extends RuntimeException
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("unchecked-failure").render(DECLARES_FAILURE))
+                .withMessageContaining("p.Failure");
+    }
+
     public static void aCheckedExceptionOfAMethodIsDeclared() {
         String source = rendered(new Members() {
             @Override
@@ -76,9 +98,9 @@ public final class Checked {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
                 cb.voidStaticMethod("multi", Io_.TOKEN, (b, io) -> b.try_(
-                                t -> t.exec(voidCall(io, Io_.multi)),
                                 h -> h.catch_(IOException_.TOKEN, (_, _) -> {})
-                                        .catch_(InterruptedException_.TOKEN, (_, _) -> {}))
+                                        .catch_(InterruptedException_.TOKEN, (_, _) -> {}),
+                                t -> t.exec(voidCall(io, Io_.multi)))
                         .end());
             }
         });
@@ -89,8 +111,8 @@ public final class Checked {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
                         cb.voidStaticMethod("multi", Io_.TOKEN, (b, io) -> b.try_(
-                                        t -> t.exec(voidCall(io, Io_.multi)),
-                                        h -> h.catch_(IOException_.TOKEN, (_, _) -> {}))
+                                        h -> h.catch_(IOException_.TOKEN, (_, _) -> {}),
+                                        t -> t.exec(voidCall(io, Io_.multi)))
                                 .end());
                     }
                 }))

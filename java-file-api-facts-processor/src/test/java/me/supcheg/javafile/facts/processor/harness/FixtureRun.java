@@ -355,19 +355,22 @@ public final class FixtureRun {
 
         /// Renders in a compilation that has the library alone, against
         /// its target classpath.
-        private <R, P> Rendering rendering(
-                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
-            return Javac.plain()
-                    .alone()
-                    .classpath(library.get())
-                    .inFirstRound(processing -> render(processing, result, parameter, body));
+        private Rendering rendering(TypedJavaFile.TypedClassSpec spec) {
+            return Javac.plain().alone().classpath(library.get()).inFirstRound(processing -> render(processing, spec));
         }
 
-        private static <R, P> Rendering render(
-                ProcessingEnvironment processing,
-                TypeToken<R> result,
-                TypeToken<P> parameter,
-                Function<Expr<P>, Expr<R>> body) {
+        /// Class `out.Out` with `public static R go(P p)` that returns `body` of its parameter.
+        private static <R, P> TypedJavaFile.TypedClassSpec go(
+                TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
+            return new TypedJavaFile.TypedClassSpec() {
+                @Override
+                public <Self> void build(TypedClassBuilder<Self> cb) {
+                    cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
+                }
+            };
+        }
+
+        private static Rendering render(ProcessingEnvironment processing, TypedJavaFile.TypedClassSpec spec) {
             List<String> verified = new CopyOnWriteArrayList<>();
             TargetReader reader = TargetClasspaths.reader(processing.getElementUtils(), processing.getTypeUtils());
             TargetClasspath target = UnsafeFacts.targetClasspath((shape, origin) -> {
@@ -381,13 +384,7 @@ public final class FixtureRun {
                 return found;
             });
             try {
-                String source = TypedJavaFile.class_(
-                                target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
-                                    @Override
-                                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
-                                    }
-                                })
+                String source = TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), spec)
                         .render();
                 return new Rendering.Rendered(source, List.copyOf(verified));
             } catch (RuntimeException rejected) {
@@ -397,7 +394,12 @@ public final class FixtureRun {
 
         @Override
         public <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
-            return switch (rendering(result, parameter, body)) {
+            return render(go(result, parameter, body));
+        }
+
+        @Override
+        public String render(TypedJavaFile.TypedClassSpec spec) {
+            return switch (rendering(spec)) {
                 case Rendering.Rendered(String source, List<String> _) -> source;
                 case Rendering.Rejected(RuntimeException reason, List<String> _) -> throw reason;
             };
@@ -406,7 +408,7 @@ public final class FixtureRun {
         @Override
         public <R, P> List<String> verified(
                 TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
-            return rendering(result, parameter, body).verified();
+            return rendering(go(result, parameter, body)).verified();
         }
 
         @Override
