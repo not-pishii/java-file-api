@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Ex;
 
 /// The token-only metamodel of [Ex]: its shape and its token, no facts of its members.
@@ -30,6 +31,7 @@ import p.Ex;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Ex_ {
     /// The shape of [Ex] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -45,7 +47,20 @@ public final class Ex_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Ex].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Ex open-class sealed=no\ntparams -\nsuperclasses java.lang.Exception; java.lang.Throwable; java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Ex()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Ex open-class sealed=no
+        tparams -
+        superclasses java.lang.Exception; java.lang.Throwable; java.lang.Object
+        interfaces java.io.Serializable
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Ex()
+        """;
 
         private Canonical() {
         }

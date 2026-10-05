@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Box;
 import p.Pair;
 import p.Sorted;
@@ -43,6 +44,7 @@ import p.Uses;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Uses_ {
     /// The shape of [Uses] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,28 @@ public final class Uses_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Uses].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Uses open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable java.util.Map<java.lang.String, ? extends java.lang.Number> wild\nmember method overridable any() -> java.util.List<?> throws -\nmember method overridable arrays() -> p.Pair<int[], java.lang.String[]> throws -\nmember method overridable lists() -> java.util.List<? super java.lang.Integer>[] throws -\nmember method overridable raw() -> p.Box throws -\nmember method overridable strings() -> p.Box<java.lang.String> throws -\nmember method overridable take(p.Sorted<java.lang.Integer>) -> void throws -\ntable abstract -\ntable concrete any(); arrays(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lists(); notify(); notifyAll(); raw(); strings(); take(p.Sorted); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Uses()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Uses open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable java.util.Map<java.lang.String, ? extends java.lang.Number> wild
+        member method overridable any() -> java.util.List<?> throws -
+        member method overridable arrays() -> p.Pair<int[], java.lang.String[]> throws -
+        member method overridable lists() -> java.util.List<? super java.lang.Integer>[] throws -
+        member method overridable raw() -> p.Box throws -
+        member method overridable strings() -> p.Box<java.lang.String> throws -
+        member method overridable take(p.Sorted<java.lang.Integer>) -> void throws -
+        table abstract -
+        table concrete any(); arrays(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lists(); notify(); notifyAll(); raw(); strings(); take(p.Sorted); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Uses()
+        """;
 
         private Canonical() {
         }

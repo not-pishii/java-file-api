@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.IoA;
 
 /// The full metamodel of [IoA]: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.IoA;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class IoA_ {
     /// The shape of [IoA] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,22 @@ public final class IoA_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [IoA].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.IoA interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m() -> void throws java.io.IOException\nsam m() -> void throws java.io.IOException\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.IoA interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract m() -> void throws java.io.IOException
+        sam m() -> void throws java.io.IOException
+        table abstract m()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

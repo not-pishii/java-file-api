@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Sorted;
 
 /// The full metamodel of [Sorted], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.Sorted;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Sorted_<T extends Comparable<T>> {
     /// The shape of [Sorted] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,23 @@ public final class Sorted_<T extends Comparable<T>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Sorted].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Sorted open-class sealed=no\ntparams #0 extends java.lang.Comparable<#0>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember method overridable max() -> #0 throws -\nmember method overridable with(#0) -> p.Sorted<#0> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); max(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); with(#0)\ntable static -\ntable ctor Sorted(#0)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Sorted open-class sealed=no
+        tparams #0 extends java.lang.Comparable<#0>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0) throws -
+        member method overridable max() -> #0 throws -
+        member method overridable with(#0) -> p.Sorted<#0> throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); max(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); with(#0)
+        table static -
+        table ctor Sorted(#0)
+        """;
 
         private Canonical() {
         }

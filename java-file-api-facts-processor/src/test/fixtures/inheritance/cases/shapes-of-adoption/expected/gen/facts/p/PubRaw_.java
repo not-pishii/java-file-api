@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.PubRaw;
 
 /// The full metamodel of [PubRaw], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -38,6 +39,7 @@ import p.PubRaw;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PubRaw_ {
     /// The shape of [PubRaw] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -53,7 +55,25 @@ public final class PubRaw_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubRaw].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubRaw open-class sealed=no\ntparams -\nsuperclasses p.HG; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable java.lang.Object value\nmember method overridable all() -> java.util.List throws -\nmember method overridable get() -> java.lang.Object throws -\nmember method overridable put(java.lang.Object) -> void throws -\ntable abstract -\ntable concrete all(); clone(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); notify(); notifyAll(); put(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubRaw()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PubRaw open-class sealed=no
+        tparams -
+        superclasses p.HG; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable java.lang.Object value
+        member method overridable all() -> java.util.List throws -
+        member method overridable get() -> java.lang.Object throws -
+        member method overridable put(java.lang.Object) -> void throws -
+        table abstract -
+        table concrete all(); clone(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); notify(); notifyAll(); put(java.lang.Object); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor PubRaw()
+        """;
 
         private Canonical() {
         }

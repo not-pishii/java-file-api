@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Map]: its shape and its token, no facts of its members.
 ///
@@ -37,6 +38,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Map_<K, V> {
     /// The shape of [Map] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,20 @@ public final class Map_<K, V> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Map].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.Map interface sealed=no\ntparams #0; #1\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract clear(); containsKey(java.lang.Object); containsValue(java.lang.Object); entrySet(); get(java.lang.Object); isEmpty(); keySet(); put(#0, #1); putAll(java.util.Map); remove(java.lang.Object); size(); values()\ntable concrete compute(#0, java.util.function.BiFunction); computeIfAbsent(#0, java.util.function.Function); computeIfPresent(#0, java.util.function.BiFunction); equals(java.lang.Object); forEach(java.util.function.BiConsumer); getClass(); getOrDefault(java.lang.Object, #1); hashCode(); merge(#0, #1, java.util.function.BiFunction); notify(); notifyAll(); putIfAbsent(#0, #1); remove(java.lang.Object, java.lang.Object); replace(#0, #1); replace(#0, #1, #1); replaceAll(java.util.function.BiFunction); toString(); wait(); wait(long); wait(long, int)\ntable static copyOf(java.util.Map); entry(java.lang.Object, java.lang.Object); of(); of(java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); ofEntries(java.util.Map$Entry[])\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.Map interface sealed=no
+        tparams #0; #1
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract clear(); containsKey(java.lang.Object); containsValue(java.lang.Object); entrySet(); get(java.lang.Object); isEmpty(); keySet(); put(#0, #1); putAll(java.util.Map); remove(java.lang.Object); size(); values()
+        table concrete compute(#0, java.util.function.BiFunction); computeIfAbsent(#0, java.util.function.Function); computeIfPresent(#0, java.util.function.BiFunction); equals(java.lang.Object); forEach(java.util.function.BiConsumer); getClass(); getOrDefault(java.lang.Object, #1); hashCode(); merge(#0, #1, java.util.function.BiFunction); notify(); notifyAll(); putIfAbsent(#0, #1); remove(java.lang.Object, java.lang.Object); replace(#0, #1); replace(#0, #1, #1); replaceAll(java.util.function.BiFunction); toString(); wait(); wait(long); wait(long, int)
+        table static copyOf(java.util.Map); entry(java.lang.Object, java.lang.Object); of(); of(java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object); ofEntries(java.util.Map$Entry[])
+        table ctor -
+        """;
 
         private Canonical() {
         }

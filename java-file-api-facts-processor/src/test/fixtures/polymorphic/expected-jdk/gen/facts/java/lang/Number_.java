@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Number]: a fact of every `public` member the type declares.
 ///
@@ -41,6 +42,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Number_ {
     /// The shape of [Number] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,27 @@ public final class Number_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Number].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Number abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method abstract doubleValue() -> double throws -\nmember method abstract floatValue() -> float throws -\nmember method abstract intValue() -> int throws -\nmember method abstract longValue() -> long throws -\nmember method overridable byteValue() -> byte throws -\nmember method overridable shortValue() -> short throws -\ntable abstract doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Number()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Number abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces java.io.Serializable
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method abstract doubleValue() -> double throws -
+        member method abstract floatValue() -> float throws -
+        member method abstract intValue() -> int throws -
+        member method abstract longValue() -> long throws -
+        member method overridable byteValue() -> byte throws -
+        member method overridable shortValue() -> short throws -
+        table abstract doubleValue(); floatValue(); intValue(); longValue()
+        table concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Number()
+        """;
 
         private Canonical() {
         }

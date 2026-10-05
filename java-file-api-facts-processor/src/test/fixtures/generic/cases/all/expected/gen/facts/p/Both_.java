@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Both;
 
 /// The full metamodel of [Both], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Both;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Both_<T extends Number & Comparable<T>> {
     /// The shape of [Both] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,22 @@ public final class Both_<T extends Number & Comparable<T>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Both].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Both abstract-class sealed=no\ntparams #0 extends java.lang.Number & java.lang.Comparable<#0>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method abstract pick() -> #0 throws -\ntable abstract pick()\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Both()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Both abstract-class sealed=no
+        tparams #0 extends java.lang.Number & java.lang.Comparable<#0>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method abstract pick() -> #0 throws -
+        table abstract pick()
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Both()
+        """;
 
         private Canonical() {
         }

@@ -41,6 +41,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Box;
 
 /// The full metamodel of [Box], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -55,6 +56,7 @@ import p.Box;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Box_<T> {
     /// The shape of [Box] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -70,7 +72,40 @@ public final class Box_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Box].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Box open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember ctor() throws -\nmember field instance final #0 initial\nmember field instance mutable #0 value\nmember field static constant java.lang.String NAME = \"box\"\nmember field static mutable int count\nmember method overridable addAll(java.util.Collection<? extends #0>) -> void throws -\nmember method overridable asList() -> java.util.List<#0> throws -\nmember method overridable drainTo(java.util.Collection<? super #0>) -> void throws -\nmember method overridable get() -> #0 throws -\nmember method overridable ints() -> int[] throws -\nmember method overridable nested() -> p.Box<p.Box<#0>> throws -\nmember method overridable raw(java.util.Map) -> java.util.List throws -\nmember method overridable rawSelf() -> p.Box throws -\nmember method overridable sameAs(p.Box<?>) -> boolean throws -\nmember method overridable self() -> p.Box<#0> throws -\nmember method overridable set(#0) -> void throws -\nmember method overridable toArray(#0[]) -> #0[] throws -\nmember method static ofString() -> p.Box<java.lang.String> throws -\nmember method static size(p.Box<?>) -> int throws -\ntable abstract -\ntable concrete addAll(java.util.Collection); asList(); clone(); drainTo(java.util.Collection); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); ints(); nested(); notify(); notifyAll(); raw(java.util.Map); rawSelf(); sameAs(p.Box); self(); set(#0); toArray(#0[]); toString(); wait(); wait(long); wait(long, int)\ntable static ofString(); size(p.Box)\ntable ctor Box(#0); Box()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Box open-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0) throws -
+        member ctor() throws -
+        member field instance final #0 initial
+        member field instance mutable #0 value
+        member field static constant java.lang.String NAME = "box"
+        member field static mutable int count
+        member method overridable addAll(java.util.Collection<? extends #0>) -> void throws -
+        member method overridable asList() -> java.util.List<#0> throws -
+        member method overridable drainTo(java.util.Collection<? super #0>) -> void throws -
+        member method overridable get() -> #0 throws -
+        member method overridable ints() -> int[] throws -
+        member method overridable nested() -> p.Box<p.Box<#0>> throws -
+        member method overridable raw(java.util.Map) -> java.util.List throws -
+        member method overridable rawSelf() -> p.Box throws -
+        member method overridable sameAs(p.Box<?>) -> boolean throws -
+        member method overridable self() -> p.Box<#0> throws -
+        member method overridable set(#0) -> void throws -
+        member method overridable toArray(#0[]) -> #0[] throws -
+        member method static ofString() -> p.Box<java.lang.String> throws -
+        member method static size(p.Box<?>) -> int throws -
+        table abstract -
+        table concrete addAll(java.util.Collection); asList(); clone(); drainTo(java.util.Collection); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); ints(); nested(); notify(); notifyAll(); raw(java.util.Map); rawSelf(); sameAs(p.Box); self(); set(#0); toArray(#0[]); toString(); wait(); wait(long); wait(long, int)
+        table static ofString(); size(p.Box)
+        table ctor Box(#0); Box()
+        """;
 
         private Canonical() {
         }

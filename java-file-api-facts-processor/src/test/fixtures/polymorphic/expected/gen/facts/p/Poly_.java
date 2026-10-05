@@ -35,6 +35,7 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Poly;
 
 /// The full metamodel of [Poly], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -50,6 +51,7 @@ import p.Poly;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Poly_ {
     /// The shape of [Poly] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -65,7 +67,32 @@ public final class Poly_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Poly].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Poly open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor <^0>(^0) throws -\nmember ctor() throws -\nmember field instance mutable int t\nmember field static constant int T = 1\nmember method overridable <^0 extends java.lang.Exception> run(java.lang.Class<^0>) -> void throws ^0, java.io.IOException\nmember method overridable <^0 extends java.lang.Number & java.lang.Comparable<^0>> clamp(^0) -> ^0 throws -\nmember method overridable <^0, ^1 extends ^0> widen(^1) -> ^0 throws -\nmember method overridable <^0, ^1> odd(^0, ^1) -> void throws -\nmember method overridable <^0> id(^0) -> ^0 throws -\nmember method overridable <^0> none() -> void throws -\nmember method static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -\nmember method static <^0> listOf(^0[]) -> java.util.List<^0> throws -\ntable abstract -\ntable concrete clamp(java.lang.Number); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); none(); notify(); notifyAll(); odd(java.lang.Object, java.lang.Object); run(java.lang.Class); toString(); wait(); wait(long); wait(long, int); widen(java.lang.Object)\ntable static listOf(java.lang.Object[]); max(java.util.Collection)\ntable ctor Poly(); Poly(java.lang.Object)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Poly open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor <^0>(^0) throws -
+        member ctor() throws -
+        member field instance mutable int t
+        member field static constant int T = 1
+        member method overridable <^0 extends java.lang.Exception> run(java.lang.Class<^0>) -> void throws ^0, java.io.IOException
+        member method overridable <^0 extends java.lang.Number & java.lang.Comparable<^0>> clamp(^0) -> ^0 throws -
+        member method overridable <^0, ^1 extends ^0> widen(^1) -> ^0 throws -
+        member method overridable <^0, ^1> odd(^0, ^1) -> void throws -
+        member method overridable <^0> id(^0) -> ^0 throws -
+        member method overridable <^0> none() -> void throws -
+        member method static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -
+        member method static <^0> listOf(^0[]) -> java.util.List<^0> throws -
+        table abstract -
+        table concrete clamp(java.lang.Number); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); none(); notify(); notifyAll(); odd(java.lang.Object, java.lang.Object); run(java.lang.Class); toString(); wait(); wait(long); wait(long, int); widen(java.lang.Object)
+        table static listOf(java.lang.Object[]); max(java.util.Collection)
+        table ctor Poly(); Poly(java.lang.Object)
+        """;
 
         private Canonical() {
         }

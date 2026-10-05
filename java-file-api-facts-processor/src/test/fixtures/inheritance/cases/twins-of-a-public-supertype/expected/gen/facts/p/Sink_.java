@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Sink;
 
 /// The full metamodel of [Sink], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -32,6 +33,7 @@ import p.Sink;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Sink_ {
     /// The shape of [Sink] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,22 @@ public final class Sink_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Sink].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Sink final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method static take(java.lang.Object) -> java.lang.String throws -\nmember method static take(java.lang.String) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static take(java.lang.Object); take(java.lang.String)\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Sink final-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method static take(java.lang.Object) -> java.lang.String throws -
+        member method static take(java.lang.String) -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static take(java.lang.Object); take(java.lang.String)
+        table ctor -
+        """;
 
         private Canonical() {
         }

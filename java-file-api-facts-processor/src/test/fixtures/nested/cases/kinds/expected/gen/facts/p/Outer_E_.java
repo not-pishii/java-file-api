@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Outer.E;
 
 /// The full metamodel of [E], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -37,6 +38,7 @@ import p.Outer.E;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Outer_E_ {
     /// The shape of [E] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,22 @@ public final class Outer_E_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [E].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer$E enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Outer$E>; java.lang.Enum<p.Outer$E>\nenum A; B\nmembers declared-public\nmember method static valueOf(java.lang.String) -> p.Outer$E throws -\nmember method static values() -> p.Outer$E[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Outer$E); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Outer$E enum sealed=no
+        tparams -
+        superclasses java.lang.Enum; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<p.Outer$E>; java.lang.Enum<p.Outer$E>
+        enum A; B
+        members declared-public
+        member method static valueOf(java.lang.String) -> p.Outer$E throws -
+        member method static values() -> p.Outer$E[] throws -
+        table abstract -
+        table concrete clone(); compareTo(p.Outer$E); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
+        table static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()
+        table ctor -
+        """;
 
         private Canonical() {
         }

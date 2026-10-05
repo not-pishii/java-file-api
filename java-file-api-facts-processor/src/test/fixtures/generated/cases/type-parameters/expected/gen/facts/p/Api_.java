@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Api;
 import p.Raw;
 
@@ -35,6 +36,7 @@ import p.Raw;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Api_ {
     /// The shape of [Api] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,22 @@ public final class Api_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Api].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Api interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract raw() -> p.Raw<?> throws -\nsam raw() -> p.Raw<?> throws -\ntable abstract raw()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Api interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract raw() -> p.Raw<?> throws -
+        sam raw() -> p.Raw<?> throws -
+        table abstract raw()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

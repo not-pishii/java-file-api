@@ -44,6 +44,7 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Greeter;
 
 /// The full metamodel of [Greeter], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -55,6 +56,7 @@ import p.Greeter;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Greeter_ {
     /// The shape of [Greeter] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -70,7 +72,55 @@ public final class Greeter_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Greeter].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Greeter open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember ctor(int, long, boolean[]) throws -\nmember ctor(java.lang.String) throws -\nmember field instance final int count\nmember field instance final java.lang.String name\nmember field instance mutable int mutable\nmember field instance mutable int[] numbers\nmember field instance mutable java.lang.String text\nmember field instance mutable java.lang.String[][] grid\nmember field static constant boolean BOOL = true\nmember field static constant byte BYTE = 127\nmember field static constant char CHAR = '\\u0027'\nmember field static constant double DOUBLE = 0.1\nmember field static constant double INFINITY = Infinity\nmember field static constant double NAN = NaN\nmember field static constant double NEGATIVE_INFINITY = -Infinity\nmember field static constant double NEGATIVE_ZERO = -0.0\nmember field static constant float FLOAT = 1.1f\nmember field static constant float FLOAT_INFINITY = Infinityf\nmember field static constant float FLOAT_NAN = NaNf\nmember field static constant int INT = -2147483648\nmember field static constant java.lang.String DEFAULT = \"say \\u0022hi\\u0022\\u000a\\u0009\\u005c \\u00e9\\u0001\"\nmember field static constant long LONG = 9007199254740993L\nmember field static constant short SHORT = -3\nmember field static final java.lang.Object OBJECT\nmember field static final java.lang.String NOT_CONSTANT\nmember field static mutable java.lang.String label\nmember field static mutable long counter\nmember method overridable arr(int[][], p.Greeter[]) -> int[] throws -\nmember method overridable greet() -> java.lang.String throws -\nmember method overridable greet(java.lang.String) -> java.lang.String throws -\nmember method overridable greet(java.lang.String, java.util.Locale) -> java.lang.String throws -\nmember method overridable log(java.lang.String) -> void throws -\nmember method static main(java.lang.String[]) -> void throws -\nmember method static parse(java.lang.String) -> int throws -\ntable abstract -\ntable concrete arr(int[][], p.Greeter[]); clone(); equals(java.lang.Object); finalize(); getClass(); greet(); greet(java.lang.String); greet(java.lang.String, java.util.Locale); hashCode(); log(java.lang.String); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static main(java.lang.String[]); parse(java.lang.String)\ntable ctor Greeter(); Greeter(int, long, boolean[]); Greeter(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Greeter open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member ctor(int, long, boolean[]) throws -
+        member ctor(java.lang.String) throws -
+        member field instance final int count
+        member field instance final java.lang.String name
+        member field instance mutable int mutable
+        member field instance mutable int[] numbers
+        member field instance mutable java.lang.String text
+        member field instance mutable java.lang.String[][] grid
+        member field static constant boolean BOOL = true
+        member field static constant byte BYTE = 127
+        member field static constant char CHAR = '\\u0027'
+        member field static constant double DOUBLE = 0.1
+        member field static constant double INFINITY = Infinity
+        member field static constant double NAN = NaN
+        member field static constant double NEGATIVE_INFINITY = -Infinity
+        member field static constant double NEGATIVE_ZERO = -0.0
+        member field static constant float FLOAT = 1.1f
+        member field static constant float FLOAT_INFINITY = Infinityf
+        member field static constant float FLOAT_NAN = NaNf
+        member field static constant int INT = -2147483648
+        member field static constant java.lang.String DEFAULT = "say \\u0022hi\\u0022\\u000a\\u0009\\u005c \\u00e9\\u0001"
+        member field static constant long LONG = 9007199254740993L
+        member field static constant short SHORT = -3
+        member field static final java.lang.Object OBJECT
+        member field static final java.lang.String NOT_CONSTANT
+        member field static mutable java.lang.String label
+        member field static mutable long counter
+        member method overridable arr(int[][], p.Greeter[]) -> int[] throws -
+        member method overridable greet() -> java.lang.String throws -
+        member method overridable greet(java.lang.String) -> java.lang.String throws -
+        member method overridable greet(java.lang.String, java.util.Locale) -> java.lang.String throws -
+        member method overridable log(java.lang.String) -> void throws -
+        member method static main(java.lang.String[]) -> void throws -
+        member method static parse(java.lang.String) -> int throws -
+        table abstract -
+        table concrete arr(int[][], p.Greeter[]); clone(); equals(java.lang.Object); finalize(); getClass(); greet(); greet(java.lang.String); greet(java.lang.String, java.util.Locale); hashCode(); log(java.lang.String); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static main(java.lang.String[]); parse(java.lang.String)
+        table ctor Greeter(); Greeter(int, long, boolean[]); Greeter(java.lang.String)
+        """;
 
         private Canonical() {
         }

@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Mix;
 
 /// The full metamodel of [Mix], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -50,6 +51,7 @@ import p.Mix;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Mix_ {
     /// The shape of [Mix] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -65,7 +67,33 @@ public final class Mix_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Mix].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Mix open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor <^0>(^0, int) throws -\nmember ctor(java.util.Set<java.lang.String>) throws -\nmember field instance mutable java.util.function.Function<java.lang.String, java.lang.String> field\nmember method overridable <^0 extends p.Marker> marked(^0) -> void throws -\nmember method overridable <^0> id(^0) -> ^0 throws -\nmember method overridable array() -> java.util.List<java.lang.String>[] throws -\nmember method overridable dollar() -> p.Dol$lar throws -\nmember method overridable marker() -> p.Marker throws -\nmember method overridable markers() -> java.util.List<p.Marker> throws -\nmember method overridable names() -> java.util.List<java.lang.String> throws -\nmember method overridable plain() -> java.lang.String throws -\nmember method overridable raw() -> java.util.List throws -\nmember method overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -\ntable abstract -\ntable concrete array(); clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); marked(p.Marker); marker(); markers(); names(); notify(); notifyAll(); plain(); raw(); toString(); wait(); wait(long); wait(long, int); wild(java.util.Map)\ntable static -\ntable ctor Mix(java.lang.Object, int); Mix(java.util.Set)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Mix open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor <^0>(^0, int) throws -
+        member ctor(java.util.Set<java.lang.String>) throws -
+        member field instance mutable java.util.function.Function<java.lang.String, java.lang.String> field
+        member method overridable <^0 extends p.Marker> marked(^0) -> void throws -
+        member method overridable <^0> id(^0) -> ^0 throws -
+        member method overridable array() -> java.util.List<java.lang.String>[] throws -
+        member method overridable dollar() -> p.Dol$lar throws -
+        member method overridable marker() -> p.Marker throws -
+        member method overridable markers() -> java.util.List<p.Marker> throws -
+        member method overridable names() -> java.util.List<java.lang.String> throws -
+        member method overridable plain() -> java.lang.String throws -
+        member method overridable raw() -> java.util.List throws -
+        member method overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -
+        table abstract -
+        table concrete array(); clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); marked(p.Marker); marker(); markers(); names(); notify(); notifyAll(); plain(); raw(); toString(); wait(); wait(long); wait(long, int); wild(java.util.Map)
+        table static -
+        table ctor Mix(java.lang.Object, int); Mix(java.util.Set)
+        """;
 
         private Canonical() {
         }

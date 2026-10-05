@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Greeter;
 import p.Other;
 
@@ -35,6 +36,7 @@ import p.Other;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Other_ {
     /// The shape of [Other] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,23 @@ public final class Other_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Other].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Other open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable greeter() -> p.Greeter throws -\nmember method overridable other(p.Greeter) -> p.Other throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); greeter(); hashCode(); notify(); notifyAll(); other(p.Greeter); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Other()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Other open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable greeter() -> p.Greeter throws -
+        member method overridable other(p.Greeter) -> p.Other throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); greeter(); hashCode(); notify(); notifyAll(); other(p.Greeter); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Other()
+        """;
 
         private Canonical() {
         }

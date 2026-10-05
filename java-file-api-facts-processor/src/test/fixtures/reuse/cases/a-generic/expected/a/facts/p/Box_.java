@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Box;
 
 /// The full metamodel of [Box], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -42,6 +43,7 @@ import p.Box;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Box_<T extends Comparable<T>> {
     /// The shape of [Box] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -57,7 +59,24 @@ public final class Box_<T extends Comparable<T>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Box].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Box open-class sealed=no\ntparams #0 extends java.lang.Comparable<#0>\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember field instance mutable #0 value\nmember method final all(#0[]) -> #0[] throws -\nmember method overridable <^0> as(^0) -> ^0 throws -\ntable abstract -\ntable concrete all(#0[]); as(java.lang.Object); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Box(#0)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Box open-class sealed=no
+        tparams #0 extends java.lang.Comparable<#0>
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0) throws -
+        member field instance mutable #0 value
+        member method final all(#0[]) -> #0[] throws -
+        member method overridable <^0> as(^0) -> ^0 throws -
+        table abstract -
+        table concrete all(#0[]); as(java.lang.Object); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Box(#0)
+        """;
 
         private Canonical() {
         }

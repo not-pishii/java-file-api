@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Number]: its shape and its token, no facts of its members.
 ///
@@ -29,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Number_ {
     /// The shape of [Number] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -44,7 +46,20 @@ public final class Number_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Number].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Number abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers none\ntable abstract doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Number()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Number abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces java.io.Serializable
+        supertypes -
+        enum -
+        members none
+        table abstract doubleValue(); floatValue(); intValue(); longValue()
+        table concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Number()
+        """;
 
         private Canonical() {
         }

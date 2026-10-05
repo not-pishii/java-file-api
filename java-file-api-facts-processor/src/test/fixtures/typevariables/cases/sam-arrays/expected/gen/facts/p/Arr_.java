@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Arr;
 
 /// The full metamodel of [Arr], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Arr;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Arr_<T> {
     /// The shape of [Arr] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,22 @@ public final class Arr_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Arr].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Arr interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract m(#0[]) -> #0[] throws -\nsam m(#0[]) -> #0[] throws -\ntable abstract m(#0[])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Arr interface sealed=no
+        tparams #0
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract m(#0[]) -> #0[] throws -
+        sam m(#0[]) -> #0[] throws -
+        table abstract m(#0[])
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

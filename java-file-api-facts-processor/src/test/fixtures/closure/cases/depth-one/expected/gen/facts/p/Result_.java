@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Result;
 
 /// The token-only metamodel of [Result]: its shape and its token, no facts of its members.
@@ -30,6 +31,7 @@ import p.Result;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Result_ {
     /// The shape of [Result] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -45,7 +47,20 @@ public final class Result_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Result].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Result open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); deep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Result()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Result open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); deep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Result()
+        """;
 
         private Canonical() {
         }

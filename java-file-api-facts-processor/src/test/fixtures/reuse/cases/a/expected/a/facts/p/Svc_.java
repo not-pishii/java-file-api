@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Dep;
 import p.Svc;
 
@@ -34,6 +35,7 @@ import p.Svc;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Svc_ {
     /// The shape of [Svc] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -49,7 +51,22 @@ public final class Svc_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Svc].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Svc open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable dep() -> p.Dep throws -\ntable abstract -\ntable concrete clone(); dep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Svc()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Svc open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable dep() -> p.Dep throws -
+        table abstract -
+        table concrete clone(); dep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Svc()
+        """;
 
         private Canonical() {
         }

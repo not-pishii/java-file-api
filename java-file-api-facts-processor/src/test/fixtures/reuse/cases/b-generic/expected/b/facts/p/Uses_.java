@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Box;
 import p.Uses;
 
@@ -36,6 +37,7 @@ import p.Uses;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Uses_ {
     /// The shape of [Uses] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,23 @@ public final class Uses_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Uses].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Uses open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable any(p.Box<java.lang.Integer>) -> p.Box<?> throws -\nmember method overridable strings() -> p.Box<java.lang.String> throws -\ntable abstract -\ntable concrete any(p.Box); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); strings(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Uses()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Uses open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable any(p.Box<java.lang.Integer>) -> p.Box<?> throws -
+        member method overridable strings() -> p.Box<java.lang.String> throws -
+        table abstract -
+        table concrete any(p.Box); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); strings(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Uses()
+        """;
 
         private Canonical() {
         }

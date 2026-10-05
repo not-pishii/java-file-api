@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Pair;
 
 /// The full metamodel of [Pair], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -42,6 +43,7 @@ import p.Pair;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Pair_<A, B> {
     /// The shape of [Pair] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -57,7 +59,25 @@ public final class Pair_<A, B> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Pair].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pair final-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0, #1) throws -\nmember field instance final #0 first\nmember field instance final #1 second\nmember method final entry() -> java.util.Map$Entry<#0, #1> throws -\nmember method final swap() -> p.Pair<#1, #0> throws -\ntable abstract -\ntable concrete clone(); entry(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); swap(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Pair(#0, #1)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Pair final-class sealed=no
+        tparams #0; #1
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(#0, #1) throws -
+        member field instance final #0 first
+        member field instance final #1 second
+        member method final entry() -> java.util.Map$Entry<#0, #1> throws -
+        member method final swap() -> p.Pair<#1, #0> throws -
+        table abstract -
+        table concrete clone(); entry(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); swap(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Pair(#0, #1)
+        """;
 
         private Canonical() {
         }

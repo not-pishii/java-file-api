@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Unused;
 
 /// The full metamodel of [Unused], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -33,6 +34,7 @@ import p.Unused;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Unused_ {
     /// The shape of [Unused] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -48,7 +50,22 @@ public final class Unused_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Unused].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Unused open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable gone() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); gone(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Unused()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Unused open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable gone() -> void throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); gone(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Unused()
+        """;
 
         private Canonical() {
         }

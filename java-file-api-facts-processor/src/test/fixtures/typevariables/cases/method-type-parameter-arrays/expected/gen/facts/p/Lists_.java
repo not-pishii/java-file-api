@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Lists;
 
 /// The full metamodel of [Lists], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Lists;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Lists_<T> {
     /// The shape of [Lists] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,22 @@ public final class Lists_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Lists].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Lists open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0 extends java.lang.Number> all(^0[], #0[]) -> void throws -\ntable abstract -\ntable concrete all(java.lang.Number[], #0[]); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Lists()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Lists open-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable <^0 extends java.lang.Number> all(^0[], #0[]) -> void throws -
+        table abstract -
+        table concrete all(java.lang.Number[], #0[]); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Lists()
+        """;
 
         private Canonical() {
         }

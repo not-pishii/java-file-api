@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Grid;
 
 /// The full metamodel of [Grid], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -41,6 +42,7 @@ import p.Grid;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Grid_<A, B> {
     /// The shape of [Grid] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -56,7 +58,22 @@ public final class Grid_<A, B> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Grid].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Grid interface sealed=no\ntparams #0; #1\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract row(#1[][]) -> #0[] throws -\nsam row(#1[][]) -> #0[] throws -\ntable abstract row(#1[][])\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Grid interface sealed=no
+        tparams #0; #1
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract row(#1[][]) -> #0[] throws -
+        sam row(#1[][]) -> #0[] throws -
+        table abstract row(#1[][])
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

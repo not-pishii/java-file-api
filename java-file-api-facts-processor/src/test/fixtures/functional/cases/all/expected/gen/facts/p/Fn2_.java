@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidSam3;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Fn2;
 
 /// The full metamodel of [Fn2], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.Fn2;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Fn2_ {
     /// The shape of [Fn2] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,22 @@ public final class Fn2_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Fn2].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Fn2 interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract call(java.lang.String, int, long) -> void throws -\nsam call(java.lang.String, int, long) -> void throws -\ntable abstract call(java.lang.String, int, long)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Fn2 interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract call(java.lang.String, int, long) -> void throws -
+        sam call(java.lang.String, int, long) -> void throws -
+        table abstract call(java.lang.String, int, long)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

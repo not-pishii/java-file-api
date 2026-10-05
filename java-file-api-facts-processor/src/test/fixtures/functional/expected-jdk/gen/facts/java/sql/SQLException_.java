@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [SQLException]: its shape and its token, no facts of its members.
 ///
@@ -32,6 +33,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class SQLException_ {
     /// The shape of [SQLException] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,20 @@ public final class SQLException_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [SQLException].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.sql.SQLException open-class sealed=no\ntparams -\nsuperclasses java.lang.Exception; java.lang.Throwable; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Iterable\nsupertypes java.lang.Iterable<java.lang.Throwable>\nenum -\nmembers none\ntable abstract -\ntable concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); forEach(java.util.function.Consumer); getCause(); getClass(); getErrorCode(); getLocalizedMessage(); getMessage(); getNextException(); getSQLState(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); iterator(); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setNextException(java.sql.SQLException); setStackTrace(java.lang.StackTraceElement[]); spliterator(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor SQLException(); SQLException(java.lang.String); SQLException(java.lang.String, java.lang.String); SQLException(java.lang.String, java.lang.String, int); SQLException(java.lang.String, java.lang.String, int, java.lang.Throwable); SQLException(java.lang.String, java.lang.String, java.lang.Throwable); SQLException(java.lang.String, java.lang.Throwable); SQLException(java.lang.Throwable)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.sql.SQLException open-class sealed=no
+        tparams -
+        superclasses java.lang.Exception; java.lang.Throwable; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Iterable
+        supertypes java.lang.Iterable<java.lang.Throwable>
+        enum -
+        members none
+        table abstract -
+        table concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); forEach(java.util.function.Consumer); getCause(); getClass(); getErrorCode(); getLocalizedMessage(); getMessage(); getNextException(); getSQLState(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); iterator(); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setNextException(java.sql.SQLException); setStackTrace(java.lang.StackTraceElement[]); spliterator(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor SQLException(); SQLException(java.lang.String); SQLException(java.lang.String, java.lang.String); SQLException(java.lang.String, java.lang.String, int); SQLException(java.lang.String, java.lang.String, int, java.lang.Throwable); SQLException(java.lang.String, java.lang.String, java.lang.Throwable); SQLException(java.lang.String, java.lang.Throwable); SQLException(java.lang.Throwable)
+        """;
 
         private Canonical() {
         }

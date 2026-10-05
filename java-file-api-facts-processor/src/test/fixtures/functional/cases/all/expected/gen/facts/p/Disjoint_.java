@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Disjoint;
 
 /// The full metamodel of [Disjoint], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -32,6 +33,7 @@ import p.Disjoint;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Disjoint_ {
     /// The shape of [Disjoint] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -47,7 +49,21 @@ public final class Disjoint_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Disjoint].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Disjoint interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.IoA; p.SqlB\nsupertypes -\nenum -\nmembers declared-public\nsam m() -> void throws -\ntable abstract m()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Disjoint interface sealed=no
+        tparams -
+        superclasses -
+        interfaces p.IoA; p.SqlB
+        supertypes -
+        enum -
+        members declared-public
+        sam m() -> void throws -
+        table abstract m()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

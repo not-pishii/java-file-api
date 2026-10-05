@@ -33,6 +33,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Pub;
 
 /// The full metamodel of [Pub], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -50,6 +51,7 @@ import p.Pub;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Pub_ {
     /// The shape of [Pub] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -65,7 +67,37 @@ public final class Pub_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Pub].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Pub open-class sealed=no\ntparams -\nsuperclasses p.Near; p.Far; java.lang.Object\ninterfaces p.HiddenApi; p.PubApi\nsupertypes p.Far<java.lang.String>; p.Near<java.lang.String>\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable java.lang.String item\nmember field static constant java.lang.String CONST = \"const\"\nmember field static constant java.lang.String FAR = \"far\"\nmember field static constant java.lang.String HID = \"near\"\nmember field static mutable int counter\nmember method overridable <^0> pick(^0) -> ^0 throws -\nmember method overridable api() -> java.lang.String throws -\nmember method overridable dflt() -> java.lang.String throws -\nmember method overridable get() -> java.lang.String throws -\nmember method overridable near() -> java.lang.String throws -\nmember method overridable overridden() -> java.lang.String throws -\nmember method overridable pub() -> java.lang.String throws -\nmember method overridable redeclared() -> java.lang.String throws -\nmember method overridable set(java.lang.String) -> void throws -\nmember method static sfar() -> java.lang.String throws -\nmember method static snear() -> java.lang.String throws -\ntable abstract -\ntable concrete api(); beyond(); clone(); dflt(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); near(); notify(); notifyAll(); overridden(); pack(); pick(java.lang.Object); prot(); pub(); redeclared(); self(); set(java.lang.String); toString(); wait(); wait(long); wait(long, int)\ntable static sfar(); snear()\ntable ctor Pub()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Pub open-class sealed=no
+        tparams -
+        superclasses p.Near; p.Far; java.lang.Object
+        interfaces p.HiddenApi; p.PubApi
+        supertypes p.Far<java.lang.String>; p.Near<java.lang.String>
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable java.lang.String item
+        member field static constant java.lang.String CONST = "const"
+        member field static constant java.lang.String FAR = "far"
+        member field static constant java.lang.String HID = "near"
+        member field static mutable int counter
+        member method overridable <^0> pick(^0) -> ^0 throws -
+        member method overridable api() -> java.lang.String throws -
+        member method overridable dflt() -> java.lang.String throws -
+        member method overridable get() -> java.lang.String throws -
+        member method overridable near() -> java.lang.String throws -
+        member method overridable overridden() -> java.lang.String throws -
+        member method overridable pub() -> java.lang.String throws -
+        member method overridable redeclared() -> java.lang.String throws -
+        member method overridable set(java.lang.String) -> void throws -
+        member method static sfar() -> java.lang.String throws -
+        member method static snear() -> java.lang.String throws -
+        table abstract -
+        table concrete api(); beyond(); clone(); dflt(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); near(); notify(); notifyAll(); overridden(); pack(); pick(java.lang.Object); prot(); pub(); redeclared(); self(); set(java.lang.String); toString(); wait(); wait(long); wait(long, int)
+        table static sfar(); snear()
+        table ctor Pub()
+        """;
 
         private Canonical() {
         }

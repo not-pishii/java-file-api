@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.WithDefault;
 
 /// The full metamodel of [WithDefault], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.WithDefault;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class WithDefault_ {
     /// The shape of [WithDefault] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,24 @@ public final class WithDefault_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [WithDefault].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.WithDefault interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract f(int) -> int throws -\nmember method overridable g(int) -> int throws -\nmember method static id() -> p.WithDefault throws -\nsam f(int) -> int throws -\ntable abstract f(int)\ntable concrete equals(java.lang.Object); g(int); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static id()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.WithDefault interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract f(int) -> int throws -
+        member method overridable g(int) -> int throws -
+        member method static id() -> p.WithDefault throws -
+        sam f(int) -> int throws -
+        table abstract f(int)
+        table concrete equals(java.lang.Object); g(int); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static id()
+        table ctor -
+        """;
 
         private Canonical() {
         }

@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Locale]: its shape and its token, no facts of its members.
 ///
@@ -30,6 +31,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Locale_ {
     /// The shape of [Locale] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -45,7 +47,20 @@ public final class Locale_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Locale].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.Locale final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable; java.lang.Cloneable\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getBaseLocale(); getClass(); getCountry(); getDisplayCountry(); getDisplayCountry(java.util.Locale); getDisplayLanguage(); getDisplayLanguage(java.util.Locale); getDisplayName(); getDisplayName(java.util.Locale); getDisplayScript(); getDisplayScript(java.util.Locale); getDisplayVariant(); getDisplayVariant(java.util.Locale); getExtension(char); getExtensionKeys(); getISO3Country(); getISO3Language(); getLanguage(); getLocaleExtensions(); getScript(); getUnicodeLocaleAttributes(); getUnicodeLocaleKeys(); getUnicodeLocaleType(java.lang.String); getVariant(); hasExtensions(); hashCode(); notify(); notifyAll(); stripExtensions(); toLanguageTag(); toString(); wait(); wait(long); wait(long, int)\ntable static availableLocales(); caseFoldLanguageTag(java.lang.String); filter(java.util.List, java.util.Collection); filter(java.util.List, java.util.Collection, java.util.Locale$FilteringMode); filterTags(java.util.List, java.util.Collection); filterTags(java.util.List, java.util.Collection, java.util.Locale$FilteringMode); forLanguageTag(java.lang.String); getAvailableLocales(); getDefault(); getDefault(java.util.Locale$Category); getISOCountries(); getISOCountries(java.util.Locale$IsoCountryCode); getISOLanguages(); getInstance(java.lang.String, java.lang.String, java.lang.String); getInstance(java.lang.String, java.lang.String, java.lang.String, java.lang.String, sun.util.locale.LocaleExtensions); getInstance(sun.util.locale.BaseLocale, sun.util.locale.LocaleExtensions); lookup(java.util.List, java.util.Collection); lookupTag(java.util.List, java.util.Collection); of(java.lang.String); of(java.lang.String, java.lang.String); of(java.lang.String, java.lang.String, java.lang.String); setDefault(java.util.Locale$Category, java.util.Locale); setDefault(java.util.Locale)\ntable ctor Locale(java.lang.String); Locale(java.lang.String, java.lang.String); Locale(java.lang.String, java.lang.String, java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.Locale final-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces java.io.Serializable; java.lang.Cloneable
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getBaseLocale(); getClass(); getCountry(); getDisplayCountry(); getDisplayCountry(java.util.Locale); getDisplayLanguage(); getDisplayLanguage(java.util.Locale); getDisplayName(); getDisplayName(java.util.Locale); getDisplayScript(); getDisplayScript(java.util.Locale); getDisplayVariant(); getDisplayVariant(java.util.Locale); getExtension(char); getExtensionKeys(); getISO3Country(); getISO3Language(); getLanguage(); getLocaleExtensions(); getScript(); getUnicodeLocaleAttributes(); getUnicodeLocaleKeys(); getUnicodeLocaleType(java.lang.String); getVariant(); hasExtensions(); hashCode(); notify(); notifyAll(); stripExtensions(); toLanguageTag(); toString(); wait(); wait(long); wait(long, int)
+        table static availableLocales(); caseFoldLanguageTag(java.lang.String); filter(java.util.List, java.util.Collection); filter(java.util.List, java.util.Collection, java.util.Locale$FilteringMode); filterTags(java.util.List, java.util.Collection); filterTags(java.util.List, java.util.Collection, java.util.Locale$FilteringMode); forLanguageTag(java.lang.String); getAvailableLocales(); getDefault(); getDefault(java.util.Locale$Category); getISOCountries(); getISOCountries(java.util.Locale$IsoCountryCode); getISOLanguages(); getInstance(java.lang.String, java.lang.String, java.lang.String); getInstance(java.lang.String, java.lang.String, java.lang.String, java.lang.String, sun.util.locale.LocaleExtensions); getInstance(sun.util.locale.BaseLocale, sun.util.locale.LocaleExtensions); lookup(java.util.List, java.util.Collection); lookupTag(java.util.List, java.util.Collection); of(java.lang.String); of(java.lang.String, java.lang.String); of(java.lang.String, java.lang.String, java.lang.String); setDefault(java.util.Locale$Category, java.util.Locale); setDefault(java.util.Locale)
+        table ctor Locale(java.lang.String); Locale(java.lang.String, java.lang.String); Locale(java.lang.String, java.lang.String, java.lang.String)
+        """;
 
         private Canonical() {
         }

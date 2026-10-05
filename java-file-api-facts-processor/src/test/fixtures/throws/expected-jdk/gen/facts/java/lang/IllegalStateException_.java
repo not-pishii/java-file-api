@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [IllegalStateException]: its shape and its token, no facts of its members.
 ///
@@ -29,6 +30,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class IllegalStateException_ {
     /// The shape of [IllegalStateException] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -44,7 +46,20 @@ public final class IllegalStateException_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [IllegalStateException].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.IllegalStateException open-class sealed=no\ntparams -\nsuperclasses java.lang.RuntimeException; java.lang.Exception; java.lang.Throwable; java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setCause(java.lang.Throwable); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor IllegalStateException(); IllegalStateException(java.lang.String); IllegalStateException(java.lang.String, java.lang.Throwable); IllegalStateException(java.lang.Throwable)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.IllegalStateException open-class sealed=no
+        tparams -
+        superclasses java.lang.RuntimeException; java.lang.Exception; java.lang.Throwable; java.lang.Object
+        interfaces java.io.Serializable
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete addSuppressed(java.lang.Throwable); clone(); equals(java.lang.Object); fillInStackTrace(); finalize(); getCause(); getClass(); getLocalizedMessage(); getMessage(); getStackTrace(); getSuppressed(); hashCode(); initCause(java.lang.Throwable); notify(); notifyAll(); printStackTrace(); printStackTrace(java.io.PrintStream); printStackTrace(java.io.PrintWriter); setCause(java.lang.Throwable); setStackTrace(java.lang.StackTraceElement[]); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor IllegalStateException(); IllegalStateException(java.lang.String); IllegalStateException(java.lang.String, java.lang.Throwable); IllegalStateException(java.lang.Throwable)
+        """;
 
         private Canonical() {
         }

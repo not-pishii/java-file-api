@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.PubFn3;
 
 /// The full metamodel of [PubFn3], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -35,6 +36,7 @@ import p.PubFn3;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PubFn3_ {
     /// The shape of [PubFn3] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,22 @@ public final class PubFn3_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubFn3].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubFn3 interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.HStr; p.PObj\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract get() -> java.lang.String throws -\nsam get() -> java.lang.String throws -\ntable abstract get()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PubFn3 interface sealed=no
+        tparams -
+        superclasses -
+        interfaces p.HStr; p.PObj
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract get() -> java.lang.String throws -
+        sam get() -> java.lang.String throws -
+        table abstract get()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

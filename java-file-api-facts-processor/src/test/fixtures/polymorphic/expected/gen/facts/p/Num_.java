@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Num;
 
 /// The full metamodel of [Num], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -34,6 +35,7 @@ import p.Num;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Num_ {
     /// The shape of [Num] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -49,7 +51,21 @@ public final class Num_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Num].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Num abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Number; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable\nsupertypes java.lang.Comparable<p.Num>\nenum -\nmembers declared-public\nmember ctor() throws -\ntable abstract compareTo(p.Num); doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Num()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Num abstract-class sealed=no
+        tparams -
+        superclasses java.lang.Number; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable
+        supertypes java.lang.Comparable<p.Num>
+        enum -
+        members declared-public
+        member ctor() throws -
+        table abstract compareTo(p.Num); doubleValue(); floatValue(); intValue(); longValue()
+        table concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Num()
+        """;
 
         private Canonical() {
         }

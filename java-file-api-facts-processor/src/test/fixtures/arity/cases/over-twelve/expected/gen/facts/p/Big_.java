@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef12;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Big;
 
 /// The full metamodel of [Big], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -42,6 +43,7 @@ import p.Big;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Big_ {
     /// The shape of [Big] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -57,7 +59,23 @@ public final class Big_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Big].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Big open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int, int, int, int, int, int, int, int, int, int, int, int) throws -\nmember method overridable ok() -> void throws -\nmember method overridable twelve(int, int, int, int, int, int, int, int, int, int, int, int) -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); ok(); thirteen(int, int, int, int, int, int, int, int, int, int, int, int, int); toString(); twelve(int, int, int, int, int, int, int, int, int, int, int, int); wait(); wait(long); wait(long, int)\ntable static staticThirteen(int, int, int, int, int, int, int, int, int, int, int, int, int)\ntable ctor Big(int, int, int, int, int, int, int, int, int, int, int, int); Big(int, int, int, int, int, int, int, int, int, int, int, int, int)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Big open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(int, int, int, int, int, int, int, int, int, int, int, int) throws -
+        member method overridable ok() -> void throws -
+        member method overridable twelve(int, int, int, int, int, int, int, int, int, int, int, int) -> void throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); ok(); thirteen(int, int, int, int, int, int, int, int, int, int, int, int, int); toString(); twelve(int, int, int, int, int, int, int, int, int, int, int, int); wait(); wait(long); wait(long, int)
+        table static staticThirteen(int, int, int, int, int, int, int, int, int, int, int, int, int)
+        table ctor Big(int, int, int, int, int, int, int, int, int, int, int, int); Big(int, int, int, int, int, int, int, int, int, int, int, int, int)
+        """;
 
         private Canonical() {
         }

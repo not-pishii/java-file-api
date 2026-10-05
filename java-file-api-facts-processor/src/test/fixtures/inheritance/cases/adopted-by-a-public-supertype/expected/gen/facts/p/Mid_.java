@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Mid;
 
 /// The full metamodel of [Mid]: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Mid;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Mid_ {
     /// The shape of [Mid] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,25 @@ public final class Mid_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Mid].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Mid open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces p.HiddenI\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant java.lang.String K = \"k\"\nmember method overridable mid() -> void throws -\nmember method overridable more() -> java.lang.String throws -\nmember method overridable run() -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Mid()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Mid open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces p.HiddenI
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant java.lang.String K = "k"
+        member method overridable mid() -> void throws -
+        member method overridable more() -> java.lang.String throws -
+        member method overridable run() -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Mid()
+        """;
 
         private Canonical() {
         }

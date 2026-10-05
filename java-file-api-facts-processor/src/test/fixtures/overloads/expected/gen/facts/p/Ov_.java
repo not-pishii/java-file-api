@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Ov;
 
 /// The full metamodel of [Ov], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -35,6 +36,7 @@ import p.Ov;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Ov_ {
     /// The shape of [Ov] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,28 @@ public final class Ov_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Ov].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Ov open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0 extends java.lang.Comparable<^0>> c(^0) -> java.lang.String throws -\nmember method overridable <^0> m(^0) -> java.lang.String throws -\nmember method overridable <^0> solo(^0) -> java.lang.String throws -\nmember method overridable c(java.lang.String) -> java.lang.String throws -\nmember method overridable m(java.lang.String) -> java.lang.String throws -\nmember method static <^0> s(^0) -> java.lang.String throws -\nmember method static s(java.lang.Integer) -> java.lang.String throws -\ntable abstract -\ntable concrete c(java.lang.Comparable); c(java.lang.String); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(java.lang.Object); m(java.lang.String); notify(); notifyAll(); solo(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static s(java.lang.Integer); s(java.lang.Object)\ntable ctor Ov()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Ov open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable <^0 extends java.lang.Comparable<^0>> c(^0) -> java.lang.String throws -
+        member method overridable <^0> m(^0) -> java.lang.String throws -
+        member method overridable <^0> solo(^0) -> java.lang.String throws -
+        member method overridable c(java.lang.String) -> java.lang.String throws -
+        member method overridable m(java.lang.String) -> java.lang.String throws -
+        member method static <^0> s(^0) -> java.lang.String throws -
+        member method static s(java.lang.Integer) -> java.lang.String throws -
+        table abstract -
+        table concrete c(java.lang.Comparable); c(java.lang.String); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); m(java.lang.Object); m(java.lang.String); notify(); notifyAll(); solo(java.lang.Object); toString(); wait(); wait(long); wait(long, int)
+        table static s(java.lang.Integer); s(java.lang.Object)
+        table ctor Ov()
+        """;
 
         private Canonical() {
         }

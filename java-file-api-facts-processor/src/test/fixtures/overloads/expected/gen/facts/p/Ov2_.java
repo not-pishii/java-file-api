@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Ov2;
 
 /// The full metamodel of [Ov2], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -36,6 +37,7 @@ import p.Ov2;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Ov2_ {
     /// The shape of [Ov2] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,23 @@ public final class Ov2_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Ov2].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Ov2 open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method static <^0> wrap(^0) -> java.util.Optional<^0> throws -\nmember method static wrap(java.lang.String) -> java.lang.StringBuilder throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static wrap(java.lang.Object); wrap(java.lang.String)\ntable ctor Ov2()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Ov2 open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method static <^0> wrap(^0) -> java.util.Optional<^0> throws -
+        member method static wrap(java.lang.String) -> java.lang.StringBuilder throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static wrap(java.lang.Object); wrap(java.lang.String)
+        table ctor Ov2()
+        """;
 
         private Canonical() {
         }

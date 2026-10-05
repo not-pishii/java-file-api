@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Bounded;
 import p.Over;
 
@@ -37,6 +38,7 @@ import p.Over;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Over_ {
     /// The shape of [Over] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,22 @@ public final class Over_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Over].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Over open-class sealed=no\ntparams -\nsuperclasses p.Bounded; java.lang.Object\ninterfaces -\nsupertypes p.Bounded<p.Secret>\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable same() -> p.Bounded<?> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lost(); notify(); notifyAll(); same(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Over()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Over open-class sealed=no
+        tparams -
+        superclasses p.Bounded; java.lang.Object
+        interfaces -
+        supertypes p.Bounded<p.Secret>
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable same() -> p.Bounded<?> throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); lost(); notify(); notifyAll(); same(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Over()
+        """;
 
         private Canonical() {
         }

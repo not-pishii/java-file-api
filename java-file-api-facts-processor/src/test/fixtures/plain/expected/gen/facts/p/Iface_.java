@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Iface;
 
 /// The full metamodel of [Iface], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -38,6 +39,7 @@ import p.Iface;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Iface_ {
     /// The shape of [Iface] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -53,7 +55,26 @@ public final class Iface_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Iface].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Iface interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember field static constant int LIMIT = 10\nmember field static constant java.lang.String NAME = \"n\"\nmember method abstract run() -> void throws -\nmember method overridable size() -> int throws -\nmember method static empty() -> p.Iface throws -\nsam run() -> void throws -\ntable abstract run()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)\ntable static empty()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Iface interface sealed=no
+        tparams -
+        superclasses -
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member field static constant int LIMIT = 10
+        member field static constant java.lang.String NAME = "n"
+        member method abstract run() -> void throws -
+        member method overridable size() -> int throws -
+        member method static empty() -> p.Iface throws -
+        sam run() -> void throws -
+        table abstract run()
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)
+        table static empty()
+        table ctor -
+        """;
 
         private Canonical() {
         }

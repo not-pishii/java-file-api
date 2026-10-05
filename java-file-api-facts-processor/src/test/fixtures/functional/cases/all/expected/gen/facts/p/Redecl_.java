@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Redecl;
 
 /// The full metamodel of [Redecl], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -33,6 +34,7 @@ import p.Redecl;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Redecl_ {
     /// The shape of [Redecl] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -48,7 +50,22 @@ public final class Redecl_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Redecl].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Redecl interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.Fn\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract apply(java.lang.String) -> java.lang.String throws -\nsam apply(java.lang.String) -> java.lang.String throws -\ntable abstract apply(java.lang.String)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Redecl interface sealed=no
+        tparams -
+        superclasses -
+        interfaces p.Fn
+        supertypes -
+        enum -
+        members declared-public
+        member method abstract apply(java.lang.String) -> java.lang.String throws -
+        sam apply(java.lang.String) -> java.lang.String throws -
+        table abstract apply(java.lang.String)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor -
+        """;
 
         private Canonical() {
         }

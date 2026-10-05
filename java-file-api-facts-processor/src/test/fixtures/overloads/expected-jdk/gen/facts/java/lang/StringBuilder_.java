@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [StringBuilder]: its shape and its token, no facts of its members.
 ///
@@ -31,6 +32,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class StringBuilder_ {
     /// The shape of [StringBuilder] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -46,7 +48,20 @@ public final class StringBuilder_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [StringBuilder].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.StringBuilder final-class sealed=no\ntparams -\nsuperclasses java.lang.AbstractStringBuilder; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Appendable; java.lang.CharSequence; java.lang.Comparable\nsupertypes java.lang.Comparable<java.lang.StringBuilder>\nenum -\nmembers none\ntable abstract -\ntable concrete append(boolean); append(char); append(char[]); append(char[], int, int); append(double); append(float); append(int); append(java.lang.AbstractStringBuilder); append(java.lang.CharSequence); append(java.lang.CharSequence, int, int); append(java.lang.Object); append(java.lang.String); append(java.lang.StringBuffer); append(long); appendCodePoint(int); capacity(); charAt(int); chars(); clone(); codePointAt(int); codePointBefore(int); codePointCount(int, int); codePoints(); compareTo(java.lang.AbstractStringBuilder); compareTo(java.lang.StringBuilder); delete(int, int); deleteCharAt(int); ensureCapacity(int); equals(java.lang.Object); finalize(); getBytes(byte[], int, byte); getChars(int, int, char[], int); getClass(); getCoder(); getValue(); hashCode(); indexOf(java.lang.String); indexOf(java.lang.String, int); initBytes(char[], int, int); insert(int, boolean); insert(int, char); insert(int, char[]); insert(int, char[], int, int); insert(int, double); insert(int, float); insert(int, int); insert(int, java.lang.CharSequence); insert(int, java.lang.CharSequence, int, int); insert(int, java.lang.Object); insert(int, java.lang.String); insert(int, long); isEmpty(); isLatin1(); lastIndexOf(java.lang.String); lastIndexOf(java.lang.String, int); length(); mix(long); notify(); notifyAll(); offsetByCodePoints(int, int); prepend(long, byte[]); repeat(int, int); repeat(java.lang.CharSequence, int); replace(int, int, java.lang.String); reverse(); setCharAt(int, char); setLength(int); subSequence(int, int); substring(int); substring(int, int); toString(); trimToSize(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor StringBuilder(); StringBuilder(int); StringBuilder(java.lang.CharSequence); StringBuilder(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.StringBuilder final-class sealed=no
+        tparams -
+        superclasses java.lang.AbstractStringBuilder; java.lang.Object
+        interfaces java.io.Serializable; java.lang.Appendable; java.lang.CharSequence; java.lang.Comparable
+        supertypes java.lang.Comparable<java.lang.StringBuilder>
+        enum -
+        members none
+        table abstract -
+        table concrete append(boolean); append(char); append(char[]); append(char[], int, int); append(double); append(float); append(int); append(java.lang.AbstractStringBuilder); append(java.lang.CharSequence); append(java.lang.CharSequence, int, int); append(java.lang.Object); append(java.lang.String); append(java.lang.StringBuffer); append(long); appendCodePoint(int); capacity(); charAt(int); chars(); clone(); codePointAt(int); codePointBefore(int); codePointCount(int, int); codePoints(); compareTo(java.lang.AbstractStringBuilder); compareTo(java.lang.StringBuilder); delete(int, int); deleteCharAt(int); ensureCapacity(int); equals(java.lang.Object); finalize(); getBytes(byte[], int, byte); getChars(int, int, char[], int); getClass(); getCoder(); getValue(); hashCode(); indexOf(java.lang.String); indexOf(java.lang.String, int); initBytes(char[], int, int); insert(int, boolean); insert(int, char); insert(int, char[]); insert(int, char[], int, int); insert(int, double); insert(int, float); insert(int, int); insert(int, java.lang.CharSequence); insert(int, java.lang.CharSequence, int, int); insert(int, java.lang.Object); insert(int, java.lang.String); insert(int, long); isEmpty(); isLatin1(); lastIndexOf(java.lang.String); lastIndexOf(java.lang.String, int); length(); mix(long); notify(); notifyAll(); offsetByCodePoints(int, int); prepend(long, byte[]); repeat(int, int); repeat(java.lang.CharSequence, int); replace(int, int, java.lang.String); reverse(); setCharAt(int, char); setLength(int); subSequence(int, int); substring(int); substring(int, int); toString(); trimToSize(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor StringBuilder(); StringBuilder(int); StringBuilder(java.lang.CharSequence); StringBuilder(java.lang.String)
+        """;
 
         private Canonical() {
         }

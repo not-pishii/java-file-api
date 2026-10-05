@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Kept;
 
 /// The full metamodel of [Kept], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Kept;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Kept_ {
     /// The shape of [Kept] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,24 @@ public final class Kept_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Kept].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Kept open-class sealed=no\ntparams -\nsuperclasses p.BadMid; java.lang.Object\ninterfaces p.HiddenI\nsupertypes p.BadMid<p.Secret>\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant java.lang.String K = \"k\"\nmember method overridable more() -> java.lang.String throws -\nmember method overridable run() -> java.lang.String throws -\ntable abstract -\ntable concrete bad(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Kept()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Kept open-class sealed=no
+        tparams -
+        superclasses p.BadMid; java.lang.Object
+        interfaces p.HiddenI
+        supertypes p.BadMid<p.Secret>
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant java.lang.String K = "k"
+        member method overridable more() -> java.lang.String throws -
+        member method overridable run() -> java.lang.String throws -
+        table abstract -
+        table concrete bad(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Kept()
+        """;
 
         private Canonical() {
         }

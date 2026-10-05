@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Res;
 
 /// The full metamodel of [Res], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -37,6 +38,7 @@ import p.Res;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Res_ {
     /// The shape of [Res] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,31 @@ public final class Res_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Res].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Res open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int ANY\nmember field instance mutable int Canonical\nmember field instance mutable int Data\nmember field instance mutable int TOKEN\nmember field instance mutable int count\nmember field instance mutable int sam\nmember field instance mutable int switch_\nmember field instance mutable int token\nmember method overridable count() -> int throws -\nmember method overridable sam(int) -> void throws -\ntable abstract -\ntable concrete clone(); count(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); sam(int); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Res()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Res open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field instance mutable int ANY
+        member field instance mutable int Canonical
+        member field instance mutable int Data
+        member field instance mutable int TOKEN
+        member field instance mutable int count
+        member field instance mutable int sam
+        member field instance mutable int switch_
+        member field instance mutable int token
+        member method overridable count() -> int throws -
+        member method overridable sam(int) -> void throws -
+        table abstract -
+        table concrete clone(); count(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); sam(int); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Res()
+        """;
 
         private Canonical() {
         }

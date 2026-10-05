@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Lib;
 import p.Marker;
 
@@ -33,6 +34,7 @@ import p.Marker;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Lib_ {
     /// The shape of [Lib] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -48,7 +50,21 @@ public final class Lib_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Lib].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Lib final-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method static take(p.Marker) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static take(p.Marker)\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Lib final-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member method static take(p.Marker) -> java.lang.String throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static take(p.Marker)
+        table ctor -
+        """;
 
         private Canonical() {
         }

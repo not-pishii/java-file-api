@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Seq;
 
 /// The full metamodel of [Seq], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -42,6 +43,7 @@ import p.Seq;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Seq_<E> {
     /// The shape of [Seq] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -57,7 +59,22 @@ public final class Seq_<E> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Seq].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Seq interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces p.Coll\nsupertypes p.Coll<#0>\nenum -\nmembers declared-public\nmember method static <^0> of() -> p.Seq<^0> throws -\nsam add(#0) -> boolean throws -\ntable abstract add(#0)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static of()\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Seq interface sealed=no
+        tparams #0
+        superclasses -
+        interfaces p.Coll
+        supertypes p.Coll<#0>
+        enum -
+        members declared-public
+        member method static <^0> of() -> p.Seq<^0> throws -
+        sam add(#0) -> boolean throws -
+        table abstract add(#0)
+        table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static of()
+        table ctor -
+        """;
 
         private Canonical() {
         }

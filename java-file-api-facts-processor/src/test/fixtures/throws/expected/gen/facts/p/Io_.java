@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Failure;
 import p.Io;
 
@@ -46,6 +47,7 @@ import p.Io;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Io_ {
     /// The shape of [Io] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -61,7 +63,29 @@ public final class Io_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Io].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Io open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws java.io.IOException\nmember ctor(int) throws -\nmember method final locked() -> void throws p.Failure\nmember method overridable <^0 extends java.lang.Throwable> generic() -> void throws ^0\nmember method overridable custom() -> void throws p.Failure\nmember method overridable multi() -> void throws java.io.IOException, java.lang.IllegalStateException, java.lang.InterruptedException\nmember method overridable read() -> void throws java.io.IOException\nmember method overridable unchecked() -> int throws java.lang.IllegalArgumentException\nmember method static util() -> void throws java.lang.Exception\ntable abstract -\ntable concrete clone(); custom(); equals(java.lang.Object); finalize(); generic(); getClass(); hashCode(); hidden(); locked(); multi(); notify(); notifyAll(); read(); toString(); unchecked(); wait(); wait(long); wait(long, int)\ntable static util()\ntable ctor Io(); Io(int); Io(java.lang.String)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Io open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws java.io.IOException
+        member ctor(int) throws -
+        member method final locked() -> void throws p.Failure
+        member method overridable <^0 extends java.lang.Throwable> generic() -> void throws ^0
+        member method overridable custom() -> void throws p.Failure
+        member method overridable multi() -> void throws java.io.IOException, java.lang.IllegalStateException, java.lang.InterruptedException
+        member method overridable read() -> void throws java.io.IOException
+        member method overridable unchecked() -> int throws java.lang.IllegalArgumentException
+        member method static util() -> void throws java.lang.Exception
+        table abstract -
+        table concrete clone(); custom(); equals(java.lang.Object); finalize(); generic(); getClass(); hashCode(); hidden(); locked(); multi(); notify(); notifyAll(); read(); toString(); unchecked(); wait(); wait(long); wait(long, int)
+        table static util()
+        table ctor Io(); Io(int); Io(java.lang.String)
+        """;
 
         private Canonical() {
         }

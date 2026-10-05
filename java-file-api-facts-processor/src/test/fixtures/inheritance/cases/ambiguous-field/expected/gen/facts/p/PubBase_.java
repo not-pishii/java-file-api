@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.PubBase;
 
 /// The full metamodel of [PubBase]: a fact of every `public` member the type declares.
@@ -35,6 +36,7 @@ import p.PubBase;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class PubBase_ {
     /// The shape of [PubBase] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -50,7 +52,22 @@ public final class PubBase_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubBase].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.PubBase open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant java.lang.String K = \"public\"\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubBase()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.PubBase open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member field static constant java.lang.String K = "public"
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor PubBase()
+        """;
 
         private Canonical() {
         }

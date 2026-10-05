@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Ov;
 
 /// The full metamodel of [Ov], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -43,6 +44,7 @@ import p.Ov;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Ov_ {
     /// The shape of [Ov] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -58,7 +60,27 @@ public final class Ov_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Ov].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Ov open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(java.awt.List) throws -\nmember field instance mutable int size\nmember method overridable <^0> k(^0) -> void throws -\nmember method overridable <^0> size() -> ^0 throws -\nmember method overridable k(int) -> void throws -\nmember method overridable m(java.awt.List) -> void throws -\nmember method overridable n(java.awt.List) -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); k(int); k(java.lang.Object); m(java.awt.List); m(java.util.List); n(java.awt.List); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Ov(java.awt.List); Ov(java.util.List)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Ov open-class sealed=no
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(java.awt.List) throws -
+        member field instance mutable int size
+        member method overridable <^0> k(^0) -> void throws -
+        member method overridable <^0> size() -> ^0 throws -
+        member method overridable k(int) -> void throws -
+        member method overridable m(java.awt.List) -> void throws -
+        member method overridable n(java.awt.List) -> void throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); k(int); k(java.lang.Object); m(java.awt.List); m(java.util.List); n(java.awt.List); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Ov(java.awt.List); Ov(java.util.List)
+        """;
 
         private Canonical() {
         }

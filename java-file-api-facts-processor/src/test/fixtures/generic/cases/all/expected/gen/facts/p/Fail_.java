@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 import p.Fail;
 
 /// The full metamodel of [Fail], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -39,6 +40,7 @@ import p.Fail;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Fail_<X extends Exception> {
     /// The shape of [Fail] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -54,7 +56,22 @@ public final class Fail_<X extends Exception> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Fail].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Fail open-class sealed=no\ntparams #0 extends java.lang.Exception\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable run() -> void throws #0\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Fail()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Fail open-class sealed=no
+        tparams #0 extends java.lang.Exception
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable run() -> void throws #0
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Fail()
+        """;
 
         private Canonical() {
         }

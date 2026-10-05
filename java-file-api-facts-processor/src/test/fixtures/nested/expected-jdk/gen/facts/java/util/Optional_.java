@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [Optional]: its shape and its token, no facts of its members.
 ///
@@ -36,6 +37,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Optional_<T> {
     /// The shape of [Optional] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -51,7 +53,20 @@ public final class Optional_<T> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Optional].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.util.Optional final-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); filter(java.util.function.Predicate); finalize(); flatMap(java.util.function.Function); get(); getClass(); hashCode(); ifPresent(java.util.function.Consumer); ifPresentOrElse(java.util.function.Consumer, java.lang.Runnable); isEmpty(); isPresent(); map(java.util.function.Function); notify(); notifyAll(); or(java.util.function.Supplier); orElse(#0); orElseGet(java.util.function.Supplier); orElseThrow(); orElseThrow(java.util.function.Supplier); stream(); toString(); wait(); wait(long); wait(long, int)\ntable static empty(); of(java.lang.Object); ofNullable(java.lang.Object)\ntable ctor -\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.util.Optional final-class sealed=no
+        tparams #0
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); filter(java.util.function.Predicate); finalize(); flatMap(java.util.function.Function); get(); getClass(); hashCode(); ifPresent(java.util.function.Consumer); ifPresentOrElse(java.util.function.Consumer, java.lang.Runnable); isEmpty(); isPresent(); map(java.util.function.Function); notify(); notifyAll(); or(java.util.function.Supplier); orElse(#0); orElseGet(java.util.function.Supplier); orElseThrow(); orElseThrow(java.util.function.Supplier); stream(); toString(); wait(); wait(long); wait(long, int)
+        table static empty(); of(java.lang.Object); ofNullable(java.lang.Object)
+        table ctor -
+        """;
 
         private Canonical() {
         }

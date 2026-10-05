@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.OnHid;
 
 /// The full metamodel of [OnHid], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -37,6 +38,7 @@ import p.OnHid;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class OnHid_ {
     /// The shape of [OnHid] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -52,7 +54,22 @@ public final class OnHid_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [OnHid].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.OnHid open-class sealed=no\ntparams -\nsuperclasses p.HidBase; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable renamed() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); renamed(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor OnHid()\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.OnHid open-class sealed=no
+        tparams -
+        superclasses p.HidBase; java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members declared-public
+        member ctor() throws -
+        member method overridable renamed() -> int throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); renamed(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor OnHid()
+        """;
 
         private Canonical() {
         }

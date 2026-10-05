@@ -33,6 +33,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Enum]: a fact of every `public` member the type declares.
 ///
@@ -49,6 +50,7 @@ import me.supcheg.javafile.type.Types;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Enum_<E extends Enum<E>> {
     /// The shape of [Enum] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -64,7 +66,29 @@ public final class Enum_<E extends Enum<E>> {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Enum].
-        static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Enum abstract-class sealed=no\ntparams #0 extends java.lang.Enum<#0>\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<#0>\nenum -\nmembers declared-public\nmember method final compareTo(#0) -> int throws -\nmember method final describeConstable() -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws -\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final getDeclaringClass() -> java.lang.Class<#0> throws -\nmember method final hashCode() -> int throws -\nmember method final name() -> java.lang.String throws -\nmember method final ordinal() -> int throws -\nmember method overridable toString() -> java.lang.String throws -\nmember method static <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws -\ntable abstract -\ntable concrete clone(); compareTo(#0); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String)\ntable ctor Enum(java.lang.String, int)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type java.lang.Enum abstract-class sealed=no
+        tparams #0 extends java.lang.Enum<#0>
+        superclasses java.lang.Object
+        interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
+        supertypes java.lang.Comparable<#0>
+        enum -
+        members declared-public
+        member method final compareTo(#0) -> int throws -
+        member method final describeConstable() -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws -
+        member method final equals(java.lang.Object) -> boolean throws -
+        member method final getDeclaringClass() -> java.lang.Class<#0> throws -
+        member method final hashCode() -> int throws -
+        member method final name() -> java.lang.String throws -
+        member method final ordinal() -> int throws -
+        member method overridable toString() -> java.lang.String throws -
+        member method static <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws -
+        table abstract -
+        table concrete clone(); compareTo(#0); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
+        table static valueOf(java.lang.Class, java.lang.String)
+        table ctor Enum(java.lang.String, int)
+        """;
 
         private Canonical() {
         }

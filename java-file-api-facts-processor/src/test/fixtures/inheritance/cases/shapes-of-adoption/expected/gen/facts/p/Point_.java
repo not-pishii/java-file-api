@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
 import p.Point;
 
 /// The full metamodel of [Point], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -40,6 +41,7 @@ import p.Point;
     "deprecation",
     "removal"
 })
+@NullMarked
 public final class Point_ {
     /// The shape of [Point] as plain data: initializing it touches no other metamodel.
     @GeneratedMetamodelPart
@@ -55,7 +57,28 @@ public final class Point_ {
     @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Point].
-        static final String TEXT = "javafile-facts-canonical 5\ntype p.Point final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\ninterfaces p.HLabel\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int, int) throws -\nmember field static constant java.lang.String NAME = \"name\"\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final label() -> java.lang.String throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\nmember method final y() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x(); y()\ntable static -\ntable ctor Point(int, int)\n";
+        static final String TEXT = """
+        javafile-facts-canonical 5
+        type p.Point final-class sealed=no
+        tparams -
+        superclasses java.lang.Record; java.lang.Object
+        interfaces p.HLabel
+        supertypes -
+        enum -
+        members declared-public
+        member ctor(int, int) throws -
+        member field static constant java.lang.String NAME = "name"
+        member method final equals(java.lang.Object) -> boolean throws -
+        member method final hashCode() -> int throws -
+        member method final label() -> java.lang.String throws -
+        member method final toString() -> java.lang.String throws -
+        member method final x() -> int throws -
+        member method final y() -> int throws -
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x(); y()
+        table static -
+        table ctor Point(int, int)
+        """;
 
         private Canonical() {
         }
