@@ -18,11 +18,11 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.CharSequence_;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;

@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// a known one that did not come up fails it too.
 class GoldenTest {
     private static final String HAND_WRITTEN = "me.supcheg.javafile.facts.jdk.";
-    private static final String GENERATED = "me.supcheg.javafile.typed.generated.";
+    private static final String GENERATED = "me.supcheg.javafile.typed.testfacts.";
 
     /// The types of the hand-written `facts/jdk`.
     private static final List<Class<?>> TYPES = List.of(

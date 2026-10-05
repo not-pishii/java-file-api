@@ -2,9 +2,9 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
-import me.supcheg.javafile.facts.jdk.CharSequence_;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Test;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;

@@ -7,7 +7,7 @@ import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;

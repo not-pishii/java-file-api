@@ -12,12 +12,12 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.ArrayList_;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.List_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.ArrayList_;
+import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;

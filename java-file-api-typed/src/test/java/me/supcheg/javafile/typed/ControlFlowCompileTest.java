@@ -6,12 +6,12 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.NumberFormatException_;
-import me.supcheg.javafile.facts.jdk.PrintStream_;
-import me.supcheg.javafile.facts.jdk.RuntimeException_;
-import me.supcheg.javafile.facts.jdk.String_;
-import me.supcheg.javafile.facts.jdk.System_;
+import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.NumberFormatException_;
+import me.supcheg.javafile.typed.testfacts.java.lang.RuntimeException_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.System_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -66,7 +66,7 @@ class ControlFlowCompileTest {
                                 PrimitiveToken.INT,
                                 String_.TOKEN,
                                 (b, s) -> b.tryTerminated(
-                                        t -> t.return_(staticCall(Integer_.parseInt, s)),
+                                        t -> t.return_(staticCall(Integer_.parseInt_String, s)),
                                         h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
                                                 .finally_(f -> f.exec(
                                                         voidCall(staticField(System_.out), PrintStream_.println)))));

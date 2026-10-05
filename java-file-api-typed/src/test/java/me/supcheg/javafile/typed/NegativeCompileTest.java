@@ -34,7 +34,7 @@ class NegativeCompileTest {
             + "import me.supcheg.javafile.type.Types;\n"
             + Stream.of(
                             "me.supcheg.javafile.facts",
-                            "me.supcheg.javafile.facts.jdk",
+                            "me.supcheg.javafile.typed.testfacts.java.lang",
                             "me.supcheg.javafile.typed",
                             "static me.supcheg.javafile.typed.Expressions")
                     .map(on -> "import " + on + ".*;\n")
@@ -79,7 +79,7 @@ class NegativeCompileTest {
                 cb.method("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed(), (b, self, boxed) -> b.let(
                         PrimitiveToken.INT, unbox(PrimitiveToken.INT, boxed), i -> b.if_(
                                 ltInt(i, call(literal("abc"), String_.length)),
-                                t -> t.exec(call(literal("abc"), String_.charAt, i)))
+                                t -> t.exec(call(literal("abc"), String_.charAt_int, i)))
                         .return_(addInt(i, literal(1)))));
                 cb.method("boxed", Integer_.TOKEN, (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));
                 cb.method("empty", String_.TOKEN, (b, self) -> b.return_(literalNull(String_.TOKEN)));
@@ -94,7 +94,7 @@ class NegativeCompileTest {
     void wrongArgumentTypePassedToCall() {
         assertRejected(
                 "WrongArgumentType",
-                "void use() { call(literal(\"hi\"), String_.charAt, literal(\"not an int\")); }",
+                "void use() { call(literal(\"hi\"), String_.charAt_int, literal(\"not an int\")); }",
                 "no suitable method found for call");
     }
 
@@ -129,7 +129,7 @@ class NegativeCompileTest {
     void implicitUnboxingOfAnArgumentDoesNotCompile() {
         assertRejected(
                 "ImplicitUnboxingArgument",
-                "void use() { call(literal(\"hi\"), String_.charAt, box(PrimitiveToken.INT, literal(0))); }",
+                "void use() { call(literal(\"hi\"), String_.charAt_int, box(PrimitiveToken.INT, literal(0))); }",
                 "no suitable method found for call");
     }
 

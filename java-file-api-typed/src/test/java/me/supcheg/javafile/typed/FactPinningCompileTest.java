@@ -10,15 +10,15 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
-import me.supcheg.javafile.facts.jdk.ArrayList_;
-import me.supcheg.javafile.facts.jdk.CharSequence_;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.List_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.PrintStream_;
-import me.supcheg.javafile.facts.jdk.Stream_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
+import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.ArrayList_;
+import me.supcheg.javafile.typed.testfacts.java.util.List_;
+import me.supcheg.javafile.typed.testfacts.java.util.stream.Stream_;
 import org.junit.jupiter.api.Test;
 
 import java.io.OutputStream;
@@ -147,19 +147,19 @@ class FactPinningCompileTest {
                         PrimitiveToken.INT,
                         integers.token,
                         (b, l) -> b.exec(call(l, removeObject, literal(1)))
-                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get, literal(0)))));
+                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
                 cb.staticMethod(
                         "removeBoxed",
                         PrimitiveToken.INT,
                         integers.token,
                         (b, l) -> b.exec(call(l, removeObject, box(PrimitiveToken.INT, literal(1))))
-                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get, literal(0)))));
+                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
                 cb.staticMethod(
                         "removeIndex",
                         PrimitiveToken.INT,
                         integers.token,
                         (b, l) -> b.exec(call(l, removeAt, literal(1)))
-                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get, literal(0)))));
+                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
             }
         });
 
@@ -339,17 +339,21 @@ class FactPinningCompileTest {
     @Test
     void staticsOfAGenericTypeAreQualifiedByTheRawTypeWithExplicitWitnesses() throws Throwable {
         List_<String> strings = new List_<>(String_.TOKEN);
-        var map = new Stream_<>(String_.TOKEN).map(Integer_.TOKEN);
+        var map = new Stream_<>(String_.TOKEN).map_Function(Integer_.TOKEN);
         Stream_<Integer> integers = new Stream_<>(Integer_.TOKEN);
         List_<Integer> integerList = new List_<>(Integer_.TOKEN);
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.staticMethod("empty", strings.token, b -> b.return_(staticCall(strings.of)));
+                cb.staticMethod("empty", strings.token, b -> b.return_(staticCall(List_.of(String_.TOKEN))));
                 // the review's probe E: rendered `List<String>.of().size()`
-                cb.staticMethod("size", PrimitiveToken.INT, b -> b.return_(call(staticCall(strings.of), strings.size)));
-                cb.staticMethod("one", strings.token, b -> b.return_(staticCall(strings.of_E, literal("a"))));
+                cb.staticMethod(
+                        "size",
+                        PrimitiveToken.INT,
+                        b -> b.return_(call(staticCall(List_.of(String_.TOKEN)), strings.size)));
+                cb.staticMethod(
+                        "one", strings.token, b -> b.return_(staticCall(List_.of_E(String_.TOKEN), literal("a"))));
                 cb.staticMethod("none", strings.token, b -> b.return_(staticCall(Fixtures.NONE)));
                 cb.staticMethod("label", String_.TOKEN, b -> b.return_(staticField(LABEL)));
                 cb.voidStaticMethod(
@@ -570,7 +574,7 @@ class FactPinningCompileTest {
                 cb.staticMethod(
                         "call",
                         PrimitiveToken.INT,
-                        b -> b.while_(call(literal("a"), Object_.equals, literal(true)), (_, _) -> {})
+                        b -> b.while_(call(literal("a"), Object_.equals_Object, literal(true)), (_, _) -> {})
                                 .return_(literal(1)));
                 // a conditional cast to CharSequence is not a constant expression (JLS 15.29)
                 cb.staticMethod(

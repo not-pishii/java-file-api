@@ -21,9 +21,9 @@ import me.supcheg.javafile.facts.TargetType.Difference;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.TypeParam;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -51,6 +51,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 /// metamodel, and the target is a reader that answers by the shape: what a
 /// compilation answers is the business of `java-file-api-lang-model`.
 class TargetClasspathLoweringTest {
+    /// The String metamodel of the typed layer itself, which a class is lowered with beside that of the test.
+    private static final TypeShape<?> TYPED_STRING =
+            me.supcheg.javafile.typed.jdk.facts.java.lang.String_.TOKEN.shape();
+
     private static final String FINGERPRINT = "0123456789abcdef".repeat(4);
 
     /// Phantom of `fixtures.Svc`, and of `fixtures.Box<T>`.
@@ -169,7 +173,10 @@ class TargetClasspathLoweringTest {
         render(target, SVC_TOKEN, TargetClasspathLoweringTest::callM);
         render(target, SVC_TOKEN, TargetClasspathLoweringTest::callM);
 
-        assertThat(asked.shapes()).containsExactly(SVC);
+        // the String the class returns is a metamodel too, that of the test and that of the typed layer, which renders
+        // a
+        // literal, and each is asked once like the others
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, SVC);
     }
 
     @Test
@@ -183,7 +190,7 @@ class TargetClasspathLoweringTest {
         assertThat(render(target, SVC_TOKEN, TargetClasspathLoweringTest::callM))
                 .contains("v0.m(\"a\")");
 
-        assertThat(asked.shapes()).containsExactly(SVC);
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, SVC);
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, unused, _ -> literal("a")))
                 .withMessageContaining("type fixtures.Unused gone");
@@ -215,7 +222,7 @@ class TargetClasspathLoweringTest {
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, boxOfSvc, _ -> literal("a")))
                 .withMessageContaining("type fixtures.Svc gone");
-        assertThat(asked.shapes()).containsExactly(BOX, SVC);
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), BOX, SVC);
     }
 
     @Test

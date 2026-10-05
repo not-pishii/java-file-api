@@ -43,6 +43,6 @@ tasks.compileJava {
 
 tasks.compileTestJava {
     options.compilerArgs.addAll(
-        listOf("-Ajavafile.facts.package=me.supcheg.javafile.typed.generated", "-Ajavafile.facts.index=false")
+        listOf("-Ajavafile.facts.package=me.supcheg.javafile.typed.testfacts", "-Ajavafile.facts.index=false")
     )
 }
