@@ -87,6 +87,19 @@ class SourceNamesTest {
                 .containsExactlyInAnyOrder("static", "final", "int", "SIZE", "COUNT", "String", "SLASHES");
     }
 
+    /// The canonical form of a type is a text block: a word of it is no name, whatever quotes and
+    /// escapes it has.
+    @Test
+    void aWordOfATextBlockIsNoName() {
+        String source = "final class Thing_ { static final String TEXT = \"\"\"\n"
+                + "        member field HID = \"near\"\n"
+                + "        table near(); far() \\\"\"\" still.inside\n"
+                + "        \"\"\"; int after; }";
+
+        assertThat(SourceNames.inBodyOf("Thing_", source))
+                .containsExactlyInAnyOrder("static", "final", "String", "TEXT", "int", "after");
+    }
+
     @Test
     void aCommentThatDoesNotEndGoesOnToTheEndOfTheSource() {
         assertThat(SourceNames.inBodyOf("Thing_", "final class Thing_ { int a; /* words"))
