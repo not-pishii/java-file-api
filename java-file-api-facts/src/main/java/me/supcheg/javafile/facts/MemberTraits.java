@@ -6,7 +6,10 @@ import java.util.List;
 /// Runtime data of a method or constructor fact that generics cannot carry.
 ///
 /// - The throws-set (§3.7): Java has no union types to put checked exceptions
-///   into a signature, so lowering checks exception coverage from this list.
+///   into a signature, so the typed layer checks from this list, where a call
+///   of the member is built, that each checked exception is caught or
+///   declared. Which of the types are checked their tokens tell
+///   ([ClassToken#isCheckedException()]).
 /// - Overridability, for `override` and the completeness checks.
 /// - Explicit type arguments of a generic method (§3.4): the witnesses the
 ///   fact was instantiated with, rendered as `recv.<A, B>m(...)` so that the

@@ -40,7 +40,7 @@ sealed interface Instr {
     record Return(Optional<Node> value) implements Instr {}
 
     /// `throw value;`, with the static type of `value`.
-    record Throw(Node value, TypeToken<?> type) implements Instr {}
+    record Throw(Node value, TypeToken<? extends Throwable> type) implements Instr {}
 
     /// `break;` out of a loop.
     record Break(LoopCtl ctl) implements Instr {}
