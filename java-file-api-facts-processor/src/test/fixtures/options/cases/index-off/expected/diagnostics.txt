@@ -1,0 +1,1 @@
+com/acme/gen/G.java:7:1: warning: p.Svc: no fact of method hidden(), which mentions types that are not public: p.Hidden
