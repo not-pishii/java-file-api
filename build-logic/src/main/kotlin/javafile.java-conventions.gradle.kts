@@ -16,7 +16,7 @@ java {
 val mockitoAgent = configurations.create("mockitoAgent") { isTransitive = false }
 
 dependencies {
-    compileOnly(libs.jspecify)
+    api(libs.jspecify)
     mockitoAgent(libs.mockito.core)
 }
 
