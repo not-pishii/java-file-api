@@ -61,3 +61,15 @@ testing {
         }
     }
 }
+
+// The tests build the metamodels of the JDK types they need with the `@Facts` processor, which is no cycle: the
+// processor is a dependency of the tests, not of the main code, and the processor jar does not depend on them.
+dependencies {
+    testAnnotationProcessor(project(":java-file-api-facts-processor"))
+}
+
+tasks.compileTestJava {
+    options.compilerArgs.addAll(
+        listOf("-Ajavafile.facts.package=me.supcheg.javafile.facts.testfacts", "-Ajavafile.facts.index=false")
+    )
+}

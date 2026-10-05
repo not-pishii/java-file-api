@@ -37,8 +37,8 @@
 /// No fact class has a public constructor or factory: the single trusted
 /// point where a fact is vouched for is [me.supcheg.javafile.facts.UnsafeFacts]
 /// (§3.1), which puts every hand-made fact under the audit `grep Unsafe`.
-/// Generator code obtains facts from metamodels (e.g.
-/// [me.supcheg.javafile.facts.jdk]), from a checked
+/// Generator code obtains facts from metamodels (those
+/// the `@Facts` processor generates), from a checked
 /// [me.supcheg.javafile.facts.FactSource], or from typed declarations. A
 /// constructor fact exists in two families: `CtorRefN` of an instantiable
 /// class ([me.supcheg.javafile.facts.ConcreteClassToken]), the only one `new`

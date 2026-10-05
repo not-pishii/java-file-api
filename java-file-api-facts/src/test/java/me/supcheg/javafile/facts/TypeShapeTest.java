@@ -2,9 +2,9 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.List_;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.facts.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.facts.testfacts.java.lang.String_;
+import me.supcheg.javafile.facts.testfacts.java.util.List_;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
@@ -364,8 +364,6 @@ class TypeShapeTest {
     @Test
     void everyOtherShapeHasTheOriginOfWhoMadeIt() {
         assertThat(finalClass(ClassDesc.of("fixtures", "Plain")).origin()).isSameAs(ShapeOrigin.UNSAFE);
-        assertThat(String_.TOKEN.shape().origin()).isSameAs(ShapeOrigin.UNSAFE);
-        assertThat(new List_<>(String_.TOKEN).token.shape().origin()).isSameAs(ShapeOrigin.UNSAFE);
         assertThat(UnsafeFacts.interfaceToken(Types.of(BOX), MethodTable.EMPTY)
                         .shape()
                         .origin())
@@ -383,6 +381,7 @@ class TypeShapeTest {
         assertThat(new List_<>(String_.TOKEN).token.shape().typeParameters())
                 .containsExactly(new TypeParam("E", List.of()));
         assertThat(String_.TOKEN.shape()).hasToString("final class java.lang.String");
+        assertThat(String_.TOKEN.shape().origin()).isInstanceOf(ShapeOrigin.Metamodel.class);
     }
 
     @Test

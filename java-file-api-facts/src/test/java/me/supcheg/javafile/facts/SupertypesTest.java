@@ -1,9 +1,9 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.facts.jdk.ArrayList_;
-import me.supcheg.javafile.facts.jdk.Function_;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.facts.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.facts.testfacts.java.lang.String_;
+import me.supcheg.javafile.facts.testfacts.java.util.ArrayList_;
+import me.supcheg.javafile.facts.testfacts.java.util.function.Function_;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -35,12 +35,13 @@ class SupertypesTest {
                 .contains(Types.parameterized(ConstantDescs.CD_List, Types.STRING));
         assertThat(supertypes.supertype(ConstantDescs.CD_Map, List.of(Types.STRING)))
                 .isEmpty();
-        assertThat(Function_.of(String_.TOKEN, Integer_.TOKEN)
+        assertThat(new Function_<>(String_.TOKEN, Integer_.TOKEN)
                         .token
                         .supertypes()
                         .typeParameters())
                 .containsExactly(Types.typeVar("T"), Types.typeVar("R"));
-        assertThat(String_.TOKEN.supertypes()).isEqualTo(Supertypes.NONE);
+        assertThat(String_.TOKEN.supertypes().supertypes())
+                .containsExactly(Types.parameterized(ClassDesc.of("java.lang", "Comparable"), Types.STRING));
     }
 
     @Test
