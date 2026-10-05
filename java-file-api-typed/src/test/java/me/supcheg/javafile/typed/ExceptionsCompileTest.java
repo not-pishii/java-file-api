@@ -7,6 +7,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.testfacts.java.io.FileNotFoundException_;
 import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
+import me.supcheg.javafile.typed.testfacts.java.io.Reader_;
 import me.supcheg.javafile.typed.testfacts.java.io.StringReader_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
@@ -65,8 +67,8 @@ class ExceptionsCompileTest {
                 "made",
                 PrimitiveToken.INT,
                 b -> b.tryTerminated(
-                        t -> t.exec(new_(ctor)).return_(literal(1)),
-                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0)))));
+                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
+                        t -> t.exec(new_(ctor)).return_(literal(1))));
 
         // static int declared(String s) throws IOException { return new StringReader(s).read(); }
         var declared =
@@ -94,8 +96,8 @@ class ExceptionsCompileTest {
                         new_(StringReader_.new_String, s),
                         r -> b.exec(voidCall(r, StringReader_.close))
                                 .tryTerminated(
-                                        t -> t.return_(call(r, StringReader_.read)),
-                                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))))));
+                                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))),
+                                        t -> t.return_(call(r, StringReader_.read)))));
 
         // static String bySuperclass(String s) {
         //     try { throw new FileNotFoundException(s); } catch (IOException e) { return e.getMessage(); }
@@ -105,8 +107,8 @@ class ExceptionsCompileTest {
                 String_.TOKEN,
                 String_.TOKEN,
                 (b, s) -> b.tryTerminated(
-                        t -> t.throw_(new_(FileNotFoundException_.new_String, s)),
-                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage)))));
+                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+                        t -> t.throw_(new_(FileNotFoundException_.new_String, s))));
 
         // static int ordered(boolean missing) {
         //     try { if (missing) { throw new FileNotFoundException(); } throw new IOException(); }
@@ -117,10 +119,10 @@ class ExceptionsCompileTest {
                 PrimitiveToken.INT,
                 PrimitiveToken.BOOLEAN,
                 (b, missing) -> b.tryTerminated(
-                        t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
-                                .throw_(new_(IOException_.new_)),
                         h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1)))
-                                .catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2)))));
+                                .catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                        t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
+                                .throw_(new_(IOException_.new_))));
 
         // static int nested(boolean missing) {
         //     try {
@@ -133,11 +135,11 @@ class ExceptionsCompileTest {
                 PrimitiveToken.INT,
                 PrimitiveToken.BOOLEAN,
                 (b, missing) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
                         outer -> outer.tryTerminated(
+                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
                                 t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
-                                        .throw_(new_(IOException_.new_)),
-                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1)))),
-                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2)))));
+                                        .throw_(new_(IOException_.new_)))));
 
         // static int rethrown(String s) throws IOException {
         //     try { return new StringReader(s).read(); } catch (IOException e) { throw e; } finally { s.length(); }
@@ -148,9 +150,9 @@ class ExceptionsCompileTest {
                         PrimitiveToken.INT,
                         String_.TOKEN,
                         (b, s) -> b.tryTerminated(
-                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read)),
                                 h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
-                                        .finally_(f -> f.exec(call(s, String_.length)))));
+                                        .finally_(f -> f.exec(call(s, String_.length))),
+                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
 
         // static int wrapped(String s) throws Exception {
         //     try { return new StringReader(s).read(); } catch (IOException e) { throw new Exception(e); }
@@ -161,9 +163,9 @@ class ExceptionsCompileTest {
                         PrimitiveToken.INT,
                         String_.TOKEN,
                         (b, s) -> b.tryTerminated(
-                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read)),
                                 h -> h.catch_(
-                                        IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e)))));
+                                        IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e))),
+                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
 
         // static int recovered(String s) {
         //     int result = 0;
@@ -178,10 +180,10 @@ class ExceptionsCompileTest {
                         PrimitiveToken.INT,
                         literal(0),
                         result -> b.try_(
-                                        t -> t.exec(assign(
-                                                result, call(new_(StringReader_.new_String, s), StringReader_.read))),
                                         h -> h.catch_(
-                                                IOException_.TOKEN, (c, _) -> c.exec(assign(result, literal(-1)))))
+                                                IOException_.TOKEN, (c, _) -> c.exec(assign(result, literal(-1)))),
+                                        t -> t.exec(assign(
+                                                result, call(new_(StringReader_.new_String, s), StringReader_.read))))
                                 .return_(result)));
 
         // static int anything(String s) { try { return Integer.parseInt(s); } catch (Exception e) { return -1; } }
@@ -190,8 +192,8 @@ class ExceptionsCompileTest {
                 PrimitiveToken.INT,
                 String_.TOKEN,
                 (b, s) -> b.tryTerminated(
-                        t -> t.return_(staticCall(Integer_.parseInt_String, s)),
-                        h -> h.catch_(Exception_.TOKEN, (c, _) -> c.return_(literal(-1)))));
+                        h -> h.catch_(Exception_.TOKEN, (c, _) -> c.return_(literal(-1))),
+                        t -> t.return_(staticCall(Integer_.parseInt_String, s))));
 
         // static void either(boolean io) throws IOException, InterruptedException {
         //     if (io) { throw new IOException(); } else { throw new InterruptedException(); }
@@ -204,6 +206,38 @@ class ExceptionsCompileTest {
                                 io,
                                 t -> t.throw_(new_(IOException_.new_)),
                                 e -> e.throw_(new_(InterruptedException_.new_))));
+
+        // static void closed(StringReader r) throws IOException { ((Reader) r).close(); }
+        cb.throwing(IOException_.TOKEN)
+                .voidStaticMethod(
+                        "closed",
+                        StringReader_.TOKEN,
+                        (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+
+        // static int closedAndCaught(StringReader r) {
+        //     try { ((Reader) r).close(); return 1; } catch (IOException e) { return 0; }
+        // }
+        cb.staticMethod(
+                "closedAndCaught",
+                PrimitiveToken.INT,
+                StringReader_.TOKEN,
+                (b, r) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
+                        t -> t.exec(voidCall(r, Reader_.close)).return_(literal(1))));
+
+        // static int precise() throws IOException {
+        //     try { try { throw new FileNotFoundException(); } catch (IOException e) { throw e; } }
+        //     catch (FileNotFoundException e) { return 1; }
+        // }
+        cb.throwing(IOException_.TOKEN)
+                .staticMethod(
+                        "precise",
+                        PrimitiveToken.INT,
+                        b -> b.tryTerminated(
+                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
+                                o -> o.tryTerminated(
+                                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
+                                        t -> t.throw_(new_(FileNotFoundException_.new_)))));
 
         // static void unchecked() { throw new RuntimeException("unchecked"); }
         cb.voidStaticMethod("unchecked", b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
@@ -251,6 +285,24 @@ class ExceptionsCompileTest {
         assertThat(compiled.invoke("wrapped", "a")).isEqualTo((int) 'a');
     }
 
+    /// `Reader.close() throws IOException`, `StringReader.close()` does not: through a receiver cast
+    /// to the owner of the fact javac goes by the clause of the fact, so the `throws` and the `catch`
+    /// the typed layer asked for are the ones javac asks for.
+    @Test
+    void aMethodThatDeclaresACheckedExceptionIsCalledThroughItsOwner() throws Throwable {
+        assertThat(compiled.source())
+                .contains("((Reader) v0).close();")
+                // a receiver of the owner's own type is not cast
+                .contains("return v1.read();");
+        assertThat(compiled.invoke("closedAndCaught", new StringReader("a"))).isEqualTo(1);
+    }
+
+    @Test
+    void aRethrownBindingThrowsWhatItsTryBlockThrows() throws Throwable {
+        // the outer catch (FileNotFoundException) is one javac accepts only by the precise rethrow
+        assertThat(compiled.invoke("precise")).isEqualTo(1);
+    }
+
     @Test
     void anUncheckedExceptionNeedsNoClause() {
         assertThatThrownBy(() -> compiled.invoke("unchecked"))
@@ -273,8 +325,8 @@ class ExceptionsCompileTest {
                                 PrimitiveToken.INT,
                                 String_.TOKEN,
                                 (b, s) -> b.tryTerminated(
-                                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read)),
-                                        h -> h.finally_(f -> f.return_(literal(0)))));
+                                        h -> h.finally_(f -> f.return_(literal(0))),
+                                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
                     }
                 });
 
