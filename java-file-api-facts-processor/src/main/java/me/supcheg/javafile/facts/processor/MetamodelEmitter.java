@@ -12,6 +12,7 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
@@ -54,12 +55,12 @@ import java.util.stream.Stream;
 ///
 /// - `@Generated` and [GeneratedMetamodel] (`of`, `fingerprint`,
 ///   `complete`);
-/// - a nested leaf class `Data` whose `SHAPE` is the
+/// - a nested leaf class `Data` (marked [GeneratedMetamodelPart]) whose `SHAPE` is the
 ///   [me.supcheg.javafile.facts.TypeShape] of the type, made by
 ///   `UnsafeFacts.shape` from plain data — class descriptors and type
 ///   references, never another metamodel — so the class initialization of
 ///   metamodels that mention each other has no cycle;
-/// - a nested class `Canonical` whose `TEXT` is the canonical form of the
+/// - a nested class `Canonical` (marked the same) whose `TEXT` is the canonical form of the
 ///   type, loaded only when the target-classpath check needs it;
 /// - the token: `TOKEN` for a type that is not generic, or used raw because a
 ///   bound of a type parameter mentions a type the metamodel cannot write —
@@ -95,6 +96,7 @@ final class MetamodelEmitter {
 
     private static final ClassDesc CD_GENERATED = ClassDesc.of("javax.annotation.processing.Generated");
     private static final ClassDesc CD_GENERATED_METAMODEL = ClassDesc.of(GeneratedMetamodel.class.getName());
+    private static final ClassDesc CD_GENERATED_METAMODEL_PART = ClassDesc.of(GeneratedMetamodelPart.class.getName());
     private static final ClassDesc CD_SUPPRESS_WARNINGS = ClassDesc.of("java.lang.SuppressWarnings");
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
     private static final ClassDesc CD_TYPE_SHAPE = ClassDesc.of(FACTS, "TypeShape");
@@ -340,6 +342,7 @@ final class MetamodelEmitter {
             cb.withNestedClass(
                     data,
                     dc -> dc.withDoc(MetamodelDocs.data(model.desc()))
+                            .withAnnotation(CD_GENERATED_METAMODEL_PART)
                             .withModifiers(Modifier.STATIC, Modifier.FINAL)
                             .withField(
                                     MetamodelNames.SHAPE,
@@ -351,6 +354,7 @@ final class MetamodelEmitter {
             cb.withNestedClass(
                     canonicalClass,
                     kc -> kc.withDoc(MetamodelDocs.canonical(model.desc()))
+                            .withAnnotation(CD_GENERATED_METAMODEL_PART)
                             .withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
                             .withField(
                                     MetamodelNames.TEXT,
@@ -744,6 +748,7 @@ final class MetamodelEmitter {
         return List.of(
                 CD_GENERATED,
                 CD_GENERATED_METAMODEL,
+                CD_GENERATED_METAMODEL_PART,
                 CD_SUPPRESS_WARNINGS,
                 CD_UNSAFE_FACTS,
                 CD_TYPE_SHAPE,

@@ -43,19 +43,21 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Greeter;
 
 /// The full metamodel of [Greeter], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Greeter] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Greeter.class, fingerprint = "8d915c9d533e35c7aae19916a509f072695df4e1edbe3ab581e0c7294abb0fbf", complete = true, format = 6)
+@GeneratedMetamodel(of = Greeter.class, fingerprint = "8d915c9d533e35c7aae19916a509f072695df4e1edbe3ab581e0c7294abb0fbf", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Greeter_ {
     /// The shape of [Greeter] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Greeter] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Greeter_"), "8d915c9d533e35c7aae19916a509f072695df4e1edbe3ab581e0c7294abb0fbf", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Greeter"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr", Param.fixed(ClassDesc.ofDescriptor("[[I")), Param.fixed(ClassDesc.ofDescriptor("[Lp/Greeter;"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("greet"), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.util.Locale"))), Signature.of("hashCode"), Signature.of("log", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("main", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("parse", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Greeter"), Signature.of("Greeter", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.ofDescriptor("[Z"))), Signature.of("Greeter", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
@@ -65,6 +67,7 @@ public final class Greeter_ {
     }
 
     /// The canonical form of [Greeter], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Greeter].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Greeter open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember ctor(int, long, boolean[]) throws -\nmember ctor(java.lang.String) throws -\nmember field instance final int count\nmember field instance final java.lang.String name\nmember field instance mutable int mutable\nmember field instance mutable int[] numbers\nmember field instance mutable java.lang.String text\nmember field instance mutable java.lang.String[][] grid\nmember field static constant boolean BOOL = true\nmember field static constant byte BYTE = 127\nmember field static constant char CHAR = '\\u0027'\nmember field static constant double DOUBLE = 0.1\nmember field static constant double INFINITY = Infinity\nmember field static constant double NAN = NaN\nmember field static constant double NEGATIVE_INFINITY = -Infinity\nmember field static constant double NEGATIVE_ZERO = -0.0\nmember field static constant float FLOAT = 1.1f\nmember field static constant float FLOAT_INFINITY = Infinityf\nmember field static constant float FLOAT_NAN = NaNf\nmember field static constant int INT = -2147483648\nmember field static constant java.lang.String DEFAULT = \"say \\u0022hi\\u0022\\u000a\\u0009\\u005c \\u00e9\\u0001\"\nmember field static constant long LONG = 9007199254740993L\nmember field static constant short SHORT = -3\nmember field static final java.lang.Object OBJECT\nmember field static final java.lang.String NOT_CONSTANT\nmember field static mutable java.lang.String label\nmember field static mutable long counter\nmember method overridable arr(int[][], p.Greeter[]) -> int[] throws -\nmember method overridable greet() -> java.lang.String throws -\nmember method overridable greet(java.lang.String) -> java.lang.String throws -\nmember method overridable greet(java.lang.String, java.util.Locale) -> java.lang.String throws -\nmember method overridable log(java.lang.String) -> void throws -\nmember method static main(java.lang.String[]) -> void throws -\nmember method static parse(java.lang.String) -> int throws -\ntable abstract -\ntable concrete arr(int[][], p.Greeter[]); clone(); equals(java.lang.Object); finalize(); getClass(); greet(); greet(java.lang.String); greet(java.lang.String, java.util.Locale); hashCode(); log(java.lang.String); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static main(java.lang.String[]); parse(java.lang.String)\ntable ctor Greeter(); Greeter(int, long, boolean[]); Greeter(java.lang.String)\n";

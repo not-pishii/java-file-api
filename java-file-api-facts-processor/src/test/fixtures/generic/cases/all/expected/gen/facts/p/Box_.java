@@ -38,6 +38,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Box;
@@ -48,7 +49,7 @@ import p.Box;
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "0598b0e82ec240398e7b043c2ef8df6fceca354c2e0d6530565064c593e4d790", complete = true, format = 6)
+@GeneratedMetamodel(of = Box.class, fingerprint = "0598b0e82ec240398e7b043c2ef8df6fceca354c2e0d6530565064c593e4d790", complete = true, format = 7)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -56,6 +57,7 @@ import p.Box;
 })
 public final class Box_<T> {
     /// The shape of [Box] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Box] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "0598b0e82ec240398e7b043c2ef8df6fceca354c2e0d6530565064c593e4d790", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), List.of(), false);
@@ -65,6 +67,7 @@ public final class Box_<T> {
     }
 
     /// The canonical form of [Box], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Box].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Box open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0) throws -\nmember ctor() throws -\nmember field instance final #0 initial\nmember field instance mutable #0 value\nmember field static constant java.lang.String NAME = \"box\"\nmember field static mutable int count\nmember method overridable addAll(java.util.Collection<? extends #0>) -> void throws -\nmember method overridable asList() -> java.util.List<#0> throws -\nmember method overridable drainTo(java.util.Collection<? super #0>) -> void throws -\nmember method overridable get() -> #0 throws -\nmember method overridable ints() -> int[] throws -\nmember method overridable nested() -> p.Box<p.Box<#0>> throws -\nmember method overridable raw(java.util.Map) -> java.util.List throws -\nmember method overridable rawSelf() -> p.Box throws -\nmember method overridable sameAs(p.Box<?>) -> boolean throws -\nmember method overridable self() -> p.Box<#0> throws -\nmember method overridable set(#0) -> void throws -\nmember method overridable toArray(#0[]) -> #0[] throws -\nmember method static ofString() -> p.Box<java.lang.String> throws -\nmember method static size(p.Box<?>) -> int throws -\ntable abstract -\ntable concrete addAll(java.util.Collection); asList(); clone(); drainTo(java.util.Collection); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); ints(); nested(); notify(); notifyAll(); raw(java.util.Map); rawSelf(); sameAs(p.Box); self(); set(#0); toArray(#0[]); toString(); wait(); wait(long); wait(long, int)\ntable static ofString(); size(p.Box)\ntable ctor Box(#0); Box()\n";

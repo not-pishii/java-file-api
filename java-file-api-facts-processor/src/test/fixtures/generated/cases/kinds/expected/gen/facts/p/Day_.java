@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
 import p.Day;
@@ -31,13 +32,14 @@ import p.Day;
 ///
 /// A member [Day] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Day.class, fingerprint = "b8b30a9e5a8326d7f2a16ed53dc2765a036f3c6443b73ef4e77cb551be00c0d0", complete = true, format = 6)
+@GeneratedMetamodel(of = Day.class, fingerprint = "b8b30a9e5a8326d7f2a16ed53dc2765a036f3c6443b73ef4e77cb551be00c0d0", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Day_ {
     /// The shape of [Day] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Day] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Day_"), "b8b30a9e5a8326d7f2a16ed53dc2765a036f3c6443b73ef4e77cb551be00c0d0", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Day"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Day"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of()), List.of("MON", "TUE"), false);
@@ -47,6 +49,7 @@ public final class Day_ {
     }
 
     /// The canonical form of [Day], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Day].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Day enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>\nenum MON; TUE\nmembers declared-public\nmember method static valueOf(java.lang.String) -> p.Day throws -\nmember method static values() -> p.Day[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Day); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";

@@ -25,19 +25,21 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Outer.R;
 
 /// The full metamodel of [R], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [R] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Record_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = R.class, fingerprint = "95dcbb42d16dcf219310b8fb9b0130652ad048fb0e8fb4a75c23d77e15c8785a", complete = true, format = 6)
+@GeneratedMetamodel(of = R.class, fingerprint = "95dcbb42d16dcf219310b8fb9b0130652ad048fb0e8fb4a75c23d77e15c8785a", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Outer_R_ {
     /// The shape of [R] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [R] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_R_"), "95dcbb42d16dcf219310b8fb9b0130652ad048fb0e8fb4a75c23d77e15c8785a", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Outer$R"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Outer$R", Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
@@ -47,6 +49,7 @@ public final class Outer_R_ {
     }
 
     /// The canonical form of [R], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [R].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer$R final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int) throws -\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()\ntable static -\ntable ctor Outer$R(int)\n";

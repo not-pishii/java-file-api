@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Base;
 
 /// The full metamodel of [Base], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -34,13 +35,14 @@ import p.Base;
 ///
 /// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Base.class, fingerprint = "d5aa0d7605e6a099ca681336aa109d1cf6eb82376810ef89b7394076bee32dde", complete = true, format = 6)
+@GeneratedMetamodel(of = Base.class, fingerprint = "d5aa0d7605e6a099ca681336aa109d1cf6eb82376810ef89b7394076bee32dde", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Base_ {
     /// The shape of [Base] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Base] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Base_"), "d5aa0d7605e6a099ca681336aa109d1cf6eb82376810ef89b7394076bee32dde", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Base"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("f"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inherited"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("over"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("hidden", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("sbase")), Set.of(Signature.of("Base"))), List.of(), false);
@@ -50,6 +52,7 @@ public final class Base_ {
     }
 
     /// The canonical form of [Base], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Base].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Base open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable f() -> int throws -\nmember method overridable inherited() -> void throws -\nmember method overridable over() -> void throws -\nmember method static hidden(java.lang.String) -> void throws -\nmember method static sbase() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); inherited(); notify(); notifyAll(); over(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)\ntable static hidden(java.lang.String); sbase()\ntable ctor Base()\n";

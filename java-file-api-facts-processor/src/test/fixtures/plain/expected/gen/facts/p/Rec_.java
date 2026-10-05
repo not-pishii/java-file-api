@@ -27,19 +27,21 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Rec;
 
 /// The full metamodel of [Rec], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Rec] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Record_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Rec.class, fingerprint = "186e3c8839036c125c7ada17dddd2a6a155d2c105c8cfdc9b08a0b37154e663e", complete = true, format = 6)
+@GeneratedMetamodel(of = Rec.class, fingerprint = "186e3c8839036c125c7ada17dddd2a6a155d2c105c8cfdc9b08a0b37154e663e", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Rec_ {
     /// The shape of [Rec] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Rec] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Rec_"), "186e3c8839036c125c7ada17dddd2a6a155d2c105c8cfdc9b08a0b37154e663e", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Rec"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(Signature.of("of")), Set.of(Signature.of("Rec", Param.fixed(ConstantDescs.CD_int)), Signature.of("Rec", Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
@@ -49,6 +51,7 @@ public final class Rec_ {
     }
 
     /// The canonical form of [Rec], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Rec].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Rec final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int) throws -\nmember ctor(int, java.lang.String) throws -\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final label() -> java.lang.String throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\nmember method static of() -> p.Rec throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()\ntable static of()\ntable ctor Rec(int); Rec(int, java.lang.String)\n";

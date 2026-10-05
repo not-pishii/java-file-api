@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Ov;
 
 /// The full metamodel of [Ov], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -37,13 +38,14 @@ import p.Ov;
 /// - `method m(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 /// - `constructor Ov(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "f606e2486a0715c0cd07712a0ce76e9e7e5cf7e0d37857af98d76e23b2970a27", complete = true, format = 6)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "f606e2486a0715c0cd07712a0ce76e9e7e5cf7e0d37857af98d76e23b2970a27", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Ov_ {
     /// The shape of [Ov] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Ov] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov_"), "f606e2486a0715c0cd07712a0ce76e9e7e5cf7e0d37857af98d76e23b2970a27", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("k", Param.fixed(ConstantDescs.CD_int)), Signature.of("k", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("m", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("n", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Ov", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))))), List.of(), false);
@@ -53,6 +55,7 @@ public final class Ov_ {
     }
 
     /// The canonical form of [Ov], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Ov].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Ov open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(java.awt.List) throws -\nmember field instance mutable int size\nmember method overridable <^0> k(^0) -> void throws -\nmember method overridable <^0> size() -> ^0 throws -\nmember method overridable k(int) -> void throws -\nmember method overridable m(java.awt.List) -> void throws -\nmember method overridable n(java.awt.List) -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); k(int); k(java.lang.Object); m(java.awt.List); m(java.util.List); n(java.awt.List); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Ov(java.awt.List); Ov(java.util.List)\n";

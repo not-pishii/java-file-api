@@ -25,19 +25,21 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Text;
 
 /// The full metamodel of [Text], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Text] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "7f57a1699b617a429cfe880b8dc922279c6b63d646507f9d332d86f6c1f01d53", complete = true, format = 6)
+@GeneratedMetamodel(of = Text.class, fingerprint = "7f57a1699b617a429cfe880b8dc922279c6b63d646507f9d332d86f6c1f01d53", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Text_ {
     /// The shape of [Text] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Text] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "7f57a1699b617a429cfe880b8dc922279c6b63d646507f9d332d86f6c1f01d53", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text"))), List.of(), false);
@@ -47,6 +49,7 @@ public final class Text_ {
     }
 
     /// The canonical form of [Text], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Text].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Text open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int \u0447\u0438\u0441\u043b\u043e\nmember field static constant char CHAR = '\\u044f'\nmember field static constant char DELETE = '\\u007f'\nmember field static constant char LONE_CHAR = '\\ud800'\nmember field static constant java.lang.String CYRILLIC = \"\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f\"\nmember field static constant java.lang.String ESCAPES = \"\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022\"\nmember field static constant java.lang.String LONE_HIGH = \"a\\ud800b\"\nmember field static constant java.lang.String LONE_LOW = \"\\udc00\"\nmember field static constant java.lang.String PAIR = \"\\ud83d\\ude00\"\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Text()\n";

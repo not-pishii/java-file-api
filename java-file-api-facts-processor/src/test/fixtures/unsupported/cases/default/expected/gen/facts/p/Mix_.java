@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Mix;
 
 /// The full metamodel of [Mix], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -43,7 +44,7 @@ import p.Mix;
 /// - `method markers()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method <T>marked(T)`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "407a0a25895d7b294c6532cc06ab62739090c7ee36e75173b52affcd0be79d4f", complete = true, format = 6)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "407a0a25895d7b294c6532cc06ab62739090c7ee36e75173b52affcd0be79d4f", complete = true, format = 7)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -51,6 +52,7 @@ import p.Mix;
 })
 public final class Mix_ {
     /// The shape of [Mix] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mix] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "407a0a25895d7b294c6532cc06ab62739090c7ee36e75173b52affcd0be79d4f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))))), List.of(), false);
@@ -60,6 +62,7 @@ public final class Mix_ {
     }
 
     /// The canonical form of [Mix], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Mix].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Mix open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor <^0>(^0, int) throws -\nmember ctor(java.util.Set<java.lang.String>) throws -\nmember field instance mutable java.util.function.Function<java.lang.String, java.lang.String> field\nmember method overridable <^0 extends p.Marker> marked(^0) -> void throws -\nmember method overridable <^0> id(^0) -> ^0 throws -\nmember method overridable array() -> java.util.List<java.lang.String>[] throws -\nmember method overridable dollar() -> p.Dol$lar throws -\nmember method overridable marker() -> p.Marker throws -\nmember method overridable markers() -> java.util.List<p.Marker> throws -\nmember method overridable names() -> java.util.List<java.lang.String> throws -\nmember method overridable plain() -> java.lang.String throws -\nmember method overridable raw() -> java.util.List throws -\nmember method overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -\ntable abstract -\ntable concrete array(); clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); marked(p.Marker); marker(); markers(); names(); notify(); notifyAll(); plain(); raw(); toString(); wait(); wait(long); wait(long, int); wild(java.util.Map)\ntable static -\ntable ctor Mix(java.lang.Object, int); Mix(java.util.Set)\n";

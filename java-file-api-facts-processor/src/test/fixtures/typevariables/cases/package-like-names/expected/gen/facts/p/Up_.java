@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Up;
@@ -34,13 +35,14 @@ import p.Up;
 /// @param <Gen> a type argument of [Up]
 /// @param <Java> a type argument of [Up]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Up.class, fingerprint = "5fa87a00d9786f0a481b06498a0a816cba046ce2e5fabd29ba9fcdc2bca5a810", complete = true, format = 6)
+@GeneratedMetamodel(of = Up.class, fingerprint = "5fa87a00d9786f0a481b06498a0a816cba046ce2e5fabd29ba9fcdc2bca5a810", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Up_<Gen, Java> {
     /// The shape of [Up] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Up] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Up_"), "5fa87a00d9786f0a481b06498a0a816cba046ce2e5fabd29ba9fcdc2bca5a810", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Up"), List.of(new TypeParam("Gen", List.of()), new TypeParam("Java", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("Gen"), Types.typeVar("Java")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Up"))), List.of(), false);
@@ -50,6 +52,7 @@ public final class Up_<Gen, Java> {
     }
 
     /// The canonical form of [Up], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Up].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Up open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable <^0> each(^0) -> java.util.Set<^0> throws -\nmember method overridable all(#1) -> java.util.Set<#0> throws -\ntable abstract -\ntable concrete all(#1); clone(); each(java.lang.Object); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Up()\n";

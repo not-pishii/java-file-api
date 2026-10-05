@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Dep;
 import p.Svc;
 
@@ -33,13 +34,14 @@ import p.Svc;
 ///
 /// A member [Svc] inherits has its fact in the metamodel of the supertype that declares it: [Base_] and [Marker_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "b6ace64b4edfe0d029c336d4fd3bbd7c2040785b5d1990a23439e7e6d649d299", complete = true, format = 6)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "b6ace64b4edfe0d029c336d4fd3bbd7c2040785b5d1990a23439e7e6d649d299", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Svc_ {
     /// The shape of [Svc] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Svc] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Svc_"), "b6ace64b4edfe0d029c336d4fd3bbd7c2040785b5d1990a23439e7e6d649d299", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Svc"), List.of(), List.of(ClassDesc.of("p.Base"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("close"), Signature.of("dep"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inherited"), Signature.of("m", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("only", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Svc"))), List.of(), false);
@@ -49,6 +51,7 @@ public final class Svc_ {
     }
 
     /// The canonical form of [Svc], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Svc].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Svc open-class sealed=no\ntparams -\nsuperclasses p.Base; java.lang.Object\ninterfaces p.Marker\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field static constant int LIMIT = 3\nmember method overridable close() -> void throws -\nmember method overridable dep() -> p.Dep throws -\nmember method overridable m(java.lang.String) -> java.lang.String throws -\nmember method overridable only(java.lang.Object) -> java.lang.String throws -\ntable abstract -\ntable concrete clone(); close(); dep(); equals(java.lang.Object); finalize(); getClass(); hashCode(); inherited(); m(java.lang.String); notify(); notifyAll(); only(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Svc()\n";

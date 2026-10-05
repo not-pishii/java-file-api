@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Low;
@@ -40,13 +41,14 @@ import p.Low;
 /// @param <me_> a type argument of [Low]
 /// @param <p_> a type argument of [Low]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "c0ef4df04b17a75161e440affdc6561077b0d1c6e53f17b59a83961f4a7bb6d4", complete = true, format = 6)
+@GeneratedMetamodel(of = Low.class, fingerprint = "c0ef4df04b17a75161e440affdc6561077b0d1c6e53f17b59a83961f4a7bb6d4", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Low_<gen_, java_, me_, p_> {
     /// The shape of [Low] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Low] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Low_"), "c0ef4df04b17a75161e440affdc6561077b0d1c6e53f17b59a83961f4a7bb6d4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Low"), List.of(new TypeParam("gen", List.of()), new TypeParam("java", List.of()), new TypeParam("me", List.of()), new TypeParam("p", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("gen"), Types.typeVar("java"), Types.typeVar("me"), Types.typeVar("p")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1), Param.var(2), Param.var(3)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Low"))), List.of(), false);
@@ -56,6 +58,7 @@ public final class Low_<gen_, java_, me_, p_> {
     }
 
     /// The canonical form of [Low], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Low].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Low open-class sealed=no\ntparams #0; #1; #2; #3\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable #0 first\nmember method overridable <^0, ^1> pick(^1, java.util.Set<#3>) -> ^0 throws -\nmember method overridable <^0> each(java.util.Set<^0>) -> void throws -\nmember method overridable all(#1, #2, #3) -> java.util.Set<#0> throws -\nmember method static <^0, ^1, ^2, ^3> of(^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws -\ntable abstract -\ntable concrete all(#1, #2, #3); clone(); each(java.util.Set); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); pick(java.lang.Object, java.util.Set); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)\ntable ctor Low()\n";

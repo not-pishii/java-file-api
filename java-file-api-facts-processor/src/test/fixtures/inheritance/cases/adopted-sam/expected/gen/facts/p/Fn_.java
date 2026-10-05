@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Fn;
 
 /// The full metamodel of [Fn], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -29,13 +30,14 @@ import p.Fn;
 ///
 /// `p.HiddenFn`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn.class, fingerprint = "4604f19067b787c18ead20a1132686039bae6ad8b130702c67ba348ffe805d0a", complete = true, format = 6)
+@GeneratedMetamodel(of = Fn.class, fingerprint = "4604f19067b787c18ead20a1132686039bae6ad8b130702c67ba348ffe805d0a", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Fn_ {
     /// The shape of [Fn] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fn] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn_"), "4604f19067b787c18ead20a1132686039bae6ad8b130702c67ba348ffe805d0a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
@@ -45,6 +47,7 @@ public final class Fn_ {
     }
 
     /// The canonical form of [Fn], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Fn].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Fn interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.HiddenFn\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract apply(java.lang.String) -> java.lang.String throws -\nsam apply(java.lang.String) -> java.lang.String throws -\ntable abstract apply(java.lang.String)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";

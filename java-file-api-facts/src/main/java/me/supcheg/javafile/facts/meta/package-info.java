@@ -4,6 +4,8 @@
 /// - [me.supcheg.javafile.facts.meta.Facts] asks for the metamodels of types.
 /// - [me.supcheg.javafile.facts.meta.GeneratedMetamodel] marks a generated
 ///   metamodel and records what it was generated from.
+/// - [me.supcheg.javafile.facts.meta.GeneratedMetamodelPart] marks the classes
+///   nested in a generated metamodel.
 /// - [me.supcheg.javafile.facts.meta.MetamodelFormat] versions the shape of
 ///   the generated code.
 ///

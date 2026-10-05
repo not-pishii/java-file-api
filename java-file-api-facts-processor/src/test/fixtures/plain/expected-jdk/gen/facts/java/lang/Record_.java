@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 
 /// The full metamodel of [Record]: a fact of every `public` member the type declares.
 ///
@@ -33,13 +34,14 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Record.class, fingerprint = "de68b5f52ae0a85b341c517bb57cb1aecb11b8ddb5d95c2373978f95bbc6667c", complete = true, format = 6)
+@GeneratedMetamodel(of = Record.class, fingerprint = "de68b5f52ae0a85b341c517bb57cb1aecb11b8ddb5d95c2373978f95bbc6667c", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Record_ {
     /// The shape of [Record] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Record] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Record_"), "de68b5f52ae0a85b341c517bb57cb1aecb11b8ddb5d95c2373978f95bbc6667c", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Record"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("hashCode"), Signature.of("toString")), Set.of(Signature.of("clone"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Record"))), List.of(), false);
@@ -49,6 +51,7 @@ public final class Record_ {
     }
 
     /// The canonical form of [Record], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Record].
         static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Record abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract equals(java.lang.Object) -> boolean throws -\nmember method abstract hashCode() -> int throws -\nmember method abstract toString() -> java.lang.String throws -\ntable abstract equals(java.lang.Object); hashCode(); toString()\ntable concrete clone(); finalize(); getClass(); notify(); notifyAll(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Record()\n";

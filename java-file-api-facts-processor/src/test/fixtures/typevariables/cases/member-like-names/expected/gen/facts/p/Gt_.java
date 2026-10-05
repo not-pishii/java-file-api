@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Gt;
@@ -41,13 +42,14 @@ import p.Gt;
 /// @param <T> a type argument of [Gt]
 /// @param <E> a type argument of [Gt]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gt.class, fingerprint = "e49346a0a5d7ee95d27d87bcafd5b1f6a8920166e94859505d9db13c2f2f410b", complete = true, format = 6)
+@GeneratedMetamodel(of = Gt.class, fingerprint = "e49346a0a5d7ee95d27d87bcafd5b1f6a8920166e94859505d9db13c2f2f410b", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Gt_<T, E> {
     /// The shape of [Gt] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Gt] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gt_"), "e49346a0a5d7ee95d27d87bcafd5b1f6a8920166e94859505d9db13c2f2f410b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Gt"), List.of(new TypeParam("T", List.of()), new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T"), Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("E", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("T", Param.var(1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Gt", Param.var(0), Param.var(1)))), List.of(), false);
@@ -57,6 +59,7 @@ public final class Gt_<T, E> {
     }
 
     /// The canonical form of [Gt], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Gt].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Gt open-class sealed=no\ntparams #0; #1\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(#0, #1) throws -\nmember field instance mutable #0 value\nmember field instance mutable #1 U\nmember field static constant int T = 1\nmember field static mutable int E\nmember method overridable <^0> E(^0, #0) -> ^0 throws -\nmember method overridable T(#1) -> #0 throws -\nmember method static <^0, ^1> of(^0, ^1) -> p.Gt<^0, ^1> throws -\ntable abstract -\ntable concrete E(java.lang.Object, #0); T(#1); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object, java.lang.Object)\ntable ctor Gt(#0, #1)\n";

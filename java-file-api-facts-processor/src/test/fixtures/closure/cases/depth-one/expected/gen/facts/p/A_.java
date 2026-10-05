@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.A;
@@ -56,13 +57,14 @@ import p.Result;
 ///
 /// @param <T> a type argument of [A]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = A.class, fingerprint = "99f4e97e231e298ae544fc3a1f55499f3104d8febd29c701e9370df38a393f14", complete = true, format = 6)
+@GeneratedMetamodel(of = A.class, fingerprint = "99f4e97e231e298ae544fc3a1f55499f3104d8febd29c701e9370df38a393f14", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class A_<T extends Bound> {
     /// The shape of [A] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [A] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.A_"), "99f4e97e231e298ae544fc3a1f55499f3104d8febd29c701e9370df38a393f14", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.A"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Bound"))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("b"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("g", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("m", Param.fixed(ClassDesc.of("p.Arg"))), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("A", Param.fixed(ClassDesc.of("p.Param1"))))), List.of(), false);
@@ -72,6 +74,7 @@ public final class A_<T extends Bound> {
     }
 
     /// The canonical form of [A], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [A].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.A open-class sealed=no\ntparams #0 extends p.Bound\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(p.Param1) throws p.CtorEx\nmember field static final p.Field1 F\nmember method overridable <^0 extends p.MBound> g(java.util.List<? super p.Lower>) -> p.Holder<p.Elem> throws -\nmember method overridable arr() -> p.Arg[] throws -\nmember method overridable b() -> p.B throws -\nmember method overridable dollar() -> p.Dol$lar throws -\nmember method overridable m(p.Arg) -> p.Result throws p.Ex\nmember method overridable marker() -> p.Marker throws -\ntable abstract -\ntable concrete arr(); b(); clone(); dollar(); equals(java.lang.Object); finalize(); g(java.util.List); getClass(); hashCode(); hidden(); m(p.Arg); marker(); notify(); notifyAll(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor A(p.Param1)\n";

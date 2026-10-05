@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Outer;
 import p.Outer.E;
 import p.Outer.Inner;
@@ -30,13 +31,14 @@ import p.Outer.NonStatic;
 ///
 /// A member [Outer] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Outer.class, fingerprint = "6b3c63a392b86052eaff2f3be24a2791dea8bad7175d05022f256f3e558beff2", complete = true, format = 6)
+@GeneratedMetamodel(of = Outer.class, fingerprint = "6b3c63a392b86052eaff2f3be24a2791dea8bad7175d05022f256f3e558beff2", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Outer_ {
     /// The shape of [Outer] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Outer] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_"), "6b3c63a392b86052eaff2f3be24a2791dea8bad7175d05022f256f3e558beff2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("e"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inner"), Signature.of("nonStatic"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer"))), List.of(), false);
@@ -46,6 +48,7 @@ public final class Outer_ {
     }
 
     /// The canonical form of [Outer], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Outer].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable e() -> p.Outer$E throws -\nmember method overridable inner() -> p.Outer$Inner throws -\nmember method overridable nonStatic() -> p.Outer$NonStatic throws -\ntable abstract -\ntable concrete clone(); e(); equals(java.lang.Object); finalize(); getClass(); hashCode(); inner(); nonStatic(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Outer()\n";
