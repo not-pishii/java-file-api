@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.model.ClassMember;
@@ -46,6 +47,8 @@ public final class TypedJavaFile {
     ///     member `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`:
     ///     the generator was compiled against another version of the type
+    /// @throws FactLookupException if a member the class uses has an overload on `target` that no
+    ///     argument tells it from; as the mismatch is, a [me.supcheg.javafile.facts.FactException]
     public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassSpec spec) {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());

@@ -9,7 +9,9 @@ import java.util.List;
 /// The message says what was looked for, where, and what similar facts the
 /// source does have, e.g.
 /// `no method java.lang.String com.example.User.nam() in mirror of com.example.User; similar: name()`.
-public final class FactLookupException extends RuntimeException {
+///
+/// One of the two [FactException]s: the other is of a whole metamodel.
+public final class FactLookupException extends FactException {
     @Serial
     private static final long serialVersionUID = 1L;
 

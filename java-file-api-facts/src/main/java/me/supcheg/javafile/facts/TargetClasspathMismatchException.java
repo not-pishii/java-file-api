@@ -32,8 +32,9 @@ import java.util.stream.Stream;
 /// the compilation — `messager.printMessage(Kind.ERROR, e.getMessage(), element)`
 /// — instead of letting it out of `process`, which javac prints as a crash
 /// of the processor; [#differences()] is there for one that tells them its
-/// own way.
-public final class TargetClasspathMismatchException extends RuntimeException {
+/// own way. One that catches [FactException] reports a fact lowering
+/// rejects, a [FactLookupException], the same way.
+public final class TargetClasspathMismatchException extends FactException {
     @Serial
     private static final long serialVersionUID = 1L;
 
