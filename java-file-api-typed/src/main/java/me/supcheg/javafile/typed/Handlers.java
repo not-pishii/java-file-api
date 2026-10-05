@@ -29,7 +29,8 @@ public final class Handlers<B extends Block<?, B>> {
     /// @param <E> the caught exception type
     /// @return this
     /// @throws IllegalStateException if a clause added before catches `type` or a superclass of it, so
-    ///     that this one would catch nothing (JLS 11.2.3)
+    ///     that this one would catch nothing (JLS 11.2.3); if called while another clause is being
+    ///     built, or after the `try` block was
     public <E extends Throwable> Handlers<B> catch_(ClassToken<E> type, BiConsumer<? super B, ? super Var<E>> body) {
         clauses.catch_(type, (block, binding) -> enclosing.fill(block, b -> body.accept(b, binding)));
         return this;
@@ -39,13 +40,15 @@ public final class Handlers<B extends Block<?, B>> {
     ///
     /// @param body builds the `finally` block
     /// @return this
-    /// @throws IllegalStateException if a `finally` block was already added
+    /// @throws IllegalStateException if a `finally` block was already added; if called while another
+    ///     clause is being built, or after the `try` block was
     public Handlers<B> finally_(Consumer<? super B> body) {
         clauses.finally_(block -> enclosing.fill(block, body));
         return this;
     }
 
-    CatchClauses<B> clauses() {
-        return clauses;
+    /// The clauses, complete: the `try` block is built under them.
+    TryClauses close() {
+        return clauses.close();
     }
 }

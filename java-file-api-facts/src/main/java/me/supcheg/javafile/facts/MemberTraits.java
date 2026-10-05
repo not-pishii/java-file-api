@@ -8,8 +8,9 @@ import java.util.List;
 /// - The throws-set (§3.7): Java has no union types to put checked exceptions
 ///   into a signature, so the typed layer checks from this list, where a call
 ///   of the member is built, that each checked exception is caught or
-///   declared. Which of the types are checked their tokens tell
-///   ([ClassToken#isCheckedException()]).
+///   declared. The token of a class tells whether it is checked
+///   ([ClassToken#isCheckedException()]); a type variable is known by the
+///   class of its bound alone.
 /// - Overridability, for `override` and the completeness checks.
 /// - Explicit type arguments of a generic method (§3.4): the witnesses the
 ///   fact was instantiated with, rendered as `recv.<A, B>m(...)` so that the

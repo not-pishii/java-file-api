@@ -1,8 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.RefToken;
-
 import java.util.List;
 
 /// What a [Block] does with a checked exception thrown in it (JLS 11.2.3):
@@ -14,15 +11,6 @@ sealed interface ExceptionScope {
     /// block nor a lambda body.
     ExceptionScope PASSES = new Passes();
 
-    /// The body of a member or of a lambda that declares no exception: `remedy` is the way out the
-    /// message names.
-    ///
-    /// @param remedy what the author can do besides catching the exception
-    /// @return the scope
-    static Declares declaresNothing(String remedy) {
-        return new Declares(List.of(), remedy);
-    }
-
     /// The block hands the exception to the block it is nested in: a
     /// branch of an `if`, a loop body, a `catch` or `finally` block.
     record Passes() implements ExceptionScope {}
@@ -33,9 +21,9 @@ sealed interface ExceptionScope {
     /// functional interface declares. An exception that is not a subtype of
     /// one of `types` cannot be thrown here.
     ///
+    /// @param boundary what the block is the body of
     /// @param types the declared exception types
-    /// @param remedy what the author can do besides catching the exception, for the message
-    record Declares(List<RefToken<? extends Throwable>> types, String remedy) implements ExceptionScope {
+    record Declares(Boundary boundary, List<ExceptionType> types) implements ExceptionScope {
         public Declares {
             types = List.copyOf(types);
         }
@@ -45,7 +33,7 @@ sealed interface ExceptionScope {
     /// of `types` is caught, any other is handed on.
     ///
     /// @param types the types of the `catch` clauses, in order
-    record Catches(List<ClassToken<? extends Throwable>> types) implements ExceptionScope {
+    record Catches(List<ExceptionType.OfClass> types) implements ExceptionScope {
         public Catches {
             types = List.copyOf(types);
         }
@@ -55,4 +43,36 @@ sealed interface ExceptionScope {
     /// normally: whatever the `try` block throws is discarded (JLS 14.20.2),
     /// so it need not be caught or declared.
     record Discards() implements ExceptionScope {}
+
+    /// What a block that [Declares] is the body of: who declares, and what
+    /// the author can do about an exception that is not declared.
+    enum Boundary {
+        /// The body of a method.
+        METHOD("the method does not declare", "catch it, or declare the method through cb.throwing(...)"),
+        /// The body of a constructor.
+        CONSTRUCTOR(
+                "the constructor does not declare", "catch it, or declare the constructor through cb.throwing(...)"),
+        /// The body of a lambda: only the method of its functional interface declares.
+        LAMBDA(
+                "the method of the functional interface of the lambda does not declare",
+                "catch it inside the lambda: the code around a lambda catches nothing thrown in it");
+
+        private final String doesNotDeclare;
+        private final String advice;
+
+        Boundary(String doesNotDeclare, String advice) {
+            this.doesNotDeclare = doesNotDeclare;
+            this.advice = advice;
+        }
+
+        /// "the method does not declare", to be followed by the exception.
+        String doesNotDeclare() {
+            return doesNotDeclare;
+        }
+
+        /// What the author can do.
+        String advice() {
+            return advice;
+        }
+    }
 }

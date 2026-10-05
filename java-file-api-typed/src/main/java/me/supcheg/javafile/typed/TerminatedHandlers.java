@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /// Collects the `catch` clauses, each of which must end, and the optional
-/// `finally` block of a [Block#tryTerminated(java.util.function.Function, Consumer)].
+/// `finally` block of a [Block#tryTerminated(Consumer, java.util.function.Function)].
 /// They are built before the `try` block, which is checked against them: a
 /// checked exception thrown in it must be of a clause here, or caught or
 /// declared further out.
@@ -31,7 +31,8 @@ public final class TerminatedHandlers<R, B extends Block<R, B>> {
     /// @param <E> the caught exception type
     /// @return this
     /// @throws IllegalStateException if a clause added before catches `type` or a superclass of it, so
-    ///     that this one would catch nothing (JLS 11.2.3)
+    ///     that this one would catch nothing (JLS 11.2.3); if called while another clause is being
+    ///     built, or after the `try` block was
     public <E extends Throwable> TerminatedHandlers<R, B> catch_(
             ClassToken<E> type, BiFunction<? super B, ? super Var<E>, Terminated<R>> body) {
         clauses.catch_(type, (block, binding) -> enclosing.fillEnding(block, b -> body.apply(b, binding)));
@@ -43,13 +44,15 @@ public final class TerminatedHandlers<R, B extends Block<R, B>> {
     ///
     /// @param body builds the `finally` block
     /// @return this
-    /// @throws IllegalStateException if a `finally` block was already added
+    /// @throws IllegalStateException if a `finally` block was already added; if called while another
+    ///     clause is being built, or after the `try` block was
     public TerminatedHandlers<R, B> finally_(Consumer<? super B> body) {
         clauses.finally_(block -> enclosing.fill(block, body));
         return this;
     }
 
-    CatchClauses<B> clauses() {
-        return clauses;
+    /// The clauses, complete: the `try` block is built under them.
+    TryClauses close() {
+        return clauses.close();
     }
 }

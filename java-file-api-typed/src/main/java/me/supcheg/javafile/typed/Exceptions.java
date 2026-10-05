@@ -1,18 +1,17 @@
 package me.supcheg.javafile.typed;
 
-import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Invocable;
-import me.supcheg.javafile.facts.PrimitiveToken;
-import me.supcheg.javafile.facts.RefToken;
-import me.supcheg.javafile.facts.TypeToken;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The exception check of JLS 11.2.3 (§9.1), run when a statement is
@@ -31,35 +30,64 @@ import java.util.stream.Stream;
 /// and stops at the first scope that catches, discards or declares.
 ///
 /// - **Subtypes.** A `catch` or a `throws` of a class covers its subclasses,
-///   as the tokens record them ([ClassToken#superclasses()]).
+///   as the tokens record them ([me.supcheg.javafile.facts.ClassToken#superclasses()]).
 /// - **Unchecked exceptions** — subclasses of `RuntimeException` and of
 ///   `Error` — are not tracked.
 /// - **A lambda body** is a boundary: what is thrown in it is covered by
 ///   the `throws` clause of the method of its functional interface, or
 ///   caught in it, never by the code around the lambda.
-/// - **A type variable** in the place of an exception (`<X extends
-///   Throwable> ... throws X`, with a type variable given for `X`) is known
-///   by its bound alone: it is taken as checked unless the bound is
-///   `RuntimeException` or `Error` itself, and is covered by the same type
-///   variable, by the class that is its bound, and by `Throwable`.
+/// - **The fact is the member javac calls.** A method a subclass overrides
+///   may declare fewer exceptions there (JLS 8.4.8.3), and javac goes by the
+///   method of the static type of the receiver. Lowering therefore casts
+///   the receiver to the owner of a fact that declares a checked exception,
+///   `((Reader) stringReader).close()`, so that javac sees the `throws`
+///   clause this check has seen.
 ///
-/// The same data validates the `catch` clauses of a `try` ([#requireCatchable]):
-/// javac rejects a clause for a checked exception the `try` block cannot
-/// throw.
+/// **The `catch` clauses of a `try`** are checked by the same data once the
+/// `try` block is built ([#requireCatchable(Instr.Try)]): javac rejects a
+/// clause for a checked exception the `try` block cannot throw. Here a
+/// `throw_` of the binding of a `catch_` throws what javac says it does
+/// (JLS 11.2.2, the precise rethrow): those exceptions of the `try` block of
+/// that clause that the clause catches and the clauses before it do not —
+/// the binding is not assignable, so it is always effectively final. What
+/// the binding of an enclosing `try` rethrows is known only once that `try`
+/// block is built, which is after its `catch` blocks are: a `try` nested in
+/// a `catch` block is therefore checked again, with what is then known, when
+/// the enclosing statement is complete, and a clause of it may be rejected
+/// there rather than where it was added.
 ///
 /// The untyped code of `Unsafe` is not looked into: what it throws is its
 /// author's to catch or declare, and a `try` block that holds some is
 /// taken to throw anything, so its `catch` clauses are not checked.
 ///
-/// Stricter than javac in two places, both of which reject code javac
-/// accepts and neither of which lets through code it rejects: a `catch`
-/// parameter that is rethrown is thrown at its declared type (no precise
-/// rethrow, JLS 11.2.2), and an exception thrown in a `catch` block is
-/// checked even where the `finally` block of that `try` would discard it.
+/// **Stricter than javac.** Each of these rejects code javac accepts; none
+/// accepts code javac rejects.
+///
+/// - *Where a rethrown binding must be covered.* When `throw_(e)` of the
+///   binding of a `catch_` is appended, the `try` block of that clause is
+///   not built yet, so the statement is checked as throwing the type of the
+///   clause: `catch (Exception e) { throw e; }` needs `Exception` caught or
+///   declared around it even where the `try` block throws `IOException`
+///   alone.
+/// - *A `catch` block under a `finally` that cannot complete normally.* The
+///   `finally` block discards what the `catch` blocks throw as it does what
+///   the `try` block throws, but a `catch` block may be built before the
+///   `finally` block is known, so what it throws is checked.
+/// - *A dead clause.* A `catch_` all of whose exceptions the preceding
+///   clauses have caught — `catch (FileNotFoundException)`, then `catch
+///   (IOException)`, of a `try` block that throws `FileNotFoundException`
+///   alone — is rejected; javac only warns of it.
+/// - *A type variable in the place of an exception* is known by its bound
+///   alone ([ExceptionType.OfVariable]): it is taken as checked unless the
+///   bound is `RuntimeException` or `Error` itself — a subclass of those
+///   would be unchecked to javac — and it is covered by the same type
+///   variable, by the class that is its bound and by `Throwable`, not by
+///   the superclasses of the bound in between.
+/// - *A field initializer* throws no checked exception. Java lets the
+///   initializer of an instance field throw what every constructor of the
+///   class declares.
 final class Exceptions {
-    private static final ClassDesc CD_RUNTIME_EXCEPTION = ClassDesc.of("java.lang.RuntimeException");
-    private static final ClassDesc CD_ERROR = ClassDesc.of("java.lang.Error");
-    private static final Set<ClassDesc> CD_EXCEPTION_AND_ABOVE =
+    private static final Set<ClassDesc> EXCEPTION_AND_ABOVE =
             Set.of(ClassDesc.of("java.lang.Exception"), ConstantDescs.CD_Throwable);
 
     private Exceptions() {}
@@ -68,7 +96,50 @@ final class Exceptions {
     ///
     /// @param type the exception type
     /// @param by the construct, for the message
-    private record Raise(RefToken<? extends Throwable> type, String by) {}
+    private record Raise(ExceptionType type, String by) {}
+
+    /// What the bindings of the enclosing `catch` clauses rethrow (JLS
+    /// 11.2.2), where it is known.
+    ///
+    /// @param thrown the exception types a `throw` of a binding throws
+    private record Rethrows(Map<Var<?>, List<ExceptionType>> thrown) {
+        static final Rethrows UNKNOWN = new Rethrows(Map.of());
+
+        Rethrows with(Var<?> binding, List<ExceptionType> types) {
+            return new Rethrows(Stream.concat(
+                            thrown.entrySet().stream().filter(e -> e.getKey() != binding),
+                            Stream.of(Map.entry(binding, types)))
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)));
+        }
+
+        Optional<List<ExceptionType>> of(Node thrownExpression) {
+            return thrownExpression instanceof Node.Local(var binding)
+                    ? Optional.ofNullable(thrown.get(binding))
+                    : Optional.empty();
+        }
+    }
+
+    /// Whether a checked exception thrown in a block is caught, discarded
+    /// or declared.
+    private sealed interface Coverage {
+        /// A `catch` clause catches it, a `finally` block discards it, or the member declares it.
+        record Covered() implements Coverage {}
+
+        /// It reaches the body that declares, which does not declare it.
+        record Uncovered(ExceptionScope.Declares by) implements Coverage {}
+    }
+
+    /// What evaluating a node does itself, apart from its subexpressions.
+    private sealed interface Act {
+        /// Calls a method or a constructor, which may throw what its fact declares.
+        record Invokes(Invocable member) implements Act {}
+
+        /// Makes an expression lambda: `value` is evaluated when the lambda is called, in `scope`.
+        record Defers(Block<?, ?> scope, Node value) implements Act {}
+
+        /// Nothing that throws a checked exception, or nothing known: the untyped code of `Unsafe`.
+        record Computes() implements Act {}
+    }
 
     // ------------------------------------------------------------------
     // Caught or declared
@@ -80,60 +151,62 @@ final class Exceptions {
     ///
     /// @throws IllegalStateException if `instr` can throw a checked exception that is neither caught nor declared
     static void check(Instr instr, Block<?, ?> block) {
-        raised(instr).forEach(raise -> requireCovered(raise, block));
-        nodes(instr).forEach(Exceptions::expressionLambdas);
+        raised(instr, Rethrows.UNKNOWN).forEach(raise -> requireCovered(raise, block));
+        nodes(instr).forEach(Exceptions::requireCoveredInLambdas);
     }
 
-    /// Checks an expression that is used outside of any body, e.g. a field
-    /// initializer: nothing catches and nothing declares there.
+    /// Checks the initializer of a field: it is in no body, so nothing
+    /// catches and nothing declares there.
     ///
-    /// @param node the expression
-    /// @param where where it is used, for the message
+    /// @param node the initializer
+    /// @param where where it is, for the message
     /// @throws IllegalStateException if `node` can throw a checked exception
-    static void standalone(Node node, String where) {
-        VoidBody nowhere = VoidBody.root(
-                where,
-                ExceptionScope.declaresNothing("make the call in a constructor or a method, which can catch or"
-                        + " declare it: an initializer does neither"));
-        raised(node).forEach(raise -> requireCovered(raise, nowhere));
-        expressionLambdas(node);
+    static void initializer(Node node, String where) {
+        List<Raise> raised = raised(node).toList();
+        if (!raised.isEmpty()) {
+            Raise raise = raised.getFirst();
+            throw new IllegalStateException(raise.by() + " in the " + where + " can throw the checked exception "
+                    + raise.type() + ": the typed layer accepts no checked exception in a field initializer —"
+                    + " stricter than Java, which lets the initializer of an instance field throw what every"
+                    + " constructor declares; make the call in a constructor or a method (JLS 11.2.3)");
+        }
+        requireCoveredInLambdas(node);
     }
 
     /// The body of an expression lambda is no statement of a block, so it
     /// is checked with the expression the lambda is part of, against the
     /// scope of the lambda.
-    private static void expressionLambdas(Node node) {
-        descendants(node).forEach(n -> {
-            if (n instanceof Node.Lambda(var _, var _, Node.LambdaBody.Value(var scope, var value))) {
-                raised(value).forEach(raise -> requireCovered(raise, scope));
-                expressionLambdas(value);
-            }
+    private static void requireCoveredInLambdas(Node node) {
+        deferred(node).forEach(lambda -> {
+            raised(lambda.value()).forEach(raise -> requireCovered(raise, lambda.scope()));
+            requireCoveredInLambdas(lambda.value());
         });
     }
 
     private static void requireCovered(Raise raise, Block<?, ?> block) {
-        uncovering(raise.type(), block).ifPresent(declares -> {
-            throw new IllegalStateException(raise.by() + " in the " + block.path()
-                    + " can throw the checked exception " + raise.type()
-                    + ", which no catch_ of an enclosing try_ catches and which is not declared (declared: "
-                    + describe(declares.types()) + "): catch it, or " + declares.remedy() + " (JLS 11.2.3)");
-        });
+        switch (coverage(raise.type(), block)) {
+            case Coverage.Covered _ -> {}
+            case Coverage.Uncovered(ExceptionScope.Declares(var boundary, var declared)) ->
+                throw new IllegalStateException(raise.by() + " in the " + block.path()
+                        + " can throw the checked exception " + raise.type()
+                        + ", which no catch_ of an enclosing try catches and " + boundary.doesNotDeclare()
+                        + " (declared: " + describe(declared) + "): " + boundary.advice() + " (JLS 11.2.3)");
+        }
     }
 
-    /// The scope at which `thrown`, thrown in `block`, stops without being
-    /// covered; empty if it is caught, discarded or declared.
-    private static Optional<ExceptionScope.Declares> uncovering(RefToken<?> thrown, Block<?, ?> block) {
+    /// What becomes of `thrown`, thrown in `block`.
+    private static Coverage coverage(ExceptionType thrown, Block<?, ?> block) {
         return switch (block.exceptionScope()) {
-            case ExceptionScope.Passes _ -> uncovering(thrown, enclosing(block));
+            case ExceptionScope.Passes _ -> coverage(thrown, enclosing(block));
             case ExceptionScope.Catches(var types) ->
-                types.stream().anyMatch(type -> covers(type, thrown))
-                        ? Optional.empty()
-                        : uncovering(thrown, enclosing(block));
-            case ExceptionScope.Discards _ -> Optional.empty();
+                types.stream().anyMatch(type -> type.covers(thrown))
+                        ? new Coverage.Covered()
+                        : coverage(thrown, enclosing(block));
+            case ExceptionScope.Discards _ -> new Coverage.Covered();
             case ExceptionScope.Declares declares ->
-                declares.types().stream().anyMatch(type -> covers(type, thrown))
-                        ? Optional.empty()
-                        : Optional.of(declares);
+                declares.types().stream().anyMatch(type -> type.covers(thrown))
+                        ? new Coverage.Covered()
+                        : new Coverage.Uncovered(declares);
         };
     }
 
@@ -153,56 +226,113 @@ final class Exceptions {
     ///
     /// @param type the type of the clause
     /// @param preceding the types of the clauses before it
-    /// @param form the statement, for the message
+    /// @param statement the statement and where it is, for the message
     /// @throws IllegalStateException if a preceding clause catches `type`
-    static void requireNotCaught(ClassToken<?> type, List<ClassToken<? extends Throwable>> preceding, String form) {
-        preceding.stream().filter(earlier -> covers(earlier, type)).findFirst().ifPresent(earlier -> {
-            throw new IllegalStateException("catch_ of " + type + " in " + form + " comes after the catch_ of "
-                    + earlier + ", which has already caught it: a catch_ of a subclass goes before the one of its"
-                    + " superclass (JLS 11.2.3)");
-        });
+    static void requireNotCaught(ExceptionType.OfClass type, List<ExceptionType.OfClass> preceding, String statement) {
+        List<ExceptionType.OfClass> catching =
+                preceding.stream().filter(earlier -> earlier.covers(type)).toList();
+        if (!catching.isEmpty()) {
+            throw new IllegalStateException("catch_ of " + type + " of the " + statement + " comes after the catch_"
+                    + " of " + catching.getFirst() + ", which has already caught it: a catch_ of a subclass goes"
+                    + " before the one of its superclass (JLS 11.2.3)");
+        }
     }
 
-    /// Rejects a `catch` clause of a checked exception class that the
-    /// `try` block cannot throw (JLS 11.2.3): it throws neither a subclass
-    /// nor a superclass of it. `Exception` and `Throwable` are always
+    /// Rejects a `catch` clause of `statement`, or of a `try` nested in it,
+    /// that can catch nothing: one of a checked exception class that its
+    /// `try` block cannot throw — it throws neither a subclass nor a
+    /// superclass of it (JLS 11.2.3). `Exception` and `Throwable` are always
     /// allowed — an unchecked exception may be thrown anywhere — and so is
     /// every unchecked class.
     ///
-    /// A clause all of whose exceptions a preceding clause has caught —
-    /// `catch (FileNotFoundException)`, then `catch (IOException)`, of a
-    /// `try` block that throws `FileNotFoundException` alone — is rejected
-    /// too: javac warns of it, and it is dead code.
+    /// A clause all of whose exceptions a preceding clause has caught is
+    /// rejected too: javac warns of it, and it is dead code.
     ///
-    /// @param type the type of the clause
-    /// @param preceding the types of the clauses before it
-    /// @param thrown the checked exceptions the `try` block can throw
-    /// @param form the statement, for the message
-    /// @throws IllegalStateException if the clause can catch nothing
-    static void requireCatchable(
-            ClassToken<?> type,
-            List<ClassToken<? extends Throwable>> preceding,
-            List<RefToken<? extends Throwable>> thrown,
-            String form) {
-        if (!type.isCheckedException() || CD_EXCEPTION_AND_ABOVE.contains(type.erasure())) {
+    /// The nested statements were checked when they were built, but for
+    /// what the bindings of the clauses of `statement` rethrow, which is
+    /// known only now.
+    ///
+    /// @param statement the `try` statement, complete
+    /// @throws IllegalStateException if a clause can catch nothing; a `try` block that holds untyped code
+    ///     of `Unsafe` is not checked
+    static void requireCatchable(Instr.Try statement) {
+        requireCatchable(statement, Rethrows.UNKNOWN);
+    }
+
+    private static void requireCatchable(Instr.Try statement, Rethrows rethrows) {
+        Block<?, ?> body = statement.body();
+        List<Instr.Catch> catches = statement.catches();
+        boolean known = !throwsUnknown(body);
+        List<ExceptionType> thrown = known ? thrown(body, rethrows).toList() : List.of();
+        requireCatchableIn(body, rethrows);
+        IntStream.range(0, catches.size()).forEach(i -> {
+            Instr.Catch clause = catches.get(i);
+            List<ExceptionType.OfClass> preceding = types(catches.subList(0, i));
+            if (known) {
+                requireCatchable(clause(clause), preceding, thrown, body);
+            }
+            requireCatchableIn(
+                    clause.body(),
+                    known ? rethrows.with(clause.var(), rethrown(clause(clause), preceding, thrown)) : rethrows);
+        });
+        statement.finallyBlock().ifPresent(finallyBlock -> requireCatchableIn(finallyBlock, rethrows));
+    }
+
+    /// Checks the `try` statements of `block`, at any depth.
+    private static void requireCatchableIn(Block<?, ?> block, Rethrows rethrows) {
+        block.instrs().forEach(instr -> {
+            if (instr instanceof Instr.Try statement) {
+                requireCatchable(statement, rethrows);
+            } else {
+                blocks(instr).forEach(nested -> requireCatchableIn(nested, rethrows));
+            }
+        });
+    }
+
+    private static void requireCatchable(
+            ExceptionType.OfClass type,
+            List<ExceptionType.OfClass> preceding,
+            List<ExceptionType> thrown,
+            Block<?, ?> body) {
+        if (!type.isChecked() || EXCEPTION_AND_ABOVE.contains(type.token().erasure())) {
             return;
         }
         // A try block that throws a superclass may throw this class at run time.
-        if (thrown.stream().anyMatch(t -> covers(t, type))) {
+        if (thrown.stream().anyMatch(t -> t.covers(type))) {
             return;
         }
-        List<RefToken<? extends Throwable>> catchable =
-                thrown.stream().filter(t -> covers(type, t)).toList();
+        List<ExceptionType> catchable = thrown.stream().filter(type::covers).toList();
         if (catchable.isEmpty()) {
-            throw new IllegalStateException("catch_ of " + type + " in " + form + ": the try block cannot throw"
-                    + " this checked exception (it can throw: " + describe(thrown) + "), so javac rejects the"
-                    + " clause; drop it (JLS 11.2.3)");
+            throw new IllegalStateException("catch_ of " + type + ": the " + body.path() + " cannot throw this"
+                    + " checked exception (it can throw: " + describe(thrown) + "), so javac rejects the clause;"
+                    + " drop it (JLS 11.2.3)");
         }
-        if (catchable.stream().allMatch(t -> preceding.stream().anyMatch(earlier -> covers(earlier, t)))) {
-            throw new IllegalStateException("catch_ of " + type + " in " + form + " is unreachable: what the try"
-                    + " block can throw of it (" + describe(catchable) + ") the preceding catch_ clauses have"
-                    + " already caught; drop it (JLS 11.2.3)");
+        if (catchable.stream().allMatch(t -> preceding.stream().anyMatch(earlier -> earlier.covers(t)))) {
+            throw new IllegalStateException("catch_ of " + type + " is unreachable: what the " + body.path()
+                    + " can throw of it (" + describe(catchable) + ") the preceding catch_ clauses have already"
+                    + " caught; drop it (JLS 11.2.3)");
         }
+    }
+
+    /// What a `throw` of the binding of a `catch` clause throws (JLS
+    /// 11.2.2): of what the `try` block throws and the preceding clauses
+    /// do not catch, what the clause catches — the exception itself if the
+    /// clause covers it, the type of the clause if the exception covers
+    /// that.
+    private static List<ExceptionType> rethrown(
+            ExceptionType.OfClass type, List<ExceptionType.OfClass> preceding, List<ExceptionType> thrown) {
+        return thrown.stream()
+                .filter(t -> preceding.stream().noneMatch(earlier -> earlier.covers(t)))
+                .flatMap(t -> type.covers(t) ? Stream.of(t) : t.covers(type) ? Stream.of(type) : Stream.empty())
+                .toList();
+    }
+
+    private static ExceptionType.OfClass clause(Instr.Catch clause) {
+        return new ExceptionType.OfClass(clause.type());
+    }
+
+    private static List<ExceptionType.OfClass> types(List<Instr.Catch> catches) {
+        return catches.stream().map(Exceptions::clause).toList();
     }
 
     // ------------------------------------------------------------------
@@ -211,145 +341,134 @@ final class Exceptions {
 
     /// The checked exceptions `block` can throw to the block it is nested
     /// in: those of its statements that it does not catch itself.
-    ///
-    /// @return the exception types, one per construct that throws
-    static Stream<RefToken<? extends Throwable>> thrown(Block<?, ?> block) {
-        return block.instrs().stream().flatMap(Exceptions::thrown);
+    private static Stream<ExceptionType> thrown(Block<?, ?> block, Rethrows rethrows) {
+        return block.instrs().stream().flatMap(instr -> thrown(instr, rethrows));
     }
 
-    private static Stream<RefToken<? extends Throwable>> thrown(Instr instr) {
-        return Stream.concat(raised(instr).map(Raise::type), thrownByNested(instr));
-    }
-
-    private static Stream<RefToken<? extends Throwable>> thrownByNested(Instr instr) {
-        return instr instanceof Instr.Try(var body, var catches, var finallyBlock)
-                ? thrownByTry(body, catches, finallyBlock)
-                : blocks(instr).flatMap(Exceptions::thrown);
-    }
-
-    /// Whether what `block` throws is not known: it holds, at any depth, a
-    /// statement or an expression of `Unsafe`, which may throw anything. A
-    /// `catch` clause of a `try` with such a `try` block is the author's
-    /// responsibility, as the untyped code is.
-    static boolean throwsUnknown(Block<?, ?> block) {
-        return block.instrs().stream()
-                .anyMatch(instr -> instr instanceof Instr.Raw
-                        || nodes(instr).flatMap(Exceptions::descendants).anyMatch(Node.Raw.class::isInstance)
-                        || blocks(instr).anyMatch(Exceptions::throwsUnknown));
-    }
-
-    /// The blocks nested in `instr`.
-    private static Stream<Block<?, ?>> blocks(Instr instr) {
-        return switch (instr) {
-            case Instr.If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.stream());
-            case Instr.IfInstance(var _, var _, var _, var then, var otherwise) ->
-                Stream.concat(Stream.of(then), otherwise.stream());
-            case Instr.While(var _, var _, var body) -> Stream.of(body);
-            case Instr.DoWhile(var _, var body, var _) -> Stream.of(body);
-            case Instr.For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
-            case Instr.ForEach(var _, var _, var _, var body) -> Stream.of(body);
-            case Instr.Try(var body, var catches, var finallyBlock) ->
-                Stream.of(Stream.of(body), catches.stream().map(Instr.Catch::body), finallyBlock.stream())
-                        .flatMap(s -> s);
-            case Instr.Let _, Instr.Exec _, Instr.Return _, Instr.Throw _ -> Stream.empty();
-            case Instr.Break _, Instr.Continue _, Instr.Raw _ -> Stream.empty();
-        };
+    private static Stream<ExceptionType> thrown(Instr instr, Rethrows rethrows) {
+        return Stream.concat(
+                raised(instr, rethrows).map(Raise::type),
+                instr instanceof Instr.Try statement
+                        ? thrownByTry(statement, rethrows)
+                        : blocks(instr).flatMap(block -> thrown(block, rethrows)));
     }
 
     /// What a `try` statement throws: what its `try` block throws and no
     /// clause catches, what its `catch` blocks throw, and what its `finally`
     /// block throws — that alone if the `finally` block cannot complete
     /// normally, as everything else is then discarded (JLS 14.20.2).
-    private static Stream<RefToken<? extends Throwable>> thrownByTry(
-            Block<?, ?> body, List<Instr.Catch> catches, Optional<Block<?, ?>> finallyBlock) {
-        Stream<RefToken<? extends Throwable>> byFinally = finallyBlock.stream().flatMap(Exceptions::thrown);
-        if (finallyBlock.filter(f -> !Reachability.canCompleteNormally(f)).isPresent()) {
-            return byFinally;
-        }
-        return Stream.of(
-                        thrown(body).filter(t -> catches.stream().noneMatch(c -> covers(c.type(), t))),
-                        catches.stream().flatMap(c -> thrown(c.body())),
-                        byFinally)
-                .flatMap(s -> s);
+    private static Stream<ExceptionType> thrownByTry(Instr.Try statement, Rethrows rethrows) {
+        Stream<ExceptionType> byFinally = statement.finallyBlock().stream().flatMap(block -> thrown(block, rethrows));
+        return statement
+                        .finallyBlock()
+                        .filter(block -> !Reachability.canCompleteNormally(block))
+                        .isPresent()
+                ? byFinally
+                : Stream.concat(thrownByTryAndCatchBlocks(statement, rethrows), byFinally);
+    }
+
+    private static Stream<ExceptionType> thrownByTryAndCatchBlocks(Instr.Try statement, Rethrows rethrows) {
+        List<Instr.Catch> catches = statement.catches();
+        List<ExceptionType> thrown = thrown(statement.body(), rethrows).toList();
+        List<ExceptionType.OfClass> types = types(catches);
+        boolean known = !throwsUnknown(statement.body());
+        return Stream.concat(
+                thrown.stream().filter(t -> types.stream().noneMatch(type -> type.covers(t))),
+                IntStream.range(0, catches.size())
+                        .boxed()
+                        .flatMap(i -> thrown(
+                                catches.get(i).body(),
+                                known
+                                        ? rethrows.with(
+                                                catches.get(i).var(),
+                                                rethrown(types.get(i), types.subList(0, i), thrown))
+                                        : rethrows)));
+    }
+
+    /// Whether what `block` throws is not known: it holds, at any depth, a
+    /// statement or an expression of `Unsafe`, which may throw anything. A
+    /// `catch` clause of a `try` with such a `try` block is the author's
+    /// responsibility, as the untyped code is.
+    private static boolean throwsUnknown(Block<?, ?> block) {
+        return block.instrs().stream()
+                .anyMatch(instr -> instr instanceof Instr.Raw
+                        || nodes(instr).flatMap(Exceptions::descendants).anyMatch(Node.Raw.class::isInstance)
+                        || blocks(instr).anyMatch(Exceptions::throwsUnknown));
     }
 
     /// The checked exceptions the expressions of `instr` and its `throw`
-    /// can throw; not those of its nested blocks.
-    private static Stream<Raise> raised(Instr instr) {
-        Stream<Raise> byExpressions = nodes(instr).flatMap(Exceptions::raised);
-        return instr instanceof Instr.Throw(var _, var type)
-                ? Stream.concat(byExpressions, thrownBy(type))
-                : byExpressions;
-    }
-
-    private static Stream<Raise> thrownBy(TypeToken<? extends Throwable> type) {
-        return switch (type) {
-            case RefToken<? extends Throwable> ref ->
-                Stream.of(ref).filter(Exceptions::isChecked).map(t -> new Raise(t, "throw_"));
-            case PrimitiveToken<?, ?, ?> primitive ->
-                throw new IllegalStateException("throw_ of a primitive " + primitive);
-        };
+    /// can throw; not those of its nested blocks. A `throw` of the binding
+    /// of a `catch` clause throws what `rethrows` knows of it, or else the
+    /// type of the clause.
+    private static Stream<Raise> raised(Instr instr, Rethrows rethrows) {
+        return Stream.concat(
+                nodes(instr).flatMap(Exceptions::raised),
+                instr instanceof Instr.Throw(var value, var type)
+                        ? rethrows.of(value).orElseGet(() -> List.of(type)).stream()
+                                .filter(ExceptionType::isChecked)
+                                .map(thrown -> new Raise(thrown, "throw_"))
+                        : Stream.empty());
     }
 
     /// The checked exceptions evaluating `node` can throw. A lambda in it
     /// throws nothing where it stands: its body runs elsewhere.
     private static Stream<Raise> raised(Node node) {
-        return descendants(node).flatMap(Exceptions::raisedItself);
+        return descendants(node).flatMap(n -> switch (act(n)) {
+            case Act.Invokes(var member) ->
+                ExceptionType.ofAll(member.traits().throwsTypes()).stream()
+                        .filter(ExceptionType::isChecked)
+                        .map(type -> new Raise(type, member.toString()));
+            case Act.Defers _, Act.Computes _ -> Stream.empty();
+        });
     }
 
-    private static Stream<Raise> raisedItself(Node node) {
+    /// The expression lambdas of `node`, not those in the body of another.
+    private static Stream<Act.Defers> deferred(Node node) {
+        return descendants(node).map(Exceptions::act).flatMap(act -> switch (act) {
+            case Act.Defers lambda -> Stream.of(lambda);
+            case Act.Invokes _, Act.Computes _ -> Stream.empty();
+        });
+    }
+
+    private static Act act(Node node) {
         return switch (node) {
-            case Node.Call(var _, var method, var _) -> declaredBy(method);
-            case Node.StaticCall(var method, var _) -> declaredBy(method);
-            case Node.New(var ctor, var _) -> declaredBy(ctor);
-            default -> Stream.empty();
+            case Node.Call(var _, var method, var _) -> new Act.Invokes(method);
+            case Node.StaticCall(var method, var _) -> new Act.Invokes(method);
+            case Node.New(var ctor, var _) -> new Act.Invokes(ctor);
+            case Node.Lambda(var _, var _, Node.LambdaBody.Value(var scope, var value)) -> new Act.Defers(scope, value);
+            // The statements of a block lambda are checked as they are appended to its block.
+            case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
+            case Node.Lit _,
+                    Node.RawLit _,
+                    Node.Local _,
+                    Node.This _,
+                    Node.Box _,
+                    Node.Unbox _,
+                    Node.FieldGet _,
+                    Node.StaticFieldGet _,
+                    Node.EnumConst _,
+                    Node.ArrayAt _,
+                    Node.ArrayLength _,
+                    Node.NewArray _,
+                    Node.Cond _,
+                    Node.Binary _,
+                    Node.Unary _,
+                    Node.Cast _,
+                    Node.InstanceOf _,
+                    Node.Switch _,
+                    Node.Assign _,
+                    Node.Raw _ -> new Act.Computes();
         };
     }
 
-    private static Stream<Raise> declaredBy(Invocable member) {
-        return member.traits().throwsTypes().stream()
-                .filter(Exceptions::isChecked)
-                .map(type -> new Raise(type, member.toString()));
-    }
-
-    // ------------------------------------------------------------------
-    // The exception types
-    // ------------------------------------------------------------------
-
-    /// Whether `type` is a checked exception type (JLS 11.1.1). A type
-    /// variable is known by its bound alone, so it is unchecked only if
-    /// the bound is `RuntimeException` or `Error` itself.
-    static boolean isChecked(RefToken<?> type) {
-        return switch (type) {
-            case ClassToken<?> cls -> cls.isCheckedException();
-            default ->
-                !type.erasure().equals(CD_RUNTIME_EXCEPTION) && !type.erasure().equals(CD_ERROR);
-        };
-    }
-
-    /// Whether a `catch` or a `throws` of `handler` covers the exception
-    /// type `thrown`: `thrown` is `handler` or a subtype of it.
-    private static boolean covers(RefToken<?> handler, RefToken<?> thrown) {
-        return switch (handler) {
-            case ClassToken<?> cls ->
-                switch (thrown) {
-                    case ClassToken<?> thrownClass -> thrownClass.isSubclassOf(cls.erasure());
-                    // A type variable is a subtype of its bound, and of nothing else that is known.
-                    default ->
-                        cls.erasure().equals(thrown.erasure()) || cls.erasure().equals(ConstantDescs.CD_Throwable);
-                };
-            default -> Tokens.sameType(handler, thrown);
-        };
-    }
-
-    private static String describe(List<? extends RefToken<?>> types) {
+    private static String describe(List<? extends ExceptionType> types) {
         return types.isEmpty()
                 ? "nothing"
                 : types.stream().map(Object::toString).distinct().collect(Collectors.joining(", "));
     }
 
     // ------------------------------------------------------------------
-    // The expressions of a statement
+    // The expressions and the blocks of a statement
     // ------------------------------------------------------------------
 
     /// The expressions `instr` evaluates itself, not those of its nested blocks.
@@ -370,6 +489,29 @@ final class Exceptions {
         };
     }
 
+    /// The blocks nested in `instr`.
+    private static Stream<Block<?, ?>> blocks(Instr instr) {
+        return switch (instr) {
+            case Instr.If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.stream());
+            case Instr.IfInstance(var _, var _, var _, var then, var otherwise) ->
+                Stream.concat(Stream.of(then), otherwise.stream());
+            case Instr.While(var _, var _, var body) -> Stream.of(body);
+            case Instr.DoWhile(var _, var body, var _) -> Stream.of(body);
+            case Instr.For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
+            case Instr.ForEach(var _, var _, var _, var body) -> Stream.of(body);
+            case Instr.Try(var body, var catches, var finallyBlock) ->
+                Stream.of(Stream.of(body), catches.stream().map(Instr.Catch::body), finallyBlock.stream())
+                        .flatMap(Function.identity());
+            case Instr.Let _,
+                    Instr.Exec _,
+                    Instr.Return _,
+                    Instr.Throw _,
+                    Instr.Break _,
+                    Instr.Continue _,
+                    Instr.Raw _ -> Stream.empty();
+        };
+    }
+
     /// `node` and every expression evaluated with it; a lambda is one of
     /// them, its body is not.
     private static Stream<Node> descendants(Node node) {
@@ -378,26 +520,32 @@ final class Exceptions {
 
     private static Stream<Node> children(Node node) {
         return switch (node) {
-            case Node.Lit _, Node.RawLit _, Node.Local _, Node.This _ -> Stream.empty();
-            case Node.StaticFieldGet _, Node.EnumConst _, Node.Raw _, Node.Lambda _ -> Stream.empty();
+            case Node.Lit _,
+                    Node.RawLit _,
+                    Node.Local _,
+                    Node.This _,
+                    Node.StaticFieldGet _,
+                    Node.EnumConst _,
+                    Node.Raw _,
+                    Node.Lambda _ -> Stream.empty();
             case Node.Box(var _, var operand) -> Stream.of(operand);
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
+            case Node.Unary(var _, var operand, var _) -> Stream.of(operand);
+            case Node.Cast(var _, var operand) -> Stream.of(operand);
+            case Node.InstanceOf(var operand, var _) -> Stream.of(operand);
+            case Node.ArrayLength(var array) -> Stream.of(array);
+            case Node.NewArray(var _, var length) -> Stream.of(length);
+            case Node.FieldGet(var target, var _) -> Stream.of(target.node());
             case Node.Call(var target, var _, var args) ->
                 Stream.concat(Stream.of(target.node()), args.stream().map(Node.Operand::node));
             case Node.StaticCall(var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.New(var _, var args) -> args.stream().map(Node.Operand::node);
-            case Node.FieldGet(var target, var _) -> Stream.of(target.node());
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);
-            case Node.ArrayLength(var array) -> Stream.of(array);
-            case Node.NewArray(var _, var length) -> Stream.of(length);
-            case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);
             case Node.Binary(var _, var left, var right, var _) -> Stream.of(left, right);
-            case Node.Unary(var _, var operand, var _) -> Stream.of(operand);
-            case Node.Cast(var _, var operand) -> Stream.of(operand);
-            case Node.InstanceOf(var operand, var _) -> Stream.of(operand);
+            case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);
             case Node.Switch(var selector, var _, var cases, var otherwise) ->
                 Stream.of(Stream.of(selector), cases.stream().map(Node.Case::value), otherwise.stream())
-                        .flatMap(s -> s);
+                        .flatMap(Function.identity());
             case Node.Assign(var target, var value) -> Stream.concat(children(target), Stream.of(value));
         };
     }

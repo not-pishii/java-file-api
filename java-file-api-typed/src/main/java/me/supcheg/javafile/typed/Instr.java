@@ -3,7 +3,6 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.RefToken;
-import me.supcheg.javafile.facts.TypeToken;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +39,7 @@ sealed interface Instr {
     record Return(Optional<Node> value) implements Instr {}
 
     /// `throw value;`, with the static type of `value`.
-    record Throw(Node value, TypeToken<? extends Throwable> type) implements Instr {}
+    record Throw(Node value, ExceptionType type) implements Instr {}
 
     /// `break;` out of a loop.
     record Break(LoopCtl ctl) implements Instr {}

@@ -127,6 +127,12 @@ import java.util.stream.Stream;
 ///   branch of a conditional — its receiver is cast to the owner,
 ///   `((Owner) recv).m()`, which types it by the fact again. A cast is never
 ///   added where javac would find it redundant.
+/// - **The `throws` clause.** An instance method that declares a checked
+///   exception is called through its owner, `((Reader) stringReader).close()`:
+///   the override of the receiver's type may declare fewer exceptions, and
+///   javac would then reject the `catch` the fact asked for, or accept code
+///   the typed layer was right to refuse. The upcast is never redundant to
+///   javac.
 /// - **Generic members.** A static member of a parameterized owner is
 ///   qualified by the raw type, `List.of()`, never `List<String>.of()`; the
 ///   type arguments of a generic method's fact
@@ -313,7 +319,7 @@ final class Lowering {
             }
             case Instr.Return(var value) -> new ReturnStmt(value.map(this::returned));
             case Instr.Throw(var value, var type) -> {
-                target.verify(type);
+                target.verify(type.token());
                 yield new ThrowStmt(expr(value));
             }
             case Instr.Break(var ctl) -> breakOrContinue(ctl, true);
@@ -497,16 +503,18 @@ final class Lowering {
     }
 
     /// `target.method(args)`. The receiver is cast to the method's owner
-    /// where the call must be pinned and the receiver is of a subtype, and
-    /// where the subtype has an overload that erases as the method does
-    /// ([#hasTwin]); otherwise it is pinned itself where its type decides the
-    /// overload.
+    /// where the receiver is of a subtype and the call must be pinned, or
+    /// the method declares a checked exception
+    /// ([#declaresCheckedException]), or the subtype has an overload that
+    /// erases as the method does ([#hasTwin]); otherwise it is pinned itself
+    /// where its type decides the overload.
     private Expr call(Node.Operand receiving, Invocable method, List<Node.Operand> args, boolean pin) {
         DeclaredToken<?> owner = method.owner();
         target.verify(receiving.type());
         Expr receiver;
         TypeToken<?> searched;
-        if ((pin && !Tokens.sameType(receiving.type(), owner)) || hasTwin(receiving.type(), method)) {
+        if (!Tokens.sameType(receiving.type(), owner)
+                && (pin || declaresCheckedException(method) || hasTwin(receiving.type(), method))) {
             receiver = Exprs.cast(owner.typeRef(), expr(receiving.node()));
             searched = owner;
         } else {
@@ -517,6 +525,15 @@ final class Lowering {
         }
         return new MethodCallExpr(
                 Optional.of(receiver), method.name(), arguments(method, searched, args), typeArgs(method));
+    }
+
+    /// Whether the `throws` clause of `method` has a checked exception. A
+    /// subtype may override the method with a narrower clause (JLS 8.4.8.3),
+    /// and javac goes by the method of the receiver's static type: through
+    /// a receiver cast to the owner it goes by the clause of the fact, which
+    /// is the one the statement was checked by ([Exceptions]).
+    private static boolean declaresCheckedException(Invocable method) {
+        return ExceptionType.ofAll(method.traits().throwsTypes()).stream().anyMatch(ExceptionType::isChecked);
     }
 
     /// The arguments of `member`, each of exactly its parameter's type unless
