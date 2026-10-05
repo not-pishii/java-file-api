@@ -19,7 +19,7 @@ java {
 val mockitoAgent = configurations.create("mockitoAgent") { isTransitive = false }
 
 dependencies {
-    compileOnly(libs.jspecify)
+    api(libs.jspecify)
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
     mockitoAgent(libs.mockito.core)

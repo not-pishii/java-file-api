@@ -32,6 +32,7 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.type.UnboundedTypeArg;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -98,6 +99,7 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_GENERATED_METAMODEL = ClassDesc.of(GeneratedMetamodel.class.getName());
     private static final ClassDesc CD_GENERATED_METAMODEL_PART = ClassDesc.of(GeneratedMetamodelPart.class.getName());
     private static final ClassDesc CD_SUPPRESS_WARNINGS = ClassDesc.of("java.lang.SuppressWarnings");
+    private static final ClassDesc CD_NULL_MARKED = ClassDesc.of(NullMarked.class.getName());
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
     private static final ClassDesc CD_TYPE_SHAPE = ClassDesc.of(FACTS, "TypeShape");
     private static final ClassDesc CD_DECLARED_KIND = ClassDesc.of(FACTS, "DeclaredKind");
@@ -332,6 +334,7 @@ final class MetamodelEmitter {
                     .<SingleAnnotationValue>map(warning -> AnnotationValues.literal(warning))
                     .toList();
             cb.withAnnotation(CD_SUPPRESS_WARNINGS, ab -> ab.withMember("value", AnnotationValues.array(suppressed)));
+            cb.withAnnotation(CD_NULL_MARKED);
             for (TypeParam param : typeParams) {
                 cb.withTypeParam(new TypeParam(
                         renaming.get(param.name()),
@@ -750,6 +753,7 @@ final class MetamodelEmitter {
                 CD_GENERATED_METAMODEL,
                 CD_GENERATED_METAMODEL_PART,
                 CD_SUPPRESS_WARNINGS,
+                CD_NULL_MARKED,
                 CD_UNSAFE_FACTS,
                 CD_TYPE_SHAPE,
                 CD_DECLARED_KIND,
