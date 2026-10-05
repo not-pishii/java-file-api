@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Cf;
 
 /// The full metamodel of [Cf], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -34,13 +35,14 @@ import p.Cf;
 ///
 /// - `method x(), method x_()`, which would all be named x_
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Cf.class, fingerprint = "4f7dc02d40f1edec606bfa1dace0ef2120e35e0f6c6b934de24a2fc872e50931", complete = true, format = 6)
+@GeneratedMetamodel(of = Cf.class, fingerprint = "4f7dc02d40f1edec606bfa1dace0ef2120e35e0f6c6b934de24a2fc872e50931", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Cf_ {
     /// The shape of [Cf] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Cf] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Cf_"), "4f7dc02d40f1edec606bfa1dace0ef2120e35e0f6c6b934de24a2fc872e50931", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Cf"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("x_")), Set.of(), Set.of(Signature.of("Cf"))), List.of(), false);
@@ -50,6 +52,7 @@ public final class Cf_ {
     }
 
     /// The canonical form of [Cf], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Cf].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Cf open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int x\nmember method overridable other() -> void throws -\nmember method overridable x() -> void throws -\nmember method overridable x_() -> void throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(); toString(); wait(); wait(long); wait(long, int); x(); x_()\ntable static -\ntable ctor Cf()\n";

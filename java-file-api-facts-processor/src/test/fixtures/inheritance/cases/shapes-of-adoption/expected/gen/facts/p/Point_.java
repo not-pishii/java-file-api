@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Point;
 
 /// The full metamodel of [Point], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -34,13 +35,14 @@ import p.Point;
 ///
 /// `p.HLabel`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Point.class, fingerprint = "a3eebd8db5b2fbfdcef9e16ed0b766d272015db3326b2593910630f5f5a8f3c5", complete = true, format = 6)
+@GeneratedMetamodel(of = Point.class, fingerprint = "a3eebd8db5b2fbfdcef9e16ed0b766d272015db3326b2593910630f5f5a8f3c5", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Point_ {
     /// The shape of [Point] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Point] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Point_"), "a3eebd8db5b2fbfdcef9e16ed0b766d272015db3326b2593910630f5f5a8f3c5", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Point"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Point", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
@@ -50,6 +52,7 @@ public final class Point_ {
     }
 
     /// The canonical form of [Point], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Point].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Point final-class sealed=no\ntparams -\nsuperclasses java.lang.Record; java.lang.Object\ninterfaces p.HLabel\nsupertypes -\nenum -\nmembers declared-public\nmember ctor(int, int) throws -\nmember field static constant java.lang.String NAME = \"name\"\nmember method final equals(java.lang.Object) -> boolean throws -\nmember method final hashCode() -> int throws -\nmember method final label() -> java.lang.String throws -\nmember method final toString() -> java.lang.String throws -\nmember method final x() -> int throws -\nmember method final y() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x(); y()\ntable static -\ntable ctor Point(int, int)\n";

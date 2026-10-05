@@ -43,6 +43,14 @@ class MetaAnnotationsTest {
     }
 
     @Test
+    void generatedMetamodelPartIsAClassRetainedAnnotationOfTypes() {
+        assertThat(GeneratedMetamodelPart.class.getAnnotation(Retention.class).value())
+                .isEqualTo(RetentionPolicy.CLASS);
+        assertThat(GeneratedMetamodelPart.class.getAnnotation(Target.class).value())
+                .containsExactly(ElementType.TYPE);
+    }
+
+    @Test
     void theAnnotationsSurviveIntoTheClassFileButNotIntoTheRuntime() throws IOException {
         Compilation compilation = javac().compile(
                         JavaFileObjects.forSourceString("a.Gen", """

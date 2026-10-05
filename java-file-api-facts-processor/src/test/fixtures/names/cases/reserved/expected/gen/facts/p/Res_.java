@@ -25,19 +25,21 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Res;
 
 /// The full metamodel of [Res], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Res] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Res.class, fingerprint = "442ce7030fff0be05b825e5a50c6ee5d2bb63d3268892a8e4d1609463c414075", complete = true, format = 6)
+@GeneratedMetamodel(of = Res.class, fingerprint = "442ce7030fff0be05b825e5a50c6ee5d2bb63d3268892a8e4d1609463c414075", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Res_ {
     /// The shape of [Res] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Res] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Res_"), "442ce7030fff0be05b825e5a50c6ee5d2bb63d3268892a8e4d1609463c414075", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Res"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("count"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("sam", Param.fixed(ConstantDescs.CD_int)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Res"))), List.of(), false);
@@ -47,6 +49,7 @@ public final class Res_ {
     }
 
     /// The canonical form of [Res], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Res].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Res open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable int ANY\nmember field instance mutable int Canonical\nmember field instance mutable int Data\nmember field instance mutable int TOKEN\nmember field instance mutable int count\nmember field instance mutable int sam\nmember field instance mutable int switch_\nmember field instance mutable int token\nmember method overridable count() -> int throws -\nmember method overridable sam(int) -> void throws -\ntable abstract -\ntable concrete clone(); count(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); sam(int); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Res()\n";

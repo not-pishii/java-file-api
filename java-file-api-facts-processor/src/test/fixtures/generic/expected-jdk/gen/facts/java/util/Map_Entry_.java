@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 
@@ -31,13 +32,14 @@ import me.supcheg.javafile.type.Types;
 /// @param <K> a type argument of [Entry]
 /// @param <V> a type argument of [Entry]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Entry.class, fingerprint = "d6e97d17638e03435b64461d0a8a239672e22cf311c52b0dfadf8aac3b223cae", complete = false, format = 6)
+@GeneratedMetamodel(of = Entry.class, fingerprint = "d6e97d17638e03435b64461d0a8a239672e22cf311c52b0dfadf8aac3b223cae", complete = false, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Map_Entry_<K, V> {
     /// The shape of [Entry] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Entry] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Map_Entry_"), "d6e97d17638e03435b64461d0a8a239672e22cf311c52b0dfadf8aac3b223cae", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Map$Entry"), List.of(new TypeParam("K", List.of()), new TypeParam("V", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("K"), Types.typeVar("V")), List.of()), new MethodTableTemplate(Set.of(Signature.of("getKey"), Signature.of("getValue"), Signature.of("setValue", Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("comparingByKey"), Signature.of("comparingByKey", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("comparingByValue"), Signature.of("comparingByValue", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("copyOf", Param.fixed(ClassDesc.of("java.util.Map$Entry")))), Set.of()), List.of(), false);
@@ -47,6 +49,7 @@ public final class Map_Entry_<K, V> {
     }
 
     /// The canonical form of [Entry], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Entry].
         static final String TEXT = "javafile-facts-canonical 5\ntype java.util.Map$Entry interface sealed=no\ntparams #0; #1\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers none\ntable abstract getKey(); getValue(); setValue(#1)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static comparingByKey(); comparingByKey(java.util.Comparator); comparingByValue(); comparingByValue(java.util.Comparator); copyOf(java.util.Map$Entry)\ntable ctor -\n";

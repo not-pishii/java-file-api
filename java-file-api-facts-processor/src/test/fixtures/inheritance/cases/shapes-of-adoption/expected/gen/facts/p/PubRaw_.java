@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.PubRaw;
 
 /// The full metamodel of [PubRaw], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -31,7 +32,7 @@ import p.PubRaw;
 ///
 /// `p.HG`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "ad38f4ff63336d3060dd7741f6d3d9495a27ea3e4d51abb8ad065430e0adf3b6", complete = true, format = 6)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "ad38f4ff63336d3060dd7741f6d3d9495a27ea3e4d51abb8ad065430e0adf3b6", complete = true, format = 7)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -39,6 +40,7 @@ import p.PubRaw;
 })
 public final class PubRaw_ {
     /// The shape of [PubRaw] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubRaw] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubRaw_"), "ad38f4ff63336d3060dd7741f6d3d9495a27ea3e4d51abb8ad065430e0adf3b6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubRaw"), List.of(), List.of(ClassDesc.of("p.HG"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubRaw"))), List.of(), false);
@@ -48,6 +50,7 @@ public final class PubRaw_ {
     }
 
     /// The canonical form of [PubRaw], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubRaw].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.PubRaw open-class sealed=no\ntparams -\nsuperclasses p.HG; java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable java.lang.Object value\nmember method overridable all() -> java.util.List throws -\nmember method overridable get() -> java.lang.Object throws -\nmember method overridable put(java.lang.Object) -> void throws -\ntable abstract -\ntable concrete all(); clone(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); notify(); notifyAll(); put(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor PubRaw()\n";

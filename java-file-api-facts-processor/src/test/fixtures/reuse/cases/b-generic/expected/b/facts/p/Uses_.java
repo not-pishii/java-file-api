@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Box;
 import p.Uses;
 
@@ -30,13 +31,14 @@ import p.Uses;
 ///
 /// A member [Uses] inherits has its fact in the metamodel of the supertype that declares it: [a.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "b24892ed0741d462f6ddcfccd8ebdc5d8bd942154f2bd321a34fb311fb2f0494", complete = true, format = 6)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "b24892ed0741d462f6ddcfccd8ebdc5d8bd942154f2bd321a34fb311fb2f0494", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Uses_ {
     /// The shape of [Uses] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Uses] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.p.Uses_"), "b24892ed0741d462f6ddcfccd8ebdc5d8bd942154f2bd321a34fb311fb2f0494", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("any", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("strings"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses"))), List.of(), false);
@@ -46,6 +48,7 @@ public final class Uses_ {
     }
 
     /// The canonical form of [Uses], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Uses].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Uses open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method overridable any(p.Box<java.lang.Integer>) -> p.Box<?> throws -\nmember method overridable strings() -> p.Box<java.lang.String> throws -\ntable abstract -\ntable concrete any(p.Box); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); strings(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Uses()\n";

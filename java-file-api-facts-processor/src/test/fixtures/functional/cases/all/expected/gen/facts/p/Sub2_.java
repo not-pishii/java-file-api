@@ -21,19 +21,21 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Sub2;
 
 /// The full metamodel of [Sub2], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Sub2] inherits has its fact in the metamodel of the supertype that declares it: [Sub_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub2.class, fingerprint = "e17748d39fe5a2caa57627b5e03a5f768f1f54e6077272b2b557301fa4259c46", complete = true, format = 6)
+@GeneratedMetamodel(of = Sub2.class, fingerprint = "e17748d39fe5a2caa57627b5e03a5f768f1f54e6077272b2b557301fa4259c46", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Sub2_ {
     /// The shape of [Sub2] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub2] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "e17748d39fe5a2caa57627b5e03a5f768f1f54e6077272b2b557301fa4259c46", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
@@ -43,6 +45,7 @@ public final class Sub2_ {
     }
 
     /// The canonical form of [Sub2], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Sub2].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Sub2 interface sealed=no\ntparams -\nsuperclasses -\ninterfaces p.Fn; p.Sub\nsupertypes -\nenum -\nmembers declared-public\nmember method overridable twice(java.lang.String) -> java.lang.String throws -\nsam apply(java.lang.String) -> java.lang.String throws -\ntable abstract apply(java.lang.String)\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); twice(java.lang.String); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";

@@ -112,6 +112,7 @@ import java.util.stream.Stream;
 public final class FactsProcessor extends AbstractProcessor {
     private static final String FORMAT = "me.supcheg.javafile.facts.meta.MetamodelFormat";
     private static final String GENERATED_METAMODEL = "me.supcheg.javafile.facts.meta.GeneratedMetamodel";
+    private static final String GENERATED_METAMODEL_PART = "me.supcheg.javafile.facts.meta.GeneratedMetamodelPart";
     private static final String UNRESOLVED = "a type in @Facts is not resolvable after all rounds";
 
     private @Nullable Diagnostics diagnostics;
@@ -128,7 +129,7 @@ public final class FactsProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Requests.FACTS, GENERATED_METAMODEL);
+        return Set.of(Requests.FACTS, GENERATED_METAMODEL, GENERATED_METAMODEL_PART);
     }
 
     @Override
@@ -158,7 +159,7 @@ public final class FactsProcessor extends AbstractProcessor {
     }
 
     /// Claims the annotations the processor supports, which are its own:
-    /// `@Facts`, which it reads, and `@GeneratedMetamodel`, which only the
+    /// `@Facts`, which it reads, and `@GeneratedMetamodel` and `@GeneratedMetamodelPart`, which only the
     /// metamodels it writes have. An annotation nobody claims is a warning
     /// of `-Xlint:processing`, an error under `-Werror`. Every other
     /// annotation of the round goes on to the processors after this one —

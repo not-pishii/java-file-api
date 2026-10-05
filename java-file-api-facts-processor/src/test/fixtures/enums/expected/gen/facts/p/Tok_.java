@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
 import p.Tok;
@@ -32,13 +33,14 @@ import p.Tok;
 ///
 /// A member [Tok] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_] and [gen.facts.java.lang.Runnable_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tok.class, fingerprint = "e5d0c724a4a37d6f2109af6091ffee1e9f039a8b4edeeb0ba05142bfdeb54aff", complete = true, format = 6)
+@GeneratedMetamodel(of = Tok.class, fingerprint = "e5d0c724a4a37d6f2109af6091ffee1e9f039a8b4edeeb0ba05142bfdeb54aff", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Tok_ {
     /// The shape of [Tok] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Tok] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tok_"), "e5d0c724a4a37d6f2109af6091ffee1e9f039a8b4edeeb0ba05142bfdeb54aff", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Tok"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Tok"))))), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Tok"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Tok"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of()), List.of("TOKEN", "sam", "token"), false);
@@ -48,6 +50,7 @@ public final class Tok_ {
     }
 
     /// The canonical form of [Tok], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Tok].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Tok enum sealed=no\ntparams -\nsuperclasses java.lang.Enum; java.lang.Object\ninterfaces java.io.Serializable; java.lang.Comparable; java.lang.Runnable; java.lang.constant.Constable\nsupertypes java.lang.Comparable<p.Tok>; java.lang.Enum<p.Tok>\nenum TOKEN; sam; token\nmembers declared-public\nmember method final run() -> void throws -\nmember method static valueOf(java.lang.String) -> p.Tok throws -\nmember method static values() -> p.Tok[] throws -\ntable abstract -\ntable concrete clone(); compareTo(p.Tok); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); run(); toString(); wait(); wait(long); wait(long, int)\ntable static valueOf(java.lang.Class, java.lang.String); valueOf(java.lang.String); values()\ntable ctor -\n";

@@ -31,12 +31,14 @@ package me.supcheg.javafile.facts.meta;
 ///   interface the type implements, not the parameterized ones alone: a
 ///   type that no longer implements one is another type to the check against
 ///   the target classpath.
+/// - 7: the classes `Data` and `Canonical` nested in a metamodel are marked
+///   [GeneratedMetamodelPart], an annotation an older `facts` does not have.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
 
     private MetamodelFormat() {}
 }

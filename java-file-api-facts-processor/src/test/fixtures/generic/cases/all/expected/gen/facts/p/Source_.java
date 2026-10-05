@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.Source;
@@ -34,13 +35,14 @@ import p.Source;
 ///
 /// @param <T> a type argument of [Source]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Source.class, fingerprint = "4c15e05ad30f3d3e04255db5066334facef322bcbf27c7cd088c9740b1e38308", complete = true, format = 6)
+@GeneratedMetamodel(of = Source.class, fingerprint = "4c15e05ad30f3d3e04255db5066334facef322bcbf27c7cd088c9740b1e38308", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Source_<T> {
     /// The shape of [Source] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Source] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Source_"), "4c15e05ad30f3d3e04255db5066334facef322bcbf27c7cd088c9740b1e38308", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Source"), List.of(new TypeParam("T", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("next")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
@@ -50,6 +52,7 @@ public final class Source_<T> {
     }
 
     /// The canonical form of [Source], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Source].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Source interface sealed=no\ntparams #0\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract next() -> #0 throws java.io.IOException\nsam next() -> #0 throws java.io.IOException\ntable abstract next()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";

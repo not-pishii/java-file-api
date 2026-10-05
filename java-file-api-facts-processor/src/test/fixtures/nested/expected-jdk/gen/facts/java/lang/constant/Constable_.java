@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 
 /// The full metamodel of [Constable]: a fact of every `public` member the type declares.
 ///
@@ -32,13 +33,14 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// A member [Constable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "9c9f1bee4c8feb11559b31959a1f65eac433ec9ea4ed7c6fe1145f7d673906dc", complete = true, format = 6)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "9c9f1bee4c8feb11559b31959a1f65eac433ec9ea4ed7c6fe1145f7d673906dc", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Constable_ {
     /// The shape of [Constable] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Constable] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "9c9f1bee4c8feb11559b31959a1f65eac433ec9ea4ed7c6fe1145f7d673906dc", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
@@ -48,6 +50,7 @@ public final class Constable_ {
     }
 
     /// The canonical form of [Constable], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Constable].
         static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.constant.Constable interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember method abstract describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -\nsam describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -\ntable abstract describeConstable()\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";

@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.PubB;
 
 /// The full metamodel of [PubB]: a fact of every `public` member the type declares.
@@ -27,13 +28,14 @@ import p.PubB;
 ///
 /// A member [PubB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubB.class, fingerprint = "962262293f943ec7425a8d5dea5733c8d7b2be04cc2d9160ac30699d1f0aad7e", complete = true, format = 6)
+@GeneratedMetamodel(of = PubB.class, fingerprint = "962262293f943ec7425a8d5dea5733c8d7b2be04cc2d9160ac30699d1f0aad7e", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class PubB_ {
     /// The shape of [PubB] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubB] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubB_"), "962262293f943ec7425a8d5dea5733c8d7b2be04cc2d9160ac30699d1f0aad7e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubB"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
@@ -43,6 +45,7 @@ public final class PubB_ {
     }
 
     /// The canonical form of [PubB], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PubB].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.PubB interface sealed=no\ntparams -\nsuperclasses -\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember field static constant java.lang.String k = \"PubB.k\"\nmember field static constant java.lang.String s = \"PubB.s\"\ntable abstract -\ntable concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor -\n";

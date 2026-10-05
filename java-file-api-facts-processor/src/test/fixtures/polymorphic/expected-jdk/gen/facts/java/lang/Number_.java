@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 
 /// The full metamodel of [Number]: a fact of every `public` member the type declares.
 ///
@@ -35,13 +36,14 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 ///
 /// A member [Number] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_] and [Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "7d348aeb26b961e3249dfadbd195daa6e0bd83151a6961c610da7709a6a69ea9", complete = true, format = 6)
+@GeneratedMetamodel(of = Number.class, fingerprint = "7d348aeb26b961e3249dfadbd195daa6e0bd83151a6961c610da7709a6a69ea9", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Number_ {
     /// The shape of [Number] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Number] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "7d348aeb26b961e3249dfadbd195daa6e0bd83151a6961c610da7709a6a69ea9", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), List.of(), false);
@@ -51,6 +53,7 @@ public final class Number_ {
     }
 
     /// The canonical form of [Number], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Number].
         static final String TEXT = "javafile-facts-canonical 5\ntype java.lang.Number abstract-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces java.io.Serializable\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember method abstract doubleValue() -> double throws -\nmember method abstract floatValue() -> float throws -\nmember method abstract intValue() -> int throws -\nmember method abstract longValue() -> long throws -\nmember method overridable byteValue() -> byte throws -\nmember method overridable shortValue() -> short throws -\ntable abstract doubleValue(); floatValue(); intValue(); longValue()\ntable concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)\ntable static -\ntable ctor Number()\n";

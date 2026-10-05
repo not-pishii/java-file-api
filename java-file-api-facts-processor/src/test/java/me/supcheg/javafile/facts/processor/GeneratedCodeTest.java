@@ -55,7 +55,8 @@ class GeneratedCodeTest {
     }
 
     /// `-Xlint:processing` warns of an annotation no processor claims: the processor claims `@Facts` and the
-    /// `@GeneratedMetamodel` of what it writes, which are its own. `@Generated` of the JDK is not its to claim.
+    /// `@GeneratedMetamodel` and `@GeneratedMetamodelPart` of what it writes, which are its own. `@Generated` of
+    /// the JDK is not its to claim.
     @Test
     void theProcessorClaimsItsOwnAnnotations() {
         Compiled compiled = Javac.facts()

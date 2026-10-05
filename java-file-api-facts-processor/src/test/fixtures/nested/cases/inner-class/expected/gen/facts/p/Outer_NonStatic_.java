@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Outer.NonStatic;
 
 /// The full metamodel of [NonStatic], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -33,13 +34,14 @@ import p.Outer.NonStatic;
 /// - `constructor NonStatic()`, which is the constructor of an inner class, which needs an enclosing instance
 /// - `constructor NonStatic(int)`, which is the constructor of an inner class, which needs an enclosing instance
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NonStatic.class, fingerprint = "975beea280d2c4d00eb712d686e01a8acdb1c92be0d05fdc668a368292deccf9", complete = true, format = 6)
+@GeneratedMetamodel(of = NonStatic.class, fingerprint = "975beea280d2c4d00eb712d686e01a8acdb1c92be0d05fdc668a368292deccf9", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Outer_NonStatic_ {
     /// The shape of [NonStatic] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [NonStatic] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_NonStatic_"), "975beea280d2c4d00eb712d686e01a8acdb1c92be0d05fdc668a368292deccf9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$NonStatic"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Outer$NonStatic"), Signature.of("Outer$NonStatic", Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
@@ -49,6 +51,7 @@ public final class Outer_NonStatic_ {
     }
 
     /// The canonical form of [NonStatic], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [NonStatic].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Outer$NonStatic open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember ctor(int) throws -\nmember method overridable x() -> int throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()\ntable static -\ntable ctor Outer$NonStatic(); Outer$NonStatic(int)\n";

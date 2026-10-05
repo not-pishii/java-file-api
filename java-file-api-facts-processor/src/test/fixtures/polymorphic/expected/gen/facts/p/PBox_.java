@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import p.PBox;
@@ -37,13 +38,14 @@ import p.PBox;
 ///
 /// @param <T> a type argument of [PBox]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PBox.class, fingerprint = "fcea109bdaa12f855e34ff9333279c3d1719e53fa1a72675c4c9e8c9ad67a63c", complete = true, format = 6)
+@GeneratedMetamodel(of = PBox.class, fingerprint = "fcea109bdaa12f855e34ff9333279c3d1719e53fa1a72675c4c9e8c9ad67a63c", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class PBox_<T> {
     /// The shape of [PBox] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [PBox] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PBox_"), "fcea109bdaa12f855e34ff9333279c3d1719e53fa1a72675c4c9e8c9ad67a63c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PBox"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("map", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("shadow", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("ofEnum", Param.fixed(ClassDesc.of("java.lang.Class")))), Set.of(Signature.of("PBox"))), List.of(), false);
@@ -53,6 +55,7 @@ public final class PBox_<T> {
     }
 
     /// The canonical form of [PBox], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [PBox].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.PBox open-class sealed=no\ntparams #0\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor() throws -\nmember field instance mutable #0 t\nmember method overridable <^0 extends #0> put(^0) -> void throws -\nmember method overridable <^0> map(java.util.function.Function<? super #0, ? extends ^0>) -> p.PBox<^0> throws -\nmember method overridable <^0> shadow(^0) -> ^0 throws -\nmember method static <^0 extends java.lang.Enum<^0>> ofEnum(java.lang.Class<^0>) -> p.PBox<^0> throws -\nmember method static <^0> of(^0) -> p.PBox<^0> throws -\ntable abstract -\ntable concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); map(java.util.function.Function); notify(); notifyAll(); put(java.lang.Object); shadow(java.lang.Object); toString(); wait(); wait(long); wait(long, int)\ntable static of(java.lang.Object); ofEnum(java.lang.Class)\ntable ctor PBox()\n";

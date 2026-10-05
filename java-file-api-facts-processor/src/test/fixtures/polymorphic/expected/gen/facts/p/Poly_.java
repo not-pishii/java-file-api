@@ -34,6 +34,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import p.Poly;
 
 /// The full metamodel of [Poly], which `@Facts` asks for: a fact of every `public` member the type declares.
@@ -44,13 +45,14 @@ import p.Poly;
 ///
 /// - `constructor <T>Poly(T)`, which is a generic constructor, whose type arguments a fact cannot give explicitly
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "a51807681ac2bd16a20f79e8ef572114f3ff0a4e212ec56864f6a002f14e7131", complete = true, format = 6)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "a51807681ac2bd16a20f79e8ef572114f3ff0a4e212ec56864f6a002f14e7131", complete = true, format = 7)
 @SuppressWarnings({
     "deprecation",
     "removal"
 })
 public final class Poly_ {
     /// The shape of [Poly] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
     public static final class Data {
         /// What [Poly] was when this metamodel was generated. Its tokens are made from it.
         public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "a51807681ac2bd16a20f79e8ef572114f3ff0a4e212ec56864f6a002f14e7131", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), List.of(), false);
@@ -60,6 +62,7 @@ public final class Poly_ {
     }
 
     /// The canonical form of [Poly], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
     static final class Canonical {
         /// The canonical form of [Poly].
         static final String TEXT = "javafile-facts-canonical 5\ntype p.Poly open-class sealed=no\ntparams -\nsuperclasses java.lang.Object\ninterfaces -\nsupertypes -\nenum -\nmembers declared-public\nmember ctor <^0>(^0) throws -\nmember ctor() throws -\nmember field instance mutable int t\nmember field static constant int T = 1\nmember method overridable <^0 extends java.lang.Exception> run(java.lang.Class<^0>) -> void throws ^0, java.io.IOException\nmember method overridable <^0 extends java.lang.Number & java.lang.Comparable<^0>> clamp(^0) -> ^0 throws -\nmember method overridable <^0, ^1 extends ^0> widen(^1) -> ^0 throws -\nmember method overridable <^0, ^1> odd(^0, ^1) -> void throws -\nmember method overridable <^0> id(^0) -> ^0 throws -\nmember method overridable <^0> none() -> void throws -\nmember method static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -\nmember method static <^0> listOf(^0[]) -> java.util.List<^0> throws -\ntable abstract -\ntable concrete clamp(java.lang.Number); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); none(); notify(); notifyAll(); odd(java.lang.Object, java.lang.Object); run(java.lang.Class); toString(); wait(); wait(long); wait(long, int); widen(java.lang.Object)\ntable static listOf(java.lang.Object[]); max(java.util.Collection)\ntable ctor Poly(); Poly(java.lang.Object)\n";
