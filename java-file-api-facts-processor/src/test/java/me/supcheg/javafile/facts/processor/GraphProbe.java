@@ -69,7 +69,7 @@ final class GraphProbe extends AbstractProcessor {
                     TypeGraph.Asked.ALL_THERE,
                     Map.of(),
                     models,
-                    new ReuseIndex(processingEnv.getFiler(), elements),
+                    new ReuseIndex(processingEnv.getFiler(), elements, Options.Index.PUBLISHED),
                     "gen.facts",
                     elements));
         }

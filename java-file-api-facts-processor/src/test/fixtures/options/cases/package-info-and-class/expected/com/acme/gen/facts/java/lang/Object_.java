@@ -33,7 +33,7 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 
 /// The full metamodel of [Object]: a fact of every `public` member the type declares.
 ///
-/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Svc], whose inherited members are called through this metamodel.
+/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Dep] and [p.Svc], whose inherited members are called through this metamodel.
 ///
 /// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")

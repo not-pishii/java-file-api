@@ -133,7 +133,7 @@ public final class FactsProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return Set.of(Options.PACKAGE, Options.STRICT);
+        return Set.of(Options.PACKAGE, Options.STRICT, Options.INDEX);
     }
 
     @Override
@@ -198,7 +198,7 @@ public final class FactsProcessor extends AbstractProcessor {
         if (!requested.isEmpty()) {
             switch (BasePackage.of(
                     options, sites.stream().map(Site::packageName).collect(Collectors.toCollection(TreeSet::new)))) {
-                case BasePackage.Chosen(String base) -> generate(base, when, elements, diagnostics);
+                case BasePackage.Chosen(String base) -> generate(base, options.index(), when, elements, diagnostics);
                 case BasePackage.Ambiguous ambiguous -> {
                     diagnostics.error(sites.first().resolve(elements), ambiguous.message());
                     stopped = true;
@@ -248,9 +248,10 @@ public final class FactsProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void generate(String base, Round when, Elements elements, Diagnostics diagnostics) {
+    private void generate(
+            String base, Options.Index publishing, Round when, Elements elements, Diagnostics diagnostics) {
         Models models = new Models(elements, processingEnv.getTypeUtils());
-        ReuseIndex index = new ReuseIndex(processingEnv.getFiler(), elements);
+        ReuseIndex index = new ReuseIndex(processingEnv.getFiler(), elements, publishing);
         SortedMap<String, Asked> asked = requested.entrySet().stream()
                 .flatMap(entry -> Optional.ofNullable(elements.getTypeElement(entry.getKey()))
                         .map(type -> new Asked(models.binaryName(type), type, entry.getValue()))
