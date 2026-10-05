@@ -143,10 +143,8 @@ class GoldenTest {
                         Class::getName,
                         jdk -> facts(open(HAND_WRITTEN + jdk.getSimpleName() + "_", jdk.getTypeParameters().length))
                                 .count()));
-        System.out.println("FOUND " + found + " total "
-                + found.values().stream().mapToLong(Long::longValue).sum());
-
         assertThat(found).hasSize(TYPES.size());
+        assertThat(found.values().stream().mapToLong(Long::longValue).sum()).isEqualTo(64);
     }
 
     /// A difference: a member of a type (`<token>` for the token), the aspect of it and what each side has.
