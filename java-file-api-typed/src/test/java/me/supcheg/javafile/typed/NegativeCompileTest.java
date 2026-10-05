@@ -433,4 +433,45 @@ class NegativeCompileTest {
                 "method cond in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
                 "inference variable T has incompatible bounds");
     }
+
+    @Test
+    void aThrowOfWhatIsNotThrowableDoesNotCompile() {
+        // §9.1, the static half: what is thrown, caught and declared is a Throwable
+        assertRejected(
+                "ThrowOfAString",
+                inClass("cb.voidMethod(\"m\", (b, self) -> b.throw_(literal(\"x\")));"),
+                "me.supcheg.javafile.typed.Expr<java.lang.String> cannot be converted to"
+                        + " me.supcheg.javafile.typed.Expr<? extends java.lang.Throwable>");
+    }
+
+    @Test
+    void aCatchOfWhatIsNotThrowableDoesNotCompile() {
+        assertRejected(
+                "CatchOfAString",
+                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(t -> {}, h -> h.catch_(String_.TOKEN, (c, e) -> {}))"
+                        + ".end());"),
+                "method catch_ in class me.supcheg.javafile.typed.Handlers<B> cannot be applied to given types",
+                "upper bounds: java.lang.Throwable");
+    }
+
+    @Test
+    void aThrowsClauseOfWhatIsNotThrowableDoesNotCompile() {
+        assertRejected(
+                "ThrowsAString",
+                inClass("cb.throwing(String_.TOKEN);"),
+                "method throwing in class me.supcheg.javafile.typed.TypedClassBuilder<Self> cannot be applied to given types",
+                "cannot be converted to me.supcheg.javafile.facts.ClassToken<? extends java.lang.Throwable>");
+    }
+
+    @Test
+    void aCaughtExceptionIsOfTheTypeOfItsClause() {
+        // the binding of catch_(RuntimeException) is no NumberFormatException
+        assertRejected(
+                "CaughtType",
+                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
+                        + "t -> t.return_(literal(1)),"
+                        + " h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_("
+                        + "call(e, Integer_.intValue)))));"),
+                "no suitable method found for call(me.supcheg.javafile.typed.Var<java.lang.RuntimeException>");
+    }
 }

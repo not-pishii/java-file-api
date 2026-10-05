@@ -4,7 +4,9 @@
 /// The supertypes and the types of the signatures come with them: `Object`, `CharSequence`, `Collection`, ...
 @Facts({
     ArrayList.class,
+    FileNotFoundException.class,
     Integer.class,
+    InterruptedException.class,
     List.class,
     Math.class,
     NumberFormatException.class,
@@ -13,13 +15,16 @@
     RuntimeException.class,
     Stream.class,
     String.class,
+    StringReader.class,
     System.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
