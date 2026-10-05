@@ -11,10 +11,10 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.Objects_;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.Objects_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -108,7 +108,7 @@ class PrimitivesTest {
                         cb.staticMethod(
                                 "sameAsObjects",
                                 PrimitiveToken.BOOLEAN,
-                                b -> b.return_(staticCall(Objects_.equals, literal(1), literal(1L))));
+                                b -> b.return_(staticCall(Objects_.equals_Object_Object, literal(1), literal(1L))));
                         cb.staticMethod("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
                         cb.staticMethod(
                                 "unboxed",

@@ -2,9 +2,9 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.Math_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Math_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +62,7 @@ class DeclarationChecksTest {
         void aStaticFactOfAnotherClassIsRejectedWhenDefined() {
             // A static fact carries no owner brand, so this compiles.
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(cb -> cb.define(Math_.toIntExact, (b, _) -> b.return_(literal(0)))))
+                    .isThrownBy(() -> declare(cb -> cb.define(Math_.toIntExact_long, (b, _) -> b.return_(literal(0)))))
                     .withMessageContaining("cannot define static int java.lang.Math.toIntExact(long): it was not"
                             + " declared by the builder of class me.supcheg.example.Probe");
         }

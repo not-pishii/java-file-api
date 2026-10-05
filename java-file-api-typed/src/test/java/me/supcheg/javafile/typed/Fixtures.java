@@ -13,10 +13,10 @@ import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.List_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.List_;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;

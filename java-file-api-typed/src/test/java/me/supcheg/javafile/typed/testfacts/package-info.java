@@ -1,6 +1,6 @@
 /// The full set of JDK types the hand-written metamodels (`me.supcheg.javafile.facts.jdk`) have, as the `@Facts`
 /// processor generates them, for [GoldenTest] to compare with: the metamodels are in
-/// `me.supcheg.javafile.typed.generated` (`-Ajavafile.facts.package`), apart from the ones the main code is built
+/// `me.supcheg.javafile.typed.testfacts` (`-Ajavafile.facts.package`), apart from the ones the main code is built
 /// with (`me.supcheg.javafile.typed.jdk.facts`).
 @Facts({
     ArrayList.class,
@@ -29,7 +29,7 @@
     System.class,
     Throwable.class
 })
-package me.supcheg.javafile.typed.golden;
+package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
 

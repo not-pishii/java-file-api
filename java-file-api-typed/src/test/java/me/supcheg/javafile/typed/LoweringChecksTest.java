@@ -3,7 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

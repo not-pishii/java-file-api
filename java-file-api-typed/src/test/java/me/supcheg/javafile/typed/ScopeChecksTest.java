@@ -4,11 +4,11 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.jdk.Integer_;
-import me.supcheg.javafile.facts.jdk.Object_;
-import me.supcheg.javafile.facts.jdk.PrintStream_;
-import me.supcheg.javafile.facts.jdk.RuntimeException_;
-import me.supcheg.javafile.facts.jdk.System_;
+import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.RuntimeException_;
+import me.supcheg.javafile.typed.testfacts.java.lang.System_;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
