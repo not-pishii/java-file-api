@@ -1,12 +1,10 @@
 package me.supcheg.javafile.typed;
 
-import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.PrimitiveToken;
-import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
 
 import java.lang.constant.ClassDesc;
@@ -114,42 +112,45 @@ final class SignatureRegistry {
     }
 
     private boolean overridesObjectMethod(Invocable member, MethodSignature signature) {
-        for (Inherited inherited : OBJECT_METHODS) {
-            if (!inherited.signature().equals(signature)) {
-                continue;
-            }
-            if (member.kind() == InvocableKind.STATIC_METHOD) {
-                throw new IllegalArgumentException("the static method " + member + " of " + owner
-                        + " would hide the instance method " + signature + " of java.lang.Object, which a static"
-                        + " method cannot (JLS 8.4.8.2)");
-            }
-            if (inherited.isFinal()) {
-                throw new IllegalArgumentException("the method " + member + " of " + owner + " would override the"
-                        + " final method " + signature + " of java.lang.Object (JLS 8.4.3.3)");
-            }
-            if (!inherited.returns().test(member.resultType())) {
-                throw new IllegalArgumentException("the method " + member + " of " + owner + " overrides "
-                        + signature + " of java.lang.Object, whose result is " + inherited.describedReturn()
-                        + ": the return types are incompatible (JLS 8.4.8.3)");
-            }
-            member.traits().throwsTypes().stream()
-                    .filter(Exceptions::isChecked)
-                    .filter(thrown -> !inherited.declares(thrown))
-                    .findFirst()
-                    .ifPresent(thrown -> {
-                        throw new IllegalArgumentException("the method " + member + " of " + owner + " overrides "
-                                + signature + " of java.lang.Object, which declares "
-                                + (inherited.throwsTypes().isEmpty()
-                                        ? "no exception"
-                                        : inherited.throwsTypes().stream()
-                                                .map(ClassDesc::displayName)
-                                                .collect(Collectors.joining(", ")))
-                                + ": an override cannot declare the checked exception " + thrown
-                                + " (JLS 8.4.8.3)");
-                    });
-            return true;
+        List<Inherited> overridden = OBJECT_METHODS.stream()
+                .filter(inherited -> inherited.signature().equals(signature))
+                .toList();
+        overridden.forEach(inherited -> requireOverride(member, signature, inherited));
+        return !overridden.isEmpty();
+    }
+
+    /// Rejects `member` as an override of `inherited`, whose signature it has.
+    private void requireOverride(Invocable member, MethodSignature signature, Inherited inherited) {
+        if (member.kind() == InvocableKind.STATIC_METHOD) {
+            throw new IllegalArgumentException("the static method " + member + " of " + owner
+                    + " would hide the instance method " + signature + " of java.lang.Object, which a static"
+                    + " method cannot (JLS 8.4.8.2)");
         }
-        return false;
+        if (inherited.isFinal()) {
+            throw new IllegalArgumentException("the method " + member + " of " + owner + " would override the"
+                    + " final method " + signature + " of java.lang.Object (JLS 8.4.3.3)");
+        }
+        if (!inherited.returns().test(member.resultType())) {
+            throw new IllegalArgumentException("the method " + member + " of " + owner + " overrides "
+                    + signature + " of java.lang.Object, whose result is " + inherited.describedReturn()
+                    + ": the return types are incompatible (JLS 8.4.8.3)");
+        }
+        List<ExceptionType> undeclared = ExceptionType.ofAll(member.traits().throwsTypes()).stream()
+                .filter(ExceptionType::isChecked)
+                .filter(thrown -> !inherited.declares(thrown))
+                .toList();
+        if (!undeclared.isEmpty()) {
+            throw new IllegalArgumentException("the method " + member + " of " + owner + " overrides "
+                    + signature + " of java.lang.Object, which declares "
+                    + (inherited.throwsTypes().isEmpty()
+                            ? "no exception"
+                            : inherited.throwsTypes().stream()
+                                    .map(ClassDesc::displayName)
+                                    .collect(Collectors.joining(", ")))
+                    + ": an override cannot declare the checked exception "
+                    + undeclared.stream().map(Object::toString).collect(Collectors.joining(", "))
+                    + " (JLS 8.4.8.3)");
+        }
     }
 
     /// The methods of the class: the instance methods declared and those
@@ -204,9 +205,13 @@ final class SignatureRegistry {
             return new Inherited(signature, isFinal, describedReturn, returns, List.of(throwsTypes));
         }
 
-        /// Whether the `throws` clause covers `thrown`: it is a class of the clause or a subclass of one.
-        boolean declares(RefToken<?> thrown) {
-            return thrown instanceof ClassToken<?> cls && throwsTypes.stream().anyMatch(cls::isSubclassOf);
+        /// Whether the `throws` clause covers `thrown`: it is a class of the clause or a subclass of
+        /// one. A type variable is known to be neither.
+        boolean declares(ExceptionType thrown) {
+            return switch (thrown) {
+                case ExceptionType.OfClass(var cls) -> throwsTypes.stream().anyMatch(cls::isSubclassOf);
+                case ExceptionType.OfVariable _ -> false;
+            };
         }
     }
 }

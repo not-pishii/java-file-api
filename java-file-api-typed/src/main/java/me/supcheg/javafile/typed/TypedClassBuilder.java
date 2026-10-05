@@ -6,17 +6,14 @@ import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
-import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
-import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MutableFieldRef;
-import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TargetClasspath;
@@ -49,7 +46,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /// Builds a typed `final` class declaration (§6.5), branded with `Self`.
 ///
@@ -98,8 +94,8 @@ import java.util.stream.Stream;
 ///
 /// **Checked exceptions.** A method or constructor declares the exceptions
 /// of its `throws` clause through [#throwing]: `cb.throwing(IOException_.TOKEN)`
-/// is this builder with every member declared through it declaring
-/// `throws IOException`. The fact of such a member carries the clause, so a
+/// declares methods and constructors as this builder does ([Declarations]),
+/// each with `throws IOException`. The fact of such a member carries the clause, so a
 /// call of it is checked like a call of any other fact, and its body may
 /// throw what the clause covers; a body that throws a checked exception it
 /// neither catches nor declares is rejected at the statement that throws
@@ -123,42 +119,23 @@ import java.util.stream.Stream;
 ///
 /// @param <Self> the brand of the class being declared, unique to one
 ///     [TypedJavaFile#class_(TargetClasspath, java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call
-public final class TypedClassBuilder<Self> {
+public final class TypedClassBuilder<Self> extends Declarations<Self> {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
 
     private final TargetClasspath target;
     private final String described;
     private final FinalClassToken<Self> self;
     private final SignatureRegistry registry;
-    private final List<Slot> slots;
-    private final Map<Object, Slot> slotsByFact;
-    private final Completion completion;
-
-    /// The exception types of the `throws` clause of the members declared through this builder.
-    private final List<ClassToken<? extends Throwable>> thrown;
+    private final List<Slot> slots = new ArrayList<>();
+    private final Map<Object, Slot> slotsByFact = new IdentityHashMap<>();
+    private Declaration declaration = new Declaration.Open();
 
     TypedClassBuilder(TargetClasspath target, ClassDesc desc) {
         this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.completion = new Completion();
         this.self = UnsafeFacts.finalClassToken(
                 new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), this::methodTable);
         this.registry = new SignatureRegistry(described);
-        this.slots = new ArrayList<>();
-        this.slotsByFact = new IdentityHashMap<>();
-        this.thrown = List.of();
-    }
-
-    /// The builder of the class `declaration` declares, whose members declare `thrown`.
-    private TypedClassBuilder(TypedClassBuilder<Self> declaration, List<ClassToken<? extends Throwable>> thrown) {
-        this.target = declaration.target;
-        this.described = declaration.described;
-        this.completion = declaration.completion;
-        this.self = declaration.self;
-        this.registry = declaration.registry;
-        this.slots = declaration.slots;
-        this.slotsByFact = declaration.slotsByFact;
-        this.thrown = thrown;
     }
 
     /// The fact of the class being declared: a [FinalClassToken], usable as
@@ -171,20 +148,20 @@ public final class TypedClassBuilder<Self> {
     }
 
     private MethodTable methodTable() {
-        if (completion.methods == null) {
-            throw new IllegalStateException("the methods of " + described + " are known only once its declaration"
-                    + " is complete: the class is still being declared");
-        }
-        return completion.methods;
+        return switch (declaration) {
+            case Declaration.Open _ ->
+                throw new IllegalStateException("the methods of " + described + " are known only once its"
+                        + " declaration is complete: the class is still being declared");
+            case Declaration.Complete(var methods) -> methods;
+        };
     }
 
     // ------------------------------------------------------------------
     // The throws clause
     // ------------------------------------------------------------------
 
-    /// This builder, with every method and constructor declared through
-    /// the result declaring `exceptions` in its `throws` clause, after
-    /// those this builder declares already:
+    /// The declarations of the methods and constructors of this class
+    /// that declare `exceptions` in their `throws` clause:
     ///
     /// ```java
     /// var read = cb.throwing(IOException_.TOKEN).declareMethod("read", PrimitiveToken.INT);
@@ -195,25 +172,30 @@ public final class TypedClassBuilder<Self> {
     ///
     /// The clause is part of the fact the declaration returns: a call of
     /// the member is accepted only where each of its checked exceptions is
-    /// caught or declared, and the body the member is defined with —
-    /// through this builder or any other of the class — may throw them and
-    /// their subclasses. Unchecked exceptions may be declared, and change
-    /// nothing. Fields declare nothing: the result declares them as this
-    /// builder does.
+    /// caught or declared, and the body the member is defined with may
+    /// throw them and their subclasses. Unchecked exceptions may be
+    /// declared, and change nothing.
+    ///
+    /// The result declares methods and constructors and nothing else — a
+    /// field has no `throws` clause, and a member is defined by this
+    /// builder whatever it declares.
     ///
     /// @param exceptions the exception types of the `throws` clause, in order
-    /// @return a builder of the same class, for the members that declare `exceptions`
+    /// @return the declarations of the members that declare `exceptions`
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public final TypedClassBuilder<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
-        return new TypedClassBuilder<>(
-                this, Stream.concat(thrown.stream(), Stream.of(exceptions)).toList());
+    public final ThrowingDeclarations<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
+        return new ThrowingDeclarations<>(this, List.of(exceptions));
     }
 
-    /// The traits of a member declared through this builder: `traits`,
-    /// with the `throws` clause of this builder.
-    private MemberTraits traits(MemberTraits traits) {
-        return new MemberTraits(List.copyOf(thrown), traits.overridability(), traits.typeArgs());
+    @Override
+    TypedClassBuilder<Self> builder() {
+        return this;
+    }
+
+    @Override
+    List<ClassToken<? extends Throwable>> thrown() {
+        return List.of();
     }
 
     // ------------------------------------------------------------------
@@ -257,8 +239,8 @@ public final class TypedClassBuilder<Self> {
         requireOpen("field " + name + " of " + described);
         registry.field(name);
         ScopeCheck.standalone(initializer.node(), "initializer of field " + name);
-        Exceptions.standalone(initializer.node(), "initializer of field " + name);
-        Slot slot = slot(field, null, "field " + field);
+        Exceptions.initializer(initializer.node(), "initializer of field " + name);
+        Slot slot = slot(field, "field " + field);
         slot.define(() -> new FieldDecl(
                 name,
                 type.typeRef(),
@@ -266,160 +248,6 @@ public final class TypedClassBuilder<Self> {
                 modifiers,
                 Optional.of(new Lowering(target).lowerInitializer(initializer.node(), type)),
                 Optional.empty()));
-    }
-
-    // ------------------------------------------------------------------
-    // Declarations
-    // ------------------------------------------------------------------
-
-    /// Declares a `public` method returning `R`, to be defined with
-    /// [#define(MethodRef0, InstanceBody0)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param <R> the result type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
-    public <R> MethodRef0<Self, R> declareMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.method(self, name, result, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public` method, to be defined with [#define(MethodRef1, InstanceBody1)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <R, A1> MethodRef1<Self, R, A1> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.method(self, name, result, p1, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public` method, to be defined with [#define(MethodRef2, InstanceBody2)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <R, A1, A2> MethodRef2<Self, R, A1, A2> declareMethod(
-            String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.method(self, name, result, p1, p2, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public void` method, to be defined with [#define(VoidMethodRef0, InstanceBody0)].
-    ///
-    /// @param name the method name
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public VoidMethodRef0<Self> declareVoidMethod(String name) {
-        return declare(UnsafeFacts.voidMethod(self, name, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public void` method, to be defined with [#define(VoidMethodRef1, InstanceBody1)].
-    ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <A1> VoidMethodRef1<Self, A1> declareVoidMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidMethod(self, name, p1, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public void` method, to be defined with [#define(VoidMethodRef2, InstanceBody2)].
-    ///
-    /// @param name the method name
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <A1, A2> VoidMethodRef2<Self, A1, A2> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.voidMethod(self, name, p1, p2, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public static` method, to be defined with [#define(StaticMethodRef0, Function)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param <R> the result type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <R> StaticMethodRef0<R> declareStaticMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.staticMethod(self, name, result, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public static` method, to be defined with [#define(StaticMethodRef1, BiFunction)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <R, A1> StaticMethodRef1<R, A1> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.staticMethod(self, name, result, p1, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public static void` method, to be defined with
-    /// [#define(VoidStaticMethodRef0, Function)].
-    ///
-    /// @param name the method name
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public VoidStaticMethodRef0 declareVoidStaticMethod(String name) {
-        return declare(UnsafeFacts.voidStaticMethod(self, name, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public static void` method, to be defined with
-    /// [#define(VoidStaticMethodRef1, BiFunction)].
-    ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    /// @throws IllegalArgumentException if javac would reject the method
-    public <A1> VoidStaticMethodRef1<A1> declareVoidStaticMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidStaticMethod(self, name, p1, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [#define(CtorRef0, InstanceBody0)].
-    ///
-    /// @return the fact of the constructor, which `new_` accepts
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public CtorRef0<Self> declareConstructor() {
-        return declare(UnsafeFacts.ctor(self, traits(MemberTraits.DEFAULT)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [#define(CtorRef1, InstanceBody1)].
-    ///
-    /// @param p1 the parameter type
-    /// @param <A1> the parameter type
-    /// @return the fact of the constructor
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public <A1> CtorRef1<Self, A1> declareConstructor(TypeToken<A1> p1) {
-        return declare(UnsafeFacts.ctor(self, p1, traits(MemberTraits.DEFAULT)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [#define(CtorRef2, InstanceBody2)].
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the constructor
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public <A1, A2> CtorRef2<Self, A1, A2> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.ctor(self, p1, p2, traits(MemberTraits.DEFAULT)));
     }
 
     // ------------------------------------------------------------------
@@ -434,8 +262,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <R> the result type
     public <R> void define(MethodRef0<Self, R> method, InstanceBody0<Self, Body<R>, R> body) {
         Slot slot = definable(method);
-        Body<R> root =
-                Body.root("body of method " + method.name(), method.traits().throwsTypes());
+        Body<R> root = Body.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         slot.define(member(slot, root, List.of(), b -> body.build(b, self)));
     }
@@ -448,8 +275,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A1> the parameter type
     public <R, A1> void define(MethodRef1<Self, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
         Slot slot = definable(method);
-        Body<R> root =
-                Body.root("body of method " + method.name(), method.traits().throwsTypes());
+        Body<R> root = Body.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
         slot.define(member(slot, root, List.of(p1), b -> body.build(b, self, p1)));
@@ -464,8 +290,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A2> the second parameter type
     public <R, A1, A2> void define(MethodRef2<Self, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
         Slot slot = definable(method);
-        Body<R> root =
-                Body.root("body of method " + method.name(), method.traits().throwsTypes());
+        Body<R> root = Body.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
@@ -478,8 +303,7 @@ public final class TypedClassBuilder<Self> {
     /// @param body the body, given its block and `this`
     public void define(VoidMethodRef0<Self> method, InstanceBody0<Self, VoidBody, Void> body) {
         Slot slot = definable(method);
-        VoidBody root =
-                VoidBody.root("body of method " + method.name(), method.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         slot.define(member(slot, root, List.of(), b -> body.build(b, self)));
     }
@@ -491,8 +315,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A1> the parameter type
     public <A1> void define(VoidMethodRef1<Self, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
         Slot slot = definable(method);
-        VoidBody root =
-                VoidBody.root("body of method " + method.name(), method.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
         slot.define(member(slot, root, List.of(p1), b -> body.build(b, self, p1)));
@@ -506,8 +329,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A2> the second parameter type
     public <A1, A2> void define(VoidMethodRef2<Self, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         Slot slot = definable(method);
-        VoidBody root =
-                VoidBody.root("body of method " + method.name(), method.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
@@ -521,8 +343,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <R> the result type
     public <R> void define(StaticMethodRef0<R> method, Function<Body<R>, Terminated<R>> body) {
         Slot slot = definable(method);
-        Body<R> root = Body.root(
-                "body of static method " + method.name(), method.traits().throwsTypes());
+        Body<R> root = Body.root("body of static method " + method.name(), declares(method));
         slot.define(member(slot, root, List.of(), body));
     }
 
@@ -534,8 +355,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A1> the parameter type
     public <R, A1> void define(StaticMethodRef1<R, A1> method, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
         Slot slot = definable(method);
-        Body<R> root = Body.root(
-                "body of static method " + method.name(), method.traits().throwsTypes());
+        Body<R> root = Body.root("body of static method " + method.name(), declares(method));
         Var<A1> p1 = Var.param(method.param1(), root);
         slot.define(member(slot, root, List.of(p1), b -> body.apply(b, p1)));
     }
@@ -546,8 +366,7 @@ public final class TypedClassBuilder<Self> {
     /// @param body the body, given its block
     public void define(VoidStaticMethodRef0 method, Function<VoidBody, Terminated<Void>> body) {
         Slot slot = definable(method);
-        VoidBody root = VoidBody.root(
-                "body of static method " + method.name(), method.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of static method " + method.name(), declares(method));
         slot.define(member(slot, root, List.of(), body));
     }
 
@@ -558,8 +377,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A1> the parameter type
     public <A1> void define(VoidStaticMethodRef1<A1> method, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
         Slot slot = definable(method);
-        VoidBody root = VoidBody.root(
-                "body of static method " + method.name(), method.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of static method " + method.name(), declares(method));
         Var<A1> p1 = Var.param(method.param1(), root);
         slot.define(member(slot, root, List.of(p1), b -> body.apply(b, p1)));
     }
@@ -570,7 +388,7 @@ public final class TypedClassBuilder<Self> {
     /// @param body the body, given its block and `this`
     public void define(CtorRef0<Self> ctor, InstanceBody0<Self, VoidBody, Void> body) {
         Slot slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", ctor.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         Expr<Self> self = thisOf(root);
         slot.define(member(slot, root, List.of(), b -> body.build(b, self)));
     }
@@ -582,7 +400,7 @@ public final class TypedClassBuilder<Self> {
     /// @param <A1> the parameter type
     public <A1> void define(CtorRef1<Self, A1> ctor, InstanceBody1<Self, VoidBody, Void, A1> body) {
         Slot slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", ctor.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(ctor.param1(), root);
         slot.define(member(slot, root, List.of(p1), b -> body.build(b, self, p1)));
@@ -596,199 +414,11 @@ public final class TypedClassBuilder<Self> {
     /// @param <A2> the second parameter type
     public <A1, A2> void define(CtorRef2<Self, A1, A2> ctor, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         Slot slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", ctor.traits().throwsTypes());
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         Expr<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(ctor.param1(), root);
         Var<A2> p2 = Var.param(ctor.param2(), root);
         slot.define(member(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2)));
-    }
-
-    // ------------------------------------------------------------------
-    // Declare and define in one call
-    // ------------------------------------------------------------------
-
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param body the body, given its block and `this`
-    /// @param <R> the result type
-    /// @return the fact of the method
-    public <R> MethodRef0<Self, R> method(String name, TypeToken<R> result, InstanceBody0<Self, Body<R>, R> body) {
-        MethodRef0<Self, R> method = declareMethod(name, result);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <R, A1> MethodRef1<Self, R, A1> method(
-            String name, TypeToken<R> result, TypeToken<A1> p1, InstanceBody1<Self, Body<R>, R, A1> body) {
-        MethodRef1<Self, R, A1> method = declareMethod(name, result, p1);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken, TypeToken, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    public <R, A1, A2> MethodRef2<Self, R, A1, A2> method(
-            String name,
-            TypeToken<R> result,
-            TypeToken<A1> p1,
-            TypeToken<A2> p2,
-            InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        MethodRef2<Self, R, A1, A2> method = declareMethod(name, result, p1, p2);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String)].
-    ///
-    /// @param name the method name
-    /// @param body the body, given its block and `this`
-    /// @return the fact of the method
-    public VoidMethodRef0<Self> voidMethod(String name, InstanceBody0<Self, VoidBody, Void> body) {
-        VoidMethodRef0<Self> method = declareVoidMethod(name);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <A1> VoidMethodRef1<Self, A1> voidMethod(
-            String name, TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        VoidMethodRef1<Self, A1> method = declareVoidMethod(name, p1);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String, TypeToken, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    public <A1, A2> VoidMethodRef2<Self, A1, A2> voidMethod(
-            String name, TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        VoidMethodRef2<Self, A1, A2> method = declareVoidMethod(name, p1, p2);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a static method, see [#declareStaticMethod(String, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param body the body, given its block
-    /// @param <R> the result type
-    /// @return the fact of the method
-    public <R> StaticMethodRef0<R> staticMethod(
-            String name, TypeToken<R> result, Function<Body<R>, Terminated<R>> body) {
-        StaticMethodRef0<R> method = declareStaticMethod(name, result);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a static method, see [#declareStaticMethod(String, TypeToken, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param body the body, given its block and the parameter
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <R, A1> StaticMethodRef1<R, A1> staticMethod(
-            String name, TypeToken<R> result, TypeToken<A1> p1, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
-        StaticMethodRef1<R, A1> method = declareStaticMethod(name, result, p1);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a static `void` method, see [#declareVoidStaticMethod(String)].
-    ///
-    /// @param name the method name
-    /// @param body the body, given its block
-    /// @return the fact of the method
-    public VoidStaticMethodRef0 voidStaticMethod(String name, Function<VoidBody, Terminated<Void>> body) {
-        VoidStaticMethodRef0 method = declareVoidStaticMethod(name);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a static `void` method, see [#declareVoidStaticMethod(String, TypeToken)].
-    ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param body the body, given its block and the parameter
-    /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <A1> VoidStaticMethodRef1<A1> voidStaticMethod(
-            String name, TypeToken<A1> p1, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
-        VoidStaticMethodRef1<A1> method = declareVoidStaticMethod(name, p1);
-        define(method, body);
-        return method;
-    }
-
-    /// Declares and defines a constructor, see [#declareConstructor()].
-    ///
-    /// @param body the body, given its block and `this`
-    /// @return the fact of the constructor
-    public CtorRef0<Self> constructor(InstanceBody0<Self, VoidBody, Void> body) {
-        CtorRef0<Self> ctor = declareConstructor();
-        define(ctor, body);
-        return ctor;
-    }
-
-    /// Declares and defines a constructor, see [#declareConstructor(TypeToken)].
-    ///
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @return the fact of the constructor
-    public <A1> CtorRef1<Self, A1> constructor(TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        CtorRef1<Self, A1> ctor = declareConstructor(p1);
-        define(ctor, body);
-        return ctor;
-    }
-
-    /// Declares and defines a constructor, see [#declareConstructor(TypeToken, TypeToken)].
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the constructor
-    public <A1, A2> CtorRef2<Self, A1, A2> constructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        CtorRef2<Self, A1, A2> ctor = declareConstructor(p1, p2);
-        define(ctor, body);
-        return ctor;
     }
 
     // ------------------------------------------------------------------
@@ -802,7 +432,7 @@ public final class TypedClassBuilder<Self> {
     /// @return this builder
     public TypedClassBuilder<Self> add(UnsafeMember member) {
         requireOpen("an unsafe member of " + described);
-        Slot slot = slot(member, null, "an unsafe member");
+        Slot slot = slot(member, "an unsafe member");
         slot.define(member::member);
         return this;
     }
@@ -828,30 +458,41 @@ public final class TypedClassBuilder<Self> {
                     + " is complete, but these declared members are never defined: "
                     + String.join(", ", undefined) + "; define each declared member exactly once");
         }
-        completion.complete = true;
-        completion.methods = registry.table();
+        declaration = new Declaration.Complete(registry.table());
         return slots.stream().map(Slot::member).toList();
     }
 
     // ------------------------------------------------------------------
 
     private void requireOpen(String what) {
-        if (completion.complete) {
-            throw new IllegalStateException("cannot declare or define " + what + ": the declaration of " + described
-                    + " is already complete; declare and define members from its TypedClassSpec only");
+        switch (declaration) {
+            case Declaration.Open _ -> Scopes.requireNoneOpen(what);
+            case Declaration.Complete _ ->
+                throw new IllegalStateException("cannot declare or define " + what + ": the declaration of "
+                        + described + " is already complete; declare and define members from its TypedClassSpec"
+                        + " only");
         }
-        Scopes.requireNoneOpen(what);
     }
 
-    private <F extends Invocable> F declare(F member) {
+    /// Declares a method or constructor of the class.
+    ///
+    /// @param member its fact
+    /// @param thrown the exception classes of its `throws` clause, as its fact has them
+    /// @return the fact, `member`
+    <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown) {
         String what = member.toString();
         requireOpen(what);
-        slot(member, member, what).overrides = registry.member(member);
+        slot(member, member, what, thrown).overrides = registry.member(member);
         return member;
     }
 
-    private Slot slot(Object key, @Nullable Invocable fact, String what) {
-        Slot slot = new Slot(what, fact);
+    /// A member that is no method and no constructor: it has no fact to lower by.
+    private Slot slot(Object key, String what) {
+        return slot(key, null, what, List.of());
+    }
+
+    private Slot slot(Object key, @Nullable Invocable fact, String what, List<ClassToken<? extends Throwable>> thrown) {
+        Slot slot = new Slot(what, fact, thrown);
         slots.add(slot);
         slotsByFact.put(key, slot);
         return slot;
@@ -895,9 +536,8 @@ public final class TypedClassBuilder<Self> {
                     new Param(lowering.declareUpfront(param), param.type().typeRef()));
         }
         CodeBody code = lowering.lowerBlock(root.instrs());
-        List<ClassOrInterfaceTypeRef> throwsClause = fact.traits().throwsTypes().stream()
-                .map(type -> throwsType(lowering, type))
-                .toList();
+        List<ClassOrInterfaceTypeRef> throwsClause =
+                slot.thrown.stream().map(type -> lowering.named(type).typeRef()).toList();
         List<AnnotationUse> annotations = slot.overrides ? List.of(new AnnotationUse(OVERRIDE, List.of())) : List.of();
         return switch (fact.kind()) {
             case CONSTRUCTOR ->
@@ -928,23 +568,25 @@ public final class TypedClassBuilder<Self> {
         };
     }
 
-    /// An exception type of the `throws` clause of a member of this
-    /// class: a class, as [#throwing] takes no other.
-    private static ClassOrInterfaceTypeRef throwsType(Lowering lowering, RefToken<? extends Throwable> type) {
-        return switch (type) {
-            case DeclaredToken<? extends Throwable> declared ->
-                lowering.named(declared).typeRef();
-            default -> throw new IllegalStateException("not an exception class: " + type);
-        };
+    /// The `throws` clause of a member, as the scope of its body.
+    private static ExceptionScope.Declares declares(Invocable member) {
+        return new ExceptionScope.Declares(
+                switch (member.kind()) {
+                    case CONSTRUCTOR -> ExceptionScope.Boundary.CONSTRUCTOR;
+                    case INSTANCE_METHOD, STATIC_METHOD -> ExceptionScope.Boundary.METHOD;
+                },
+                ExceptionType.ofAll(member.traits().throwsTypes()));
     }
 
-    /// What the builders of one class share that changes: whether the
-    /// declaration is complete, and the methods of the class once it is.
-    private static final class Completion {
-        @Nullable
-        MethodTable methods;
+    /// Whether the class is still being declared.
+    private sealed interface Declaration {
+        /// Members are being declared and defined.
+        record Open() implements Declaration {}
 
-        boolean complete;
+        /// The declaration is complete.
+        ///
+        /// @param methods the methods of the class
+        record Complete(MethodTable methods) implements Declaration {}
     }
 
     /// A declared member, defined or not yet.
@@ -952,15 +594,19 @@ public final class TypedClassBuilder<Self> {
         final String what;
         final @Nullable Invocable fact;
 
+        /// The exception classes of the `throws` clause of a method or constructor.
+        final List<ClassToken<? extends Throwable>> thrown;
+
         /// The lowering of the member, once it is defined.
         @Nullable
         Supplier<ClassMember> member;
 
         boolean overrides;
 
-        Slot(String what, @Nullable Invocable fact) {
+        Slot(String what, @Nullable Invocable fact, List<ClassToken<? extends Throwable>> thrown) {
             this.what = what;
             this.fact = fact;
+            this.thrown = thrown;
         }
 
         Invocable fact() {

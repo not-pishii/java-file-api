@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.TypeToken;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -107,8 +108,9 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return parent == null ? what : what + " in " + parent.path();
     }
 
+    /// The statements of this block so far, as a view.
     final List<Instr> instrs() {
-        return List.copyOf(instrs);
+        return Collections.unmodifiableList(instrs);
     }
 
     final void requireOpen() {
@@ -474,20 +476,21 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param exception the thrown expression
     /// @return the proof that this block ended
     /// @throws IllegalStateException if the exception is checked and neither caught nor declared
+    /// @throws IllegalArgumentException if the type of `exception` is neither a class nor a type variable,
+    ///     which only an expression of `Unsafe` can be
     public final Terminated<R> throw_(Expr<? extends Throwable> exception) {
-        return appendFinal(new Instr.Throw(exception.node(), exception.type()), "throw_");
+        return appendFinal(new Instr.Throw(exception.node(), ExceptionType.of(exception.type())), "throw_");
     }
 
     /// Appends `try { body } catch ... finally ...` as a statement. It must
     /// complete normally; if the `try` block and every `catch` end, use
-    /// [#tryTerminated(Function, Consumer)], which ends this block.
+    /// [#tryTerminated(Consumer, Function)], which ends this block.
     ///
-    /// **`handlers` is run before `body`.** What a statement of the `try`
-    /// block may throw depends on the `catch` clauses around it, and a
-    /// statement is checked when it is built: so the clauses are built
-    /// first, and a call in `body` that throws a checked exception no
-    /// clause catches fails right there. The rendered code is in the order
-    /// of Java, whatever the order of building.
+    /// **The handlers come first**, as they are built first: what a
+    /// statement of the `try` block may throw depends on the `catch`
+    /// clauses around it, and a statement is checked when it is built, so a
+    /// call in `body` that throws a checked exception no clause catches
+    /// fails right there. The rendered code is in the order of Java.
     ///
     /// A `catch_` is rejected if it can catch nothing: when it is added, if
     /// a preceding `catch_` has its type or a superclass of it; once `body`
@@ -495,19 +498,19 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// and `Throwable` — that the `try` block cannot throw, or of which the
     /// preceding clauses leave nothing (JLS 11.2.3).
     ///
-    /// @param body builds the `try` block
     /// @param handlers adds `catch` clauses and the `finally` block
+    /// @param body builds the `try` block
     /// @return this block
-    /// @throws IllegalArgumentException if `handlers` adds neither a `catch` nor a `finally`
-    /// @throws IllegalStateException if the statement cannot complete normally, or a `catch_` can catch
-    ///     nothing
-    public final B try_(Consumer<? super B> body, Consumer<? super Handlers<B>> handlers) {
+    /// @throws IllegalStateException if `handlers` adds neither a `catch` nor a `finally`, if the
+    ///     statement cannot complete normally, or if a `catch_` can catch nothing
+    public final B try_(Consumer<? super Handlers<B>> handlers, Consumer<? super B> body) {
         requireOpen();
         Handlers<B> collected = new Handlers<>(self());
         handlers.accept(collected);
-        B bodyBlock = open("try block of try_", collected.clauses().scope(), body);
+        TryClauses clauses = collected.close();
+        B bodyBlock = open("try block of try_", clauses.scope(), body);
         return continueWith(
-                collected.clauses().toInstr(bodyBlock),
+                clauses.statement(bodyBlock),
                 "try_ whose try block and every catch_ end, or whose finally_ ends,",
                 "build it with tryTerminated, which returns the Terminated of this block");
     }
@@ -516,21 +519,22 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// every `catch` block end, and so ends this block. The `finally` block,
     /// if any, is a plain block.
     ///
-    /// As with [#try_(Consumer, Consumer)], `handlers` is run before `body`,
-    /// and a `catch_` that can catch nothing is rejected.
+    /// As with [#try_(Consumer, Consumer)], the handlers come first and are
+    /// built first, and a `catch_` that can catch nothing is rejected.
     ///
-    /// @param body builds the `try` block, which must end
     /// @param handlers adds `catch` clauses, each of which must end, and the `finally` block
+    /// @param body builds the `try` block, which must end
     /// @return the proof that this block ended
-    /// @throws IllegalArgumentException if `handlers` adds neither a `catch` nor a `finally`
-    /// @throws IllegalStateException if a `catch_` can catch nothing
+    /// @throws IllegalStateException if `handlers` adds neither a `catch` nor a `finally`, or if a
+    ///     `catch_` can catch nothing
     public final Terminated<R> tryTerminated(
-            Function<? super B, Terminated<R>> body, Consumer<? super TerminatedHandlers<R, B>> handlers) {
+            Consumer<? super TerminatedHandlers<R, B>> handlers, Function<? super B, Terminated<R>> body) {
         requireOpen();
         TerminatedHandlers<R, B> collected = new TerminatedHandlers<>(self());
         handlers.accept(collected);
-        B bodyBlock = closed("try block of tryTerminated", collected.clauses().scope(), body);
-        return appendFinal(collected.clauses().toInstr(bodyBlock), "tryTerminated");
+        TryClauses clauses = collected.close();
+        B bodyBlock = closed("try block of tryTerminated", clauses.scope(), body);
+        return appendFinal(clauses.statement(bodyBlock), "tryTerminated");
     }
 
     /// Appends an untyped core statement. Its reachability is the author's

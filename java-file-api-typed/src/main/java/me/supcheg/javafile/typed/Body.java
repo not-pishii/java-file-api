@@ -18,22 +18,23 @@ public final class Body<R> extends Block<R, Body<R>> {
         super(parent, lambdaBoundary, what, exceptionScope);
     }
 
-    /// The body of a member that declares no exception: the root of a scope tree.
+    /// The body of a method that declares no exception: the root of a scope tree.
     static <R> Body<R> root(String what) {
-        return root(what, List.of());
+        return root(what, new ExceptionScope.Declares(ExceptionScope.Boundary.METHOD, List.of()));
     }
 
     /// The body of a member: the root of a scope tree.
     ///
     /// @param what the member, for diagnostics
-    /// @param declared the exception types of the `throws` clause of the member
-    static <R> Body<R> root(String what, List<RefToken<? extends Throwable>> declared) {
-        return new Body<>(null, false, what, new ExceptionScope.Declares(declared, VoidBody.DECLARE_ON_MEMBER));
+    /// @param declares the `throws` clause of the member
+    static <R> Body<R> root(String what, ExceptionScope.Declares declares) {
+        return new Body<>(null, false, what, declares);
     }
 
     /// The block body of a lambda of the generated code, nested in
     /// `enclosing`: a lambda boundary (§6.2), which a [MutVar] or [LoopCtl]
-    /// of `enclosing` does not cross.
+    /// of `enclosing` does not cross. The method of its functional
+    /// interface declares no exception.
     static <R> Body<R> lambdaBody(Block<?, ?> enclosing) {
         return lambdaBody(enclosing, List.of());
     }
@@ -44,9 +45,12 @@ public final class Body<R> extends Block<R, Body<R>> {
     ///
     /// @param enclosing the block the lambda is built in
     /// @param declared the exception types of the `throws` clause of the functional interface's method
-    static <R> Body<R> lambdaBody(Block<?, ?> enclosing, List<RefToken<? extends Throwable>> declared) {
+    static <R> Body<R> lambdaBody(Block<?, ?> enclosing, List<? extends RefToken<? extends Throwable>> declared) {
         return new Body<>(
-                enclosing, true, "lambda body", new ExceptionScope.Declares(declared, VoidBody.CATCH_IN_LAMBDA));
+                enclosing,
+                true,
+                "lambda body",
+                new ExceptionScope.Declares(ExceptionScope.Boundary.LAMBDA, ExceptionType.ofAll(declared)));
     }
 
     @Override
