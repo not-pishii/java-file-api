@@ -1,10 +1,12 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
 
 import java.lang.constant.ClassDesc;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /// The member signatures of a class being declared (§6.5, §9.7): rejects,
 /// when the member is declared, what javac would reject in the rendered
@@ -31,6 +34,9 @@ import java.util.function.Predicate;
 ///   (`getClass`, `notify`, `notifyAll`, `wait`; JLS 8.4.3.3);
 /// - an instance method that overrides a method of `Object` with an
 ///   incompatible return type, e.g. `int toString()` (JLS 8.4.8.3);
+/// - an instance method that overrides a method of `Object` and declares a
+///   checked exception the overridden method does not, e.g. `String
+///   toString() throws IOException` (JLS 8.4.8.3);
 /// - a `static` method with the signature of an instance method of `Object`,
 ///   which it cannot hide (JLS 8.4.8.2).
 ///
@@ -51,10 +57,12 @@ final class SignatureRegistry {
                     r -> r.map(t -> t.erasure().equals(ConstantDescs.CD_String)).orElse(false),
                     "toString"),
             Inherited.overridable(
-                    "a reference type",
-                    r -> r.map(t -> !(t instanceof PrimitiveToken<?, ?, ?>)).orElse(false),
-                    "clone"),
-            Inherited.overridable("void", Optional::isEmpty, "finalize"));
+                            "a reference type",
+                            r -> r.map(t -> !(t instanceof PrimitiveToken<?, ?, ?>))
+                                    .orElse(false),
+                            "clone")
+                    .throwing(ClassDesc.of("java.lang.CloneNotSupportedException")),
+            Inherited.overridable("void", Optional::isEmpty, "finalize").throwing(ConstantDescs.CD_Throwable));
 
     private final String owner;
     private final Map<MethodSignature, Invocable> methods = new LinkedHashMap<>();
@@ -124,6 +132,21 @@ final class SignatureRegistry {
                         + signature + " of java.lang.Object, whose result is " + inherited.describedReturn()
                         + ": the return types are incompatible (JLS 8.4.8.3)");
             }
+            member.traits().throwsTypes().stream()
+                    .filter(Exceptions::isChecked)
+                    .filter(thrown -> !inherited.declares(thrown))
+                    .findFirst()
+                    .ifPresent(thrown -> {
+                        throw new IllegalArgumentException("the method " + member + " of " + owner + " overrides "
+                                + signature + " of java.lang.Object, which declares "
+                                + (inherited.throwsTypes().isEmpty()
+                                        ? "no exception"
+                                        : inherited.throwsTypes().stream()
+                                                .map(ClassDesc::displayName)
+                                                .collect(Collectors.joining(", ")))
+                                + ": an override cannot declare the checked exception " + thrown
+                                + " (JLS 8.4.8.3)");
+                    });
             return true;
         }
         return false;
@@ -158,19 +181,32 @@ final class SignatureRegistry {
     /// @param isFinal whether it is `final`
     /// @param describedReturn the return type an override needs, for messages
     /// @param returns whether an override's result type is compatible
+    /// @param throwsTypes the classes of its `throws` clause: an override declares no checked exception
+    ///     that is not one of them or a subclass of one
     private record Inherited(
             MethodSignature signature,
             boolean isFinal,
             String describedReturn,
-            Predicate<Optional<TypeToken<?>>> returns) {
+            Predicate<Optional<TypeToken<?>>> returns,
+            List<ClassDesc> throwsTypes) {
 
         static Inherited final_(String name, ClassDesc... params) {
-            return new Inherited(new MethodSignature(name, List.of(params)), true, "", _ -> false);
+            return new Inherited(new MethodSignature(name, List.of(params)), true, "", _ -> false, List.of());
         }
 
         static Inherited overridable(
                 String describedReturn, Predicate<Optional<TypeToken<?>>> returns, String name, ClassDesc... params) {
-            return new Inherited(new MethodSignature(name, List.of(params)), false, describedReturn, returns);
+            return new Inherited(
+                    new MethodSignature(name, List.of(params)), false, describedReturn, returns, List.of());
+        }
+
+        Inherited throwing(ClassDesc... throwsTypes) {
+            return new Inherited(signature, isFinal, describedReturn, returns, List.of(throwsTypes));
+        }
+
+        /// Whether the `throws` clause covers `thrown`: it is a class of the clause or a subclass of one.
+        boolean declares(RefToken<?> thrown) {
+            return thrown instanceof ClassToken<?> cls && throwsTypes.stream().anyMatch(cls::isSubclassOf);
         }
     }
 }

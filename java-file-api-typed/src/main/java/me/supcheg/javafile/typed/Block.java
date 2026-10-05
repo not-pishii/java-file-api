@@ -42,6 +42,16 @@ import java.util.function.Function;
 /// and a loop body that could never run (`while_` over a constant `false`)
 /// is rejected.
 ///
+/// **Checked exceptions (JLS 11.2.3).** A statement that can throw a checked
+/// exception — a call of a method or constructor whose fact declares one,
+/// a `throw_` of one — is accepted only where the exception is caught by a
+/// `catch_` of an enclosing `try_`/`tryTerminated`, or declared by the
+/// member the body belongs to ([TypedClassBuilder#throwing]); anywhere else
+/// appending it fails, at that statement. A `catch_` covers the subclasses
+/// of its type, unchecked exceptions are not tracked, and a `catch_` of a
+/// checked exception its `try` block cannot throw is rejected as javac
+/// rejects it. See [Exceptions].
+///
 /// Only the innermost block being built accepts statements; using the
 /// builder of an enclosing block inside a nested block or lambda fails fast.
 ///
@@ -55,19 +65,32 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     private final @Nullable Block<?, ?> parent;
     private final boolean lambdaBoundary;
     private final String what;
+    private final ExceptionScope exceptionScope;
     private final List<Instr> instrs = new ArrayList<>();
     private @Nullable String endedBy;
 
-    Block(@Nullable Block<?, ?> parent, boolean lambdaBoundary, String what) {
+    Block(@Nullable Block<?, ?> parent, boolean lambdaBoundary, String what, ExceptionScope exceptionScope) {
         this.parent = parent;
         this.lambdaBoundary = lambdaBoundary;
         this.what = what;
+        this.exceptionScope = exceptionScope;
     }
 
     abstract B self();
 
     /// Creates a block nested in this one, of the same kind.
-    abstract B child(String what);
+    abstract B child(String what, ExceptionScope exceptionScope);
+
+    /// Creates a block nested in this one, of the same kind, that hands
+    /// the exceptions thrown in it to this one.
+    final B child(String what) {
+        return child(what, ExceptionScope.PASSES);
+    }
+
+    /// What becomes of a checked exception thrown in this block.
+    final ExceptionScope exceptionScope() {
+        return exceptionScope;
+    }
 
     /// The block this one is nested in, or `null` for the body of a member.
     final @Nullable Block<?, ?> parent() {
@@ -100,6 +123,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     final B append(Instr instr) {
         requireOpen();
         ScopeCheck.check(instr, this);
+        Exceptions.check(instr, this);
         instrs.add(instr);
         return self();
     }
@@ -109,6 +133,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     private B continueWith(Instr instr, String form, String hint) {
         requireOpen();
         ScopeCheck.check(instr, this);
+        Exceptions.check(instr, this);
         if (!Reachability.canCompleteNormally(instr)) {
             throw new IllegalStateException(form + " in the " + path()
                     + " cannot complete normally, so a statement after it would be unreachable (JLS 14.22); "
@@ -143,13 +168,21 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     }
 
     private B open(String what, Consumer<? super B> spec) {
-        B child = child(what);
+        return open(what, ExceptionScope.PASSES, spec);
+    }
+
+    private B open(String what, ExceptionScope exceptionScope, Consumer<? super B> spec) {
+        B child = child(what, exceptionScope);
         fill(child, spec);
         return child;
     }
 
     private B closed(String what, Function<? super B, Terminated<R>> spec) {
-        B child = child(what);
+        return closed(what, ExceptionScope.PASSES, spec);
+    }
+
+    private B closed(String what, ExceptionScope exceptionScope, Function<? super B, Terminated<R>> spec) {
+        B child = child(what, exceptionScope);
         fillEnding(child, spec);
         return child;
     }
@@ -431,11 +464,16 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return appendFinal(new Instr.Continue(ctl), "continue_");
     }
 
-    /// Appends `throw exception;` and ends this block. Lowering checks that
-    /// a checked exception is caught or declared.
+    /// Appends `throw exception;` and ends this block. A checked exception —
+    /// by the static type of `exception` — must be caught by a `catch_` of
+    /// an enclosing `try_` or declared by the member
+    /// ([TypedClassBuilder#throwing]). A caught exception that is rethrown
+    /// is thrown at the type of its `catch_`: there is no precise rethrow
+    /// (JLS 11.2.2).
     ///
     /// @param exception the thrown expression
     /// @return the proof that this block ended
+    /// @throws IllegalStateException if the exception is checked and neither caught nor declared
     public final Terminated<R> throw_(Expr<? extends Throwable> exception) {
         return appendFinal(new Instr.Throw(exception.node(), exception.type()), "throw_");
     }
@@ -444,18 +482,32 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// complete normally; if the `try` block and every `catch` end, use
     /// [#tryTerminated(Function, Consumer)], which ends this block.
     ///
+    /// **`handlers` is run before `body`.** What a statement of the `try`
+    /// block may throw depends on the `catch` clauses around it, and a
+    /// statement is checked when it is built: so the clauses are built
+    /// first, and a call in `body` that throws a checked exception no
+    /// clause catches fails right there. The rendered code is in the order
+    /// of Java, whatever the order of building.
+    ///
+    /// A `catch_` is rejected if it can catch nothing: when it is added, if
+    /// a preceding `catch_` has its type or a superclass of it; once `body`
+    /// is built, if its type is a checked exception — other than `Exception`
+    /// and `Throwable` — that the `try` block cannot throw, or of which the
+    /// preceding clauses leave nothing (JLS 11.2.3).
+    ///
     /// @param body builds the `try` block
     /// @param handlers adds `catch` clauses and the `finally` block
     /// @return this block
     /// @throws IllegalArgumentException if `handlers` adds neither a `catch` nor a `finally`
-    /// @throws IllegalStateException if the statement cannot complete normally
+    /// @throws IllegalStateException if the statement cannot complete normally, or a `catch_` can catch
+    ///     nothing
     public final B try_(Consumer<? super B> body, Consumer<? super Handlers<B>> handlers) {
         requireOpen();
-        B bodyBlock = open("try block of try_", body);
         Handlers<B> collected = new Handlers<>(self());
         handlers.accept(collected);
+        B bodyBlock = open("try block of try_", collected.clauses().scope(), body);
         return continueWith(
-                collected.toInstr(bodyBlock),
+                collected.clauses().toInstr(bodyBlock),
                 "try_ whose try block and every catch_ end, or whose finally_ ends,",
                 "build it with tryTerminated, which returns the Terminated of this block");
     }
@@ -464,21 +516,28 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// every `catch` block end, and so ends this block. The `finally` block,
     /// if any, is a plain block.
     ///
+    /// As with [#try_(Consumer, Consumer)], `handlers` is run before `body`,
+    /// and a `catch_` that can catch nothing is rejected.
+    ///
     /// @param body builds the `try` block, which must end
     /// @param handlers adds `catch` clauses, each of which must end, and the `finally` block
     /// @return the proof that this block ended
     /// @throws IllegalArgumentException if `handlers` adds neither a `catch` nor a `finally`
+    /// @throws IllegalStateException if a `catch_` can catch nothing
     public final Terminated<R> tryTerminated(
             Function<? super B, Terminated<R>> body, Consumer<? super TerminatedHandlers<R, B>> handlers) {
         requireOpen();
-        B bodyBlock = closed("try block of tryTerminated", body);
         TerminatedHandlers<R, B> collected = new TerminatedHandlers<>(self());
         handlers.accept(collected);
-        return appendFinal(collected.toInstr(bodyBlock), "tryTerminated");
+        B bodyBlock = closed("try block of tryTerminated", collected.clauses().scope(), body);
+        return appendFinal(collected.clauses().toInstr(bodyBlock), "tryTerminated");
     }
 
     /// Appends an untyped core statement. Its reachability is the author's
-    /// responsibility; it is assumed to complete normally.
+    /// responsibility; it is assumed to complete normally. So are the
+    /// checked exceptions it throws: none of them is checked, and the
+    /// `catch_` clauses of a `try_` whose `try` block holds the statement
+    /// are not checked against what the block throws.
     ///
     /// @param stmt the statement, from [Unsafe#stmt(me.supcheg.javafile.code.Stmt)]
     /// @return this block

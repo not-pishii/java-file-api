@@ -1,40 +1,40 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
-import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /// Collects the `catch` clauses, each of which must end, and the optional
 /// `finally` block of a [Block#tryTerminated(java.util.function.Function, Consumer)].
+/// They are built before the `try` block, which is checked against them: a
+/// checked exception thrown in it must be of a clause here, or caught or
+/// declared further out.
 ///
 /// @param <R> the result type of the enclosing method or lambda
 /// @param <B> the block type of the `try`/`catch`/`finally` bodies
 public final class TerminatedHandlers<R, B extends Block<R, B>> {
     private final B enclosing;
-    private final List<Instr.Catch> catches = new ArrayList<>();
-    private @Nullable B finallyBlock;
+    private final CatchClauses<B> clauses;
 
     TerminatedHandlers(B enclosing) {
         this.enclosing = enclosing;
+        this.clauses = new CatchClauses<>("tryTerminated", enclosing);
     }
 
-    /// Adds `catch (Type v) { body }` whose block ends.
+    /// Adds `catch (Type v) { body }` whose block ends. The clause catches
+    /// `type` and its subclasses; an exception thrown in `body` — the caught
+    /// one rethrown too — is one of the code around the `try`.
     ///
     /// @param type the caught exception type
     /// @param body builds the `catch` block, given the binding; it must end
     /// @param <E> the caught exception type
     /// @return this
+    /// @throws IllegalStateException if a clause added before catches `type` or a superclass of it, so
+    ///     that this one would catch nothing (JLS 11.2.3)
     public <E extends Throwable> TerminatedHandlers<R, B> catch_(
             ClassToken<E> type, BiFunction<? super B, ? super Var<E>, Terminated<R>> body) {
-        B block = enclosing.child("catch block of tryTerminated");
-        Var<E> binding = new Var<>(type, "caught exception", block);
-        enclosing.fillEnding(block, b -> body.apply(b, binding));
-        catches.add(new Instr.Catch(type, binding, block));
+        clauses.catch_(type, (block, binding) -> enclosing.fillEnding(block, b -> body.apply(b, binding)));
         return this;
     }
 
@@ -45,19 +45,11 @@ public final class TerminatedHandlers<R, B extends Block<R, B>> {
     /// @return this
     /// @throws IllegalStateException if a `finally` block was already added
     public TerminatedHandlers<R, B> finally_(Consumer<? super B> body) {
-        if (finallyBlock != null) {
-            throw new IllegalStateException("tryTerminated already has a finally_ block");
-        }
-        B block = enclosing.child("finally block of tryTerminated");
-        enclosing.fill(block, body);
-        finallyBlock = block;
+        clauses.finally_(block -> enclosing.fill(block, body));
         return this;
     }
 
-    Instr.Try toInstr(Block<?, ?> body) {
-        if (catches.isEmpty() && finallyBlock == null) {
-            throw new IllegalArgumentException("tryTerminated requires at least one catch_ or a finally_");
-        }
-        return new Instr.Try(body, List.copyOf(catches), Optional.ofNullable(finallyBlock));
+    CatchClauses<B> clauses() {
+        return clauses;
     }
 }

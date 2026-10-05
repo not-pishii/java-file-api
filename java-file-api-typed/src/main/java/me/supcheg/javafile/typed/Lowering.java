@@ -69,9 +69,11 @@ import java.util.stream.Stream;
 /// [Expr]/[Stmt].
 ///
 /// Residual semantic checks that Java's type system cannot express (§9 —
-/// checked-exception coverage, switch exhaustiveness, `implement`
-/// completeness, modifier validity) are the responsibility of the
-/// declaration layer that calls into this class, not of this class itself;
+/// switch exhaustiveness, `implement` completeness, modifier validity) are
+/// the responsibility of the declaration layer that calls into this class,
+/// not of this class itself; that a checked exception is caught or declared
+/// (§9.1) is checked before lowering, where each statement is built
+/// ([Exceptions]);
 /// this class performs the structural checks that are intrinsic to lowering
 /// itself: a variable must be in scope where it is referenced (enforced by
 /// the scope stack of [NameEnv]) and `break`/`continue` must target a loop
@@ -196,6 +198,18 @@ final class Lowering {
     private String declare(Var<?> var) {
         target.verify(var.type());
         return names.declare(var);
+    }
+
+    /// A type the lowered code names outside of any statement, e.g. in a
+    /// `throws` clause: verified as every other.
+    ///
+    /// @param type the type
+    /// @param <T> the kind of token
+    /// @return `type`
+    /// @throws TargetClasspathMismatchException if a metamodel of `type` does not hold on the target classpath
+    <T extends TypeToken<?>> T named(T type) {
+        target.verify(type);
+        return type;
     }
 
     /// Lowers a single expression outside statement context.
