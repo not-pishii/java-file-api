@@ -649,7 +649,7 @@ final class MetamodelEmitter {
     /// pieces of a line that is itself too long.
     private static Expr text(Canonical canonical) {
         List<Expr> parts = parts(canonical.text(), TEXT_PART).stream()
-                .<Expr>map(Exprs::literal)
+                .<Expr>map(Exprs::textBlock)
                 .toList();
         if (parts.size() == 1) {
             return parts.getFirst();
