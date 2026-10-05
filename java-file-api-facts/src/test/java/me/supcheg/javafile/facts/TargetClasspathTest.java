@@ -3,7 +3,6 @@ package me.supcheg.javafile.facts;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.TargetType.Difference;
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.type.TypeParam;
 import org.junit.jupiter.api.Test;
 
@@ -113,16 +112,26 @@ class TargetClasspathTest {
         Asked asked = new Asked(Map.of());
         TargetClasspath target = UnsafeFacts.targetClasspath(asked);
 
+        FinalClassToken<Object> madeByHand = UnsafeFacts.finalClassToken(UnsafeFacts.shape(
+                DeclaredKind.FINAL_CLASS,
+                ClassDesc.of("p", "ByHand"),
+                List.of(),
+                List.of(ConstantDescs.CD_Object),
+                Supertypes.NONE,
+                MethodTableTemplate.EMPTY,
+                List.of(),
+                false));
+
         // made by hand, built in, of no declared type at all
-        target.verify(String_.TOKEN);
+        target.verify(madeByHand);
         target.verify(PrimitiveToken.INT.boxed());
         target.verify(PrimitiveToken.INT);
         target.verify(PrimitiveToken.INT.array());
         target.verify(UnsafeFacts.typeVarToken(me.supcheg.javafile.type.Types.typeVar("T"), ConstantDescs.CD_Object));
 
         assertThat(asked.shapes()).isEmpty();
-        assertThat(target.methods(String_.TOKEN.shape()))
-                .isSameAs(String_.TOKEN.shape().methods());
+        assertThat(target.methods(madeByHand.shape()))
+                .isSameAs(madeByHand.shape().methods());
     }
 
     @Test

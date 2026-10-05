@@ -1,9 +1,9 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.facts.jdk.String_;
 import me.supcheg.javafile.facts.source.MemberKind;
 import me.supcheg.javafile.facts.source.MemberQuery;
 import me.supcheg.javafile.facts.source.Resolution;
+import me.supcheg.javafile.facts.testfacts.java.lang.String_;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
