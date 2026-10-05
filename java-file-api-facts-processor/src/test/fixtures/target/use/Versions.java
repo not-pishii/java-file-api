@@ -174,12 +174,38 @@ public final class Versions {
         assertThat(applied(typed, taken)).isEqualTo("taken");
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> rendered(typed.against("removed-interface"), taken))
-                .withMessageContaining(
+                .withMessageStartingWith(
                         """
-                          changed: interfaces
-                            generated against: p.Marker
-                            target: -
-                        """);
+                        metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath:
+                          missing: interface p.Marker
+                        The generator""");
+    }
+
+    public static void anInterfaceThatIsImplementedBesideLeavesTheMetamodelToHold(Typed typed) {
+        Function<Expr<String>, Expr<String>> taken = s -> staticCall(Lib_.take_Marker, new_(Svc_.new_));
+        Typed added = typed.against("added-interface");
+
+        // a Svc is a Marker there as it was: what it is besides takes nothing of the metamodel away
+        assertThat(added.verified(String_.TOKEN, String_.TOKEN, taken)).contains("p.Svc: changed");
+        assertThat(applied(added, taken)).isEqualTo("taken");
+        assertThat(applied(added, Versions::m)).isEqualTo("m(String) a");
+    }
+
+    public static void anOverloadOfAnInterfaceThatIsImplementedBesideIsACandidateOfTheVersion(Typed typed) {
+        Typed added = typed.against("added-interface");
+
+        // the interface has a default only(String), which javac would choose for a String
+        assertThat(rendered(typed, Versions::only)).contains("new Svc().only(v0)");
+        assertThat(rendered(added, Versions::only)).contains("new Svc().only((Object) v0)");
+        assertThat(applied(added, Versions::only)).isEqualTo("only(Object) a");
+    }
+
+    public static void anInterfaceThatIsNowThatOfAnInterfaceTheTypeImplementsIsThereAsBefore(Typed typed) {
+        Function<Expr<String>, Expr<String>> taken = s -> staticCall(Lib_.take_Marker, new_(Svc_.new_));
+        Typed inherited = typed.against("inherited-interface");
+
+        assertThat(inherited.verified(String_.TOKEN, String_.TOKEN, taken)).contains("p.Svc: changed");
+        assertThat(applied(inherited, taken)).isEqualTo("taken");
     }
 
     public static void aConstantOfAnotherValueIsAChangedField(Typed typed) {

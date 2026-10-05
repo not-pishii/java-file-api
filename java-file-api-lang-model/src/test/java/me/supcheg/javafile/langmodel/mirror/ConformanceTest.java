@@ -322,26 +322,117 @@ class ConformanceTest {
                     "  generated against: java.lang.Object",
                     "  target: p.Base; java.lang.Object"),
             full(
+                    "a superclass is put between the type and its superclass",
+                    List.of("package p; public class T extends Base {}", BASE),
+                    List.of(
+                            "package p; public class T extends Mid {}",
+                            "package p; public class Mid extends Base {}",
+                            BASE),
+                    "changed: superclasses",
+                    "  generated against: p.Base; java.lang.Object",
+                    "  target: p.Mid; p.Base; java.lang.Object"),
+            // ---- the supertypes: those of the metamodel are among those of the type
+            full(
                     "an interface without type arguments is no longer implemented",
                     List.of("package p; public class T implements Marker {}", MARKER),
                     List.of("package p; public class T {}", MARKER),
-                    "changed: interfaces",
-                    "  generated against: p.Marker",
-                    "  target: -"),
+                    "missing: interface p.Marker"),
             full(
                     "an interface is implemented",
                     List.of("package p; public class T {}", MARKER),
                     List.of("package p; public class T implements Marker {}", MARKER),
-                    "changed: interfaces",
-                    "  generated against: -",
-                    "  target: p.Marker"),
+                    CHANGED),
             full(
-                    "the type argument of a supertype",
+                    "an interface with type arguments is implemented",
+                    "package p; public abstract class T {}",
+                    "package p; public abstract class T implements Comparable<T> {}",
+                    CHANGED),
+            full(
+                    "an interface is implemented beside another",
+                    List.of("package p; public class T implements Marker {}", MARKER),
+                    List.of("package p; public class T implements Marker, java.io.Serializable {}", MARKER),
+                    CHANGED),
+            full(
+                    "an interface is implemented instead of another",
+                    List.of("package p; public class T implements Marker {}", MARKER),
+                    List.of("package p; public class T implements java.io.Serializable {}", MARKER),
+                    "missing: interface p.Marker"),
+            full(
+                    "an interface the type implemented itself is that of another interface it implements",
+                    List.of("package p; public class T implements Marker {}", MARKER),
+                    List.of(
+                            "package p; public class T implements Sub {}",
+                            "package p; public interface Sub extends Marker {}",
+                            MARKER),
+                    CHANGED),
+            full(
+                    "an interface the type implemented itself is that of its superclass",
+                    List.of("package p; public class T extends Base implements Marker {}", BASE, MARKER),
+                    List.of(
+                            "package p; public class T extends Base {}",
+                            "package p; public class Base implements Marker { public void inherited() {} }",
+                            MARKER),
+                    UNCHANGED),
+            full(
+                    "an interface of an interface the type implements is no longer one of it",
+                    List.of(
+                            "package p; public class T implements Sub {}",
+                            "package p; public interface Sub extends Marker {}",
+                            MARKER),
+                    List.of(
+                            "package p; public class T implements Sub {}",
+                            "package p; public interface Sub {}",
+                            MARKER),
+                    "missing: interface p.Marker"),
+            full(
+                    "the type argument of an interface",
                     "package p; public abstract class T implements java.util.function.Supplier<String> {}",
                     "package p; public abstract class T implements java.util.function.Supplier<Object> {}",
-                    "changed: supertypes",
-                    "  generated against: java.util.function.Supplier<java.lang.String>",
-                    "  target: java.util.function.Supplier<java.lang.Object>"),
+                    "changed: supertype java.util.function.Supplier<java.lang.String>",
+                    "  found: java.util.function.Supplier<java.lang.Object>"),
+            full(
+                    "the type argument of an interface, of a type with type parameters",
+                    "package p; public abstract class T<E> implements java.util.Map<E, java.util.List<E>> {}",
+                    "package p; public abstract class T<E> implements java.util.Map<E, java.util.Set<E>> {}",
+                    "changed: supertype java.util.Map<#0, java.util.List<#0>>",
+                    "  found: java.util.Map<#0, java.util.Set<#0>>"),
+            full(
+                    "an interface is implemented without its type arguments",
+                    "package p; public abstract class T implements java.util.function.Supplier<String> {}",
+                    "package p; @SuppressWarnings(\"rawtypes\")"
+                            + " public abstract class T implements java.util.function.Supplier {}",
+                    "changed: supertype java.util.function.Supplier<java.lang.String>",
+                    "  found: java.util.function.Supplier"),
+            full(
+                    "an interface with type arguments is no longer implemented",
+                    "package p; public abstract class T implements java.util.function.Supplier<String> {}",
+                    "package p; public abstract class T {}",
+                    "missing: interface java.util.function.Supplier"),
+            full(
+                    "the type argument of the superclass",
+                    List.of("package p; public class T extends Of<String> {}", "package p; public class Of<E> {}"),
+                    List.of("package p; public class T extends Of<Object> {}", "package p; public class Of<E> {}"),
+                    "changed: supertype p.Of<java.lang.String>",
+                    "  found: p.Of<java.lang.Object>"),
+            full(
+                    "the superclass with type arguments is no longer one, and its interface with it",
+                    List.of(
+                            "package p; public class T extends Of<String> {}",
+                            "package p; public abstract class Of<E> implements Comparable<E> {"
+                                    + " public int compareTo(E e) { return 0; } }"),
+                    List.of(
+                            "package p; public class T {}",
+                            "package p; public abstract class Of<E> implements Comparable<E> {"
+                                    + " public int compareTo(E e) { return 0; } }"),
+                    "changed: superclasses",
+                    "  generated against: p.Of; java.lang.Object",
+                    "  target: java.lang.Object",
+                    "missing: interface java.lang.Comparable"),
+            full(
+                    "an enum implements an interface",
+                    List.of(ENUM, MARKER),
+                    List.of("package p; public enum T implements Marker { A, B }", MARKER),
+                    CHANGED),
             full(
                     "an enum constant is added",
                     ENUM,
@@ -377,6 +468,18 @@ class ConformanceTest {
                     "  found: method abstract m() -> java.lang.Object throws -",
                     "changed: sam m() -> java.lang.String throws -",
                     "  found: sam m() -> java.lang.Object throws -"),
+            full(
+                    "a functional interface gets an interface with an abstract method",
+                    List.of(FN, "package p; public interface Other { void other(); }"),
+                    List.of(
+                            "package p; public interface T extends Other { String m(); }",
+                            "package p; public interface Other { void other(); }"),
+                    "missing: sam m() -> java.lang.String throws -"),
+            full(
+                    "a functional interface gets an interface without an abstract method",
+                    List.of(FN, MARKER),
+                    List.of("package p; public interface T extends Marker { String m(); }", MARKER),
+                    CHANGED),
             // ---- a token-only metamodel: no facts of members
             tokenOnly("nothing, of a token-only metamodel", T, T, UNCHANGED),
             tokenOnly(
@@ -390,6 +493,18 @@ class ConformanceTest {
                     FN,
                     "package p; public interface T { String m(); void other(); }",
                     CHANGED),
+            new Row(
+                    "an interface is implemented, of a token-only metamodel",
+                    MemberFilter.NONE,
+                    List.of("package p; public class T {}", MARKER),
+                    List.of("package p; public class T implements Marker {}", MARKER),
+                    List.of(CHANGED)),
+            new Row(
+                    "an interface is no longer implemented, of a token-only metamodel",
+                    MemberFilter.NONE,
+                    List.of("package p; public class T implements Marker {}", MARKER),
+                    List.of("package p; public class T {}", MARKER),
+                    List.of("missing: interface p.Marker")),
             tokenOnly(
                     "the class is abstract, of a token-only metamodel",
                     T,
