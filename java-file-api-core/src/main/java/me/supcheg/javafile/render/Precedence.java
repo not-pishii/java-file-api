@@ -76,7 +76,8 @@ final class Precedence {
             case NullLiteral ignored -> PRIMARY_LEVEL;
             case TextBlockExpr ignored -> PRIMARY_LEVEL;
             case NewExpr ignored -> PRIMARY_LEVEL;
-            case SwitchExpr ignored -> PRIMARY_LEVEL;
+            // a switch expression is a unary expression, not a primary (JLS 15.15): `(switch ...).m()`
+            case SwitchExpr ignored -> UNARY_LEVEL;
             case ThisExpr ignored -> PRIMARY_LEVEL;
             case SuperExpr ignored -> PRIMARY_LEVEL;
             case ClassLiteralExpr ignored -> PRIMARY_LEVEL;

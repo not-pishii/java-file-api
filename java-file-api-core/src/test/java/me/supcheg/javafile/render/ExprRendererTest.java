@@ -1158,6 +1158,21 @@ class ExprRendererTest {
     }
 
     @Test
+    void methodCallTargetThatIsASwitchParenthesizesTheSwitch() {
+        Expr expr = new SwitchExpr(field("x"), List.of()).call("trim");
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("(switch (x) {\n}).trim()");
+    }
+
+    @Test
+    void castAndBinaryOperandThatIsASwitchNeedNoParentheses() {
+        TypeRef stringType = Types.of(ClassDesc.of("java.lang", "String"));
+        Expr expr = add(cast(stringType, new SwitchExpr(field("x"), List.of())), new SwitchExpr(field("y"), List.of()));
+        assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
+                .isEqualTo("(String) switch (x) {\n} + switch (y) {\n}");
+    }
+
+    @Test
     void methodCallTargetThatIsACastParenthesizesTheCast() {
         TypeRef stringType = Types.of(ClassDesc.of("java.lang", "String"));
         Expr expr = cast(stringType, field("o")).call("trim");
