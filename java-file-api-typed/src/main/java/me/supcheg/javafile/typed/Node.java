@@ -39,6 +39,8 @@ sealed interface Node {
             // A lambda has no type but that of its context, and lowering renders it under a cast to
             // its token or where the target type is exactly its token.
             case Lambda _ -> true;
+            // javac types the expression by what it is of, not by the supertype its token tells.
+            case Upcast _ -> false;
             // Every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
             case Switch _ -> true;
             case Lit _,
@@ -126,6 +128,18 @@ sealed interface Node {
 
     /// A cast.
     record Cast(TypeToken<?> type, Node operand) implements Node {}
+
+    /// An expression seen as of a supertype by an [me.supcheg.javafile.typed.Upcast]: `inner` is
+    /// rendered as it is, without a cast, so javac types it by `innerType`
+    /// — the class being declared — though the token of the expression is
+    /// `type`. Lowering goes by `innerType` where the type of the expression
+    /// decides a member, and casts to `type` where the expression must be of
+    /// exactly its token.
+    ///
+    /// @param inner the expression
+    /// @param innerType the token of its static type, which javac sees
+    /// @param type the supertype the witness is of
+    record Upcast(Node inner, TypeToken<?> innerType, TypeToken<?> type) implements Node {}
 
     /// An `instanceof` test without a binding.
     record InstanceOf(Node operand, RefToken<?> type) implements Node {}
