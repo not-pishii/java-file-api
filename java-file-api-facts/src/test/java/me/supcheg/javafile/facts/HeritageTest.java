@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -100,6 +101,68 @@ class HeritageTest {
         assertThat(List.<Heritage.Member>of(format, GENERATED.constructors().getFirst()))
                 .extracting(member -> member.signature().name())
                 .containsExactly("format", "Base");
+    }
+
+    @Test
+    void aHeritageAppliedToTypeArgumentsIsInTheirTerms() {
+        TypeRef t = Types.typeVar("T");
+        TypeRef listOfT = Types.parameterized(ClassDesc.of("java.util.List"), Types.extendsBound(t));
+        Heritage.Method put = new Heritage.Method(
+                Visibility.PUBLIC,
+                Dispatch.ABSTRACT,
+                BASE,
+                Signature.of("put", Param.var(0, 1), Param.fixed(ClassDesc.of("java.util.List"))),
+                List.of(),
+                List.of(Types.array(t), listOfT),
+                Arity.FIXED,
+                new Result.Of(t),
+                List.of(Types.typeVar("T")),
+                Set.of(List.of(ConstantDescs.CD_Object.arrayType(), ClassDesc.of("java.util.List"))),
+                List.of());
+        // the type parameter T of the method hides that of the type
+        Heritage.Method own = new Heritage.Method(
+                Visibility.PUBLIC,
+                Dispatch.CONCRETE,
+                BASE,
+                Signature.of("own", Param.fixed(ConstantDescs.CD_Object)),
+                List.of(new TypeParam("T", List.of())),
+                List.of(t),
+                Arity.FIXED,
+                Result.NOTHING,
+                List.of(),
+                Set.of(List.of(ConstantDescs.CD_Object)),
+                List.of());
+        Heritage.Constructor constructor = new Heritage.Constructor(
+                Visibility.PROTECTED,
+                Signature.of("Base", Param.var(0)),
+                List.of(),
+                List.of(t),
+                Arity.FIXED,
+                List.of());
+        Heritage.Told generic = new Heritage.Told(List.of(put, own), List.of(constructor));
+        List<TypeParam> typeParameters = List.of(new TypeParam("T", List.of()));
+
+        Heritage.Told ofStrings = generic.applied(typeParameters, List.of(Types.STRING));
+
+        assertThat(ofStrings.methods().getFirst().params())
+                .containsExactly(
+                        Types.array(Types.STRING),
+                        Types.parameterized(ClassDesc.of("java.util.List"), Types.extendsBound(Types.STRING)));
+        assertThat(ofStrings.methods().getFirst().result()).isEqualTo(new Result.Of(Types.STRING));
+        assertThat(ofStrings.methods().getFirst().throwsTypes()).containsExactly(Types.STRING);
+        assertThat(ofStrings.methods().getFirst().signature()).isEqualTo(put.signature());
+        assertThat(ofStrings.methods().getFirst().erasures()).isEqualTo(put.erasures());
+        assertThat(ofStrings.methods().getLast()).isEqualTo(own);
+        assertThat(ofStrings.constructors().getFirst().params()).containsExactly(Types.STRING);
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> generic.applied(List.of(), List.of(Types.STRING)))
+                .withMessage("expected 0 type arguments, got 1");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> generic.applied(typeParameters, List.of(Types.INT)))
+                .withMessage("an exception type is no primitive, got int");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> generic.applied(typeParameters, List.of(Types.array(Types.STRING))))
+                .withMessage("an exception type is no array, got java.lang.String[]");
     }
 
     @Test
