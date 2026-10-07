@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.TargetType;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -587,6 +589,40 @@ class ConformanceTest {
                             Signature.of("T"), Signature.of("T", Param.fixed(ConstantDescs.CD_long)));
         });
     }
+
+    @Test
+    void theHeritageOfAChangedTypeIsThatOfTheTargetAndATokenOnlyMetamodelHasNone() {
+        String target = BASE_OF_HERITAGE.replace("void hook() {}", "final void hook() {} void added() {}");
+        Canonical full = Harness.run(env -> Canonical.of(Harness.ok(env.full("p.T"))), BASE_OF_HERITAGE);
+        Canonical tokenOnly =
+                Harness.run(env -> Canonical.of(Harness.ok(env.full("p.T")).withoutMembers()), BASE_OF_HERITAGE);
+
+        // the lines of the heritage are not compared: no fact tells a method of package access, and one that
+        // is final now is the business of whoever declares a method of its signature
+        TargetType ofFull =
+                Harness.run(env -> Conformance.of(full.fingerprint(), full::text, Harness.ok(env.full("p.T"))), target);
+        TargetType ofTokenOnly = Harness.run(
+                env -> Conformance.of(tokenOnly.fingerprint(), tokenOnly::text, Harness.ok(env.full("p.T"))), target);
+
+        assertThat(ofFull)
+                .isInstanceOfSatisfying(
+                        TargetType.Changed.class,
+                        changed -> assertThat(changed.heritage())
+                                .isInstanceOfSatisfying(
+                                        Heritage.Told.class,
+                                        told -> assertThat(told.methods())
+                                                .filteredOn(method ->
+                                                        method.declaredBy().equals(ClassDesc.of("p", "T")))
+                                                .extracting(method -> method.name() + " " + method.dispatch())
+                                                .containsExactly("added CONCRETE", "hook FINAL", "n CONCRETE")));
+        assertThat(ofTokenOnly)
+                .isInstanceOfSatisfying(
+                        TargetType.Changed.class,
+                        changed -> assertThat(changed.heritage()).isSameAs(Heritage.UNTOLD));
+    }
+
+    private static final String BASE_OF_HERITAGE =
+            "package p; public class T { public T() {} public void n() {} void hook() {} }";
 
     @Test
     void theCanonicalFormIsReadOnlyWhereTheFingerprintDiffers() {

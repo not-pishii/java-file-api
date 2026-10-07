@@ -26,7 +26,7 @@ import p.Elem;
 ///
 /// `@Facts` does not ask for [Elem]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Elem.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Elem.class, fingerprint = "11b2b21e62963b7e12614784bc8424e2a87ce438644c731dd64433abf85fdc05", complete = false, format = 8)
+@GeneratedMetamodel(of = Elem.class, fingerprint = "ae0dd38366beeaeca88d032d9cf40a8ebf08bb74df2a82da5eb9f8970bfeee47", complete = false, format = 9)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Elem_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Elem] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Elem_"), "11b2b21e62963b7e12614784bc8424e2a87ce438644c731dd64433abf85fdc05", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Elem"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Elem"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Elem_"), "ae0dd38366beeaeca88d032d9cf40a8ebf08bb74df2a82da5eb9f8970bfeee47", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Elem"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Elem"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Elem_ {
     static final class Canonical {
         /// The canonical form of [Elem].
         static final String TEXT = """
-        javafile-facts-canonical 6
+        javafile-facts-canonical 7
         type p.Elem open-class sealed=no
         tparams -
         superclasses java.lang.Object

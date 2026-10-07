@@ -2,6 +2,7 @@ package gen.facts.java.lang;
 
 import gen.facts.java.lang.Enum_.Canonical;
 import gen.facts.java.lang.Enum_.Data;
+import gen.facts.java.lang.Enum_.Data.Inherited;
 import java.lang.Enum.EnumDesc;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -13,6 +14,14 @@ import me.supcheg.javafile.facts.AbstractClassToken;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
+import me.supcheg.javafile.facts.Heritage.Arity;
+import me.supcheg.javafile.facts.Heritage.Constructor;
+import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Method;
+import me.supcheg.javafile.facts.Heritage.Result;
+import me.supcheg.javafile.facts.Heritage.Result.Of;
+import me.supcheg.javafile.facts.Heritage.Told;
+import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -35,6 +44,7 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
@@ -47,7 +57,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Enum]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Enum.class, fingerprint = "1e9fdf9ff7985f7a31a5518aeef1a717344f4bb1789f82657d766ce6896fe22f", complete = true, format = 8)
+@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 9)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -58,9 +68,91 @@ public final class Enum_<E extends Enum<E>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Enum] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "1e9fdf9ff7985f7a31a5518aeef1a717344f4bb1789f82657d766ce6896fe22f", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), false, () -> Inherited.HERITAGE);
 
         private Data() {
+        }
+
+        /// What a class that extends or implements [Enum] inherits, loaded only when one is declared.
+        @GeneratedMetamodelPart
+        static final class Inherited {
+            /// Every constructor and method of [Enum] that is not private, as a member of it, whoever declares it.
+            static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12(), m13(), m14(), m15(), m16()), List.of(c0()));
+
+            private Inherited() {
+            }
+
+            private static Method m0() {
+                return new Method(Visibility.PROTECTED, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("clone"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.Object"))), List.of(Types.of(ClassDesc.of("java.lang.CloneNotSupportedException"))), Set.of(List.of()), List.of(ClassDesc.of("java.lang.Object")));
+            }
+
+            private static Method m1() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("compareTo", Param.var(0)), List.of(), List.of(Types.typeVar("E")), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Enum")), List.of(ClassDesc.of("java.lang.Object"))), List.of(ClassDesc.of("java.lang.Comparable")));
+            }
+
+            private static Method m2() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("describeConstable"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.util.Optional"), List.of(Types.exact(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum$EnumDesc"), List.of(Types.exact(Types.typeVar("E")))))))), List.of(), Set.of(List.of()), List.of(ClassDesc.of("java.lang.constant.Constable")));
+            }
+
+            private static Method m3() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(), List.of(Types.of(ClassDesc.of("java.lang.Object"))), Arity.FIXED, new Of(PrimitiveTypeRef.BOOLEAN), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of(ClassDesc.of("java.lang.Object")));
+            }
+
+            private static Method m4() {
+                return new Method(Visibility.PROTECTED, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("finalize"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of(ClassDesc.of("java.lang.Object")));
+            }
+
+            private static Method m5() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("getClass"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()))), List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m6() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("getDeclaringClass"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.exact(Types.typeVar("E"))))), List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m7() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("hashCode"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of(ClassDesc.of("java.lang.Object")));
+            }
+
+            private static Method m8() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("name"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m9() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notify"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m10() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notifyAll"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m11() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Enum"), Signature.of("ordinal"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
+            }
+
+            private static Method m12() {
+                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Enum"), Signature.of("toString"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of(ClassDesc.of("java.lang.Object")));
+            }
+
+            private static Method m13() {
+                return new Method(Visibility.PUBLIC, Dispatch.STATIC, ClassDesc.of("java.lang.Enum"), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.exact(Types.typeVar("T")))), Types.of(ClassDesc.of("java.lang.String"))), Arity.FIXED, new Of(Types.typeVar("T")), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Class"), ClassDesc.of("java.lang.String"))), List.of());
+            }
+
+            private static Method m14() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of()), List.of());
+            }
+
+            private static Method m15() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(), List.of(PrimitiveTypeRef.LONG), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long)), List.of());
+            }
+
+            private static Method m16() {
+                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.LONG, PrimitiveTypeRef.INT), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long, ConstantDescs.CD_int)), List.of());
+            }
+
+            private static Constructor c0() {
+                return new Constructor(Visibility.PROTECTED, Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(Types.of(ClassDesc.of("java.lang.String")), PrimitiveTypeRef.INT), Arity.FIXED, List.of());
+            }
         }
     }
 
@@ -69,7 +161,7 @@ public final class Enum_<E extends Enum<E>> {
     static final class Canonical {
         /// The canonical form of [Enum].
         static final String TEXT = """
-        javafile-facts-canonical 6
+        javafile-facts-canonical 7
         type java.lang.Enum abstract-class sealed=no
         tparams #0 extends java.lang.Enum<#0>
         superclasses java.lang.Object
@@ -89,6 +181,24 @@ public final class Enum_<E extends Enum<E>> {
         member method public final ordinal() -> int throws -
         member method public overridable toString() -> java.lang.String throws -
         member method public static <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws -
+        inherit ctor protected (java.lang.String, int) throws -
+        inherit method protected final java.lang.Enum clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides java.lang.Object
+        inherit method protected final java.lang.Enum finalize() -> void throws - erased () overrides java.lang.Object
+        inherit method public concrete java.lang.Enum toString() -> java.lang.String throws - erased () overrides java.lang.Object
+        inherit method public final java.lang.Enum compareTo(#0) -> int throws - erased (java.lang.Enum); (java.lang.Object) overrides java.lang.Comparable
+        inherit method public final java.lang.Enum describeConstable() -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws - erased () overrides java.lang.constant.Constable
+        inherit method public final java.lang.Enum equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides java.lang.Object
+        inherit method public final java.lang.Enum getDeclaringClass() -> java.lang.Class<#0> throws - erased () overrides -
+        inherit method public final java.lang.Enum hashCode() -> int throws - erased () overrides java.lang.Object
+        inherit method public final java.lang.Enum name() -> java.lang.String throws - erased () overrides -
+        inherit method public final java.lang.Enum ordinal() -> int throws - erased () overrides -
+        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
+        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
+        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
+        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
+        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
+        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit method public static java.lang.Enum <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws - erased (java.lang.Class, java.lang.String) overrides -
         table abstract -
         table concrete clone(); compareTo(#0); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
         table static valueOf(java.lang.Class, java.lang.String)

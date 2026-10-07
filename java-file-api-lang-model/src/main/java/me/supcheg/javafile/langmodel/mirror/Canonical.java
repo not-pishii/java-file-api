@@ -55,7 +55,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 6
+/// javafile-facts-canonical 7
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
@@ -97,12 +97,19 @@ import java.util.stream.Stream;
 /// ```
 /// sam apply(#0) -> #1 throws -
 /// ```
+///
+/// A type a class can extend or implement tells its heritage with its
+/// members ([TypeModel#heritage()]): a line per constructor and per method
+/// a class that extends or implements it inherits, see
+/// [#heritage(Heritage.Told, List)]. Like the method table, the lines are
+/// what the type is, not what a fact says of it: they are in the
+/// fingerprint, and are not compared one by one ([Conformance]).
 public final class Canonical {
 
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 6";
+    public static final String HEADER = "javafile-facts-canonical 7";
 
     private final String text;
     private final String fingerprint;
@@ -153,6 +160,10 @@ public final class Canonical {
                                         + sam.result().map(scope::type).orElse("void")
                                         + throwsClause(sam.throwsTypes(), scope))
                                 .stream(),
+                        switch (model.heritage()) {
+                            case Heritage.Told told -> heritage(told, model.typeParams()).stream();
+                            case Heritage.Untold _ -> Stream.<String>empty();
+                        },
                         Stream.of(
                                 "table abstract " + items(table(model.methods().abstractMethods())),
                                 "table concrete " + items(table(model.methods().concreteMethods())),

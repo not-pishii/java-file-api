@@ -1,1 +1,1 @@
-error: the @Facts processor generates metamodel format 8, but java-file-api-facts on the classpath has format 999; use java-file-api-facts of the same version as the processor
+error: the @Facts processor generates metamodel format 9, but java-file-api-facts on the classpath has format 999; use java-file-api-facts of the same version as the processor

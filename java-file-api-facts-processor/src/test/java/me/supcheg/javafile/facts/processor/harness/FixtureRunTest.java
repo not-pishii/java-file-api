@@ -94,6 +94,7 @@ class FixtureRunTest {
 
     private static final String OUTPUT = "one: the output of the processor is expected/";
     private static final String SHARED = "one: the metamodels of the JDK are expected-jdk/";
+    private static final String HERITAGE = "one: the heritage a metamodel holds is the one its canonical form tells";
 
     @Test
     void theSnapshotIsComparedFileByFileAndLineByLine() throws IOException {
@@ -205,6 +206,7 @@ class FixtureRunTest {
                         SHARED,
                         OUTPUT,
                         "one: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
+                        HERITAGE,
                         "one: use/ compiles under -Xlint:all -Werror",
                         "one: use/Checks.holds",
                         "one: use/Checks.doesNotHold",
@@ -250,6 +252,7 @@ class FixtureRunTest {
                         SHARED,
                         OUTPUT,
                         "one: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
+                        HERITAGE,
                         "one: use/ compiles under -Xlint:all -Werror");
         assertThat(outcomes.get("one: use/ compiles under -Xlint:all -Werror"))
                 .get()

@@ -38,10 +38,11 @@ public final class Escaped {
         named(Supertypes_.UnsafeFacts_, "UnsafeFacts");
         named(Supertypes_.MemberTraits_, "MemberTraits");
         named(Supertypes_.PrimitiveToken_, "PrimitiveToken");
+        // the heritage of the type is told with the type references of java-file-api-core
+        named(Supertypes_.Types_, "Types");
     }
 
     public static void aMemberNamedLikeAClassTheMetamodelDoesNotUseIsNot() {
-        named(Supertypes_.Types, "Types");
         named(Supertypes_.Prim, "Prim");
         named(Supertypes_.TypeParam, "TypeParam");
     }

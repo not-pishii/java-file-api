@@ -31,7 +31,7 @@ import p.Plan;
 ///
 /// A member [Plan] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plan.class, fingerprint = "c15efd85d54d1ecb8e703d360b71b5f49a16fcd22e570a4c3b31ae3287f4a0bb", complete = true, format = 8)
+@GeneratedMetamodel(of = Plan.class, fingerprint = "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", complete = true, format = 9)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Plan_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Plan] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Plan_"), "c15efd85d54d1ecb8e703d360b71b5f49a16fcd22e570a4c3b31ae3287f4a0bb", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Plan"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("mode", Param.fixed(ConstantDescs.CD_boolean))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Plan_"), "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Plan"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("mode", Param.fixed(ConstantDescs.CD_boolean))), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -53,7 +53,7 @@ public final class Plan_ {
     static final class Canonical {
         /// The canonical form of [Plan].
         static final String TEXT = """
-        javafile-facts-canonical 6
+        javafile-facts-canonical 7
         type p.Plan final-class sealed=no
         tparams -
         superclasses java.lang.Object

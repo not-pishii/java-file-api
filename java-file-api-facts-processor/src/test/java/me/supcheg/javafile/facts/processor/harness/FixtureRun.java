@@ -1,10 +1,14 @@
 package me.supcheg.javafile.facts.processor.harness;
 
+import me.supcheg.javafile.facts.Heritage;
+import me.supcheg.javafile.facts.ShapeOrigin;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetReader;
 import me.supcheg.javafile.facts.TargetType;
+import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
 import me.supcheg.javafile.typed.Expr;
 import me.supcheg.javafile.typed.TypedClassBuilder;
@@ -173,6 +177,10 @@ public final class FixtureRun {
                                     "the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
                                     fixtureCase.expected(),
                                     metamodels::get)),
+                            Stream.of(test(
+                                    "the heritage a metamodel holds is the one its canonical form tells",
+                                    fixtureCase.expected(),
+                                    this::verifyHeritages)),
                             use.isEmpty()
                                     ? Stream.<DynamicNode>empty()
                                     : Stream.concat(
@@ -298,6 +306,40 @@ public final class FixtureRun {
         private List<Path> classpath() {
             return Stream.concat(Stream.of(metamodels.get()), libraries().stream())
                     .toList();
+        }
+
+        /// The heritage of a metamodel is written twice, as data of its shape and as lines of its
+        /// canonical form, which the fingerprint is of: the lines made of the data are those of the form,
+        /// for every metamodel of the case, and a shape without a heritage has no such line.
+        private void verifyHeritages() throws Exception {
+            Path directory = metamodels.get();
+            try (URLClassLoader loader = new URLClassLoader(
+                    Stream.concat(Stream.of(directory), libraries().stream())
+                            .map(FixtureRun::url)
+                            .toArray(URL[]::new),
+                    FixtureRun.class.getClassLoader())) {
+                List<String> metamodelClasses = processed.get().sources().keySet().stream()
+                        .filter(name -> name.endsWith("_"))
+                        .toList();
+                for (String name : metamodelClasses) {
+                    TypeShape<?> shape = (TypeShape<?>)
+                            load(loader, name + "$Data").getField("SHAPE").get(null);
+                    List<String> told = ((ShapeOrigin.Metamodel) shape.origin())
+                            .canonical()
+                            .get()
+                            .lines()
+                            .filter(line -> line.startsWith("inherit "))
+                            .toList();
+                    List<String> held =
+                            switch (shape.heritage()) {
+                                case Heritage.Told heritage -> Canonical.heritage(heritage, shape.typeParameters());
+                                case Heritage.Untold _ -> List.of();
+                            };
+                    org.assertj.core.api.Assertions.assertThat(held)
+                            .as("the heritage of %s", name)
+                            .isEqualTo(told);
+                }
+            }
         }
 
         /// The class output of the case as the jar of its module would

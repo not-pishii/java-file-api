@@ -38,6 +38,8 @@ import java.util.stream.Stream;
 /// metamodel has none |
 /// | `table` | not compared: the table is taken from the type | an overload the type has added is a candidate
 /// javac chooses among |
+/// | `inherit`, of a full metamodel | not compared: the heritage is taken from the type | what a class that
+/// extends the type inherits is what the type has now: a method it has got abstract is to be implemented |
 ///
 /// **The supertypes.** A form tells every interface of its type, however
 /// the type comes by it, so the comparison does not depend on where an
@@ -100,7 +102,7 @@ public final class Conformance {
                         data(lines, targetLines), facts(facts(lines, full), facts(targetLines, full)))
                 .toList();
         return differences.isEmpty()
-                ? new TargetType.Changed(target.methods(), Heritage.UNTOLD)
+                ? new TargetType.Changed(target.methods(), full ? target.heritage() : Heritage.UNTOLD)
                 : new TargetType.Mismatched(differences);
     }
 

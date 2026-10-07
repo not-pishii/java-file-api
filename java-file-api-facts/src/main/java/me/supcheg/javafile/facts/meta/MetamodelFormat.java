@@ -38,12 +38,15 @@ package me.supcheg.javafile.facts.meta;
 ///   subclass alone calls — of an abstract class, or `protected` — is a
 ///   `SuperCtorRefN`, which replaces `AbstractCtorRefN`; the shape of a type
 ///   tells the interfaces it implements, and a fact its access.
+/// - 9: the full metamodel of a type a class can extend or implement tells
+///   its heritage — every method and constructor such a class inherits or
+///   could clash with —, as data of its shape and in its canonical form.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     private MetamodelFormat() {}
 }
