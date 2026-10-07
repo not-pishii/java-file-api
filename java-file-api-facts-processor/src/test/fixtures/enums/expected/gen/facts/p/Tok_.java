@@ -34,7 +34,7 @@ import p.Tok;
 ///
 /// A member [Tok] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_] and [gen.facts.java.lang.Runnable_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 9)
+@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

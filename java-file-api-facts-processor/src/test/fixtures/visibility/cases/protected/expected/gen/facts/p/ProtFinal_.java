@@ -30,7 +30,7 @@ import p.ProtFinal;
 ///
 /// The `protected` members have no facts: the type cannot be extended, and only a subclass reaches them.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "8d46fbe84cfa3368c8929f6d2dae23e49dca81ef3ee5631b76e0a2b0f0a143f4", complete = true, format = 9)
+@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "8d46fbe84cfa3368c8929f6d2dae23e49dca81ef3ee5631b76e0a2b0f0a143f4", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

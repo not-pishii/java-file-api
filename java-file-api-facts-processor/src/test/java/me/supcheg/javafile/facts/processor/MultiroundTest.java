@@ -167,8 +167,11 @@ class MultiroundTest {
         ///
         /// @param round the round, from 1
         /// @return the qualified names, sorted
+        /// The classes written in a round, but for the holders of a heritage (`X_Heritage`).
         Set<String> writtenIn(int round) {
-            return roots.get(round);
+            return roots.get(round).stream()
+                    .filter(name -> !name.endsWith("_Heritage"))
+                    .collect(Collectors.toCollection(TreeSet::new));
         }
 
         @Override
@@ -212,7 +215,7 @@ class MultiroundTest {
                 """, "package p; public class Uses { public gen.Missing missing() { return null; } }")
                 .orFail();
         Map<String, String> sources = compilation.sources();
-        assertThat(sources.keySet())
+        assertThat(compilation.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Missing",
@@ -231,7 +234,7 @@ class MultiroundTest {
                 package gen;
                 """, "package p; public class Uses { public gen.Missing missing() { return null; } }")
                 .orFail();
-        assertThat(compilation.sources().keySet())
+        assertThat(compilation.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts", "gen.Missing", "gen.Other", "gen.facts.p.Uses_", "gen.facts.gen.Missing_"));
     }
@@ -248,7 +251,7 @@ class MultiroundTest {
 
         // Sub waits for its superclass; then Missing, which is not asked for, is read as a supertype, and
         // Other, which Missing mentions, gets a token
-        assertThat(sources.keySet())
+        assertThat(compilation.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Missing",
@@ -342,7 +345,7 @@ class MultiroundTest {
 
         // round 1 has Base as a type Holder mentions, and writes nothing: gen.Late is not there; round 2
         // finds Base to be a supertype of it, and writes its full metamodel
-        assertThat(sources.keySet())
+        assertThat(compilation.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Late",
@@ -521,7 +524,7 @@ class MultiroundTest {
         Map<String, String> sources = compilation.sources();
 
         // a type another processor generates that nothing asks for changes nothing
-        assertThat(sources.keySet())
+        assertThat(compilation.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject(
                         "gen.facts",
                         "gen.Unrelated",
@@ -946,6 +949,6 @@ class MultiroundTest {
         assertThat(sources.get("gen.facts.p.Sub_"))
                 .contains("Sam0<Sub, Missing> sam")
                 .contains("Missing_.Data.SHAPE");
-        assertThat(sources.keySet()).contains("gen.facts.gen.Missing_");
+        assertThat(compilation.metamodels()).contains("gen.facts.gen.Missing_");
     }
 }

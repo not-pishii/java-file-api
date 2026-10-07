@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Locale]: it is only mentioned in the signatures of [p.Greeter]. For the facts of its members add `Locale.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Locale.class, fingerprint = "dbbc97766a70029259f9f8519fb445cb949f8d1517affdc2587cb5d76530a51d", complete = false, format = 9)
+@GeneratedMetamodel(of = Locale.class, fingerprint = "dbbc97766a70029259f9f8519fb445cb949f8d1517affdc2587cb5d76530a51d", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

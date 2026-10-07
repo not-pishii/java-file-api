@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [ReflectiveOperationException]: it is only mentioned in the signatures of [java.lang.constant.ConstantDesc]. For the facts of its members add `ReflectiveOperationException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ReflectiveOperationException.class, fingerprint = "71bebd240d0a6400aba114f668bef2556492019fabf9bbe514709de7b7131380", complete = false, format = 9)
+@GeneratedMetamodel(of = ReflectiveOperationException.class, fingerprint = "71bebd240d0a6400aba114f668bef2556492019fabf9bbe514709de7b7131380", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

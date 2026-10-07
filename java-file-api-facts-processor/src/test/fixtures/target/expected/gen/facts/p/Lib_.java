@@ -29,7 +29,7 @@ import p.Marker;
 ///
 /// A member [Lib] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lib.class, fingerprint = "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", complete = true, format = 9)
+@GeneratedMetamodel(of = Lib.class, fingerprint = "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

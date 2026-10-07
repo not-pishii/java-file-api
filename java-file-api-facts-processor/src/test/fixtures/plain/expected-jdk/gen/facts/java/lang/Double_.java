@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Double]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Double.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Double.class, fingerprint = "602eff1dec2d6cd9905b81bb71700581b34fc06c6bae91e47a45b51e533d901c", complete = false, format = 9)
+@GeneratedMetamodel(of = Double.class, fingerprint = "602eff1dec2d6cd9905b81bb71700581b34fc06c6bae91e47a45b51e533d901c", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Long]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Long.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Long.class, fingerprint = "625f8608bd3bb623b4c384b3704200ce140e83efac2c56984e391d3c13bd6fa5", complete = false, format = 9)
+@GeneratedMetamodel(of = Long.class, fingerprint = "625f8608bd3bb623b4c384b3704200ce140e83efac2c56984e391d3c13bd6fa5", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

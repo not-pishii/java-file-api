@@ -2,7 +2,6 @@ package gen.facts.p;
 
 import gen.facts.p.Named_.Canonical;
 import gen.facts.p.Named_.Data;
-import gen.facts.p.Named_.Data.Inherited;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
-import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
@@ -36,7 +34,7 @@ import p.Named;
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", complete = true, format = 9)
+@GeneratedMetamodel(of = Named.class, fingerprint = "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,19 +45,9 @@ public final class Named_<Data_, String_, Int> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Named] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Named_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [Named] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [Named] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(), List.of());
-
-            private Inherited() {
-            }
         }
     }
 

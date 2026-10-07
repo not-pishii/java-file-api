@@ -107,7 +107,7 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_METAMODEL_ORIGIN = ClassDesc.of(FACTS + ".ShapeOrigin$Metamodel");
     private static final ClassDesc CD_SUPERTYPES = ClassDesc.of(FACTS, "Supertypes");
     private static final ClassDesc CD_TEMPLATE = ClassDesc.of(FACTS, "MethodTableTemplate");
-    private static final ClassDesc CD_HERITAGE = ClassDesc.of(FACTS, "Heritage");
+    private static final ClassDesc CD_SUPPLIER = ClassDesc.of("java.util.function.Supplier");
     private static final ClassDesc CD_HERITAGE_TOLD = ClassDesc.of(FACTS + ".Heritage$Told");
     private static final ClassDesc CD_HERITAGE_METHOD = ClassDesc.of(FACTS + ".Heritage$Method");
     private static final ClassDesc CD_HERITAGE_CONSTRUCTOR = ClassDesc.of(FACTS + ".Heritage$Constructor");
@@ -295,7 +295,11 @@ final class MetamodelEmitter {
                         referenced.stream().flatMap(MetamodelEmitter::simpleNames),
                         Stream.concat(referenced.stream(), Stream.of(metamodel))
                                 .flatMap(MetamodelEmitter::outermostPackage),
-                        Stream.of(metamodel.displayName(), MetamodelNames.DATA, MetamodelNames.CANONICAL))
+                        Stream.of(
+                                metamodel.displayName(),
+                                MetamodelNames.heritage(metamodel).displayName(),
+                                MetamodelNames.DATA,
+                                MetamodelNames.CANONICAL))
                 .flatMap(Function.identity())
                 .collect(Collectors.toSet());
         List<String> names = MetamodelNames.typeParameters(declared, typeNames);
@@ -352,24 +356,24 @@ final class MetamodelEmitter {
                                 .map(b -> (ClassOrInterfaceTypeRef) rename(b, renaming))
                                 .toList()));
             }
-            ClassDesc inherited = data.nested(MetamodelNames.INHERITED);
-            cb.withNestedClass(data, dc -> {
-                dc.withDoc(MetamodelDocs.data(model.desc()))
-                        .withAnnotation(CD_GENERATED_METAMODEL_PART)
-                        .withModifiers(Modifier.STATIC, Modifier.FINAL)
-                        .withField(
-                                MetamodelNames.SHAPE,
-                                Types.parameterized(CD_TYPE_SHAPE, Types.of(token.kindClass())),
-                                fb -> fb.withDoc(MetamodelDocs.shape(model.desc()))
-                                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                        .withInitializer(
-                                                shape(metamodel, model, canonical, token, canonicalClass, inherited)))
-                        .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
-                switch (model.heritage()) {
-                    case Heritage.Told told -> dc.withNestedClass(inherited, hc -> heritage(hc, told, model.desc()));
-                    case Heritage.Untold _ -> {}
-                }
-            });
+            cb.withNestedClass(
+                    data,
+                    dc -> dc.withDoc(MetamodelDocs.data(model.desc()))
+                            .withAnnotation(CD_GENERATED_METAMODEL_PART)
+                            .withModifiers(Modifier.STATIC, Modifier.FINAL)
+                            .withField(
+                                    MetamodelNames.SHAPE,
+                                    Types.parameterized(CD_TYPE_SHAPE, Types.of(token.kindClass())),
+                                    fb -> fb.withDoc(MetamodelDocs.shape(model.desc()))
+                                            .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                            .withInitializer(shape(
+                                                    metamodel,
+                                                    model,
+                                                    canonical,
+                                                    token,
+                                                    canonicalClass,
+                                                    MetamodelNames.heritage(metamodel))))
+                            .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)));
             cb.withNestedClass(
                     canonicalClass,
                     kc -> kc.withDoc(MetamodelDocs.canonical(model.desc()))
@@ -528,8 +532,8 @@ final class MetamodelEmitter {
         });
     }
 
-    /// The shape of the type: with its heritage, which the class `inherited` holds, if the model tells one —
-    /// a type that tells one is no enum, so it has no constants.
+    /// The shape of the type: with its heritage, which an object of the class `inherited` supplies, if the
+    /// model tells one — a type that tells one is no enum, so it has no constants.
     private static Expr shape(
             ClassDesc metamodel,
             TypeModel model,
@@ -559,10 +563,9 @@ final class MetamodelEmitter {
                 template(model.methods()));
         Stream<Expr> rest =
                 switch (model.heritage()) {
-                    case Heritage.Told _ ->
-                        Stream.of(
-                                Exprs.literal(model.sealed()),
-                                Exprs.lambda(List.of(), Exprs.staticField(inherited, MetamodelNames.HERITAGE)));
+                    // a new object, not a lambda that names the class: a class is named in an expression
+                    // where a field of its name would be meant, and after `new` only a class is
+                    case Heritage.Told _ -> Stream.of(Exprs.literal(model.sealed()), Exprs.new_(inherited));
                     case Heritage.Untold _ ->
                         Stream.of(
                                 list(model.enumConstants().stream()
@@ -574,18 +577,52 @@ final class MetamodelEmitter {
                 CD_UNSAFE_FACTS, "shape", Stream.concat(type, rest).toList());
     }
 
-    /// The class that holds the heritage of the type: a method per member, so that no initializer grows
-    /// with the number of members of the type beyond what a method may hold.
-    private static void heritage(ClassBuilder hc, Heritage.Told heritage, ClassDesc type) {
+    /// The class that holds the heritage of the type of a full metamodel, if its model tells one: a class
+    /// of its own beside the metamodel ([MetamodelNames#heritage]), an object of which supplies the
+    /// heritage to the shape. The heritage is in a class nested in it, which nothing loads before it is
+    /// asked for, with a method per member, so that no initializer grows with the number of members of
+    /// the type beyond what a method may hold.
+    ///
+    /// @param metamodel the metamodel class
+    /// @param model the type, read with its members
+    /// @return the source file, if the type tells a heritage
+    static Optional<JavaFile> heritage(ClassDesc metamodel, TypeModel model) {
+        return switch (model.heritage()) {
+            case Heritage.Told told -> {
+                ClassDesc holder = MetamodelNames.heritage(metamodel);
+                ClassDesc held = holder.nested(MetamodelNames.HELD);
+                yield Optional.of(JavaFile.class_(
+                        holder,
+                        cb -> cb.withDoc(MetamodelDocs.inherited(model.desc()))
+                                .withModifiers(Modifier.FINAL)
+                                .withAnnotation(
+                                        CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
+                                .withAnnotation(CD_GENERATED_METAMODEL_PART)
+                                .withAnnotation(CD_NULL_MARKED)
+                                .withInterface(Types.parameterized(CD_SUPPLIER, Types.of(CD_HERITAGE_TOLD)))
+                                .withConstructor(ctor -> ctor.withDoc(MetamodelDocs.heritageHolder()))
+                                .withMethod(
+                                        "get",
+                                        Types.of(CD_HERITAGE_TOLD),
+                                        mb -> mb.withDoc(MetamodelDocs.heritageGiven())
+                                                .withAnnotation(ClassDesc.of("java.lang.Override"))
+                                                .withModifiers(Modifier.PUBLIC)
+                                                .withBody(b ->
+                                                        b.return_(Exprs.staticField(held, MetamodelNames.HERITAGE))))
+                                .withNestedClass(held, hc -> held(hc, told, model.desc()))));
+            }
+            case Heritage.Untold _ -> Optional.empty();
+        };
+    }
+
+    private static void held(ClassBuilder hc, Heritage.Told heritage, ClassDesc type) {
         List<String> methods = IntStream.range(0, heritage.methods().size())
                 .mapToObj(i -> "m" + i)
                 .toList();
         List<String> constructors = IntStream.range(0, heritage.constructors().size())
                 .mapToObj(i -> "c" + i)
                 .toList();
-        hc.withDoc(MetamodelDocs.inherited(type))
-                .withAnnotation(CD_GENERATED_METAMODEL_PART)
-                .withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
+        hc.withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
                 .withField(
                         MetamodelNames.HERITAGE,
                         Types.of(CD_HERITAGE_TOLD),
@@ -892,15 +929,6 @@ final class MetamodelEmitter {
                 CD_METAMODEL_ORIGIN,
                 CD_SUPERTYPES,
                 CD_TEMPLATE,
-                CD_HERITAGE,
-                CD_HERITAGE_TOLD,
-                CD_HERITAGE_METHOD,
-                CD_HERITAGE_CONSTRUCTOR,
-                CD_HERITAGE_VISIBILITY,
-                CD_HERITAGE_DISPATCH,
-                CD_HERITAGE_ARITY,
-                CD_HERITAGE_RESULT,
-                CD_HERITAGE_RESULT_OF,
                 CD_SIGNATURE,
                 CD_PARAM,
                 CD_TOKEN_ARG,

@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Integer]: it is only mentioned in the signatures of [p.Ov]. For the facts of its members add `Integer.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Integer.class, fingerprint = "1d772bc232fb368feace28aa59b89bfa38212fc592ee94d8b53e74846736056a", complete = false, format = 9)
+@GeneratedMetamodel(of = Integer.class, fingerprint = "1d772bc232fb368feace28aa59b89bfa38212fc592ee94d8b53e74846736056a", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [List]: it is only mentioned in the signatures of [p.Ov]. For the facts of its members add `List.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = List.class, fingerprint = "a6e89bfb48e44df95564900b5f9be0b4c185adc238b63119ea78ea55d6bb0c1c", complete = false, format = 9)
+@GeneratedMetamodel(of = List.class, fingerprint = "a6e89bfb48e44df95564900b5f9be0b4c185adc238b63119ea78ea55d6bb0c1c", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

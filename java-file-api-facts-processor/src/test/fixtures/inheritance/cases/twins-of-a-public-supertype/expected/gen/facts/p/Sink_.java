@@ -28,7 +28,7 @@ import p.Sink;
 ///
 /// A member [Sink] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 9)
+@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

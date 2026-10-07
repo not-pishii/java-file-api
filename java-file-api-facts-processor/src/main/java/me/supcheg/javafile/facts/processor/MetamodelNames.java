@@ -51,11 +51,26 @@ final class MetamodelNames {
     /// The nested class holding the canonical form of the type.
     static final String CANONICAL = "Canonical";
 
-    /// The class nested in [#DATA] that holds the heritage of the type, loaded when it is asked for.
-    static final String INHERITED = "Inherited";
+    /// What the name of the class that holds the heritage of a type adds to that of its metamodel:
+    /// `List_Heritage` beside `List_`. No metamodel is named so: the name of one ends with `_`.
+    static final String HERITAGE_SUFFIX = "Heritage";
 
-    /// The field of [#INHERITED] holding the heritage.
+    /// The class nested in the class of the heritage that holds it, loaded when it is asked for.
+    static final String HELD = "Held";
+
+    /// The field of [#HELD] holding the heritage.
     static final String HERITAGE = "HERITAGE";
+
+    /// The class that holds the heritage of the type of a metamodel: a class of its own beside the
+    /// metamodel, so that what it is written with — the classes of the heritage, of type references —
+    /// takes no name from the facts of the metamodel, which a member of such a name would have to
+    /// give way to.
+    ///
+    /// @param metamodel the metamodel class
+    /// @return the class of the heritage
+    static ClassDesc heritage(ClassDesc metamodel) {
+        return ClassDesc.of(metamodel.packageName(), metamodel.displayName() + HERITAGE_SUFFIX);
+    }
 
     /// The field of [#CANONICAL] holding the canonical form.
     static final String TEXT = "TEXT";

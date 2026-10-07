@@ -46,7 +46,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Integer] inherits has its fact in the metamodel of the supertype that declares it: [Comparable_], [Number_], [gen.facts.java.lang.constant.Constable_] and [gen.facts.java.lang.constant.ConstantDesc_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 9)
+@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

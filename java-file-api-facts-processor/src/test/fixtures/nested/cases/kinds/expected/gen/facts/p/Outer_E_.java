@@ -33,7 +33,7 @@ import p.Outer.E;
 ///
 /// A member [E] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = E.class, fingerprint = "67ecc7dfcc97890bc3c63be01b1497f9aac892d8f4b6c99d6197866bee438aa0", complete = true, format = 9)
+@GeneratedMetamodel(of = E.class, fingerprint = "67ecc7dfcc97890bc3c63be01b1497f9aac892d8f4b6c99d6197866bee438aa0", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

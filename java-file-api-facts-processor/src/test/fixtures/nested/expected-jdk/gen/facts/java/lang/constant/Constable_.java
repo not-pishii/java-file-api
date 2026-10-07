@@ -2,7 +2,6 @@ package gen.facts.java.lang.constant;
 
 import gen.facts.java.lang.constant.Constable_.Canonical;
 import gen.facts.java.lang.constant.Constable_.Data;
-import gen.facts.java.lang.constant.Constable_.Data.Inherited;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;
@@ -13,12 +12,6 @@ import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
-import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
-import me.supcheg.javafile.facts.Heritage.Method;
-import me.supcheg.javafile.facts.Heritage.Result.Of;
-import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
@@ -33,8 +26,6 @@ import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
-import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Constable]: a fact of every `public` member the type declares.
@@ -43,7 +34,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Constable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 9)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -54,23 +45,9 @@ public final class Constable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Constable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Constable_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [Constable] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [Constable] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(m0()), List.of());
-
-            private Inherited() {
-            }
-
-            private static Method m0() {
-                return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.constant.Constable"), Signature.of("describeConstable"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.util.Optional"), List.of(Types.extendsBound(Types.of(ClassDesc.of("java.lang.constant.ConstantDesc")))))), List.of(), Set.of(List.of()), List.of());
-            }
         }
     }
 
