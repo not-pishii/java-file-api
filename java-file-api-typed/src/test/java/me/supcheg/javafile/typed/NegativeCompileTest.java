@@ -35,6 +35,9 @@ class NegativeCompileTest {
             + Stream.of(
                             "me.supcheg.javafile.facts",
                             "me.supcheg.javafile.typed.testfacts.java.lang",
+                            "me.supcheg.javafile.typed.testfacts.java.util.function",
+                            "me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures",
+                            "me.supcheg.javafile.typed.fixtures",
                             "me.supcheg.javafile.typed",
                             "static me.supcheg.javafile.typed.Expressions")
                     .map(on -> "import " + on + ".*;\n")
@@ -85,6 +88,14 @@ class NegativeCompileTest {
                 cb.method("empty", String_.TOKEN, (b, self) -> b.return_(literalNull(String_.TOKEN)));
                 cb.method("same", PrimitiveToken.BOOLEAN, (b, self) -> b.return_(eqRef(literal("a"), literal("b"))));
                 new_(Object_.new_);
+                cb.method("lazy", new Supplier_<>(String_.TOKEN).token, String_.TOKEN, (b, self, s) -> b.return_(
+                        lambda(new Supplier_<>(String_.TOKEN).sam, () -> call(s, String_.trim))));
+                cb.method("later", Runnable_.TOKEN, String_.TOKEN, (b, self, s) -> b.return_(
+                        lambdaBlock(Runnable_.sam, lb -> lb.exec(call(s, String_.trim)).end())));
+                cb.method("advice", String_.TOKEN, Signal_.TOKEN, (b, self, s) -> b.return_(
+                        switch_(s, Signal_.TOKEN, String_.TOKEN, c -> c
+                                .case_(Signal_.RED, literal("stop"))
+                                .case_(List.of(Signal_.AMBER, Signal_.GREEN), y -> y.yield_(literal("go"))))));
                 """);
 
         assertThat(compile("Control", body)).succeeded();
@@ -512,5 +523,191 @@ class NegativeCompileTest {
                 inClass("cb.throwing(RuntimeException_.TOKEN).throwing(RuntimeException_.TOKEN);"),
                 "cannot find symbol",
                 "symbol:   method throwing(");
+    }
+
+    // ------------------------------------------------------------------
+    // Lambdas (§6.4): the parameters and the result are those of the `sam` fact
+    // ------------------------------------------------------------------
+
+    private static final String STRING_TO_INTEGER = "new Function_<>(String_.TOKEN, Integer_.TOKEN).sam";
+
+    @Test
+    void aLambdaHasTheParametersOfItsFunctionalInterface() {
+        assertRejected(
+                "LambdaArity",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", () -> box(PrimitiveToken.INT, literal(1))); }",
+                "no suitable method found for lambda(",
+                "incompatible parameter types in lambda expression");
+        assertRejected(
+                "LambdaTwoForOne",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", (a, b) -> box(PrimitiveToken.INT, literal(1))); }",
+                "no suitable method found for lambda(",
+                "incompatible parameter types in lambda expression");
+    }
+
+    @Test
+    void aParameterOfALambdaIsOfTheTypeOfItsFunctionalInterface() {
+        assertRejected(
+                "LambdaParameterType",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> call(s, Integer_.intValue)); }",
+                "no suitable method found for call(me.supcheg.javafile.typed.Var<java.lang.String>,");
+    }
+
+    @Test
+    void aLambdaGivesTheResultOfItsFunctionalInterface() {
+        assertRejected(
+                "LambdaResultType",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> s); }",
+                "inference variable R has incompatible bounds",
+                "lower bounds: java.lang.String");
+        assertRejected(
+                "LambdaUnboxedResult",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> call(s, String_.length)); }",
+                "incompatible bounds",
+                "equality constraints: java.lang.Integer");
+    }
+
+    @Test
+    void aBlockLambdaWithAResultReturns() {
+        assertRejected(
+                "LambdaNoReturn",
+                "void use() { lambdaBlock(" + STRING_TO_INTEGER + ", (lb, s) -> { }); }",
+                "no suitable method found for lambdaBlock(",
+                "missing return value");
+        assertRejected(
+                "LambdaEnd",
+                "void use() { lambdaBlock(" + STRING_TO_INTEGER + ", (lb, s) -> lb.end()); }",
+                "cannot find symbol",
+                "symbol:   method end()");
+    }
+
+    @Test
+    void aLambdaWithoutAResultIsAnEffectAndReturnsNoValue() {
+        assertRejected(
+                "VoidLambdaValue",
+                "void use() { lambda(Runnable_.sam, () -> literal(1)); }",
+                "no suitable method found for lambda(me.supcheg.javafile.facts.VoidSam0<java.lang.Runnable>,");
+        assertRejected(
+                "VoidLambdaReturn",
+                "void use() { lambdaBlock(Runnable_.sam, lb -> lb.return_(literal(1))); }",
+                "method return_ in class me.supcheg.javafile.typed.VoidBody cannot be applied to given types");
+    }
+
+    @Test
+    void aLambdaWithAResultIsNotAVoidCall() {
+        assertRejected(
+                "LambdaOfVoidCall",
+                "void use(Expr<Runnable> r) { lambda(new Supplier_<>(String_.TOKEN).sam,"
+                        + " () -> voidCall(r, Runnable_.run)); }",
+                "no suitable method found for lambda(me.supcheg.javafile.facts.Sam0<");
+    }
+
+    @Test
+    void aLambdaIsTypedByTheSamFactAndNotByAMethodFact() {
+        assertRejected(
+                "LambdaOfMethodFact",
+                "void use() { lambda(String_.length, () -> literal(1)); }",
+                "no suitable method found for lambda");
+    }
+
+    @Test
+    void aLambdaIsOfItsFunctionalInterfaceAndNoOther() {
+        assertRejected(
+                "LambdaOtherInterface",
+                inClass("cb.method(\"m\", Runnable_.TOKEN, (b, self) -> b.return_("
+                        + "lambda(new Supplier_<>(String_.TOKEN).sam, () -> literal(\"a\"))));"),
+                "inference variable F has incompatible bounds",
+                "upper bounds: java.lang.Runnable");
+    }
+
+    // ------------------------------------------------------------------
+    // switch expressions (§6.3)
+    // ------------------------------------------------------------------
+
+    @Test
+    void theBlockOfACaseHasNoReturn() {
+        assertRejected(
+                "ReturnInSwitch",
+                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(y -> y.return_(literal(\"a\")))); }",
+                "cannot find symbol",
+                "symbol:   method return_(");
+        assertRejected(
+                "ReturnInBranchInSwitch",
+                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(y -> y.ifElse(literal(true), t -> t.return_(literal(\"a\")),"
+                        + " e -> e.yield_(literal(\"b\"))))); }",
+                "cannot find symbol",
+                "symbol:   method return_(");
+    }
+
+    @Test
+    void theBlockOfACaseYields() {
+        assertRejected(
+                "NoYield",
+                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(y -> { })); }",
+                "no suitable method found for default_(",
+                "missing return value");
+    }
+
+    @Test
+    void aResultIsOfTheTypeOfTheSwitch() {
+        assertRejected(
+                "ValueType",
+                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(literal(1))); }",
+                "no suitable method found for default_(me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int>)");
+        assertRejected(
+                "YieldType",
+                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(y -> y.yield_(literal(1)))); }",
+                "cannot be converted to me.supcheg.javafile.typed.Expr<? extends java.lang.String>");
+    }
+
+    @Test
+    void theSelectorIsOfTheEnum() {
+        assertRejected(
+                "SelectorType",
+                "void use() { switch_(literal(\"a\"), Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(literal(\"a\"))); }",
+                "inference variable E has incompatible bounds",
+                "lower bounds: java.lang.String");
+    }
+
+    @Test
+    void aCaseIsOfAConstantOfTheEnum() {
+        assertRejected(
+                "ConstantType",
+                "void use(Expr<Signal> s, EnumConstant<Thread.State> other) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                        + " c -> c.case_(other, literal(\"a\"))); }",
+                "no suitable method found for case_(me.supcheg.javafile.facts.EnumConstant<java.lang.Thread.State>,");
+    }
+
+    @Test
+    void aSwitchIsOverAnEnum() {
+        assertRejected(
+                "NotAnEnum",
+                "void use() { switch_(literal(\"a\"), String_.TOKEN, String_.TOKEN,"
+                        + " c -> c.default_(literal(\"a\"))); }",
+                "cannot be converted to me.supcheg.javafile.facts.EnumToken<E>");
+    }
+
+    @Test
+    void aSwitchExpressionIsNoStatement() {
+        assertRejected(
+                "SwitchStatement",
+                inClass("cb.voidMethod(\"m\", Signal_.TOKEN, (b, self, s) -> b.exec(switch_(s, Signal_.TOKEN,"
+                        + " String_.TOKEN, c -> c.default_(literal(\"a\")))).end());"),
+                "conforms to me.supcheg.javafile.typed.Effect");
+    }
+
+    @Test
+    void theCasesAndTheBlockOfACaseHaveNoPublicConstructor() {
+        assertRejected(
+                "StraySwitchCases",
+                "void use() { new SwitchCases<Signal, String>(Signal_.TOKEN, String_.TOKEN, null); }",
+                "is not public in me.supcheg.javafile.typed.SwitchCases");
+        assertRejected("StrayYieldBody", "void use() { YieldBody.ofCase(null, String_.TOKEN, \"stray\"); }", "ofCase");
     }
 }
