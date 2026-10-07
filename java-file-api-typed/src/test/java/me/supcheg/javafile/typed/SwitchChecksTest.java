@@ -285,6 +285,26 @@ class SwitchChecksTest {
         }
 
         @Test
+        void aConstantIsOfTheFactOfTheEnumNotOfAnotherFactOfTheSameEnum() {
+            // two facts of one enum, of the same qualified name and of different constants
+            ClassDesc signal = ClassDesc.of("me.supcheg.javafile.typed.fixtures", "Signal");
+            EnumToken<Signal> narrow =
+                    UnsafeFacts.enumToken(Types.of(signal), List.of("RED", "AMBER"), MethodTable.EMPTY);
+            EnumToken<Signal> wide =
+                    UnsafeFacts.enumToken(Types.of(signal), List.of("RED", "AMBER", "GREEN"), MethodTable.EMPTY);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> intMethod((b, s) -> b.return_(
+                            switch_(narrow, s, PrimitiveToken.INT, c -> c.case_(wide.constant("RED"), literal(1))))))
+                    .withMessageContaining("case_ RED of the switch_ over me.supcheg.javafile.typed.fixtures.Signal"
+                            + " in the body of static method m: me.supcheg.javafile.typed.fixtures.Signal.RED is not"
+                            + " a constant of the fact of me.supcheg.javafile.typed.fixtures.Signal the switch is"
+                            + " over, whose constants are RED, AMBER: the cases are exhaustive by one fact of the"
+                            + " enum, the one that is held against the target classpath; take the constant from the"
+                            + " token given to switch_");
+        }
+
+        @Test
         void primitiveAndReferenceResultsDoNotMixThoughJavaBoxesThem() {
             unlikeJavac(
                     IllegalArgumentException.class,
