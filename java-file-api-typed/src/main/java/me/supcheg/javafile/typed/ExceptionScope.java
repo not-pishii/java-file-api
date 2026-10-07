@@ -18,7 +18,8 @@ sealed interface ExceptionScope {
     /// The block is where an exception stops: the body of a method or
     /// constructor, which may throw what its `throws` clause declares, or
     /// the body of a lambda, which may throw what the method of its
-    /// functional interface declares. An exception that is not a subtype of
+    /// functional interface declares, or a block of an expression built
+    /// outside of any body, which may throw nothing. An exception that is not a subtype of
     /// one of `types` cannot be thrown here.
     ///
     /// @param boundary what the block is the body of
@@ -55,7 +56,12 @@ sealed interface ExceptionScope {
         /// The body of a lambda: only the method of its functional interface declares.
         LAMBDA(
                 "the method of the functional interface of the lambda does not declare",
-                "catch it inside the lambda: the code around a lambda catches nothing thrown in it");
+                "catch it inside the lambda: the code around a lambda catches nothing thrown in it"),
+        /// A block of an expression built outside of any body, which can only be a field initializer.
+        INITIALIZER(
+                "nothing declares outside of the body of a member",
+                "catch it inside the block, or build the expression in the body of a method or constructor that"
+                        + " declares it");
 
         private final String doesNotDeclare;
         private final String advice;

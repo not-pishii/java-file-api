@@ -4,13 +4,19 @@ import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
 import me.supcheg.javafile.code.BinaryExpr;
+import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.BreakStmt;
+import me.supcheg.javafile.code.CaseBody;
+import me.supcheg.javafile.code.CaseLabel;
 import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConstantLabel;
 import me.supcheg.javafile.code.ContinueStmt;
+import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DoWhileStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.ExprCaseBody;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.FieldAccessExpr;
@@ -25,13 +31,17 @@ import me.supcheg.javafile.code.StatementExpr;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
+import me.supcheg.javafile.code.SwitchCase;
+import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
+import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.Invocable;
@@ -69,11 +79,12 @@ import java.util.stream.Stream;
 /// [Expr]/[Stmt].
 ///
 /// Residual semantic checks that Java's type system cannot express (§9 —
-/// switch exhaustiveness, `implement` completeness, modifier validity) are
+/// `implement` completeness, modifier validity) are
 /// the responsibility of the declaration layer that calls into this class,
 /// not of this class itself; that a checked exception is caught or declared
-/// (§9.1) is checked before lowering, where each statement is built
-/// ([Exceptions]);
+/// (§9.1) and that a `switch` is exhaustive (§9.2) is checked before
+/// lowering, where each statement and each `switch` is built
+/// ([Exceptions], [SwitchCases]);
 /// this class performs the structural checks that are intrinsic to lowering
 /// itself: a variable must be in scope where it is referenced (enforced by
 /// the scope stack of [NameEnv]) and `break`/`continue` must target a loop
@@ -139,6 +150,22 @@ import java.util.stream.Stream;
 ///   ([me.supcheg.javafile.facts.MemberTraits#typeArgs()]) are rendered as
 ///   explicit witnesses, `List.<String>of()`, `stream.<R>map(f)`, so javac
 ///   never infers others.
+/// - **Lambdas.** A lambda has no type of its own to javac, only that of
+///   its context (JLS 15.27.3), and a typed lambda may stand where there is
+///   none — the receiver of a call, an operand of `==`, the initializer of
+///   an `Object` — or where the context has another type than its fact, or
+///   one that decides an overload. It is therefore rendered under a cast to
+///   the functional interface of its fact, `(Function<String, Integer>)
+///   (String v0) -> ...`, which is never redundant to javac, and without
+///   one only where the target type is exactly that interface and nothing
+///   else is in question: the initializer of a variable or a field of that
+///   type, the value returned from a body of that result type, the
+///   argument of the only candidate of a call whose parameter is of that
+///   type. Its parameters are always typed explicitly.
+/// - **`switch` expressions.** Every result of a `switch` is of the type
+///   of the expression, cast to it where the typed expression is of another
+///   ([Expressions#switch_]), so javac types the `switch` by that type and
+///   never by promotion, boxing or a least upper bound (JLS 15.28.1).
 /// - **The diamond.** `new T<>(...)` is rendered only where the target type
 ///   is exactly the constructed type — a local variable's initializer, a
 ///   field's initializer, the value returned from a body of that result
@@ -318,6 +345,8 @@ final class Lowering {
                 yield labeled(ctl, new EnhancedForStmt(var_.type().typeRef(), name, iterableExpr, bodyCode));
             }
             case Instr.Return(var value) -> new ReturnStmt(value.map(this::returned));
+            // The value is of the type of the switch already (YieldBody.yield_); pinned, it is exactly.
+            case Instr.Yield(var value) -> new YieldStmt(expr(value, true));
             case Instr.Throw(var value, var type) -> {
                 target.verify(type.token());
                 yield new ThrowStmt(expr(value));
@@ -471,10 +500,9 @@ final class Lowering {
                 target.verify(type);
                 yield expr(operand).instanceOf(type.typeRef());
             }
-            case Node.Lambda(var sam, var params, var body) -> lambda(sam, params, body);
-            case Node.Switch ignored ->
-                throw new UnsupportedOperationException(
-                        "typed switch expressions are not implemented yet (phase 2 — exhaustive enum switch, §3.5/§9)");
+            // No target type is known here: the cast gives the lambda the one of its fact.
+            case Node.Lambda lambda -> Exprs.cast(lambda.sam().owner().typeRef(), lambda(lambda));
+            case Node.Switch switch_ -> switchExpr(switch_);
             case Node.Assign ignored ->
                 throw new IllegalStateException(
                         "an assignment was used as a value; it is only representable as a statement (Effect)");
@@ -492,14 +520,26 @@ final class Lowering {
     }
 
     /// An expression whose target type is `declared`, in an assignment
-    /// context: the diamond infers exactly `declared` there (JLS 15.9.1).
+    /// context: the diamond infers exactly `declared` there (JLS 15.9.1),
+    /// and a lambda is of `declared` (JLS 15.27.3).
     private Expr initializer(Node node, TypeToken<?> declared) {
         if (node instanceof Node.New(var ctor, var args)
                 && ctor.owner().typeRef() instanceof ParameterizedTypeRef
                 && Tokens.sameType(ctor.owner(), declared)) {
             return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, null, args));
         }
-        return expr(node);
+        return targeted(node, declared);
+    }
+
+    /// An expression in an assignment or invocation context whose target
+    /// type is `targetType`, there being no other type javac could take the
+    /// context for: a lambda of exactly that type stands as it is, where a
+    /// cast to it would be redundant.
+    private Expr targeted(Node node, TypeToken<?> targetType) {
+        return node instanceof Node.Lambda lambda
+                        && Tokens.sameType(lambda.sam().owner(), targetType)
+                ? lambda(lambda)
+                : expr(node);
     }
 
     /// `target.method(args)`. The receiver is cast to the method's owner
@@ -553,9 +593,12 @@ final class Lowering {
                     TypeToken<?> param = params.get(i);
                     boolean boxes = arg.type() instanceof PrimitiveToken<?, ?, ?>
                             && !(param instanceof PrimitiveToken<?, ?, ?>);
-                    return boxes || (!onlyCandidate && !Tokens.sameType(arg.type(), param))
-                            ? Exprs.cast(param.typeRef(), expr(arg.node()))
-                            : expr(arg.node(), !onlyCandidate);
+                    if (boxes || (!onlyCandidate && !Tokens.sameType(arg.type(), param))) {
+                        return Exprs.cast(param.typeRef(), expr(arg.node()));
+                    }
+                    // The one candidate gives a lambda its target type; among several, the cast of
+                    // the lambda does (expr), as the type of any other argument decides.
+                    return onlyCandidate ? targeted(arg.node(), param) : expr(arg.node(), true);
                 })
                 .toList();
     }
@@ -726,11 +769,16 @@ final class Lowering {
 
     // ------------------------------------------------------------------
 
+    /// A lambda, without a target type of its own: `(String v0) -> ...`.
+    /// Its parameters are typed explicitly, so its function type is that of
+    /// its fact whatever the target type lets javac infer.
+    ///
     /// A lambda body is a scope of its own for the parameters, and a fresh
     /// loop context: `break`/`continue` cannot jump out of a lambda. Its
     /// `return` statements return the result of the functional interface's
-    /// method.
-    private Expr lambda(Invocable sam, List<Var<?>> params, Node.LambdaBody body) {
+    /// method, which is the target type of an expression body too.
+    private Expr lambda(Node.Lambda lambda) {
+        Invocable sam = lambda.sam();
         uses(sam);
         Deque<LoopCtl> enclosingLoops = loopStack;
         TypeToken<?> enclosingResult = result;
@@ -738,19 +786,17 @@ final class Lowering {
         result = sam.resultType().orElse(null);
         names.push();
         try {
-            List<Param> coreParams = new ArrayList<>(params.size());
-            for (Var<?> param : params) {
-                coreParams.add(new Param(declare(param), param.type().typeRef()));
-            }
-            return switch (body) {
-                case Node.LambdaBody.Value(var ignoredScope, var value) -> Exprs.typedLambda(coreParams, expr(value));
+            List<Param> coreParams = lambda.params().stream()
+                    .map(param -> new Param(declare(param), param.type().typeRef()))
+                    .toList();
+            return switch (lambda.body()) {
+                // An assignment is a statement of the core, not an expression: `(v0) -> { this.f = v0; }`.
+                case Node.LambdaBody.Value(var _, Node.Assign assign) ->
+                    Exprs.typedLambda(coreParams, cb -> cb.accept(assignStmt(assign)));
+                case Node.LambdaBody.Value(var _, var value) -> Exprs.typedLambda(coreParams, returned(value));
                 case Node.LambdaBody.Block(var block) -> {
                     List<Stmt> stmts = lowerBlock(block.instrs()).statements();
-                    yield Exprs.typedLambda(coreParams, cb -> {
-                        for (Stmt s : stmts) {
-                            cb.accept(s);
-                        }
-                    });
+                    yield Exprs.typedLambda(coreParams, cb -> stmts.forEach(cb));
                 }
             };
         } finally {
@@ -758,5 +804,38 @@ final class Lowering {
             loopStack = enclosingLoops;
             result = enclosingResult;
         }
+    }
+
+    /// A `switch` expression over an enum. The selector is of the enum to
+    /// javac, cast to it if its static type is another; every result is of
+    /// the type of the expression ([Expressions#switch_]), so that is the
+    /// type javac gives the `switch` where it stands alone (JLS 15.28.1). A
+    /// block of a case is in the loops of the code around it, though it
+    /// cannot break or continue them ([ScopeCheck]).
+    private Expr switchExpr(Node.Switch switch_) {
+        EnumToken<?> enumType = switch_.enumType();
+        Node.Operand selector = switch_.selector();
+        target.verify(enumType);
+        target.verify(selector.type());
+        Expr selected = Tokens.sameType(selector.type(), enumType)
+                ? expr(selector.node(), true)
+                : Exprs.cast(enumType.typeRef(), expr(selector.node()));
+        Stream<SwitchCase> cases = switch_.cases().stream()
+                .map(c -> new SwitchCase(
+                        NonEmptyList.copyOf(c.constants().stream()
+                                .<CaseLabel>map(constant ->
+                                        new ConstantLabel(new FieldAccessExpr(Optional.empty(), constant.name())))
+                                .toList()),
+                        caseBody(c.arm())));
+        Stream<SwitchCase> otherwise = switch_.otherwise().stream()
+                .map(arm -> new SwitchCase(NonEmptyList.copyOf(List.<CaseLabel>of(new DefaultLabel())), caseBody(arm)));
+        return new SwitchExpr(selected, Stream.concat(cases, otherwise).toList());
+    }
+
+    private CaseBody caseBody(Node.Arm arm) {
+        return switch (arm) {
+            case Node.Arm.Value(var value) -> new ExprCaseBody(expr(value, true));
+            case Node.Arm.Block(var block) -> new BlockCaseBody(lowerBlock(block.instrs()));
+        };
     }
 }

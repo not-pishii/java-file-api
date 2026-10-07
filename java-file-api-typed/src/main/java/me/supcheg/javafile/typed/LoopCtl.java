@@ -6,7 +6,8 @@ package me.supcheg.javafile.typed;
 ///
 /// Breaking an outer loop from an inner one renders a labeled `break`. A
 /// `LoopCtl` that escapes its loop body — stored and used after the loop, in
-/// another loop, or from a lambda body inside the loop, which Java forbids —
+/// another loop, or from a lambda body or a block of a `switch` expression
+/// inside the loop, neither of which Java lets jump out —
 /// is rejected when the `break_`/`continue_` is built.
 public final class LoopCtl {
     private final Block<?, ?> body;

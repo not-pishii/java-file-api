@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -56,6 +55,15 @@ import java.util.stream.Stream;
 /// the enclosing statement is complete, and a clause of it may be rejected
 /// there rather than where it was added.
 ///
+/// **A `switch` expression** throws where it stands: what its selector and
+/// the values of its cases throw is thrown by the expression it is part of,
+/// and a block of a case ([YieldBody]) hands what is thrown in it to the
+/// block the `switch` was built in, where its statements were checked as
+/// they were appended. That block encloses the one the `switch` is used in
+/// ([ScopeCheck]), so what covers an exception there covers it here; to the
+/// `catch` clauses of a `try` a block of a case is a block of the statement
+/// the `switch` is in.
+///
 /// The untyped code of `Unsafe` is not looked into: what it throws is its
 /// author's to catch or declare, and a `try` block that holds some is
 /// taken to throw anything, so its `catch` clauses are not checked.
@@ -83,6 +91,9 @@ import java.util.stream.Stream;
 ///   would be unchecked to javac — and it is covered by the same type
 ///   variable, by the class that is its bound and by `Throwable`, not by
 ///   the superclasses of the bound in between.
+/// - *A block of a `switch` built outside the `try` it is used in.* Its
+///   statements are checked where the `switch` is built: a `catch_` of a
+///   `try_` the `switch` is then used in does not cover them.
 /// - *A field initializer* throws no checked exception. Java lets the
 ///   initializer of an instance field throw what every constructor of the
 ///   class declares.
@@ -171,6 +182,19 @@ final class Exceptions {
                     + " constructor declares; make the call in a constructor or a method (JLS 11.2.3)");
         }
         requireCoveredInLambdas(node);
+    }
+
+    /// Checks the body of an expression lambda where the lambda is made: it
+    /// is no statement of a block, and what it throws is covered in the
+    /// lambda or not at all.
+    ///
+    /// @param value the body
+    /// @param scope the lambda-boundary block of the lambda
+    /// @throws IllegalStateException if `value` can throw a checked exception the method of the functional
+    ///     interface does not declare
+    static void lambdaValue(Node value, Block<?, ?> scope) {
+        raised(value).forEach(raise -> requireCovered(raise, scope));
+        requireCoveredInLambdas(value);
     }
 
     /// The body of an expression lambda is no statement of a block, so it
@@ -455,9 +479,11 @@ final class Exceptions {
                     Node.Unary _,
                     Node.Cast _,
                     Node.InstanceOf _,
-                    Node.Switch _,
                     Node.Assign _,
                     Node.Raw _ -> new Act.Computes();
+            // A switch throws what its selector, its values and its blocks do, and nothing of its own:
+            // a selector that is null is a NullPointerException, which is not checked.
+            case Node.Switch _ -> new Act.Computes();
         };
     }
 
@@ -484,32 +510,28 @@ final class Exceptions {
                 Stream.of(init, condition, update);
             case Instr.ForEach(var _, var _, var iterable, var _) -> Stream.of(iterable);
             case Instr.Return(var value) -> value.stream();
+            case Instr.Yield(var value) -> Stream.of(value);
             case Instr.Throw(var value, var _) -> Stream.of(value);
             case Instr.Break _, Instr.Continue _, Instr.Try _, Instr.Raw _ -> Stream.empty();
         };
     }
 
-    /// The blocks nested in `instr`.
+    /// The blocks nested in `instr`: those of the statement, and those of
+    /// the cases of the `switch` expressions it evaluates.
     private static Stream<Block<?, ?>> blocks(Instr instr) {
-        return switch (instr) {
-            case Instr.If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.stream());
-            case Instr.IfInstance(var _, var _, var _, var then, var otherwise) ->
-                Stream.concat(Stream.of(then), otherwise.stream());
-            case Instr.While(var _, var _, var body) -> Stream.of(body);
-            case Instr.DoWhile(var _, var body, var _) -> Stream.of(body);
-            case Instr.For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
-            case Instr.ForEach(var _, var _, var _, var body) -> Stream.of(body);
-            case Instr.Try(var body, var catches, var finallyBlock) ->
-                Stream.of(Stream.of(body), catches.stream().map(Instr.Catch::body), finallyBlock.stream())
-                        .flatMap(Function.identity());
-            case Instr.Let _,
-                    Instr.Exec _,
-                    Instr.Return _,
-                    Instr.Throw _,
-                    Instr.Break _,
-                    Instr.Continue _,
-                    Instr.Raw _ -> Stream.empty();
-        };
+        return Stream.concat(
+                Instr.blocks(instr),
+                nodes(instr).flatMap(Exceptions::descendants).flatMap(Exceptions::blocks));
+    }
+
+    /// The blocks `node` has itself: those of the cases of a `switch`.
+    private static Stream<Block<?, ?>> blocks(Node node) {
+        return node instanceof Node.Switch switch_
+                ? switch_.arms().flatMap(arm -> switch (arm) {
+                    case Node.Arm.Value _ -> Stream.empty();
+                    case Node.Arm.Block(var block) -> Stream.of(block);
+                })
+                : Stream.empty();
     }
 
     /// `node` and every expression evaluated with it; a lambda is one of
@@ -543,9 +565,13 @@ final class Exceptions {
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);
             case Node.Binary(var _, var left, var right, var _) -> Stream.of(left, right);
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);
-            case Node.Switch(var selector, var _, var cases, var otherwise) ->
-                Stream.of(Stream.of(selector), cases.stream().map(Node.Case::value), otherwise.stream())
-                        .flatMap(Function.identity());
+            // The statements of a block of a case are checked as they are appended to it.
+            case Node.Switch switch_ ->
+                Stream.concat(
+                        Stream.of(switch_.selector().node()), switch_.arms().flatMap(arm -> switch (arm) {
+                            case Node.Arm.Value(var value) -> Stream.of(value);
+                            case Node.Arm.Block _ -> Stream.empty();
+                        }));
             case Node.Assign(var target, var value) -> Stream.concat(children(target), Stream.of(value));
         };
     }

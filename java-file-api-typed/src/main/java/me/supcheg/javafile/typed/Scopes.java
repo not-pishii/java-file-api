@@ -1,5 +1,7 @@
 package me.supcheg.javafile.typed;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.Supplier;
 
 /// The innermost scope being built, bound for the duration of [#within].
@@ -16,6 +18,13 @@ final class Scopes {
 
     static <X> X within(Object scope, Supplier<X> action) {
         return ScopedValue.where(SCOPE, scope).call(action::get);
+    }
+
+    /// The innermost block being built, or `null` outside of any body: where
+    /// an expression that is a scope of its own — a lambda, a `switch` with a
+    /// block — is built, and so what it is nested in.
+    static @Nullable Block<?, ?> innermostBlock() {
+        return SCOPE.isBound() && SCOPE.get() instanceof Block<?, ?> block ? block : null;
     }
 
     static void requireInnermost(Object scope, String what) {

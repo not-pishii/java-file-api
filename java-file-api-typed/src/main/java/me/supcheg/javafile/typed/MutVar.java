@@ -10,7 +10,11 @@ import me.supcheg.javafile.facts.TypeToken;
 /// Besides the scope rule of every [Var], a `MutVar` never crosses a lambda
 /// boundary: a statement of a lambda body that reads or assigns a `MutVar`
 /// declared outside that lambda is rejected when it is built, since javac
-/// allows a lambda to capture only effectively final variables.
+/// allows a lambda to capture only effectively final variables. Whether a
+/// `MutVar` is ever assigned is not looked at: one that is not would be
+/// effectively final to javac, and is rejected all the same — declare it by
+/// `let`. The block of a case of a `switch` expression is no such boundary:
+/// it reads and assigns the variables of the code around the `switch`.
 ///
 /// @param <T> the Java type of the variable
 public final class MutVar<T> extends Var<T> {

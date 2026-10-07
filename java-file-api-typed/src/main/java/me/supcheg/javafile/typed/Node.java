@@ -16,6 +16,7 @@ import me.supcheg.javafile.facts.TypeToken;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /// The untyped expression IR of the typed layer. Unlike core expressions it
 /// refers to variables by identity; lowering assigns names.
@@ -110,11 +111,44 @@ sealed interface Node {
     /// the single abstract method of the interface, its owner.
     record Lambda(Invocable sam, List<Var<?>> params, LambdaBody body) implements Node {}
 
-    /// A `switch` expression over an enum.
-    record Switch(Node selector, EnumToken<?> enumType, List<Case> cases, Optional<Node> otherwise) implements Node {}
+    /// A `switch` expression over an enum, `switch (selector) { case A, B -> ...; default -> ... }`.
+    /// Every result is of the type of the expression, see [Arm].
+    ///
+    /// @param selector the selector, with its static type: lowering casts it to `enumType` if it is of another
+    /// @param enumType the enum
+    /// @param cases the cases, in order: every constant in at most one, and in exactly one if there is no
+    ///     `otherwise`
+    /// @param otherwise the `default` case, if any
+    record Switch(Operand selector, EnumToken<?> enumType, List<Case> cases, Optional<Arm> otherwise) implements Node {
+        public Switch {
+            cases = List.copyOf(cases);
+        }
 
-    /// A case of a [Switch].
-    record Case(EnumConstant<?> constant, Node value) {}
+        /// What the cases are, the `default` one last.
+        Stream<Arm> arms() {
+            return Stream.concat(cases.stream().map(Case::arm), otherwise.stream());
+        }
+    }
+
+    /// A case of a [Switch], `case A, B -> arm`.
+    ///
+    /// @param constants the constants of the label, at least one
+    /// @param arm what the case is
+    record Case(List<EnumConstant<?>> constants, Arm arm) {
+        public Case {
+            constants = List.copyOf(constants);
+        }
+    }
+
+    /// What a case of a [Switch] is.
+    sealed interface Arm {
+        /// `-> value`: `value` is of the type of the `switch`, cast to it where its own type is another.
+        record Value(Node value) implements Arm {}
+
+        /// `-> { ... }`: a block nested in the block the `switch` is built in, that ends by `yield`
+        /// or cannot complete normally.
+        record Block(YieldBody<?> block) implements Arm {}
+    }
 
     /// An assignment, used as a statement.
     record Assign(Target target, Node value) implements Node {}
@@ -132,11 +166,12 @@ sealed interface Node {
 
     /// The body of a [Lambda]. Either way the lambda's parameters are owned by
     /// a lambda-boundary block (§6.2) nested in the block the lambda is
-    /// built in.
+    /// built in, if it is built in one.
     sealed interface LambdaBody {
         /// An expression body, `x -> expr`; `scope` is the (statement-less)
         /// lambda-boundary block that owns the parameters and in which
-        /// `value` is checked.
+        /// `value` is checked. For a `void` method `value` is a statement
+        /// expression, an [Assign] among them.
         record Value(me.supcheg.javafile.typed.Block<?, ?> scope, Node value) implements LambdaBody {}
 
         /// A block body, `x -> { ... }`.

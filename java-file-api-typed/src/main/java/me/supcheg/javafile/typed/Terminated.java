@@ -1,7 +1,7 @@
 package me.supcheg.javafile.typed;
 
 /// The proof that a block ended (§6.3): with `return`, `throw`, `break`,
-/// `continue`, or a construct that cannot complete normally (JLS 14.22) —
+/// `continue`, `yield`, or a construct that cannot complete normally (JLS 14.22) —
 /// an `ifElse` whose branches both end, a `tryTerminated`, a `loopForever`.
 /// For `void` code, [VoidBody#end()] also gives it.
 ///
@@ -15,7 +15,8 @@ package me.supcheg.javafile.typed;
 /// nested block, another method — is rejected where it is handed back, when
 /// the construct is built.
 ///
-/// @param <R> the result type of the enclosing method or lambda
+/// @param <R> the result type of the enclosing method or lambda, or the type of the `switch` expression
+///     the block is of
 public final class Terminated<R> {
     private final Block<?, ?> issuer;
 

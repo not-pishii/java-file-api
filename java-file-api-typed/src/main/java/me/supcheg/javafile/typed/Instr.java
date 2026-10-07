@@ -6,6 +6,8 @@ import me.supcheg.javafile.facts.RefToken;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /// The untyped statement IR of the typed layer.
 sealed interface Instr {
@@ -38,6 +40,9 @@ sealed interface Instr {
     /// `return;` or `return value;`.
     record Return(Optional<Node> value) implements Instr {}
 
+    /// `yield value;` of the block of a case of a `switch` expression.
+    record Yield(Node value) implements Instr {}
+
     /// `throw value;`, with the static type of `value`.
     record Throw(Node value, ExceptionType type) implements Instr {}
 
@@ -55,4 +60,25 @@ sealed interface Instr {
 
     /// An untyped core statement from `Unsafe`.
     record Raw(Stmt stmt) implements Instr {}
+
+    /// The blocks that are part of the statement `instr`: its branches,
+    /// its body. Not the blocks of the expressions it evaluates.
+    ///
+    /// @param instr the statement
+    /// @return its blocks, in the order of the code
+    static Stream<Block<?, ?>> blocks(Instr instr) {
+        return switch (instr) {
+            case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.stream());
+            case IfInstance(var _, var _, var _, var then, var otherwise) ->
+                Stream.concat(Stream.of(then), otherwise.stream());
+            case While(var _, var _, var body) -> Stream.of(body);
+            case DoWhile(var _, var body, var _) -> Stream.of(body);
+            case For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
+            case ForEach(var _, var _, var _, var body) -> Stream.of(body);
+            case Try(var body, var catches, var finallyBlock) ->
+                Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.stream())
+                        .flatMap(Function.identity());
+            case Let _, Exec _, Return _, Yield _, Throw _, Break _, Continue _, Raw _ -> Stream.empty();
+        };
+    }
 }
