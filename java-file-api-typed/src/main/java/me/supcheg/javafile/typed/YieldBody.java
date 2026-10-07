@@ -57,8 +57,8 @@ public final class YieldBody<Y> extends Block<Y, YieldBody<Y>> {
     }
 
     @Override
-    YieldBody<Y> child(String what, ExceptionScope exceptionScope) {
-        return new YieldBody<>(this, Nesting.PLAIN, what, exceptionScope, type);
+    YieldBody<Y> child(String what, Nesting nesting, ExceptionScope exceptionScope) {
+        return new YieldBody<>(this, nesting, what, exceptionScope, type);
     }
 
     /// Appends `yield value;` and ends this block: `value` is the value of

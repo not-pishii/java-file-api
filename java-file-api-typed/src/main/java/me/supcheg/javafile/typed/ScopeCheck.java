@@ -195,7 +195,7 @@ final class ScopeCheck {
     /// expression.
     private static boolean nestedSpecially(Block<?, ?> owner, @Nullable Block<?, ?> use) {
         return Stream.<@Nullable Block<?, ?>>iterate(use, b -> b != null && b != owner, Block::parent)
-                .anyMatch(b -> b.nesting() != Block.Nesting.PLAIN);
+                .anyMatch(b -> b.nesting().ofExpression());
     }
 
     /// Whether a lambda body is between `use` and `owner`, which encloses it.
@@ -261,7 +261,7 @@ final class ScopeCheck {
                         + loopBody.path() + ", which does not enclose it: the LoopCtl escaped its loop body (§6.3)");
             }
             switch (b.nesting()) {
-                case PLAIN -> {}
+                case PLAIN, FINALLY_BLOCK -> {}
                 case LAMBDA_BODY ->
                     throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
                             + loopBody.path() + " across a lambda boundary: a lambda body cannot break or continue"
