@@ -81,7 +81,14 @@ final class MetamodelNames {
     /// The names a member fact may not have: those of the tokens, the
     /// functional interface's `sam`, the reserve for an exhaustive switch and
     /// the nested classes.
-    private static final Set<String> RESERVED = Set.of(TOKEN, INSTANCE_TOKEN, ANY, SAM, "switch_", DATA, CANONICAL);
+    /// The method of a metamodel that starts the proof that a class extends the type.
+    static final String EXTEND = "extend";
+
+    /// The method of a metamodel that starts the proof that a class implements the type.
+    static final String IMPLEMENT = "implement";
+
+    private static final Set<String> RESERVED =
+            Set.of(TOKEN, INSTANCE_TOKEN, ANY, SAM, "switch_", DATA, CANONICAL, EXTEND, IMPLEMENT);
 
     private MetamodelNames() {}
 

@@ -45,12 +45,14 @@ package me.supcheg.javafile.facts.meta;
 ///   so that what it is written with takes no name from the facts.
 /// - 11: that class has the entry of a type a generated class can extend or
 ///   implement: `extend` or `implement`, and a step per abstract method.
+/// - 12: a metamodel has the entry as a method of its own, `extend` or
+///   `implement`; a member of its type named so gives way to it.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 11;
+    public static final int VERSION = 12;
 
     private MetamodelFormat() {}
 }

@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -31,9 +32,9 @@ import p.Ov;
 ///
 /// A member [Ov] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Ov] by the proof `Ov_Heritage` starts.
+/// A generated class extends or implements [Ov] by the proof its metamodel starts, with the stages of `Ov_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "a2c68a0ed825cc9757049dda2437b7f8865a935ca53e221aba0f63e7564f85e1", complete = true, format = 11)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "a2c68a0ed825cc9757049dda2437b7f8865a935ca53e221aba0f63e7564f85e1", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -152,5 +153,14 @@ public final class Ov_ {
     /// @return the fact
     public static <T> MethodRef1<Ov, String, T> solo_T(RefToken<T> t) {
         return UnsafeFacts.method(TOKEN, "solo", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared extends [Ov]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Ov> extend(RefToken<Self> self) {
+        return new Ov_Heritage().extend(TOKEN, self);
     }
 }

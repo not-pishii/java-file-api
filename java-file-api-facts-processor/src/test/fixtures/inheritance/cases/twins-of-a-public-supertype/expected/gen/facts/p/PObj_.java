@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.PObj_.Canonical;
 import gen.facts.p.PObj_.Data;
+import gen.facts.p.PObj_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -31,9 +33,9 @@ import p.PObj;
 ///
 /// A member [PObj] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [PObj] by the proof `PObj_Heritage` starts.
+/// A generated class extends or implements [PObj] by the proof its metamodel starts, with the stages of `PObj_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 11)
+@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -86,5 +88,14 @@ public final class PObj_ {
     public static final Sam0<PObj, Object> sam = UnsafeFacts.sam(get);
 
     private PObj_() {
+    }
+
+    /// Starts the proof that a class being declared implements [PObj]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new PObj_Heritage().implement(TOKEN, self);
     }
 }

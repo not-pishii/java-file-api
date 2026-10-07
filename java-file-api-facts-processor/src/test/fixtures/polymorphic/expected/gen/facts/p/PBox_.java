@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -37,11 +38,11 @@ import p.PBox;
 ///
 /// A member [PBox] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [PBox] by the proof `PBox_Heritage` starts.
+/// A generated class extends or implements [PBox] by the proof its metamodel starts, with the stages of `PBox_Heritage`.
 ///
 /// @param <T> a type argument of [PBox]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PBox.class, fingerprint = "5a7b9b2d5818f3553b4e9ab535ee3898d005294c21a9e22270011a0060b815bf", complete = true, format = 11)
+@GeneratedMetamodel(of = PBox.class, fingerprint = "5a7b9b2d5818f3553b4e9ab535ee3898d005294c21a9e22270011a0060b815bf", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -172,5 +173,14 @@ public final class PBox_<T> {
     /// @return the fact
     public <T_> MethodRef1<PBox<T>, T_, T_> shadow_T(RefToken<T_> t__) {
         return UnsafeFacts.method(token, "shadow", t__, UnsafeFacts.param(t__, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t__));
+    }
+
+    /// Starts the proof that a class being declared extends [PBox]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, PBox<T>> extend(RefToken<Self> self) {
+        return new PBox_Heritage().extend(this.token, self);
     }
 }

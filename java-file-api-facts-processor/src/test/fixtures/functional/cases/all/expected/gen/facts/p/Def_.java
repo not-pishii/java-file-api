@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -28,9 +30,9 @@ import p.Def;
 ///
 /// A member [Def] inherits has its fact in the metamodel of the supertype that declares it: [Fn_].
 ///
-/// A generated class extends or implements [Def] by the proof `Def_Heritage` starts.
+/// A generated class extends or implements [Def] by the proof its metamodel starts, with the stages of `Def_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Def.class, fingerprint = "20105e50991cb403a1f248e92b1e91d6e057ffc54b9c6b51732f8f1c306e2b87", complete = true, format = 11)
+@GeneratedMetamodel(of = Def.class, fingerprint = "20105e50991cb403a1f248e92b1e91d6e057ffc54b9c6b51732f8f1c306e2b87", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -79,5 +81,14 @@ public final class Def_ {
     public static final MethodRef1<Def, String, String> apply_String = UnsafeFacts.method(TOKEN, "apply", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Def_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Def]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Def> implement(RefToken<Self> self) {
+        return new Def_Heritage().implement(TOKEN, self);
     }
 }

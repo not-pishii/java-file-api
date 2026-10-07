@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -50,11 +51,11 @@ import p.ProtG;
 ///
 /// `p.ProtBase`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
-/// A generated class extends or implements [ProtG] by the proof `ProtG_Heritage` starts.
+/// A generated class extends or implements [ProtG] by the proof its metamodel starts, with the stages of `ProtG_Heritage`.
 ///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 11)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -225,5 +226,14 @@ public final class ProtG_<T> {
     /// @return the fact
     public static <X extends Number> Protected<ProtG<?>, StaticMethodRef1<X, X>> spick_X(RefToken<X> x) {
         return UnsafeFacts.protected_(ANY, UnsafeFacts.staticMethod(ANY, "spick", x, UnsafeFacts.param(x, Param.fixed(ClassDesc.of("java.lang.Number"))), MemberTraits.FINAL.withTypeArgs(x).with(Access.PROTECTED)));
+    }
+
+    /// Starts the proof that a class being declared extends [ProtG]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, ProtG<T>> extend(RefToken<Self> self) {
+        return new ProtG_Heritage().extend(this.token, self);
     }
 }

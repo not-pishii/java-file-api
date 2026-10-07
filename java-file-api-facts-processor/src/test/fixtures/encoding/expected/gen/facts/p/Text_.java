@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -19,6 +20,7 @@ import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Char;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
@@ -33,9 +35,9 @@ import p.Text;
 ///
 /// A member [Text] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Text] by the proof `Text_Heritage` starts.
+/// A generated class extends or implements [Text] by the proof its metamodel starts, with the stages of `Text_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "6a5035fd9035915f6f90c9d20a0a648c34cbad243455d261751a66f8ae96a15a", complete = true, format = 11)
+@GeneratedMetamodel(of = Text.class, fingerprint = "6a5035fd9035915f6f90c9d20a0a648c34cbad243455d261751a66f8ae96a15a", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -131,5 +133,14 @@ public final class Text_ {
     public static final CtorRef0<Text> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     private Text_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Text]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Text> extend(RefToken<Self> self) {
+        return new Text_Heritage().extend(TOKEN, self);
     }
 }

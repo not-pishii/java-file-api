@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -48,11 +49,11 @@ import p.Box;
 ///
 /// A member [Box] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Box] by the proof `Box_Heritage` starts.
+/// A generated class extends or implements [Box] by the proof its metamodel starts, with the stages of `Box_Heritage`.
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "d8126ca3995b5fbc5fc59fdfbb4a01b691118d2aa317db08324a20d2ab22b7e7", complete = true, format = 11)
+@GeneratedMetamodel(of = Box.class, fingerprint = "d8126ca3995b5fbc5fc59fdfbb4a01b691118d2aa317db08324a20d2ab22b7e7", complete = true, format = 12)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -227,5 +228,14 @@ public final class Box_<T> {
         this.self = UnsafeFacts.method(token, "self", token, MemberTraits.OVERRIDABLE);
         this.set_T = UnsafeFacts.voidMethod(token, "set", UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
         this.toArray_TArray = UnsafeFacts.method(token, "toArray", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE);
+    }
+
+    /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Box<T>> extend(RefToken<Self> self) {
+        return new Box_Heritage().extend(this.token, self);
     }
 }

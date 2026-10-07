@@ -120,7 +120,7 @@ public final class Pub1_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Self> Complete<Self, Pub1> extend(DeclaredToken<Pub1> type, RefToken<Self> self) {
+    public <Self> Complete<Self, Pub1> extend(DeclaredToken<Pub1> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

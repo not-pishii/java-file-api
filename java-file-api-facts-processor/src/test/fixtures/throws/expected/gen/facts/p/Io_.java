@@ -8,6 +8,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -42,9 +43,9 @@ import p.Io;
 /// - `method hidden()`, which mentions types that are not public: p.Secret
 /// - `constructor Io(java.lang.String)`, which mentions types that are not public: p.Secret
 ///
-/// A generated class extends or implements [Io] by the proof `Io_Heritage` starts.
+/// A generated class extends or implements [Io] by the proof its metamodel starts, with the stages of `Io_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 11)
+@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -152,5 +153,14 @@ public final class Io_ {
     /// @return the fact
     public static <X extends Throwable> VoidMethodRef0<Io> generic(RefToken<X> x) {
         return UnsafeFacts.voidMethod(TOKEN, "generic", MemberTraits.OVERRIDABLE.throwing(x).withTypeArgs(x));
+    }
+
+    /// Starts the proof that a class being declared extends [Io]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Io> extend(RefToken<Self> self) {
+        return new Io_Heritage().extend(TOKEN, self);
     }
 }

@@ -120,7 +120,7 @@ public final class Both_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <T extends Number & Comparable<T>, Self> Extend<T, Self> extend(DeclaredToken<Both<T>> type, RefToken<Self> self) {
+    public <T extends Number & Comparable<T>, Self> Extend<T, Self> extend(DeclaredToken<Both<T>> type, RefToken<Self> self) {
         return new Extend<>(UnsafeFacts.steps(type, self));
     }
 

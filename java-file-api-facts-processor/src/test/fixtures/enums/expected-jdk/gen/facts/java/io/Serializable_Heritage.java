@@ -49,7 +49,7 @@ public final class Serializable_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Self> Complete<Self, Serializable> implement(DeclaredToken<Serializable> type, RefToken<Self> self) {
+    public <Self> Complete<Self, Serializable> implement(DeclaredToken<Serializable> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

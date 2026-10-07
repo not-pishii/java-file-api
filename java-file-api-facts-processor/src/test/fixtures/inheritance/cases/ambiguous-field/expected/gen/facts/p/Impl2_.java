@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -34,9 +36,9 @@ import p.Impl2;
 ///
 /// - `field K of p.HIface`, which is ambiguous in p.Impl2 with field K of p.PubBase
 ///
-/// A generated class extends or implements [Impl2] by the proof `Impl2_Heritage` starts.
+/// A generated class extends or implements [Impl2] by the proof its metamodel starts, with the stages of `Impl2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl2.class, fingerprint = "b5de6cf7a6e67c4554f366c17b4deef22be1cd5901984223db2f1eee6e37c566", complete = true, format = 11)
+@GeneratedMetamodel(of = Impl2.class, fingerprint = "b5de6cf7a6e67c4554f366c17b4deef22be1cd5901984223db2f1eee6e37c566", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -96,5 +98,14 @@ public final class Impl2_ {
     public static final CtorRef0<Impl2> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     private Impl2_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Impl2]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Impl2> extend(RefToken<Self> self) {
+        return new Impl2_Heritage().extend(TOKEN, self);
     }
 }

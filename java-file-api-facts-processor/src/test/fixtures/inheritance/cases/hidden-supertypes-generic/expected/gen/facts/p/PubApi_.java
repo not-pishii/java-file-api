@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.PubApi_.Canonical;
 import gen.facts.p.PubApi_.Data;
+import gen.facts.p.PubApi_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -31,9 +33,9 @@ import p.PubApi;
 ///
 /// A member [PubApi] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [PubApi] by the proof `PubApi_Heritage` starts.
+/// A generated class extends or implements [PubApi] by the proof its metamodel starts, with the stages of `PubApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubApi.class, fingerprint = "47d010ffa628484c7d6c6baaaa337d9adefac643aab4cb1de2ad52c59885dee2", complete = true, format = 11)
+@GeneratedMetamodel(of = PubApi.class, fingerprint = "47d010ffa628484c7d6c6baaaa337d9adefac643aab4cb1de2ad52c59885dee2", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -91,5 +93,14 @@ public final class PubApi_ {
     public static final Sam0<PubApi, String> sam = UnsafeFacts.sam(pub);
 
     private PubApi_() {
+    }
+
+    /// Starts the proof that a class being declared implements [PubApi]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new PubApi_Heritage().implement(TOKEN, self);
     }
 }

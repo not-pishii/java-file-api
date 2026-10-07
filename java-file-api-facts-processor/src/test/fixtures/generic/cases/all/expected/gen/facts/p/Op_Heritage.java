@@ -77,7 +77,7 @@ public final class Op_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <T, Self> Implement<T, Self> implement(DeclaredToken<Op<T>> type, RefToken<Self> self) {
+    public <T, Self> Implement<T, Self> implement(DeclaredToken<Op<T>> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

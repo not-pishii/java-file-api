@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -17,6 +18,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -33,9 +35,9 @@ import p.PubRaw;
 ///
 /// `p.HG`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
-/// A generated class extends or implements [PubRaw] by the proof `PubRaw_Heritage` starts.
+/// A generated class extends or implements [PubRaw] by the proof its metamodel starts, with the stages of `PubRaw_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "1fa6a4ed1c609408552b2040d646d426d7d15b7a5f9065e590374ee79fc00c9a", complete = true, format = 11)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "1fa6a4ed1c609408552b2040d646d426d7d15b7a5f9065e590374ee79fc00c9a", complete = true, format = 12)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -115,5 +117,14 @@ public final class PubRaw_ {
     public static final VoidMethodRef1<PubRaw, Object> put_Object = UnsafeFacts.voidMethod(TOKEN, "put", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private PubRaw_() {
+    }
+
+    /// Starts the proof that a class being declared extends [PubRaw]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, PubRaw> extend(RefToken<Self> self) {
+        return new PubRaw_Heritage().extend(TOKEN, self);
     }
 }

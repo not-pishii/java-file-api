@@ -26,7 +26,7 @@ import p.Bound;
 ///
 /// `@Facts` does not ask for [Bound]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Bound.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Bound.class, fingerprint = "6717990bbc9603f1207221848194b38c17970abba5576a8c6c2189044e2c8ce2", complete = false, format = 11)
+@GeneratedMetamodel(of = Bound.class, fingerprint = "6717990bbc9603f1207221848194b38c17970abba5576a8c6c2189044e2c8ce2", complete = false, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

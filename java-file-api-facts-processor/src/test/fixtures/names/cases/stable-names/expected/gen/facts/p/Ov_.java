@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -39,9 +40,9 @@ import p.Ov;
 /// - `method m(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 /// - `constructor Ov(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 ///
-/// A generated class extends or implements [Ov] by the proof `Ov_Heritage` starts.
+/// A generated class extends or implements [Ov] by the proof its metamodel starts, with the stages of `Ov_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "ec95643e100ae9f4a4810980f017ea15f29356afd3f39ccc5277dcb6e60cd6a0", complete = true, format = 11)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "ec95643e100ae9f4a4810980f017ea15f29356afd3f39ccc5277dcb6e60cd6a0", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -144,5 +145,14 @@ public final class Ov_ {
     /// @return the fact
     public static <T> MethodRef0<Ov, T> size_(RefToken<T> t) {
         return UnsafeFacts.method(TOKEN, "size", t, MemberTraits.OVERRIDABLE.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared extends [Ov]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Ov> extend(RefToken<Self> self) {
+        return new Ov_Heritage().extend(TOKEN, self);
     }
 }

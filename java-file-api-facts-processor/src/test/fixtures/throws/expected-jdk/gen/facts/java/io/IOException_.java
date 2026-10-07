@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [IOException]: it is only mentioned in the signatures of [p.Io]. For the facts of its members add `IOException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IOException.class, fingerprint = "92ce52da6e0510ac0a3bc8d631729f1d3f2d93a432bd5d7b7d32eb6172864f88", complete = false, format = 11)
+@GeneratedMetamodel(of = IOException.class, fingerprint = "92ce52da6e0510ac0a3bc8d631729f1d3f2d93a432bd5d7b7d32eb6172864f88", complete = false, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

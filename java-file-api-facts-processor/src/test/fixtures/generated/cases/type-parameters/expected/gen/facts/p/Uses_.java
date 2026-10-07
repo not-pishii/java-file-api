@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -33,11 +34,11 @@ import p.Uses;
 ///
 /// A member [Uses] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Uses] by the proof `Uses_Heritage` starts.
+/// A generated class extends or implements [Uses] by the proof its metamodel starts, with the stages of `Uses_Heritage`.
 ///
 /// @param <T> a type argument of [Uses]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "225c14b2c2df9e00dd02ef948ba4059fe7625391ce66708bb4f4369ef6600dea", complete = true, format = 11)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "225c14b2c2df9e00dd02ef948ba4059fe7625391ce66708bb4f4369ef6600dea", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -105,5 +106,14 @@ public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
     public Uses_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
+    }
+
+    /// Starts the proof that a class being declared extends [Uses]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Uses<T>> extend(RefToken<Self> self) {
+        return new Uses_Heritage().extend(this.token, self);
     }
 }

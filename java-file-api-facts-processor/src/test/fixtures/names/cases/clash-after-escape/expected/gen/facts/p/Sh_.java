@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -36,9 +38,9 @@ import p.Sh;
 ///
 /// - `field x_, method <T>x()`, which would all be named x_
 ///
-/// A generated class extends or implements [Sh] by the proof `Sh_Heritage` starts.
+/// A generated class extends or implements [Sh] by the proof its metamodel starts, with the stages of `Sh_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sh.class, fingerprint = "37850320452769bc67a5f0a7ff29eaa35f64e661b10bccd45d25904a6a674d9f", complete = true, format = 11)
+@GeneratedMetamodel(of = Sh.class, fingerprint = "37850320452769bc67a5f0a7ff29eaa35f64e661b10bccd45d25904a6a674d9f", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -110,5 +112,14 @@ public final class Sh_ {
     public static final VoidMethodRef0<Sh> other = UnsafeFacts.voidMethod(TOKEN, "other", MemberTraits.OVERRIDABLE);
 
     private Sh_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Sh]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Sh> extend(RefToken<Self> self) {
+        return new Sh_Heritage().extend(TOKEN, self);
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -34,11 +35,11 @@ import p.Lists;
 ///
 /// A member [Lists] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Lists] by the proof `Lists_Heritage` starts.
+/// A generated class extends or implements [Lists] by the proof its metamodel starts, with the stages of `Lists_Heritage`.
 ///
 /// @param <T> a type argument of [Lists]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lists.class, fingerprint = "62cc92919e68c2afb1afab674bcd8839871a2e0bd2ba53616e1f5a318accdaab", complete = true, format = 11)
+@GeneratedMetamodel(of = Lists.class, fingerprint = "62cc92919e68c2afb1afab674bcd8839871a2e0bd2ba53616e1f5a318accdaab", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -120,5 +121,14 @@ public final class Lists_<T> {
     /// @return the fact
     public <U extends Number> VoidMethodRef2<Lists<T>, U[], T[]> all_UArray_TArray(RefToken<U> u) {
         return UnsafeFacts.voidMethod(token, "all", UnsafeFacts.param(ArrayToken.of(u), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;"))), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
+    }
+
+    /// Starts the proof that a class being declared extends [Lists]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Lists<T>> extend(RefToken<Self> self) {
+        return new Lists_Heritage().extend(this.token, self);
     }
 }

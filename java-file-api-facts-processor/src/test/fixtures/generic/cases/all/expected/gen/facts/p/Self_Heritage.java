@@ -124,7 +124,7 @@ public final class Self_Heritage implements Supplier<Told> {
     /// @param <S> a type argument of the type
     /// @param <Self_> the class being declared
     /// @return the stage of the first step
-    public static <S extends Self<S>, Self_> Extend<S, Self_> extend(DeclaredToken<Self<S>> type, RefToken<Self_> self) {
+    public <S extends Self<S>, Self_> Extend<S, Self_> extend(DeclaredToken<Self<S>> type, RefToken<Self_> self) {
         return new Extend<>(UnsafeFacts.steps(type, self));
     }
 

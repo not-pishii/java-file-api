@@ -2,6 +2,7 @@ package gen.facts.java.lang;
 
 import gen.facts.java.lang.Runnable_.Canonical;
 import gen.facts.java.lang.Runnable_.Data;
+import gen.facts.java.lang.Runnable_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -14,6 +15,7 @@ import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -30,9 +32,9 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Runnable] inherits has its fact in the metamodel of the supertype that declares it: [Object_].
 ///
-/// A generated class extends or implements [Runnable] by the proof `Runnable_Heritage` starts.
+/// A generated class extends or implements [Runnable] by the proof its metamodel starts, with the stages of `Runnable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 11)
+@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -85,5 +87,14 @@ public final class Runnable_ {
     public static final VoidSam0<Runnable> sam = UnsafeFacts.voidSam(run);
 
     private Runnable_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Runnable]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Runnable_Heritage().implement(TOKEN, self);
     }
 }

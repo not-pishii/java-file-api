@@ -121,7 +121,7 @@ public final class Sorted_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T extends Comparable<T>, Self> Complete<Self, Sorted<T>> extend(DeclaredToken<Sorted<T>> type, RefToken<Self> self) {
+    public <T extends Comparable<T>, Self> Complete<Self, Sorted<T>> extend(DeclaredToken<Sorted<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

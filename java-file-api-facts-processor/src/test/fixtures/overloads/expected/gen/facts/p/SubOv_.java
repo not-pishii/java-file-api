@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -16,6 +17,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -29,9 +31,9 @@ import p.SubOv;
 ///
 /// A member [SubOv] inherits has its fact in the metamodel of the supertype that declares it: [Ov_].
 ///
-/// A generated class extends or implements [SubOv] by the proof `SubOv_Heritage` starts.
+/// A generated class extends or implements [SubOv] by the proof its metamodel starts, with the stages of `SubOv_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SubOv.class, fingerprint = "9acb3ac8408610e8968dcc4d1ca8d72e154b765f34f534a6cde8b57407343e2c", complete = true, format = 11)
+@GeneratedMetamodel(of = SubOv.class, fingerprint = "9acb3ac8408610e8968dcc4d1ca8d72e154b765f34f534a6cde8b57407343e2c", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -103,5 +105,14 @@ public final class SubOv_ {
     public static final MethodRef1<SubOv, String, String> solo_String = UnsafeFacts.method(TOKEN, "solo", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private SubOv_() {
+    }
+
+    /// Starts the proof that a class being declared extends [SubOv]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, SubOv> extend(RefToken<Self> self) {
+        return new SubOv_Heritage().extend(TOKEN, self);
     }
 }

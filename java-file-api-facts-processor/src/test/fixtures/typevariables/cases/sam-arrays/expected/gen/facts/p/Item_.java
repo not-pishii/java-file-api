@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -28,9 +30,9 @@ import p.Item;
 ///
 /// A member [Item] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Item] by the proof `Item_Heritage` starts.
+/// A generated class extends or implements [Item] by the proof its metamodel starts, with the stages of `Item_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Item.class, fingerprint = "8934f04df860f4042291990c3523f465f14089af86f03e78b7b55ee9c54d2a93", complete = true, format = 11)
+@GeneratedMetamodel(of = Item.class, fingerprint = "8934f04df860f4042291990c3523f465f14089af86f03e78b7b55ee9c54d2a93", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -90,5 +92,14 @@ public final class Item_ {
     public static final CtorRef0<Item> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     private Item_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Item]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Item> extend(RefToken<Self> self) {
+        return new Item_Heritage().extend(TOKEN, self);
     }
 }

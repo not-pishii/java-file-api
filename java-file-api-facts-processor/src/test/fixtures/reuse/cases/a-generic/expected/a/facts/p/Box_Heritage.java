@@ -122,7 +122,7 @@ public final class Box_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T extends Comparable<T>, Self> Complete<Self, Box<T>> extend(DeclaredToken<Box<T>> type, RefToken<Self> self) {
+    public <T extends Comparable<T>, Self> Complete<Self, Box<T>> extend(DeclaredToken<Box<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

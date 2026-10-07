@@ -136,7 +136,7 @@ public final class Uses_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Self> Complete<Self, Uses> extend(DeclaredToken<Uses> type, RefToken<Self> self) {
+    public <Self> Complete<Self, Uses> extend(DeclaredToken<Uses> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

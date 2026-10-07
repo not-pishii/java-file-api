@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import p.Taken;
 ///
 /// A member [Taken] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Taken] by the proof `Taken_Heritage` starts.
+/// A generated class extends or implements [Taken] by the proof its metamodel starts, with the stages of `Taken_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Taken.class, fingerprint = "46bc976a5facb6d67e0c48c4aad42b65411c492dbcafc72e6d05244538fedc22", complete = true, format = 11)
+@GeneratedMetamodel(of = Taken.class, fingerprint = "200935c6164cfbb8efbd6dfe54bd4201532904115bffa1316b03a9058cb885da", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +47,7 @@ public final class Taken_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Taken] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Taken_"), "46bc976a5facb6d67e0c48c4aad42b65411c492dbcafc72e6d05244538fedc22", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Taken"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("extend"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("implement"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Taken"))), false, new Taken_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Taken_"), "200935c6164cfbb8efbd6dfe54bd4201532904115bffa1316b03a9058cb885da", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Taken"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("extend"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("implement"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Taken"))), false, new Taken_Heritage());
 
         private Data() {
         }
@@ -79,8 +81,12 @@ public final class Taken_ {
         member field public instance mutable int Of
         member field public instance mutable int ParameterizedTypeRef
         member field public instance mutable int PrimitiveTypeRef
+        member field public instance mutable int RefToken
         member field public instance mutable int Result
+        member field public instance mutable int Self
+        member field public instance mutable int Set
         member field public instance mutable int Supplier
+        member field public instance mutable int Taken_Heritage
         member field public instance mutable int Told
         member field public instance mutable int Types
         member field public instance mutable int Visibility
@@ -158,11 +164,23 @@ public final class Taken_ {
     /// The fact of [Taken#PrimitiveTypeRef].
     public static final MutableFieldRef<Taken, Int> PrimitiveTypeRef = UnsafeFacts.mutableField(TOKEN, "PrimitiveTypeRef", PrimitiveToken.INT);
 
+    /// The fact of [Taken#RefToken].
+    public static final MutableFieldRef<Taken, Int> RefToken = UnsafeFacts.mutableField(TOKEN, "RefToken", PrimitiveToken.INT);
+
     /// The fact of [Taken#Result].
     public static final MutableFieldRef<Taken, Int> Result = UnsafeFacts.mutableField(TOKEN, "Result", PrimitiveToken.INT);
 
+    /// The fact of [Taken#Self].
+    public static final MutableFieldRef<Taken, Int> Self = UnsafeFacts.mutableField(TOKEN, "Self", PrimitiveToken.INT);
+
+    /// The fact of [Taken#Set].
+    public static final MutableFieldRef<Taken, Int> Set_ = UnsafeFacts.mutableField(TOKEN, "Set", PrimitiveToken.INT);
+
     /// The fact of [Taken#Supplier].
     public static final MutableFieldRef<Taken, Int> Supplier = UnsafeFacts.mutableField(TOKEN, "Supplier", PrimitiveToken.INT);
+
+    /// The fact of [Taken#Taken_Heritage].
+    public static final MutableFieldRef<Taken, Int> Taken_Heritage_ = UnsafeFacts.mutableField(TOKEN, "Taken_Heritage", PrimitiveToken.INT);
 
     /// The fact of [Taken#Told].
     public static final MutableFieldRef<Taken, Int> Told = UnsafeFacts.mutableField(TOKEN, "Told", PrimitiveToken.INT);
@@ -186,11 +204,20 @@ public final class Taken_ {
     public static final CtorRef0<Taken> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Taken#extend()].
-    public static final VoidMethodRef0<Taken> extend = UnsafeFacts.voidMethod(TOKEN, "extend", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Taken> extend_ = UnsafeFacts.voidMethod(TOKEN, "extend", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Taken#implement()].
-    public static final VoidMethodRef0<Taken> implement = UnsafeFacts.voidMethod(TOKEN, "implement", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Taken> implement_ = UnsafeFacts.voidMethod(TOKEN, "implement", MemberTraits.OVERRIDABLE);
 
     private Taken_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Taken]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Taken> extend(RefToken<Self> self) {
+        return new Taken_Heritage().extend(TOKEN, self);
     }
 }

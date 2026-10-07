@@ -127,7 +127,7 @@ public final class Gt_Heritage implements Supplier<Told> {
     /// @param <E> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T, E, Self> Complete<Self, Gt<T, E>> extend(DeclaredToken<Gt<T, E>> type, RefToken<Self> self) {
+    public <T, E, Self> Complete<Self, Gt<T, E>> extend(DeclaredToken<Gt<T, E>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

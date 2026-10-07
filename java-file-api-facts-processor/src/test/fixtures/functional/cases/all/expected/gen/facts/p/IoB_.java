@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.IoB_.Canonical;
 import gen.facts.p.IoB_.Data;
+import gen.facts.p.IoB_Heritage.Implement;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import p.IoB;
 ///
 /// A member [IoB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [IoB] by the proof `IoB_Heritage` starts.
+/// A generated class extends or implements [IoB] by the proof its metamodel starts, with the stages of `IoB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoB.class, fingerprint = "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", complete = true, format = 11)
+@GeneratedMetamodel(of = IoB.class, fingerprint = "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -87,5 +89,14 @@ public final class IoB_ {
     public static final VoidSam0<IoB> sam = UnsafeFacts.voidSam(m);
 
     private IoB_() {
+    }
+
+    /// Starts the proof that a class being declared implements [IoB]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new IoB_Heritage().implement(TOKEN, self);
     }
 }

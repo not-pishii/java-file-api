@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -35,11 +36,11 @@ import p.T2;
 ///
 /// A member [T2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [T2] by the proof `T2_Heritage` starts.
+/// A generated class extends or implements [T2] by the proof its metamodel starts, with the stages of `T2_Heritage`.
 ///
 /// @param <T> a type argument of [T2]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = T2.class, fingerprint = "7635c4c03a05592359822e8826d5358cacafb66a81815fff2aa849b17e60a603", complete = true, format = 11)
+@GeneratedMetamodel(of = T2.class, fingerprint = "7635c4c03a05592359822e8826d5358cacafb66a81815fff2aa849b17e60a603", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -142,5 +143,14 @@ public final class T2_<T> {
         this.m_String = UnsafeFacts.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
         this.m_T = UnsafeFacts.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
         this.one_T = UnsafeFacts.method(token, "one", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
+    }
+
+    /// Starts the proof that a class being declared extends [T2]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, T2<T>> extend(RefToken<Self> self) {
+        return new T2_Heritage().extend(this.token, self);
     }
 }

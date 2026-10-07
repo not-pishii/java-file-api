@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Taken_Abstract_.Canonical;
 import gen.facts.p.Taken_Abstract_.Data;
+import gen.facts.p.Taken_Abstract_Heritage.Extend;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
@@ -32,9 +34,9 @@ import p.Taken.Abstract;
 ///
 /// A member [Abstract] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Abstract] by the proof `Taken_Abstract_Heritage` starts.
+/// A generated class extends or implements [Abstract] by the proof its metamodel starts, with the stages of `Taken_Abstract_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abstract.class, fingerprint = "6c69fab365611ca425bfde461aabafb5b7a4e9752d7dfa3ff0ee4cdfaee6534a", complete = true, format = 11)
+@GeneratedMetamodel(of = Abstract.class, fingerprint = "6c69fab365611ca425bfde461aabafb5b7a4e9752d7dfa3ff0ee4cdfaee6534a", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -107,5 +109,14 @@ public final class Taken_Abstract_ {
     public static final MethodRef0<Abstract, Int> Method = UnsafeFacts.method(TOKEN, "Method", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     private Taken_Abstract_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Abstract]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Extend<Self> extend(RefToken<Self> self) {
+        return new Taken_Abstract_Heritage().extend(TOKEN, self);
     }
 }

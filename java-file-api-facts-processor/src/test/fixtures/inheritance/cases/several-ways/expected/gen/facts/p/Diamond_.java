@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
@@ -34,9 +36,9 @@ import p.Diamond;
 ///
 /// `p.Root`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
-/// A generated class extends or implements [Diamond] by the proof `Diamond_Heritage` starts.
+/// A generated class extends or implements [Diamond] by the proof its metamodel starts, with the stages of `Diamond_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Diamond.class, fingerprint = "feb3e7dc3676ad2fa35b3092bedbf7f2bd8012209e495a6dad6a015f66d48374", complete = true, format = 11)
+@GeneratedMetamodel(of = Diamond.class, fingerprint = "feb3e7dc3676ad2fa35b3092bedbf7f2bd8012209e495a6dad6a015f66d48374", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -105,5 +107,14 @@ public final class Diamond_ {
     public static final MethodRef0<Diamond, String> root = UnsafeFacts.method(TOKEN, "root", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Diamond_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Diamond]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Diamond> extend(RefToken<Self> self) {
+        return new Diamond_Heritage().extend(TOKEN, self);
     }
 }

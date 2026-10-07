@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -35,11 +36,11 @@ import p.Sorted;
 ///
 /// A member [Sorted] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Sorted] by the proof `Sorted_Heritage` starts.
+/// A generated class extends or implements [Sorted] by the proof its metamodel starts, with the stages of `Sorted_Heritage`.
 ///
 /// @param <T> a type argument of [Sorted]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sorted.class, fingerprint = "01bd5e4ae0ea1066763ace0598751cfa7e0884d734e38395436798a459ae3312", complete = true, format = 11)
+@GeneratedMetamodel(of = Sorted.class, fingerprint = "01bd5e4ae0ea1066763ace0598751cfa7e0884d734e38395436798a459ae3312", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -119,5 +120,14 @@ public final class Sorted_<T extends Comparable<T>> {
         this.new_T = UnsafeFacts.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
         this.max = UnsafeFacts.method(token, "max", t, MemberTraits.OVERRIDABLE);
         this.with_T = UnsafeFacts.method(token, "with", token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
+    }
+
+    /// Starts the proof that a class being declared extends [Sorted]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Sorted<T>> extend(RefToken<Self> self) {
+        return new Sorted_Heritage().extend(this.token, self);
     }
 }

@@ -450,6 +450,12 @@ final class MetamodelEmitter {
                     });
                 }
             }
+            full.flatMap(Full::entry).ifPresent(entry -> {
+                switch (entry) {
+                    case Entry.Offered offered -> delegate(cb, metamodel, model, names, offered);
+                    case Entry.Refused _ -> {}
+                }
+            });
         });
         return new Emitted(file, names);
     }
@@ -655,6 +661,57 @@ final class MetamodelEmitter {
         };
     }
 
+    /// The entry of a type as a method of its metamodel, `extend` or `implement`: it hands the token of the
+    /// type to the entry of the class of the heritage, which has the stages.
+    ///
+    /// It is written so that no fact of the metamodel can stand in its way, whatever the fact is named: a
+    /// class is named after `new` and as a type alone, where a field of its name is not meant, and the rest
+    /// is `this`, a parameter and `TOKEN`, a name no fact has. So the names it uses are none the facts give
+    /// way to: [#takenNames] reads a metamodel without it.
+    private static void delegate(
+            ClassBuilder cb, ClassDesc metamodel, TypeModel model, List<String> names, Entry.Offered offered) {
+        boolean isInterface = model.kind() instanceof DeclaredKind.Interface;
+        String verb = isInterface ? MetamodelNames.IMPLEMENT : MetamodelNames.EXTEND;
+        ClassDesc holder = MetamodelNames.heritage(metamodel);
+        String self = Stream.iterate(offered.self(), name -> name + "_")
+                .filter(name -> !names.contains(name))
+                .findFirst()
+                .orElseThrow();
+        List<TypeArg> typeArgs = Stream.concat(names.stream(), Stream.of(self))
+                .<TypeArg>map(name -> Types.exact(Types.typeVar(name)))
+                .toList();
+        boolean generic = !names.isEmpty();
+        TypeRef result = offered.steps().isEmpty()
+                ? Types.parameterized(
+                        CD_COMPLETE,
+                        Types.typeVar(self),
+                        generic
+                                ? new ParameterizedTypeRef(
+                                        model.desc(),
+                                        names.stream()
+                                                .<TypeArg>map(name -> Types.exact(Types.typeVar(name)))
+                                                .toList())
+                                : Types.of(model.desc()))
+                : new ParameterizedTypeRef(holder.nested(isInterface ? "Implement" : "Extend"), typeArgs);
+        cb.withMethod(
+                verb,
+                result,
+                mb -> mb.withDoc(MetamodelDocs.delegate(model.desc(), isInterface, self))
+                        .withModifiers(
+                                generic
+                                        ? new Modifier[] {Modifier.PUBLIC}
+                                        : new Modifier[] {Modifier.PUBLIC, Modifier.STATIC})
+                        .withTypeParam(self)
+                        .withParam("self", Types.parameterized(CD_REF_TOKEN, Types.typeVar(self)))
+                        .withBody(b -> b.return_(Exprs.new_(holder)
+                                .call(
+                                        verb,
+                                        generic
+                                                ? Exprs.this_().field(MetamodelNames.INSTANCE_TOKEN)
+                                                : Exprs.field(MetamodelNames.TOKEN),
+                                        Exprs.field("self")))));
+    }
+
     private static final ClassDesc CD_COMPLETE = ClassDesc.of(FACTS, "Complete");
     private static final ClassDesc CD_STEPS = ClassDesc.of(FACTS, "Steps");
     private static final ClassDesc CD_DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
@@ -692,8 +749,10 @@ final class MetamodelEmitter {
                 ? stepsTaken.call("complete")
                 : Exprs.newDiamond(stageClass.apply(taken), stepsTaken);
         cb.withMethod(verb, after.apply(0), mb -> {
+            // of an object of the class, which a metamodel makes with `new`: a class named for a static method
+            // is named where a field of the metamodel of its name would be meant
             mb.withDoc(MetamodelDocs.entry(model.desc(), isInterface, typeParams, offered))
-                    .withModifiers(Modifier.PUBLIC, Modifier.STATIC);
+                    .withModifiers(Modifier.PUBLIC);
             typeParams.forEach(
                     param -> mb.withTypeParam(param.name(), param.bounds().toArray(ClassOrInterfaceTypeRef[]::new)));
             mb.withParam("type", Types.parameterized(CD_DECLARED_TOKEN, type))

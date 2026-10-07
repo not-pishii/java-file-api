@@ -21,6 +21,10 @@ public class Taken {
     public int Types;
     public int PrimitiveTypeRef;
     public int ParameterizedTypeRef;
+    public int RefToken;
+    public int Set;
+    public int Self;
+    public int Taken_Heritage;
     public int me;
     public int java;
 

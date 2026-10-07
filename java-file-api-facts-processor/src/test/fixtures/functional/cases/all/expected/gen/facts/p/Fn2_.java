@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Fn2_.Canonical;
 import gen.facts.p.Fn2_.Data;
+import gen.facts.p.Fn2_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -17,6 +18,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.Prim.Long;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import p.Fn2;
 ///
 /// A member [Fn2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Fn2] by the proof `Fn2_Heritage` starts.
+/// A generated class extends or implements [Fn2] by the proof its metamodel starts, with the stages of `Fn2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn2.class, fingerprint = "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", complete = true, format = 11)
+@GeneratedMetamodel(of = Fn2.class, fingerprint = "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -87,5 +89,14 @@ public final class Fn2_ {
     public static final VoidSam3<Fn2, String, Int, Long> sam = UnsafeFacts.voidSam(call_String_int_long);
 
     private Fn2_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Fn2]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Fn2_Heritage().implement(TOKEN, self);
     }
 }

@@ -75,7 +75,7 @@ public final class Seq_Heritage implements Supplier<Told> {
     /// @param <E> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <E, Self> Implement<E, Self> implement(DeclaredToken<Seq<E>> type, RefToken<Self> self) {
+    public <E, Self> Implement<E, Self> implement(DeclaredToken<Seq<E>> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

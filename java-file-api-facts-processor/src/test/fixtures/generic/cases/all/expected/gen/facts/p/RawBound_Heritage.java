@@ -117,7 +117,7 @@ public final class RawBound_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T extends Comparable, Self> Complete<Self, RawBound<T>> extend(DeclaredToken<RawBound<T>> type, RefToken<Self> self) {
+    public <T extends Comparable, Self> Complete<Self, RawBound<T>> extend(DeclaredToken<RawBound<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

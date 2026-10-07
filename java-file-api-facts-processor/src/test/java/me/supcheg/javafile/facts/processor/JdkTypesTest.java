@@ -561,7 +561,7 @@ class JdkTypesTest {
         assertThat(inherited.owner()).isSameAs(Loaded.fact(operator, "token"));
         assertThat(inherited.result()).isSameAs(string);
         assertThat(loaded.memberNames("gen.facts.java.util.function.UnaryOperator_"))
-                .containsExactly("identity", "sam");
+                .containsExactly("identity", "implement", "sam");
         // equals(Object) of Comparator does not count
         assertThat(Loaded.fact(loaded.instance("gen.facts.java.util.Comparator_", string), "sam"))
                 .isInstanceOf(Sam2.class);

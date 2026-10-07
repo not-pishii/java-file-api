@@ -117,7 +117,7 @@ public final class Fail_Heritage implements Supplier<Told> {
     /// @param <X> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <X extends Exception, Self> Complete<Self, Fail<X>> extend(DeclaredToken<Fail<X>> type, RefToken<Self> self) {
+    public <X extends Exception, Self> Complete<Self, Fail<X>> extend(DeclaredToken<Fail<X>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

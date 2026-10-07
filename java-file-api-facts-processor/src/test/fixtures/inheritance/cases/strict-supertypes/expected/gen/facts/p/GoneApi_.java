@@ -7,12 +7,14 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import p.GoneApi;
 ///
 /// - `method gone(p.Secret)`, which mentions types that are not public: p.Secret
 ///
-/// A generated class extends or implements [GoneApi] by the proof `GoneApi_Heritage` starts.
+/// A generated class extends or implements [GoneApi] by the proof its metamodel starts, with the stages of `GoneApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = GoneApi.class, fingerprint = "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", complete = true, format = 11)
+@GeneratedMetamodel(of = GoneApi.class, fingerprint = "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -79,5 +81,14 @@ public final class GoneApi_ {
     public static final InterfaceToken<GoneApi> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     private GoneApi_() {
+    }
+
+    /// Starts the proof that a class being declared implements [GoneApi]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, GoneApi> implement(RefToken<Self> self) {
+        return new GoneApi_Heritage().implement(TOKEN, self);
     }
 }

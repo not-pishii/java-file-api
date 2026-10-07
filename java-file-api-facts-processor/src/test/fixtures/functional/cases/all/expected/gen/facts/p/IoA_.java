@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.IoA_.Canonical;
 import gen.facts.p.IoA_.Data;
+import gen.facts.p.IoA_Heritage.Implement;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import p.IoA;
 ///
 /// A member [IoA] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [IoA] by the proof `IoA_Heritage` starts.
+/// A generated class extends or implements [IoA] by the proof its metamodel starts, with the stages of `IoA_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 11)
+@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -87,5 +89,14 @@ public final class IoA_ {
     public static final VoidSam0<IoA> sam = UnsafeFacts.voidSam(m);
 
     private IoA_() {
+    }
+
+    /// Starts the proof that a class being declared implements [IoA]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new IoA_Heritage().implement(TOKEN, self);
     }
 }

@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.PubFn3_.Canonical;
 import gen.facts.p.PubFn3_.Data;
+import gen.facts.p.PubFn3_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -31,9 +33,9 @@ import p.PubFn3;
 ///
 /// `p.HStr`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
-/// A generated class extends or implements [PubFn3] by the proof `PubFn3_Heritage` starts.
+/// A generated class extends or implements [PubFn3] by the proof its metamodel starts, with the stages of `PubFn3_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 11)
+@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -86,5 +88,14 @@ public final class PubFn3_ {
     public static final Sam0<PubFn3, String> sam = UnsafeFacts.sam(get);
 
     private PubFn3_() {
+    }
+
+    /// Starts the proof that a class being declared implements [PubFn3]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new PubFn3_Heritage().implement(TOKEN, self);
     }
 }

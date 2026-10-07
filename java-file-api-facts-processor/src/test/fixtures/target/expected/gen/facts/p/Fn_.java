@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Fn_.Canonical;
 import gen.facts.p.Fn_.Data;
+import gen.facts.p.Fn_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -29,9 +31,9 @@ import p.Fn;
 ///
 /// A member [Fn] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Fn] by the proof `Fn_Heritage` starts.
+/// A generated class extends or implements [Fn] by the proof its metamodel starts, with the stages of `Fn_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn.class, fingerprint = "e97325ecbe53e1e192e93d3c12163623312d22a80a4d97fabf4c7dcfc06a6897", complete = true, format = 11)
+@GeneratedMetamodel(of = Fn.class, fingerprint = "e97325ecbe53e1e192e93d3c12163623312d22a80a4d97fabf4c7dcfc06a6897", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -84,5 +86,14 @@ public final class Fn_ {
     public static final Sam1<Fn, String, String> sam = UnsafeFacts.sam(apply_String);
 
     private Fn_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Fn]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Fn_Heritage().implement(TOKEN, self);
     }
 }

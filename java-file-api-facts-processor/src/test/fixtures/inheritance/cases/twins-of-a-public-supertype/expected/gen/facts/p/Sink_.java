@@ -30,7 +30,7 @@ import p.Sink;
 ///
 /// No generated class extends or implements [Sink]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 11)
+@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

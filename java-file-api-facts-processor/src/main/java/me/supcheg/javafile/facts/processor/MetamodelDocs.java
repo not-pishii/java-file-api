@@ -408,9 +408,9 @@ final class MetamodelDocs {
                 paragraph(Stream.of(
                         words("A generated class extends or implements "),
                         link(type),
-                        words(" by the proof "),
+                        words(" by the proof its metamodel starts, with the stages of "),
                         code(holder.displayName()),
-                        words(" starts.")));
+                        words(".")));
             case Entry.Refused(String reason) ->
                 paragraph(Stream.of(
                         words("No generated class extends or implements "), link(type), words(": " + reason + ".")));
@@ -426,6 +426,27 @@ final class MetamodelDocs {
                                         ? "the class being declared"
                                         : "a type argument of the type")))
                 .toList();
+    }
+
+    /// The comment of the method of a metamodel that starts the proof: `extend` or `implement`.
+    ///
+    /// @param type the type
+    /// @param isInterface whether the type is implemented, not extended
+    /// @param self the name of the type variable of the class being declared
+    /// @return the comment
+    static DocComment delegate(ClassDesc type, boolean isInterface, String self) {
+        return new DocComment(
+                paragraph(Stream.of(
+                                words("Starts the proof that a class being declared "
+                                        + (isInterface ? "implements " : "extends ")),
+                                link(type),
+                                words(": a step per abstract method of the type follows, and the declaration of"
+                                        + " the class takes the proof after the last.")))
+                        .toList(),
+                List.of(
+                        new DocTag.Param("self", DocText.of("the token of the class being declared")),
+                        new DocTag.TypeParam(self, DocText.of("the class being declared")),
+                        new DocTag.Return(DocText.of("the proof, or the stage of its first step"))));
     }
 
     /// The comment of the entry of a type: `extend` or `implement`.

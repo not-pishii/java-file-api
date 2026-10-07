@@ -2,6 +2,7 @@ package gen.facts.java.util.function;
 
 import gen.facts.java.util.function.Function_.Canonical;
 import gen.facts.java.util.function.Function_.Data;
+import gen.facts.java.util.function.Function_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -36,12 +37,12 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Function] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Function] by the proof `Function_Heritage` starts.
+/// A generated class extends or implements [Function] by the proof its metamodel starts, with the stages of `Function_Heritage`.
 ///
 /// @param <T> a type argument of [Function]
 /// @param <R> a type argument of [Function]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Function.class, fingerprint = "8388e7ddbbe8b9b468b5c8c2f0ef57f0f9d2079c957f52d5c39fd6b3a815164c", complete = true, format = 11)
+@GeneratedMetamodel(of = Function.class, fingerprint = "8388e7ddbbe8b9b468b5c8c2f0ef57f0f9d2079c957f52d5c39fd6b3a815164c", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -143,5 +144,14 @@ public final class Function_<T, R> {
     /// @return the fact
     public static <T> StaticMethodRef0<Function<T, T>> identity(RefToken<T> t) {
         return UnsafeFacts.staticMethod(ANY, "identity", UnsafeFacts.<Function<T, T>>interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared implements [Function]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<T, R, Self> implement(RefToken<Self> self) {
+        return new Function_Heritage().implement(this.token, self);
     }
 }

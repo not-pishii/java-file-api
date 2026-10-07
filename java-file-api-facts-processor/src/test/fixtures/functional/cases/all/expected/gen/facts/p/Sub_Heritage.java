@@ -66,7 +66,7 @@ public final class Sub_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <Self> Implement<Self> implement(DeclaredToken<Sub> type, RefToken<Self> self) {
+    public <Self> Implement<Self> implement(DeclaredToken<Sub> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

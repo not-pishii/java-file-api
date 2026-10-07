@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef12;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -17,6 +18,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -38,9 +40,9 @@ import p.Big;
 /// - `method thirteen(int,int,int,int,int,int,int,int,int,int,int,int,int)`, which has 13 parameters, more than 12
 /// - `method staticThirteen(int,int,int,int,int,int,int,int,int,int,int,int,int)`, which has 13 parameters, more than 12
 ///
-/// A generated class extends or implements [Big] by the proof `Big_Heritage` starts.
+/// A generated class extends or implements [Big] by the proof its metamodel starts, with the stages of `Big_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Big.class, fingerprint = "2a2e66f95b5937e8e1ea169b7911e62c92a93cfc1aeac15307882202d735967f", complete = true, format = 11)
+@GeneratedMetamodel(of = Big.class, fingerprint = "2a2e66f95b5937e8e1ea169b7911e62c92a93cfc1aeac15307882202d735967f", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -113,5 +115,14 @@ public final class Big_ {
     public static final VoidMethodRef12<Big, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int> twelve_int_int_int_int_int_int_int_int_int_int_int_int = UnsafeFacts.voidMethod(TOKEN, "twelve", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private Big_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Big]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Big> extend(RefToken<Self> self) {
+        return new Big_Heritage().extend(TOKEN, self);
     }
 }

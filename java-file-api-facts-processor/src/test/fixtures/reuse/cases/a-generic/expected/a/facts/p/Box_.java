@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -36,11 +37,11 @@ import p.Box;
 ///
 /// A member [Box] inherits has its fact in the metamodel of the supertype that declares it: [a.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Box] by the proof `Box_Heritage` starts.
+/// A generated class extends or implements [Box] by the proof its metamodel starts, with the stages of `Box_Heritage`.
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "f095275cc019e8593cdc942b80ba08a03d72d4145e33b2f4cac7bc8873a24d44", complete = true, format = 11)
+@GeneratedMetamodel(of = Box.class, fingerprint = "f095275cc019e8593cdc942b80ba08a03d72d4145e33b2f4cac7bc8873a24d44", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -133,5 +134,14 @@ public final class Box_<T extends Comparable<T>> {
     /// @return the fact
     public <R> MethodRef1<Box<T>, R, R> as_R(RefToken<R> r) {
         return UnsafeFacts.method(token, "as", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(r));
+    }
+
+    /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Box<T>> extend(RefToken<Self> self) {
+        return new Box_Heritage().extend(this.token, self);
     }
 }

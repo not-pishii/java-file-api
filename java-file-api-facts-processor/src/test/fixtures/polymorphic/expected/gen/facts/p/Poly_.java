@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -46,9 +47,9 @@ import p.Poly;
 ///
 /// - `constructor <T>Poly(T)`, which is a generic constructor, whose type arguments a fact cannot give explicitly
 ///
-/// A generated class extends or implements [Poly] by the proof `Poly_Heritage` starts.
+/// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", complete = true, format = 11)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -210,5 +211,14 @@ public final class Poly_ {
     /// @return the fact
     public static <A, B extends A> MethodRef1<Poly, A, B> widen_B(RefToken<A> a, RefToken<B> b) {
         return UnsafeFacts.method(TOKEN, "widen", a, UnsafeFacts.param(b, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(a, b));
+    }
+
+    /// Starts the proof that a class being declared extends [Poly]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Poly> extend(RefToken<Self> self) {
+        return new Poly_Heritage().extend(TOKEN, self);
     }
 }
