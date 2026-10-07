@@ -274,7 +274,29 @@ class MultiroundTest {
                 public class Sup { public gen.Never never() { return null; } }
                 """);
 
-        // Sub does not wait for the metamodel of its supertype: only Sup is stuck
+        // Sub does not wait for the metamodel of its supertype, but it can be extended, and tells never() as a
+        // method a subclass of it inherits: its heritage mentions gen.Never as that of Sup does
+        assertThat(unresolvable(compilation))
+                .containsExactly(
+                        "type p.Sub in @Facts is not resolvable after all rounds: it mentions gen.Never, which no"
+                                + " processor generated",
+                        "type p.Sup (a supertype of p.Sub) in @Facts is not resolvable after all rounds: it"
+                                + " mentions gen.Never, which no processor generated");
+    }
+
+    @Test
+    void aFinalTypeDoesNotWaitForWhatTheMembersItInheritsMention() {
+        Compiled compilation =
+                process("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
+                class G {}
+                """, "package p; public final class Sub extends Sup { public void sub() {} }", """
+                package p;
+                public class Sup { public gen.Never never() { return null; } }
+                """);
+
+        // nothing extends Sub, so it tells no heritage: only Sup is stuck
         assertThat(unresolvable(compilation))
                 .containsExactly("type p.Sup (a supertype of p.Sub) in @Facts is not resolvable after all rounds: it"
                         + " mentions gen.Never, which no processor generated");
