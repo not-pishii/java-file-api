@@ -4,6 +4,7 @@ import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
 import me.supcheg.javafile.code.BinaryExpr;
+import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
@@ -138,6 +139,13 @@ import java.util.stream.Stream;
 ///   branch of a conditional — its receiver is cast to the owner,
 ///   `((Owner) recv).m()`, which types it by the fact again. A cast is never
 ///   added where javac would find it redundant.
+/// - **Witnesses.** An expression an [Upcast] witness was applied to is
+///   rendered as it was: its token names a supertype, javac types it by the
+///   class. Its receiver, argument and selector positions are judged by the
+///   type before the witness, as those of any subtype of the owner are, and
+///   where javac checks the type itself — the operand of a cast, of
+///   `instanceof`, of `==`, a branch of a conditional — it is cast to the
+///   supertype.
 /// - **The `throws` clause.** An instance method that declares a checked
 ///   exception is called through its owner, `((Reader) stringReader).close()`:
 ///   the override of the receiver's type may declare fewer exceptions, and
@@ -287,7 +295,7 @@ final class Lowering {
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
-                Expr operandExpr = expr(operand);
+                Expr operandExpr = expr(operand, true);
                 // The binding is in scope in the then-branch only.
                 names.push();
                 Expr condition;
@@ -490,15 +498,21 @@ final class Lowering {
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 Exprs.cond(expr(condition), expr(whenTrue, true), expr(whenFalse, true));
             case Node.Binary(var op, var left, var right, var ignoredType) ->
-                new BinaryExpr(expr(left), op, expr(right));
+                new BinaryExpr(compared(op, left), op, compared(op, right));
             case Node.Unary(var op, var operand, var ignoredType) -> new UnaryExpr(op, expr(operand));
             case Node.Cast(var type, var operand) -> {
                 target.verify(type);
-                yield Exprs.cast(type.typeRef(), expr(operand));
+                yield Exprs.cast(type.typeRef(), expr(operand, true));
+            }
+            // Unpinned, the expression is rendered as it is and javac types it by the class it is of;
+            // pinned, the cast makes it of the supertype, and is no redundant one to javac.
+            case Node.Upcast(var inner, var _, var type) -> {
+                target.verify(type);
+                yield pin ? Exprs.cast(type.typeRef(), expr(inner)) : expr(inner);
             }
             case Node.InstanceOf(var operand, var type) -> {
                 target.verify(type);
-                yield expr(operand).instanceOf(type.typeRef());
+                yield expr(operand, true).instanceOf(type.typeRef());
             }
             // No target type is known here: the cast gives the lambda the one of its fact.
             case Node.Lambda lambda -> Exprs.cast(lambda.sam().owner().typeRef(), lambda(lambda));
@@ -542,13 +556,33 @@ final class Lowering {
                 : expr(node);
     }
 
+    /// An operand as javac sees it: the expression an [Upcast] witness was applied to, of the type it
+    /// was of before. The witness changes the token and nothing in the rendered code, so the members
+    /// javac searches for `this.m(x)` are those of the class, whatever supertype the token names: the
+    /// receiver of a call or a field and the selector of a `switch` are judged by the type before
+    /// the witness, as any receiver of a subtype of the owner is.
+    private static Node.Operand seen(Node.Operand operand) {
+        return operand.node() instanceof Node.Upcast(var inner, var innerType, var _)
+                ? seen(new Node.Operand(inner, innerType))
+                : operand;
+    }
+
+    /// An operand of a binary operator. javac rejects `==` and `!=` of two references neither of
+    /// which can be cast to the other (JLS 15.21.3), and the typed layer went by the tokens: an
+    /// expression an [Upcast] witness was applied to is compared as of the supertype.
+    private Expr compared(BinaryOp op, Node operand) {
+        boolean ofReferences = op == BinaryOp.EQ || op == BinaryOp.NEQ;
+        return expr(operand, ofReferences && operand instanceof Node.Upcast);
+    }
+
     /// `target.method(args)`. The receiver is cast to the method's owner
     /// where the receiver is of a subtype and the call must be pinned, or
     /// the method declares a checked exception
     /// ([#declaresCheckedException]), or the subtype has an overload that
     /// erases as the method does ([#hasTwin]); otherwise it is pinned itself
     /// where its type decides the overload.
-    private Expr call(Node.Operand receiving, Invocable method, List<Node.Operand> args, boolean pin) {
+    private Expr call(Node.Operand witnessed, Invocable method, List<Node.Operand> args, boolean pin) {
+        Node.Operand receiving = seen(witnessed);
         DeclaredToken<?> owner = method.owner();
         target.verify(receiving.type());
         Expr receiver;
@@ -718,7 +752,8 @@ final class Lowering {
     /// if it is of another type, so javac looks the field up in the owner —
     /// not in a subtype that hides it with a field of its own, or that has
     /// the name from two supertypes and so for neither (JLS 8.3, 8.3.3.3).
-    private Expr fieldReceiver(Node.Operand receiving, FieldRef<?, ?> field) {
+    private Expr fieldReceiver(Node.Operand witnessed, FieldRef<?, ?> field) {
+        Node.Operand receiving = seen(witnessed);
         uses(field);
         target.verify(receiving.type());
         DeclaredToken<?> owner = field.owner();
@@ -814,7 +849,7 @@ final class Lowering {
     /// cannot break or continue them ([ScopeCheck]).
     private Expr switchExpr(Node.Switch switch_) {
         EnumToken<?> enumType = switch_.enumType();
-        Node.Operand selector = switch_.selector();
+        Node.Operand selector = seen(switch_.selector());
         target.verify(enumType);
         target.verify(selector.type());
         Expr selected = Tokens.sameType(selector.type(), enumType)

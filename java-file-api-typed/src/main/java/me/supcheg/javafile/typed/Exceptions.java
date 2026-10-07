@@ -469,6 +469,7 @@ final class Exceptions {
                     Node.Binary _,
                     Node.Unary _,
                     Node.Cast _,
+                    Node.Upcast _,
                     Node.InstanceOf _,
                     Node.Assign _,
                     Node.Raw _ -> new Act.Computes();
@@ -545,6 +546,7 @@ final class Exceptions {
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
             case Node.Unary(var _, var operand, var _) -> Stream.of(operand);
             case Node.Cast(var _, var operand) -> Stream.of(operand);
+            case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
             case Node.InstanceOf(var operand, var _) -> Stream.of(operand);
             case Node.ArrayLength(var array) -> Stream.of(array);
             case Node.NewArray(var _, var length) -> Stream.of(length);

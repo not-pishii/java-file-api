@@ -39,6 +39,7 @@ final class Constants {
             case Node.RawLit _,
                     Node.Local _,
                     Node.This _,
+                    Node.Upcast _,
                     Node.Box _,
                     Node.Unbox _,
                     Node.Call _,
