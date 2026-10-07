@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -40,6 +41,7 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -252,6 +254,47 @@ class TargetClasspathLoweringTest {
 
     private static MethodRef1<SvcP, String, Object> objectTaking() {
         return OBJECT_TAKING;
+    }
+
+    /// Phantom of the enum `fixtures.Light`.
+    interface LightP {}
+
+    @Test
+    void anEnumThatHasGotAConstantFailsTheSwitchThatWasExhaustive() {
+        TypeShape<DeclaredKind.EnumClass> light = UnsafeFacts.shape(
+                new ShapeOrigin.Metamodel(ClassDesc.of("gen.facts.fixtures", "Light_"), FINGERPRINT, () -> ""),
+                DeclaredKind.ENUM_CLASS,
+                ClassDesc.of("fixtures", "Light"),
+                List.of(),
+                List.of(ConstantDescs.CD_Enum, ConstantDescs.CD_Object),
+                Supertypes.NONE,
+                new MethodTableTemplate(Set.of(), Set.of(), Set.of()),
+                List.of("ON", "OFF"),
+                false);
+        EnumToken<LightP> token = UnsafeFacts.enumToken(light);
+        // exhaustive by the facts: a case of ON and one of OFF, no default
+        Function<Expr<LightP>, Expr<String>> exhaustive = l -> switch_(
+                l,
+                token,
+                String_.TOKEN,
+                c -> c.case_(token.constant("ON"), literal("on")).case_(token.constant("OFF"), literal("off")));
+        Function<Expr<LightP>, Expr<String>> withDefault =
+                l -> switch_(l, token, String_.TOKEN, c -> c.default_(literal("any")));
+
+        assertThat(render(UnsafeFacts.targetClasspath(new Asked(Map.of())), token, exhaustive))
+                .contains("case ON -> \"on\";");
+
+        // what the check of java-file-api-lang-model answers for `enum Light { ON, OFF, DIM }`
+        TargetClasspath target = UnsafeFacts.targetClasspath(new Asked(Map.of(
+                light,
+                new TargetType.Mismatched(List.of(new Difference.ChangedData("enum", "ON; OFF", "ON; OFF; DIM"))))));
+
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> render(target, token, exhaustive))
+                .withMessageContaining("ON; OFF; DIM");
+        // the facts of the enum are those of the target or none, whether the switch leans on its constants or not
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> render(target, token, withDefault));
     }
 
     @Test
