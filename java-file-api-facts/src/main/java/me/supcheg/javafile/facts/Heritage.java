@@ -2,12 +2,24 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.ExactTypeArg;
+import me.supcheg.javafile.type.ExtendsTypeArg;
+import me.supcheg.javafile.type.ParameterizedTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.type.SuperTypeArg;
+import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
+import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /// What a class that extends a type, or implements it, has to know of the
 /// type beyond the facts of its members: every method the type has that is
@@ -44,6 +56,69 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
     ///                inherited —, each once
     /// @param constructors the constructors the type declares that are not `private`; none for an interface
     record Told(List<Method> methods, List<Constructor> constructors) implements Heritage {
+
+        /// The heritage of the type applied to type arguments: what a class that extends `List<String>`
+        /// inherits, of the heritage of `List<E>`. Every type parameter of the type is replaced by its
+        /// argument in the parameters, results and exceptions of the members; a type parameter of a
+        /// member itself, which hides one of the type of its name, is left as it is, and so are the
+        /// signatures and erasures, which do not depend on the arguments.
+        ///
+        /// @param typeParameters the type parameters of the type, in order
+        /// @param arguments the type arguments, one per type parameter
+        /// @return the heritage in terms of the arguments
+        /// @throws IllegalArgumentException if there is not an argument per type parameter, or an
+        ///                                  exception type is replaced by a type that is no class or
+        ///                                  type variable
+        public Told applied(List<TypeParam> typeParameters, List<TypeRef> arguments) {
+            if (typeParameters.size() != arguments.size()) {
+                throw new IllegalArgumentException(
+                        "expected " + typeParameters.size() + " type arguments, got " + arguments.size());
+            }
+            Map<String, TypeRef> ofType = IntStream.range(0, typeParameters.size())
+                    .boxed()
+                    .collect(Collectors.toMap(i -> typeParameters.get(i).name(), arguments::get));
+            return new Told(
+                    methods.stream()
+                            .map(method -> {
+                                Map<String, TypeRef> env = visible(ofType, method.typeParams());
+                                return new Method(
+                                        method.visibility(),
+                                        method.dispatch(),
+                                        method.declaredBy(),
+                                        method.signature(),
+                                        method.typeParams(),
+                                        method.params().stream()
+                                                .map(param -> substitute(param, env))
+                                                .toList(),
+                                        method.arity(),
+                                        switch (method.result()) {
+                                            case Result.Nothing nothing -> nothing;
+                                            case Result.Of(TypeRef type) -> new Result.Of(substitute(type, env));
+                                        },
+                                        method.throwsTypes().stream()
+                                                .map(thrown -> thrown(thrown, env))
+                                                .toList(),
+                                        method.erasures(),
+                                        method.overrides());
+                            })
+                            .toList(),
+                    constructors.stream()
+                            .map(constructor -> {
+                                Map<String, TypeRef> env = visible(ofType, constructor.typeParams());
+                                return new Constructor(
+                                        constructor.visibility(),
+                                        constructor.signature(),
+                                        constructor.typeParams(),
+                                        constructor.params().stream()
+                                                .map(param -> substitute(param, env))
+                                                .toList(),
+                                        constructor.arity(),
+                                        constructor.throwsTypes().stream()
+                                                .map(thrown -> thrown(thrown, env))
+                                                .toList());
+                            })
+                            .toList());
+        }
 
         /// @throws IllegalArgumentException if two methods have one signature
         public Told {
@@ -217,6 +292,49 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         ///
         /// @return the signature
         MethodTableTemplate.Signature signature();
+    }
+
+    /// The type parameters of the type a member sees: those its own type parameters do not hide.
+    private static Map<String, TypeRef> visible(Map<String, TypeRef> ofType, List<TypeParam> ofMember) {
+        Set<String> hidden = ofMember.stream().map(TypeParam::name).collect(Collectors.toSet());
+        return ofType.entrySet().stream()
+                .filter(entry -> !hidden.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private static ClassOrInterfaceTypeRef thrown(ClassOrInterfaceTypeRef thrown, Map<String, TypeRef> env) {
+        return switch (substitute(thrown, env)) {
+            case ClassOrInterfaceTypeRef type -> type;
+            case ArrayTypeRef array ->
+                throw new IllegalArgumentException("an exception type is no array, got " + TypeNames.describe(array));
+            case PrimitiveTypeRef primitive ->
+                throw new IllegalArgumentException("an exception type is no primitive, got " + primitive.sourceName());
+        };
+    }
+
+    private static TypeRef substitute(TypeRef type, Map<String, TypeRef> env) {
+        return switch (type) {
+            case TypeVarRef variable -> env.getOrDefault(variable.name(), variable);
+            case ParameterizedTypeRef parameterized ->
+                new ParameterizedTypeRef(
+                        parameterized.raw(),
+                        parameterized.args().stream()
+                                .map(argument -> substitute(argument, env))
+                                .toList(),
+                        parameterized.annotations());
+            case ArrayTypeRef array -> new ArrayTypeRef(substitute(array.component(), env), array.annotations());
+            case ClassTypeRef cls -> cls;
+            case PrimitiveTypeRef primitive -> primitive;
+        };
+    }
+
+    private static TypeArg substitute(TypeArg argument, Map<String, TypeRef> env) {
+        return switch (argument) {
+            case ExactTypeArg exact -> new ExactTypeArg(substitute(exact.type(), env));
+            case ExtendsTypeArg bound -> new ExtendsTypeArg(substitute(bound.bound(), env));
+            case SuperTypeArg bound -> new SuperTypeArg(substitute(bound.bound(), env));
+            case UnboundedTypeArg unbounded -> unbounded;
+        };
     }
 
     private static void requireDeclarer(ClassDesc declarer) {
