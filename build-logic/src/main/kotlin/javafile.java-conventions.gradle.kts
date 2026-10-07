@@ -58,6 +58,9 @@ spotless {
         palantirJavaFormat("2.96.0")
         importOrder("", "javax|java", "\\#")
         forbidWildcardImports()
+        // The sources by their directories, not the source sets: those hold build/generated too, which the
+        // annotation processor rewrites while the tree is read ("Could not read path ...build/generated...").
+        target("src/*/java/**/*.java")
         targetExclude("build/**")
     }
 }
