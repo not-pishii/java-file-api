@@ -31,7 +31,7 @@ import p.PubFn3;
 ///
 /// `p.HStr`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn3.class, fingerprint = "ed957d416ebe95bdbc6ab7d2720001ab469f1b675031c3cf119f5eb50c1aacf4", complete = true, format = 7)
+@GeneratedMetamodel(of = PubFn3.class, fingerprint = "e1662686b0dbcdefab6694f499922d9c4fa1a846978ad25b1937ef404080f65b", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class PubFn3_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubFn3] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn3_"), "ed957d416ebe95bdbc6ab7d2720001ab469f1b675031c3cf119f5eb50c1aacf4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn3"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn3_"), "e1662686b0dbcdefab6694f499922d9c4fa1a846978ad25b1937ef404080f65b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn3"), List.of(), List.of(), List.of(ClassDesc.of("p.HStr"), ClassDesc.of("p.PObj")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -53,15 +53,15 @@ public final class PubFn3_ {
     static final class Canonical {
         /// The canonical form of [PubFn3].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.PubFn3 interface sealed=no
         tparams -
         superclasses -
         interfaces p.HStr; p.PObj
         supertypes -
         enum -
-        members declared-public
-        member method abstract get() -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract get() -> java.lang.String throws -
         sam get() -> java.lang.String throws -
         table abstract get()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

@@ -32,7 +32,7 @@ import p.Seen;
 ///
 /// A member [High] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = High.class, fingerprint = "4e4d3646bf0fb98037dd754e2a1cb61559953f7d54c595c7ceaa5d41bcc8752c", complete = true, format = 7)
+@GeneratedMetamodel(of = High.class, fingerprint = "c719dfdee43b8d89cbe30e1d6f3e3a2efc7fb29b0e3a24bcd886b7d5751b960a", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class High_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [High] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.High_"), "4e4d3646bf0fb98037dd754e2a1cb61559953f7d54c595c7ceaa5d41bcc8752c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.High"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("High"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.High_"), "c719dfdee43b8d89cbe30e1d6f3e3a2efc7fb29b0e3a24bcd886b7d5751b960a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.High"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("High"))), List.of(), false);
 
         private Data() {
         }
@@ -54,16 +54,16 @@ public final class High_ {
     static final class Canonical {
         /// The canonical form of [High].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.High open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method overridable seen() -> p.Seen throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public overridable seen() -> p.Seen throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); seen(); toString(); wait(); wait(long); wait(long, int)
         table static -

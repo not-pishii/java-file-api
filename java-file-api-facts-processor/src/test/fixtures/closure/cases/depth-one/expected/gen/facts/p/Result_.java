@@ -26,7 +26,7 @@ import p.Result;
 ///
 /// `@Facts` does not ask for [Result]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Result.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Result.class, fingerprint = "63b2b9e8ee778b357360a33226990ea7ddc3573c3ed624c548dd81d305431472", complete = false, format = 7)
+@GeneratedMetamodel(of = Result.class, fingerprint = "bc5c6924efd1fa217f530428a9472bb6aedc0f3a59accb409885f8c15ccf90df", complete = false, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Result_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Result] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Result_"), "63b2b9e8ee778b357360a33226990ea7ddc3573c3ed624c548dd81d305431472", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Result"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("deep"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Result"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Result_"), "bc5c6924efd1fa217f530428a9472bb6aedc0f3a59accb409885f8c15ccf90df", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Result"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("deep"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Result"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Result_ {
     static final class Canonical {
         /// The canonical form of [Result].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Result open-class sealed=no
         tparams -
         superclasses java.lang.Object

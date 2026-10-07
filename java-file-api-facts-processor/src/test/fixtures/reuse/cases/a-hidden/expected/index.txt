@@ -1,5 +1,7 @@
 META-INF/javafile/metamodel/full/java.lang.Object -> a.facts.java.lang.Object_
 META-INF/javafile/metamodel/full/p.OnHid -> a.facts.p.OnHid_
 META-INF/javafile/metamodel/token/java.lang.Class -> a.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> a.facts.java.lang.CloneNotSupportedException_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> a.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> a.facts.java.lang.String_
+META-INF/javafile/metamodel/token/java.lang.Throwable -> a.facts.java.lang.Throwable_

@@ -32,7 +32,7 @@ import p.Ov2;
 ///
 /// A member [Ov2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov2.class, fingerprint = "bc749ab7c8747278d03e6fbfc20ed9b3776a61a8d97bfe8593d02821d967f319", complete = true, format = 7)
+@GeneratedMetamodel(of = Ov2.class, fingerprint = "feb50944fd3171331513956154948a24685f2ad7747f8f012a1b65f36f25d9a0", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Ov2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Ov2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov2_"), "bc749ab7c8747278d03e6fbfc20ed9b3776a61a8d97bfe8593d02821d967f319", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov2"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Ov2"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov2_"), "feb50944fd3171331513956154948a24685f2ad7747f8f012a1b65f36f25d9a0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov2"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("wrap", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Ov2"))), List.of(), false);
 
         private Data() {
         }
@@ -54,17 +54,17 @@ public final class Ov2_ {
     static final class Canonical {
         /// The canonical form of [Ov2].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Ov2 open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method static <^0> wrap(^0) -> java.util.Optional<^0> throws -
-        member method static wrap(java.lang.String) -> java.lang.StringBuilder throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public static <^0> wrap(^0) -> java.util.Optional<^0> throws -
+        member method public static wrap(java.lang.String) -> java.lang.StringBuilder throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static wrap(java.lang.Object); wrap(java.lang.String)

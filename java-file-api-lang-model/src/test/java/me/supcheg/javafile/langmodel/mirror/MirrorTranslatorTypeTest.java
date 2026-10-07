@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static me.supcheg.javafile.facts.MethodTableTemplate.Param.fixed;
 import static me.supcheg.javafile.facts.MethodTableTemplate.Param.var;
@@ -441,7 +443,8 @@ class MirrorTranslatorTypeTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        Overridability.FINAL));
+                        Overridability.FINAL,
+                        Access.PUBLIC));
         assertThat(methods(model).get("valueOf").params()).containsExactly(Types.STRING);
         assertThat(methods(model).get("x").overridability()).isEqualTo(Overridability.FINAL);
     }
@@ -482,13 +485,15 @@ class MirrorTranslatorTypeTest {
         assertThat(model.members())
                 .filteredOn(FieldModel.class::isInstance)
                 .containsExactly(
-                        new FieldModel("mutable", false, Types.INT, Mutability.MUTABLE),
-                        new FieldModel("instanceFinal", false, Types.INT, Mutability.FINAL),
-                        new FieldModel("staticMutable", true, Types.INT, Mutability.MUTABLE),
-                        new FieldModel("staticFinal", true, Types.OBJECT, Mutability.FINAL),
-                        new FieldModel("CONSTANT", true, Types.INT, new Mutability.Constant(7)),
-                        new FieldModel("TEXT", true, Types.STRING, new Mutability.Constant("hi")),
-                        new FieldModel("value", false, Types.typeVar("T"), Mutability.MUTABLE));
+                        new FieldModel("mutable", false, Types.INT, Mutability.MUTABLE, Access.PUBLIC),
+                        new FieldModel("instanceFinal", false, Types.INT, Mutability.FINAL, Access.PUBLIC),
+                        new FieldModel("staticMutable", true, Types.INT, Mutability.MUTABLE, Access.PUBLIC),
+                        new FieldModel("staticFinal", true, Types.OBJECT, Mutability.FINAL, Access.PUBLIC),
+                        new FieldModel("CONSTANT", true, Types.INT, new Mutability.Constant(7), Access.PUBLIC),
+                        new FieldModel("TEXT", true, Types.STRING, new Mutability.Constant("hi"), Access.PUBLIC),
+                        new FieldModel("value", false, Types.typeVar("T"), Mutability.MUTABLE, Access.PUBLIC),
+                        // Fields can be extended: a subclass reaches prot
+                        new FieldModel("prot", false, Types.INT, Mutability.MUTABLE, Access.PROTECTED));
     }
 
     @Test
@@ -504,16 +509,17 @@ class MirrorTranslatorTypeTest {
 
         assertThat(model.members())
                 .containsExactly(
-                        new CtorModel(List.of(), List.of(), List.of(), List.of()),
+                        new CtorModel(List.of(), List.of(), List.of(), List.of(), Access.PUBLIC),
                         new CtorModel(
                                 List.of(new TypeParam("X", List.of(Types.of(CD_NUMBER)))),
                                 List.of(Types.typeVar("X"), Types.typeVar("T")),
                                 List.of(fixed(CD_NUMBER), var(0)),
-                                List.of(Types.of(IOException.class))));
+                                List.of(Types.of(IOException.class)),
+                                Access.PUBLIC));
     }
 
     @Test
-    void methodsAreDeclaredPublicOnesWithOverridability() {
+    void methodsAreDeclaredAccessibleOnesWithOverridability() {
         TypeModel model = full("p.Methods", """
                 package p;
                 public abstract class Methods<T> extends Base {
@@ -540,7 +546,8 @@ class MirrorTranslatorTypeTest {
                                 List.of(),
                                 List.of(),
                                 List.of(),
-                                Overridability.ABSTRACT),
+                                Overridability.ABSTRACT,
+                                Access.PUBLIC),
                         new MethodModel(
                                 "fin",
                                 false,
@@ -549,7 +556,8 @@ class MirrorTranslatorTypeTest {
                                 List.of(),
                                 List.of(),
                                 List.of(),
-                                Overridability.FINAL),
+                                Overridability.FINAL,
+                                Access.PUBLIC),
                         new MethodModel(
                                 "stat",
                                 true,
@@ -558,7 +566,8 @@ class MirrorTranslatorTypeTest {
                                 List.of(Types.typeVar("S")),
                                 List.of(fixed(ConstantDescs.CD_Object)),
                                 List.of(),
-                                Overridability.FINAL),
+                                Overridability.FINAL,
+                                Access.PUBLIC),
                         new MethodModel(
                                 "open",
                                 false,
@@ -567,7 +576,8 @@ class MirrorTranslatorTypeTest {
                                 List.of(Types.array(Types.INT)),
                                 List.of(fixed(ConstantDescs.CD_int.arrayType())),
                                 List.of(),
-                                Overridability.OVERRIDABLE),
+                                Overridability.OVERRIDABLE,
+                                Access.PUBLIC),
                         new MethodModel(
                                 "rethrow",
                                 false,
@@ -576,7 +586,56 @@ class MirrorTranslatorTypeTest {
                                 List.of(),
                                 List.of(),
                                 List.of(Types.typeVar("X"), Types.of(IOException.class)),
-                                Overridability.OVERRIDABLE));
+                                Overridability.OVERRIDABLE,
+                                Access.PUBLIC),
+                        // Methods can be extended: a subclass reaches prot()
+                        new MethodModel(
+                                "prot",
+                                false,
+                                List.of(),
+                                Optional.empty(),
+                                List.of(),
+                                List.of(),
+                                List.of(),
+                                Overridability.OVERRIDABLE,
+                                Access.PROTECTED));
+    }
+
+    @Test
+    void aProtectedMemberIsOneOfAClassThatCanBeExtendedAlone() {
+        String members = "protected int field; protected static int sfield; protected void method() {}"
+                + " protected static void smethod() {}";
+        List<List<String>> accesses = Harness.run(
+                env -> Stream.of("p.Open", "p.Abs", "p.Fin", "p.Rec", "p.En", "p.Sealed")
+                        .map(name -> Harness.ok(env.full(name)).members().stream()
+                                .map(member -> switch (member) {
+                                    case FieldModel field -> field.access() + " " + field.name();
+                                    case MethodModel method -> method.access() + " " + method.name();
+                                    case CtorModel ctor -> ctor.access() + " new";
+                                })
+                                .toList())
+                        .toList(),
+                "package p; public class Open { protected Open() {} public Open(int i) {} " + members + " }",
+                "package p; public abstract class Abs { protected Abs() {} " + members + " }",
+                "package p; public final class Fin { protected Fin() {} public Fin(int i) {} " + members + " }",
+                "package p; public record Rec(int i) { protected static int sfield; protected void method() {} }",
+                "package p; public enum En { A; protected int field; protected void method() {} }",
+                "package p; public sealed class Sealed permits Sub { protected Sealed() {} protected void method() {} }",
+                "package p; final class Sub extends Sealed {}");
+
+        List<String> all = List.of("PROTECTED field", "PROTECTED sfield", "PROTECTED method", "PROTECTED smethod");
+        assertThat(accesses.get(0))
+                .containsExactlyElementsOf(Stream.concat(Stream.of("PROTECTED new", "PUBLIC new"), all.stream())
+                        .toList());
+        assertThat(accesses.get(1))
+                .containsExactlyElementsOf(
+                        Stream.concat(Stream.of("PROTECTED new"), all.stream()).toList());
+        // a final class, a record and an enum have no subclass to reach a protected member
+        assertThat(accesses.get(2)).containsExactly("PUBLIC new");
+        assertThat(accesses.subList(3, 5))
+                .allSatisfy(found -> assertThat(found).isNotEmpty().allMatch(member -> member.startsWith("PUBLIC ")));
+        // a sealed class is extended by the classes it permits: its kind does not tell them
+        assertThat(accesses.get(5)).containsExactly("PROTECTED new", "PROTECTED method");
     }
 
     @Test
@@ -628,7 +687,8 @@ class MirrorTranslatorTypeTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        Overridability.OVERRIDABLE));
+                        Overridability.OVERRIDABLE,
+                        Access.PUBLIC));
         assertThat(model.skipped())
                 .containsExactly(
                         new SkippedMember("field field", "mentions types that are not public: p.Hidden"),
@@ -730,7 +790,8 @@ class MirrorTranslatorTypeTest {
         assertThat(rounds).hasSize(2);
         assertThat(rounds.getFirst()).isEqualTo(new Translation.Deferred<>("gen.Made"));
         assertThat(Harness.ok(rounds.getLast()).members())
-                .contains(new FieldModel("made", false, Types.of(ClassDesc.of("gen.Made")), Mutability.MUTABLE));
+                .contains(new FieldModel(
+                        "made", false, Types.of(ClassDesc.of("gen.Made")), Mutability.MUTABLE, Access.PUBLIC));
     }
 
     /// Generates `gen.Made` in the first round, as another processor would.
@@ -825,7 +886,8 @@ class MirrorTranslatorTypeTest {
         assertThat(orElseThrow.result()).contains(Types.typeVar("T"));
 
         assertThat(jdk.get("java.lang.Integer").members())
-                .contains(new FieldModel("MAX_VALUE", true, Types.INT, new Mutability.Constant(Integer.MAX_VALUE)));
+                .contains(new FieldModel(
+                        "MAX_VALUE", true, Types.INT, new Mutability.Constant(Integer.MAX_VALUE), Access.PUBLIC));
     }
 
     @Test
@@ -872,8 +934,8 @@ class MirrorTranslatorTypeTest {
 
         assertThat(results).hasSize(4);
         assertThat(results.get(0))
-                .isEqualTo(
-                        new Translation.Ok<MemberModel>(new FieldModel("field", false, Types.INT, Mutability.MUTABLE)));
+                .isEqualTo(new Translation.Ok<MemberModel>(
+                        new FieldModel("field", false, Types.INT, Mutability.MUTABLE, Access.PUBLIC)));
         assertThat(((Translation.Ok<MemberModel>) results.get(1)).value()).isInstanceOf(CtorModel.class);
         assertThat(((Translation.Ok<MemberModel>) results.get(2)).value())
                 .isInstanceOfSatisfying(MethodModel.class, m -> {
@@ -976,13 +1038,15 @@ class MirrorTranslatorTypeTest {
                         "near of Near",
                         "snear of Near",
                         // not HID, which Near hides; overridden(), which Near overrides; redeclared() and
-                        // hiddenStatic(), which Pub declares again; nor what is not public
+                        // hiddenStatic(), which Pub declares again; nor pack(), which has package access
                         "FAR of Far",
                         "item of Far",
                         "get of Far",
                         "set of Far",
                         "self of Far",
                         "sfar of Far",
+                        // prot(): Pub can be extended, and its subclass reaches the protected method
+                        "prot of Far",
                         // not api(), which Pub implements, nor the static method of an interface
                         "CONST of HiddenApi",
                         "dflt of HiddenApi");
@@ -1026,9 +1090,9 @@ class MirrorTranslatorTypeTest {
                 .containsExactly(fixed(ConstantDescs.CD_String), fixed(ConstantDescs.CD_List));
         assertThat(model.members())
                 .contains(
-                        new FieldModel("item", false, Types.STRING, Mutability.MUTABLE),
-                        new FieldModel("HID", true, Types.STRING, new Mutability.Constant("near")),
-                        new FieldModel("CONST", true, Types.STRING, new Mutability.Constant("const")));
+                        new FieldModel("item", false, Types.STRING, Mutability.MUTABLE, Access.PUBLIC),
+                        new FieldModel("HID", true, Types.STRING, new Mutability.Constant("near"), Access.PUBLIC),
+                        new FieldModel("CONST", true, Types.STRING, new Mutability.Constant("const"), Access.PUBLIC));
         assertThat(methods.get("snear").isStatic()).isTrue();
         assertThat(methods.get("near").overridability()).isEqualTo(Overridability.OVERRIDABLE);
         assertThat(methods.get("redeclared").overridability()).isEqualTo(Overridability.OVERRIDABLE);
@@ -1053,7 +1117,8 @@ class MirrorTranslatorTypeTest {
                 """);
 
         assertThat(model.members())
-                .contains(new FieldModel("first", false, Types.array(Types.typeVar("E")), Mutability.MUTABLE));
+                .contains(new FieldModel(
+                        "first", false, Types.array(Types.typeVar("E")), Mutability.MUTABLE, Access.PUBLIC));
         MethodModel second = methods(model).get("second");
         assertThat(second.result()).contains(Types.STRING);
         assertThat(second.params()).containsExactly(Types.array(Types.typeVar("E")));
@@ -1135,10 +1200,10 @@ class MirrorTranslatorTypeTest {
         // the canonical form has the members that have facts, and the whole table
         assertThat(Canonical.of(model).text().lines().filter(line -> line.startsWith("member ")))
                 .containsExactly(
-                        "member ctor() throws -",
-                        "member field static constant int OWN = 2",
-                        "member method overridable more() -> java.lang.String throws -",
-                        "member method overridable own() -> void throws -");
+                        "member ctor public () throws -",
+                        "member field public static constant int OWN = 2",
+                        "member method public overridable more() -> java.lang.String throws -",
+                        "member method public overridable own() -> void throws -");
         assertThat(Canonical.of(model).text()).contains("run()");
     }
 
@@ -1398,7 +1463,8 @@ class MirrorTranslatorTypeTest {
                 List.of(Types.INT),
                 List.of(fixed(ConstantDescs.CD_int)),
                 List.of(Types.of(ClassDesc.of("java.io.IOException"))),
-                Overridability.ABSTRACT);
+                Overridability.ABSTRACT,
+                Access.PUBLIC);
         assertThat(sams.get("declared")).contains(apply);
         assertThat(sams.get("inherited")).contains(apply);
         assertThat(sams.get("generic").orElseThrow().params()).containsExactly(Types.typeVar("T"));

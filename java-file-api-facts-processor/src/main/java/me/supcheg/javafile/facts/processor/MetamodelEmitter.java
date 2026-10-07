@@ -531,6 +531,9 @@ final class MetamodelEmitter {
                 list(model.superclasses().stream()
                         .map(MetamodelEmitter::classDesc)
                         .toList()),
+                list(model.interfaces().stream()
+                        .map(MetamodelEmitter::classDesc)
+                        .toList()),
                 supertypes(model.supertypes()),
                 template(model.methods()),
                 list(model.enumConstants().stream().map(Exprs::literal).toList()),

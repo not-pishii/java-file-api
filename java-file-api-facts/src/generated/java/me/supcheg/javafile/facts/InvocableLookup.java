@@ -12,7 +12,7 @@ abstract class InvocableLookup<O> {
 
     abstract ConcreteClassToken<O> concreteClassToken();
 
-    abstract AbstractClassToken<O> abstractClassToken();
+    abstract ExtendableClassToken<O> extendableClassToken();
 
     public <R> MethodRef0<O, R> method(String name, TypeToken<R> result) {
         return new MethodRef0<>(token(), name, result, resolve(MemberQuery.method(name, result)).traits(), Invocables.declared(token()));
@@ -34,8 +34,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef0<>(concreteClassToken(), resolve(MemberQuery.constructor()).traits(), Invocables.declared(concreteClassToken()));
     }
 
-    public AbstractCtorRef0<O> abstractCtor() {
-        return new AbstractCtorRef0<>(abstractClassToken(), resolve(MemberQuery.constructor()).traits(), Invocables.declared(abstractClassToken()));
+    public SuperCtorRef0<O> superCtor() {
+        return new SuperCtorRef0<>(extendableClassToken(), resolve(MemberQuery.constructor()).traits(), Invocables.declared(extendableClassToken()));
     }
 
     public <R, A1> MethodRef1<O, R, A1> method(String name, TypeToken<R> result, TypeToken<A1> param1) {
@@ -58,8 +58,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef1<>(concreteClassToken(), param1, resolve(MemberQuery.constructor(param1)).traits(), Invocables.declared(concreteClassToken(), param1));
     }
 
-    public <A1> AbstractCtorRef1<O, A1> abstractCtor(TypeToken<A1> param1) {
-        return new AbstractCtorRef1<>(abstractClassToken(), param1, resolve(MemberQuery.constructor(param1)).traits(), Invocables.declared(abstractClassToken(), param1));
+    public <A1> SuperCtorRef1<O, A1> superCtor(TypeToken<A1> param1) {
+        return new SuperCtorRef1<>(extendableClassToken(), param1, resolve(MemberQuery.constructor(param1)).traits(), Invocables.declared(extendableClassToken(), param1));
     }
 
     public <R, A1, A2> MethodRef2<O, R, A1, A2> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2) {
@@ -82,8 +82,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef2<>(concreteClassToken(), param1, param2, resolve(MemberQuery.constructor(param1, param2)).traits(), Invocables.declared(concreteClassToken(), param1, param2));
     }
 
-    public <A1, A2> AbstractCtorRef2<O, A1, A2> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2) {
-        return new AbstractCtorRef2<>(abstractClassToken(), param1, param2, resolve(MemberQuery.constructor(param1, param2)).traits(), Invocables.declared(abstractClassToken(), param1, param2));
+    public <A1, A2> SuperCtorRef2<O, A1, A2> superCtor(TypeToken<A1> param1, TypeToken<A2> param2) {
+        return new SuperCtorRef2<>(extendableClassToken(), param1, param2, resolve(MemberQuery.constructor(param1, param2)).traits(), Invocables.declared(extendableClassToken(), param1, param2));
     }
 
     public <R, A1, A2, A3> MethodRef3<O, R, A1, A2, A3> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3) {
@@ -106,8 +106,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef3<>(concreteClassToken(), param1, param2, param3, resolve(MemberQuery.constructor(param1, param2, param3)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3));
     }
 
-    public <A1, A2, A3> AbstractCtorRef3<O, A1, A2, A3> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3) {
-        return new AbstractCtorRef3<>(abstractClassToken(), param1, param2, param3, resolve(MemberQuery.constructor(param1, param2, param3)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3));
+    public <A1, A2, A3> SuperCtorRef3<O, A1, A2, A3> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3) {
+        return new SuperCtorRef3<>(extendableClassToken(), param1, param2, param3, resolve(MemberQuery.constructor(param1, param2, param3)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3));
     }
 
     public <R, A1, A2, A3, A4> MethodRef4<O, R, A1, A2, A3, A4> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4) {
@@ -130,8 +130,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef4<>(concreteClassToken(), param1, param2, param3, param4, resolve(MemberQuery.constructor(param1, param2, param3, param4)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4));
     }
 
-    public <A1, A2, A3, A4> AbstractCtorRef4<O, A1, A2, A3, A4> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4) {
-        return new AbstractCtorRef4<>(abstractClassToken(), param1, param2, param3, param4, resolve(MemberQuery.constructor(param1, param2, param3, param4)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4));
+    public <A1, A2, A3, A4> SuperCtorRef4<O, A1, A2, A3, A4> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4) {
+        return new SuperCtorRef4<>(extendableClassToken(), param1, param2, param3, param4, resolve(MemberQuery.constructor(param1, param2, param3, param4)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4));
     }
 
     public <R, A1, A2, A3, A4, A5> MethodRef5<O, R, A1, A2, A3, A4, A5> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5) {
@@ -154,8 +154,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef5<>(concreteClassToken(), param1, param2, param3, param4, param5, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5));
     }
 
-    public <A1, A2, A3, A4, A5> AbstractCtorRef5<O, A1, A2, A3, A4, A5> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5) {
-        return new AbstractCtorRef5<>(abstractClassToken(), param1, param2, param3, param4, param5, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5));
+    public <A1, A2, A3, A4, A5> SuperCtorRef5<O, A1, A2, A3, A4, A5> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5) {
+        return new SuperCtorRef5<>(extendableClassToken(), param1, param2, param3, param4, param5, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5));
     }
 
     public <R, A1, A2, A3, A4, A5, A6> MethodRef6<O, R, A1, A2, A3, A4, A5, A6> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6) {
@@ -178,8 +178,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef6<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6));
     }
 
-    public <A1, A2, A3, A4, A5, A6> AbstractCtorRef6<O, A1, A2, A3, A4, A5, A6> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6) {
-        return new AbstractCtorRef6<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6));
+    public <A1, A2, A3, A4, A5, A6> SuperCtorRef6<O, A1, A2, A3, A4, A5, A6> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6) {
+        return new SuperCtorRef6<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7> MethodRef7<O, R, A1, A2, A3, A4, A5, A6, A7> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7) {
@@ -202,8 +202,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef7<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7> AbstractCtorRef7<O, A1, A2, A3, A4, A5, A6, A7> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7) {
-        return new AbstractCtorRef7<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7));
+    public <A1, A2, A3, A4, A5, A6, A7> SuperCtorRef7<O, A1, A2, A3, A4, A5, A6, A7> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7) {
+        return new SuperCtorRef7<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7, A8> MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8) {
@@ -226,8 +226,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef8<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7, A8> AbstractCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8) {
-        return new AbstractCtorRef8<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8));
+    public <A1, A2, A3, A4, A5, A6, A7, A8> SuperCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8) {
+        return new SuperCtorRef8<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9> MethodRef9<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9) {
@@ -250,8 +250,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef9<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7, A8, A9> AbstractCtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9) {
-        return new AbstractCtorRef9<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9));
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9> SuperCtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9) {
+        return new SuperCtorRef9<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> MethodRef10<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10) {
@@ -274,8 +274,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef10<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> AbstractCtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10) {
-        return new AbstractCtorRef10<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> SuperCtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10) {
+        return new SuperCtorRef10<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> MethodRef11<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11) {
@@ -298,8 +298,8 @@ abstract class InvocableLookup<O> {
         return new CtorRef11<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> AbstractCtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11) {
-        return new AbstractCtorRef11<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> SuperCtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11) {
+        return new SuperCtorRef11<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
     }
 
     public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> MethodRef12<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method(String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11, TypeToken<A12> param12) {
@@ -322,7 +322,7 @@ abstract class InvocableLookup<O> {
         return new CtorRef12<>(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12)).traits(), Invocables.declared(concreteClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
     }
 
-    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> AbstractCtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> abstractCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11, TypeToken<A12> param12) {
-        return new AbstractCtorRef12<>(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12)).traits(), Invocables.declared(abstractClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> SuperCtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> superCtor(TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11, TypeToken<A12> param12) {
+        return new SuperCtorRef12<>(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, resolve(MemberQuery.constructor(param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12)).traits(), Invocables.declared(extendableClassToken(), param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
     }
 }

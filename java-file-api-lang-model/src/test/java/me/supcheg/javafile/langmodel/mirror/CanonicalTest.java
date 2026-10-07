@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -52,32 +53,32 @@ class CanonicalTest {
     }
 
     private static String fingerprint(String source) {
-        return canonical("p.T", MemberFilter.DECLARED_PUBLIC, source).fingerprint();
+        return canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, source).fingerprint();
     }
 
     @Test
     void textOfAType() {
-        Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
+        Canonical canonical = canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE);
 
         assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 5
+                        javafile-facts-canonical 6
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
                         interfaces java.lang.Comparable; java.lang.Runnable
                         supertypes java.lang.Comparable<p.T<#0>>
                         enum -
-                        members declared-public
-                        member ctor(#0) throws java.io.IOException, java.lang.InterruptedException
-                        member field instance mutable #0 value
-                        member field static constant int K = 1
-                        member method overridable compareTo(p.T<#0>) -> int throws -
-                        member method overridable fill(#0[]) -> void throws -
-                        member method overridable get(int) -> #0 throws java.lang.Exception
-                        member method overridable put(#0, java.util.List<? super #0>, java.util.List<? extends #0>, \
+                        members declared-accessible
+                        member ctor public (#0) throws java.io.IOException, java.lang.InterruptedException
+                        member field public instance mutable #0 value
+                        member field public static constant int K = 1
+                        member method public overridable compareTo(p.T<#0>) -> int throws -
+                        member method public overridable fill(#0[]) -> void throws -
+                        member method public overridable get(int) -> #0 throws java.lang.Exception
+                        member method public overridable put(#0, java.util.List<? super #0>, java.util.List<? extends #0>, \
                         java.util.List<?>) -> void throws -
-                        member method overridable run() -> void throws -
-                        member method static <^0 extends java.lang.CharSequence> make(^0, int[]) -> ^0 throws -
+                        member method public overridable run() -> void throws -
+                        member method public static <^0 extends java.lang.CharSequence> make(^0, int[]) -> ^0 throws -
                         table abstract -
                         table concrete clone(); compareTo(p.T); equals(java.lang.Object); fill(#0[]); \
                         finalize(); get(int); getClass(); hashCode(); hidden(int); notify(); notifyAll(); pack(); \
@@ -91,20 +92,20 @@ class CanonicalTest {
     void theMembersAdoptedFromASupertypeThatIsNotPublicAreInTheTextAndTheFingerprint() {
         String pub = "package p; public class Pub extends Hidden<String> { public void own() {} }";
         String hidden = "package p; class Hidden<T> { public T get() { return null; } public static final int K = 1; }";
-        Canonical canonical = canonical("p.Pub", MemberFilter.DECLARED_PUBLIC, pub, hidden);
+        Canonical canonical = canonical("p.Pub", MemberFilter.DECLARED_ACCESSIBLE, pub, hidden);
 
         assertThat(canonical.text()).contains("""
-                        members declared-public
-                        member ctor() throws -
-                        member field static constant int K = 1
-                        member method overridable get() -> java.lang.String throws -
-                        member method overridable own() -> void throws -
+                        members declared-accessible
+                        member ctor public () throws -
+                        member field public static constant int K = 1
+                        member method public overridable get() -> java.lang.String throws -
+                        member method public overridable own() -> void throws -
                         table abstract -
                         """);
         // a change of the hidden supertype alone is a change of the type that adopts its members
         String changed =
                 "package p; class Hidden<T> { public T get() { return null; } public static final int K = 2; }";
-        assertThat(canonical("p.Pub", MemberFilter.DECLARED_PUBLIC, pub, changed)
+        assertThat(canonical("p.Pub", MemberFilter.DECLARED_ACCESSIBLE, pub, changed)
                         .fingerprint())
                 .isNotEqualTo(canonical.fingerprint());
         // which a token-only metamodel, without members, does not tell
@@ -124,7 +125,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 5
+                        javafile-facts-canonical 6
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -142,7 +143,7 @@ class CanonicalTest {
 
     @Test
     void textOfConstantsIsAsciiAndExact() {
-        Canonical canonical = canonical("p.Constants", MemberFilter.DECLARED_PUBLIC, """
+        Canonical canonical = canonical("p.Constants", MemberFilter.DECLARED_ACCESSIBLE, """
                 package p;
                 public class Constants {
                     private Constants() {}
@@ -164,26 +165,26 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .contains(
-                        "member field static constant boolean Z = true\n",
-                        "member field static constant byte B = -1\n",
-                        "member field static constant short S = 2\n",
-                        "member field static constant char C = '\\u000a'\n",
-                        "member field static constant char Q = '\\u0027'\n",
-                        "member field static constant int I = 3\n",
-                        "member field static constant long J = 4L\n",
-                        "member field static constant float F = 0.5f\n",
-                        "member field static constant double D = -0.0\n",
-                        "member field static constant double NAN = NaN\n",
-                        "member field static constant double INF = Infinity\n",
-                        "member field static constant float FNAN = NaNf\n",
-                        "member field static constant java.lang.String STR = \"a\\u0022b\\u005cc\\u00e9\\u0009~\"\n");
+                        "member field public static constant boolean Z = true\n",
+                        "member field public static constant byte B = -1\n",
+                        "member field public static constant short S = 2\n",
+                        "member field public static constant char C = '\\u000a'\n",
+                        "member field public static constant char Q = '\\u0027'\n",
+                        "member field public static constant int I = 3\n",
+                        "member field public static constant long J = 4L\n",
+                        "member field public static constant float F = 0.5f\n",
+                        "member field public static constant double D = -0.0\n",
+                        "member field public static constant double NAN = NaN\n",
+                        "member field public static constant double INF = Infinity\n",
+                        "member field public static constant float FNAN = NaNf\n",
+                        "member field public static constant java.lang.String STR = \"a\\u0022b\\u005cc\\u00e9\\u0009~\"\n");
         assertThat(StandardCharsets.US_ASCII.newEncoder().canEncode(canonical.text()))
                 .isTrue();
     }
 
     @Test
     void fingerprintIsTheSha256OfTheTextAsAMetamodelRecordsIt() throws NoSuchAlgorithmException {
-        Canonical canonical = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
+        Canonical canonical = canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE);
 
         assertThat(canonical.fingerprint())
                 .isEqualTo(HexFormat.of()
@@ -196,8 +197,8 @@ class CanonicalTest {
 
     @Test
     void equalityIsByText() {
-        Canonical one = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
-        Canonical two = canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE);
+        Canonical one = canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE);
+        Canonical two = canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE);
         Canonical other = canonical("p.T", MemberFilter.NONE, BASE);
 
         assertThat(one)
@@ -263,8 +264,8 @@ class CanonicalTest {
                 package gen;
                 public class Made { public void m() {} }
                 """;
-        Canonical together = canonical("p.User", MemberFilter.DECLARED_PUBLIC, user, made);
-        Canonical reversed = canonical("p.User", MemberFilter.DECLARED_PUBLIC, made, user);
+        Canonical together = canonical("p.User", MemberFilter.DECLARED_ACCESSIBLE, user, made);
+        Canonical reversed = canonical("p.User", MemberFilter.DECLARED_ACCESSIBLE, made, user);
         List<Translation<TypeModel>> rounds =
                 Harness.everyRound(env -> env.full("p.User"), List.of(new MirrorTranslatorTypeTest.Generator()), user);
 
@@ -358,7 +359,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 5
+                        javafile-facts-canonical 6
                         type p.T interface sealed=no
                         tparams -
                         superclasses -
@@ -374,11 +375,12 @@ class CanonicalTest {
                         """);
         assertThat(canonical(
                                 "p.Op",
-                                MemberFilter.DECLARED_PUBLIC,
+                                MemberFilter.DECLARED_ACCESSIBLE,
                                 "package p; public interface Op<A, B> { B apply(A a, int[] is) throws Exception, Error; }")
                         .text())
-                .contains("member method abstract apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n"
-                        + "sam apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n");
+                .contains(
+                        "member method public abstract apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n"
+                                + "sam apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n");
         assertThat(canonical("p.Two", MemberFilter.NONE, "package p; public interface Two { void a(); void b(); }")
                         .text())
                 .doesNotContain("sam ");
@@ -445,7 +447,7 @@ class CanonicalTest {
     void theFilterIsHashed() {
         assertThat(canonical("p.T", MemberFilter.NONE, BASE).fingerprint())
                 .isNotEqualTo(
-                        canonical("p.T", MemberFilter.DECLARED_PUBLIC, BASE).fingerprint());
+                        canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE).fingerprint());
     }
 
     // ---- hand-made models
@@ -464,7 +466,7 @@ class CanonicalTest {
                 List.of(),
                 false,
                 Optional.empty(),
-                MemberFilter.DECLARED_PUBLIC,
+                MemberFilter.DECLARED_ACCESSIBLE,
                 List.of(new MethodModel(
                         "m",
                         false,
@@ -473,7 +475,8 @@ class CanonicalTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        Overridability.ABSTRACT)),
+                        Overridability.ABSTRACT,
+                        Access.PUBLIC)),
                 List.of());
 
         assertThatThrownBy(() -> Canonical.of(model))
@@ -495,7 +498,7 @@ class CanonicalTest {
                 List.of(),
                 false,
                 Optional.empty(),
-                MemberFilter.DECLARED_PUBLIC,
+                MemberFilter.DECLARED_ACCESSIBLE,
                 List.of(
                         new CtorModel(
                                 List.of(new TypeParam("E", List.of()), new TypeParam("F", List.of(Types.typeVar("E")))),
@@ -503,7 +506,8 @@ class CanonicalTest {
                                 List.of(
                                         MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object),
                                         MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object)),
-                                List.of()),
+                                List.of(),
+                                Access.PUBLIC),
                         new MethodModel(
                                 "m",
                                 false,
@@ -512,12 +516,13 @@ class CanonicalTest {
                                 List.of(),
                                 List.of(),
                                 List.of(),
-                                Overridability.FINAL)),
+                                Overridability.FINAL,
+                                Access.PUBLIC)),
                 List.of());
 
         assertThat(Canonical.of(model).text())
                 .contains(
-                        "member ctor <^0, ^1 extends ^0>(^0, ^1) throws -\n",
-                        "member method final <^0> m() -> ^0 throws -\n");
+                        "member ctor public <^0, ^1 extends ^0>(^0, ^1) throws -\n",
+                        "member method public final <^0> m() -> ^0 throws -\n");
     }
 }

@@ -33,7 +33,7 @@ import p.Mentions;
 ///
 /// A member [Mentions] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mentions.class, fingerprint = "50dfdf7e14bf31485a9368a42c6b7c2ea07a196f6b838daf88316b92789c7fa5", complete = true, format = 7)
+@GeneratedMetamodel(of = Mentions.class, fingerprint = "91fffb11aa6a31e8eef17df9bd55ebfa9e3b33ab140ad2515360860ad705edb0", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Mentions_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mentions] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "50dfdf7e14bf31485a9368a42c6b7c2ea07a196f6b838daf88316b92789c7fa5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "91fffb11aa6a31e8eef17df9bd55ebfa9e3b33ab140ad2515360860ad705edb0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions"))), List.of(), false);
 
         private Data() {
         }
@@ -55,18 +55,18 @@ public final class Mentions_ {
     static final class Canonical {
         /// The canonical form of [Mentions].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Mentions open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method overridable dollar() -> p.ByDollar<?> throws -
-        member method overridable hidden() -> p.ByHidden<?> throws -
-        member method overridable marker() -> p.ByMarker<?> throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public overridable dollar() -> p.ByDollar<?> throws -
+        member method public overridable hidden() -> p.ByHidden<?> throws -
+        member method public overridable marker() -> p.ByMarker<?> throws -
         table abstract -
         table concrete clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); marker(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

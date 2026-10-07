@@ -32,7 +32,7 @@ import p.Outer.NonStatic;
 ///
 /// A member [Outer] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Outer.class, fingerprint = "6b3c63a392b86052eaff2f3be24a2791dea8bad7175d05022f256f3e558beff2", complete = true, format = 7)
+@GeneratedMetamodel(of = Outer.class, fingerprint = "cc87a4783dfce5aebbb32b9613985678392e3725afaf0246854a6c9df9b91e71", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Outer_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Outer] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_"), "6b3c63a392b86052eaff2f3be24a2791dea8bad7175d05022f256f3e558beff2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("e"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inner"), Signature.of("nonStatic"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_"), "cc87a4783dfce5aebbb32b9613985678392e3725afaf0246854a6c9df9b91e71", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("e"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inner"), Signature.of("nonStatic"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer"))), List.of(), false);
 
         private Data() {
         }
@@ -54,18 +54,18 @@ public final class Outer_ {
     static final class Canonical {
         /// The canonical form of [Outer].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Outer open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method overridable e() -> p.Outer$E throws -
-        member method overridable inner() -> p.Outer$Inner throws -
-        member method overridable nonStatic() -> p.Outer$NonStatic throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public overridable e() -> p.Outer$E throws -
+        member method public overridable inner() -> p.Outer$Inner throws -
+        member method public overridable nonStatic() -> p.Outer$NonStatic throws -
         table abstract -
         table concrete clone(); e(); equals(java.lang.Object); finalize(); getClass(); hashCode(); inner(); nonStatic(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

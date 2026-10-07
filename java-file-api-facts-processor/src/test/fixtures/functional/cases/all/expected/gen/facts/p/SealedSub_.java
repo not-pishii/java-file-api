@@ -26,7 +26,7 @@ import p.SealedSub;
 ///
 /// A member [SealedSub] inherits has its fact in the metamodel of the supertype that declares it: [Run_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedSub.class, fingerprint = "130ae757d7f03df5a3975c9a1c6d816dc3d4f1060ba75e2dadd7214aa9d641e3", complete = true, format = 7)
+@GeneratedMetamodel(of = SealedSub.class, fingerprint = "52775fd1f668736acc3626990ce929ff6170674feabfd70eb9d36f54404e4a8c", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class SealedSub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SealedSub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SealedSub_"), "130ae757d7f03df5a3975c9a1c6d816dc3d4f1060ba75e2dadd7214aa9d641e3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SealedSub"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), true);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SealedSub_"), "52775fd1f668736acc3626990ce929ff6170674feabfd70eb9d36f54404e4a8c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SealedSub"), List.of(), List.of(), List.of(ClassDesc.of("p.Run")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), true);
 
         private Data() {
         }
@@ -48,14 +48,14 @@ public final class SealedSub_ {
     static final class Canonical {
         /// The canonical form of [SealedSub].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.SealedSub interface sealed=yes
         tparams -
         superclasses -
         interfaces p.Run
         supertypes -
         enum -
-        members declared-public
+        members declared-accessible
         table abstract run()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

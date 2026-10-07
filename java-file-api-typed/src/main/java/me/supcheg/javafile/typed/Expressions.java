@@ -311,7 +311,7 @@ public final class Expressions {
     // ------------------------------------------------------------------
     // Instance creation: only a `CtorRefN` — the constructor of an
     // instantiable class — is accepted; the constructor of an abstract
-    // class is an `AbstractCtorRefN`, which `new_` does not take (§3.1).
+    // class is a `SuperCtorRefN`, which `new_` does not take (§3.1).
     // The type arguments are always those of the fact: lowering renders the
     // diamond itself where the target type is exactly the constructed one.
     // Each throws IllegalArgumentException for a class token with a

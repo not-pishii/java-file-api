@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -155,10 +156,13 @@ public final class MirrorTranslator {
     }
 
     /// The fields, constructors and methods a full metamodel of a type has
-    /// facts of ([MemberFilter#DECLARED_PUBLIC]): the `public` ones the type
-    /// declares, in declaration order, and then the ones it adopts.
+    /// facts of ([MemberFilter#DECLARED_ACCESSIBLE]): the accessible ones the
+    /// type declares, in declaration order, and then the ones it adopts. A
+    /// member is accessible if it is `public`, or `protected` and the type a
+    /// class that can be extended ([#extendable(TypeElement)]): a subclass
+    /// reaches it, and nothing else does.
     ///
-    /// A type adopts the `public` fields and methods it inherits from a
+    /// A type adopts the accessible fields and methods it inherits from a
     /// supertype that is not `public`: such a supertype has no metamodel, so
     /// its members are told as members of the nearest subtype that can have
     /// one, as javac sees them — `capacity()` of `java.lang.StringBuilder`,
@@ -205,10 +209,10 @@ public final class MirrorTranslator {
                 .toList();
     }
 
-    /// The `public` fields, constructors and methods a type declares.
+    /// The accessible fields, constructors and methods a type declares.
     private static Stream<Element> declared(TypeElement element) {
         return element.getEnclosedElements().stream()
-                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                .filter(member -> access(member, element).isPresent())
                 .<Element>map(member -> member)
                 // enum constants are TypeModel.enumConstants; member types have models of their own
                 .filter(member -> switch (member.getKind()) {
@@ -246,7 +250,7 @@ public final class MirrorTranslator {
                 .toList();
     }
 
-    /// The `public` fields and methods of the supertypes that are not
+    /// The accessible fields and methods of the supertypes that are not
     /// `public` which a type has through such supertypes alone: those of
     /// the nearer supertype first, and none that a nearer type replaces. A
     /// `public` supertype that has one of them too is not looked at here.
@@ -264,7 +268,7 @@ public final class MirrorTranslator {
                 .collect(Collectors.groupingBy(member -> member.getSimpleName().toString()));
         return hidden.stream()
                 .<Element>flatMap(supertype -> supertype.getEnclosedElements().stream())
-                .filter(member -> member.getModifiers().contains(Modifier.PUBLIC))
+                .filter(member -> access(member, element).isPresent())
                 .filter(member -> {
                     List<Element> namesakes =
                             inherited.getOrDefault(member.getSimpleName().toString(), List.of());
@@ -272,6 +276,37 @@ public final class MirrorTranslator {
                             && namesakes.stream().noneMatch(other -> replaces(other, member, element));
                 })
                 .toList();
+    }
+
+    /// The access a fact of a member of a type is of: that of a `public`
+    /// member, and of a `protected` one if the type is a class that can be
+    /// extended; none for any other member, which code of another package
+    /// cannot name.
+    ///
+    /// @param member a member of `type`, declared or inherited
+    /// @param type the class, interface, enum or record
+    /// @return the access of the fact, if the member can have one
+    private static Optional<Access> access(Element member, TypeElement type) {
+        Set<Modifier> modifiers = member.getModifiers();
+        if (modifiers.contains(Modifier.PUBLIC)) {
+            return Optional.of(Access.PUBLIC);
+        }
+        return modifiers.contains(Modifier.PROTECTED) && extendable(type)
+                ? Optional.of(Access.PROTECTED)
+                : Optional.empty();
+    }
+
+    /// Whether a type is a class a class of another package can extend, as
+    /// its kind tells: neither `final`, nor a record, nor an enum, nor an
+    /// interface.
+    ///
+    /// @param type the class, interface, enum or record
+    /// @return `true` for a class whose token is an `ExtendableClassToken`
+    public static boolean extendable(TypeElement type) {
+        return switch (kind(type)) {
+            case DeclaredKind.OpenClass _, DeclaredKind.AbstractClass _ -> true;
+            case DeclaredKind.FinalClass _, DeclaredKind.Interface _, DeclaredKind.EnumClass _ -> false;
+        };
     }
 
     /// Whether a supertype tells the members it adopts: it is `public`, and
@@ -611,7 +646,7 @@ public final class MirrorTranslator {
         // a model with members reads what the type adopts once, for the members and for the sam
         Supplier<List<Element>> adopted =
                 switch (filter) {
-                    case DECLARED_PUBLIC -> {
+                    case DECLARED_ACCESSIBLE -> {
                         List<Element> read = adopted(element, self);
                         yield () -> read;
                     }
@@ -619,7 +654,7 @@ public final class MirrorTranslator {
                 };
         List<Read> reads =
                 switch (filter) {
-                    case DECLARED_PUBLIC ->
+                    case DECLARED_ACCESSIBLE ->
                         Stream.concat(declared(element), adopted.get().stream())
                                 .map(member -> read(element, self, member))
                                 .toList();
@@ -850,8 +885,11 @@ public final class MirrorTranslator {
                         "field " + name,
                         "is ambiguous in " + owner.getQualifiedName() + " with field " + name + " of "
                                 + ((TypeElement) rival.getEnclosingElement()).getQualifiedName())))
-                .orElseGet(() ->
-                        Read.of(reading, 0, "field " + name, () -> new FieldModel(name, isStatic, type, mutability)));
+                .orElseGet(() -> Read.of(
+                        reading,
+                        0,
+                        "field " + name,
+                        () -> new FieldModel(name, isStatic, type, mutability, accessOf(field))));
     }
 
     /// Another field of a type under the name of a field of it, which the
@@ -877,7 +915,8 @@ public final class MirrorTranslator {
                 reading,
                 params.size(),
                 "constructor " + constructor,
-                () -> new CtorModel(typeParams, params, declared(constructor, owner, self), throwsTypes));
+                () -> new CtorModel(
+                        typeParams, params, declared(constructor, owner, self), throwsTypes, accessOf(constructor)));
     }
 
     private Read method(TypeElement owner, DeclaredType self, ExecutableElement method) {
@@ -918,7 +957,14 @@ public final class MirrorTranslator {
                         params,
                         declared(method, owner, self),
                         throwsTypes,
-                        overridability));
+                        overridability,
+                        accessOf(method)));
+    }
+
+    /// The access of a member that is read: only an accessible one is ([#access]), so one that is not
+    /// `protected` is `public`.
+    private static Access accessOf(Element member) {
+        return member.getModifiers().contains(Modifier.PROTECTED) ? Access.PROTECTED : Access.PUBLIC;
     }
 
     private List<TypeParam> typeParams(ExecutableType type, Reading reading) {

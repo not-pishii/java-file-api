@@ -33,7 +33,7 @@ import p.Text;
 ///
 /// A member [Text] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "7f57a1699b617a429cfe880b8dc922279c6b63d646507f9d332d86f6c1f01d53", complete = true, format = 7)
+@GeneratedMetamodel(of = Text.class, fingerprint = "ee4e7370a928a739a441f5e0a32860288585bd04b488ee12865446dd4c0865a3", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Text_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Text] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "7f57a1699b617a429cfe880b8dc922279c6b63d646507f9d332d86f6c1f01d53", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "ee4e7370a928a739a441f5e0a32860288585bd04b488ee12865446dd4c0865a3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text"))), List.of(), false);
 
         private Data() {
         }
@@ -55,24 +55,24 @@ public final class Text_ {
     static final class Canonical {
         /// The canonical form of [Text].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Text open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member field instance mutable int \u0447\u0438\u0441\u043b\u043e
-        member field static constant char CHAR = '\\u044f'
-        member field static constant char DELETE = '\\u007f'
-        member field static constant char LONE_CHAR = '\\ud800'
-        member field static constant java.lang.String CYRILLIC = "\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f"
-        member field static constant java.lang.String ESCAPES = "\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022"
-        member field static constant java.lang.String LONE_HIGH = "a\\ud800b"
-        member field static constant java.lang.String LONE_LOW = "\\udc00"
-        member field static constant java.lang.String PAIR = "\\ud83d\\ude00"
+        members declared-accessible
+        member ctor public () throws -
+        member field public instance mutable int \u0447\u0438\u0441\u043b\u043e
+        member field public static constant char CHAR = '\\u044f'
+        member field public static constant char DELETE = '\\u007f'
+        member field public static constant char LONE_CHAR = '\\ud800'
+        member field public static constant java.lang.String CYRILLIC = "\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442 \\u00e9\\u007f"
+        member field public static constant java.lang.String ESCAPES = "\\u005cu0041 \\u005c\\u00e9 \\u0022\\u00e9\\u0022"
+        member field public static constant java.lang.String LONE_HIGH = "a\\ud800b"
+        member field public static constant java.lang.String LONE_LOW = "\\udc00"
+        member field public static constant java.lang.String PAIR = "\\ud83d\\ude00"
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

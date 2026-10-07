@@ -438,7 +438,7 @@ class FixtureRunTest {
                                 .containsExactly("p.Dep: mismatched");
                         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                                 .isThrownBy(() -> less.render(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
-                                .withMessageContaining("missing: method overridable x() -> int throws -");
+                                .withMessageContaining("missing: method public overridable x() -> int throws -");
                     }
 
                     public static void anArgumentOfTheLibraryIsNotOfTheVersion(Typed typed) {

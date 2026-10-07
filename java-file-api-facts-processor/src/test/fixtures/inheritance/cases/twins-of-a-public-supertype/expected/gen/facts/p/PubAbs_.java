@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -16,6 +15,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -28,7 +28,7 @@ import p.PubAbs;
 ///
 /// A member [PubAbs] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PStr_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubAbs.class, fingerprint = "eef718bc37226c0a4eea8e548e25b8eb6ffa4f8f4d190bc954f5cbfffdf60435", complete = true, format = 7)
+@GeneratedMetamodel(of = PubAbs.class, fingerprint = "9a0900f244a2499cf54b3786fd60ae5365d12f0f356d4e73f3034c6a2a51b2b9", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class PubAbs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubAbs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "eef718bc37226c0a4eea8e548e25b8eb6ffa4f8f4d190bc954f5cbfffdf60435", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "9a0900f244a2499cf54b3786fd60ae5365d12f0f356d4e73f3034c6a2a51b2b9", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.PStr")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), List.of(), false);
 
         private Data() {
         }
@@ -50,15 +50,15 @@ public final class PubAbs_ {
     static final class Canonical {
         /// The canonical form of [PubAbs].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.PubAbs abstract-class sealed=no
         tparams -
         superclasses p.HAbs; java.lang.Object
         interfaces p.PStr
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
+        members declared-accessible
+        member ctor public () throws -
         table abstract get()
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -73,7 +73,7 @@ public final class PubAbs_ {
     public static final AbstractClassToken<PubAbs> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [PubAbs#PubAbs()].
-    public static final AbstractCtorRef0<PubAbs> super_ = UnsafeFacts.abstractCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<PubAbs> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
 
     private PubAbs_() {
     }

@@ -9,7 +9,7 @@ import java.util.List;
 /// instantiated and extended.
 ///
 /// @param <T> the Java type this token stands for
-public final class OpenClassToken<T> extends ClassTokenData implements ConcreteClassToken<T> {
+public final class OpenClassToken<T> extends ClassTokenData implements ConcreteClassToken<T>, ExtendableClassToken<T> {
 
     OpenClassToken(TypeShape<DeclaredKind.OpenClass> shape, List<TokenArg> args) {
         super(shape, args);

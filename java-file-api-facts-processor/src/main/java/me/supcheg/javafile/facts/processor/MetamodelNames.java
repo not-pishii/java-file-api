@@ -127,7 +127,7 @@ final class MetamodelNames {
     /// The names of the facts of members (mini-spec §2.2): a field, an enum
     /// constant and a method without parameters are named as they are, a
     /// method with parameters `name_T1_T2`, a constructor `new_T1_T2` — or
-    /// `super_T1_T2` in an abstract class. `Ti` is [#typeSuffix] of the declared
+    /// `super_T1_T2` in an abstract class and for a `protected` one. `Ti` is [#typeSuffix] of the declared
     /// type of a parameter.
     ///
     /// Members whose names match are told apart by the qualified name of the
@@ -212,7 +212,10 @@ final class MetamodelNames {
             case CONSTRUCTOR ->
                 new Member(
                         element,
-                        element.getEnclosingElement().getModifiers().contains(Modifier.ABSTRACT) ? "super" : "new",
+                        element.getEnclosingElement().getModifiers().contains(Modifier.ABSTRACT)
+                                        || element.getModifiers().contains(Modifier.PROTECTED)
+                                ? "super"
+                                : "new",
                         member.parameters());
             default -> throw new IllegalArgumentException("Not a member with a fact: " + element);
         };

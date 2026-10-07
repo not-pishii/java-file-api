@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <T> a type argument of [Optional]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Optional.class, fingerprint = "73ed6f60333955d3076846828ae56c0dfee450109a9327eff9510f626935799c", complete = false, format = 7)
+@GeneratedMetamodel(of = Optional.class, fingerprint = "19472c9c73d008c408a42121dec4b43983f6a3ba36ccd223d91333c9f395ac3e", complete = false, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Optional_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Optional] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Optional_"), "73ed6f60333955d3076846828ae56c0dfee450109a9327eff9510f626935799c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.util.Optional"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("filter", Param.fixed(ClassDesc.of("java.util.function.Predicate"))), Signature.of("finalize"), Signature.of("flatMap", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ifPresent", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("ifPresentOrElse", Param.fixed(ClassDesc.of("java.util.function.Consumer")), Param.fixed(ClassDesc.of("java.lang.Runnable"))), Signature.of("isEmpty"), Signature.of("isPresent"), Signature.of("map", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("or", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("orElse", Param.var(0)), Signature.of("orElseGet", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("orElseThrow"), Signature.of("orElseThrow", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("stream"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty"), Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("ofNullable", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Optional_"), "19472c9c73d008c408a42121dec4b43983f6a3ba36ccd223d91333c9f395ac3e", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.util.Optional"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("filter", Param.fixed(ClassDesc.of("java.util.function.Predicate"))), Signature.of("finalize"), Signature.of("flatMap", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ifPresent", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("ifPresentOrElse", Param.fixed(ClassDesc.of("java.util.function.Consumer")), Param.fixed(ClassDesc.of("java.lang.Runnable"))), Signature.of("isEmpty"), Signature.of("isPresent"), Signature.of("map", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("or", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("orElse", Param.var(0)), Signature.of("orElseGet", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("orElseThrow"), Signature.of("orElseThrow", Param.fixed(ClassDesc.of("java.util.function.Supplier"))), Signature.of("stream"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty"), Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("ofNullable", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Optional_<T> {
     static final class Canonical {
         /// The canonical form of [Optional].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type java.util.Optional final-class sealed=no
         tparams #0
         superclasses java.lang.Object

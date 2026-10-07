@@ -35,7 +35,7 @@ import p.Mid;
 ///
 /// `p.HiddenI`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mid.class, fingerprint = "8e926b75d9dd8f1460de2cd106f1c7c5ebdab59a0d023efc09234f02398e42c6", complete = true, format = 7)
+@GeneratedMetamodel(of = Mid.class, fingerprint = "1169ce190d975c2873ec9da8635dc152b61c53a2d5a76cbe98d33afce0bb926e", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Mid_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mid_"), "8e926b75d9dd8f1460de2cd106f1c7c5ebdab59a0d023efc09234f02398e42c6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mid"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mid"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mid_"), "1169ce190d975c2873ec9da8635dc152b61c53a2d5a76cbe98d33afce0bb926e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mid"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mid"))), List.of(), false);
 
         private Data() {
         }
@@ -57,19 +57,19 @@ public final class Mid_ {
     static final class Canonical {
         /// The canonical form of [Mid].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Mid open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces p.HiddenI
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member field static constant java.lang.String K = "k"
-        member method overridable mid() -> void throws -
-        member method overridable more() -> java.lang.String throws -
-        member method overridable run() -> java.lang.String throws -
+        members declared-accessible
+        member ctor public () throws -
+        member field public static constant java.lang.String K = "k"
+        member method public overridable mid() -> void throws -
+        member method public overridable more() -> java.lang.String throws -
+        member method public overridable run() -> java.lang.String throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)
         table static -

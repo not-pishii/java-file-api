@@ -62,7 +62,7 @@ final class MetamodelDocs {
         /// @param reasons why the type is in the graph of the round
         /// @param supertypes the `public` supertypes nearest to the type, sorted by name: where the facts
         ///     of the members it inherits are
-        /// @param protectedMembers whether the type declares `protected` members, which have no facts
+        /// @param protectedMembers whether the type declares `protected` members that have no facts
         record Full(List<TypeGraph.Reason> reasons, List<Supertype> supertypes, Protected protectedMembers)
                 implements About {
             /// Copies the lists.
@@ -109,11 +109,12 @@ final class MetamodelDocs {
             record None(String name, String reason) implements Supertype {}
         }
 
-        /// Whether a type declares `protected` members (Q3: they have no facts).
+        /// Whether a type declares `protected` members that have no facts: those of a type that cannot be
+        /// extended, which no subclass reaches.
         enum Protected {
-            /// It declares some.
+            /// It cannot be extended and declares some.
             SOME,
-            /// It declares none.
+            /// It declares none, or can be extended: they have facts.
             NONE
         }
     }
@@ -268,16 +269,26 @@ final class MetamodelDocs {
                 .map(MetamodelDocs::code)
                 .toList();
         boolean one = adopted.size() == 1;
+        boolean held = plan.members().stream()
+                .anyMatch(fact -> switch (fact.model().access()) {
+                    case PUBLIC -> false;
+                    case PROTECTED -> true;
+                });
         return Stream.of(
                         paragraph(
                                 Stream.of(words("The full metamodel of "), link(type)),
                                 asked
                                         ? Stream.of(words(", which "), code("@Facts"), words(" asks for"))
                                         : Stream.empty(),
-                                Stream.of(
-                                        words(": a fact of every "),
-                                        code("public"),
-                                        words(" member the type declares."))),
+                                Stream.concat(
+                                        Stream.of(words(": a fact of every "), code("public")),
+                                        held
+                                                ? Stream.of(
+                                                        words(" and every "),
+                                                        code("protected"),
+                                                        words(" member the type declares, the latter held back"
+                                                                + " for a subclass."))
+                                                : Stream.of(words(" member the type declares.")))),
                         asked
                                 ? Stream.<DocBlock>empty()
                                 : paragraph(
@@ -330,8 +341,11 @@ final class MetamodelDocs {
                                                 .toList())))),
                         switch (about.protectedMembers()) {
                             case SOME ->
-                                paragraph(
-                                        Stream.of(words("The "), code("protected"), words(" members have no facts.")));
+                                paragraph(Stream.of(
+                                        words("The "),
+                                        code("protected"),
+                                        words(" members have no facts: the type cannot be extended, and"
+                                                + " only a subclass reaches them.")));
                             case NONE -> Stream.<DocBlock>empty();
                         })
                 .flatMap(Function.identity());
@@ -498,13 +512,20 @@ final class MetamodelDocs {
 
     /// `The fact of [member]`, and where the member is declared if the link is not through that type.
     private static Stream<DocInline> factOf(MemberPlan.Fact fact) {
-        return Stream.concat(
-                Stream.of(words("The fact of "), new DocInline.Link(fact.member())),
-                switch (fact.origin()) {
-                    case MemberPlan.Origin.Declared _, MemberPlan.Origin.Inherited _ -> Stream.empty();
-                    case MemberPlan.Origin.Adopted(String from) ->
-                        Stream.of(words(", declared in "), code(from), words(", which is not "), code("public"));
-                });
+        return Stream.<Stream<DocInline>>of(
+                        Stream.of(words("The fact of "), new DocInline.Link(fact.member())),
+                        switch (fact.origin()) {
+                            case MemberPlan.Origin.Declared _, MemberPlan.Origin.Inherited _ -> Stream.empty();
+                            case MemberPlan.Origin.Adopted(String from) ->
+                                Stream.of(
+                                        words(", declared in "), code(from), words(", which is not "), code("public"));
+                        },
+                        switch (fact.model().access()) {
+                            case PUBLIC -> Stream.empty();
+                            case PROTECTED ->
+                                Stream.of(words(", which is "), code("protected"), words(": a subclass alone uses it"));
+                        })
+                .flatMap(Function.identity());
     }
 
     // ---- text

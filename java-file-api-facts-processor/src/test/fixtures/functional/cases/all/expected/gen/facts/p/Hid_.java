@@ -30,7 +30,7 @@ import p.Hid;
 ///
 /// - `method s()`, which mentions types that are not public: p.Secret
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Hid.class, fingerprint = "dd3fb541086ad3ca6930914c2c11d9cec85cc871ae9ffa9fe36062066a441e84", complete = true, format = 7)
+@GeneratedMetamodel(of = Hid.class, fingerprint = "7fdc0a42849f58aa70e2fb60ae7e4ffabb32ba286bca7d6c1f974851e51bcee2", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class Hid_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Hid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Hid_"), "dd3fb541086ad3ca6930914c2c11d9cec85cc871ae9ffa9fe36062066a441e84", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Hid"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("s")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Hid_"), "7fdc0a42849f58aa70e2fb60ae7e4ffabb32ba286bca7d6c1f974851e51bcee2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Hid"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("s")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -52,14 +52,14 @@ public final class Hid_ {
     static final class Canonical {
         /// The canonical form of [Hid].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Hid interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
+        members declared-accessible
         table abstract s()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

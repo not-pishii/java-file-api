@@ -37,7 +37,7 @@ import p.Supertypes;
 ///
 /// A member [Supertypes] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Supertypes.class, fingerprint = "4c8e29081a51cab688086e92237982776ea0773bc4dd1cf4484fb753daeab010", complete = true, format = 7)
+@GeneratedMetamodel(of = Supertypes.class, fingerprint = "eb942bbf1104805b4149546f1b621255beb63849d7075feef211a036dcd3dbf5", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Supertypes_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Supertypes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "4c8e29081a51cab688086e92237982776ea0773bc4dd1cf4484fb753daeab010", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "eb942bbf1104805b4149546f1b621255beb63849d7075feef211a036dcd3dbf5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes"))), List.of(), false);
 
         private Data() {
         }
@@ -59,50 +59,50 @@ public final class Supertypes_ {
     static final class Canonical {
         /// The canonical form of [Supertypes].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Supertypes open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member field instance mutable int ArrayToken
-        member field instance mutable int Canonical
-        member field instance mutable int ClassDesc
-        member field instance mutable int ConstantDescs
-        member field instance mutable int Data
-        member field instance mutable int DeclaredKind
-        member field instance mutable int Int
-        member field instance mutable int List
-        member field instance mutable int MemberTraits
-        member field instance mutable int Metamodel
-        member field instance mutable int MethodTableTemplate
-        member field instance mutable int MutableFieldRef
-        member field instance mutable int OpenClassToken
-        member field instance mutable int Other_
-        member field instance mutable int Param
-        member field instance mutable int Prim
-        member field instance mutable int PrimitiveToken
-        member field instance mutable int SHAPE
-        member field instance mutable int Set
-        member field instance mutable int Signature
-        member field instance mutable int String
-        member field instance mutable int TEXT
-        member field instance mutable int TOKEN
-        member field instance mutable int TypeParam
-        member field instance mutable int TypeShape
-        member field instance mutable int Types
-        member field instance mutable int UnsafeFacts
-        member field instance mutable int gen
-        member field instance mutable int java
-        member field instance mutable int me
-        member field instance mutable int p
-        member field static constant double Double = NaN
-        member field static constant float Float = NaNf
-        member field static constant java.lang.String NAME = "n"
-        member method overridable other(java.awt.List, int[], java.lang.String[]) -> p.Other throws java.io.IOException
+        members declared-accessible
+        member ctor public () throws -
+        member field public instance mutable int ArrayToken
+        member field public instance mutable int Canonical
+        member field public instance mutable int ClassDesc
+        member field public instance mutable int ConstantDescs
+        member field public instance mutable int Data
+        member field public instance mutable int DeclaredKind
+        member field public instance mutable int Int
+        member field public instance mutable int List
+        member field public instance mutable int MemberTraits
+        member field public instance mutable int Metamodel
+        member field public instance mutable int MethodTableTemplate
+        member field public instance mutable int MutableFieldRef
+        member field public instance mutable int OpenClassToken
+        member field public instance mutable int Other_
+        member field public instance mutable int Param
+        member field public instance mutable int Prim
+        member field public instance mutable int PrimitiveToken
+        member field public instance mutable int SHAPE
+        member field public instance mutable int Set
+        member field public instance mutable int Signature
+        member field public instance mutable int String
+        member field public instance mutable int TEXT
+        member field public instance mutable int TOKEN
+        member field public instance mutable int TypeParam
+        member field public instance mutable int TypeShape
+        member field public instance mutable int Types
+        member field public instance mutable int UnsafeFacts
+        member field public instance mutable int gen
+        member field public instance mutable int java
+        member field public instance mutable int me
+        member field public instance mutable int p
+        member field public static constant double Double = NaN
+        member field public static constant float Float = NaNf
+        member field public static constant java.lang.String NAME = "n"
+        member method public overridable other(java.awt.List, int[], java.lang.String[]) -> p.Other throws java.io.IOException
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(java.awt.List, int[], java.lang.String[]); toString(); wait(); wait(long); wait(long, int)
         table static -

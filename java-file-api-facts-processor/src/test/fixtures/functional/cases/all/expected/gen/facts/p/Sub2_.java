@@ -29,7 +29,7 @@ import p.Sub2;
 ///
 /// A member [Sub2] inherits has its fact in the metamodel of the supertype that declares it: [Sub_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub2.class, fingerprint = "e17748d39fe5a2caa57627b5e03a5f768f1f54e6077272b2b557301fa4259c46", complete = true, format = 7)
+@GeneratedMetamodel(of = Sub2.class, fingerprint = "9fda52c649ae5b678d025dbea58d7769455864a1cb6079d1bb222da250953715", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Sub2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "e17748d39fe5a2caa57627b5e03a5f768f1f54e6077272b2b557301fa4259c46", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "9fda52c649ae5b678d025dbea58d7769455864a1cb6079d1bb222da250953715", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn"), ClassDesc.of("p.Sub")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -51,15 +51,15 @@ public final class Sub2_ {
     static final class Canonical {
         /// The canonical form of [Sub2].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Sub2 interface sealed=no
         tparams -
         superclasses -
         interfaces p.Fn; p.Sub
         supertypes -
         enum -
-        members declared-public
-        member method overridable twice(java.lang.String) -> java.lang.String throws -
+        members declared-accessible
+        member method public overridable twice(java.lang.String) -> java.lang.String throws -
         sam apply(java.lang.String) -> java.lang.String throws -
         table abstract apply(java.lang.String)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); twice(java.lang.String); wait(); wait(long); wait(long, int)

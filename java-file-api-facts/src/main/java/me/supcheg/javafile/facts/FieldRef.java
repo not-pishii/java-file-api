@@ -7,20 +7,23 @@ import me.supcheg.javafile.Identifiers;
 ///
 /// @param <O> the type owning the field
 /// @param <T> the field type
-public sealed class FieldRef<O, T> permits MutableFieldRef {
+public sealed class FieldRef<O, T> implements MemberFact permits MutableFieldRef {
     private final DeclaredToken<O> owner;
     private final String name;
     private final TypeToken<T> type;
+    private final Access access;
 
-    FieldRef(DeclaredToken<O> owner, String name, TypeToken<T> type) {
+    FieldRef(DeclaredToken<O> owner, String name, TypeToken<T> type, Access access) {
         this.owner = owner;
         this.name = Identifiers.requireValid(name);
         this.type = type;
+        this.access = access;
     }
 
     /// The type owning the field.
     ///
     /// @return the owner token
+    @Override
     public final DeclaredToken<O> owner() {
         return owner;
     }
@@ -37,6 +40,14 @@ public sealed class FieldRef<O, T> permits MutableFieldRef {
     /// @return the type token
     public final TypeToken<T> type() {
         return type;
+    }
+
+    /// The access of the field.
+    ///
+    /// @return the access
+    @Override
+    public final Access access() {
+        return access;
     }
 
     @Override

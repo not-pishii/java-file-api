@@ -278,7 +278,7 @@ final class Closure {
 
     /// Reads a type a full metamodel is wanted of and what its signatures mention.
     private static Reading read(TypeElement requested, Models models) {
-        return switch (models.of(requested, MemberFilter.DECLARED_PUBLIC)) {
+        return switch (models.of(requested, MemberFilter.DECLARED_ACCESSIBLE)) {
             case Translation.Deferred<TypeModel>(String unresolved) -> new Reading.Waiting(unresolved);
             case Translation.Unrepresentable<TypeModel>(String reason) -> new Reading.Unrepresentable(reason);
             case Translation.Ok<TypeModel>(TypeModel full) ->

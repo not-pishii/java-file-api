@@ -157,7 +157,7 @@ final class ReuseIndex {
                     + (format == null ? "an older format" : "format " + format) + ", not of format "
                     + MetamodelFormat.VERSION + ", which this processor generates");
         }
-        MemberFilter filter = complete ? MemberFilter.DECLARED_PUBLIC : MemberFilter.NONE;
+        MemberFilter filter = complete ? MemberFilter.DECLARED_ACCESSIBLE : MemberFilter.NONE;
         return switch (models.of(type, filter)) {
             // a metamodel is reused for the type it was generated from alone: one that still holds of a
             // changed type lacks the facts of what the type has added

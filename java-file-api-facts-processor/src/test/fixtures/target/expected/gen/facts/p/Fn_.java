@@ -29,7 +29,7 @@ import p.Fn;
 ///
 /// A member [Fn] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn.class, fingerprint = "59f94f4f6f68db0746836756c472e362a7bd6de1b36f437d6149cb610ef99cf0", complete = true, format = 7)
+@GeneratedMetamodel(of = Fn.class, fingerprint = "fc1852aede7e7d1a1dc570c8a134ff8fe2748d38c354c3759c3a9eec7088b7cd", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Fn_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fn] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn_"), "59f94f4f6f68db0746836756c472e362a7bd6de1b36f437d6149cb610ef99cf0", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn_"), "fc1852aede7e7d1a1dc570c8a134ff8fe2748d38c354c3759c3a9eec7088b7cd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -51,15 +51,15 @@ public final class Fn_ {
     static final class Canonical {
         /// The canonical form of [Fn].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Fn interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member method abstract apply(java.lang.String) -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract apply(java.lang.String) -> java.lang.String throws -
         sam apply(java.lang.String) -> java.lang.String throws -
         table abstract apply(java.lang.String)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

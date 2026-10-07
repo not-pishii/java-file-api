@@ -33,10 +33,12 @@ import java.util.stream.Stream;
 /// Which members of a requested type get a fact, and under which name
 /// (mini-spec §2.2, §2.3, Q3, Q6, Q10).
 ///
-/// Only members the type declares get one, and only `public` ones (Q3: no
-/// `protected`); an inherited member is reached through the metamodel of the
-/// supertype (Q6(b)). A supertype that is not `public` has no metamodel, so
-/// the `public` fields and methods the type inherits from it are adopted:
+/// Only members the type declares get one, and only accessible ones: the
+/// `public` ones, and the `protected` ones of a class that can be extended,
+/// whose facts are held back for a subclass; an inherited member is reached
+/// through the metamodel of the supertype (Q6(b)). A supertype that is not
+/// `public` has no metamodel, so the accessible fields and methods the type
+/// inherits from it are adopted:
 /// they get a fact here, as members of the type, in its terms (Q13,
 /// [me.supcheg.javafile.langmodel.mirror.MirrorTranslator#members]). The
 /// other exception is `sam`, which a functional interface has whether it

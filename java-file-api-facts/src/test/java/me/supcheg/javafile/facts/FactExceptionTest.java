@@ -21,6 +21,7 @@ class FactExceptionTest {
             ClassDesc.of("p", "Color"),
             List.of(),
             List.of(ConstantDescs.CD_Enum, ConstantDescs.CD_Object),
+            List.of(),
             Supertypes.NONE,
             MethodTableTemplate.EMPTY,
             List.of("RED", "GREEN"),

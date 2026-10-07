@@ -37,7 +37,8 @@ import java.util.function.Supplier;
 ///
 /// A declared token is a [TypeShape] — the data of a type apart from its
 /// type arguments — applied to type arguments. A shape is made by
-/// [#shape(ShapeOrigin.Metamodel, DeclaredKind, ClassDesc, List, List, Supertypes, MethodTableTemplate, List, boolean)]
+/// [#shape(ShapeOrigin.Metamodel, DeclaredKind, ClassDesc, List, List, List, Supertypes, MethodTableTemplate, List,
+/// boolean)]
 /// (generated metamodels, origin [ShapeOrigin.Metamodel]) or by the same
 /// factory without an origin (by hand, [ShapeOrigin#UNSAFE]); a token of it
 /// by the factory of its kind, e.g.
@@ -50,14 +51,20 @@ import java.util.function.Supplier;
 /// [EnumToken#constant(String)].
 ///
 /// The member factories of the arity families — `method`, `voidMethod`,
-/// `staticMethod`, `voidStaticMethod`, `ctor`, `abstractCtor`, `sam`,
+/// `staticMethod`, `voidStaticMethod`, `ctor`, `superCtor`, `sam`,
 /// `voidSam`, each for arity 0 to 12 — are generated and inherited from a
 /// package-private superclass; call them as `UnsafeFacts.method(...)`.
 ///
 /// A constructor fact comes in two families (§3.1): `ctor` needs a
 /// [ConcreteClassToken] and gives a `CtorRefN`, the only constructor fact
-/// `new_` accepts; `abstractCtor` needs an [AbstractClassToken] and gives an
-/// `AbstractCtorRefN`, usable only to call the constructor from a subclass.
+/// `new_` accepts; `superCtor` needs an [ExtendableClassToken] and gives a
+/// `SuperCtorRefN`, usable only to call the constructor from a subclass: the
+/// fact of a constructor of an abstract class, and of a `protected` one.
+///
+/// The fact of any other `protected` member is made as that of a `public`
+/// one, with [Access#PROTECTED] — in the [MemberTraits] of a method, as the
+/// last argument of a field —, and handed out held back, by
+/// [#protected_(ExtendableClassToken, MemberFact)].
 public final class UnsafeFacts extends InvocableFactories {
     private UnsafeFacts() {}
 
@@ -70,6 +77,7 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param desc the class or interface
     /// @param typeParameters the type parameters with their bounds, see [TypeShape#typeParameters()]
     /// @param superclasses the erased superclass chain, see [TypeShape#superclasses()]
+    /// @param interfaces the erased interfaces, see [TypeShape#interfaces()]
     /// @param supertypes the parameterized supertypes, see [TypeShape#supertypes()]
     /// @param methods the methods, instance and `static`, declared and inherited, see [TypeShape#methods()]
     /// @param enumConstants the enum constants, see [TypeShape#enumConstants()]
@@ -83,12 +91,22 @@ public final class UnsafeFacts extends InvocableFactories {
             ClassDesc desc,
             List<TypeParam> typeParameters,
             List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
             Supertypes supertypes,
             MethodTableTemplate methods,
             List<String> enumConstants,
             boolean sealed) {
         return new TypeShape<>(
-                origin, kind, desc, typeParameters, superclasses, supertypes, methods, enumConstants, sealed);
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                superclasses,
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed);
     }
 
     /// Vouches for the shape of a type by hand: the shape is of origin
@@ -99,6 +117,7 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param desc the class or interface
     /// @param typeParameters the type parameters with their bounds, see [TypeShape#typeParameters()]
     /// @param superclasses the erased superclass chain, see [TypeShape#superclasses()]
+    /// @param interfaces the erased interfaces, see [TypeShape#interfaces()]
     /// @param supertypes the parameterized supertypes, see [TypeShape#supertypes()]
     /// @param methods the methods, instance and `static`, declared and inherited, see [TypeShape#methods()]
     /// @param enumConstants the enum constants, see [TypeShape#enumConstants()]
@@ -111,6 +130,7 @@ public final class UnsafeFacts extends InvocableFactories {
             ClassDesc desc,
             List<TypeParam> typeParameters,
             List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
             Supertypes supertypes,
             MethodTableTemplate methods,
             List<String> enumConstants,
@@ -121,6 +141,7 @@ public final class UnsafeFacts extends InvocableFactories {
                 desc,
                 typeParameters,
                 superclasses,
+                interfaces,
                 supertypes,
                 methods,
                 enumConstants,
@@ -381,7 +402,20 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param <T> the field type
     /// @return the fact
     public static <O, T> FieldRef<O, T> field(DeclaredToken<O> owner, String name, TypeToken<T> type) {
-        return new FieldRef<>(owner, name, type);
+        return field(owner, name, type, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a `final` instance field of an access.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the field type, as a member of `owner`
+    /// @param access the access of the field
+    /// @param <O> the owner type
+    /// @param <T> the field type
+    /// @return the fact
+    public static <O, T> FieldRef<O, T> field(DeclaredToken<O> owner, String name, TypeToken<T> type, Access access) {
+        return new FieldRef<>(owner, name, type, access);
     }
 
     /// Vouches that a type has a non-`final` instance field.
@@ -393,7 +427,21 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param <T> the field type
     /// @return the fact
     public static <O, T> MutableFieldRef<O, T> mutableField(DeclaredToken<O> owner, String name, TypeToken<T> type) {
-        return new MutableFieldRef<>(owner, name, type);
+        return mutableField(owner, name, type, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a non-`final` instance field of an access.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the field type, as a member of `owner`
+    /// @param access the access of the field
+    /// @param <O> the owner type
+    /// @param <T> the field type
+    /// @return the fact
+    public static <O, T> MutableFieldRef<O, T> mutableField(
+            DeclaredToken<O> owner, String name, TypeToken<T> type, Access access) {
+        return new MutableFieldRef<>(owner, name, type, access);
     }
 
     /// Vouches that a type has a `final` static field that is not a constant
@@ -405,7 +453,21 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param <T> the field type
     /// @return the fact
     public static <T> StaticFieldRef<T> staticField(DeclaredToken<?> owner, String name, TypeToken<T> type) {
-        return new StaticFieldRef<>(owner, name, type, Optional.empty());
+        return staticField(owner, name, type, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a `final` static field of an access that is
+    /// not a constant variable.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the field type
+    /// @param access the access of the field
+    /// @param <T> the field type
+    /// @return the fact
+    public static <T> StaticFieldRef<T> staticField(
+            DeclaredToken<?> owner, String name, TypeToken<T> type, Access access) {
+        return new StaticFieldRef<>(owner, name, type, Optional.empty(), access);
     }
 
     /// Vouches that a type has a primitive constant variable: a `final`
@@ -420,7 +482,22 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @return the fact
     public static <P, B> StaticFieldRef<P> constantField(
             DeclaredToken<?> owner, String name, PrimitiveToken<P, B, ?> type, B value) {
-        return new StaticFieldRef<>(owner, name, type, Optional.of(value));
+        return constantField(owner, name, type, value, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a primitive constant variable of an access.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the field type
+    /// @param value the constant value, boxed
+    /// @param access the access of the field
+    /// @param <P> the marker of the field type
+    /// @param <B> the box of the field type
+    /// @return the fact
+    public static <P, B> StaticFieldRef<P> constantField(
+            DeclaredToken<?> owner, String name, PrimitiveToken<P, B, ?> type, B value, Access access) {
+        return new StaticFieldRef<>(owner, name, type, Optional.of(value), access);
     }
 
     /// Vouches that a type has a `String` constant variable.
@@ -433,7 +510,21 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @throws IllegalArgumentException if `type` is not the token of `String`
     public static StaticFieldRef<String> constantField(
             DeclaredToken<?> owner, String name, DeclaredToken<String> type, String value) {
-        return new StaticFieldRef<>(owner, name, type, Optional.of(value));
+        return constantField(owner, name, type, value, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a `String` constant variable of an access.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the `String` token
+    /// @param value the constant value
+    /// @param access the access of the field
+    /// @return the fact
+    /// @throws IllegalArgumentException if `type` is not the token of `String`
+    public static StaticFieldRef<String> constantField(
+            DeclaredToken<?> owner, String name, DeclaredToken<String> type, String value, Access access) {
+        return new StaticFieldRef<>(owner, name, type, Optional.of(value), access);
     }
 
     /// Vouches that a type has a non-`final` static field.
@@ -445,7 +536,34 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @return the fact
     public static <T> MutableStaticFieldRef<T> mutableStaticField(
             DeclaredToken<?> owner, String name, TypeToken<T> type) {
-        return new MutableStaticFieldRef<>(owner, name, type);
+        return mutableStaticField(owner, name, type, Access.PUBLIC);
+    }
+
+    /// Vouches that a type has a non-`final` static field of an access.
+    ///
+    /// @param owner the type owning the field
+    /// @param name the field name
+    /// @param type the field type
+    /// @param access the access of the field
+    /// @param <T> the field type
+    /// @return the fact
+    public static <T> MutableStaticFieldRef<T> mutableStaticField(
+            DeclaredToken<?> owner, String name, TypeToken<T> type, Access access) {
+        return new MutableStaticFieldRef<>(owner, name, type, access);
+    }
+
+    /// Holds back the fact of a `protected` member of a class, so that only
+    /// the declaration of a subclass takes it (JLS 6.6.2).
+    ///
+    /// @param owner the class owning the member
+    /// @param fact the fact of the member, of [Access#PROTECTED]
+    /// @param <O> the owner type
+    /// @param <F> the fact
+    /// @return the fact, held back
+    /// @throws IllegalArgumentException if `fact` is not of a `protected` member, or not of a member of the
+    ///                                  type of `owner`
+    public static <O, F extends MemberFact> Protected<O, F> protected_(ExtendableClassToken<O> owner, F fact) {
+        return new Protected<>(owner, fact);
     }
 
     /// Vouches for a reader of the target classpath (§5): what `reader`

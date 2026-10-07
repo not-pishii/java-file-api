@@ -85,7 +85,7 @@ public final class Versions {
                 .withMessage(
                         """
                         metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath:
-                          missing: method overridable m(java.lang.String) -> java.lang.String throws -
+                          missing: method public overridable m(java.lang.String) -> java.lang.String throws -
                         The generator was compiled against another p.Svc than this compilation has (another version\
                          of its library, or another --release). Generate the metamodels against this version: rebuild\
                          the generator against it, or align the versions.""")
@@ -94,7 +94,7 @@ public final class Versions {
                     assertThat(e.metamodel().metamodel()).isEqualTo(ClassDesc.of("gen.facts.p", "Svc_"));
                     assertThat(e.differences())
                             .containsExactly(new Difference.MissingFact(
-                                    "method overridable m(java.lang.String) -> java.lang.String throws -",
+                                    "method public overridable m(java.lang.String) -> java.lang.String throws -",
                                     java.util.List.of()));
                 });
     }
@@ -103,7 +103,7 @@ public final class Versions {
         // only(Object) is there in the version; m(String), which Svc_ has a fact of too, is not
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> rendered(typed.against("removed-method"), Versions::only))
-                .withMessageContaining("missing: method overridable m(java.lang.String)");
+                .withMessageContaining("missing: method public overridable m(java.lang.String)");
     }
 
     public static void aParameterOfAnotherTypeIsAChangedMethod(Typed typed) {
@@ -111,8 +111,8 @@ public final class Versions {
                 .isThrownBy(() -> rendered(typed.against("changed-parameter"), Versions::m))
                 .withMessageContaining(
                         """
-                          changed: method overridable m(java.lang.String) -> java.lang.String throws -
-                            found: method overridable m(java.lang.CharSequence) -> java.lang.String throws -
+                          changed: method public overridable m(java.lang.String) -> java.lang.String throws -
+                            found: method public overridable m(java.lang.CharSequence) -> java.lang.String throws -
                         """);
     }
 
@@ -121,8 +121,8 @@ public final class Versions {
                 .isThrownBy(() -> rendered(typed.against("added-exception"), Versions::m))
                 .withMessageContaining(
                         """
-                          changed: method overridable close() -> void throws -
-                            found: method overridable close() -> void throws java.io.IOException
+                          changed: method public overridable close() -> void throws -
+                            found: method public overridable close() -> void throws java.io.IOException
                         """);
     }
 
@@ -217,8 +217,8 @@ public final class Versions {
                         .render(PrimitiveToken.INT, String_.TOKEN, s -> staticField(Svc_.LIMIT)))
                 .withMessageContaining(
                         """
-                          changed: field static constant int LIMIT = 3
-                            found: field static constant int LIMIT = 4
+                          changed: field public static constant int LIMIT = 3
+                            found: field public static constant int LIMIT = 4
                         """);
     }
 

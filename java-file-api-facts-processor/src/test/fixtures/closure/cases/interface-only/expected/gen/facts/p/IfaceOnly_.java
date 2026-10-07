@@ -29,7 +29,7 @@ import p.IfaceOnly;
 ///
 /// A member [IfaceOnly] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IfaceOnly.class, fingerprint = "9c801891a37ab1f4500f4352c2253e6f1daeeab7b614a6b44a38b8e17794b328", complete = true, format = 7)
+@GeneratedMetamodel(of = IfaceOnly.class, fingerprint = "1c602c7ab31696527811607d3f5c23bba5ecc7051efff66299674b85fac3ad07", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class IfaceOnly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [IfaceOnly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IfaceOnly_"), "9c801891a37ab1f4500f4352c2253e6f1daeeab7b614a6b44a38b8e17794b328", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IfaceOnly"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("name")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IfaceOnly_"), "1c602c7ab31696527811607d3f5c23bba5ecc7051efff66299674b85fac3ad07", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IfaceOnly"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("name")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -51,15 +51,15 @@ public final class IfaceOnly_ {
     static final class Canonical {
         /// The canonical form of [IfaceOnly].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.IfaceOnly interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member method abstract name() -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract name() -> java.lang.String throws -
         sam name() -> java.lang.String throws -
         table abstract name()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

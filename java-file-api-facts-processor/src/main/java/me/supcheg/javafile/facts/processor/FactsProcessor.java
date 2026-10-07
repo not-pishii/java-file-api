@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.facts.processor.MetamodelDocs.About;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
+import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Pair;
@@ -580,11 +581,13 @@ public final class FactsProcessor extends AbstractProcessor {
                 .orElseGet(() -> new About.Supertype.None(name, name + " has no full metamodel"));
     }
 
-    /// Whether a type declares `protected` fields, constructors or methods: they have no facts (Q3).
+    /// Whether a type that cannot be extended declares `protected` fields, constructors or methods: they
+    /// have no facts, as only a subclass reaches a `protected` member.
     private static About.Protected protectedMembers(TypeElement type) {
-        return type.getEnclosedElements().stream()
-                        .anyMatch(member ->
-                                member.getModifiers().contains(Modifier.PROTECTED) && !(member instanceof TypeElement))
+        return !MirrorTranslator.extendable(type)
+                        && type.getEnclosedElements().stream()
+                                .anyMatch(member -> member.getModifiers().contains(Modifier.PROTECTED)
+                                        && !(member instanceof TypeElement))
                 ? About.Protected.SOME
                 : About.Protected.NONE;
     }
@@ -620,7 +623,7 @@ public final class FactsProcessor extends AbstractProcessor {
         planned.stale().forEach(reason -> diagnostics.warning(at, reason + "; generating " + name));
         MemberFilter filter =
                 switch (planned.completeness()) {
-                    case FULL -> MemberFilter.DECLARED_PUBLIC;
+                    case FULL -> MemberFilter.DECLARED_ACCESSIBLE;
                     case TOKEN -> MemberFilter.NONE;
                 };
         TypeModel model =

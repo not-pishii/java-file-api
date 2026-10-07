@@ -31,7 +31,7 @@ import p.PubApi;
 ///
 /// A member [PubApi] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubApi.class, fingerprint = "b77aad8f2b353331193eedc514b3fe38b7c85a4e71b8bf443457f84bcd328e1f", complete = true, format = 7)
+@GeneratedMetamodel(of = PubApi.class, fingerprint = "031b700967a11ae692aefba16cf85ea9a536c42bdde1f2623ed2b85a43e52eb6", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class PubApi_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubApi] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubApi_"), "b77aad8f2b353331193eedc514b3fe38b7c85a4e71b8bf443457f84bcd328e1f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubApi"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("pub")), Set.of(Signature.of("beyond"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubApi_"), "031b700967a11ae692aefba16cf85ea9a536c42bdde1f2623ed2b85a43e52eb6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubApi"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("pub")), Set.of(Signature.of("beyond"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -53,16 +53,16 @@ public final class PubApi_ {
     static final class Canonical {
         /// The canonical form of [PubApi].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.PubApi interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member method abstract pub() -> java.lang.String throws -
-        member method overridable beyond() -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract pub() -> java.lang.String throws -
+        member method public overridable beyond() -> java.lang.String throws -
         sam pub() -> java.lang.String throws -
         table abstract pub()
         table concrete beyond(); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

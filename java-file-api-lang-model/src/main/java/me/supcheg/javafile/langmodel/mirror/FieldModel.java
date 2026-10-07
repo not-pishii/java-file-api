@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.type.TypeRef;
 
 import java.util.Set;
@@ -10,8 +11,10 @@ import java.util.Set;
 /// @param name the field name
 /// @param isStatic whether the field is `static`
 /// @param type the field type
+/// @param access the access of the field: `public`, or `protected`
 /// @param mutability whether the field can be assigned, and its value if it is a constant
-public record FieldModel(String name, boolean isStatic, TypeRef type, Mutability mutability) implements MemberModel {
+public record FieldModel(String name, boolean isStatic, TypeRef type, Mutability mutability, Access access)
+        implements MemberModel {
 
     /// @throws IllegalArgumentException if `name` is not a Java identifier, or the field is a
     ///                                  [Mutability.Constant] but not `static`

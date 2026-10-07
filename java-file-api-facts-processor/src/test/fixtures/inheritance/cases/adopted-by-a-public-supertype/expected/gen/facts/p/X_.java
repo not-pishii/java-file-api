@@ -35,7 +35,7 @@ import p.X;
 ///
 /// `p.Own`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = X.class, fingerprint = "15914c8ee90b92a8b7cc72f6b6c889057aa47ff923c1b8130d3c3879fbf6a0dc", complete = true, format = 7)
+@GeneratedMetamodel(of = X.class, fingerprint = "78cb0c2d07a56fcbd78eeb77cb2d3529939c44e262f5243553d20c4adab18531", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class X_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [X] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.X_"), "15914c8ee90b92a8b7cc72f6b6c889057aa47ff923c1b8130d3c3879fbf6a0dc", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.X"), List.of(), List.of(ClassDesc.of("p.Mid"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("X"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.X_"), "78cb0c2d07a56fcbd78eeb77cb2d3529939c44e262f5243553d20c4adab18531", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.X"), List.of(), List.of(ClassDesc.of("p.Mid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI"), ClassDesc.of("p.Own")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("X"))), List.of(), false);
 
         private Data() {
         }
@@ -57,18 +57,18 @@ public final class X_ {
     static final class Canonical {
         /// The canonical form of [X].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.X open-class sealed=no
         tparams -
         superclasses p.Mid; java.lang.Object
         interfaces p.HiddenI; p.Own
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member field static constant int OWN = 2
-        member method overridable more() -> java.lang.String throws -
-        member method overridable own() -> void throws -
+        members declared-accessible
+        member ctor public () throws -
+        member field public static constant int OWN = 2
+        member method public overridable more() -> java.lang.String throws -
+        member method public overridable own() -> void throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); mid(); more(); notify(); notifyAll(); own(); run(); toString(); wait(); wait(long); wait(long, int)
         table static -

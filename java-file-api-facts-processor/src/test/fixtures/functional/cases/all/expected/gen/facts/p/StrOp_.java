@@ -30,7 +30,7 @@ import p.StrOp;
 ///
 /// A member [StrOp] inherits has its fact in the metamodel of the supertype that declares it: [StrFn_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrOp.class, fingerprint = "84a6ba1ad6bbf585347dd18dd439b74a94a60f82df07989b8cd369bff4e85b84", complete = true, format = 7)
+@GeneratedMetamodel(of = StrOp.class, fingerprint = "fd19b60598fc39639270041deaaf7bf5c237ff4743c559b4f373f76cafa9d7c9", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class StrOp_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [StrOp] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrOp_"), "84a6ba1ad6bbf585347dd18dd439b74a94a60f82df07989b8cd369bff4e85b84", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrOp"), List.of(), List.of(), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrOp_"), "fd19b60598fc39639270041deaaf7bf5c237ff4743c559b4f373f76cafa9d7c9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrOp"), List.of(), List.of(), List.of(ClassDesc.of("java.util.function.Function"), ClassDesc.of("p.StrFn")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -52,14 +52,14 @@ public final class StrOp_ {
     static final class Canonical {
         /// The canonical form of [StrOp].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.StrOp interface sealed=no
         tparams -
         superclasses -
         interfaces java.util.function.Function; p.StrFn
         supertypes java.util.function.Function<java.lang.String, java.lang.String>
         enum -
-        members declared-public
+        members declared-accessible
         sam apply(java.lang.String) -> java.lang.String throws -
         table abstract apply(java.lang.String)
         table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

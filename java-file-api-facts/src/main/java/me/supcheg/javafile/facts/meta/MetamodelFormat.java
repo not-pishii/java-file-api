@@ -33,12 +33,17 @@ package me.supcheg.javafile.facts.meta;
 ///   the target classpath.
 /// - 7: the classes `Data` and `Canonical` nested in a metamodel are marked
 ///   [GeneratedMetamodelPart], an annotation an older `facts` does not have.
+/// - 8: a class that can be extended has the facts of its `protected`
+///   members, each held back in a `Protected`; the fact of a constructor a
+///   subclass alone calls — of an abstract class, or `protected` — is a
+///   `SuperCtorRefN`, which replaces `AbstractCtorRefN`; the shape of a type
+///   tells the interfaces it implements, and a fact its access.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     private MetamodelFormat() {}
 }

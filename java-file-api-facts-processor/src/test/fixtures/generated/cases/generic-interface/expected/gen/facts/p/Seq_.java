@@ -38,7 +38,7 @@ import p.Seq;
 ///
 /// @param <E> a type argument of [Seq]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seq.class, fingerprint = "62a9c7800c21ec7031ebb8de942f092a5f53a40bee90949491ecd3cb48102a88", complete = true, format = 7)
+@GeneratedMetamodel(of = Seq.class, fingerprint = "3f46125d1d271f6f8ef6dffcfa07d78d51b1a8574b04e66f7c8cbaeb38978a24", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Seq_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Seq] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seq_"), "62a9c7800c21ec7031ebb8de942f092a5f53a40bee90949491ecd3cb48102a88", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Seq"), List.of(new TypeParam("E", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Coll"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of")), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seq_"), "3f46125d1d271f6f8ef6dffcfa07d78d51b1a8574b04e66f7c8cbaeb38978a24", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Seq"), List.of(new TypeParam("E", List.of())), List.of(), List.of(ClassDesc.of("p.Coll")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Coll"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of")), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -60,15 +60,15 @@ public final class Seq_<E> {
     static final class Canonical {
         /// The canonical form of [Seq].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Seq interface sealed=no
         tparams #0
         superclasses -
         interfaces p.Coll
         supertypes p.Coll<#0>
         enum -
-        members declared-public
-        member method static <^0> of() -> p.Seq<^0> throws -
+        members declared-accessible
+        member method public static <^0> of() -> p.Seq<^0> throws -
         sam add(#0) -> boolean throws -
         table abstract add(#0)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

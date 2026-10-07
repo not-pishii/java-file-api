@@ -33,11 +33,11 @@ class ConformanceTest {
             String change, MemberFilter filter, List<String> before, List<String> after, List<String> expected) {}
 
     private static Row full(String change, String before, String after, String... expected) {
-        return new Row(change, MemberFilter.DECLARED_PUBLIC, List.of(before), List.of(after), List.of(expected));
+        return new Row(change, MemberFilter.DECLARED_ACCESSIBLE, List.of(before), List.of(after), List.of(expected));
     }
 
     private static Row full(String change, List<String> before, List<String> after, String... expected) {
-        return new Row(change, MemberFilter.DECLARED_PUBLIC, before, after, List.of(expected));
+        return new Row(change, MemberFilter.DECLARED_ACCESSIBLE, before, after, List.of(expected));
     }
 
     private static Row tokenOnly(String change, String before, String after, String... expected) {
@@ -111,158 +111,181 @@ class ConformanceTest {
                     "a method is removed",
                     T,
                     t("public void n() {}", ""),
-                    "missing: method overridable n() -> void throws -"),
+                    "missing: method public overridable n() -> void throws -"),
             full(
                     "an overload is removed and another stays",
                     t("public void n() {}", "public void n() {} public void n(int i) {}"),
                     T,
-                    "missing: method overridable n(int) -> void throws -",
-                    "  similar: method overridable n() -> void throws -"),
+                    "missing: method public overridable n(int) -> void throws -",
+                    "  similar: method public overridable n() -> void throws -"),
             full(
                     "a parameter is of another type",
                     T,
                     t("m(String s) { return s; }", "m(CharSequence s) { return \"\"; }"),
-                    "changed: method overridable m(java.lang.String) -> java.lang.String throws -",
-                    "  found: method overridable m(java.lang.CharSequence) -> java.lang.String throws -"),
+                    "changed: method public overridable m(java.lang.String) -> java.lang.String throws -",
+                    "  found: method public overridable m(java.lang.CharSequence) -> java.lang.String throws -"),
             full(
                     "the result is of another type",
                     T,
                     t("public String m(String s)", "public CharSequence m(String s)"),
-                    "changed: method overridable m(java.lang.String) -> java.lang.String throws -",
-                    "  found: method overridable m(java.lang.String) -> java.lang.CharSequence throws -"),
+                    "changed: method public overridable m(java.lang.String) -> java.lang.String throws -",
+                    "  found: method public overridable m(java.lang.String) -> java.lang.CharSequence throws -"),
             full(
                     "the result is void",
                     T,
                     t("public String m(String s) { return s; }", "public void m(String s) {}"),
-                    "changed: method overridable m(java.lang.String) -> java.lang.String throws -",
-                    "  found: method overridable m(java.lang.String) -> void throws -"),
+                    "changed: method public overridable m(java.lang.String) -> java.lang.String throws -",
+                    "  found: method public overridable m(java.lang.String) -> void throws -"),
             full(
                     "a method is static",
                     T,
                     t("public void n() {}", "public static void n() {}"),
-                    "changed: method overridable n() -> void throws -",
-                    "  found: method static n() -> void throws -"),
+                    "changed: method public overridable n() -> void throws -",
+                    "  found: method public static n() -> void throws -"),
             full(
                     "a method is final",
                     T,
                     t("public void n() {}", "public final void n() {}"),
-                    "changed: method overridable n() -> void throws -",
-                    "  found: method final n() -> void throws -"),
+                    "changed: method public overridable n() -> void throws -",
+                    "  found: method public final n() -> void throws -"),
             full(
                     "a method throws a checked exception",
                     T,
                     t("public void n() {}", "public void n() throws java.io.IOException {}"),
-                    "changed: method overridable n() -> void throws -",
-                    "  found: method overridable n() -> void throws java.io.IOException"),
+                    "changed: method public overridable n() -> void throws -",
+                    "  found: method public overridable n() -> void throws java.io.IOException"),
             full(
                     "a method no longer throws an exception",
                     t("public void n() {}", "public void n() throws java.io.IOException {}"),
                     T,
-                    "changed: method overridable n() -> void throws java.io.IOException",
-                    "  found: method overridable n() -> void throws -"),
+                    "changed: method public overridable n() -> void throws java.io.IOException",
+                    "  found: method public overridable n() -> void throws -"),
             full(
                     "a method throws a subclass of its exception",
                     t("public void n() {}", "public void n() throws java.io.IOException {}"),
                     t("public void n() {}", "public void n() throws java.io.FileNotFoundException {}"),
-                    "changed: method overridable n() -> void throws java.io.IOException",
-                    "  found: method overridable n() -> void throws java.io.FileNotFoundException"),
+                    "changed: method public overridable n() -> void throws java.io.IOException",
+                    "  found: method public overridable n() -> void throws java.io.FileNotFoundException"),
             full(
                     "a method is no longer public",
                     T,
                     t("public void n() {}", "protected void n() {}"),
-                    "missing: method overridable n() -> void throws -"),
+                    "changed: method public overridable n() -> void throws -",
+                    "  found: method protected overridable n() -> void throws -"),
+            full(
+                    "a protected method is public",
+                    t("public void n() {}", "protected void n() {}"),
+                    T,
+                    "changed: method protected overridable n() -> void throws -",
+                    "  found: method public overridable n() -> void throws -"),
+            full(
+                    "a method is no longer accessible",
+                    T,
+                    t("public void n() {}", "void n() {}"),
+                    "missing: method public overridable n() -> void throws -"),
+            full(
+                    "a protected method is added",
+                    T,
+                    t("public void n() {}", "public void n() {} protected void p() {}"),
+                    CHANGED),
+            full(
+                    "a protected constructor is public",
+                    t("public T() {}", "protected T() {}"),
+                    T,
+                    "changed: ctor protected () throws -",
+                    "  found: ctor public () throws -"),
             full(
                     "the bound of a type parameter of a method",
                     t("public void n() {}", "public <X> void n() {}"),
                     t("public void n() {}", "public <X extends Number> void n() {}"),
-                    "changed: method overridable <^0> n() -> void throws -",
-                    "  found: method overridable <^0 extends java.lang.Number> n() -> void throws -"),
+                    "changed: method public overridable <^0> n() -> void throws -",
+                    "  found: method public overridable <^0 extends java.lang.Number> n() -> void throws -"),
             full(
                     "two overloads are others",
                     t("public void n() {}", "public void n(int i) {} public void n(long l) {}"),
                     t("public void n() {}", "public void n(short i) {} public void n(byte l) {}"),
-                    "missing: method overridable n(int) -> void throws -",
-                    "  similar: method overridable n(byte) -> void throws -; method overridable n(short) -> void throws -",
-                    "missing: method overridable n(long) -> void throws -",
-                    "  similar: method overridable n(byte) -> void throws -; method overridable n(short) -> void throws -"),
+                    "missing: method public overridable n(int) -> void throws -",
+                    "  similar: method public overridable n(byte) -> void throws -; method public overridable n(short) -> void throws -",
+                    "missing: method public overridable n(long) -> void throws -",
+                    "  similar: method public overridable n(byte) -> void throws -; method public overridable n(short) -> void throws -"),
             full(
                     "an abstract method gets a body",
                     "package p; public interface T { void n(); void o(); }",
                     "package p; public interface T { default void n() {} void o(); }",
-                    "changed: method abstract n() -> void throws -",
-                    "  found: method overridable n() -> void throws -"),
+                    "changed: method public abstract n() -> void throws -",
+                    "  found: method public overridable n() -> void throws -"),
             full(
                     "a method moves up to a public supertype",
                     List.of("package p; public class T extends Base { public void up() {} }", BASE),
                     List.of(
                             "package p; public class T extends Base {}",
                             "package p; public class Base { public void inherited() {} public void up() {} }"),
-                    "missing: method overridable up() -> void throws -"),
+                    "missing: method public overridable up() -> void throws -"),
             full(
                     "a member the type adopts from a hidden supertype",
                     List.of("package p; public class T extends Hidden {}", HIDDEN),
                     List.of(
                             "package p; public class T extends Hidden {}",
                             "package p; class Hidden { public long adopted() { return 0; } }"),
-                    "changed: method overridable adopted() -> int throws -",
-                    "  found: method overridable adopted() -> long throws -"),
+                    "changed: method public overridable adopted() -> int throws -",
+                    "  found: method public overridable adopted() -> long throws -"),
             // ---- a constructor
             full(
                     "a constructor takes another parameter",
                     T,
                     t("public T() {}", "public T(int i) {}"),
-                    "changed: ctor() throws -",
-                    "  found: ctor(int) throws -"),
+                    "changed: ctor public () throws -",
+                    "  found: ctor public (int) throws -"),
             full(
                     "a constructor throws a checked exception",
                     T,
                     t("public T() {}", "public T() throws Exception {}"),
-                    "changed: ctor() throws -",
-                    "  found: ctor() throws java.lang.Exception"),
+                    "changed: ctor public () throws -",
+                    "  found: ctor public () throws java.lang.Exception"),
             full(
                     "a constructor is removed and another stays",
                     t("public T() {}", "public T() {} public T(int i) {}"),
                     t("public T() {}", "public T(int i) {}"),
-                    "missing: ctor() throws -",
-                    "  similar: ctor(int) throws -"),
+                    "missing: ctor public () throws -",
+                    "  similar: ctor public (int) throws -"),
             // ---- a field
-            full("a field is removed", T, t("public int f;", ""), "missing: field instance mutable int f"),
+            full("a field is removed", T, t("public int f;", ""), "missing: field public instance mutable int f"),
             full(
                     "a field is of another type",
                     T,
                     t("public int f;", "public long f;"),
-                    "changed: field instance mutable int f",
-                    "  found: field instance mutable long f"),
+                    "changed: field public instance mutable int f",
+                    "  found: field public instance mutable long f"),
             full(
                     "a field is final",
                     T,
                     t("public int f;", "public final int f = 1;"),
-                    "changed: field instance mutable int f",
-                    "  found: field instance final int f"),
+                    "changed: field public instance mutable int f",
+                    "  found: field public instance final int f"),
             full(
                     "a field is static",
                     T,
                     t("public int f;", "public static int f;"),
-                    "changed: field instance mutable int f",
-                    "  found: field static mutable int f"),
+                    "changed: field public instance mutable int f",
+                    "  found: field public static mutable int f"),
             full(
                     "a constant has another value",
                     T,
                     t("K = 1;", "K = 2;"),
-                    "changed: field static constant int K = 1",
-                    "  found: field static constant int K = 2"),
+                    "changed: field public static constant int K = 1",
+                    "  found: field public static constant int K = 2"),
             full(
                     "a constant is no longer one",
                     T,
                     t("K = 1;", "K = Integer.parseInt(\"1\");"),
-                    "changed: field static constant int K = 1",
-                    "  found: field static final int K"),
+                    "changed: field public static constant int K = 1",
+                    "  found: field public static final int K"),
             full(
                     "a constant of a text with the sign of a value",
                     "package p; public class T { public static final String S = \"a = b\"; }",
                     "package p; public class T { public static final String S = \"a = c\"; }",
-                    "changed: field static constant java.lang.String S = \"a = b\"",
-                    "  found: field static constant java.lang.String S = \"a = c\""),
+                    "changed: field public static constant java.lang.String S = \"a = b\"",
+                    "  found: field public static constant java.lang.String S = \"a = c\""),
             // ---- the data of the shape
             full(
                     "the class is abstract",
@@ -281,7 +304,7 @@ class ConformanceTest {
                     "changed: superclasses",
                     "  generated against: java.lang.Object",
                     "  target: -",
-                    "missing: ctor() throws -"),
+                    "missing: ctor public () throws -"),
             full(
                     "the class is final, and so are its methods",
                     "package p; public class T { public void n() {} }",
@@ -289,8 +312,8 @@ class ConformanceTest {
                     "changed: type",
                     "  generated against: p.T open-class sealed=no",
                     "  target: p.T final-class sealed=no",
-                    "changed: method overridable n() -> void throws -",
-                    "  found: method final n() -> void throws -"),
+                    "changed: method public overridable n() -> void throws -",
+                    "  found: method public final n() -> void throws -"),
             full(
                     "the class is sealed",
                     List.of("package p; public abstract class T {}", "package p; final class Only extends T {}"),
@@ -464,8 +487,8 @@ class ConformanceTest {
                     "the single abstract method is another",
                     List.of("package p; public interface T extends Fn {}", "package p; interface Fn { String m(); }"),
                     List.of("package p; public interface T extends Fn {}", "package p; interface Fn { Object m(); }"),
-                    "changed: method abstract m() -> java.lang.String throws -",
-                    "  found: method abstract m() -> java.lang.Object throws -",
+                    "changed: method public abstract m() -> java.lang.String throws -",
+                    "  found: method public abstract m() -> java.lang.Object throws -",
                     "changed: sam m() -> java.lang.String throws -",
                     "  found: sam m() -> java.lang.Object throws -"),
             full(
@@ -637,7 +660,7 @@ class ConformanceTest {
         assertThat(Conformance.names(canonical)).containsExactly("field S", "field map", "method max", "method of");
         assertThat(Conformance.names(Harness.run(env -> Canonical.of(Harness.ok(env.full("p.T"))), FN)))
                 .containsExactly("method m", "sam");
-        assertThat(Conformance.name("member ctor <^0>(^0) throws -")).isEqualTo("ctor");
-        assertThat(Conformance.name("member ctor() throws -")).isEqualTo("ctor");
+        assertThat(Conformance.name("member ctor public <^0>(^0) throws -")).isEqualTo("ctor");
+        assertThat(Conformance.name("member ctor public () throws -")).isEqualTo("ctor");
     }
 }

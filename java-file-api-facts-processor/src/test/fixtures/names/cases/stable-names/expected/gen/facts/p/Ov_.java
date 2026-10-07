@@ -39,7 +39,7 @@ import p.Ov;
 /// - `method m(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 /// - `constructor Ov(java.util.List<p.Hidden>)`, which mentions types that are not public: p.Hidden
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "f606e2486a0715c0cd07712a0ce76e9e7e5cf7e0d37857af98d76e23b2970a27", complete = true, format = 7)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "5846939549973a56df77c4fb03d3e748878de17ae2e8bcd564fb37678517ba0b", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Ov_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Ov] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov_"), "f606e2486a0715c0cd07712a0ce76e9e7e5cf7e0d37857af98d76e23b2970a27", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("k", Param.fixed(ConstantDescs.CD_int)), Signature.of("k", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("m", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("n", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Ov", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov_"), "5846939549973a56df77c4fb03d3e748878de17ae2e8bcd564fb37678517ba0b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("k", Param.fixed(ConstantDescs.CD_int)), Signature.of("k", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("m", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("n", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Ov", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))))), List.of(), false);
 
         private Data() {
         }
@@ -61,21 +61,21 @@ public final class Ov_ {
     static final class Canonical {
         /// The canonical form of [Ov].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Ov open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor(java.awt.List) throws -
-        member field instance mutable int size
-        member method overridable <^0> k(^0) -> void throws -
-        member method overridable <^0> size() -> ^0 throws -
-        member method overridable k(int) -> void throws -
-        member method overridable m(java.awt.List) -> void throws -
-        member method overridable n(java.awt.List) -> void throws -
+        members declared-accessible
+        member ctor public (java.awt.List) throws -
+        member field public instance mutable int size
+        member method public overridable <^0> k(^0) -> void throws -
+        member method public overridable <^0> size() -> ^0 throws -
+        member method public overridable k(int) -> void throws -
+        member method public overridable m(java.awt.List) -> void throws -
+        member method public overridable n(java.awt.List) -> void throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); k(int); k(java.lang.Object); m(java.awt.List); m(java.util.List); n(java.awt.List); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)
         table static -

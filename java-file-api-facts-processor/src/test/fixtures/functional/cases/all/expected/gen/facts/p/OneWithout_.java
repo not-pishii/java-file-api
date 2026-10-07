@@ -28,7 +28,7 @@ import p.OneWithout;
 ///
 /// A member [OneWithout] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [NoneB_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OneWithout.class, fingerprint = "8e9bf52e56f267bedcb113d336d0bfe74310232702e72239a19c4fd088115b7f", complete = true, format = 7)
+@GeneratedMetamodel(of = OneWithout.class, fingerprint = "1fb3c2407b88c88e3b70df637b42ac39284e52d6795d635ce6db082a7e559102", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class OneWithout_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [OneWithout] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OneWithout_"), "8e9bf52e56f267bedcb113d336d0bfe74310232702e72239a19c4fd088115b7f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.OneWithout"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OneWithout_"), "1fb3c2407b88c88e3b70df637b42ac39284e52d6795d635ce6db082a7e559102", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.OneWithout"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.NoneB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -50,14 +50,14 @@ public final class OneWithout_ {
     static final class Canonical {
         /// The canonical form of [OneWithout].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.OneWithout interface sealed=no
         tparams -
         superclasses -
         interfaces p.IoA; p.NoneB
         supertypes -
         enum -
-        members declared-public
+        members declared-accessible
         sam m() -> void throws -
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

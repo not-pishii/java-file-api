@@ -47,12 +47,13 @@ class ClosureTest {
     }
 
     @Test
-    void aSignatureEdgeLeadsToEveryTypeTheDeclaredPublicSignaturesMention() {
+    void aSignatureEdgeLeadsToEveryTypeTheDeclaredAccessibleSignaturesMention() {
         TypeGraph graph = graph("p.A");
 
         // parameters, results, fields, throws, type arguments, wildcard bounds, array components and
-        // the bounds of the type parameters of the type and of a method; not what a member that is not
-        // public or that mentions a type that is not public mentions, and nothing a mentioned type mentions
+        // the bounds of the type parameters of the type and of a method; not what a member that is neither
+        // public nor protected, or that mentions a type that is not public, mentions, and nothing a mentioned
+        // type mentions
         assertThat(graph.from("p.A", Edge.Signature.class).map(Edge::to))
                 .containsExactly(
                         "java.util.List",
@@ -69,6 +70,7 @@ class ClosureTest {
                         "p.MBound",
                         "p.Marker",
                         "p.Param1",
+                        "p.Prot",
                         "p.Result");
         assertThat(graph.edges()).noneMatch(edge -> edge instanceof Edge.Awaits);
         assertThat(graph.nodes().get("p.A")).isInstanceOf(Node.Requested.class);
@@ -82,7 +84,7 @@ class ClosureTest {
         assertThat(graph.nodes().get("p.Dol$lar"))
                 .isEqualTo(new Node.Mentioned(
                         "p.Dol$lar", new Token.Unavailable("a class with $ in its simple name is not supported yet")));
-        assertThat(graph.nodes()).doesNotContainKeys("p.Hidden", "p.Prot", "p.Pkg", "p.Deep", "p.Only");
+        assertThat(graph.nodes()).doesNotContainKeys("p.Hidden", "p.Pkg", "p.Deep", "p.Only");
     }
 
     @Test

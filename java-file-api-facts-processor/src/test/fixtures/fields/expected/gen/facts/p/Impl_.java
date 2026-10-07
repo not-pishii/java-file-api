@@ -28,7 +28,7 @@ import p.Impl;
 ///
 /// A member [Impl] inherits has its fact in the metamodel of the supertype that declares it: [PubA_] and [PubB_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl.class, fingerprint = "2a3455b7c5785477dd16b8610cf15f03095ec0ccda5361ec074448bdb5ad7952", complete = true, format = 7)
+@GeneratedMetamodel(of = Impl.class, fingerprint = "d0133e6cbba9d22569f51d3b167c40eff0cc8a8c7ab5851d5d30b9ce47bd8025", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Impl_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Impl] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Impl_"), "2a3455b7c5785477dd16b8610cf15f03095ec0ccda5361ec074448bdb5ad7952", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Impl"), List.of(), List.of(ClassDesc.of("p.PubA"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Impl"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Impl_"), "d0133e6cbba9d22569f51d3b167c40eff0cc8a8c7ab5851d5d30b9ce47bd8025", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Impl"), List.of(), List.of(ClassDesc.of("p.PubA"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.PubB")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Impl"))), List.of(), false);
 
         private Data() {
         }
@@ -50,15 +50,15 @@ public final class Impl_ {
     static final class Canonical {
         /// The canonical form of [Impl].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Impl open-class sealed=no
         tparams -
         superclasses p.PubA; java.lang.Object
         interfaces p.PubB
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
+        members declared-accessible
+        member ctor public () throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

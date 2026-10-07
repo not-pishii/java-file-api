@@ -194,7 +194,7 @@ class GeneratorAgainstAnotherVersionTest {
         assertThat(compiled.errors().getFirst().lines().map(String::strip))
                 .containsExactly(
                         "metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath:",
-                        "missing: method overridable m(java.lang.String) -> java.lang.String throws -",
+                        "missing: method public overridable m(java.lang.String) -> java.lang.String throws -",
                         "The generator was compiled against another p.Svc than this compilation has (another version"
                                 + " of its library, or another --release). Generate the metamodels against this"
                                 + " version: rebuild the generator against it, or align the versions.");

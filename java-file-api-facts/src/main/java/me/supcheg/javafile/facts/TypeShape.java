@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /// What is known about a declared type apart from its type arguments: its
-/// kind, type parameters, superclass chain, parameterized supertypes, method
+/// kind, type parameters, superclass chain, interfaces, parameterized supertypes, method
 /// table, enum constants, whether it is `sealed`, and who vouches for all of
 /// it (§3.1). A [DeclaredToken] is a shape applied to type arguments, made
 /// by the factories of [UnsafeFacts] that take a shape: the one shape of
@@ -48,6 +48,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final List<TypeParam> typeParameters;
     private final List<ClassDesc> boundErasures;
     private final List<ClassDesc> superclasses;
+    private final List<ClassDesc> interfaces;
     private final Supertypes supertypes;
     private final Supplier<MethodTableTemplate> methods;
     private final List<String> enumConstants;
@@ -59,11 +60,22 @@ public final class TypeShape<K extends DeclaredKind> {
             ClassDesc desc,
             List<TypeParam> typeParameters,
             List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
             Supertypes supertypes,
             MethodTableTemplate methods,
             List<String> enumConstants,
             boolean sealed) {
-        this(origin, kind, desc, typeParameters, superclasses, supertypes, () -> methods, enumConstants, sealed);
+        this(
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                superclasses,
+                interfaces,
+                supertypes,
+                () -> methods,
+                enumConstants,
+                sealed);
         if (methods.typeParameterCount() > this.typeParameters.size()) {
             throw new IllegalArgumentException("the method table of " + this + " refers to type parameter #"
                     + (methods.typeParameterCount() - 1) + ", but the type has " + this.typeParameters.size()
@@ -79,6 +91,7 @@ public final class TypeShape<K extends DeclaredKind> {
             ClassDesc desc,
             List<TypeParam> typeParameters,
             List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
             Supertypes supertypes,
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
@@ -92,12 +105,14 @@ public final class TypeShape<K extends DeclaredKind> {
         this.typeParameters = List.copyOf(typeParameters);
         this.boundErasures = boundErasures(this.typeParameters);
         this.superclasses = List.copyOf(superclasses);
+        this.interfaces = List.copyOf(interfaces);
         this.supertypes = supertypes;
         this.methods = methods;
         this.enumConstants = List.copyOf(enumConstants);
         this.sealed = sealed;
         requireSupertypesOfTheTypeParameters();
         requireSuperclasses();
+        requireInterfaces();
         requireKindData();
     }
 
@@ -144,6 +159,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 desc,
                 typeParameters,
                 superclasses,
+                List.of(),
                 supertypes,
                 () -> MethodTableTemplate.of(methods.get()),
                 enumConstants,
@@ -158,6 +174,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 desc,
                 List.of(),
                 superclasses,
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
@@ -199,6 +216,18 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @return the superclass chain
     public List<ClassDesc> superclasses() {
         return superclasses;
+    }
+
+    /// The erasures of the interfaces the type implements or extends,
+    /// transitively — those of its superclasses included —, sorted by binary
+    /// name: with [#superclasses()], every class and interface a value of
+    /// the type is assignable to. Empty when not recorded, as for a shape
+    /// made of a type reference, so the list proves that a type is a subtype
+    /// of an interface and never that it is not.
+    ///
+    /// @return the interfaces
+    public List<ClassDesc> interfaces() {
+        return interfaces;
     }
 
     /// The parameterized supertypes of the type, in terms of
@@ -354,6 +383,22 @@ public final class TypeShape<K extends DeclaredKind> {
         if (superclasses.contains(desc) || Set.copyOf(superclasses).size() != superclasses.size()) {
             throw new IllegalArgumentException(
                     "the superclass chain of " + this + " repeats a class: " + describe(superclasses));
+        }
+    }
+
+    private void requireInterfaces() {
+        interfaces.stream().filter(i -> !i.isClassOrInterface()).findFirst().ifPresent(i -> {
+            throw new IllegalArgumentException(
+                    "an interface of " + this + " is a class or interface type, got " + i.displayName());
+        });
+        if (interfaces.contains(desc) || Set.copyOf(interfaces).size() != interfaces.size()) {
+            throw new IllegalArgumentException("the interfaces of " + this + " repeat one: " + describe(interfaces));
+        }
+        List<ClassDesc> both =
+                interfaces.stream().filter(superclasses::contains).toList();
+        if (!both.isEmpty()) {
+            throw new IllegalArgumentException(
+                    this + " has " + describe(both) + " both as a superclass and as an interface");
         }
     }
 

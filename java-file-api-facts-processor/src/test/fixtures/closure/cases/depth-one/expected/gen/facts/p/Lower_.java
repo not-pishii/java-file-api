@@ -26,7 +26,7 @@ import p.Lower;
 ///
 /// `@Facts` does not ask for [Lower]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Lower.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lower.class, fingerprint = "45054cd1d440e20b6749d9ffd04fbc08344b25f608c28ee28364ff94917d1068", complete = false, format = 7)
+@GeneratedMetamodel(of = Lower.class, fingerprint = "1f96665a6171869064083020c62a7212216a427f7cdaa900048357a826d4c547", complete = false, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Lower_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Lower] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lower_"), "45054cd1d440e20b6749d9ffd04fbc08344b25f608c28ee28364ff94917d1068", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Lower"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Lower"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lower_"), "1f96665a6171869064083020c62a7212216a427f7cdaa900048357a826d4c547", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Lower"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Lower"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Lower_ {
     static final class Canonical {
         /// The canonical form of [Lower].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Lower open-class sealed=no
         tparams -
         superclasses java.lang.Object

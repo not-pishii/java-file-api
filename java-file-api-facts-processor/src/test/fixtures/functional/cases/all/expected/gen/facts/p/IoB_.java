@@ -32,7 +32,7 @@ import p.IoB;
 ///
 /// A member [IoB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoB.class, fingerprint = "40f07ba25d9a202afb751ca51898e18d9466e08415b7af94c24f8294035bb4b8", complete = true, format = 7)
+@GeneratedMetamodel(of = IoB.class, fingerprint = "c0bdfcc4d159839b4f7fc9ca238c9817920747ff8b423c91ddb4a71d930dd9e1", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class IoB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [IoB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoB_"), "40f07ba25d9a202afb751ca51898e18d9466e08415b7af94c24f8294035bb4b8", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoB"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoB_"), "c0bdfcc4d159839b4f7fc9ca238c9817920747ff8b423c91ddb4a71d930dd9e1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -54,15 +54,15 @@ public final class IoB_ {
     static final class Canonical {
         /// The canonical form of [IoB].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.IoB interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member method abstract m() -> void throws java.io.IOException
+        members declared-accessible
+        member method public abstract m() -> void throws java.io.IOException
         sam m() -> void throws java.io.IOException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

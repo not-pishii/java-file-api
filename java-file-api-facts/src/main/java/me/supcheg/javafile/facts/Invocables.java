@@ -61,11 +61,15 @@ final class Invocables {
         return iface;
     }
 
+    /// A constructor a subclass constructor calls, as [#describe] tells one `new` calls.
+    static String describeSuper(Invocable constructor) {
+        return "super " + describe(constructor).substring("new ".length());
+    }
+
     static String describe(Invocable invocable) {
         String params = invocable.params().stream().map(Object::toString).collect(Collectors.joining(", ", "(", ")"));
         return switch (invocable.kind()) {
-            case CONSTRUCTOR ->
-                (invocable.owner() instanceof AbstractClassToken<?> ? "super " : "new ") + invocable.owner() + params;
+            case CONSTRUCTOR -> "new " + invocable.owner() + params;
             case STATIC_METHOD ->
                 "static " + result(invocable) + " " + invocable.owner() + "." + invocable.name() + params;
             case INSTANCE_METHOD -> result(invocable) + " " + invocable.owner() + "." + invocable.name() + params;

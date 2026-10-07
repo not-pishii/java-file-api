@@ -4,6 +4,7 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -52,6 +53,12 @@ import java.util.stream.Stream;
 ///   method of a generic type, which needs the tokens of the type, and
 ///   `static` otherwise.
 ///
+/// The fact of a `protected` member is held back: it is a `Protected` of the
+/// type and of the fact, which only the declaration of a subclass opens. A
+/// constructor is not: a subclass constructor alone takes a `SuperCtorRefN`,
+/// which the fact of a constructor of an abstract class and of a
+/// `protected` constructor is.
+///
 /// Every token of another type is made on the spot from the shape in that
 /// type's metamodel — `UnsafeFacts.<List<E>>interfaceToken(List_.Data.SHAPE,
 /// TokenArg.exact(e))` — never from `Y_.TOKEN` or the constructor of `Y_`,
@@ -66,6 +73,8 @@ final class MemberFacts {
 
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
     private static final ClassDesc CD_MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
+    private static final ClassDesc CD_ACCESS = ClassDesc.of(FACTS, "Access");
+    private static final ClassDesc CD_PROTECTED = ClassDesc.of(FACTS, "Protected");
     private static final ClassDesc CD_PRIMITIVE_TOKEN = ClassDesc.of(FACTS, "PrimitiveToken");
     private static final ClassDesc CD_ARRAY_TOKEN = ClassDesc.of(FACTS, "ArrayToken");
     private static final ClassDesc CD_TOKEN_ARG = ClassDesc.of(FACTS, "TokenArg");
@@ -342,49 +351,81 @@ final class MemberFacts {
         Expr token = token(field.type(), scope);
         Expr nameLiteral = Exprs.literal(field.name());
         Expr owned = owner(field.isStatic());
-        if (field.isStatic()) {
-            return switch (field.mutability()) {
-                case FieldModel.Mutability.Constant constant ->
-                    value(
-                            name,
-                            parameterized(family("StaticFieldRef"), type),
-                            unsafe("constantField", owned, nameLiteral, token, constantValue(constant.value())),
-                            scope,
-                            doc);
-                case FieldModel.Mutability.Final _ ->
-                    value(
-                            name,
-                            parameterized(family("StaticFieldRef"), type),
-                            unsafe("staticField", owned, nameLiteral, token),
-                            scope,
-                            doc);
-                case FieldModel.Mutability.Mutable _ ->
-                    value(
-                            name,
-                            parameterized(family("MutableStaticFieldRef"), type),
-                            unsafe("mutableStaticField", owned, nameLiteral, token),
-                            scope,
-                            doc);
+        // the factory of the fact, what it takes after the owner, the name and the type, and the family
+        FieldFact made =
+                switch (field.mutability()) {
+                    case FieldModel.Mutability.Constant constant
+                    when field.isStatic() ->
+                        new FieldFact("constantField", Stream.of(constantValue(constant.value())), "StaticFieldRef");
+                    case FieldModel.Mutability.Constant _ ->
+                        throw new IllegalStateException("an instance field is not a constant: " + field.name());
+                    case FieldModel.Mutability.Final _ ->
+                        field.isStatic()
+                                ? new FieldFact("staticField", Stream.empty(), "StaticFieldRef")
+                                : new FieldFact("field", Stream.empty(), "FieldRef");
+                    case FieldModel.Mutability.Mutable _ ->
+                        field.isStatic()
+                                ? new FieldFact("mutableStaticField", Stream.empty(), "MutableStaticFieldRef")
+                                : new FieldFact("mutableField", Stream.empty(), "MutableFieldRef");
+                };
+        Held held = new Held(
+                field.isStatic()
+                        ? parameterized(family(made.family()), type)
+                        : parameterized(family(made.family()), owner, type),
+                unsafe(
+                        made.factory(),
+                        Stream.of(Stream.of(owned, nameLiteral, token), made.more(), access(field.access()))
+                                .flatMap(Function.identity())
+                                .toList()));
+        Held handed = held.as(field.access(), field.isStatic(), this);
+        return value(name, handed.type(), handed.init(), scope, doc);
+    }
+
+    /// How the fact of a field is made.
+    ///
+    /// @param factory the factory of `UnsafeFacts`
+    /// @param more what the factory takes after the owner, the name and the type of the field
+    /// @param family the class of the fact
+    private record FieldFact(String factory, Stream<Expr> more, String family) {}
+
+    /// A fact and its type, as the metamodel hands it out.
+    ///
+    /// @param type the type of the fact
+    /// @param init the fact
+    private record Held(TypeRef type, Expr init) {
+
+        /// The fact of a member of an access: as it is for a `public` member, held back in a
+        /// `Protected` of the type for a `protected` one.
+        Held as(Access access, boolean isStatic, MemberFacts facts) {
+            return switch (access) {
+                case PUBLIC -> this;
+                case PROTECTED ->
+                    new Held(
+                            parameterized(facts.use(CD_PROTECTED), facts.ownedBy(isStatic), type),
+                            facts.unsafe("protected_", facts.owner(isStatic), init));
             };
         }
-        return switch (field.mutability()) {
-            case FieldModel.Mutability.Mutable _ ->
-                value(
-                        name,
-                        parameterized(family("MutableFieldRef"), owner, type),
-                        unsafe("mutableField", owned, nameLiteral, token),
-                        scope,
-                        doc);
-            case FieldModel.Mutability.Final _ ->
-                value(
-                        name,
-                        parameterized(family("FieldRef"), owner, type),
-                        unsafe("field", owned, nameLiteral, token),
-                        scope,
-                        doc);
-            case FieldModel.Mutability.Constant _ ->
-                throw new IllegalStateException("an instance field is not a constant: " + field.name());
+    }
+
+    /// What tells the access of a field to its factory: nothing for a `public` one.
+    private Stream<Expr> access(Access access) {
+        return switch (access) {
+            case PUBLIC -> Stream.empty();
+            case PROTECTED -> Stream.of(Exprs.staticField(use(CD_ACCESS), Access.PROTECTED.name()));
         };
+    }
+
+    /// The type the token that owns a member is of ([#owner]): the type itself, applied to its
+    /// own type parameters for an instance member of a generic type and to wildcards for a
+    /// `static` one.
+    private TypeRef ownedBy(boolean isStatic) {
+        return self.generic() && isStatic
+                ? new ParameterizedTypeRef(
+                        self.desc(),
+                        self.typeVars().stream()
+                                .<TypeArg>map(_ -> Types.unbounded())
+                                .toList())
+                : ownerType();
     }
 
     /// The value of a constant as an expression a `constantField` takes: the
@@ -419,7 +460,11 @@ final class MemberFacts {
             throw new IllegalStateException("a generic constructor has no fact: " + name);
         }
         Scope scope = scope(false);
-        boolean isAbstract = self.kind() instanceof DeclaredKind.AbstractClass;
+        boolean forSubclass = self.kind() instanceof DeclaredKind.AbstractClass
+                || switch (ctor.access()) {
+                    case PUBLIC -> false;
+                    case PROTECTED -> true;
+                };
         int arity = ctor.params().size();
         List<TypeRef> typeArgs = Stream.concat(
                         Stream.of(ownerType()), ctor.params().stream().map(param -> phantom(param, scope)))
@@ -427,14 +472,14 @@ final class MemberFacts {
         List<Expr> args = Stream.of(
                         Stream.of(owner(false)),
                         params(ctor.params(), ctor.declared(), scope),
-                        Stream.of(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), scope)))
+                        Stream.of(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), ctor.access(), scope)))
                 .flatMap(Function.identity())
                 .toList();
-        String family = (isAbstract ? "AbstractCtorRef" : "CtorRef") + requireArity(arity);
+        String family = (forSubclass ? "SuperCtorRef" : "CtorRef") + requireArity(arity);
         return value(
                 name,
                 parameterized(family(family), typeArgs),
-                unsafe(isAbstract ? "abstractCtor" : "ctor", args),
+                unsafe(forSubclass ? "superCtor" : "ctor", args),
                 scope,
                 MetamodelDocs.fact(fact));
     }
@@ -443,12 +488,9 @@ final class MemberFacts {
         String name = fact.name();
         if (method.typeParams().isEmpty()) {
             Scope scope = scope(method.isStatic());
-            return value(
-                    name,
-                    methodType(method, scope),
-                    methodFact(method, List.of(), scope),
-                    scope,
-                    MetamodelDocs.fact(fact));
+            Held handed = new Held(methodType(method, scope), methodFact(method, List.of(), scope))
+                    .as(method.access(), method.isStatic(), this);
+            return value(name, handed.type(), handed.init(), scope, MetamodelDocs.fact(fact));
         }
         Scope outer = scope(method.isStatic());
         List<String> declared =
@@ -489,13 +531,15 @@ final class MemberFacts {
                                 .map(bound -> (ClassOrInterfaceTypeRef) javaType(bound, scope))
                                 .toList()))
                 .toList();
+        Held handed = new Held(methodType(method, scope), methodFact(method, witnessTokens, scope))
+                .as(method.access(), method.isStatic(), this);
         return new Spec.Factory(
                 name,
                 !outer.instance(),
                 typeParams,
                 witnesses,
-                methodType(method, scope),
-                methodFact(method, witnessTokens, scope),
+                handed.type(),
+                handed.init(),
                 MetamodelDocs.factory(fact, names, local.witnesses()));
     }
 
@@ -540,7 +584,8 @@ final class MemberFacts {
                         Stream.of(owner(method.isStatic()), Exprs.literal(method.name())),
                         method.result().stream().map(result -> token(result, scope)),
                         params(method.params(), method.declared(), scope),
-                        Stream.of(traits(method.overridability(), method.throwsTypes(), witnesses, scope)))
+                        Stream.of(traits(
+                                method.overridability(), method.throwsTypes(), witnesses, method.access(), scope)))
                 .flatMap(Function.identity())
                 .toList();
         String factory = method.isStatic() ? "staticMethod" : "method";
@@ -604,13 +649,19 @@ final class MemberFacts {
             Overridability overridability,
             List<ClassOrInterfaceTypeRef> throwsTypes,
             List<Expr> witnesses,
+            Access access,
             Scope scope) {
-        Expr traits = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
-        if (!throwsTypes.isEmpty()) {
-            traits = traits.call(
-                    "throwing", throwsTypes.stream().map(t -> token(t, scope)).toList());
-        }
-        return witnesses.isEmpty() ? traits : traits.call("withTypeArgs", witnesses);
+        Expr named = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
+        Expr thrown = throwsTypes.isEmpty()
+                ? named
+                : named.call(
+                        "throwing",
+                        throwsTypes.stream().map(t -> token(t, scope)).toList());
+        Expr applied = witnesses.isEmpty() ? thrown : thrown.call("withTypeArgs", witnesses);
+        return access(access)
+                .findFirst()
+                .<Expr>map(of -> applied.call("with", of))
+                .orElse(applied);
     }
 
     // ---- tokens and their phantom types

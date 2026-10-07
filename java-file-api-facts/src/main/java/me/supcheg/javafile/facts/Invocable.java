@@ -5,9 +5,9 @@ import java.util.Optional;
 
 /// The untyped view of a method or constructor fact, shared by the typed
 /// arity families (`MethodRefN`, `VoidMethodRefN`, `StaticMethodRefN`,
-/// `VoidStaticMethodRefN`, `CtorRefN`). Lowering reads it; generator code
+/// `VoidStaticMethodRefN`, `CtorRefN`, `SuperCtorRefN`). Lowering reads it; generator code
 /// uses the typed families.
-public interface Invocable {
+public non-sealed interface Invocable extends MemberFact {
 
     /// What kind of member the fact is.
     ///
@@ -17,7 +17,16 @@ public interface Invocable {
     /// The type declaring or inheriting the member.
     ///
     /// @return the owner token
+    @Override
     DeclaredToken<?> owner();
+
+    /// The access of the member, as its [#traits()] tell it.
+    ///
+    /// @return the access
+    @Override
+    default Access access() {
+        return traits().access();
+    }
 
     /// The member name; for a constructor, the simple name of its class.
     ///

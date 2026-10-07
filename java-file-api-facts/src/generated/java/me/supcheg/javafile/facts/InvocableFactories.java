@@ -24,8 +24,8 @@ abstract class InvocableFactories {
         return new CtorRef0<>(owner, traits, Invocables.declared(owner));
     }
 
-    public static <O> AbstractCtorRef0<O> abstractCtor(AbstractClassToken<O> owner, MemberTraits traits) {
-        return new AbstractCtorRef0<>(owner, traits, Invocables.declared(owner));
+    public static <O> SuperCtorRef0<O> superCtor(ExtendableClassToken<O> owner, MemberTraits traits) {
+        return new SuperCtorRef0<>(owner, traits, Invocables.declared(owner));
     }
 
     public static <F, R> Sam0<F, R> sam(MethodRef0<F, R> method) {
@@ -56,8 +56,8 @@ abstract class InvocableFactories {
         return new CtorRef1<>(owner, Invocables.token(param1), traits, Invocables.declared(owner, param1));
     }
 
-    public static <O, A1> AbstractCtorRef1<O, A1> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, MemberTraits traits) {
-        return new AbstractCtorRef1<>(owner, Invocables.token(param1), traits, Invocables.declared(owner, param1));
+    public static <O, A1> SuperCtorRef1<O, A1> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, MemberTraits traits) {
+        return new SuperCtorRef1<>(owner, Invocables.token(param1), traits, Invocables.declared(owner, param1));
     }
 
     public static <F, R, A1> Sam1<F, R, A1> sam(MethodRef1<F, R, A1> method) {
@@ -88,8 +88,8 @@ abstract class InvocableFactories {
         return new CtorRef2<>(owner, Invocables.token(param1), Invocables.token(param2), traits, Invocables.declared(owner, param1, param2));
     }
 
-    public static <O, A1, A2> AbstractCtorRef2<O, A1, A2> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, MemberTraits traits) {
-        return new AbstractCtorRef2<>(owner, Invocables.token(param1), Invocables.token(param2), traits, Invocables.declared(owner, param1, param2));
+    public static <O, A1, A2> SuperCtorRef2<O, A1, A2> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, MemberTraits traits) {
+        return new SuperCtorRef2<>(owner, Invocables.token(param1), Invocables.token(param2), traits, Invocables.declared(owner, param1, param2));
     }
 
     public static <F, R, A1, A2> Sam2<F, R, A1, A2> sam(MethodRef2<F, R, A1, A2> method) {
@@ -120,8 +120,8 @@ abstract class InvocableFactories {
         return new CtorRef3<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), traits, Invocables.declared(owner, param1, param2, param3));
     }
 
-    public static <O, A1, A2, A3> AbstractCtorRef3<O, A1, A2, A3> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, MemberTraits traits) {
-        return new AbstractCtorRef3<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), traits, Invocables.declared(owner, param1, param2, param3));
+    public static <O, A1, A2, A3> SuperCtorRef3<O, A1, A2, A3> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, MemberTraits traits) {
+        return new SuperCtorRef3<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), traits, Invocables.declared(owner, param1, param2, param3));
     }
 
     public static <F, R, A1, A2, A3> Sam3<F, R, A1, A2, A3> sam(MethodRef3<F, R, A1, A2, A3> method) {
@@ -152,8 +152,8 @@ abstract class InvocableFactories {
         return new CtorRef4<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), traits, Invocables.declared(owner, param1, param2, param3, param4));
     }
 
-    public static <O, A1, A2, A3, A4> AbstractCtorRef4<O, A1, A2, A3, A4> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, MemberTraits traits) {
-        return new AbstractCtorRef4<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), traits, Invocables.declared(owner, param1, param2, param3, param4));
+    public static <O, A1, A2, A3, A4> SuperCtorRef4<O, A1, A2, A3, A4> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, MemberTraits traits) {
+        return new SuperCtorRef4<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), traits, Invocables.declared(owner, param1, param2, param3, param4));
     }
 
     public static <F, R, A1, A2, A3, A4> Sam4<F, R, A1, A2, A3, A4> sam(MethodRef4<F, R, A1, A2, A3, A4> method) {
@@ -184,8 +184,8 @@ abstract class InvocableFactories {
         return new CtorRef5<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), traits, Invocables.declared(owner, param1, param2, param3, param4, param5));
     }
 
-    public static <O, A1, A2, A3, A4, A5> AbstractCtorRef5<O, A1, A2, A3, A4, A5> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, MemberTraits traits) {
-        return new AbstractCtorRef5<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), traits, Invocables.declared(owner, param1, param2, param3, param4, param5));
+    public static <O, A1, A2, A3, A4, A5> SuperCtorRef5<O, A1, A2, A3, A4, A5> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, MemberTraits traits) {
+        return new SuperCtorRef5<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), traits, Invocables.declared(owner, param1, param2, param3, param4, param5));
     }
 
     public static <F, R, A1, A2, A3, A4, A5> Sam5<F, R, A1, A2, A3, A4, A5> sam(MethodRef5<F, R, A1, A2, A3, A4, A5> method) {
@@ -216,8 +216,8 @@ abstract class InvocableFactories {
         return new CtorRef6<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6> AbstractCtorRef6<O, A1, A2, A3, A4, A5, A6> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, MemberTraits traits) {
-        return new AbstractCtorRef6<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6));
+    public static <O, A1, A2, A3, A4, A5, A6> SuperCtorRef6<O, A1, A2, A3, A4, A5, A6> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, MemberTraits traits) {
+        return new SuperCtorRef6<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6> Sam6<F, R, A1, A2, A3, A4, A5, A6> sam(MethodRef6<F, R, A1, A2, A3, A4, A5, A6> method) {
@@ -248,8 +248,8 @@ abstract class InvocableFactories {
         return new CtorRef7<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7> AbstractCtorRef7<O, A1, A2, A3, A4, A5, A6, A7> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, MemberTraits traits) {
-        return new AbstractCtorRef7<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7));
+    public static <O, A1, A2, A3, A4, A5, A6, A7> SuperCtorRef7<O, A1, A2, A3, A4, A5, A6, A7> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, MemberTraits traits) {
+        return new SuperCtorRef7<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7> Sam7<F, R, A1, A2, A3, A4, A5, A6, A7> sam(MethodRef7<F, R, A1, A2, A3, A4, A5, A6, A7> method) {
@@ -280,8 +280,8 @@ abstract class InvocableFactories {
         return new CtorRef8<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> AbstractCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, MemberTraits traits) {
-        return new AbstractCtorRef8<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8));
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> SuperCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, MemberTraits traits) {
+        return new SuperCtorRef8<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8> Sam8<F, R, A1, A2, A3, A4, A5, A6, A7, A8> sam(MethodRef8<F, R, A1, A2, A3, A4, A5, A6, A7, A8> method) {
@@ -312,8 +312,8 @@ abstract class InvocableFactories {
         return new CtorRef9<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> AbstractCtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, MemberTraits traits) {
-        return new AbstractCtorRef9<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9));
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> SuperCtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, MemberTraits traits) {
+        return new SuperCtorRef9<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Sam9<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> sam(MethodRef9<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method) {
@@ -344,8 +344,8 @@ abstract class InvocableFactories {
         return new CtorRef10<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> AbstractCtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, MemberTraits traits) {
-        return new AbstractCtorRef10<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> SuperCtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, MemberTraits traits) {
+        return new SuperCtorRef10<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Sam10<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam(MethodRef10<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method) {
@@ -376,8 +376,8 @@ abstract class InvocableFactories {
         return new CtorRef11<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> AbstractCtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, MemberTraits traits) {
-        return new AbstractCtorRef11<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> SuperCtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, MemberTraits traits) {
+        return new SuperCtorRef11<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Sam11<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> sam(MethodRef11<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method) {
@@ -408,8 +408,8 @@ abstract class InvocableFactories {
         return new CtorRef12<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
     }
 
-    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> AbstractCtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> abstractCtor(AbstractClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, MemberTraits traits) {
-        return new AbstractCtorRef12<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> SuperCtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, MemberTraits traits) {
+        return new SuperCtorRef12<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12));
     }
 
     public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Sam12<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> sam(MethodRef12<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method) {

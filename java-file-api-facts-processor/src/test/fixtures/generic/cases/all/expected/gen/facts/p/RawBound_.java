@@ -35,7 +35,7 @@ import p.RawBound;
 ///
 /// @param <T> a type argument of [RawBound]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = RawBound.class, fingerprint = "2c697cbf3b4ff277222027ef4171166131c48ea1b4c7588ab812eb8f6fe82985", complete = true, format = 7)
+@GeneratedMetamodel(of = RawBound.class, fingerprint = "82667fe895595f914a014731ff27e6c92ce4da840539006cb930b0e0d710684e", complete = true, format = 8)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -47,7 +47,7 @@ public final class RawBound_<T extends Comparable> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [RawBound] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.RawBound_"), "2c697cbf3b4ff277222027ef4171166131c48ea1b4c7588ab812eb8f6fe82985", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.RawBound"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Comparable"))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("RawBound"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.RawBound_"), "82667fe895595f914a014731ff27e6c92ce4da840539006cb930b0e0d710684e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.RawBound"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Comparable"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("RawBound"))), List.of(), false);
 
         private Data() {
         }
@@ -58,16 +58,16 @@ public final class RawBound_<T extends Comparable> {
     static final class Canonical {
         /// The canonical form of [RawBound].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.RawBound open-class sealed=no
         tparams #0 extends java.lang.Comparable
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method overridable get() -> #0 throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public overridable get() -> #0 throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

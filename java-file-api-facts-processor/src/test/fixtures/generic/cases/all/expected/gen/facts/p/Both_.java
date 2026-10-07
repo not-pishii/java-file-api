@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -18,6 +17,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
@@ -36,7 +36,7 @@ import p.Both;
 ///
 /// @param <T> a type argument of [Both]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "5723581a63e92f7b104218b74db4d3b3de63f9f8a90fafd814b196b0027596ca", complete = true, format = 7)
+@GeneratedMetamodel(of = Both.class, fingerprint = "75ce0478b6ff1c15aaf4fb9c38df6f2d72f5a0b7b600dfcc7319372711372454", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Both_<T extends Number & Comparable<T>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Both] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Both_"), "5723581a63e92f7b104218b74db4d3b3de63f9f8a90fafd814b196b0027596ca", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Both"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Number")), new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("pick")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Both"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Both_"), "75ce0478b6ff1c15aaf4fb9c38df6f2d72f5a0b7b600dfcc7319372711372454", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Both"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Number")), new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("pick")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Both"))), List.of(), false);
 
         private Data() {
         }
@@ -58,16 +58,16 @@ public final class Both_<T extends Number & Comparable<T>> {
     static final class Canonical {
         /// The canonical form of [Both].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Both abstract-class sealed=no
         tparams #0 extends java.lang.Number & java.lang.Comparable<#0>
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method abstract pick() -> #0 throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public abstract pick() -> #0 throws -
         table abstract pick()
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -85,7 +85,7 @@ public final class Both_<T extends Number & Comparable<T>> {
     public final AbstractClassToken<Both<T>> token;
 
     /// The fact of [Both#Both()].
-    public final AbstractCtorRef0<Both<T>> super_;
+    public final SuperCtorRef0<Both<T>> super_;
 
     /// The fact of [Both#pick()].
     public final MethodRef0<Both<T>, T> pick;
@@ -95,7 +95,7 @@ public final class Both_<T extends Number & Comparable<T>> {
     /// @param t the token of the type argument `T`
     public Both_(RefToken<T> t) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.super_ = UnsafeFacts.abstractCtor(token, MemberTraits.FINAL);
+        this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
         this.pick = UnsafeFacts.method(token, "pick", t, MemberTraits.ABSTRACT);
     }
 }

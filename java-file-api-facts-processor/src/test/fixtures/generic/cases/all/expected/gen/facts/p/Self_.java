@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -21,6 +20,7 @@ import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
@@ -39,7 +39,7 @@ import p.Self;
 ///
 /// @param <S> a type argument of [Self]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Self.class, fingerprint = "d3294ad1dc39c6be5e082aba5055fa341e0756f350b20c44acd0edcdf2c89b9b", complete = true, format = 7)
+@GeneratedMetamodel(of = Self.class, fingerprint = "76c9deb31308b1ecf11d36e0f0930c5bc2d6f2717733a1165c0fa97ce55fdb2a", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Self_<S extends Self<S>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Self] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "d3294ad1dc39c6be5e082aba5055fa341e0756f350b20c44acd0edcdf2c89b9b", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Self"), List.of(new TypeParam("S", List.of(new ParameterizedTypeRef(ClassDesc.of("p.Self"), List.of(Types.exact(Types.typeVar("S"))))))), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("S")), List.of()), new MethodTableTemplate(Set.of(Signature.of("me")), Set.of(Signature.of("clone"), Signature.of("compare", Param.var(0)), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "76c9deb31308b1ecf11d36e0f0930c5bc2d6f2717733a1165c0fa97ce55fdb2a", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Self"), List.of(new TypeParam("S", List.of(new ParameterizedTypeRef(ClassDesc.of("p.Self"), List.of(Types.exact(Types.typeVar("S"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("S")), List.of()), new MethodTableTemplate(Set.of(Signature.of("me")), Set.of(Signature.of("clone"), Signature.of("compare", Param.var(0)), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
 
         private Data() {
         }
@@ -61,17 +61,17 @@ public final class Self_<S extends Self<S>> {
     static final class Canonical {
         /// The canonical form of [Self].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Self abstract-class sealed=no
         tparams #0 extends p.Self<#0>
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method abstract me() -> #0 throws -
-        member method overridable compare(#0) -> int throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public abstract me() -> #0 throws -
+        member method public overridable compare(#0) -> int throws -
         table abstract me()
         table concrete clone(); compare(#0); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -89,7 +89,7 @@ public final class Self_<S extends Self<S>> {
     public final AbstractClassToken<Self<S>> token;
 
     /// The fact of [Self#Self()].
-    public final AbstractCtorRef0<Self<S>> super_;
+    public final SuperCtorRef0<Self<S>> super_;
 
     /// The fact of [Self#compare(Self)].
     public final MethodRef1<Self<S>, Int, S> compare_S;
@@ -102,7 +102,7 @@ public final class Self_<S extends Self<S>> {
     /// @param s the token of the type argument `S`
     public Self_(RefToken<S> s) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(s));
-        this.super_ = UnsafeFacts.abstractCtor(token, MemberTraits.FINAL);
+        this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
         this.compare_S = UnsafeFacts.method(token, "compare", PrimitiveToken.INT, UnsafeFacts.param(s, Param.var(0)), MemberTraits.OVERRIDABLE);
         this.me = UnsafeFacts.method(token, "me", s, MemberTraits.ABSTRACT);
     }

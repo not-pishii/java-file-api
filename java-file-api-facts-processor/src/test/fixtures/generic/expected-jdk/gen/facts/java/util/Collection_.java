@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Collection]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Collection.class, fingerprint = "f283a871539f38d068180349c01a8fc6b749f6a2cc88104b9d9a8eae01957c66", complete = false, format = 7)
+@GeneratedMetamodel(of = Collection.class, fingerprint = "25526aedc0305f2e47017da38f26738966a554638368937c0e533c9213e9267d", complete = false, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Collection_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Collection] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Collection_"), "f283a871539f38d068180349c01a8fc6b749f6a2cc88104b9d9a8eae01957c66", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Collection"), List.of(new TypeParam("E", List.of())), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Iterable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0)), Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("clear"), Signature.of("contains", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("containsAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("isEmpty"), Signature.of("iterator"), Signature.of("remove", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("removeAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("retainAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("size"), Signature.of("toArray"), Signature.of("toArray", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("parallelStream"), Signature.of("removeIf", Param.fixed(ClassDesc.of("java.util.function.Predicate"))), Signature.of("spliterator"), Signature.of("stream"), Signature.of("toArray", Param.fixed(ClassDesc.of("java.util.function.IntFunction"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Collection_"), "25526aedc0305f2e47017da38f26738966a554638368937c0e533c9213e9267d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Collection"), List.of(new TypeParam("E", List.of())), List.of(), List.of(ClassDesc.of("java.lang.Iterable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Iterable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0)), Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("clear"), Signature.of("contains", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("containsAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("isEmpty"), Signature.of("iterator"), Signature.of("remove", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("removeAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("retainAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("size"), Signature.of("toArray"), Signature.of("toArray", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("parallelStream"), Signature.of("removeIf", Param.fixed(ClassDesc.of("java.util.function.Predicate"))), Signature.of("spliterator"), Signature.of("stream"), Signature.of("toArray", Param.fixed(ClassDesc.of("java.util.function.IntFunction"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class Collection_<E> {
     static final class Canonical {
         /// The canonical form of [Collection].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type java.util.Collection interface sealed=no
         tparams #0
         superclasses -

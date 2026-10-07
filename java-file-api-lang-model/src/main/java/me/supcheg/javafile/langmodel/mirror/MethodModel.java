@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -22,6 +23,7 @@ import java.util.Optional;
 /// @param throwsTypes the declared exceptions, in declaration order: classes and type variables
 /// @param overridability whether the method can be overridden, and must be; [Overridability#FINAL] for a
 ///                       `static` method
+/// @param access the access of the method: `public`, or `protected`
 public record MethodModel(
         String name,
         boolean isStatic,
@@ -30,7 +32,8 @@ public record MethodModel(
         List<TypeRef> params,
         List<MethodTableTemplate.Param> declared,
         List<ClassOrInterfaceTypeRef> throwsTypes,
-        Overridability overridability)
+        Overridability overridability,
+        Access access)
         implements MemberModel {
 
     /// @throws IllegalArgumentException if `name` is not a Java identifier, the method has more

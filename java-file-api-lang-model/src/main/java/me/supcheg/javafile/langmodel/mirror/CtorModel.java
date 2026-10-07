@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
@@ -13,11 +14,13 @@ import java.util.List;
 /// @param params the parameter types, in order; a variable-arity parameter is its array type
 /// @param declared the parameters as the method table of the type lists them, one per parameter of `params`
 /// @param throwsTypes the declared exceptions, in declaration order: classes and type variables
+/// @param access the access of the constructor: `public`, or `protected`
 public record CtorModel(
         List<TypeParam> typeParams,
         List<TypeRef> params,
         List<MethodTableTemplate.Param> declared,
-        List<ClassOrInterfaceTypeRef> throwsTypes)
+        List<ClassOrInterfaceTypeRef> throwsTypes,
+        Access access)
         implements MemberModel {
 
     /// @throws IllegalArgumentException if the constructor has more than [#MAX_ARITY] parameters, or
