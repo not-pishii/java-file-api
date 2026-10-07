@@ -24,6 +24,9 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
     /// The node handed to the superclass, never read: [#node()] is overridden.
     private static final Node UNUSED = new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull());
 
+    /// The role of the variable of a loop.
+    static final String LOOP_VARIABLE = "loop variable";
+
     private final Node local;
     private final String role;
     private final Block<?, ?> owner;
@@ -37,6 +40,13 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
 
     static <T> Var<T> param(TypeToken<T> type, Block<?, ?> owner) {
         return new Var<>(type, "parameter", owner);
+    }
+
+    /// Whether this is the variable of a `for` loop, in scope in the
+    /// condition and the update of the loop as in its body: the loop
+    /// variable that can be assigned, as that of a `for`-each loop cannot.
+    boolean isVariableOfFor() {
+        return this instanceof MutVar<?> && role.equals(LOOP_VARIABLE);
     }
 
     /// The block this variable is in scope for.

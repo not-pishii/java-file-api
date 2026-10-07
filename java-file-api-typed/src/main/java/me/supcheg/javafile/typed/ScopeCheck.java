@@ -3,6 +3,8 @@ package me.supcheg.javafile.typed;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /// The scope check of §6.2, run when a statement is appended: every [Var]
 /// the statement refers to must be owned by the block it is appended to or
@@ -155,7 +157,7 @@ final class ScopeCheck {
                     case Node.LambdaBody.Block(var block) -> block;
                 };
         Block<?, ?> builtIn = scope.parent();
-        if (builtIn != null && !encloses(builtIn, use)) {
+        if (builtIn != null && outside(builtIn, use)) {
             throw new IllegalStateException("a lambda built in the " + builtIn.path() + " is used in the " + where
                     + ", which is not inside that block: the variables it captures are out of scope there (§6.2)");
         }
@@ -173,7 +175,7 @@ final class ScopeCheck {
                 if (builtIn == null) {
                     return;
                 }
-                if (!encloses(builtIn, use)) {
+                if (outside(builtIn, use)) {
                     throw new IllegalStateException("a switch_ built in the " + builtIn.path() + " is used in the "
                             + where + ", which is not inside that block: the variables its blocks use are out of"
                             + " scope there (§6.2)");
@@ -188,6 +190,14 @@ final class ScopeCheck {
         }
     }
 
+    /// Whether `use`, or a block between it and `owner`, which encloses it,
+    /// is the body of a lambda or a block of a `switch`: a block of an
+    /// expression.
+    private static boolean nestedSpecially(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+        return Stream.<@Nullable Block<?, ?>>iterate(use, b -> b != null && b != owner, Block::parent)
+                .anyMatch(b -> b.nesting() != Block.Nesting.PLAIN);
+    }
+
     /// Whether a lambda body is between `use` and `owner`, which encloses it.
     private static boolean crossesLambda(Block<?, ?> owner, @Nullable Block<?, ?> use) {
         for (Block<?, ?> b = use; b != null && b != owner; b = b.parent()) {
@@ -198,13 +208,10 @@ final class ScopeCheck {
         return false;
     }
 
-    private static boolean encloses(Block<?, ?> owner, @Nullable Block<?, ?> use) {
-        for (Block<?, ?> b = use; b != null; b = b.parent()) {
-            if (b == owner) {
-                return true;
-            }
-        }
-        return false;
+    /// Whether `use` is neither `owner` nor a block nested in it.
+    private static boolean outside(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+        return Stream.<@Nullable Block<?, ?>>iterate(use, Objects::nonNull, Block::parent)
+                .noneMatch(b -> b == owner);
     }
 
     private static void requireInScope(Var<?> var, @Nullable Block<?, ?> use, String where) {
@@ -221,6 +228,14 @@ final class ScopeCheck {
             }
             crossesLambda |= b.nesting() == Block.Nesting.LAMBDA_BODY;
         }
+        Block<?, ?> around = owner.parent();
+        if (var.isVariableOfFor() && around != null && !outside(around, use) && nestedSpecially(around, use)) {
+            throw new IllegalStateException("the " + var + " declared in the " + owner.path() + " is used in the "
+                    + where + ", which is not inside the body of the loop: the variable is out of scope there. A"
+                    + " lambda or a block of a switch_ built in the condition or the update of a for_ is a block"
+                    + " of the code around the loop, not of its body: there, give the switch_ a case that is a"
+                    + " value instead of a block, or use the variable in the body of the loop (§6.2)");
+        }
         throw new IllegalStateException("the " + var + " declared in the " + owner.path() + " is used in the "
                 + where + ", which is not inside that block: the variable is out of scope there — it escaped the"
                 + " lambda it was handed to (§6.2)");
@@ -230,7 +245,7 @@ final class ScopeCheck {
     /// to, lambdas in it included (it is effectively final), and nowhere
     /// else: not in another member, not in a field initializer (§6.5).
     private static void requireThisInScope(Block<?, ?> owner, @Nullable Block<?, ?> use, String where) {
-        if (!encloses(owner, use)) {
+        if (outside(owner, use)) {
             throw new IllegalStateException("the this of the " + owner.path() + " is used in the " + where
                     + ", which is not inside that body: this is handed only to the body of an instance method or"
                     + " constructor, and is in scope only there (§6.5)");

@@ -93,7 +93,7 @@ class NegativeCompileTest {
                 cb.method("later", Runnable_.TOKEN, String_.TOKEN, (b, self, s) -> b.return_(
                         lambdaBlock(Runnable_.sam, lb -> lb.exec(call(s, String_.trim)).end())));
                 cb.method("advice", String_.TOKEN, Signal_.TOKEN, (b, self, s) -> b.return_(
-                        switch_(s, Signal_.TOKEN, String_.TOKEN, c -> c
+                        switch_(Signal_.TOKEN, s, String_.TOKEN, c -> c
                                 .case_(Signal_.RED, literal("stop"))
                                 .case_(List.of(Signal_.AMBER, Signal_.GREEN), y -> y.yield_(literal("go"))))));
                 """);
@@ -628,13 +628,13 @@ class NegativeCompileTest {
     void theBlockOfACaseHasNoReturn() {
         assertRejected(
                 "ReturnInSwitch",
-                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.default_(y -> y.return_(literal(\"a\")))); }",
                 "cannot find symbol",
                 "symbol:   method return_(");
         assertRejected(
                 "ReturnInBranchInSwitch",
-                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.default_(y -> y.ifElse(literal(true), t -> t.return_(literal(\"a\")),"
                         + " e -> e.yield_(literal(\"b\"))))); }",
                 "cannot find symbol",
@@ -645,7 +645,7 @@ class NegativeCompileTest {
     void theBlockOfACaseYields() {
         assertRejected(
                 "NoYield",
-                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.default_(y -> { })); }",
                 "no suitable method found for default_(",
                 "missing return value");
@@ -655,12 +655,12 @@ class NegativeCompileTest {
     void aResultIsOfTheTypeOfTheSwitch() {
         assertRejected(
                 "ValueType",
-                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.default_(literal(1))); }",
                 "no suitable method found for default_(me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int>)");
         assertRejected(
                 "YieldType",
-                "void use(Expr<Signal> s) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.default_(y -> y.yield_(literal(1)))); }",
                 "cannot be converted to me.supcheg.javafile.typed.Expr<? extends java.lang.String>");
     }
@@ -669,7 +669,7 @@ class NegativeCompileTest {
     void theSelectorIsOfTheEnum() {
         assertRejected(
                 "SelectorType",
-                "void use() { switch_(literal(\"a\"), Signal_.TOKEN, String_.TOKEN,"
+                "void use() { switch_(Signal_.TOKEN, literal(\"a\"), String_.TOKEN,"
                         + " c -> c.default_(literal(\"a\"))); }",
                 "inference variable E has incompatible bounds",
                 "lower bounds: java.lang.String");
@@ -679,7 +679,7 @@ class NegativeCompileTest {
     void aCaseIsOfAConstantOfTheEnum() {
         assertRejected(
                 "ConstantType",
-                "void use(Expr<Signal> s, EnumConstant<Thread.State> other) { switch_(s, Signal_.TOKEN, String_.TOKEN,"
+                "void use(Expr<Signal> s, EnumConstant<Thread.State> other) { switch_(Signal_.TOKEN, s, String_.TOKEN,"
                         + " c -> c.case_(other, literal(\"a\"))); }",
                 "no suitable method found for case_(me.supcheg.javafile.facts.EnumConstant<java.lang.Thread.State>,");
     }
@@ -688,7 +688,7 @@ class NegativeCompileTest {
     void aSwitchIsOverAnEnum() {
         assertRejected(
                 "NotAnEnum",
-                "void use() { switch_(literal(\"a\"), String_.TOKEN, String_.TOKEN,"
+                "void use() { switch_(String_.TOKEN, literal(\"a\"), String_.TOKEN,"
                         + " c -> c.default_(literal(\"a\"))); }",
                 "cannot be converted to me.supcheg.javafile.facts.EnumToken<E>");
     }
@@ -697,7 +697,7 @@ class NegativeCompileTest {
     void aSwitchExpressionIsNoStatement() {
         assertRejected(
                 "SwitchStatement",
-                inClass("cb.voidMethod(\"m\", Signal_.TOKEN, (b, self, s) -> b.exec(switch_(s, Signal_.TOKEN,"
+                inClass("cb.voidMethod(\"m\", Signal_.TOKEN, (b, self, s) -> b.exec(switch_(Signal_.TOKEN, s,"
                         + " String_.TOKEN, c -> c.default_(literal(\"a\")))).end());"),
                 "conforms to me.supcheg.javafile.typed.Effect");
     }
@@ -705,9 +705,57 @@ class NegativeCompileTest {
     @Test
     void theCasesAndTheBlockOfACaseHaveNoPublicConstructor() {
         assertRejected(
-                "StraySwitchCases",
-                "void use() { new SwitchCases<Signal, String>(Signal_.TOKEN, String_.TOKEN, null); }",
-                "is not public in me.supcheg.javafile.typed.SwitchCases");
+                "StrayEnumSwitchCases",
+                "void use() { new EnumSwitchCases<Signal, String>(Signal_.TOKEN, String_.TOKEN, null); }",
+                "is not public in me.supcheg.javafile.typed.EnumSwitchCases");
         assertRejected("StrayYieldBody", "void use() { YieldBody.ofCase(null, String_.TOKEN, \"stray\"); }", "ofCase");
+    }
+
+    // ------------------------------------------------------------------
+    // finally blocks: none of the statements that end a block (FinallyBody)
+    // ------------------------------------------------------------------
+
+    private static String inFinally(String statement) {
+        return inClass("cb.staticMethod(\"m\", PrimitiveToken.INT, b -> b.while_(literal(true), (loop, ctl) ->"
+                + " loop.try_(h -> h.finally_(f -> " + statement + "), t -> t.break_(ctl))).return_(literal(0)));");
+    }
+
+    @Test
+    void aFinallyBlockDoesNotReturnThrowBreakOrContinue() {
+        assertRejected("FinallyReturns", inFinally("f.return_(literal(1))"), "cannot find symbol", "method return_(");
+        assertRejected(
+                "FinallyThrows",
+                inFinally("f.throw_(new_(RuntimeException_.new_))"),
+                "cannot find symbol",
+                "method throw_(");
+        assertRejected("FinallyBreaks", inFinally("f.break_(ctl)"), "cannot find symbol", "method break_(");
+        assertRejected("FinallyContinues", inFinally("f.continue_(ctl)"), "cannot find symbol", "method continue_(");
+    }
+
+    @Test
+    void aFinallyBlockHasNoneOfTheFormsThatEndABlock() {
+        assertRejected(
+                "FinallyLoopsForever", inFinally("f.loopForever(loop2 -> {})"), "cannot find symbol", "loopForever");
+        assertRejected(
+                "FinallyIfElse",
+                inFinally("f.ifElse(literal(true), t -> t.return_(literal(1)), e -> e.return_(literal(2)))"),
+                "cannot find symbol",
+                "ifElse");
+        assertRejected(
+                "FinallyTryTerminated",
+                inFinally("f.tryTerminated(g -> g.finally_(x -> {}), t -> t.return_(literal(1)))"),
+                "cannot find symbol",
+                "tryTerminated");
+    }
+
+    @Test
+    void aFinallyBlockOfACaseDoesNotYield() {
+        assertRejected(
+                "FinallyYields",
+                "void use(Expr<Signal> s) { switch_(Signal_.TOKEN, s, String_.TOKEN, c -> c.default_(y ->"
+                        + " y.tryTerminated(h -> h.finally_(f -> f.yield_(literal(\"f\"))),"
+                        + " t -> t.yield_(literal(\"t\"))))); }",
+                "cannot find symbol",
+                "method yield_(");
     }
 }

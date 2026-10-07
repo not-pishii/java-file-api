@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
@@ -54,13 +55,13 @@ class LambdaChecksTest {
             "local variables referenced from a lambda expression must be final or effectively final";
 
     /// Declares the class `Probe` with the given members.
-    private static void declare(Consumer<TypedClassBuilder<?>> members) {
-        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static JavaFile declare(Consumer<TypedClassBuilder<?>> members) {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
     }
 
     /// Declares `static void m()` with the given body.
-    private static void voidMethod(Function<VoidBody, Terminated<Void>> body) {
-        declare(cb -> cb.voidStaticMethod("m", body));
+    private static JavaFile voidMethod(Function<VoidBody, Terminated<Void>> body) {
+        return declare(cb -> cb.voidStaticMethod("m", body));
     }
 
     /// `Integer.valueOf(new StringReader("a").read())`, which throws `IOException`.
