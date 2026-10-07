@@ -2,6 +2,7 @@ package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
@@ -40,6 +41,8 @@ import java.io.Serial;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -683,6 +686,10 @@ public final class MirrorTranslator {
                 enumConstants,
                 element.getModifiers().contains(Modifier.SEALED),
                 sam,
+                switch (filter) {
+                    case DECLARED_ACCESSIBLE -> heritage(element);
+                    case NONE -> Heritage.UNTOLD;
+                },
                 filter,
                 reads.stream().flatMap(Read::models).toList(),
                 reads.stream().flatMap(Read::skips).toList()));
@@ -802,6 +809,163 @@ public final class MirrorTranslator {
                         .map(constructor -> new MethodTableTemplate.Signature(
                                 desc(element).displayName(), declared(constructor, element, self)))
                         .collect(Collectors.toUnmodifiableSet()));
+    }
+
+    /// What a class that extends or implements a type inherits of it
+    /// ([Heritage]): every method the type has that is not `private`,
+    /// declared or inherited, and every constructor it declares that is not,
+    /// as members of the type — whoever declares them, a supertype that is
+    /// not `public` included, and whatever their access and the types of
+    /// their signatures.
+    ///
+    /// - Of the methods the type has under one signature — the abstract ones
+    ///   it inherits from several supertypes — one stands for all: the one
+    ///   with a body if there is one, else the one of the most specific
+    ///   result, as for a `sam`. The others are among those it overrides.
+    /// - An interface tells neither the methods of `Object` nor a method it
+    ///   declares again with the signature of a `public` one of `Object`:
+    ///   a class that implements it has them from its superclass.
+    /// - A method overrides every method of a supertype of the type that
+    ///   `Elements.overrides` tells it overrides as a member of the type.
+    ///
+    /// @param element the class, interface, enum or record
+    /// @return the heritage; [Heritage#UNTOLD] of a type that cannot be extended or implemented, and of
+    ///         one with a member whose signature cannot be expressed
+    /// @throws IllegalStateException if a member mentions a type not generated yet: ask [#type] first, which
+    ///                               defers
+    public Heritage heritage(TypeElement element) {
+        if (!(kind(element) instanceof DeclaredKind.Inheritable)) {
+            return Heritage.UNTOLD;
+        }
+        DeclaredType self = (DeclaredType) element.asType();
+        boolean isInterface = element.getKind() == ElementKind.INTERFACE;
+        TypeElement object = elements.getTypeElement("java.lang.Object");
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature =
+                ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
+                        .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
+                        .filter(method -> !isInterface
+                                || !(method.getEnclosingElement().equals(object)
+                                        || OBJECT_METHODS.contains(signature(method, element, self))))
+                        .collect(Collectors.groupingBy(
+                                method -> signature(method, element, self), LinkedHashMap::new, Collectors.toList()));
+        List<ExecutableElement> inSupertypes = supertypes(self)
+                .flatMap(supertype ->
+                        ElementFilter.methodsIn(((TypeElement) supertype.asElement()).getEnclosedElements()).stream())
+                .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
+                .toList();
+        List<Inherited> methods = bySignature.entrySet().stream()
+                .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+                .map(entry -> inherited(element, self, entry.getKey(), entry.getValue(), inSupertypes))
+                .toList();
+        List<Inherited> constructors = ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
+                .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
+                .map(constructor -> constructorOf(element, self, constructor))
+                .sorted(Comparator.comparing(
+                        constructor -> constructor.member().signature().toString()))
+                .toList();
+        boolean expressible = Stream.concat(methods.stream(), constructors.stream())
+                .allMatch(inherited -> inherited.problems().isEmpty());
+        return expressible
+                ? new Heritage.Told(
+                        methods.stream()
+                                .map(inherited -> (Heritage.Method) inherited.member())
+                                .toList(),
+                        constructors.stream()
+                                .map(inherited -> (Heritage.Constructor) inherited.member())
+                                .toList())
+                : Heritage.UNTOLD;
+    }
+
+    /// A member of a heritage as it is read, and what of its signature cannot be expressed.
+    private record Inherited(Heritage.Member member, List<String> problems) {}
+
+    /// The method that stands for the methods a type has under one signature.
+    private Inherited inherited(
+            TypeElement element,
+            DeclaredType self,
+            MethodTableTemplate.Signature signature,
+            List<ExecutableElement> twins,
+            List<ExecutableElement> inSupertypes) {
+        ExecutableElement method = twins.stream()
+                .filter(twin -> !twin.getModifiers().contains(Modifier.ABSTRACT))
+                .findFirst()
+                .orElseGet(() -> pick(twins, self));
+        List<ExecutableElement> overridden = Stream.concat(
+                        twins.stream(),
+                        inSupertypes.stream()
+                                .filter(other -> other.getSimpleName().contentEquals(method.getSimpleName())
+                                        && elements.overrides(method, other, element)))
+                .filter(other -> !other.equals(method))
+                .distinct()
+                .toList();
+        Reading reading = new Reading(VarScope.of(element, method));
+        ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
+        TypeMirror returnType = type.getReturnType();
+        Heritage.Method told = new Heritage.Method(
+                visibility(method),
+                dispatch(method),
+                desc((TypeElement) method.getEnclosingElement()),
+                signature,
+                typeParams(type, reading),
+                params(type, reading),
+                method.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED,
+                returnType.getKind() == TypeKind.VOID
+                        ? Heritage.Result.NOTHING
+                        : new Heritage.Result.Of(type(returnType, reading)),
+                throwsTypes(type, reading),
+                Stream.concat(Stream.of(method), overridden.stream())
+                        .map(this::erasedParameters)
+                        .collect(Collectors.toUnmodifiableSet()),
+                overridden.stream()
+                        .map(other -> elements.getBinaryName((TypeElement) other.getEnclosingElement())
+                                .toString())
+                        .distinct()
+                        .sorted()
+                        .map(ClassDesc::of)
+                        .toList());
+        return new Inherited(told, List.copyOf(reading.problems));
+    }
+
+    private Inherited constructorOf(TypeElement element, DeclaredType self, ExecutableElement constructor) {
+        Reading reading = new Reading(VarScope.of(constructor));
+        ExecutableType type = (ExecutableType) types.asMemberOf(self, constructor);
+        Heritage.Constructor told = new Heritage.Constructor(
+                visibility(constructor),
+                new MethodTableTemplate.Signature(desc(element).displayName(), declared(constructor, element, self)),
+                typeParams(type, reading),
+                params(type, reading),
+                constructor.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED,
+                throwsTypes(type, reading));
+        return new Inherited(told, List.copyOf(reading.problems));
+    }
+
+    /// The erasures of the parameters of a method as it is declared, whatever type it is a member of.
+    private List<ClassDesc> erasedParameters(ExecutableElement method) {
+        return method.getParameters().stream()
+                .map(parameter -> erasure(types.erasure(parameter.asType())))
+                .toList();
+    }
+
+    private static Heritage.Visibility visibility(Element member) {
+        Set<Modifier> modifiers = member.getModifiers();
+        if (modifiers.contains(Modifier.PUBLIC)) {
+            return Heritage.Visibility.PUBLIC;
+        }
+        return modifiers.contains(Modifier.PROTECTED) ? Heritage.Visibility.PROTECTED : Heritage.Visibility.PACKAGE;
+    }
+
+    private static Heritage.Dispatch dispatch(ExecutableElement method) {
+        Set<Modifier> modifiers = method.getModifiers();
+        if (modifiers.contains(Modifier.STATIC)) {
+            return Heritage.Dispatch.STATIC;
+        }
+        if (modifiers.contains(Modifier.ABSTRACT)) {
+            return Heritage.Dispatch.ABSTRACT;
+        }
+        if (modifiers.contains(Modifier.FINAL)) {
+            return Heritage.Dispatch.FINAL;
+        }
+        return modifiers.contains(Modifier.DEFAULT) ? Heritage.Dispatch.DEFAULT : Heritage.Dispatch.CONCRETE;
     }
 
     /// The signature of a method as a member of a type, in the template of

@@ -2,6 +2,7 @@ package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -190,6 +191,83 @@ public final class Canonical {
     @Override
     public String toString() {
         return text;
+    }
+
+    /// The lines that tell a heritage, one per member, sorted: the
+    /// constructors and the methods a class that extends or implements the
+    /// type inherits or could clash with.
+    ///
+    /// ```
+    /// inherit ctor protected (#0, int...) throws java.io.IOException
+    /// inherit method public abstract p.Api size() -> int throws - erased () overrides -
+    /// inherit method public concrete p.Base add(#0) -> boolean throws - erased (java.lang.Object) overrides p.Api
+    /// inherit method public default p.Api <^0> to(^0[]) -> ^0 throws - erased (java.lang.Object[]) overrides -
+    /// ```
+    ///
+    /// A line tells who may name the member (`public`, `protected`,
+    /// `package`), and of a method what it is to a class that inherits it
+    /// (`abstract`, `default`, `concrete`, `final`, `static`), the type that
+    /// declares it, its signature and result as a member of the type, a
+    /// parameter of variable arity as `T...`, what it throws, the erasures
+    /// of its parameters as it and the methods it overrides declare them,
+    /// and the types that declare those.
+    ///
+    /// @param heritage the heritage
+    /// @param typeParams the type parameters of the type the heritage is of
+    /// @return the lines, sorted
+    /// @throws IllegalArgumentException if the heritage mentions a type variable that is not declared
+    public static List<String> heritage(Heritage.Told heritage, List<TypeParam> typeParams) {
+        return Stream.concat(
+                        heritage.constructors().stream().map(constructor -> {
+                            Scope scope = new Scope(typeParams, constructor.typeParams());
+                            return "inherit ctor " + visibility(constructor.visibility()) + " "
+                                    + typeParamsPrefix(constructor.typeParams(), scope)
+                                            .strip()
+                                    + params(constructor.params(), constructor.arity(), scope)
+                                    + throwsClause(constructor.throwsTypes(), scope);
+                        }),
+                        heritage.methods().stream().map(method -> {
+                            Scope scope = new Scope(typeParams, method.typeParams());
+                            return "inherit method " + visibility(method.visibility()) + " "
+                                    + method.dispatch().name().toLowerCase(Locale.ROOT) + " "
+                                    + binaryName(method.declaredBy()) + " "
+                                    + typeParamsPrefix(method.typeParams(), scope) + method.name()
+                                    + params(method.params(), method.arity(), scope) + " -> "
+                                    + switch (method.result()) {
+                                        case Heritage.Result.Nothing _ -> "void";
+                                        case Heritage.Result.Of(TypeRef type) -> scope.type(type);
+                                    }
+                                    + throwsClause(method.throwsTypes(), scope) + " erased "
+                                    + items(method.erasures().stream()
+                                            .map(erasure -> erasure.stream()
+                                                    .map(Canonical::erasure)
+                                                    .collect(Collectors.joining(", ", "(", ")")))
+                                            .sorted()
+                                            .toList())
+                                    + " overrides "
+                                    + items(method.overrides().stream()
+                                            .map(Canonical::binaryName)
+                                            .toList());
+                        }))
+                .sorted()
+                .toList();
+    }
+
+    private static String visibility(Heritage.Visibility visibility) {
+        return switch (visibility) {
+            case PUBLIC -> "public";
+            case PROTECTED -> "protected";
+            case PACKAGE -> "package";
+        };
+    }
+
+    /// The parameters of a member of a heritage: the last of variable arity as `T...`.
+    private static String params(List<TypeRef> params, Heritage.Arity arity, Scope scope) {
+        String fixed = params(params, scope);
+        return switch (arity) {
+            case FIXED -> fixed;
+            case VARIABLE -> fixed.substring(0, fixed.length() - "[])".length()) + "...)";
+        };
     }
 
     private static String member(MemberModel member, List<TypeParam> typeTypeParams) {

@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
@@ -38,6 +39,10 @@ import java.util.Optional;
 /// @param sam the single abstract method of a functional interface as a member of it, declared or
 ///            inherited, as [MirrorTranslator#sam(javax.lang.model.element.TypeElement)] finds it;
 ///            empty if the type is not functional or the method has no model
+/// @param heritage what a class that extends or implements the type inherits
+///                 ([MirrorTranslator#heritage(javax.lang.model.element.TypeElement)]): told of a class
+///                 that is not `final` and of an interface, with their members ([MemberFilter#DECLARED_ACCESSIBLE]),
+///                 and of no other model
 /// @param filter which members are in `members`
 /// @param members the members `filter` selects that have facts, in declaration order
 /// @param skipped the members `filter` selects that have no facts, in declaration order
@@ -53,12 +58,14 @@ public record TypeModel(
         List<String> enumConstants,
         boolean sealed,
         Optional<MethodModel> sam,
+        Heritage heritage,
         MemberFilter filter,
         List<MemberModel> members,
         List<SkippedMember> skipped) {
 
     /// @throws IllegalArgumentException if `desc` is not a class or interface, `filter` is
-    ///                                  [MemberFilter#NONE] but there are members, or there is a
+    ///                                  [MemberFilter#NONE] but there are members or a heritage, the
+    ///                                  type cannot be extended or implemented but has a heritage, or there is a
     ///                                  `sam` but the type is not an interface, is `sealed`, or the
     ///                                  method is not an abstract one without type parameters
     public TypeModel {
@@ -88,6 +95,16 @@ public record TypeModel(
         if (filter == MemberFilter.NONE && !(members.isEmpty() && skipped.isEmpty())) {
             throw new IllegalArgumentException("a model without members has members " + members + " " + skipped);
         }
+        boolean told =
+                switch (heritage) {
+                    case Heritage.Told _ -> true;
+                    case Heritage.Untold _ -> false;
+                };
+        if (told && (filter == MemberFilter.NONE || !(kind instanceof DeclaredKind.Inheritable))) {
+            throw new IllegalArgumentException(
+                    "only a class that is not final and an interface tell a heritage, with their members; got "
+                            + desc.displayName());
+        }
     }
 
     /// The type without its members, as [MemberFilter#NONE] gives it: what a
@@ -108,6 +125,7 @@ public record TypeModel(
                 enumConstants,
                 sealed,
                 sam,
+                Heritage.UNTOLD,
                 MemberFilter.NONE,
                 List.of(),
                 List.of());

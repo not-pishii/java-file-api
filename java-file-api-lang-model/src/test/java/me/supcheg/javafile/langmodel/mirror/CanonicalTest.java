@@ -2,6 +2,7 @@ package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.ShapeOrigin;
@@ -466,6 +467,7 @@ class CanonicalTest {
                 List.of(),
                 false,
                 Optional.empty(),
+                Heritage.UNTOLD,
                 MemberFilter.DECLARED_ACCESSIBLE,
                 List.of(new MethodModel(
                         "m",
@@ -498,6 +500,7 @@ class CanonicalTest {
                 List.of(),
                 false,
                 Optional.empty(),
+                Heritage.UNTOLD,
                 MemberFilter.DECLARED_ACCESSIBLE,
                 List.of(
                         new CtorModel(
