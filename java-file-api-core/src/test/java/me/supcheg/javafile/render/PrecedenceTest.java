@@ -70,7 +70,6 @@ class PrecedenceTest {
             literal(1),
             textBlock("x"),
             new NewExpr(new TypedNewTarget(Types.of(ClassDesc.of("java.lang", "Object"))), List.of(), Optional.empty()),
-            new SwitchExpr(field("x"), List.of()),
             new ThisExpr(),
             new SuperExpr(),
             classLiteral(ClassDesc.of("java.lang", "String")),
@@ -86,6 +85,11 @@ class PrecedenceTest {
                     .as(primary.getClass().getSimpleName())
                     .isEqualTo(15);
         }
+    }
+
+    @Test
+    void switchExprRendersAtTheUnaryLevel() {
+        assertThat(Precedence.level(new SwitchExpr(field("x"), List.of()))).isEqualTo(13);
     }
 
     @Test
