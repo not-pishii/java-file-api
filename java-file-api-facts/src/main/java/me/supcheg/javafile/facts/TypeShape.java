@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 
 /// What is known about a declared type apart from its type arguments: its
 /// kind, type parameters, superclass chain, interfaces, parameterized supertypes, method
-/// table, enum constants, whether it is `sealed`, and who vouches for all of
+/// table, enum constants, whether it is `sealed`, its [Heritage], and who vouches for all of
 /// it (§3.1). A [DeclaredToken] is a shape applied to type arguments, made
 /// by the factories of [UnsafeFacts] that take a shape: the one shape of
 /// `List<E>` makes the tokens of `List<String>`, `List<? super T>` and the
@@ -53,6 +53,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final Supplier<MethodTableTemplate> methods;
     private final List<String> enumConstants;
     private final boolean sealed;
+    private final Supplier<? extends Heritage> heritage;
 
     TypeShape(
             ShapeOrigin origin,
@@ -96,6 +97,32 @@ public final class TypeShape<K extends DeclaredKind> {
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
             boolean sealed) {
+        this(
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                superclasses,
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed,
+                () -> Heritage.UNTOLD);
+    }
+
+    TypeShape(
+            ShapeOrigin origin,
+            K kind,
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
+            Supertypes supertypes,
+            Supplier<MethodTableTemplate> methods,
+            List<String> enumConstants,
+            boolean sealed,
+            Supplier<? extends Heritage> heritage) {
         this.origin = origin;
         this.kind = kind;
         if (!desc.isClassOrInterface()) {
@@ -110,6 +137,7 @@ public final class TypeShape<K extends DeclaredKind> {
         this.methods = methods;
         this.enumConstants = List.copyOf(enumConstants);
         this.sealed = sealed;
+        this.heritage = heritage;
         requireSupertypesOfTheTypeParameters();
         requireSuperclasses();
         requireInterfaces();
@@ -260,6 +288,16 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @return `true` for a sealed class or interface
     public boolean sealed() {
         return sealed;
+    }
+
+    /// What a class that extends or implements the type has to know of it:
+    /// [Heritage.Told] by the full metamodel of a type that can be extended
+    /// or implemented, [Heritage.Untold] by any other shape. It is loaded
+    /// when first asked for.
+    ///
+    /// @return the heritage
+    public Heritage heritage() {
+        return heritage.get();
     }
 
     /// The type applied to type arguments.

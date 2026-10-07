@@ -36,7 +36,9 @@ public sealed interface TargetType permits TargetType.Holds, TargetType.Mismatch
     ///
     /// @param methods the methods of the type on the target classpath, in terms of its type parameters,
     ///                which are those of the shape
-    record Changed(MethodTableTemplate methods) implements Holds {}
+    /// @param heritage the heritage of the type on the target classpath, which stands for that of a shape
+    ///                 that tells one; [Heritage#UNTOLD] of a type that cannot be extended or implemented
+    record Changed(MethodTableTemplate methods, Heritage heritage) implements Holds {}
 
     /// The metamodel does not hold of the target classpath.
     ///

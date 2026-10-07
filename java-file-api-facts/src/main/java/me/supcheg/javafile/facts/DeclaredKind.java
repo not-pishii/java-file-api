@@ -11,12 +11,12 @@ package me.supcheg.javafile.facts;
 /// runtime value. A `switch` over the kinds is exhaustive without `default`.
 ///
 /// Records are final classes; annotation interfaces are not supported yet.
-public sealed interface DeclaredKind
-        permits DeclaredKind.FinalClass,
-                DeclaredKind.OpenClass,
-                DeclaredKind.AbstractClass,
-                DeclaredKind.Interface,
-                DeclaredKind.EnumClass {
+public sealed interface DeclaredKind permits DeclaredKind.FinalClass, DeclaredKind.Inheritable, DeclaredKind.EnumClass {
+
+    /// A kind of type a class can extend or implement: a class that is not
+    /// `final`, or an interface. Only a shape of such a kind tells a
+    /// [Heritage].
+    sealed interface Inheritable extends DeclaredKind permits OpenClass, AbstractClass, Interface {}
 
     /// A `final` class, a record included.
     FinalClass FINAL_CLASS = new FinalClass();
@@ -44,7 +44,7 @@ public sealed interface DeclaredKind
     }
 
     /// The kind of a class that is neither `abstract` nor `final`.
-    final class OpenClass implements DeclaredKind {
+    final class OpenClass implements Inheritable {
         private OpenClass() {}
 
         @Override
@@ -54,7 +54,7 @@ public sealed interface DeclaredKind
     }
 
     /// The kind of an `abstract` class.
-    final class AbstractClass implements DeclaredKind {
+    final class AbstractClass implements Inheritable {
         private AbstractClass() {}
 
         @Override
@@ -64,7 +64,7 @@ public sealed interface DeclaredKind
     }
 
     /// The kind of an interface.
-    final class Interface implements DeclaredKind {
+    final class Interface implements Inheritable {
         private Interface() {}
 
         @Override

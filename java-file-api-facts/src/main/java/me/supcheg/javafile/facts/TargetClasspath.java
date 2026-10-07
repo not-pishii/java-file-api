@@ -19,7 +19,9 @@ import java.util.stream.Stream;
 /// - [#verify(TypeToken)] checks every metamodel a type is made of, and
 ///   throws a [TargetClasspathMismatchException] for one that does not hold;
 /// - [#methods(TypeShape)] gives the methods of a type as the target
-///   classpath has them, which is what javac chooses an overload among.
+///   classpath has them, which is what javac chooses an overload among;
+/// - [#heritage(TypeShape)] gives what a class that extends or implements a
+///   type inherits, as the target classpath has the type.
 ///
 /// Only a shape of origin [ShapeOrigin.Metamodel] is checked: the others
 /// are vouched for by hand or read off the target itself. A shape is read
@@ -61,8 +63,31 @@ public final class TargetClasspath {
     ///                               being declared
     public MethodTableTemplate methods(TypeShape<?> shape) {
         return switch (read(shape)) {
-            case TargetType.Changed(MethodTableTemplate methods) -> methods;
+            case TargetType.Changed(MethodTableTemplate methods, Heritage _) -> methods;
             case TargetType.Unchanged _ -> shape.methods();
+        };
+    }
+
+    /// What a class that extends or implements a type has to know of it, as
+    /// the target classpath has the type: the heritage of the shape, unless
+    /// the shape is of a metamodel generated from another version of the
+    /// type that still holds — then that of the target, where a method may
+    /// have become abstract or `final`. A shape that tells no heritage has
+    /// none here either: its metamodel names no member a class could
+    /// override.
+    ///
+    /// @param shape the shape of the type
+    /// @return the heritage, in terms of the type parameters of `shape`
+    /// @throws TargetClasspathMismatchException if `shape` is of a metamodel that does not hold on the target
+    ///                                          classpath
+    public Heritage heritage(TypeShape<?> shape) {
+        return switch (shape.heritage()) {
+            case Heritage.Untold untold -> untold;
+            case Heritage.Told told ->
+                switch (read(shape)) {
+                    case TargetType.Changed(MethodTableTemplate _, Heritage ofTarget) -> ofTarget;
+                    case TargetType.Unchanged _ -> told;
+                };
         };
     }
 
@@ -83,7 +108,7 @@ public final class TargetClasspath {
 
     /// What a reader found, if it can be of the shape.
     private static TargetType checked(TypeShape<?> shape, TargetType found) {
-        if (found instanceof TargetType.Changed(MethodTableTemplate methods)
+        if (found instanceof TargetType.Changed(MethodTableTemplate methods, Heritage _)
                 && methods.typeParameterCount() > shape.typeParameters().size()) {
             throw new IllegalStateException("the method table of " + shape + " on the target classpath refers to type"
                     + " parameter #" + (methods.typeParameterCount() - 1) + ", but the type has "

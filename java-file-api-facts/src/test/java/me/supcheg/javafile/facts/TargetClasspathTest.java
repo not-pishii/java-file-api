@@ -138,7 +138,8 @@ class TargetClasspathTest {
 
     @Test
     void theMethodsOfAChangedTypeAreThoseOfTheTarget() {
-        TargetClasspath target = UnsafeFacts.targetClasspath(new Asked(Map.of(SVC, new TargetType.Changed(TARGET))));
+        TargetClasspath target =
+                UnsafeFacts.targetClasspath(new Asked(Map.of(SVC, new TargetType.Changed(TARGET, Heritage.UNTOLD))));
 
         target.verify(UnsafeFacts.openClassToken(SVC));
 
@@ -150,8 +151,8 @@ class TargetClasspathTest {
     void aMethodTableOfTheTargetIsInTermsOfTheTypeParametersOfTheShape() {
         MethodTableTemplate ofAGenericType =
                 new MethodTableTemplate(Set.of(Signature.of("m", Param.var(0))), Set.of(), Set.of());
-        TargetClasspath target =
-                UnsafeFacts.targetClasspath(new Asked(Map.of(SVC, new TargetType.Changed(ofAGenericType))));
+        TargetClasspath target = UnsafeFacts.targetClasspath(
+                new Asked(Map.of(SVC, new TargetType.Changed(ofAGenericType, Heritage.UNTOLD))));
 
         assertThatIllegalStateException()
                 .isThrownBy(() -> target.methods(SVC))
