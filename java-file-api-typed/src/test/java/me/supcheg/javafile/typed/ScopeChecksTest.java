@@ -292,15 +292,6 @@ class ScopeChecksTest {
         }
 
         @Test
-        void aTryWhoseFinallyEndsIsRejected() {
-            assertThatIllegalStateException()
-                    .isThrownBy(() -> intMethod((b, _) -> b.try_(
-                                    h -> h.finally_(f -> f.return_(literal(2))), t -> t.exec(print(literal(1))))
-                            .return_(literal(3))))
-                    .withMessageContaining("build it with tryTerminated");
-        }
-
-        @Test
         void aWhileOverConstantFalseIsRejected() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod(
@@ -347,18 +338,6 @@ class ScopeChecksTest {
                                     literal(true), (loop, ctl) -> loop.if_(flag, t -> t.break_(ctl)))
                             .return_(literal(0))))
                     .doesNotThrowAnyException();
-        }
-
-        @Test
-        void aBreakSwallowedByAFinallyThatEndsDoesNotExitTheLoop() {
-            // while (true) { try { break; } finally { continue; } } — the loop never exits
-            assertThatIllegalStateException()
-                    .isThrownBy(() -> intMethod((b, _) -> b.while_(
-                                    literal(true),
-                                    (loop, ctl) -> loop.tryTerminated(
-                                            h -> h.finally_(f -> f.continue_(ctl)), t -> t.break_(ctl)))
-                            .return_(literal(0))))
-                    .withMessageContaining("loopForever");
         }
 
         @Test

@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 ///
 /// @param <E> the enum
 /// @param <R> the type of the `switch` expression
-public final class SwitchCases<E, R> {
+public final class EnumSwitchCases<E, R> {
     private final EnumToken<E> enumType;
     private final TypeToken<R> type;
     private final @Nullable Block<?, ?> enclosing;
@@ -69,7 +69,7 @@ public final class SwitchCases<E, R> {
     /// @param enumType the enum of the selector
     /// @param type the type of the `switch`
     /// @param enclosing the block the `switch` is built in, or `null` outside of any body
-    SwitchCases(EnumToken<E> enumType, TypeToken<R> type, @Nullable Block<?, ?> enclosing) {
+    EnumSwitchCases(EnumToken<E> enumType, TypeToken<R> type, @Nullable Block<?, ?> enclosing) {
         this.enumType = enumType;
         this.type = type;
         this.enclosing = enclosing;
@@ -85,7 +85,7 @@ public final class SwitchCases<E, R> {
     ///     a case
     /// @throws IllegalArgumentException if the constant is not one of the enum of the `switch`; if `value`
     ///     is primitive and the type of the `switch` is not, or the reverse
-    public SwitchCases<E, R> case_(EnumConstant<E> constant, Expr<? extends R> value) {
+    public EnumSwitchCases<E, R> case_(EnumConstant<E> constant, Expr<? extends R> value) {
         return case_(List.of(constant), value);
     }
 
@@ -99,7 +99,7 @@ public final class SwitchCases<E, R> {
     ///     case
     /// @throws IllegalArgumentException if there is no constant, or one is not of the enum of the
     ///     `switch`; if `value` is primitive and the type of the `switch` is not, or the reverse
-    public SwitchCases<E, R> case_(List<EnumConstant<E>> constants, Expr<? extends R> value) {
+    public EnumSwitchCases<E, R> case_(List<EnumConstant<E>> constants, Expr<? extends R> value) {
         String label = label(constants);
         List<Node.Case> before = open(label, constants);
         phase = new Phase.Open(with(before, new Node.Case(List.copyOf(constants), value(value))));
@@ -114,7 +114,7 @@ public final class SwitchCases<E, R> {
     /// @throws IllegalStateException if the constant has a case already; if this is not the time to add
     ///     a case
     /// @throws IllegalArgumentException if the constant is not one of the enum of the `switch`
-    public SwitchCases<E, R> case_(EnumConstant<E> constant, Function<? super YieldBody<R>, Terminated<R>> body) {
+    public EnumSwitchCases<E, R> case_(EnumConstant<E> constant, Function<? super YieldBody<R>, Terminated<R>> body) {
         return case_(List.of(constant), body);
     }
 
@@ -126,7 +126,7 @@ public final class SwitchCases<E, R> {
     /// @throws IllegalStateException if a constant has a case already; if this is not the time to add a
     ///     case
     /// @throws IllegalArgumentException if there is no constant, or one is not of the enum of the `switch`
-    public SwitchCases<E, R> case_(
+    public EnumSwitchCases<E, R> case_(
             List<EnumConstant<E>> constants, Function<? super YieldBody<R>, Terminated<R>> body) {
         String label = label(constants);
         List<Node.Case> before = open(label, constants);
@@ -180,7 +180,7 @@ public final class SwitchCases<E, R> {
                     + " has the constants " + String.join(", ", missing) + ", which have no case_, and there"
                     + " is no default_; a switch expression covers every value of its selector (JLS 15.28.1)");
         }
-        if (made.arms().noneMatch(SwitchCases::hasResult)) {
+        if (made.arms().noneMatch(EnumSwitchCases::hasResult)) {
             throw new IllegalStateException("the " + statement() + " has no result: every case is a block that"
                     + " never yields; a switch expression has at least one result expression (JLS 15.28.1)");
         }

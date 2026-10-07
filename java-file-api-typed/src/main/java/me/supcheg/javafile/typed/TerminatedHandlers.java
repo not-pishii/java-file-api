@@ -39,15 +39,16 @@ public final class TerminatedHandlers<R, B extends Block<R, B>> {
         return this;
     }
 
-    /// Adds `finally { body }`. The `finally` block is a plain block: the
-    /// statement ends whether or not it does.
+    /// Adds `finally { body }`. The block completes normally, and the
+    /// statement ends all the same: it has no statement that ends it
+    /// ([FinallyBody]).
     ///
     /// @param body builds the `finally` block
     /// @return this
     /// @throws IllegalStateException if a `finally` block was already added; if called while another
     ///     clause is being built, or after the `try` block was
-    public TerminatedHandlers<R, B> finally_(Consumer<? super B> body) {
-        clauses.finally_(block -> enclosing.fill(block, body));
+    public TerminatedHandlers<R, B> finally_(Consumer<? super FinallyBody<B>> body) {
+        clauses.finally_(block -> enclosing.fill(block, b -> body.accept(new FinallyBody<>(b))));
         return this;
     }
 

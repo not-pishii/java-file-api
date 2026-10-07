@@ -36,14 +36,15 @@ public final class Handlers<B extends Block<?, B>> {
         return this;
     }
 
-    /// Adds `finally { body }`.
+    /// Adds `finally { body }`. The block completes normally: it has no
+    /// statement that ends it ([FinallyBody]).
     ///
     /// @param body builds the `finally` block
     /// @return this
     /// @throws IllegalStateException if a `finally` block was already added; if called while another
     ///     clause is being built, or after the `try` block was
-    public Handlers<B> finally_(Consumer<? super B> body) {
-        clauses.finally_(block -> enclosing.fill(block, body));
+    public Handlers<B> finally_(Consumer<? super FinallyBody<B>> body) {
+        clauses.finally_(block -> enclosing.fill(block, b -> body.accept(new FinallyBody<>(b))));
         return this;
     }
 

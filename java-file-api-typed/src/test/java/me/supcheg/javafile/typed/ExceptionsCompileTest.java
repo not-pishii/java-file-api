@@ -1,8 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
-import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.testfacts.java.io.FileNotFoundException_;
@@ -23,7 +20,6 @@ import java.io.StringReader;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.call;
@@ -309,29 +305,5 @@ class ExceptionsCompileTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("unchecked");
         assertThatThrownBy(() -> compiled.invoke("declaresUnchecked")).hasMessage("declared");
-    }
-
-    /// `try { return r.read(); } finally { return 0; }`: the `finally` block
-    /// discards the exception, so it is neither caught nor declared — javac
-    /// accepts it, with the `finally` lint only.
-    @Test
-    void aFinallyThatCannotCompleteNormallyDiscardsTheExceptionsOfItsTryBlock() {
-        JavaFile file =
-                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
-                    @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.staticMethod(
-                                "discarded",
-                                PrimitiveToken.INT,
-                                String_.TOKEN,
-                                (b, s) -> b.tryTerminated(
-                                        h -> h.finally_(f -> f.return_(literal(0))),
-                                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
-                    }
-                });
-
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
-
-        assertThat(compilation).succeeded();
     }
 }

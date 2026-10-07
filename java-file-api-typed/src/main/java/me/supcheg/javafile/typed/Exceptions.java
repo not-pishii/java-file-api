@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 /// Every block knows its [ExceptionScope] before a statement is appended to
 /// it — the `catch` clauses of a `try` are built before its `try` block, see
 /// [Block#try_] — so the check walks from the block of the statement outwards
-/// and stops at the first scope that catches, discards or declares.
+/// and stops at the first scope that catches or declares.
 ///
 /// - **Subtypes.** A `catch` or a `throws` of a class covers its subclasses,
 ///   as the tokens record them ([me.supcheg.javafile.facts.ClassToken#superclasses()]).
@@ -77,10 +77,6 @@ import java.util.stream.Stream;
 ///   clause: `catch (Exception e) { throw e; }` needs `Exception` caught or
 ///   declared around it even where the `try` block throws `IOException`
 ///   alone.
-/// - *A `catch` block under a `finally` that cannot complete normally.* The
-///   `finally` block discards what the `catch` blocks throw as it does what
-///   the `try` block throws, but a `catch` block may be built before the
-///   `finally` block is known, so what it throws is checked.
 /// - *A dead clause.* A `catch_` all of whose exceptions the preceding
 ///   clauses have caught — `catch (FileNotFoundException)`, then `catch
 ///   (IOException)`, of a `try` block that throws `FileNotFoundException`
@@ -133,7 +129,7 @@ final class Exceptions {
     /// Whether a checked exception thrown in a block is caught, discarded
     /// or declared.
     private sealed interface Coverage {
-        /// A `catch` clause catches it, a `finally` block discards it, or the member declares it.
+        /// A `catch` clause catches it, or the member declares it.
         record Covered() implements Coverage {}
 
         /// It reaches the body that declares, which does not declare it.
@@ -226,7 +222,6 @@ final class Exceptions {
                 types.stream().anyMatch(type -> type.covers(thrown))
                         ? new Coverage.Covered()
                         : coverage(thrown, enclosing(block));
-            case ExceptionScope.Discards _ -> new Coverage.Covered();
             case ExceptionScope.Declares declares ->
                 declares.types().stream().anyMatch(type -> type.covers(thrown))
                         ? new Coverage.Covered()
@@ -379,16 +374,12 @@ final class Exceptions {
 
     /// What a `try` statement throws: what its `try` block throws and no
     /// clause catches, what its `catch` blocks throw, and what its `finally`
-    /// block throws — that alone if the `finally` block cannot complete
-    /// normally, as everything else is then discarded (JLS 14.20.2).
+    /// block throws. A `finally` block completes normally ([FinallyBody]),
+    /// so it discards nothing of the others (JLS 14.20.2).
     private static Stream<ExceptionType> thrownByTry(Instr.Try statement, Rethrows rethrows) {
-        Stream<ExceptionType> byFinally = statement.finallyBlock().stream().flatMap(block -> thrown(block, rethrows));
-        return statement
-                        .finallyBlock()
-                        .filter(block -> !Reachability.canCompleteNormally(block))
-                        .isPresent()
-                ? byFinally
-                : Stream.concat(thrownByTryAndCatchBlocks(statement, rethrows), byFinally);
+        return Stream.concat(
+                thrownByTryAndCatchBlocks(statement, rethrows),
+                statement.finallyBlock().stream().flatMap(block -> thrown(block, rethrows)));
     }
 
     private static Stream<ExceptionType> thrownByTryAndCatchBlocks(Instr.Try statement, Rethrows rethrows) {

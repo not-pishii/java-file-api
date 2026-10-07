@@ -577,19 +577,6 @@ class ExceptionChecksTest {
         }
 
         @Test
-        void whatAFinallyThatCannotCompleteNormallyDiscardsIsNotThrownToTheOuterTry() {
-            asJavac(
-                    () -> intMethod(b -> b.tryTerminated(
-                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
-                            outer -> outer.tryTerminated(
-                                    h -> h.finally_(f -> f.return_(literal(0))), t -> t.return_(read())))),
-                    "cannot throw this checked exception",
-                    "static int m() { try { try { return " + READ + "; } finally { return 0; } }"
-                            + " catch (IOException e) { return 2; } }",
-                    "exception java.io.IOException is never thrown in body of corresponding try statement");
-        }
-
-        @Test
         void theClausesOfATryBlockWithUntypedCodeAreNotChecked() {
             // what an Unsafe statement or expression throws is not known
             UnsafeStmt statement =
@@ -740,20 +727,6 @@ class ExceptionChecksTest {
                             + " exception java.lang.Exception",
                     "static int m() throws IOException { try { return " + READ
                             + "; } catch (Exception e) { throw e; } }");
-        }
-
-        @Test
-        void whatACatchBlockThrowsMustBeCoveredThoughAFinallyDiscardsIt() {
-            // stricter: the catch block may be built before the finally block is known
-            unlikeJavac(
-                    () -> intMethod(b -> b.tryTerminated(
-                            h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.throw_(new_(IOException_.new_)))
-                                    .finally_(f -> f.return_(literal(0))),
-                            t -> t.return_(literal(1)))),
-                    "throw_ in the catch block of tryTerminated in body of static method m can throw the checked"
-                            + " exception java.io.IOException",
-                    "static int m() { try { return 1; } catch (RuntimeException e) { throw new IOException(); }"
-                            + " finally { return 0; } }");
         }
     }
 
