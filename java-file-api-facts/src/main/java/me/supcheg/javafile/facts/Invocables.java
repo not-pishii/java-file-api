@@ -66,6 +66,14 @@ final class Invocables {
         return "super " + describe(constructor).substring("new ".length());
     }
 
+    /// How a class has a method, as an `ImplementationN` tells it.
+    static String describe(Implemented how) {
+        return switch (how) {
+            case Implemented.ByOverride(Invocable overridden, Invocable own) -> own + " overriding " + overridden;
+            case Implemented.ByInheritance(Invocable inherited) -> "inherited " + inherited;
+        };
+    }
+
     static String describe(Invocable invocable) {
         String params = invocable.params().stream().map(Object::toString).collect(Collectors.joining(", ", "(", ")"));
         return switch (invocable.kind()) {

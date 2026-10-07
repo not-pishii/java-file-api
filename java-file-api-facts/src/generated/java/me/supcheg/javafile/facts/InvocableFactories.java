@@ -419,4 +419,108 @@ abstract class InvocableFactories {
     public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidSam12<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidSam(VoidMethodRef12<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method) {
         return new VoidSam12<>(method);
     }
+
+    public static <Self, R> Implementation0<Self, R> implementation0(Implemented how) {
+        return new Implementation0<>(how);
+    }
+
+    public static <Self> VoidImplementation0<Self> voidImplementation0(Implemented how) {
+        return new VoidImplementation0<>(how);
+    }
+
+    public static <Self, R, A1> Implementation1<Self, R, A1> implementation1(Implemented how) {
+        return new Implementation1<>(how);
+    }
+
+    public static <Self, A1> VoidImplementation1<Self, A1> voidImplementation1(Implemented how) {
+        return new VoidImplementation1<>(how);
+    }
+
+    public static <Self, R, A1, A2> Implementation2<Self, R, A1, A2> implementation2(Implemented how) {
+        return new Implementation2<>(how);
+    }
+
+    public static <Self, A1, A2> VoidImplementation2<Self, A1, A2> voidImplementation2(Implemented how) {
+        return new VoidImplementation2<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3> Implementation3<Self, R, A1, A2, A3> implementation3(Implemented how) {
+        return new Implementation3<>(how);
+    }
+
+    public static <Self, A1, A2, A3> VoidImplementation3<Self, A1, A2, A3> voidImplementation3(Implemented how) {
+        return new VoidImplementation3<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4> Implementation4<Self, R, A1, A2, A3, A4> implementation4(Implemented how) {
+        return new Implementation4<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4> VoidImplementation4<Self, A1, A2, A3, A4> voidImplementation4(Implemented how) {
+        return new VoidImplementation4<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5> Implementation5<Self, R, A1, A2, A3, A4, A5> implementation5(Implemented how) {
+        return new Implementation5<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5> VoidImplementation5<Self, A1, A2, A3, A4, A5> voidImplementation5(Implemented how) {
+        return new VoidImplementation5<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6> Implementation6<Self, R, A1, A2, A3, A4, A5, A6> implementation6(Implemented how) {
+        return new Implementation6<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6> VoidImplementation6<Self, A1, A2, A3, A4, A5, A6> voidImplementation6(Implemented how) {
+        return new VoidImplementation6<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Implementation7<Self, R, A1, A2, A3, A4, A5, A6, A7> implementation7(Implemented how) {
+        return new Implementation7<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7> VoidImplementation7<Self, A1, A2, A3, A4, A5, A6, A7> voidImplementation7(Implemented how) {
+        return new VoidImplementation7<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> Implementation8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> implementation8(Implemented how) {
+        return new Implementation8<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8> VoidImplementation8<Self, A1, A2, A3, A4, A5, A6, A7, A8> voidImplementation8(Implemented how) {
+        return new VoidImplementation8<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Implementation9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> implementation9(Implemented how) {
+        return new Implementation9<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidImplementation9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> voidImplementation9(Implemented how) {
+        return new VoidImplementation9<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Implementation10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation10(Implemented how) {
+        return new Implementation10<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidImplementation10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> voidImplementation10(Implemented how) {
+        return new VoidImplementation10<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Implementation11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> implementation11(Implemented how) {
+        return new Implementation11<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidImplementation11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> voidImplementation11(Implemented how) {
+        return new VoidImplementation11<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Implementation12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> implementation12(Implemented how) {
+        return new Implementation12<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidImplementation12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidImplementation12(Implemented how) {
+        return new VoidImplementation12<>(how);
+    }
 }

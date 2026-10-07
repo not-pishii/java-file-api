@@ -61,6 +61,10 @@ import java.util.function.Supplier;
 /// `SuperCtorRefN`, usable only to call the constructor from a subclass: the
 /// fact of a constructor of an abstract class, and of a `protected` one.
 ///
+/// How a class being declared has a method of a supertype is vouched for by
+/// `implementation0`..`implementation12` and `voidImplementation0`..: the
+/// typed layer makes one where a class declares that it overrides a method.
+///
 /// The fact of any other `protected` member is made as that of a `public`
 /// one, with [Access#PROTECTED] — in the [MemberTraits] of a method, as the
 /// last argument of a field —, and handed out held back, by
@@ -593,6 +597,19 @@ public final class UnsafeFacts extends InvocableFactories {
     public static <T> MutableStaticFieldRef<T> mutableStaticField(
             DeclaredToken<?> owner, String name, TypeToken<T> type, Access access) {
         return new MutableStaticFieldRef<>(owner, name, type, access);
+    }
+
+    /// Starts the proof that a class extends or implements a type, as the
+    /// class `X_Heritage` beside the metamodel of the type does: the stages
+    /// of that class add a step per abstract method of the type.
+    ///
+    /// @param supertype the type
+    /// @param self the class being declared
+    /// @param <Self> the class
+    /// @param <X> the type
+    /// @return the proof without a step yet
+    public static <Self, X> Steps<Self, X> steps(DeclaredToken<X> supertype, RefToken<Self> self) {
+        return new Steps<>(supertype, self, List.of());
     }
 
     /// Holds back the fact of a `protected` member of a class, so that only
