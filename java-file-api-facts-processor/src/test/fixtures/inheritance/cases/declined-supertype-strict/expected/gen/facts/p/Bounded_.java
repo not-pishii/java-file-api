@@ -32,7 +32,7 @@ import p.Bounded;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [Bounded] mentions a type the metamodel cannot name.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Bounded.class, fingerprint = "67e866f7585159baa8e1329a9b987a6a61e5d61c6c45cb63c7c85de7c443eb3b", complete = false, format = 11)
+@GeneratedMetamodel(of = Bounded.class, fingerprint = "67e866f7585159baa8e1329a9b987a6a61e5d61c6c45cb63c7c85de7c443eb3b", complete = false, format = 12)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

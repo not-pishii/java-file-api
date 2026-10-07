@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Coll_.Canonical;
 import gen.facts.p.Coll_.Data;
+import gen.facts.p.Coll_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -37,11 +38,11 @@ import p.Coll;
 ///
 /// A member [Coll] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Coll] by the proof `Coll_Heritage` starts.
+/// A generated class extends or implements [Coll] by the proof its metamodel starts, with the stages of `Coll_Heritage`.
 ///
 /// @param <E> a type argument of [Coll]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 11)
+@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -103,5 +104,14 @@ public final class Coll_<E> {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(e));
         this.add_E = UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, UnsafeFacts.param(e, Param.var(0)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(add_E);
+    }
+
+    /// Starts the proof that a class being declared implements [Coll]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<E, Self> implement(RefToken<Self> self) {
+        return new Coll_Heritage().implement(this.token, self);
     }
 }

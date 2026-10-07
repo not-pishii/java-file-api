@@ -153,7 +153,7 @@ public final class Io_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Self> Complete<Self, Io> extend(DeclaredToken<Io> type, RefToken<Self> self) {
+    public <Self> Complete<Self, Io> extend(DeclaredToken<Io> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

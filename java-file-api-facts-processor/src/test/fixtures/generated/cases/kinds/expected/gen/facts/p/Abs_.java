@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
@@ -28,9 +30,9 @@ import p.Abs;
 ///
 /// A member [Abs] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Abs] by the proof `Abs_Heritage` starts.
+/// A generated class extends or implements [Abs] by the proof its metamodel starts, with the stages of `Abs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abs.class, fingerprint = "2ae6bc1ebff9c484a289db05ade951e180e05c62f4a5eaaab156f5db1ee1ec54", complete = true, format = 11)
+@GeneratedMetamodel(of = Abs.class, fingerprint = "2ae6bc1ebff9c484a289db05ade951e180e05c62f4a5eaaab156f5db1ee1ec54", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -90,5 +92,14 @@ public final class Abs_ {
     public static final SuperCtorRef0<Abs> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
 
     private Abs_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Abs]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Abs> extend(RefToken<Self> self) {
+        return new Abs_Heritage().extend(TOKEN, self);
     }
 }

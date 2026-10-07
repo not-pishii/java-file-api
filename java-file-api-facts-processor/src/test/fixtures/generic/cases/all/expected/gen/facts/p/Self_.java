@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Self_.Canonical;
 import gen.facts.p.Self_.Data;
+import gen.facts.p.Self_Heritage.Extend;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -37,11 +38,11 @@ import p.Self;
 ///
 /// A member [Self] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Self] by the proof `Self_Heritage` starts.
+/// A generated class extends or implements [Self] by the proof its metamodel starts, with the stages of `Self_Heritage`.
 ///
 /// @param <S> a type argument of [Self]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Self.class, fingerprint = "a6ea157101e8dafa8fd1176c0d5650391073e44651dd74de3361e16bb58a7b56", complete = true, format = 11)
+@GeneratedMetamodel(of = Self.class, fingerprint = "a6ea157101e8dafa8fd1176c0d5650391073e44651dd74de3361e16bb58a7b56", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -121,5 +122,14 @@ public final class Self_<S extends Self<S>> {
         this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
         this.compare_S = UnsafeFacts.method(token, "compare", PrimitiveToken.INT, UnsafeFacts.param(s, Param.var(0)), MemberTraits.OVERRIDABLE);
         this.me = UnsafeFacts.method(token, "me", s, MemberTraits.ABSTRACT);
+    }
+
+    /// Starts the proof that a class being declared extends [Self]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self_> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self_> Extend<S, Self_> extend(RefToken<Self_> self) {
+        return new Self_Heritage().extend(this.token, self);
     }
 }

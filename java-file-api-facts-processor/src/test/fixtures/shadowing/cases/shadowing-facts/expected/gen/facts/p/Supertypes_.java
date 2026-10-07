@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -23,6 +24,7 @@ import me.supcheg.javafile.facts.Prim.Double;
 import me.supcheg.javafile.facts.Prim.Float;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeShape;
@@ -37,9 +39,9 @@ import p.Supertypes;
 ///
 /// A member [Supertypes] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Supertypes] by the proof `Supertypes_Heritage` starts.
+/// A generated class extends or implements [Supertypes] by the proof its metamodel starts, with the stages of `Supertypes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Supertypes.class, fingerprint = "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", complete = true, format = 11)
+@GeneratedMetamodel(of = Supertypes.class, fingerprint = "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -240,5 +242,14 @@ public final class Supertypes_ {
     public static final MethodRef3<Supertypes, Other, java.awt.List, int[], String[]> other_List_intArray_StringArray = UnsafeFacts.method(TOKEN, "other", UnsafeFacts.<Other>openClassToken(Other_.Data.SHAPE), UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), PrimitiveToken.INT.array(), ArrayToken.of(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)), MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
 
     private Supertypes_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Supertypes]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Supertypes> extend(RefToken<Self> self) {
+        return new Supertypes_Heritage().extend(TOKEN, self);
     }
 }

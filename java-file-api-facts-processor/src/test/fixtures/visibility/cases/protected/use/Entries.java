@@ -3,7 +3,6 @@ import gen.facts.java.lang.String_;
 import gen.facts.p.ProtAbs_;
 import gen.facts.p.ProtAbs_Heritage;
 import gen.facts.p.ProtG_;
-import gen.facts.p.ProtG_Heritage;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.Implementation1;
 import me.supcheg.javafile.facts.Implemented;
@@ -32,7 +31,7 @@ public final class Entries {
                 UnsafeFacts.implementation1(new Implemented.ByOverride(hook, own));
 
         Complete<String, ProtAbs> complete =
-                ProtAbs_Heritage.extend(ProtAbs_.TOKEN, String_.TOKEN).hook_String(how);
+                ProtAbs_.extend(String_.TOKEN).hook_String(how);
 
         assertThat(complete.supertype()).isSameAs(ProtAbs_.TOKEN);
         assertThat(complete.self()).isSameAs(String_.TOKEN);
@@ -46,7 +45,7 @@ public final class Entries {
                 UnsafeFacts.implementation1(new Implemented.ByInheritance(other));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> ProtAbs_Heritage.extend(ProtAbs_.TOKEN, String_.TOKEN).hook_String(ofAnother))
+                .isThrownBy(() -> ProtAbs_.extend(String_.TOKEN).hook_String(ofAnother))
                 .withMessageContaining("the step hook(java.lang.String) of p.ProtAbs takes an implementation of that"
                         + " method");
     }
@@ -54,7 +53,7 @@ public final class Entries {
     public static void theProofOfATypeWithoutAbstractMethodsIsCompleteAtOnce() {
         ProtG_<Integer> ints = new ProtG_<>(Integer_.TOKEN);
 
-        Complete<String, ProtG<Integer>> complete = ProtG_Heritage.extend(ints.token, String_.TOKEN);
+        Complete<String, ProtG<Integer>> complete = ints.extend(String_.TOKEN);
 
         assertThat(complete.supertype()).isSameAs(ints.token);
         assertThat(complete.steps()).isEmpty();

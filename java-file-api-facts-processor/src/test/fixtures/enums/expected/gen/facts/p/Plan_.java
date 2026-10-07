@@ -33,7 +33,7 @@ import p.Plan;
 ///
 /// No generated class extends or implements [Plan]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plan.class, fingerprint = "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", complete = true, format = 11)
+@GeneratedMetamodel(of = Plan.class, fingerprint = "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

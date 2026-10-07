@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Seq_.Canonical;
 import gen.facts.p.Seq_.Data;
+import gen.facts.p.Seq_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -36,11 +37,11 @@ import p.Seq;
 ///
 /// A member [Seq] inherits has its fact in the metamodel of the supertype that declares it: [Coll_].
 ///
-/// A generated class extends or implements [Seq] by the proof `Seq_Heritage` starts.
+/// A generated class extends or implements [Seq] by the proof its metamodel starts, with the stages of `Seq_Heritage`.
 ///
 /// @param <E> a type argument of [Seq]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seq.class, fingerprint = "7a8e2333c5aade61ccb1941320e754759992ee4caf1d9cc4873ad3af1eb5d53c", complete = true, format = 11)
+@GeneratedMetamodel(of = Seq.class, fingerprint = "7a8e2333c5aade61ccb1941320e754759992ee4caf1d9cc4873ad3af1eb5d53c", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -108,5 +109,14 @@ public final class Seq_<E> {
     /// @return the fact
     public static <T> StaticMethodRef0<Seq<T>> of(RefToken<T> t) {
         return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<Seq<T>>interfaceToken(Data.SHAPE, TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared implements [Seq]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<E, Self> implement(RefToken<Self> self) {
+        return new Seq_Heritage().implement(this.token, self);
     }
 }

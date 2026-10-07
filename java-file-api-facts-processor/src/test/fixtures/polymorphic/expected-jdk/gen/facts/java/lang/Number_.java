@@ -2,6 +2,7 @@ package gen.facts.java.lang;
 
 import gen.facts.java.lang.Number_.Canonical;
 import gen.facts.java.lang.Number_.Data;
+import gen.facts.java.lang.Number_Heritage.Extend;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -22,6 +23,7 @@ import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.Prim.Long;
 import me.supcheg.javafile.facts.Prim.Short;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
@@ -37,9 +39,9 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Number] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_] and [Object_].
 ///
-/// A generated class extends or implements [Number] by the proof `Number_Heritage` starts.
+/// A generated class extends or implements [Number] by the proof its metamodel starts, with the stages of `Number_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "bc95e3172a5e76ce3ee76850b599ebf945507fb5e02fbdc48cf8130172101fdb", complete = true, format = 11)
+@GeneratedMetamodel(of = Number.class, fingerprint = "bc95e3172a5e76ce3ee76850b599ebf945507fb5e02fbdc48cf8130172101fdb", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -129,5 +131,14 @@ public final class Number_ {
     public static final MethodRef0<Number, Short> shortValue = UnsafeFacts.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.OVERRIDABLE);
 
     private Number_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Number]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Extend<Self> extend(RefToken<Self> self) {
+        return new Number_Heritage().extend(TOKEN, self);
     }
 }

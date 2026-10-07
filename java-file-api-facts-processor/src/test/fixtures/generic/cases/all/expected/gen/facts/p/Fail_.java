@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -33,11 +34,11 @@ import p.Fail;
 ///
 /// A member [Fail] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Fail] by the proof `Fail_Heritage` starts.
+/// A generated class extends or implements [Fail] by the proof its metamodel starts, with the stages of `Fail_Heritage`.
 ///
 /// @param <X> a type argument of [Fail]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fail.class, fingerprint = "556492e061931e60f8ce32e6ad2fd0687184bbd9a6bbe78f6ead90c127e66a59", complete = true, format = 11)
+@GeneratedMetamodel(of = Fail.class, fingerprint = "556492e061931e60f8ce32e6ad2fd0687184bbd9a6bbe78f6ead90c127e66a59", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -111,5 +112,14 @@ public final class Fail_<X extends Exception> {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(x));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
         this.run = UnsafeFacts.voidMethod(token, "run", MemberTraits.OVERRIDABLE.throwing(x));
+    }
+
+    /// Starts the proof that a class being declared extends [Fail]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Fail<X>> extend(RefToken<Self> self) {
+        return new Fail_Heritage().extend(this.token, self);
     }
 }

@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [ConstantDesc]: it is only mentioned in the signatures of [java.lang.constant.Constable]. For the facts of its members add `ConstantDesc.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "997afef373f884974d595c49b23523271ca4f12b3fc9e92f830ffa751ab4195a", complete = false, format = 11)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "997afef373f884974d595c49b23523271ca4f12b3fc9e92f830ffa751ab4195a", complete = false, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

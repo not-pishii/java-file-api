@@ -68,7 +68,7 @@ public final class Grid_Heritage implements Supplier<Told> {
     /// @param <B> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <A, B, Self> Implement<A, B, Self> implement(DeclaredToken<Grid<A, B>> type, RefToken<Self> self) {
+    public <A, B, Self> Implement<A, B, Self> implement(DeclaredToken<Grid<A, B>> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

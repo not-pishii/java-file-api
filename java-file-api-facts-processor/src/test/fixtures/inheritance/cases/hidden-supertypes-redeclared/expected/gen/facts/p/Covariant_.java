@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -45,9 +46,9 @@ import p.Covariant;
 ///
 /// `p.Far`, `p.HiddenApi` and `p.Near`, supertypes that are not `public`, have no metamodels: the `public` members inherited from them are facts of this one.
 ///
-/// A generated class extends or implements [Covariant] by the proof `Covariant_Heritage` starts.
+/// A generated class extends or implements [Covariant] by the proof its metamodel starts, with the stages of `Covariant_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 11)
+@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -200,5 +201,14 @@ public final class Covariant_ {
     /// @return the fact
     public static <R> MethodRef1<Covariant, R, R> pick_R(RefToken<R> r) {
         return UnsafeFacts.method(TOKEN, "pick", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(r));
+    }
+
+    /// Starts the proof that a class being declared extends [Covariant]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Covariant> extend(RefToken<Self> self) {
+        return new Covariant_Heritage().extend(TOKEN, self);
     }
 }

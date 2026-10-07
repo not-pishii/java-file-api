@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -40,12 +41,12 @@ import p.Gt;
 ///
 /// A member [Gt] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Gt] by the proof `Gt_Heritage` starts.
+/// A generated class extends or implements [Gt] by the proof its metamodel starts, with the stages of `Gt_Heritage`.
 ///
 /// @param <T> a type argument of [Gt]
 /// @param <E> a type argument of [Gt]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 11)
+@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -168,5 +169,14 @@ public final class Gt_<T, E> {
     /// @return the fact
     public static <T, E> StaticMethodRef2<Gt<T, E>, T, E> of_T_E(RefToken<T> t, RefToken<E> e) {
         return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<Gt<T, E>>openClassToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(e)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(e, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t, e));
+    }
+
+    /// Starts the proof that a class being declared extends [Gt]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Gt<T, E>> extend(RefToken<Self> self) {
+        return new Gt_Heritage().extend(this.token, self);
     }
 }

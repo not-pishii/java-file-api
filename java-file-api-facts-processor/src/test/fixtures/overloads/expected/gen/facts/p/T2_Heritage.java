@@ -133,7 +133,7 @@ public final class T2_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T, Self> Complete<Self, T2<T>> extend(DeclaredToken<T2<T>> type, RefToken<Self> self) {
+    public <T, Self> Complete<Self, T2<T>> extend(DeclaredToken<T2<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

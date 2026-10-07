@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -33,11 +34,11 @@ import p.Box;
 ///
 /// A member [Box] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Box] by the proof `Box_Heritage` starts.
+/// A generated class extends or implements [Box] by the proof its metamodel starts, with the stages of `Box_Heritage`.
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "d119a8423fc5838eb915bf9c4168e8fa0285d1d53a8e488abe4e8cbc01d0c76b", complete = true, format = 11)
+@GeneratedMetamodel(of = Box.class, fingerprint = "d119a8423fc5838eb915bf9c4168e8fa0285d1d53a8e488abe4e8cbc01d0c76b", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -111,5 +112,14 @@ public final class Box_<T> {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
         this.put_T = UnsafeFacts.method(token, "put", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
+    }
+
+    /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Box<T>> extend(RefToken<Self> self) {
+        return new Box_Heritage().extend(this.token, self);
     }
 }

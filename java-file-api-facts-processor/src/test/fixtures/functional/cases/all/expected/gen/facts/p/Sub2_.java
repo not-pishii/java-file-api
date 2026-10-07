@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Sub2_.Canonical;
 import gen.facts.p.Sub2_.Data;
+import gen.facts.p.Sub2_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -29,9 +31,9 @@ import p.Sub2;
 ///
 /// A member [Sub2] inherits has its fact in the metamodel of the supertype that declares it: [Sub_].
 ///
-/// A generated class extends or implements [Sub2] by the proof `Sub2_Heritage` starts.
+/// A generated class extends or implements [Sub2] by the proof its metamodel starts, with the stages of `Sub2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub2.class, fingerprint = "67529d56c016f186802d7520e0cff77c1d05b8ccf51e777bdf7fc696d43ddfc2", complete = true, format = 11)
+@GeneratedMetamodel(of = Sub2.class, fingerprint = "67529d56c016f186802d7520e0cff77c1d05b8ccf51e777bdf7fc696d43ddfc2", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -85,5 +87,14 @@ public final class Sub2_ {
     public static final Sam1<Sub2, String, String> sam = UnsafeFacts.sam(UnsafeFacts.method(TOKEN, "apply", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT));
 
     private Sub2_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Sub2]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Sub2_Heritage().implement(TOKEN, self);
     }
 }

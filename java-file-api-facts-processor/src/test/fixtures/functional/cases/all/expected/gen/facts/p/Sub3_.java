@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Sub3_.Canonical;
 import gen.facts.p.Sub3_.Data;
+import gen.facts.p.Sub3_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -29,9 +31,9 @@ import p.Sub3;
 ///
 /// A member [Sub3] inherits has its fact in the metamodel of the supertype that declares it: [Base_].
 ///
-/// A generated class extends or implements [Sub3] by the proof `Sub3_Heritage` starts.
+/// A generated class extends or implements [Sub3] by the proof its metamodel starts, with the stages of `Sub3_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub3.class, fingerprint = "8e96b86e7ba7f16ba2359739c0f8d430fa42fa6c256478a6dd2ca1e6136e9ab7", complete = true, format = 11)
+@GeneratedMetamodel(of = Sub3.class, fingerprint = "8e96b86e7ba7f16ba2359739c0f8d430fa42fa6c256478a6dd2ca1e6136e9ab7", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -84,5 +86,14 @@ public final class Sub3_ {
     public static final Sam0<Sub3, String> sam = UnsafeFacts.sam(get);
 
     private Sub3_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Sub3]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Sub3_Heritage().implement(TOKEN, self);
     }
 }

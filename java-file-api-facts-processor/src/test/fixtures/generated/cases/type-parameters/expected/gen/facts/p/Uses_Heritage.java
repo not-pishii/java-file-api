@@ -115,7 +115,7 @@ public final class Uses_Heritage implements Supplier<Told> {
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <T extends Data & Canonical<Data>, Self> Complete<Self, Uses<T>> extend(DeclaredToken<Uses<T>> type, RefToken<Self> self) {
+    public <T extends Data & Canonical<Data>, Self> Complete<Self, Uses<T>> extend(DeclaredToken<Uses<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

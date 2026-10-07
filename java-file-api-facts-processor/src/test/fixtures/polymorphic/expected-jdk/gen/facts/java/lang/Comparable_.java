@@ -2,6 +2,7 @@ package gen.facts.java.lang;
 
 import gen.facts.java.lang.Comparable_.Canonical;
 import gen.facts.java.lang.Comparable_.Data;
+import gen.facts.java.lang.Comparable_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -36,11 +37,11 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Comparable] inherits has its fact in the metamodel of the supertype that declares it: [Object_].
 ///
-/// A generated class extends or implements [Comparable] by the proof `Comparable_Heritage` starts.
+/// A generated class extends or implements [Comparable] by the proof its metamodel starts, with the stages of `Comparable_Heritage`.
 ///
 /// @param <T> a type argument of [Comparable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comparable.class, fingerprint = "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", complete = true, format = 11)
+@GeneratedMetamodel(of = Comparable.class, fingerprint = "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -102,5 +103,14 @@ public final class Comparable_<T> {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
         this.compareTo_T = UnsafeFacts.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(compareTo_T);
+    }
+
+    /// Starts the proof that a class being declared implements [Comparable]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<T, Self> implement(RefToken<Self> self) {
+        return new Comparable_Heritage().implement(this.token, self);
     }
 }

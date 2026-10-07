@@ -82,7 +82,7 @@ public final class Function_Heritage implements Supplier<Told> {
     /// @param <R> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <T, R, Self> Implement<T, R, Self> implement(DeclaredToken<Function<T, R>> type, RefToken<Self> self) {
+    public <T, R, Self> Implement<T, R, Self> implement(DeclaredToken<Function<T, R>> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

@@ -49,7 +49,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Enum]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 11)
+@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

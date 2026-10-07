@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -49,9 +50,9 @@ import p.Pub;
 ///
 /// - `method self() of p.Far`, which mentions types that are not public: p.Far
 ///
-/// A generated class extends or implements [Pub] by the proof `Pub_Heritage` starts.
+/// A generated class extends or implements [Pub] by the proof its metamodel starts, with the stages of `Pub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub.class, fingerprint = "c05865dd6bee406b78ffc64c196865abb68952427c4f35241e75db29955e8cbb", complete = true, format = 11)
+@GeneratedMetamodel(of = Pub.class, fingerprint = "c05865dd6bee406b78ffc64c196865abb68952427c4f35241e75db29955e8cbb", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -200,5 +201,14 @@ public final class Pub_ {
     /// @return the fact
     public static <R> MethodRef1<Pub, R, R> pick_R(RefToken<R> r) {
         return UnsafeFacts.method(TOKEN, "pick", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(r));
+    }
+
+    /// Starts the proof that a class being declared extends [Pub]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Pub> extend(RefToken<Self> self) {
+        return new Pub_Heritage().extend(TOKEN, self);
     }
 }

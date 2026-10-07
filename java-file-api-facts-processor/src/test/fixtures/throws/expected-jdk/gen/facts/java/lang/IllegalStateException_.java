@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [IllegalStateException]: it is only mentioned in the signatures of [p.Io]. For the facts of its members add `IllegalStateException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IllegalStateException.class, fingerprint = "705c3689817050cb247eefb2c03f2e7cf45022f4e9149499c35a30d32e93b36e", complete = false, format = 11)
+@GeneratedMetamodel(of = IllegalStateException.class, fingerprint = "705c3689817050cb247eefb2c03f2e7cf45022f4e9149499c35a30d32e93b36e", complete = false, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

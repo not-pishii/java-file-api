@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Both_.Canonical;
 import gen.facts.p.Both_.Data;
+import gen.facts.p.Both_Heritage.Extend;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -34,11 +35,11 @@ import p.Both;
 ///
 /// A member [Both] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Both] by the proof `Both_Heritage` starts.
+/// A generated class extends or implements [Both] by the proof its metamodel starts, with the stages of `Both_Heritage`.
 ///
 /// @param <T> a type argument of [Both]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "fe06f095bf806d913d3a372fa4f1ed1fb1cf59b83261118b221e6492b1c40eb2", complete = true, format = 11)
+@GeneratedMetamodel(of = Both.class, fingerprint = "fe06f095bf806d913d3a372fa4f1ed1fb1cf59b83261118b221e6492b1c40eb2", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -112,5 +113,14 @@ public final class Both_<T extends Number & Comparable<T>> {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(t));
         this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
         this.pick = UnsafeFacts.method(token, "pick", t, MemberTraits.ABSTRACT);
+    }
+
+    /// Starts the proof that a class being declared extends [Both]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Extend<T, Self> extend(RefToken<Self> self) {
+        return new Both_Heritage().extend(this.token, self);
     }
 }

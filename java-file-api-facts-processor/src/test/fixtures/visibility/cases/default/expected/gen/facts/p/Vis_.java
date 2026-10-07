@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -21,6 +22,7 @@ import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.Protected;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.SuperCtorRef1;
 import me.supcheg.javafile.facts.Supertypes;
@@ -48,9 +50,9 @@ import p.Vis;
 /// - `method arr()`, which mentions types that are not public: p.Hidden
 /// - `method nested(p.Outer.PkgNested)`, which mentions types that are not public: p.Outer$PkgNested
 ///
-/// A generated class extends or implements [Vis] by the proof `Vis_Heritage` starts.
+/// A generated class extends or implements [Vis] by the proof its metamodel starts, with the stages of `Vis_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 11)
+@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -150,5 +152,14 @@ public final class Vis_ {
     public static final VoidStaticMethodRef0 sPub = UnsafeFacts.voidStaticMethod(TOKEN, "sPub", MemberTraits.FINAL);
 
     private Vis_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Vis]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Vis> extend(RefToken<Self> self) {
+        return new Vis_Heritage().extend(TOKEN, self);
     }
 }

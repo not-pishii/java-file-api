@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -29,9 +31,9 @@ import p.Unused;
 ///
 /// A member [Unused] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Unused] by the proof `Unused_Heritage` starts.
+/// A generated class extends or implements [Unused] by the proof its metamodel starts, with the stages of `Unused_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Unused.class, fingerprint = "63760cace53b79bfd66761dcb6ce1ff91c21b5c21006a8eb955687386b6f9a3a", complete = true, format = 11)
+@GeneratedMetamodel(of = Unused.class, fingerprint = "63760cace53b79bfd66761dcb6ce1ff91c21b5c21006a8eb955687386b6f9a3a", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -96,5 +98,14 @@ public final class Unused_ {
     public static final VoidMethodRef0<Unused> gone = UnsafeFacts.voidMethod(TOKEN, "gone", MemberTraits.OVERRIDABLE);
 
     private Unused_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Unused]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Unused> extend(RefToken<Self> self) {
+        return new Unused_Heritage().extend(TOKEN, self);
     }
 }

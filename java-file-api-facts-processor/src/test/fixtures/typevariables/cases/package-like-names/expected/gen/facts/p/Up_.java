@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -33,12 +34,12 @@ import p.Up;
 ///
 /// A member [Up] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Up] by the proof `Up_Heritage` starts.
+/// A generated class extends or implements [Up] by the proof its metamodel starts, with the stages of `Up_Heritage`.
 ///
 /// @param <Gen> a type argument of [Up]
 /// @param <Java> a type argument of [Up]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Up.class, fingerprint = "65bc792f054f67edc2783b68a4867ea9435371a12c775f186049f4ef47aba232", complete = true, format = 11)
+@GeneratedMetamodel(of = Up.class, fingerprint = "65bc792f054f67edc2783b68a4867ea9435371a12c775f186049f4ef47aba232", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -130,5 +131,14 @@ public final class Up_<Gen, Java> {
     /// @return the fact
     public <Me> MethodRef1<Up<Gen, Java>, Set<Me>, Me> each_Me(RefToken<Me> me) {
         return UnsafeFacts.method(token, "each", UnsafeFacts.<Set<Me>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(me)), UnsafeFacts.param(me, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(me));
+    }
+
+    /// Starts the proof that a class being declared extends [Up]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Up<Gen, Java>> extend(RefToken<Self> self) {
+        return new Up_Heritage().extend(this.token, self);
     }
 }

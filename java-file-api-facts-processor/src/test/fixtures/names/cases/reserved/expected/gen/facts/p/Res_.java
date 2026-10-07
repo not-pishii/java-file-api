@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -19,6 +20,7 @@ import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -33,9 +35,9 @@ import p.Res;
 ///
 /// A member [Res] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Res] by the proof `Res_Heritage` starts.
+/// A generated class extends or implements [Res] by the proof its metamodel starts, with the stages of `Res_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Res.class, fingerprint = "b3f0ae8ef419ed7e3e786a207eb7f76ff9ff42b714bceca8f625e7494f3e562b", complete = true, format = 11)
+@GeneratedMetamodel(of = Res.class, fingerprint = "b3f0ae8ef419ed7e3e786a207eb7f76ff9ff42b714bceca8f625e7494f3e562b", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -137,5 +139,14 @@ public final class Res_ {
     public static final VoidMethodRef1<Res, Int> sam_int = UnsafeFacts.voidMethod(TOKEN, "sam", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private Res_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Res]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Res> extend(RefToken<Self> self) {
+        return new Res_Heritage().extend(TOKEN, self);
     }
 }

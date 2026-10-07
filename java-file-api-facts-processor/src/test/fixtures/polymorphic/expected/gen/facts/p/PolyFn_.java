@@ -31,7 +31,7 @@ import p.PolyFn;
 ///
 /// No generated class extends or implements [PolyFn]: its abstract method apply(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PolyFn.class, fingerprint = "316ec3eabed3b8b425c5e281fdaf75853679a7a703efc77da998dc6a2ed35b45", complete = true, format = 11)
+@GeneratedMetamodel(of = PolyFn.class, fingerprint = "316ec3eabed3b8b425c5e281fdaf75853679a7a703efc77da998dc6a2ed35b45", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"

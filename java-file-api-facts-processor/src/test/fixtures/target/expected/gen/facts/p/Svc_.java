@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -19,6 +20,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
@@ -35,9 +37,9 @@ import p.Svc;
 ///
 /// A member [Svc] inherits has its fact in the metamodel of the supertype that declares it: [Base_] and [Marker_].
 ///
-/// A generated class extends or implements [Svc] by the proof `Svc_Heritage` starts.
+/// A generated class extends or implements [Svc] by the proof its metamodel starts, with the stages of `Svc_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "f172632a28e6d6a7075c488790964b834f9b91f5e1eab902fd3c13aaa986b190", complete = true, format = 11)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "f172632a28e6d6a7075c488790964b834f9b91f5e1eab902fd3c13aaa986b190", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -122,5 +124,14 @@ public final class Svc_ {
     public static final MethodRef1<Svc, String, Object> only_Object = UnsafeFacts.method(TOKEN, "only", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Svc_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Svc]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Svc> extend(RefToken<Self> self) {
+        return new Svc_Heritage().extend(TOKEN, self);
     }
 }

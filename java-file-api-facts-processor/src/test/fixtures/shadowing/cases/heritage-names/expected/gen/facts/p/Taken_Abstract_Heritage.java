@@ -120,7 +120,7 @@ public final class Taken_Abstract_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public static <Self> Extend<Self> extend(DeclaredToken<Abstract> type, RefToken<Self> self) {
+    public <Self> Extend<Self> extend(DeclaredToken<Abstract> type, RefToken<Self> self) {
         return new Extend<>(UnsafeFacts.steps(type, self));
     }
 

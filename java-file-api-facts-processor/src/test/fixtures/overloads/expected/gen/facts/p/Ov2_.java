@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -32,9 +33,9 @@ import p.Ov2;
 ///
 /// A member [Ov2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Ov2] by the proof `Ov2_Heritage` starts.
+/// A generated class extends or implements [Ov2] by the proof its metamodel starts, with the stages of `Ov2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov2.class, fingerprint = "4ec2e1152f69e4365bfb58357245590dd05a59054fe51729433958bc0389649d", complete = true, format = 11)
+@GeneratedMetamodel(of = Ov2.class, fingerprint = "4ec2e1152f69e4365bfb58357245590dd05a59054fe51729433958bc0389649d", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -110,5 +111,14 @@ public final class Ov2_ {
     /// @return the fact
     public static <T> StaticMethodRef1<Optional<T>, T> wrap_T(RefToken<T> t) {
         return UnsafeFacts.staticMethod(TOKEN, "wrap", UnsafeFacts.<Optional<T>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared extends [Ov2]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Ov2> extend(RefToken<Self> self) {
+        return new Ov2_Heritage().extend(TOKEN, self);
     }
 }

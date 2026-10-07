@@ -2,6 +2,7 @@ package gen.facts.java.lang.constant;
 
 import gen.facts.java.lang.constant.Constable_.Canonical;
 import gen.facts.java.lang.constant.Constable_.Data;
+import gen.facts.java.lang.constant.Constable_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
@@ -34,9 +36,9 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Constable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Constable] by the proof `Constable_Heritage` starts.
+/// A generated class extends or implements [Constable] by the proof its metamodel starts, with the stages of `Constable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 11)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -89,5 +91,14 @@ public final class Constable_ {
     public static final Sam0<Constable, Optional<? extends ConstantDesc>> sam = UnsafeFacts.sam(describeConstable);
 
     private Constable_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Constable]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Constable_Heritage().implement(TOKEN, self);
     }
 }

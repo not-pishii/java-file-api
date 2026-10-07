@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Arr_.Canonical;
 import gen.facts.p.Arr_.Data;
+import gen.facts.p.Arr_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -34,11 +35,11 @@ import p.Arr;
 ///
 /// A member [Arr] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Arr] by the proof `Arr_Heritage` starts.
+/// A generated class extends or implements [Arr] by the proof its metamodel starts, with the stages of `Arr_Heritage`.
 ///
 /// @param <T> a type argument of [Arr]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Arr.class, fingerprint = "efef12e1f617c0551e99da408e3b863a7aaa678041f8718b5945ee97803bf73a", complete = true, format = 11)
+@GeneratedMetamodel(of = Arr.class, fingerprint = "efef12e1f617c0551e99da408e3b863a7aaa678041f8718b5945ee97803bf73a", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -100,5 +101,14 @@ public final class Arr_<T> {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
         this.m_TArray = UnsafeFacts.method(token, "m", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(m_TArray);
+    }
+
+    /// Starts the proof that a class being declared implements [Arr]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<T, Self> implement(RefToken<Self> self) {
+        return new Arr_Heritage().implement(this.token, self);
     }
 }

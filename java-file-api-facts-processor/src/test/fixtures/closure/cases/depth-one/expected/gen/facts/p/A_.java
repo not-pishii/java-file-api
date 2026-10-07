@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -57,11 +58,11 @@ import p.Result;
 /// - `method marker()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method hidden()`, which mentions types that are not public: p.Hidden
 ///
-/// A generated class extends or implements [A] by the proof `A_Heritage` starts.
+/// A generated class extends or implements [A] by the proof its metamodel starts, with the stages of `A_Heritage`.
 ///
 /// @param <T> a type argument of [A]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = A.class, fingerprint = "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", complete = true, format = 11)
+@GeneratedMetamodel(of = A.class, fingerprint = "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -177,5 +178,14 @@ public final class A_<T extends Bound> {
     /// @return the fact
     public <U extends MBound> MethodRef1<A<T>, Holder<Elem>, List<? super Lower>> g_List(RefToken<U> u) {
         return UnsafeFacts.method(token, "g", UnsafeFacts.<Holder<Elem>>openClassToken(Holder_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<Elem>openClassToken(Elem_.Data.SHAPE))), UnsafeFacts.<List<? super Lower>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.superBound(UnsafeFacts.<Lower>openClassToken(Lower_.Data.SHAPE))), MemberTraits.OVERRIDABLE.withTypeArgs(u));
+    }
+
+    /// Starts the proof that a class being declared extends [A]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, A<T>> extend(RefToken<Self> self) {
+        return new A_Heritage().extend(this.token, self);
     }
 }

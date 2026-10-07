@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -16,6 +17,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
@@ -33,9 +35,9 @@ import p.Over;
 ///
 /// The members inherited from `p.Bounded`, which has no full metamodel, have no facts: the bounds of the type parameters of p.Bounded mention types that are not public: p.Secret.
 ///
-/// A generated class extends or implements [Over] by the proof `Over_Heritage` starts.
+/// A generated class extends or implements [Over] by the proof its metamodel starts, with the stages of `Over_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 11)
+@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -101,5 +103,14 @@ public final class Over_ {
     public static final MethodRef0<Over, Bounded<?>> same = UnsafeFacts.method(TOKEN, "same", UnsafeFacts.<Bounded<?>>openClassToken(Bounded_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     private Over_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Over]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Over> extend(RefToken<Self> self) {
+        return new Over_Heritage().extend(TOKEN, self);
     }
 }

@@ -7,12 +7,14 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
@@ -29,9 +31,9 @@ import p.PubB;
 ///
 /// A member [PubB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [PubB] by the proof `PubB_Heritage` starts.
+/// A generated class extends or implements [PubB] by the proof its metamodel starts, with the stages of `PubB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubB.class, fingerprint = "f16eeb5e23ce2df41a3249c257ec76485974d73fd74a74dd2fe62f82d02055af", complete = true, format = 11)
+@GeneratedMetamodel(of = PubB.class, fingerprint = "f16eeb5e23ce2df41a3249c257ec76485974d73fd74a74dd2fe62f82d02055af", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -83,5 +85,14 @@ public final class PubB_ {
     public static final StaticFieldRef<String> s = UnsafeFacts.constantField(TOKEN, "s", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "PubB.s");
 
     private PubB_() {
+    }
+
+    /// Starts the proof that a class being declared implements [PubB]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, PubB> implement(RefToken<Self> self) {
+        return new PubB_Heritage().implement(TOKEN, self);
     }
 }

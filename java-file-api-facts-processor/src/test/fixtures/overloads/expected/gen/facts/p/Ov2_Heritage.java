@@ -121,7 +121,7 @@ public final class Ov2_Heritage implements Supplier<Told> {
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Self> Complete<Self, Ov2> extend(DeclaredToken<Ov2> type, RefToken<Self> self) {
+    public <Self> Complete<Self, Ov2> extend(DeclaredToken<Ov2> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

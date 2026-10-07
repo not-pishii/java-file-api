@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.StaticMethodRef1;
@@ -35,9 +37,9 @@ import p.PubSame;
 ///
 /// `p.HSame`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
-/// A generated class extends or implements [PubSame] by the proof `PubSame_Heritage` starts.
+/// A generated class extends or implements [PubSame] by the proof its metamodel starts, with the stages of `PubSame_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 11)
+@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -111,5 +113,14 @@ public final class PubSame_ {
     public static final StaticMethodRef1<String, Int> tag_int = UnsafeFacts.staticMethod(TOKEN, "tag", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     private PubSame_() {
+    }
+
+    /// Starts the proof that a class being declared extends [PubSame]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, PubSame> extend(RefToken<Self> self) {
+        return new PubSame_Heritage().extend(TOKEN, self);
     }
 }

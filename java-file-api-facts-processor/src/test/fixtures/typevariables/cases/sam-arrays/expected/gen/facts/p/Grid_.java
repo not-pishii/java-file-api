@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Grid_.Canonical;
 import gen.facts.p.Grid_.Data;
+import gen.facts.p.Grid_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -34,12 +35,12 @@ import p.Grid;
 ///
 /// A member [Grid] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Grid] by the proof `Grid_Heritage` starts.
+/// A generated class extends or implements [Grid] by the proof its metamodel starts, with the stages of `Grid_Heritage`.
 ///
 /// @param <A> a type argument of [Grid]
 /// @param <B> a type argument of [Grid]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 11)
+@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -102,5 +103,14 @@ public final class Grid_<A, B> {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(a), TokenArg.exact(b));
         this.row_BArrayArray = UnsafeFacts.method(token, "row", ArrayToken.of(a), UnsafeFacts.param(ArrayToken.of(ArrayToken.of(b)), Param.var(1, 2)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.sam(row_BArrayArray);
+    }
+
+    /// Starts the proof that a class being declared implements [Grid]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Implement<A, B, Self> implement(RefToken<Self> self) {
+        return new Grid_Heritage().implement(this.token, self);
     }
 }

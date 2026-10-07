@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -23,6 +24,7 @@ import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.Prim.Long;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.Protected;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
@@ -39,9 +41,9 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Impl] and [p.Impl2], whose inherited members are called through this metamodel.
 ///
-/// A generated class extends or implements [Object] by the proof `Object_Heritage` starts.
+/// A generated class extends or implements [Object] by the proof its metamodel starts, with the stages of `Object_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 11)
+@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 12)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -145,5 +147,14 @@ public final class Object_ {
     public static final VoidMethodRef2<Object, Long, Int> wait_long_int = UnsafeFacts.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
 
     private Object_() {
+    }
+
+    /// Starts the proof that a class being declared extends [Object]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Complete<Self, Object> extend(RefToken<Self> self) {
+        return new Object_Heritage().extend(TOKEN, self);
     }
 }

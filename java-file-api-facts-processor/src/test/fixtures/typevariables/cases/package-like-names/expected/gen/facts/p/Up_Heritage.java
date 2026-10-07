@@ -123,7 +123,7 @@ public final class Up_Heritage implements Supplier<Told> {
     /// @param <Java> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public static <Gen, Java, Self> Complete<Self, Up<Gen, Java>> extend(DeclaredToken<Up<Gen, Java>> type, RefToken<Self> self) {
+    public <Gen, Java, Self> Complete<Self, Up<Gen, Java>> extend(DeclaredToken<Up<Gen, Java>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }
