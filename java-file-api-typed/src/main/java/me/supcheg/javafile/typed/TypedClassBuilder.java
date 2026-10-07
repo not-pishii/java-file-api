@@ -31,12 +31,9 @@ import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
-import me.supcheg.javafile.type.ClassTypeRef;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
-import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -140,13 +137,11 @@ public final class TypedClassBuilder<Self> extends Declarations<Self> {
     private final Map<Object, Slot> slotsByFact = new IdentityHashMap<>();
     private Declaration declaration = new Declaration.Open();
 
-    TypedClassBuilder(TargetClasspath target, ClassDesc desc) {
-        this.target = target;
-        this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.self = UnsafeFacts.finalClassToken(
-                new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), this::methodTable);
-        this.registry = new SignatureRegistry(
-                described, Inheritance.of(described, Inheritance.supertype(described, target, Object_.TOKEN)));
+    TypedClassBuilder(ClassDeclaration<Self> declared, Inheritance inherited) {
+        this.target = declared.target();
+        this.described = declared.described();
+        this.self = declared.self();
+        this.registry = new SignatureRegistry(described, inherited);
     }
 
     /// The fact of the class being declared: a [FinalClassToken], usable as
@@ -158,7 +153,7 @@ public final class TypedClassBuilder<Self> extends Declarations<Self> {
         return self;
     }
 
-    private MethodTable methodTable() {
+    MethodTable methodTable() {
         return switch (declaration) {
             case Declaration.Open _ ->
                 throw new IllegalStateException("the methods of " + described + " are known only once its"
