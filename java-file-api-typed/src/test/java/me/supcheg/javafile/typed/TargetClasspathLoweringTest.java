@@ -274,12 +274,12 @@ class TargetClasspathLoweringTest {
         EnumToken<LightP> token = UnsafeFacts.enumToken(light);
         // exhaustive by the facts: a case of ON and one of OFF, no default
         Function<Expr<LightP>, Expr<String>> exhaustive = l -> switch_(
-                l,
                 token,
+                l,
                 String_.TOKEN,
                 c -> c.case_(token.constant("ON"), literal("on")).case_(token.constant("OFF"), literal("off")));
         Function<Expr<LightP>, Expr<String>> withDefault =
-                l -> switch_(l, token, String_.TOKEN, c -> c.default_(literal("any")));
+                l -> switch_(token, l, String_.TOKEN, c -> c.default_(literal("any")));
 
         assertThat(render(UnsafeFacts.targetClasspath(new Asked(Map.of())), token, exhaustive))
                 .contains("case ON -> \"on\";");

@@ -6,13 +6,13 @@ import me.supcheg.javafile.facts.TypeToken;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Collects the cases of a `switch` expression over an enum,
-/// [Expressions#switch_(Expr, EnumToken, TypeToken, java.util.function.Consumer)],
+/// [Expressions#switch_(EnumToken, Expr, TypeToken, java.util.function.Consumer)],
 /// in the order of the code.
 ///
 /// A case is of one constant or of several, `case A, B ->`, and is a value,
@@ -163,22 +163,32 @@ public final class EnumSwitchCases<E, R> {
     Node.Switch close(Node.Operand selector) {
         Node.Switch made =
                 switch (phase) {
-                    case Phase.Open(var cases) -> new Node.Switch(selector, enumType, cases, Optional.empty());
+                    case Phase.Open(var cases) -> new Node.Switch(selector, enumType, cases, new Node.Default.None());
                     case Phase.Complete(var cases, var otherwise) ->
-                        new Node.Switch(selector, enumType, cases, Optional.of(otherwise));
+                        new Node.Switch(selector, enumType, cases, new Node.Default.Of(otherwise));
                     case Phase.Building(var label) ->
                         throw new IllegalStateException(
                                 "the " + statement() + " is made while its " + label + " is being built");
                     case Phase.Made _ -> throw new IllegalStateException("the " + statement() + " is made twice");
                 };
         phase = new Phase.Made();
-        List<String> missing = enumType.constants().stream()
-                .filter(name -> covered(made.cases()).noneMatch(name::equals))
-                .toList();
-        if (made.otherwise().isEmpty() && !missing.isEmpty()) {
-            throw new IllegalStateException("the " + statement() + " is not exhaustive: " + enumType
-                    + " has the constants " + String.join(", ", missing) + ", which have no case_, and there"
-                    + " is no default_; a switch expression covers every value of its selector (JLS 15.28.1)");
+        if (made.arms().findAny().isEmpty()) {
+            throw new IllegalStateException("the " + statement() + " has no case: add a case_ of each constant of "
+                    + enumType + ", or a default_; a switch expression has at least one case (JLS 15.28)");
+        }
+        switch (made.otherwise()) {
+            case Node.Default.Of _ -> {}
+            case Node.Default.None _ -> {
+                List<String> missing = enumType.constants().stream()
+                        .filter(name -> covered(made.cases()).noneMatch(name::equals))
+                        .toList();
+                if (!missing.isEmpty()) {
+                    throw new IllegalStateException("the " + statement() + " is not exhaustive: " + enumType
+                            + " has the constants " + String.join(", ", missing) + ", which have no case_, and"
+                            + " there is no default_; a switch expression covers every value of its selector"
+                            + " (JLS 15.28.1)");
+                }
+            }
         }
         if (made.arms().noneMatch(EnumSwitchCases::hasResult)) {
             throw new IllegalStateException("the " + statement() + " has no result: every case is a block that"
@@ -221,22 +231,26 @@ public final class EnumSwitchCases<E, R> {
                                 + " made: the cases of a switch are added by its cases, which run when it is"
                                 + " built, and nowhere else");
                 };
-        constants.forEach(constant -> {
-            if (!Tokens.sameType(constant.owner(), enumType)) {
-                throw new IllegalArgumentException(label + " of the " + statement() + ": " + constant
-                        + " is not a constant of the " + enumType + " this fact of the enum has ("
-                        + String.join(", ", enumType.constants()) + ")");
-            }
-        });
+        constants.stream()
+                .filter(constant -> constant.owner().shape() != enumType.shape())
+                .findFirst()
+                .ifPresent(constant -> {
+                    throw new IllegalArgumentException(label + " of the " + statement() + ": " + constant
+                            + " is not a constant of the fact of " + enumType + " the switch is over, whose"
+                            + " constants are " + String.join(", ", enumType.constants()) + ": the cases are"
+                            + " exhaustive by one fact of the enum, the one that is held against the target"
+                            + " classpath; take the constant from the token given to switch_");
+                });
         List<String> names = constants.stream().map(EnumConstant::name).toList();
-        Optional<String> duplicate = Stream.concat(
-                        names.stream().filter(name -> covered(before).anyMatch(name::equals)),
-                        names.stream().filter(name -> names.indexOf(name) != names.lastIndexOf(name)))
-                .findFirst();
-        if (duplicate.isPresent()) {
-            throw new IllegalStateException(label + " of the " + statement() + ": the constant " + duplicate.get()
-                    + " has a case already; a constant is the label of one case (JLS 14.11.1)");
-        }
+        IntStream.range(0, names.size())
+                .filter(i -> covered(before).anyMatch(names.get(i)::equals)
+                        || names.subList(0, i).contains(names.get(i)))
+                .mapToObj(names::get)
+                .findFirst()
+                .ifPresent(duplicate -> {
+                    throw new IllegalStateException(label + " of the " + statement() + ": the constant " + duplicate
+                            + " has a case already; a constant is the label of one case (JLS 14.11.1)");
+                });
         return before;
     }
 

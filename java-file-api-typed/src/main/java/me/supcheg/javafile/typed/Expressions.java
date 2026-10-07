@@ -607,7 +607,7 @@ public final class Expressions {
     /// A `switch` expression over an enum, of exactly the type `R`:
     ///
     /// ```java
-    /// switch_(day, Day_.TOKEN, String_.TOKEN, c -> c
+    /// switch_(Day_.TOKEN, day, String_.TOKEN, c -> c
     ///         .case_(Day_.MON, literal("mon"))
     ///         .case_(List.of(Day_.TUE, Day_.WED), y -> y.yield_(literal("other"))));
     /// ```
@@ -617,7 +617,7 @@ public final class Expressions {
     /// `null` at run time is a `NullPointerException`, as in Java.
     ///
     /// The cases are checked as they are added and when they are complete
-    /// ([SwitchCases]): a constant has one case, and without a `default_`
+    /// ([EnumSwitchCases]): a constant has one case, and without a `default_`
     /// every constant of the enum has one — the constants are those of the
     /// facts of `enumType`, which hold of the target classpath or lowering
     /// fails.
@@ -637,8 +637,8 @@ public final class Expressions {
     /// body, for a field initializer, uses no variable and throws no checked
     /// exception.
     ///
+    /// @param enumType the enum of the selector, the witness of its constants
     /// @param selector the selector
-    /// @param enumType the enum of the selector
     /// @param type the type of the `switch`
     /// @param cases adds the cases, in the order of the code
     /// @param <E> the enum
@@ -646,11 +646,11 @@ public final class Expressions {
     /// @return the `switch` expression
     /// @throws IllegalStateException if the cases are not exhaustive, or none has a result
     public static <E, R> Expr<R> switch_(
-            Expr<? extends E> selector,
             EnumToken<E> enumType,
+            Expr<? extends E> selector,
             TypeToken<R> type,
-            Consumer<? super SwitchCases<E, R>> cases) {
-        SwitchCases<E, R> collected = new SwitchCases<>(enumType, type, Scopes.innermostBlock());
+            Consumer<? super EnumSwitchCases<E, R>> cases) {
+        EnumSwitchCases<E, R> collected = new EnumSwitchCases<>(enumType, type, Scopes.innermostBlock());
         cases.accept(collected);
         return Expr.of(collected.close(operand(selector)), type);
     }
@@ -1120,7 +1120,7 @@ public final class Expressions {
     enum Choice {
         /// [#cond(Expr, Expr, Expr, TypeToken)].
         COND("cond", "branch", "branches"),
-        /// [#switch_(Expr, EnumToken, TypeToken, Consumer)].
+        /// [#switch_(EnumToken, Expr, TypeToken, Consumer)].
         SWITCH("switch_", "result", "results");
 
         private final String form;

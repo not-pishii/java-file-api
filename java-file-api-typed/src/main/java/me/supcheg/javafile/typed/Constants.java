@@ -35,7 +35,25 @@ final class Constants {
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 cond(fold(condition), fold(whenTrue), fold(whenFalse));
             case Node.Cast(var type, var operand) -> cast(type.typeRef(), fold(operand));
-            default -> null;
+            // None of these is a constant expression (JLS 15.29): a call, a lambda and a switch never are.
+            case Node.RawLit _,
+                    Node.Local _,
+                    Node.This _,
+                    Node.Box _,
+                    Node.Unbox _,
+                    Node.Call _,
+                    Node.StaticCall _,
+                    Node.New _,
+                    Node.FieldGet _,
+                    Node.EnumConst _,
+                    Node.ArrayAt _,
+                    Node.ArrayLength _,
+                    Node.NewArray _,
+                    Node.InstanceOf _,
+                    Node.Lambda _,
+                    Node.Switch _,
+                    Node.Assign _,
+                    Node.Raw _ -> null;
         };
     }
 

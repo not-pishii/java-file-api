@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.Prim;
@@ -48,18 +49,18 @@ class SwitchChecksTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
 
     /// Declares the class `Probe` with the given members.
-    private static void declare(Consumer<TypedClassBuilder<?>> members) {
-        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static JavaFile declare(Consumer<TypedClassBuilder<?>> members) {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
     }
 
     /// Declares `static int m(Signal s)` with the given body.
-    private static void intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
-        declare(cb -> cb.staticMethod("m", PrimitiveToken.INT, Signal_.TOKEN, body));
+    private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
+        return declare(cb -> cb.staticMethod("m", PrimitiveToken.INT, Signal_.TOKEN, body));
     }
 
     /// `switch (s) { cases }` of type `int`.
-    private static Expr<Prim.Int> intSwitch(Expr<Signal> s, Consumer<SwitchCases<Signal, Prim.Int>> cases) {
-        return switch_(s, Signal_.TOKEN, PrimitiveToken.INT, cases);
+    private static Expr<Prim.Int> intSwitch(Expr<Signal> s, Consumer<EnumSwitchCases<Signal, Prim.Int>> cases) {
+        return switch_(Signal_.TOKEN, s, PrimitiveToken.INT, cases);
     }
 
     /// `new StringReader("a").read()`, which throws `IOException`.
@@ -129,10 +130,12 @@ class SwitchChecksTest {
         }
 
         @Test
-        void aSwitchWithoutACaseIsNotExhaustive() {
+        void aSwitchHasACase() {
             asJavac(
                     () -> intMethod((b, s) -> b.return_(intSwitch(s, _ -> {}))),
-                    "is not exhaustive",
+                    "the switch_ over me.supcheg.javafile.typed.fixtures.Signal in the body of static method m has"
+                            + " no case: add a case_ of each constant of me.supcheg.javafile.typed.fixtures.Signal,"
+                            + " or a default_",
                     "static int m(Signal s) { return switch (s) { }; }",
                     "switch expression does not have any case clauses");
         }
@@ -244,7 +247,7 @@ class SwitchChecksTest {
 
         @Test
         void aCaseIsNotAddedOnceTheSwitchIsMade() {
-            AtomicReference<SwitchCases<Signal, Prim.Int>> escaped = new AtomicReference<>();
+            AtomicReference<EnumSwitchCases<Signal, Prim.Int>> escaped = new AtomicReference<>();
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod((b, s) -> {
@@ -274,9 +277,9 @@ class SwitchChecksTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> intMethod((b, s) ->
                             b.return_(intSwitch(s, c -> c.case_(other.constant("ON"), literal(1))))))
-                    .withMessageContaining("fixtures.Light.ON is not a constant of the"
-                            + " me.supcheg.javafile.typed.fixtures.Signal this fact of the enum has (RED, AMBER,"
-                            + " GREEN)");
+                    .withMessageContaining("fixtures.Light.ON is not a constant of the fact of"
+                            + " me.supcheg.javafile.typed.fixtures.Signal the switch is over, whose constants are"
+                            + " RED, AMBER, GREEN");
         }
 
         @Test
@@ -288,7 +291,7 @@ class SwitchChecksTest {
                             Object_.TOKEN,
                             Signal_.TOKEN,
                             (b, s) ->
-                                    b.return_(switch_(s, Signal_.TOKEN, Object_.TOKEN, c -> c.default_(literal(1)))))),
+                                    b.return_(switch_(Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(literal(1)))))),
                     "switch_ of type java.lang.Object has a result of type int: switch_ does not mix primitive and"
                             + " reference results",
                     "static Object m(Signal s) { return switch (s) { default -> 1; }; }");
@@ -299,7 +302,7 @@ class SwitchChecksTest {
                             Object_.TOKEN,
                             Signal_.TOKEN,
                             (b, s) -> b.return_(switch_(
-                                    s, Signal_.TOKEN, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))))),
+                                    Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))))),
                     "switch_ of type java.lang.Object has a result of type int",
                     "static Object m(Signal s) { return switch (s) { default -> { yield 1; } }; }");
         }
@@ -435,8 +438,8 @@ class SwitchChecksTest {
                                 "f",
                                 PrimitiveToken.INT,
                                 switch_(
-                                        Expressions.enumConstant(Signal_.RED),
                                         Signal_.TOKEN,
+                                        Expressions.enumConstant(Signal_.RED),
                                         PrimitiveToken.INT,
                                         c -> c.default_(y -> y.yield_(read()))));
                     }),

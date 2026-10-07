@@ -15,7 +15,6 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /// The untyped expression IR of the typed layer. Unlike core expressions it
@@ -34,10 +33,34 @@ sealed interface Node {
     /// @return `true` if the static type javac infers is the token's
     static boolean isExact(Node node) {
         return switch (node) {
-            case Call(var target, var method, var ignored) ->
+            case Call(var target, var method, var _) ->
                 isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
-            case ArrayAt(var array, var ignored) -> isExact(array);
-            default -> true;
+            case ArrayAt(var array, var _) -> isExact(array);
+            // A lambda has no type but that of its context, and lowering renders it under a cast to
+            // its token or where the target type is exactly its token.
+            case Lambda _ -> true;
+            // Every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
+            case Switch _ -> true;
+            case Lit _,
+                    RawLit _,
+                    Local _,
+                    This _,
+                    Box _,
+                    Unbox _,
+                    StaticCall _,
+                    New _,
+                    FieldGet _,
+                    StaticFieldGet _,
+                    EnumConst _,
+                    ArrayLength _,
+                    NewArray _,
+                    Cond _,
+                    Binary _,
+                    Unary _,
+                    Cast _,
+                    InstanceOf _,
+                    Assign _,
+                    Raw _ -> true;
         };
     }
 
@@ -118,15 +141,20 @@ sealed interface Node {
     /// @param enumType the enum
     /// @param cases the cases, in order: every constant in at most one, and in exactly one if there is no
     ///     `otherwise`
-    /// @param otherwise the `default` case, if any
-    record Switch(Operand selector, EnumToken<?> enumType, List<Case> cases, Optional<Arm> otherwise) implements Node {
+    /// @param otherwise the `default` case, or that there is none
+    record Switch(Operand selector, EnumToken<?> enumType, List<Case> cases, Default otherwise) implements Node {
         public Switch {
             cases = List.copyOf(cases);
         }
 
         /// What the cases are, the `default` one last.
         Stream<Arm> arms() {
-            return Stream.concat(cases.stream().map(Case::arm), otherwise.stream());
+            return Stream.concat(
+                    cases.stream().map(Case::arm),
+                    switch (otherwise) {
+                        case Default.None _ -> Stream.empty();
+                        case Default.Of(var arm) -> Stream.of(arm);
+                    });
         }
     }
 
@@ -138,6 +166,15 @@ sealed interface Node {
         public Case {
             constants = List.copyOf(constants);
         }
+    }
+
+    /// The `default` case of a [Switch].
+    sealed interface Default {
+        /// There is none: the cases cover every constant of the enum.
+        record None() implements Default {}
+
+        /// `default -> arm`.
+        record Of(Arm arm) implements Default {}
     }
 
     /// What a case of a [Switch] is.

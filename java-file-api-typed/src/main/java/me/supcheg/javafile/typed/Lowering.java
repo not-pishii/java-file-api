@@ -84,7 +84,7 @@ import java.util.stream.Stream;
 /// not of this class itself; that a checked exception is caught or declared
 /// (§9.1) and that a `switch` is exhaustive (§9.2) is checked before
 /// lowering, where each statement and each `switch` is built
-/// ([Exceptions], [SwitchCases]);
+/// ([Exceptions], [EnumSwitchCases]);
 /// this class performs the structural checks that are intrinsic to lowering
 /// itself: a variable must be in scope where it is referenced (enforced by
 /// the scope stack of [NameEnv]) and `break`/`continue` must target a loop
@@ -238,7 +238,7 @@ final class Lowering {
     ///
     /// @param type the type
     /// @param <T> the kind of token
-    /// @return `type`
+    /// @return the type given, verified
     /// @throws TargetClasspathMismatchException if a metamodel of `type` does not hold on the target classpath
     <T extends TypeToken<?>> T named(T type) {
         target.verify(type);
@@ -796,7 +796,7 @@ final class Lowering {
                 case Node.LambdaBody.Value(var _, var value) -> Exprs.typedLambda(coreParams, returned(value));
                 case Node.LambdaBody.Block(var block) -> {
                     List<Stmt> stmts = lowerBlock(block.instrs()).statements();
-                    yield Exprs.typedLambda(coreParams, cb -> stmts.forEach(cb));
+                    yield Exprs.typedLambda(coreParams, stmts::forEach);
                 }
             };
         } finally {
@@ -827,7 +827,10 @@ final class Lowering {
                                         new ConstantLabel(new FieldAccessExpr(Optional.empty(), constant.name())))
                                 .toList()),
                         caseBody(c.arm())));
-        Stream<SwitchCase> otherwise = switch_.otherwise().stream()
+        Stream<SwitchCase> otherwise = (switch (switch_.otherwise()) {
+                    case Node.Default.None _ -> Stream.<Node.Arm>empty();
+                    case Node.Default.Of(var arm) -> Stream.of(arm);
+                })
                 .map(arm -> new SwitchCase(NonEmptyList.copyOf(List.<CaseLabel>of(new DefaultLabel())), caseBody(arm)));
         return new SwitchExpr(selected, Stream.concat(cases, otherwise).toList());
     }

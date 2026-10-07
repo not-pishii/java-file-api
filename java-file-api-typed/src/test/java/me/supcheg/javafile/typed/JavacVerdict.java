@@ -3,25 +3,29 @@ package me.supcheg.javafile.typed;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.testing.compile.Compiler.javac;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /// A construction-time check of the typed layer told against javac, by the
 /// Java the typed code stands for: [#asJavac] where javac rejects that Java
 /// too — else the test could pass for a reason of its own —, [#unlikeJavac]
-/// where the typed layer is stricter and javac accepts it, and
-/// [#asJavacAccepts] for what both accept.
+/// where the typed layer is stricter and javac accepts it, [#asJavacWarns]
+/// where javac accepts it with a warning, and [#asJavacAccepts] for what
+/// both accept.
 ///
-/// The Java is given as the members of a class `Probe`, compiled without
-/// lints with `java.io`, `java.util`, `java.util.function`,
-/// `java.util.concurrent` and [Signal] imported.
+/// The Java is given as the members of a class `Probe`, compiled under
+/// every lint, as the rendered code of the tests is, with `java.io`,
+/// `java.util`, `java.util.function`, `java.util.concurrent` and [Signal]
+/// imported. What the typed layer accepts is told against its own render
+/// too: javac accepts that without a warning.
 final class JavacVerdict {
     private JavacVerdict() {}
 
@@ -33,8 +37,8 @@ final class JavacVerdict {
                     + "import " + Signal.class.getCanonicalName() + ";\n";
 
     private static Compilation compiled(String members) {
-        return javac().compile(
-                        JavaFileObjects.forSourceString("Probe", IMPORTS + "class Probe {\n" + members + "\n}\n"));
+        return javac().withOptions("-Xlint:all")
+                .compile(JavaFileObjects.forSourceString("Probe", IMPORTS + "class Probe {\n" + members + "\n}\n"));
     }
 
     /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects
@@ -69,9 +73,27 @@ final class JavacVerdict {
         unlikeJavac(IllegalStateException.class, typed, message, java);
     }
 
-    /// The typed layer accepts `typed`, and javac the Java it stands for.
-    static void asJavacAccepts(ThrowingCallable typed, String java) {
-        assertThatCode(typed).doesNotThrowAnyException();
+    /// The typed layer rejects `typed` with `message` where javac accepts the Java it stands for and warns
+    /// of it with `warning`: the typed layer renders no code javac warns of.
+    static void asJavacWarns(ThrowingCallable typed, String message, String java, String warning) {
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(typed).withMessageContaining(message);
+        javacWarns(java, warning);
+    }
+
+    /// javac accepts `java` and warns of it with `warning`.
+    static void javacWarns(String java, String warning) {
+        Compilation compilation = compiled(java);
+        CompilationSubject.assertThat(compilation).succeeded();
+        CompilationSubject.assertThat(compilation).hadWarningContaining(warning);
+    }
+
+    /// The typed layer accepts `typed`, javac the class it renders, under every lint and without a warning,
+    /// and the Java it stands for.
+    static void asJavacAccepts(Supplier<JavaFile> typed, String java) {
+        JavaFile file = typed.get();
+        CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
+                        .compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render())))
+                .succeededWithoutWarnings();
         CompilationSubject.assertThat(compiled(java)).succeeded();
     }
 }

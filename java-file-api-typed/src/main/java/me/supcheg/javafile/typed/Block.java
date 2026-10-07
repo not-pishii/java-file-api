@@ -439,7 +439,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B bodyBlock = child("body of for_");
         LoopCtl ctl = new LoopCtl(bodyBlock);
-        MutVar<T> var = new MutVar<>(type, "loop variable", bodyBlock);
+        MutVar<T> var = new MutVar<>(type, Var.LOOP_VARIABLE, bodyBlock);
         Expr<Prim.Bool> conditionExpr = condition.apply(var);
         requireReachableBody(conditionExpr, "for_");
         Node updateNode = Assignment.nodeOf(update.apply(var));
@@ -464,7 +464,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B bodyBlock = child("body of forEach");
         LoopCtl ctl = new LoopCtl(bodyBlock);
-        Var<T> var = new Var<>(element, "loop variable", bodyBlock);
+        Var<T> var = new Var<>(element, Var.LOOP_VARIABLE, bodyBlock);
         fill(bodyBlock, b -> body.accept(b, var, ctl));
         return append(new Instr.ForEach(ctl, var, iterable.node(), bodyBlock));
     }
@@ -532,13 +532,13 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         B bodyBlock = open("try block of try_", clauses.scope(), body);
         return continueWith(
                 clauses.statement(bodyBlock),
-                "try_ whose try block and every catch_ end, or whose finally_ ends,",
+                "try_ whose try block and every catch_ end",
                 "build it with tryTerminated, which returns the Terminated of this block");
     }
 
     /// Appends `try { body } catch ... finally ...` whose `try` block and
     /// every `catch` block end, and so ends this block. The `finally` block,
-    /// if any, is a plain block.
+    /// if any, completes normally ([FinallyBody]).
     ///
     /// As with [#try_(Consumer, Consumer)], the handlers come first and are
     /// built first, and a `catch_` that can catch nothing is rejected.

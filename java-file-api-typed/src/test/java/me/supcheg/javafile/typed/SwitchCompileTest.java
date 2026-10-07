@@ -71,8 +71,8 @@ class SwitchCompileTest {
                 String_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         String_.TOKEN,
                         c -> c.case_(Signal_.RED, literal("stop"))
                                 .case_(Signal_.AMBER, literal("wait"))
@@ -84,8 +84,8 @@ class SwitchCompileTest {
                 PrimitiveToken.BOOLEAN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         PrimitiveToken.BOOLEAN,
                         c -> c.case_(List.of(Signal_.RED, Signal_.AMBER), literal(false))
                                 .default_(literal(true)))));
@@ -96,8 +96,8 @@ class SwitchCompileTest {
                 String_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         String_.TOKEN,
                         c -> c.case_(
                                         Signal_.GREEN,
@@ -110,8 +110,8 @@ class SwitchCompileTest {
                 String_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         String_.TOKEN,
                         c -> c.case_(
                                         Signal_.AMBER,
@@ -124,8 +124,8 @@ class SwitchCompileTest {
                 Object_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         Object_.TOKEN,
                         c -> c.case_(Signal_.RED, literal("red"))
                                 .case_(Signal_.AMBER, y -> y.yield_(box(PrimitiveToken.INT, literal(1))))
@@ -137,8 +137,8 @@ class SwitchCompileTest {
                 Signal_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         Signal_.TOKEN,
                         c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
                                 .case_(Signal_.GREEN, enumConstant(Signal_.AMBER))
@@ -160,15 +160,15 @@ class SwitchCompileTest {
                 (b, s) -> b.return_(addInt(
                         call(
                                 switch_(
-                                        s,
                                         Signal_.TOKEN,
+                                        s,
                                         String_.TOKEN,
                                         c -> c.case_(Signal_.RED, literal("stop"))
                                                 .default_(literal("go"))),
                                 String_.length),
                         switch_(
-                                s,
                                 Signal_.TOKEN,
+                                s,
                                 PrimitiveToken.INT,
                                 c -> c.case_(Signal_.RED, literal(10))
                                         .case_(Signal_.AMBER, literal(20))
@@ -180,18 +180,18 @@ class SwitchCompileTest {
                 String_.TOKEN,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
+                        Signal_.TOKEN,
                         switch_(
-                                s,
                                 Signal_.TOKEN,
+                                s,
                                 Signal_.TOKEN,
                                 c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
                                         .default_(enumConstant(Signal_.RED))),
-                        Signal_.TOKEN,
                         String_.TOKEN,
                         c -> c.case_(Signal_.GREEN, literal("go"))
                                 .default_(switch_(
-                                        s,
                                         Signal_.TOKEN,
+                                        s,
                                         String_.TOKEN,
                                         inner -> inner.case_(Signal_.GREEN, literal("was green"))
                                                 .default_(literal("was amber")))))));
@@ -204,8 +204,8 @@ class SwitchCompileTest {
                 (b, s) -> b.return_(lambda(
                         STRINGS.sam,
                         () -> switch_(
-                                s,
                                 Signal_.TOKEN,
+                                s,
                                 String_.TOKEN,
                                 c -> c.case_(Signal_.RED, y -> y.yield_(literal("stop")))
                                         .default_(literal("go"))))));
@@ -216,8 +216,8 @@ class SwitchCompileTest {
                 STRINGS.token,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         STRINGS.token,
                         c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
                                 .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
@@ -227,8 +227,8 @@ class SwitchCompileTest {
                 "initial",
                 String_.TOKEN,
                 switch_(
-                        staticCall(Signal_.valueOf_String, literal("RED")),
                         Signal_.TOKEN,
+                        staticCall(Signal_.valueOf_String, literal("RED")),
                         String_.TOKEN,
                         c -> c.case_(Signal_.RED, y -> y.yield_(literal("r"))).default_(literal("?"))));
         cb.method("initial", String_.TOKEN, (b, self) -> b.return_(Expressions.field(self, initial)));
@@ -247,8 +247,8 @@ class SwitchCompileTest {
                         n -> b.let(
                                 String_.TOKEN,
                                 switch_(
-                                        s,
                                         Signal_.TOKEN,
+                                        s,
                                         String_.TOKEN,
                                         c -> c.case_(
                                                         Signal_.RED,
@@ -264,8 +264,8 @@ class SwitchCompileTest {
                 PrimitiveToken.INT,
                 Signal_.TOKEN,
                 (b, s) -> b.return_(switch_(
-                        s,
                         Signal_.TOKEN,
+                        s,
                         PrimitiveToken.INT,
                         c -> c.case_(
                                         Signal_.RED,
@@ -291,8 +291,8 @@ class SwitchCompileTest {
                         PrimitiveToken.INT,
                         Signal_.TOKEN,
                         (b, s) -> b.return_(switch_(
-                                s,
                                 Signal_.TOKEN,
+                                s,
                                 PrimitiveToken.INT,
                                 c -> c.case_(
                                                 Signal_.RED,
@@ -313,8 +313,8 @@ class SwitchCompileTest {
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
                         t -> t.return_(switch_(
-                                s,
                                 Signal_.TOKEN,
+                                s,
                                 PrimitiveToken.INT,
                                 c -> c.case_(
                                                 Signal_.RED,
