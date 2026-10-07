@@ -556,6 +556,25 @@ class SwitchChecksTest {
                             + " around the loop, not of its body: there, give the switch_ a case that is a value"
                             + " instead of a block",
                     "static int m(Signal s) { for (int i = 0; i < switch (s) { default -> { yield i; } }; i = i + 1) { } return 0; }");
+            // nor does a block of a statement of that block: it is of the block of the switch_ all the same
+            unlikeJavac(
+                    () -> intMethod((b, s) -> b.for_(
+                                    PrimitiveToken.INT,
+                                    literal(0),
+                                    i -> ltInt(
+                                            i,
+                                            intSwitch(
+                                                    s,
+                                                    c -> c.default_(y -> y.if_(
+                                                                    literal(true),
+                                                                    t -> t.let(PrimitiveToken.INT, i, v -> v))
+                                                            .yield_(literal(1))))),
+                                    i -> assign(i, addInt(i, literal(1))),
+                                    (_, _, _) -> {})
+                            .return_(literal(0))),
+                    "is used in the then-branch of if_ in block of default_ of switch_ in body of static method m,"
+                            + " which is not inside the body of the loop",
+                    "static int m(Signal s) { for (int i = 0; i < switch (s) { default -> { if (true) { int v = i; } yield 1; } }; i = i + 1) { } return 0; }");
             asJavacAccepts(
                     () -> intMethod((b, s) -> b.for_(
                                     PrimitiveToken.INT,
