@@ -1,8 +1,13 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.typed.fixtures.Op;
+import me.supcheg.javafile.typed.fixtures.Outer;
 import me.supcheg.javafile.typed.fixtures.Signal;
+import me.supcheg.javafile.typed.fixtures.Words;
 import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.io.StringReader_;
 import me.supcheg.javafile.typed.testfacts.java.lang.IllegalStateException_;
@@ -10,7 +15,11 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Nothing_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Op_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Outer_Level_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Words_;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +30,8 @@ import java.util.function.Supplier;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
+import static me.supcheg.javafile.typed.Expressions.assignAt;
+import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
@@ -29,7 +40,10 @@ import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.geInt;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.literalNull;
+import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
+import static me.supcheg.javafile.typed.Expressions.not;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +73,8 @@ class SwitchCompileTest {
                         cases(cb);
                         places(cb);
                         blocks(cb);
+                        enums(cb);
+                        syntax(cb);
                     }
                 }));
     }
@@ -325,6 +341,172 @@ class SwitchCompileTest {
                                                         body -> body.throw_(
                                                                 new_(IOException_.new_String, literal("red")))))
                                         .default_(y -> y.throw_(new_(IOException_.new_String, literal("other"))))))));
+    }
+
+    /// The enums a `switch` is over: constants with bodies, a nested enum, constants that are contextual
+    /// keywords, an enum without a constant.
+    private static <Self> void enums(TypedClassBuilder<Self> cb) {
+        cb.staticMethod(
+                "named",
+                String_.TOKEN,
+                Op_.TOKEN,
+                (b, op) -> b.return_(switch_(
+                        Op_.TOKEN,
+                        op,
+                        String_.TOKEN,
+                        c -> c.case_(Op_.ADD, literal("add")).case_(Op_.SUB, literal("sub")))));
+        cb.staticMethod(
+                "rank",
+                PrimitiveToken.INT,
+                Outer_Level_.TOKEN,
+                (b, level) -> b.return_(switch_(
+                        Outer_Level_.TOKEN,
+                        level,
+                        PrimitiveToken.INT,
+                        c -> c.case_(Outer_Level_.LOW, literal(0)).case_(Outer_Level_.HIGH, literal(1)))));
+        cb.staticMethod(
+                "word",
+                String_.TOKEN,
+                Words_.TOKEN,
+                (b, w) -> b.return_(switch_(
+                        Words_.TOKEN,
+                        w,
+                        String_.TOKEN,
+                        c -> c.case_(Words_.when, literal("when"))
+                                .case_(Words_.yield, y -> y.yield_(literal("yield")))
+                                .case_(List.of(Words_.record, Words_.var), literal("record or var"))
+                                .case_(Words_.sealed, literal("sealed"))
+                                .case_(Words_.permits, literal("permits")))));
+        cb.staticMethod(
+                "ofNothing",
+                String_.TOKEN,
+                Nothing_.TOKEN,
+                (b, n) -> b.return_(switch_(Nothing_.TOKEN, n, String_.TOKEN, c -> c.default_(literal("none")))));
+    }
+
+    /// Where the rendered code needs care: a `yield` before a parenthesis, and a `switch` as an index, an
+    /// array, the target of an assignment and the operand of `!`.
+    private static <Self> void syntax(TypedClassBuilder<Self> cb) {
+        ArrayToken<int[], Prim.Int> ints = PrimitiveToken.INT.array();
+
+        // yield (String) null;
+        cb.staticMethod(
+                "yieldsNull",
+                String_.TOKEN,
+                Signal_.TOKEN,
+                (b, s) -> b.return_(switch_(
+                        Signal_.TOKEN, s, String_.TOKEN, c -> c.default_(y -> y.yield_(literalNull(String_.TOKEN))))));
+        // yield ("a" + "b").length();
+        cb.staticMethod(
+                "yieldsLength",
+                PrimitiveToken.INT,
+                Signal_.TOKEN,
+                (b, s) -> b.return_(switch_(
+                        Signal_.TOKEN,
+                        s,
+                        PrimitiveToken.INT,
+                        c -> c.default_(y -> y.yield_(call(concat(literal("a"), literal("b")), String_.length))))));
+        // yield (switch (s) { ... }).trim();
+        cb.staticMethod(
+                "yieldsOfSwitch",
+                String_.TOKEN,
+                Signal_.TOKEN,
+                (b, s) -> b.return_(switch_(
+                        Signal_.TOKEN,
+                        s,
+                        String_.TOKEN,
+                        c -> c.default_(y -> y.yield_(call(
+                                switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in "))),
+                                String_.trim))))));
+        // yield ((Supplier<String>) (() -> "l")).get();
+        cb.staticMethod(
+                "yieldsOfLambda",
+                String_.TOKEN,
+                Signal_.TOKEN,
+                (b, s) -> b.return_(switch_(
+                        Signal_.TOKEN,
+                        s,
+                        String_.TOKEN,
+                        c -> c.default_(y -> y.yield_(call(lambda(STRINGS.sam, () -> literal("l")), STRINGS.get))))));
+
+        // int[] a = new int[3]; a[switch ...] = 7; (switch (s) { default -> a; })[0] = 5;
+        // return a[switch ...] + (switch (s) { default -> a; })[0];
+        cb.staticMethod(
+                "indexed",
+                PrimitiveToken.INT,
+                Signal_.TOKEN,
+                (b, s) -> b.let(
+                        ints,
+                        newArray(ints, literal(3)),
+                        a -> b.exec(assignAt(ints, a, rank(s), literal(7)))
+                                .exec(assignAt(
+                                        ints,
+                                        switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)),
+                                        literal(0),
+                                        literal(5)))
+                                .return_(addInt(
+                                        at(ints, a, rank(s)),
+                                        at(ints, switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)), literal(0))))));
+        // return !switch (s) { case RED -> true; default -> false; };
+        cb.staticMethod(
+                "notRed",
+                PrimitiveToken.BOOLEAN,
+                Signal_.TOKEN,
+                (b, s) -> b.return_(not(switch_(
+                        Signal_.TOKEN,
+                        s,
+                        PrimitiveToken.BOOLEAN,
+                        c -> c.case_(Signal_.RED, literal(true)).default_(literal(false))))));
+    }
+
+    /// `switch (s) { case RED -> 1; default -> 2; }`.
+    private static Expr<Prim.Int> rank(Expr<Signal> s) {
+        return switch_(
+                Signal_.TOKEN,
+                s,
+                PrimitiveToken.INT,
+                c -> c.case_(Signal_.RED, literal(1)).default_(literal(2)));
+    }
+
+    @Test
+    void aSwitchIsOverAnEnumWhoseConstantsHaveBodiesANestedOneAndOneWithoutAConstant() throws Throwable {
+        assertThat(compiled.invoke("named", Op.ADD)).isEqualTo("add");
+        assertThat(compiled.invoke("named", Op.SUB)).isEqualTo("sub");
+        assertThat(compiled.invoke("rank", Outer.Level.HIGH)).isEqualTo(1);
+        assertThatNullPointerException().isThrownBy(() -> compiled.invoke("ofNothing", (Object) null));
+        assertThat(compiled.source()).contains("import me.supcheg.javafile.typed.fixtures.Outer.Level;");
+    }
+
+    @Test
+    void aConstantThatIsAContextualKeywordIsTheLabelOfACase() throws Throwable {
+        assertThat(compiled.invoke("word", Words.when)).isEqualTo("when");
+        assertThat(compiled.invoke("word", Words.yield)).isEqualTo("yield");
+        assertThat(compiled.invoke("word", Words.var)).isEqualTo("record or var");
+        assertThat(compiled.invoke("word", Words.sealed)).isEqualTo("sealed");
+        assertThat(compiled.invoke("word", Words.permits)).isEqualTo("permits");
+        assertThat(compiled.source()).contains("case yield -> {").contains("case record, var ->");
+    }
+
+    @Test
+    void aYieldBeforeAParenthesisIsAYield() throws Throwable {
+        assertThat(compiled.invoke("yieldsNull", Signal.RED)).isNull();
+        assertThat(compiled.invoke("yieldsLength", Signal.RED)).isEqualTo(2);
+        assertThat(compiled.invoke("yieldsOfSwitch", Signal.RED)).isEqualTo("in");
+        assertThat(compiled.invoke("yieldsOfLambda", Signal.RED)).isEqualTo("l");
+        assertThat(compiled.source())
+                .contains("yield (String) null;")
+                .contains("yield (\"a\" + \"b\").length();")
+                .contains("yield (switch (v0) {")
+                .contains("yield ((Supplier<String>) (() -> \"l\")).get();");
+    }
+
+    @Test
+    void aSwitchIsAnIndexAnArrayTheTargetOfAnAssignmentAndTheOperandOfNot() throws Throwable {
+        assertThat(compiled.invoke("indexed", Signal.RED)).isEqualTo(12);
+        assertThat(compiled.invoke("indexed", Signal.GREEN)).isEqualTo(12);
+        assertThat(compiled.invoke("notRed", Signal.RED)).isEqualTo(false);
+        assertThat(compiled.invoke("notRed", Signal.GREEN)).isEqualTo(true);
+        assertThat(compiled.source()).contains("})[0] = 5;").contains("return !switch (v0) {");
     }
 
     @Test

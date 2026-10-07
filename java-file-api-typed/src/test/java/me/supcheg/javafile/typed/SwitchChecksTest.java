@@ -24,11 +24,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.ltInt;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
@@ -515,6 +517,52 @@ class SwitchChecksTest {
                     }
                     """,
                     "local variables referenced from a lambda expression must be final or effectively final");
+        }
+
+        @Test
+        void aBlockBuiltInTheConditionOfAForDoesNotSeeTheLoopVariableThoughItDoesToJavac() {
+            unlikeJavac(
+                    () -> intMethod((b, s) -> b.for_(
+                                    PrimitiveToken.INT,
+                                    literal(0),
+                                    i -> ltInt(i, intSwitch(s, c -> c.default_(y -> y.yield_(i)))),
+                                    i -> assign(i, addInt(i, literal(1))),
+                                    (_, _, _) -> {})
+                            .return_(literal(0))),
+                    "the loop variable of type int declared in the body of for_ in body of static method m is used"
+                            + " in the block of default_ of switch_ in body of static method m, which is not inside"
+                            + " the body of the loop: the variable is out of scope there. A lambda or a block of a"
+                            + " switch_ built in the condition or the update of a for_ is a block of the code"
+                            + " around the loop, not of its body: there, give the switch_ a case that is a value"
+                            + " instead of a block",
+                    "static int m(Signal s) { for (int i = 0; i < switch (s) { default -> { yield i; } }; i = i + 1) { } return 0; }");
+            asJavacAccepts(
+                    () -> intMethod((b, s) -> b.for_(
+                                    PrimitiveToken.INT,
+                                    literal(0),
+                                    i -> ltInt(i, intSwitch(s, c -> c.default_(i))),
+                                    i -> assign(i, addInt(i, literal(1))),
+                                    (_, _, _) -> {})
+                            .return_(literal(0))),
+                    "static int m(Signal s) { for (int i = 0; i < switch (s) { default -> i; }; i = i + 1) { } return 0; }");
+        }
+
+        @Test
+        void aCaseAddedWhileTheValueOfAnotherIsComputedComesBeforeIt() {
+            // the handle of the cases around is called from the cases of a switch nested in a value
+            asJavacAccepts(
+                    () -> intMethod((b, s) -> b.return_(intSwitch(
+                            s,
+                            c -> c.case_(Signal_.RED, intSwitch(s, inner -> {
+                                        c.case_(Signal_.AMBER, literal(2));
+                                        inner.default_(literal(1));
+                                    }))
+                                    .default_(literal(3))))),
+                    """
+                    static int m(Signal s) {
+                        return switch (s) { case AMBER -> 2; case RED -> switch (s) { default -> 1; }; default -> 3; };
+                    }
+                    """);
         }
 
         @Test
