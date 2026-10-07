@@ -25,8 +25,10 @@ import p.Shape;
 /// The full metamodel of [Shape], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Shape] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Shape]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shape.class, fingerprint = "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", complete = true, format = 10)
+@GeneratedMetamodel(of = Shape.class, fingerprint = "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

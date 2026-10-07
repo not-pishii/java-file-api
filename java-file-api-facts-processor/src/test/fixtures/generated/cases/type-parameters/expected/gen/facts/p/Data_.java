@@ -26,8 +26,10 @@ import org.jspecify.annotations.NullMarked;
 /// The full metamodel of [p.Data], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [p.Data] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [p.Data] by the proof `Data_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Data.class, fingerprint = "da0087ef78609ee98300ff71b367454137a8069b7b626f29611bfde6e6ff798f", complete = true, format = 10)
+@GeneratedMetamodel(of = p.Data.class, fingerprint = "da0087ef78609ee98300ff71b367454137a8069b7b626f29611bfde6e6ff798f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

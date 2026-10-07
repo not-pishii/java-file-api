@@ -27,8 +27,10 @@ import p.Open;
 /// The full metamodel of [Open], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Open] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Open] by the proof `Open_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Open.class, fingerprint = "fe24eff1e673a46fd93dcd791c6fa0644ae44d1f8294abab3f2dbc9fe7a1614b", complete = true, format = 10)
+@GeneratedMetamodel(of = Open.class, fingerprint = "fe24eff1e673a46fd93dcd791c6fa0644ae44d1f8294abab3f2dbc9fe7a1614b", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

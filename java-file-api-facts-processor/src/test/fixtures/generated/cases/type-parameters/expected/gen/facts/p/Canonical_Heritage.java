@@ -11,6 +11,11 @@ import org.jspecify.annotations.NullMarked;
 /// What a class that extends or implements [p.Canonical] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodelPart
+@SuppressWarnings({
+    "rawtypes",
+    "deprecation",
+    "removal"
+})
 @NullMarked
 public final class Canonical_Heritage implements Supplier<Told> {
     /// For the shape of the metamodel.

@@ -27,8 +27,10 @@ import org.jspecify.annotations.NullMarked;
 /// `@Facts` does not ask for [Serializable]: it is here as a supertype of [Integer], whose inherited members are called through this metamodel.
 ///
 /// A member [Serializable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Serializable] by the proof `Serializable_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 10)
+@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

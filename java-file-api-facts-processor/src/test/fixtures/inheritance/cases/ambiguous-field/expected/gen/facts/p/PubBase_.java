@@ -30,8 +30,10 @@ import p.PubBase;
 /// `@Facts` does not ask for [PubBase]: it is here as a supertype of [p.Impl2], whose inherited members are called through this metamodel.
 ///
 /// A member [PubBase] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [PubBase] by the proof `PubBase_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubBase.class, fingerprint = "27b61cde885cc849757c490bbabd45029a2532f270c88c754c0f85b5c5bb31d5", complete = true, format = 10)
+@GeneratedMetamodel(of = PubBase.class, fingerprint = "27b61cde885cc849757c490bbabd45029a2532f270c88c754c0f85b5c5bb31d5", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

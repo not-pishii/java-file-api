@@ -31,8 +31,10 @@ import p.Comp;
 /// The full metamodel of [Comp], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Comp] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Comp] by the proof `Comp_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comp.class, fingerprint = "8a827708b845a541b86b2169e2351e07be3f0d8f63be4f3b44c60c66704d3324", complete = true, format = 10)
+@GeneratedMetamodel(of = Comp.class, fingerprint = "8a827708b845a541b86b2169e2351e07be3f0d8f63be4f3b44c60c66704d3324", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

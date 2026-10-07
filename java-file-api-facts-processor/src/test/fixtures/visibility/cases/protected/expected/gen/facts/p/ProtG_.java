@@ -50,9 +50,11 @@ import p.ProtG;
 ///
 /// `p.ProtBase`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
+/// A generated class extends or implements [ProtG] by the proof `ProtG_Heritage` starts.
+///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 10)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -35,8 +35,10 @@ import p.Sh;
 /// These members have no fact:
 ///
 /// - `field x_, method <T>x()`, which would all be named x_
+///
+/// A generated class extends or implements [Sh] by the proof `Sh_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sh.class, fingerprint = "37850320452769bc67a5f0a7ff29eaa35f64e661b10bccd45d25904a6a674d9f", complete = true, format = 10)
+@GeneratedMetamodel(of = Sh.class, fingerprint = "37850320452769bc67a5f0a7ff29eaa35f64e661b10bccd45d25904a6a674d9f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

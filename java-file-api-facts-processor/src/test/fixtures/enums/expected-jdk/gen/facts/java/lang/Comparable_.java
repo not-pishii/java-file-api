@@ -36,9 +36,11 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Comparable] inherits has its fact in the metamodel of the supertype that declares it: [Object_].
 ///
+/// A generated class extends or implements [Comparable] by the proof `Comparable_Heritage` starts.
+///
 /// @param <T> a type argument of [Comparable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comparable.class, fingerprint = "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", complete = true, format = 10)
+@GeneratedMetamodel(of = Comparable.class, fingerprint = "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

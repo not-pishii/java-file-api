@@ -27,8 +27,10 @@ import p.OneWithout;
 /// The full metamodel of [OneWithout], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [OneWithout] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [NoneB_].
+///
+/// A generated class extends or implements [OneWithout] by the proof `OneWithout_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OneWithout.class, fingerprint = "9d2f73ff01017a851cc9f610d93c72976b7e45eef0619759b492aaa56154d7d8", complete = true, format = 10)
+@GeneratedMetamodel(of = OneWithout.class, fingerprint = "9d2f73ff01017a851cc9f610d93c72976b7e45eef0619759b492aaa56154d7d8", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

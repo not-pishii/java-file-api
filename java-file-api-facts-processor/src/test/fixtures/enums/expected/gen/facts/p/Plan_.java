@@ -30,8 +30,10 @@ import p.Plan;
 /// The full metamodel of [Plan], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Plan] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Plan]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plan.class, fingerprint = "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", complete = true, format = 10)
+@GeneratedMetamodel(of = Plan.class, fingerprint = "5e7b2681b704169a3d3e31157030be2606f4763054d2ae616ed2ece1a43e57d1", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

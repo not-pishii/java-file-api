@@ -35,8 +35,10 @@ import p.Base;
 /// The full metamodel of [Base], which `@Facts` asks for: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
 /// A member [Base] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Base] by the proof `Base_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Base.class, fingerprint = "dc54c327840af68aaca018d16ece32cb73c50c8f6fd790049d47490d47f126bf", complete = true, format = 10)
+@GeneratedMetamodel(of = Base.class, fingerprint = "dc54c327840af68aaca018d16ece32cb73c50c8f6fd790049d47490d47f126bf", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

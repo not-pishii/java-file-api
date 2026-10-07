@@ -36,10 +36,12 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Function] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Function] by the proof `Function_Heritage` starts.
+///
 /// @param <T> a type argument of [Function]
 /// @param <R> a type argument of [Function]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Function.class, fingerprint = "8388e7ddbbe8b9b468b5c8c2f0ef57f0f9d2079c957f52d5c39fd6b3a815164c", complete = true, format = 10)
+@GeneratedMetamodel(of = Function.class, fingerprint = "8388e7ddbbe8b9b468b5c8c2f0ef57f0f9d2079c957f52d5c39fd6b3a815164c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

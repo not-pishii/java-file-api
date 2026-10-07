@@ -34,9 +34,11 @@ import p.Arr;
 ///
 /// A member [Arr] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Arr] by the proof `Arr_Heritage` starts.
+///
 /// @param <T> a type argument of [Arr]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Arr.class, fingerprint = "efef12e1f617c0551e99da408e3b863a7aaa678041f8718b5945ee97803bf73a", complete = true, format = 10)
+@GeneratedMetamodel(of = Arr.class, fingerprint = "efef12e1f617c0551e99da408e3b863a7aaa678041f8718b5945ee97803bf73a", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

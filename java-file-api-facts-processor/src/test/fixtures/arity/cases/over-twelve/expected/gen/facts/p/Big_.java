@@ -37,8 +37,10 @@ import p.Big;
 /// - `constructor Big(int,int,int,int,int,int,int,int,int,int,int,int,int)`, which has 13 parameters, more than 12
 /// - `method thirteen(int,int,int,int,int,int,int,int,int,int,int,int,int)`, which has 13 parameters, more than 12
 /// - `method staticThirteen(int,int,int,int,int,int,int,int,int,int,int,int,int)`, which has 13 parameters, more than 12
+///
+/// A generated class extends or implements [Big] by the proof `Big_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Big.class, fingerprint = "2a2e66f95b5937e8e1ea169b7911e62c92a93cfc1aeac15307882202d735967f", complete = true, format = 10)
+@GeneratedMetamodel(of = Big.class, fingerprint = "2a2e66f95b5937e8e1ea169b7911e62c92a93cfc1aeac15307882202d735967f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

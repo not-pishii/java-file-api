@@ -36,8 +36,10 @@ import p.Color;
 /// A member [Color] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_] and [gen.facts.java.lang.Object_].
 ///
 /// `p.HLabel`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// No generated class extends or implements [Color]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Color.class, fingerprint = "2215dc4e3aaecdda6c3244ae58b99cfbacd4220d10eb32b45fb159ac72083f17", complete = true, format = 10)
+@GeneratedMetamodel(of = Color.class, fingerprint = "2215dc4e3aaecdda6c3244ae58b99cfbacd4220d10eb32b45fb159ac72083f17", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

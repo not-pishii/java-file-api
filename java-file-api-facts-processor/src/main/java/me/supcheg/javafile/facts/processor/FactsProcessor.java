@@ -656,7 +656,15 @@ public final class FactsProcessor extends AbstractProcessor {
                                         planned.subject() + ": no fact of " + skip.told(),
                                         about.reasons(),
                                         skip.origin()));
-                        yield MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken, about);
+                        yield MetamodelEmitter.full(
+                                metamodel,
+                                model,
+                                canonical,
+                                plan,
+                                targets,
+                                taken,
+                                about,
+                                Entry.of(planned.type(), model, elements));
                     }
                     case About.Mentioned about ->
                         MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about);
@@ -672,7 +680,8 @@ public final class FactsProcessor extends AbstractProcessor {
             }
             Optional<JavaFile> heritage =
                     switch (planned.about()) {
-                        case About.Full _ -> MetamodelEmitter.heritage(metamodel, model);
+                        case About.Full _ ->
+                            MetamodelEmitter.heritage(metamodel, model, Entry.of(planned.type(), model, elements));
                         case About.Mentioned _, About.Declined _ -> Optional.empty();
                     };
             if (heritage.isPresent()) {

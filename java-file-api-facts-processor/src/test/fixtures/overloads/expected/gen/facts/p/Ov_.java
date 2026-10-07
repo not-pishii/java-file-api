@@ -30,8 +30,10 @@ import p.Ov;
 /// The full metamodel of [Ov], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Ov] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Ov] by the proof `Ov_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "a2c68a0ed825cc9757049dda2437b7f8865a935ca53e221aba0f63e7564f85e1", complete = true, format = 10)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "a2c68a0ed825cc9757049dda2437b7f8865a935ca53e221aba0f63e7564f85e1", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

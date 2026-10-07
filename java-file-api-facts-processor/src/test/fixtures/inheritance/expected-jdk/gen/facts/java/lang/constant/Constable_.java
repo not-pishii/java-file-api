@@ -33,8 +33,10 @@ import org.jspecify.annotations.NullMarked;
 /// `@Facts` does not ask for [Constable]: it is here as a supertype of [p.Color], whose inherited members are called through this metamodel.
 ///
 /// A member [Constable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Constable] by the proof `Constable_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 10)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

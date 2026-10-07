@@ -44,8 +44,10 @@ import p.Covariant;
 /// A member [Covariant] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PubApi_].
 ///
 /// `p.Far`, `p.HiddenApi` and `p.Near`, supertypes that are not `public`, have no metamodels: the `public` members inherited from them are facts of this one.
+///
+/// A generated class extends or implements [Covariant] by the proof `Covariant_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 10)
+@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

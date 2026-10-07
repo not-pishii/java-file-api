@@ -33,8 +33,10 @@ import p.Diamond;
 /// A member [Diamond] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.Root`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [Diamond] by the proof `Diamond_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Diamond.class, fingerprint = "feb3e7dc3676ad2fa35b3092bedbf7f2bd8012209e495a6dad6a015f66d48374", complete = true, format = 10)
+@GeneratedMetamodel(of = Diamond.class, fingerprint = "feb3e7dc3676ad2fa35b3092bedbf7f2bd8012209e495a6dad6a015f66d48374", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

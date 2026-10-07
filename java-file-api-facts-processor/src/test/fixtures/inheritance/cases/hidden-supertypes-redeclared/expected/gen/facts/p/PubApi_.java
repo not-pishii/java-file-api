@@ -30,8 +30,10 @@ import p.PubApi;
 /// `@Facts` does not ask for [PubApi]: it is here as a supertype of [p.Covariant], whose inherited members are called through this metamodel.
 ///
 /// A member [PubApi] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [PubApi] by the proof `PubApi_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubApi.class, fingerprint = "47d010ffa628484c7d6c6baaaa337d9adefac643aab4cb1de2ad52c59885dee2", complete = true, format = 10)
+@GeneratedMetamodel(of = PubApi.class, fingerprint = "47d010ffa628484c7d6c6baaaa337d9adefac643aab4cb1de2ad52c59885dee2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

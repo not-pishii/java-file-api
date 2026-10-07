@@ -28,8 +28,10 @@ import p.Wide;
 /// The full metamodel of [Wide], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Wide] inherits has its fact in the metamodel of the supertype that declares it: [Two_].
+///
+/// A generated class extends or implements [Wide] by the proof `Wide_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Wide.class, fingerprint = "f1072036619581db90ab9f5cbd2497ec1c1a4602011cebaf68b533f9d82c0dc5", complete = true, format = 10)
+@GeneratedMetamodel(of = Wide.class, fingerprint = "f1072036619581db90ab9f5cbd2497ec1c1a4602011cebaf68b533f9d82c0dc5", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

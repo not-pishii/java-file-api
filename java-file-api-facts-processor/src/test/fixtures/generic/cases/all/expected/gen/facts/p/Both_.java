@@ -34,9 +34,11 @@ import p.Both;
 ///
 /// A member [Both] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Both] by the proof `Both_Heritage` starts.
+///
 /// @param <T> a type argument of [Both]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "fe06f095bf806d913d3a372fa4f1ed1fb1cf59b83261118b221e6492b1c40eb2", complete = true, format = 10)
+@GeneratedMetamodel(of = Both.class, fingerprint = "fe06f095bf806d913d3a372fa4f1ed1fb1cf59b83261118b221e6492b1c40eb2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -45,9 +45,11 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Enum] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_], [Comparable_], [Object_] and [gen.facts.java.lang.constant.Constable_].
 ///
+/// No generated class extends or implements [Enum]: no class extends java.lang.Enum but an enum or a record does.
+///
 /// @param <E> a type argument of [Enum]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 10)
+@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

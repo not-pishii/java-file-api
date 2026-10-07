@@ -28,8 +28,10 @@ import p.Run;
 /// The full metamodel of [Run], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Run] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Run] by the proof `Run_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Run.class, fingerprint = "6c0075c4bbd6f66c325f05c265745ffc65984bece89cd9202a1e48ac61751eec", complete = true, format = 10)
+@GeneratedMetamodel(of = Run.class, fingerprint = "6c0075c4bbd6f66c325f05c265745ffc65984bece89cd9202a1e48ac61751eec", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

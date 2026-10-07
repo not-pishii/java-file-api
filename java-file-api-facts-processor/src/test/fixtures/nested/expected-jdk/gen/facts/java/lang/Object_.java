@@ -38,8 +38,10 @@ import org.jspecify.annotations.NullMarked;
 /// The full metamodel of [Object]: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
 /// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Gen.St], whose inherited members are called through this metamodel.
+///
+/// A generated class extends or implements [Object] by the proof `Object_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 10)
+@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

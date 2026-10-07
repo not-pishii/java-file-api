@@ -33,9 +33,11 @@ import p.Fail;
 ///
 /// A member [Fail] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Fail] by the proof `Fail_Heritage` starts.
+///
 /// @param <X> a type argument of [Fail]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fail.class, fingerprint = "556492e061931e60f8ce32e6ad2fd0687184bbd9a6bbe78f6ead90c127e66a59", complete = true, format = 10)
+@GeneratedMetamodel(of = Fail.class, fingerprint = "556492e061931e60f8ce32e6ad2fd0687184bbd9a6bbe78f6ead90c127e66a59", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

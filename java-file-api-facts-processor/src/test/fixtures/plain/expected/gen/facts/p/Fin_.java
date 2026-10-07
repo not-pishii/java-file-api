@@ -31,8 +31,10 @@ import p.Fin;
 /// The full metamodel of [Fin], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Fin] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Fin]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 10)
+@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

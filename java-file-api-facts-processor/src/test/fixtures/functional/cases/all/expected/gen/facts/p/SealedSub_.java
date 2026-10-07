@@ -25,8 +25,10 @@ import p.SealedSub;
 /// The full metamodel of [SealedSub], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [SealedSub] inherits has its fact in the metamodel of the supertype that declares it: [Run_].
+///
+/// No generated class extends or implements [SealedSub]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedSub.class, fingerprint = "9d7232f71c0627d40b000216857d32e0b7ae9f6934684d0060ef721e62210c78", complete = true, format = 10)
+@GeneratedMetamodel(of = SealedSub.class, fingerprint = "9d7232f71c0627d40b000216857d32e0b7ae9f6934684d0060ef721e62210c78", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

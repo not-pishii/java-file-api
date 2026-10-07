@@ -27,8 +27,10 @@ import p.Outer.Deep.Deeper;
 /// The full metamodel of [Deeper], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Deeper] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Deeper] by the proof `Outer_Deep_Deeper_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Deeper.class, fingerprint = "978eefb39c30f9019a3c496a12783e723975f20512931f362155d5a08be0053a", complete = true, format = 10)
+@GeneratedMetamodel(of = Deeper.class, fingerprint = "978eefb39c30f9019a3c496a12783e723975f20512931f362155d5a08be0053a", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

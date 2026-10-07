@@ -35,9 +35,11 @@ import p.Sorted;
 ///
 /// A member [Sorted] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Sorted] by the proof `Sorted_Heritage` starts.
+///
 /// @param <T> a type argument of [Sorted]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sorted.class, fingerprint = "01bd5e4ae0ea1066763ace0598751cfa7e0884d734e38395436798a459ae3312", complete = true, format = 10)
+@GeneratedMetamodel(of = Sorted.class, fingerprint = "01bd5e4ae0ea1066763ace0598751cfa7e0884d734e38395436798a459ae3312", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

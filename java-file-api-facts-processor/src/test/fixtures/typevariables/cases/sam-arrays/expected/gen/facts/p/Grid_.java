@@ -34,10 +34,12 @@ import p.Grid;
 ///
 /// A member [Grid] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Grid] by the proof `Grid_Heritage` starts.
+///
 /// @param <A> a type argument of [Grid]
 /// @param <B> a type argument of [Grid]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 10)
+@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

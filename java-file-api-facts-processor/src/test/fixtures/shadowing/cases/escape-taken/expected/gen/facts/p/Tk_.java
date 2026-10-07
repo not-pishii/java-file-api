@@ -36,8 +36,10 @@ import p.Tk;
 /// These members have no fact:
 ///
 /// - `field Other`, which would be named Other_, a name the metamodel itself uses
+///
+/// A generated class extends or implements [Tk] by the proof `Tk_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tk.class, fingerprint = "b6ca76d9c1877bff9cda9574d2b183753a457a650be8eed3783b6bec996d5a4d", complete = true, format = 10)
+@GeneratedMetamodel(of = Tk.class, fingerprint = "b6ca76d9c1877bff9cda9574d2b183753a457a650be8eed3783b6bec996d5a4d", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

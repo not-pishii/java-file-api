@@ -33,9 +33,11 @@ import p.RawBound;
 ///
 /// A member [RawBound] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [RawBound] by the proof `RawBound_Heritage` starts.
+///
 /// @param <T> a type argument of [RawBound]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = RawBound.class, fingerprint = "368cbec77f502bfe6b43552ecdf1a85d41fd4926df62e89f7ec7e578f60ef735", complete = true, format = 10)
+@GeneratedMetamodel(of = RawBound.class, fingerprint = "368cbec77f502bfe6b43552ecdf1a85d41fd4926df62e89f7ec7e578f60ef735", complete = true, format = 11)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

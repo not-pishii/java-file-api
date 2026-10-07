@@ -35,8 +35,10 @@ import p.Point;
 /// A member [Point] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [gen.facts.java.lang.Record_].
 ///
 /// `p.HLabel`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// No generated class extends or implements [Point]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Point.class, fingerprint = "cc97550d3fc707c053a6cead4602b484c38b44c0319f78a301dc56d8b9d19de4", complete = true, format = 10)
+@GeneratedMetamodel(of = Point.class, fingerprint = "cc97550d3fc707c053a6cead4602b484c38b44c0319f78a301dc56d8b9d19de4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

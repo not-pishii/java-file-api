@@ -31,8 +31,10 @@ import p.GoneApi;
 /// These members have no fact:
 ///
 /// - `method gone(p.Secret)`, which mentions types that are not public: p.Secret
+///
+/// A generated class extends or implements [GoneApi] by the proof `GoneApi_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = GoneApi.class, fingerprint = "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", complete = true, format = 10)
+@GeneratedMetamodel(of = GoneApi.class, fingerprint = "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

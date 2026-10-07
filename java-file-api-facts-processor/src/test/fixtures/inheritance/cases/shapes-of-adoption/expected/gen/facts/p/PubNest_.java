@@ -34,8 +34,10 @@ import p.PubNest;
 /// These members have no fact:
 ///
 /// - `method make() of p.HNest`, which mentions types that are not public: p.HNest$In
+///
+/// A generated class extends or implements [PubNest] by the proof `PubNest_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubNest.class, fingerprint = "fa72aea049080a1a0634f53fd517759aa65d7b32fb136c88220773576377c19a", complete = true, format = 10)
+@GeneratedMetamodel(of = PubNest.class, fingerprint = "fa72aea049080a1a0634f53fd517759aa65d7b32fb136c88220773576377c19a", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

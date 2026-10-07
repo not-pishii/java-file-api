@@ -8,6 +8,7 @@ import me.supcheg.javafile.doc.DocRef;
 import me.supcheg.javafile.doc.DocTag;
 import me.supcheg.javafile.doc.DocText;
 import me.supcheg.javafile.type.ClassDescNames;
+import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -138,10 +139,18 @@ final class MetamodelDocs {
     /// @param plan the facts of a full metamodel and the members without one; empty for a token-only one
     /// @return the comment
     static DocComment type(
-            ClassDesc type, List<String> typeParams, Generics generics, About about, Optional<MemberPlan> plan) {
+            ClassDesc type,
+            List<String> typeParams,
+            Generics generics,
+            About about,
+            Optional<MemberPlan> plan,
+            Optional<EntryOf> entry) {
         Stream<DocBlock> description =
                 switch (about) {
-                    case About.Full full -> full(type, full, plan.orElseThrow());
+                    case About.Full full ->
+                        Stream.concat(
+                                full(type, full, plan.orElseThrow()),
+                                entry.stream().flatMap(told -> entry(type, told.holder(), told.entry())));
                     case About.Mentioned(List<TypeGraph.Reason> reasons) ->
                         Stream.of(
                                         tokenOnly(type),
@@ -383,6 +392,110 @@ final class MetamodelDocs {
                 words("What "),
                 link(type),
                 words(" was when this metamodel was generated. Its tokens are made from it."));
+    }
+
+    /// The entry of a type and the class that has it.
+    ///
+    /// @param holder the class of the heritage of the type
+    /// @param entry whether a generated class can extend or implement the type
+    record EntryOf(ClassDesc holder, Entry entry) {}
+
+    /// Whether a generated class can extend or implement the type, and how: a paragraph of the comment of
+    /// its full metamodel.
+    private static Stream<DocBlock> entry(ClassDesc type, ClassDesc holder, Entry entry) {
+        return switch (entry) {
+            case Entry.Offered _ ->
+                paragraph(Stream.of(
+                        words("A generated class extends or implements "),
+                        link(type),
+                        words(" by the proof "),
+                        code(holder.displayName()),
+                        words(" starts.")));
+            case Entry.Refused(String reason) ->
+                paragraph(Stream.of(
+                        words("No generated class extends or implements "), link(type), words(": " + reason + ".")));
+        };
+    }
+
+    private static List<DocTag> typeParamTags(List<TypeParam> typeParams, Entry.Offered offered) {
+        return typeParams.stream()
+                .<DocTag>map(param -> new DocTag.TypeParam(
+                        param.name(),
+                        DocText.of(
+                                param.name().equals(offered.self())
+                                        ? "the class being declared"
+                                        : "a type argument of the type")))
+                .toList();
+    }
+
+    /// The comment of the entry of a type: `extend` or `implement`.
+    ///
+    /// @param type the type
+    /// @param isInterface whether the type is implemented, not extended
+    /// @param typeParams the type parameters of the entry: those of the type, and the class being declared
+    /// @param offered the entry
+    /// @return the comment
+    static DocComment entry(ClassDesc type, boolean isInterface, List<TypeParam> typeParams, Entry.Offered offered) {
+        return new DocComment(
+                paragraph(
+                                Stream.of(
+                                        words("Starts the proof that a class being declared "
+                                                + (isInterface ? "implements " : "extends ")),
+                                        link(type),
+                                        words(
+                                                offered.steps().isEmpty()
+                                                        ? ", which has no abstract method: the proof is complete."
+                                                        : ": a step per abstract method follows, in the order of their names.")))
+                        .toList(),
+                Stream.of(
+                                Stream.<DocTag>of(
+                                        new DocTag.Param("type", DocText.of("the token of the type")),
+                                        new DocTag.Param("self", DocText.of("the token of the class being declared"))),
+                                typeParamTags(typeParams, offered).stream(),
+                                Stream.<DocTag>of(new DocTag.Return(DocText.of(
+                                        offered.steps().isEmpty() ? "the proof" : "the stage of the first step"))))
+                        .flatMap(Function.identity())
+                        .toList());
+    }
+
+    /// The comment of a stage of the proof.
+    ///
+    /// @param type the type
+    /// @param isInterface whether the type is implemented, not extended
+    /// @param typeParams the type parameters of the stage
+    /// @param offered the entry
+    /// @param taken the number of steps taken before the stage
+    /// @return the comment
+    static DocComment stage(
+            ClassDesc type, boolean isInterface, List<TypeParam> typeParams, Entry.Offered offered, int taken) {
+        return new DocComment(
+                paragraph(Stream.of(
+                                words("The proof that a class " + (isInterface ? "implements " : "extends ")),
+                                link(type),
+                                words(" after " + taken + " of its "
+                                        + offered.steps().size() + " steps.")))
+                        .toList(),
+                typeParamTags(typeParams, offered));
+    }
+
+    /// The comment of a step.
+    ///
+    /// @param step the step
+    /// @param last whether the proof is complete with it
+    /// @return the comment
+    static DocComment step(Entry.Step step, boolean last) {
+        return new DocComment(
+                paragraph(Stream.of(
+                                words("Takes how the class has the abstract method "),
+                                code(step.method().signature().toString()),
+                                words(", declared in "),
+                                code(ClassDescNames.qualifiedByDots(
+                                        step.method().declaredBy())),
+                                words(".")))
+                        .toList(),
+                List.of(
+                        new DocTag.Param("how", DocText.of("the implementation of the method")),
+                        new DocTag.Return(DocText.of(last ? "the proof, complete" : "the stage of the next step"))));
     }
 
     /// The comment of the class that holds the heritage of a type.

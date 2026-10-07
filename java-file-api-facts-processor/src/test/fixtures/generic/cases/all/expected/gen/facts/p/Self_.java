@@ -37,9 +37,11 @@ import p.Self;
 ///
 /// A member [Self] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Self] by the proof `Self_Heritage` starts.
+///
 /// @param <S> a type argument of [Self]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Self.class, fingerprint = "a6ea157101e8dafa8fd1176c0d5650391073e44651dd74de3361e16bb58a7b56", complete = true, format = 10)
+@GeneratedMetamodel(of = Self.class, fingerprint = "a6ea157101e8dafa8fd1176c0d5650391073e44651dd74de3361e16bb58a7b56", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

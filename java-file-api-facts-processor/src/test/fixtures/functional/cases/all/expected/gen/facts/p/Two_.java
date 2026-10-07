@@ -27,8 +27,10 @@ import p.Two;
 /// The full metamodel of [Two], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Two] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Two] by the proof `Two_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Two.class, fingerprint = "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", complete = true, format = 10)
+@GeneratedMetamodel(of = Two.class, fingerprint = "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

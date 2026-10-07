@@ -29,8 +29,10 @@ import p.Sub;
 /// The full metamodel of [Sub], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Sub] inherits has its fact in the metamodel of the supertype that declares it: [Super_].
+///
+/// A generated class extends or implements [Sub] by the proof `Sub_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub.class, fingerprint = "3da4230405e9d22c50107c8bcf404a835a2b378b40e378de1d44ca60b40b43dc", complete = true, format = 10)
+@GeneratedMetamodel(of = Sub.class, fingerprint = "3da4230405e9d22c50107c8bcf404a835a2b378b40e378de1d44ca60b40b43dc", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

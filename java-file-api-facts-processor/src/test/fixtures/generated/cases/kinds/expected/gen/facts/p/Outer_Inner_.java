@@ -27,8 +27,10 @@ import p.Outer.Inner;
 /// The full metamodel of [Inner], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Inner] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Inner] by the proof `Outer_Inner_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Inner.class, fingerprint = "0a9e31c995876aef1fc94e25aab3965b9b9e8cd1df1675909fdad19e4f727d26", complete = true, format = 10)
+@GeneratedMetamodel(of = Inner.class, fingerprint = "0a9e31c995876aef1fc94e25aab3965b9b9e8cd1df1675909fdad19e4f727d26", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

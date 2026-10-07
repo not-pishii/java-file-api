@@ -34,8 +34,10 @@ import p.Mid;
 /// A member [Mid] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.HiddenI`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [Mid] by the proof `Mid_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mid.class, fingerprint = "e4479035c9b5d8218ee3b4a2ec94d8eccd54dfdfd6ec0f682b7d383d8dee0633", complete = true, format = 10)
+@GeneratedMetamodel(of = Mid.class, fingerprint = "e4479035c9b5d8218ee3b4a2ec94d8eccd54dfdfd6ec0f682b7d383d8dee0633", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

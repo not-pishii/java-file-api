@@ -37,9 +37,11 @@ import p.Coll;
 ///
 /// A member [Coll] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Coll] by the proof `Coll_Heritage` starts.
+///
 /// @param <E> a type argument of [Coll]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 10)
+@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

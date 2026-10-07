@@ -31,8 +31,10 @@ import p.Seen;
 /// `@Facts` does not ask for [High]: it is here as a supertype of [p.Low], whose inherited members are called through this metamodel.
 ///
 /// A member [High] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [High] by the proof `High_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = High.class, fingerprint = "fe9d27fb2431e832b0f7efc05c82d39a941ce3dc3f1711c06633e789b9c9ec47", complete = true, format = 10)
+@GeneratedMetamodel(of = High.class, fingerprint = "fe9d27fb2431e832b0f7efc05c82d39a941ce3dc3f1711c06633e789b9c9ec47", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

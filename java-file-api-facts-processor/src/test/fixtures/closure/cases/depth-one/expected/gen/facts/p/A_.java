@@ -57,9 +57,11 @@ import p.Result;
 /// - `method marker()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method hidden()`, which mentions types that are not public: p.Hidden
 ///
+/// A generated class extends or implements [A] by the proof `A_Heritage` starts.
+///
 /// @param <T> a type argument of [A]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = A.class, fingerprint = "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", complete = true, format = 10)
+@GeneratedMetamodel(of = A.class, fingerprint = "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

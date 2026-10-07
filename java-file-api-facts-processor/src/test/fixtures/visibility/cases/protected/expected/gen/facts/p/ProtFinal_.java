@@ -29,8 +29,10 @@ import p.ProtFinal;
 /// A member [ProtFinal] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// The `protected` members have no facts: the type cannot be extended, and only a subclass reaches them.
+///
+/// No generated class extends or implements [ProtFinal]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "8d46fbe84cfa3368c8929f6d2dae23e49dca81ef3ee5631b76e0a2b0f0a143f4", complete = true, format = 10)
+@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "8d46fbe84cfa3368c8929f6d2dae23e49dca81ef3ee5631b76e0a2b0f0a143f4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

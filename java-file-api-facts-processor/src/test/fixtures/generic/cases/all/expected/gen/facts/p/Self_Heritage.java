@@ -1,5 +1,6 @@
 package gen.facts.p;
 
+import gen.facts.p.Self_Heritage.Extend;
 import gen.facts.p.Self_Heritage.Held;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.Constructor;
 import me.supcheg.javafile.facts.Heritage.Dispatch;
@@ -15,17 +18,27 @@ import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Implementation0;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.Steps;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
+import p.Self;
 
-/// What a class that extends or implements [p.Self] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
+/// What a class that extends or implements [Self] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodelPart
+@SuppressWarnings({
+    "rawtypes",
+    "deprecation",
+    "removal"
+})
 @NullMarked
 public final class Self_Heritage implements Supplier<Told> {
     /// For the shape of the metamodel.
@@ -41,7 +54,7 @@ public final class Self_Heritage implements Supplier<Told> {
     }
 
     static final class Held {
-        /// Every constructor and method of [p.Self] that is not private, as a member of it, whoever declares it.
+        /// Every constructor and method of [Self] that is not private, as a member of it, whoever declares it.
         static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12()), List.of(c0()));
 
         private Held() {
@@ -101,6 +114,37 @@ public final class Self_Heritage implements Supplier<Told> {
 
         private static Constructor c0() {
             return new Constructor(Visibility.PUBLIC, Signature.of("Self"), List.of(), List.of(), Arity.FIXED, List.of());
+        }
+    }
+
+    /// Starts the proof that a class being declared extends [Self]: a step per abstract method follows, in the order of their names.
+    ///
+    /// @param type the token of the type
+    /// @param self the token of the class being declared
+    /// @param <S> a type argument of the type
+    /// @param <Self_> the class being declared
+    /// @return the stage of the first step
+    public static <S extends Self<S>, Self_> Extend<S, Self_> extend(DeclaredToken<Self<S>> type, RefToken<Self_> self) {
+        return new Extend<>(UnsafeFacts.steps(type, self));
+    }
+
+    /// The proof that a class extends [Self] after 0 of its 1 steps.
+    ///
+    /// @param <S> a type argument of the type
+    /// @param <Self_> the class being declared
+    public static final class Extend<S extends Self<S>, Self_> {
+        private final Steps<Self_, Self<S>> steps;
+
+        private Extend(Steps<Self_, Self<S>> steps) {
+            this.steps = steps;
+        }
+
+        /// Takes how the class has the abstract method `me()`, declared in `Self`.
+        ///
+        /// @param how the implementation of the method
+        /// @return the proof, complete
+        public Complete<Self_, Self<S>> me(Implementation0<Self_, ? extends S> how) {
+            return this.steps.with(Signature.of("me"), how).complete();
         }
     }
 }

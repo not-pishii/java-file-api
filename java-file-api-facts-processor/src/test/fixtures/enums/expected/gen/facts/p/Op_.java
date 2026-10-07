@@ -36,8 +36,10 @@ import p.Op;
 /// The full metamodel of [Op], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Op] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_].
+///
+/// No generated class extends or implements [Op]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Op.class, fingerprint = "d4e1800ed71c2f5b6d6fb21117d8af63c60573ceb692ca9ba04eb09a9239327f", complete = true, format = 10)
+@GeneratedMetamodel(of = Op.class, fingerprint = "d4e1800ed71c2f5b6d6fb21117d8af63c60573ceb692ca9ba04eb09a9239327f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

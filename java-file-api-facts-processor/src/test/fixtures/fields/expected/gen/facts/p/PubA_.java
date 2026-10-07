@@ -31,8 +31,10 @@ import p.PubA;
 /// `@Facts` does not ask for [PubA]: it is here as a supertype of [p.Impl], whose inherited members are called through this metamodel.
 ///
 /// A member [PubA] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [PubA] by the proof `PubA_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubA.class, fingerprint = "a81589960333de4af38bf599d314d75395817de47d0beedc68e0add8d291b849", complete = true, format = 10)
+@GeneratedMetamodel(of = PubA.class, fingerprint = "a81589960333de4af38bf599d314d75395817de47d0beedc68e0add8d291b849", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,8 +30,10 @@ import p.Base;
 /// `@Facts` does not ask for [Base]: it is here as a supertype of [p.Sub3], whose inherited members are called through this metamodel.
 ///
 /// A member [Base] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Base] by the proof `Base_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Base.class, fingerprint = "68adff05e5e93d26b63bac9282e86971f236f0785dd92cd8644a6adcc52e205b", complete = true, format = 10)
+@GeneratedMetamodel(of = Base.class, fingerprint = "68adff05e5e93d26b63bac9282e86971f236f0785dd92cd8644a6adcc52e205b", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

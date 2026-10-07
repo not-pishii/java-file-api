@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Short]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Short.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Short.class, fingerprint = "77fcc26e8a4d83381898a157750d3b8467206c798da6a8508af1664f786c8291", complete = false, format = 10)
+@GeneratedMetamodel(of = Short.class, fingerprint = "77fcc26e8a4d83381898a157750d3b8467206c798da6a8508af1664f786c8291", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

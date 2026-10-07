@@ -27,8 +27,10 @@ import p.Sink;
 /// The full metamodel of [Sink], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Sink] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Sink]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 10)
+@GeneratedMetamodel(of = Sink.class, fingerprint = "011bac640e0d8369c71375bc5321c5a03781b1e3de2803ceee11aeab05f00b20", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

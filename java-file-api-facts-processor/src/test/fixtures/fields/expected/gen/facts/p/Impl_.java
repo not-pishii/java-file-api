@@ -27,8 +27,10 @@ import p.Impl;
 /// The full metamodel of [Impl], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Impl] inherits has its fact in the metamodel of the supertype that declares it: [PubA_] and [PubB_].
+///
+/// A generated class extends or implements [Impl] by the proof `Impl_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl.class, fingerprint = "a8cf4d473b79f588afa3734733577e35210122b5e6008d0abc967523f55ad175", complete = true, format = 10)
+@GeneratedMetamodel(of = Impl.class, fingerprint = "a8cf4d473b79f588afa3734733577e35210122b5e6008d0abc967523f55ad175", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

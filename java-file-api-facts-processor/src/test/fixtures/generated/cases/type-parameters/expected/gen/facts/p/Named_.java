@@ -30,11 +30,13 @@ import p.Named;
 ///
 /// A member [Named] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// No generated class extends or implements [Named]: its type parameter String is named like a class the proof mentions.
+///
 /// @param <Data_> a type argument of [Named]
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", complete = true, format = 10)
+@GeneratedMetamodel(of = Named.class, fingerprint = "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

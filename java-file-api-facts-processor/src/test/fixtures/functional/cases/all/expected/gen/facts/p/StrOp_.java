@@ -29,8 +29,10 @@ import p.StrOp;
 /// The full metamodel of [StrOp], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [StrOp] inherits has its fact in the metamodel of the supertype that declares it: [StrFn_].
+///
+/// A generated class extends or implements [StrOp] by the proof `StrOp_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrOp.class, fingerprint = "c615a5a1f7969ca8d66ec7be72fa7c69f0fd127fcd07ef50045fbf8bf9d6cbc7", complete = true, format = 10)
+@GeneratedMetamodel(of = StrOp.class, fingerprint = "c615a5a1f7969ca8d66ec7be72fa7c69f0fd127fcd07ef50045fbf8bf9d6cbc7", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -31,8 +31,10 @@ import p.WithDefault;
 /// The full metamodel of [WithDefault], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [WithDefault] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [WithDefault] by the proof `WithDefault_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithDefault.class, fingerprint = "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", complete = true, format = 10)
+@GeneratedMetamodel(of = WithDefault.class, fingerprint = "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

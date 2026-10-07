@@ -37,12 +37,14 @@ import p.Low;
 ///
 /// A member [Low] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// No generated class extends or implements [Low]: its type parameter p is named like a class the proof mentions.
+///
 /// @param <gen_> a type argument of [Low]
 /// @param <java_> a type argument of [Low]
 /// @param <me_> a type argument of [Low]
 /// @param <p_> a type argument of [Low]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "8e2413fbb769b669bae63168d9f4749ac55492d92d88eaa0cb36869f751a1c12", complete = true, format = 10)
+@GeneratedMetamodel(of = Low.class, fingerprint = "8e2413fbb769b669bae63168d9f4749ac55492d92d88eaa0cb36869f751a1c12", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

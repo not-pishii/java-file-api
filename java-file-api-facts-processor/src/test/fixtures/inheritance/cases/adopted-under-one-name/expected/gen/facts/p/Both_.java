@@ -34,8 +34,10 @@ import p.Both;
 ///
 /// - `field K of p.One`, which is ambiguous in p.Both with field K of p.Other
 /// - `field K of p.Other`, which is ambiguous in p.Both with field K of p.One
+///
+/// A generated class extends or implements [Both] by the proof `Both_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "a3eeda83c9ccbbd945ffc15c4c38a71d57b03537e229dc83fbfb6183ebde5b9f", complete = true, format = 10)
+@GeneratedMetamodel(of = Both.class, fingerprint = "a3eeda83c9ccbbd945ffc15c4c38a71d57b03537e229dc83fbfb6183ebde5b9f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

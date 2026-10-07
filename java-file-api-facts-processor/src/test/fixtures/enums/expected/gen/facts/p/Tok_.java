@@ -33,8 +33,10 @@ import p.Tok;
 /// The full metamodel of [Tok], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Tok] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Enum_] and [gen.facts.java.lang.Runnable_].
+///
+/// No generated class extends or implements [Tok]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 10)
+@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

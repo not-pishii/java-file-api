@@ -34,8 +34,10 @@ import p.Svc;
 /// The full metamodel of [Svc], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Svc] inherits has its fact in the metamodel of the supertype that declares it: [Base_] and [Marker_].
+///
+/// A generated class extends or implements [Svc] by the proof `Svc_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "f172632a28e6d6a7075c488790964b834f9b91f5e1eab902fd3c13aaa986b190", complete = true, format = 10)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "f172632a28e6d6a7075c488790964b834f9b91f5e1eab902fd3c13aaa986b190", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

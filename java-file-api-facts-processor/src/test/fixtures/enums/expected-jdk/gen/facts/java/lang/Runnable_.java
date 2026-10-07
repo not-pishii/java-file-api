@@ -29,8 +29,10 @@ import org.jspecify.annotations.NullMarked;
 /// `@Facts` does not ask for [Runnable]: it is here as a supertype of [p.Tok], whose inherited members are called through this metamodel.
 ///
 /// A member [Runnable] inherits has its fact in the metamodel of the supertype that declares it: [Object_].
+///
+/// A generated class extends or implements [Runnable] by the proof `Runnable_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 10)
+@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

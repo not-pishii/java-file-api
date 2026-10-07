@@ -29,8 +29,10 @@ import p.Hid;
 /// These members have no fact:
 ///
 /// - `method s()`, which mentions types that are not public: p.Secret
+///
+/// No generated class extends or implements [Hid]: its abstract method s() mentions p.Secret, which a class of another package cannot name.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Hid.class, fingerprint = "dfcb65bb081ce014a15b94d5f9a23a5584ec2e65650c5000783333a4c21d65e7", complete = true, format = 10)
+@GeneratedMetamodel(of = Hid.class, fingerprint = "dfcb65bb081ce014a15b94d5f9a23a5584ec2e65650c5000783333a4c21d65e7", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,8 +30,10 @@ import p.PStr;
 /// `@Facts` does not ask for [PStr]: it is here as a supertype of [p.PubAbs] and [p.PubFn2], whose inherited members are called through this metamodel.
 ///
 /// A member [PStr] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [PStr] by the proof `PStr_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PStr.class, fingerprint = "386e0bd62a728af4b2fde0a1d44183ec518657b487cb0fe3ece4778e20890da3", complete = true, format = 10)
+@GeneratedMetamodel(of = PStr.class, fingerprint = "386e0bd62a728af4b2fde0a1d44183ec518657b487cb0fe3ece4778e20890da3", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

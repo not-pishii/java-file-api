@@ -34,9 +34,11 @@ import p.Box;
 ///
 /// A member [Box] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Box] by the proof `Box_Heritage` starts.
+///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "a8f6433b03106c448e06a72e6b225bd50945e8a46e5ed54a752863afd797e061", complete = true, format = 10)
+@GeneratedMetamodel(of = Box.class, fingerprint = "a8f6433b03106c448e06a72e6b225bd50945e8a46e5ed54a752863afd797e061", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -28,8 +28,10 @@ import p.Gen;
 /// The full metamodel of [Gen], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Gen] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Gen]: its abstract method id(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "8c8bd4e6ba03225c6f269ff0d5c2fa489e6fbe296cac687241f00aecfd494da5", complete = true, format = 10)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "8c8bd4e6ba03225c6f269ff0d5c2fa489e6fbe296cac687241f00aecfd494da5", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"
