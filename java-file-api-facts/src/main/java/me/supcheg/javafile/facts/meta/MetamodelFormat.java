@@ -41,12 +41,14 @@ package me.supcheg.javafile.facts.meta;
 /// - 9: the full metamodel of a type a class can extend or implement tells
 ///   its heritage — every method and constructor such a class inherits or
 ///   could clash with —, as data of its shape and in its canonical form.
+/// - 10: the heritage is in a class of its own beside the metamodel, `X_Heritage`,
+///   so that what it is written with takes no name from the facts.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 9;
+    public static final int VERSION = 10;
 
     private MetamodelFormat() {}
 }

@@ -373,9 +373,14 @@ class FixtureRunTest {
         Path cases = fixtures.resolve("reuse/cases");
         assertThat(Snapshot.read(cases.resolve("a/expected")).files()).containsKey("a/facts/p/Dep_.java");
         assertThat(Snapshot.read(cases.resolve("b/expected")).files())
-                .containsOnlyKeys("b/facts/p/Other_.java", "index.txt");
+                .containsOnlyKeys("b/facts/p/Other_.java", "b/facts/p/Other_Heritage.java", "index.txt");
         assertThat(Snapshot.read(cases.resolve("c/expected")).files())
-                .containsOnlyKeys("c/facts/p/Other_.java", "c/facts/p/Dep_.java", "index.txt", "diagnostics.txt")
+                .containsOnlyKeys(
+                        "c/facts/p/Other_.java",
+                        "c/facts/p/Other_Heritage.java",
+                        "c/facts/p/Dep_.java",
+                        "index.txt",
+                        "diagnostics.txt")
                 .hasEntrySatisfying(
                         "diagnostics.txt",
                         diagnostics -> assertThat(diagnostics)
@@ -533,7 +538,7 @@ class FixtureRunTest {
                 .contains(number)
                 .allMatch(Snapshot::platform);
         assertThat(Snapshot.read(root.resolve("cases/a/expected")).files().keySet())
-                .containsExactlyInAnyOrder("gen/facts/p/Thing_.java", "index.txt");
+                .containsExactlyInAnyOrder("gen/facts/p/Thing_.java", "gen/facts/p/Thing_Heritage.java", "index.txt");
         assertThat(Snapshot.read(root.resolve("cases/c/expected")).files())
                 .containsKey(number)
                 .hasEntrySatisfying(

@@ -32,7 +32,7 @@ import p.Fin;
 ///
 /// A member [Fin] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 9)
+@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

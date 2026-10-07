@@ -33,7 +33,7 @@ import p.Rec;
 ///
 /// A member [Rec] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Record_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Rec.class, fingerprint = "753d7505a575041e68b0a662ff6a49d321169d0479ed5c40c7b8340151a7d235", complete = true, format = 9)
+@GeneratedMetamodel(of = Rec.class, fingerprint = "753d7505a575041e68b0a662ff6a49d321169d0479ed5c40c7b8340151a7d235", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -123,7 +123,7 @@ class ReuseTest {
         // round 1 writes the full Other_, which takes the token of Dep from the token-only a.facts.p.Dep_
         // of the classpath: a token of Dep whatever gen.Late turns out to extend. Round 2 finds Dep to be
         // a supertype, for which the token-only metamodel is not enough: its full one is generated
-        assertThat(b.sources().keySet())
+        assertThat(b.metamodels())
                 .containsExactlyInAnyOrder("gen.Late", "b.facts.p.Other_", "b.facts.p.Dep_", "b.facts.gen.Late_");
         assertThat(b.sources().get("b.facts.p.Dep_")).contains("complete = true");
         assertThat(b.sources().get("b.facts.p.Other_")).contains("a.facts.p.Dep_.Data.SHAPE");
@@ -139,14 +139,14 @@ class ReuseTest {
                 .classpath(v1, full)
                 .compile(generator("b", "p.Dep.class"))
                 .orFail();
-        assertThat(requested.sources().keySet()).containsExactlyInAnyOrderElementsOf(withObject("b.facts"));
+        assertThat(requested.metamodels()).containsExactlyInAnyOrderElementsOf(withObject("b.facts"));
         assertThat(requested.diagnostics()).isEmpty();
 
         Compiled mentioned = Javac.facts()
                 .classpath(v1, full)
                 .compile(generator("b", "p.Other.class"))
                 .orFail();
-        assertThat(mentioned.sources().keySet())
+        assertThat(mentioned.metamodels())
                 .containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Other_"));
         assertThat(mentioned.diagnostics()).isEmpty();
     }
@@ -160,7 +160,7 @@ class ReuseTest {
                 .compile(generator("b", "p.Dep.class"))
                 .orFail();
 
-        assertThat(b.sources().keySet()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
+        assertThat(b.metamodels()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(b.warnings())
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated"
                         + " from a different p.Dep; generating b.facts.p.Dep_");
@@ -176,7 +176,7 @@ class ReuseTest {
                 .compile(generator("b", "p.Dep.class"))
                 .orFail();
 
-        assertThat(b.sources().keySet()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
+        assertThat(b.metamodels()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(b.warnings())
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of format "
                         + (MetamodelFormat.VERSION - 1) + ", not of format " + MetamodelFormat.VERSION
@@ -210,7 +210,7 @@ class ReuseTest {
                 .compile(generator("b", "p.Dep.class"))
                 .orFail();
 
-        assertThat(b.sources().keySet()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
+        assertThat(b.metamodels()).containsExactlyInAnyOrderElementsOf(withObject("b.facts", "b.facts.p.Dep_"));
         assertThat(b.warnings())
                 .containsExactly("metamodel x.facts.p.Dep_ on the classpath is of an older format, not of format "
                         + MetamodelFormat.VERSION + ", which this processor generates; generating b.facts.p.Dep_");
@@ -228,7 +228,7 @@ class ReuseTest {
                 .compile(generator("b", "p.Other.class, p.Svc.class"))
                 .orFail();
 
-        assertThat(b.sources().keySet()).containsExactlyInAnyOrder("b.facts.p.Other_", "b.facts.p.Svc_");
+        assertThat(b.metamodels()).containsExactlyInAnyOrder("b.facts.p.Other_", "b.facts.p.Svc_");
         assertThat(b.warnings())
                 .containsExactly(
                         "META-INF/javafile/metamodel/full/p.Other names x.facts.p.Other_, which is not on the"

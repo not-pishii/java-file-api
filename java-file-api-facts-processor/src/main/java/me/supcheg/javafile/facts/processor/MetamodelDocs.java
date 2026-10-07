@@ -385,7 +385,7 @@ final class MetamodelDocs {
                 words(" was when this metamodel was generated. Its tokens are made from it."));
     }
 
-    /// The comment of the nested class `Data.Inherited`.
+    /// The comment of the class that holds the heritage of a type.
     ///
     /// @param type the type the metamodel is of
     /// @return the comment
@@ -393,10 +393,26 @@ final class MetamodelDocs {
         return sentence(
                 words("What a class that extends or implements "),
                 link(type),
-                words(" inherits, loaded only when one is declared."));
+                words(" inherits: the heritage the shape of its metamodel tells, loaded only when one is declared."));
     }
 
-    /// The comment of `Data.Inherited.HERITAGE`.
+    /// The comment of the method that gives the heritage.
+    ///
+    /// @return the comment
+    static DocComment heritageGiven() {
+        return new DocComment(
+                paragraph(Stream.of(words("The heritage."))).toList(),
+                List.of(new DocTag.Return(DocText.of("the heritage, made when it is first asked for"))));
+    }
+
+    /// The comment of the constructor of the class that holds the heritage.
+    ///
+    /// @return the comment
+    static DocComment heritageHolder() {
+        return sentence(words("For the shape of the metamodel."));
+    }
+
+    /// The comment of the field holding the heritage.
     ///
     /// @param type the type the metamodel is of
     /// @return the comment

@@ -100,6 +100,17 @@ public record Compiled(
         return generated.stream().collect(Collectors.toMap(Source::name, Source::text, (a, _) -> a, TreeMap::new));
     }
 
+    /// The generated classes that are no holders of a heritage (`X_Heritage`, which each full metamodel
+    /// of a type a class can extend or implement has beside it): the metamodels, and what other
+    /// processors generated.
+    ///
+    /// @return the qualified names, sorted
+    public List<String> metamodels() {
+        return sources().keySet().stream()
+                .filter(name -> !name.endsWith("_Heritage"))
+                .toList();
+    }
+
     /// The resources written to the class output — the index of
     /// metamodels under `META-INF` — by path.
     ///

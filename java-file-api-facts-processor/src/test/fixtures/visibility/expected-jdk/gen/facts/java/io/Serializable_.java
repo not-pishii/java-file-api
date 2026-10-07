@@ -2,7 +2,6 @@ package gen.facts.java.io;
 
 import gen.facts.java.io.Serializable_.Canonical;
 import gen.facts.java.io.Serializable_.Data;
-import gen.facts.java.io.Serializable_.Data.Inherited;
 import java.io.Serializable;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -11,7 +10,6 @@ import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
-import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
@@ -30,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Serializable] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 9)
+@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,19 +39,9 @@ public final class Serializable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Serializable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Serializable_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [Serializable] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [Serializable] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(), List.of());
-
-            private Inherited() {
-            }
         }
     }
 

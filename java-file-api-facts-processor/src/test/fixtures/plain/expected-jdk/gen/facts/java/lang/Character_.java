@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Character]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Character.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Character.class, fingerprint = "f982a3a0a58c72b7d785baf4eb6355bb5d4179d8f1789e75d1ff5d70991910e2", complete = false, format = 9)
+@GeneratedMetamodel(of = Character.class, fingerprint = "f982a3a0a58c72b7d785baf4eb6355bb5d4179d8f1789e75d1ff5d70991910e2", complete = false, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

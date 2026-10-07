@@ -2,7 +2,6 @@ package gen.facts.p;
 
 import gen.facts.p.ProtG_.Canonical;
 import gen.facts.p.ProtG_.Data;
-import gen.facts.p.ProtG_.Data.Inherited;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -14,14 +13,6 @@ import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
 import me.supcheg.javafile.facts.FieldRef;
-import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Constructor;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
-import me.supcheg.javafile.facts.Heritage.Method;
-import me.supcheg.javafile.facts.Heritage.Result;
-import me.supcheg.javafile.facts.Heritage.Result.Of;
-import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef2;
@@ -48,8 +39,6 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
-import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
@@ -63,7 +52,7 @@ import p.ProtG;
 ///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 9)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -74,111 +63,9 @@ public final class ProtG_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtG] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG"))), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG"))), false, new ProtG_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [ProtG] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [ProtG] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12(), m13(), m14(), m15(), m16(), m17(), m18(), m19(), m20()), List.of(c0(), c1()));
-
-            private Inherited() {
-            }
-
-            private static Method m0() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("p.ProtBase"), Signature.of("adopted"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m1() {
-                return new Method(Visibility.PROTECTED, Dispatch.STATIC, ClassDesc.of("p.ProtBase"), Signature.of("adoptedStatic"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m2() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("clone"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.Object"))), List.of(Types.of(ClassDesc.of("java.lang.CloneNotSupportedException"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m3() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(), List.of(Types.of(ClassDesc.of("java.lang.Object"))), Arity.FIXED, new Of(PrimitiveTypeRef.BOOLEAN), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
-            }
-
-            private static Method m4() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("finalize"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.Throwable"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m5() {
-                return new Method(Visibility.PROTECTED, Dispatch.FINAL, ClassDesc.of("p.ProtG"), Signature.of("fixed"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m6() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("p.ProtG"), Signature.of("get"), List.of(), List.of(), Arity.FIXED, new Of(Types.typeVar("T")), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m7() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("getClass"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()))), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m8() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("hashCode"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m9() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notify"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m10() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notifyAll"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m11() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("p.ProtG"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), List.of(new TypeParam("X", List.of())), List.of(Types.typeVar("X"), Types.typeVar("T")), Arity.FIXED, new Of(Types.typeVar("X")), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"), ClassDesc.of("java.lang.Object"))), List.of());
-            }
-
-            private static Method m12() {
-                return new Method(Visibility.PACKAGE, Dispatch.CONCRETE, ClassDesc.of("p.ProtBase"), Signature.of("pkg"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m13() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("p.ProtG"), Signature.of("pub"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m14() {
-                return new Method(Visibility.PROTECTED, Dispatch.STATIC, ClassDesc.of("p.ProtG"), Signature.of("reset"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m15() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("p.ProtG"), Signature.of("set", Param.var(0)), List.of(), List.of(Types.typeVar("T")), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.io.IOException"))), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
-            }
-
-            private static Method m16() {
-                return new Method(Visibility.PROTECTED, Dispatch.STATIC, ClassDesc.of("p.ProtG"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number"))), List.of(new TypeParam("X", List.of(Types.of(ClassDesc.of("java.lang.Number"))))), List.of(Types.typeVar("X")), Arity.FIXED, new Of(Types.typeVar("X")), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Number"))), List.of());
-            }
-
-            private static Method m17() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("toString"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m18() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m19() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(), List.of(PrimitiveTypeRef.LONG), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long)), List.of());
-            }
-
-            private static Method m20() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.LONG, PrimitiveTypeRef.INT), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long, ConstantDescs.CD_int)), List.of());
-            }
-
-            private static Constructor c0() {
-                return new Constructor(Visibility.PROTECTED, Signature.of("ProtG", Param.var(0)), List.of(), List.of(Types.typeVar("T")), Arity.FIXED, List.of(Types.of(ClassDesc.of("java.io.IOException"))));
-            }
-
-            private static Constructor c1() {
-                return new Constructor(Visibility.PUBLIC, Signature.of("ProtG"), List.of(), List.of(), Arity.FIXED, List.of());
-            }
         }
     }
 

@@ -222,7 +222,7 @@ class JdkTypesTest {
         for (String types : List.of(TYPES, GENERIC_TYPES)) {
             Compiled compiled = processed(types);
             Loaded loaded = load(compiled);
-            List<TypeShape<?>> shapes = compiled.sources().keySet().stream()
+            List<TypeShape<?>> shapes = compiled.metamodels().stream()
                     .<TypeShape<?>>map(loaded::shape)
                     .toList();
 

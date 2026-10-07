@@ -9,14 +9,6 @@ import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
-import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Constructor;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
-import me.supcheg.javafile.facts.Heritage.Method;
-import me.supcheg.javafile.facts.Heritage.Result;
-import me.supcheg.javafile.facts.Heritage.Result.Of;
-import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -39,19 +31,15 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
-import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import u.facts.java.lang.Object_.Canonical;
 import u.facts.java.lang.Object_.Data;
-import u.facts.java.lang.Object_.Data.Inherited;
 
 /// The full metamodel of [Object]: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
 /// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Svc], whose inherited members are called through this metamodel.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 9)
+@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -62,67 +50,9 @@ public final class Object_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Object] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("u.facts.java.lang.Object_"), "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("u.facts.java.lang.Object_"), "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, new Object_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [Object] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [Object] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10()), List.of(c0()));
-
-            private Inherited() {
-            }
-
-            private static Method m0() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("clone"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.Object"))), List.of(Types.of(ClassDesc.of("java.lang.CloneNotSupportedException"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m1() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(), List.of(Types.of(ClassDesc.of("java.lang.Object"))), Arity.FIXED, new Of(PrimitiveTypeRef.BOOLEAN), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
-            }
-
-            private static Method m2() {
-                return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("finalize"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.Throwable"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m3() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("getClass"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()))), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m4() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("hashCode"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m5() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notify"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m6() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notifyAll"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m7() {
-                return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("toString"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
-            }
-
-            private static Method m8() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of()), List.of());
-            }
-
-            private static Method m9() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(), List.of(PrimitiveTypeRef.LONG), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long)), List.of());
-            }
-
-            private static Method m10() {
-                return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.LONG, PrimitiveTypeRef.INT), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long, ConstantDescs.CD_int)), List.of());
-            }
-
-            private static Constructor c0() {
-                return new Constructor(Visibility.PUBLIC, Signature.of("Object"), List.of(), List.of(), Arity.FIXED, List.of());
-            }
         }
     }
 

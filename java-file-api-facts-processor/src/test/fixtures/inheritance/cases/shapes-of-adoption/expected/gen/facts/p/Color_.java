@@ -37,7 +37,7 @@ import p.Color;
 ///
 /// `p.HLabel`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Color.class, fingerprint = "2215dc4e3aaecdda6c3244ae58b99cfbacd4220d10eb32b45fb159ac72083f17", complete = true, format = 9)
+@GeneratedMetamodel(of = Color.class, fingerprint = "2215dc4e3aaecdda6c3244ae58b99cfbacd4220d10eb32b45fb159ac72083f17", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"

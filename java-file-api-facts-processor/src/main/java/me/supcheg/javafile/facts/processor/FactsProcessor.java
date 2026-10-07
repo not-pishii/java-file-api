@@ -670,6 +670,19 @@ public final class FactsProcessor extends AbstractProcessor {
                     .openWriter()) {
                 writer.write(MetamodelEmitter.source(file));
             }
+            Optional<JavaFile> heritage =
+                    switch (planned.about()) {
+                        case About.Full _ -> MetamodelEmitter.heritage(metamodel, model);
+                        case About.Mentioned _, About.Declined _ -> Optional.empty();
+                    };
+            if (heritage.isPresent()) {
+                try (Writer writer = processingEnv
+                        .getFiler()
+                        .createSourceFile(heritage.get().qualifiedName(), originating)
+                        .openWriter()) {
+                    writer.write(MetamodelEmitter.source(heritage.get()));
+                }
+            }
             index.publish(planned.completeness(), planned.binaryName(), metamodel, originating);
         } catch (IOException e) {
             throw new UncheckedIOException("cannot write " + name, e);

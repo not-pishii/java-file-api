@@ -2,7 +2,6 @@ package gen.facts.p;
 
 import gen.facts.p.Iface_.Canonical;
 import gen.facts.p.Iface_.Data;
-import gen.facts.p.Iface_.Data.Inherited;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
-import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
@@ -28,7 +26,7 @@ import p.Iface;
 ///
 /// A member [Iface] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", complete = true, format = 9)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", complete = true, format = 10)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,19 +37,9 @@ public final class Iface_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Iface] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, () -> Inherited.HERITAGE);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Iface_Heritage());
 
         private Data() {
-        }
-
-        /// What a class that extends or implements [Iface] inherits, loaded only when one is declared.
-        @GeneratedMetamodelPart
-        static final class Inherited {
-            /// Every constructor and method of [Iface] that is not private, as a member of it, whoever declares it.
-            static final Told HERITAGE = new Told(List.of(), List.of());
-
-            private Inherited() {
-            }
         }
     }
 
