@@ -76,24 +76,38 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             this.advice = advice;
         }
 
-        String advice(boolean inFinally) {
-            return inFinally
-                    ? "a finally block completes normally, so a form that cannot is not expressible in it:"
-                            + " give it a way to complete, or leave it out of the finally block"
-                    : advice;
+        String advice(Nesting nesting) {
+            return switch (nesting) {
+                case FINALLY_BLOCK ->
+                    "a finally block completes normally, so a form that cannot is not expressible in it:"
+                            + " give it a way to complete, or leave it out of the finally block";
+                case PLAIN, LAMBDA_BODY, SWITCH_BLOCK -> advice;
+            };
         }
     }
 
     /// What a block is to the block it is nested in.
     enum Nesting {
-        /// A block of a statement — a branch, a loop body, a `try`, `catch` or `finally` block — or
-        /// the body of a member.
+        /// A block of a statement — a branch, a loop body, a `try` or `catch` block — or the body of
+        /// a member.
         PLAIN,
+        /// The `finally` block of a `try`, which completes normally: it has no form that ends it
+        /// ([FinallyBody]). To the scopes it is a block of a statement, as [#PLAIN] is.
+        FINALLY_BLOCK,
         /// The body of a lambda: a [MutVar] and a [LoopCtl] do not cross into it.
         LAMBDA_BODY,
         /// The block of a case of a `switch` expression: a [LoopCtl] does not cross into it
         /// (JLS 15.28.1), a [MutVar] does.
-        SWITCH_BLOCK
+        SWITCH_BLOCK;
+
+        /// Whether a block nested so is a block of an expression — the body of a lambda or a block
+        /// of a `switch` —, not of a statement of the block it is nested in.
+        boolean ofExpression() {
+            return switch (this) {
+                case PLAIN, FINALLY_BLOCK -> false;
+                case LAMBDA_BODY, SWITCH_BLOCK -> true;
+            };
+        }
     }
 
     private final @Nullable Block<?, ?> parent;
@@ -102,7 +116,6 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     private final ExceptionScope exceptionScope;
     private final List<Instr> instrs = new ArrayList<>();
     private @Nullable String endedBy;
-    private boolean finallyBlock;
 
     Block(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
         this.parent = parent;
@@ -113,17 +126,19 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     abstract B self();
 
-    /// Marks this block as the `finally` block of a `try`, which completes normally: what is
-    /// said of a form that cannot complete normally in it is said so.
-    ///
-    /// @return this block
-    final B markFinally() {
-        finallyBlock = true;
-        return self();
+    /// Creates a block nested in this one, of the same kind.
+    abstract B child(String what, Nesting nesting, ExceptionScope exceptionScope);
+
+    /// Creates a block of a statement nested in this one, of the same kind.
+    final B child(String what, ExceptionScope exceptionScope) {
+        return child(what, Nesting.PLAIN, exceptionScope);
     }
 
-    /// Creates a block nested in this one, of the same kind.
-    abstract B child(String what, ExceptionScope exceptionScope);
+    /// Creates the `finally` block of a `try` of this block, of the same kind, that hands the
+    /// exceptions thrown in it to this one.
+    final B finallyChild(String what) {
+        return child(what, Nesting.FINALLY_BLOCK, ExceptionScope.PASSES);
+    }
 
     /// Creates a block nested in this one, of the same kind, that hands
     /// the exceptions thrown in it to this one.
@@ -183,7 +198,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         if (!Reachability.canCompleteNormally(instr)) {
             throw new IllegalStateException(form + " in the " + path()
                     + " cannot complete normally, so a statement after it would be unreachable (JLS 14.22); "
-                    + instead.advice(finallyBlock));
+                    + instead.advice(nesting));
         }
         instrs.add(instr);
         return self();

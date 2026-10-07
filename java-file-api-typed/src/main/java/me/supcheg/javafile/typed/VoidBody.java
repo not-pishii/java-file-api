@@ -56,8 +56,8 @@ public final class VoidBody extends Block<Void, VoidBody> {
     }
 
     @Override
-    VoidBody child(String what, ExceptionScope exceptionScope) {
-        return new VoidBody(this, Nesting.PLAIN, what, exceptionScope);
+    VoidBody child(String what, Nesting nesting, ExceptionScope exceptionScope) {
+        return new VoidBody(this, nesting, what, exceptionScope);
     }
 
     /// Appends a bare `return;` and ends this block.

@@ -60,8 +60,8 @@ public final class Body<R> extends Block<R, Body<R>> {
     }
 
     @Override
-    Body<R> child(String what, ExceptionScope exceptionScope) {
-        return new Body<>(this, Nesting.PLAIN, what, exceptionScope);
+    Body<R> child(String what, Nesting nesting, ExceptionScope exceptionScope) {
+        return new Body<>(this, nesting, what, exceptionScope);
     }
 
     /// Appends `return value;` and ends this block.

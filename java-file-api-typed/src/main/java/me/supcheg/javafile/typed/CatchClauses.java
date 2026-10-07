@@ -76,7 +76,7 @@ final class CatchClauses<B extends Block<?, B>> {
             throw new IllegalStateException("the " + statement() + " already has a finally_ block");
         }
         phase = new Phase.Building("finally_");
-        B block = enclosing.child("finally block of " + form).markFinally();
+        B block = enclosing.finallyChild("finally block of " + form);
         fill.accept(block);
         phase = new Phase.Open(new TryClauses(before.catches(), Optional.of(block)));
     }
