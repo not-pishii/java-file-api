@@ -38,9 +38,9 @@ final class Reachability {
             case Instr.DoWhile(var ctl, var body, var condition) ->
                 ((canCompleteNormally(body) || exits(ctl, body, false)) && !Constants.isConstant(condition, true))
                         || exits(ctl, body, true);
-            case Instr.Try(var body, var catches, var finallyBlock) ->
-                (canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body())))
-                        && finallyBlock.map(Reachability::canCompleteNormally).orElse(true);
+            case Instr.Try(var body, var catches, var ignoredFinally) ->
+                // A finally block completes normally by its type (FinallyBody).
+                canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body()));
             case Instr.Return ignored -> false;
             case Instr.Yield ignored -> false;
             case Instr.Throw ignored -> false;
@@ -65,8 +65,7 @@ final class Reachability {
     }
 
     /// Whether `block` holds a `break` (or `continue`) of the loop `ctl`
-    /// that exits (continues) it: one not held in a `try` whose `finally`
-    /// cannot complete normally.
+    /// that exits (continues) it.
     private static boolean exits(LoopCtl ctl, Block<?, ?> block, boolean isBreak) {
         for (Instr instr : block.instrs()) {
             if (exits(ctl, instr, isBreak)) {
@@ -96,17 +95,11 @@ final class Reachability {
                     var ignoredUpdate,
                     var body) -> exits(ctl, body, isBreak);
             case Instr.ForEach(var ignored, var ignoredVar, var ignoredIterable, var body) -> exits(ctl, body, isBreak);
-            case Instr.Try(var body, var catches, var finallyBlock) -> {
-                boolean inFinally =
-                        finallyBlock.map(f -> exits(ctl, f, isBreak)).orElse(false);
-                if (finallyBlock.isPresent() && !canCompleteNormally(finallyBlock.get())) {
-                    // A finally that cannot complete normally swallows the jump.
-                    yield inFinally;
-                }
-                yield inFinally
+            case Instr.Try(var body, var catches, var finallyBlock) ->
+                // The finally block completes normally, so it swallows no jump of the others.
+                finallyBlock.map(f -> exits(ctl, f, isBreak)).orElse(false)
                         || exits(ctl, body, isBreak)
                         || catches.stream().anyMatch(c -> exits(ctl, c.body(), isBreak));
-            }
             case Instr.Let ignored -> false;
             case Instr.Exec ignored -> false;
             case Instr.Raw ignored -> false;

@@ -19,13 +19,11 @@ record TryClauses(List<Instr.Catch> catches, Optional<Block<?, ?>> finallyBlock)
         return catches.stream().map(c -> new ExceptionType.OfClass(c.type())).toList();
     }
 
-    /// What the `try` block does with a checked exception thrown in it.
+    /// What the `try` block does with a checked exception thrown in it: a
+    /// clause catches it or it is handed on. The `finally` block takes
+    /// nothing away, as it completes normally ([FinallyBody]).
     ExceptionScope scope() {
-        return finallyBlock
-                        .filter(block -> !Reachability.canCompleteNormally(block))
-                        .isPresent()
-                ? new ExceptionScope.Discards()
-                : new ExceptionScope.Catches(types());
+        return new ExceptionScope.Catches(types());
     }
 
     /// The statement, of the `try` block `body` built under [#scope()].

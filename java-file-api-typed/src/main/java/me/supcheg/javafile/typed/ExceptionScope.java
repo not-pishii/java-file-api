@@ -40,11 +40,6 @@ sealed interface ExceptionScope {
         }
     }
 
-    /// The block is a `try` block whose `finally` block cannot complete
-    /// normally: whatever the `try` block throws is discarded (JLS 14.20.2),
-    /// so it need not be caught or declared.
-    record Discards() implements ExceptionScope {}
-
     /// What a block that [Declares] is the body of: who declares, and what
     /// the author can do about an exception that is not declared.
     enum Boundary {
