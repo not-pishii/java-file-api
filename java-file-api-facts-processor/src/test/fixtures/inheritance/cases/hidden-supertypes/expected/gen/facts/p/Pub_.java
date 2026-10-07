@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
@@ -21,6 +22,7 @@ import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.Prim.Int;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticFieldRef;
@@ -28,6 +30,7 @@ import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -36,7 +39,7 @@ import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import p.Pub;
 
-/// The full metamodel of [Pub], which `@Facts` asks for: a fact of every `public` member the type declares.
+/// The full metamodel of [Pub], which `@Facts` asks for: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
 /// A member [Pub] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PubApi_].
 ///
@@ -46,7 +49,7 @@ import p.Pub;
 ///
 /// - `method self() of p.Far`, which mentions types that are not public: p.Far
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub.class, fingerprint = "f312c4364705582e9d7e651ae5ff371e877291e804308ce3241e5c194affe1d4", complete = true, format = 7)
+@GeneratedMetamodel(of = Pub.class, fingerprint = "101cf41b5b77aef56760e1d9bf4f35f141290f15c32009bcbb2e328713f07546", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -57,7 +60,7 @@ public final class Pub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Pub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub_"), "f312c4364705582e9d7e651ae5ff371e877291e804308ce3241e5c194affe1d4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub"), List.of(), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Pub"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub_"), "101cf41b5b77aef56760e1d9bf4f35f141290f15c32009bcbb2e328713f07546", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub"), List.of(), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenApi"), ClassDesc.of("p.PubApi")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Pub"))), List.of(), false);
 
         private Data() {
         }
@@ -68,31 +71,32 @@ public final class Pub_ {
     static final class Canonical {
         /// The canonical form of [Pub].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Pub open-class sealed=no
         tparams -
         superclasses p.Near; p.Far; java.lang.Object
         interfaces p.HiddenApi; p.PubApi
         supertypes p.Far<java.lang.String>; p.Near<java.lang.String>
         enum -
-        members declared-public
-        member ctor() throws -
-        member field instance mutable java.lang.String item
-        member field static constant java.lang.String CONST = "const"
-        member field static constant java.lang.String FAR = "far"
-        member field static constant java.lang.String HID = "near"
-        member field static mutable int counter
-        member method overridable <^0> pick(^0) -> ^0 throws -
-        member method overridable api() -> java.lang.String throws -
-        member method overridable dflt() -> java.lang.String throws -
-        member method overridable get() -> java.lang.String throws -
-        member method overridable near() -> java.lang.String throws -
-        member method overridable overridden() -> java.lang.String throws -
-        member method overridable pub() -> java.lang.String throws -
-        member method overridable redeclared() -> java.lang.String throws -
-        member method overridable set(java.lang.String) -> void throws -
-        member method static sfar() -> java.lang.String throws -
-        member method static snear() -> java.lang.String throws -
+        members declared-accessible
+        member ctor public () throws -
+        member field public instance mutable java.lang.String item
+        member field public static constant java.lang.String CONST = "const"
+        member field public static constant java.lang.String FAR = "far"
+        member field public static constant java.lang.String HID = "near"
+        member field public static mutable int counter
+        member method protected overridable prot() -> void throws -
+        member method public overridable <^0> pick(^0) -> ^0 throws -
+        member method public overridable api() -> java.lang.String throws -
+        member method public overridable dflt() -> java.lang.String throws -
+        member method public overridable get() -> java.lang.String throws -
+        member method public overridable near() -> java.lang.String throws -
+        member method public overridable overridden() -> java.lang.String throws -
+        member method public overridable pub() -> java.lang.String throws -
+        member method public overridable redeclared() -> java.lang.String throws -
+        member method public overridable set(java.lang.String) -> void throws -
+        member method public static sfar() -> java.lang.String throws -
+        member method public static snear() -> java.lang.String throws -
         table abstract -
         table concrete api(); beyond(); clone(); dflt(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); near(); notify(); notifyAll(); overridden(); pack(); pick(java.lang.Object); prot(); pub(); redeclared(); self(); set(java.lang.String); toString(); wait(); wait(long); wait(long, int)
         table static sfar(); snear()
@@ -138,6 +142,9 @@ public final class Pub_ {
 
     /// The fact of [Pub#overridden()], declared in `p.Near`, which is not `public`.
     public static final MethodRef0<Pub, String> overridden = UnsafeFacts.method(TOKEN, "overridden", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+
+    /// The fact of [Pub#prot()], declared in `p.Far`, which is not `public`, which is `protected`: a subclass alone uses it.
+    public static final Protected<Pub, VoidMethodRef0<Pub>> prot = UnsafeFacts.protected_(TOKEN, UnsafeFacts.voidMethod(TOKEN, "prot", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
 
     /// The fact of [Pub#pub()].
     public static final MethodRef0<Pub, String> pub = UnsafeFacts.method(TOKEN, "pub", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);

@@ -6,7 +6,7 @@ import gen.facts.p.Both_;
 import gen.facts.p.Box_;
 import gen.facts.p.Fail_;
 import gen.facts.p.Sorted_;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.type.TypeParam;
@@ -48,7 +48,7 @@ public final class Bounds {
     /// `Both` is abstract: its constructor is a fact for `super(…)` alone.
     public static void theFactsOfABoundedTypeAreInTermsOfItsArgument() {
         Both_<Integer> both = new Both_<>(Integer_.TOKEN);
-        AbstractCtorRef0<Both<Integer>> none = both.super_;
+        SuperCtorRef0<Both<Integer>> none = both.super_;
         MethodRef0<Both<Integer>, Integer> pick = both.pick;
 
         assertThat(none.owner()).isSameAs(both.token);

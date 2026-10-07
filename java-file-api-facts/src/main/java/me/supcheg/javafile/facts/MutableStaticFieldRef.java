@@ -8,7 +8,7 @@ import java.util.Optional;
 /// @param <T> the field type
 public final class MutableStaticFieldRef<T> extends StaticFieldRef<T> {
 
-    MutableStaticFieldRef(DeclaredToken<?> owner, String name, TypeToken<T> type) {
-        super(owner, name, type, Optional.empty());
+    MutableStaticFieldRef(DeclaredToken<?> owner, String name, TypeToken<T> type, Access access) {
+        super(owner, name, type, Optional.empty(), access);
     }
 }

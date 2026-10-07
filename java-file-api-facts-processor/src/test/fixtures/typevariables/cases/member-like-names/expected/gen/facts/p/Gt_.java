@@ -43,7 +43,7 @@ import p.Gt;
 /// @param <T> a type argument of [Gt]
 /// @param <E> a type argument of [Gt]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gt.class, fingerprint = "e49346a0a5d7ee95d27d87bcafd5b1f6a8920166e94859505d9db13c2f2f410b", complete = true, format = 7)
+@GeneratedMetamodel(of = Gt.class, fingerprint = "7350298436ce8ca250495bc4dd62014a0e7a3fe2ebd41ff654ea907eb146bf63", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -54,7 +54,7 @@ public final class Gt_<T, E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Gt] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gt_"), "e49346a0a5d7ee95d27d87bcafd5b1f6a8920166e94859505d9db13c2f2f410b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Gt"), List.of(new TypeParam("T", List.of()), new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), new Supertypes(List.of(Types.typeVar("T"), Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("E", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("T", Param.var(1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Gt", Param.var(0), Param.var(1)))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gt_"), "7350298436ce8ca250495bc4dd62014a0e7a3fe2ebd41ff654ea907eb146bf63", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Gt"), List.of(new TypeParam("T", List.of()), new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T"), Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("E", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("T", Param.var(1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Gt", Param.var(0), Param.var(1)))), List.of(), false);
 
         private Data() {
         }
@@ -65,22 +65,22 @@ public final class Gt_<T, E> {
     static final class Canonical {
         /// The canonical form of [Gt].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Gt open-class sealed=no
         tparams #0; #1
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor(#0, #1) throws -
-        member field instance mutable #0 value
-        member field instance mutable #1 U
-        member field static constant int T = 1
-        member field static mutable int E
-        member method overridable <^0> E(^0, #0) -> ^0 throws -
-        member method overridable T(#1) -> #0 throws -
-        member method static <^0, ^1> of(^0, ^1) -> p.Gt<^0, ^1> throws -
+        members declared-accessible
+        member ctor public (#0, #1) throws -
+        member field public instance mutable #0 value
+        member field public instance mutable #1 U
+        member field public static constant int T = 1
+        member field public static mutable int E
+        member method public overridable <^0> E(^0, #0) -> ^0 throws -
+        member method public overridable T(#1) -> #0 throws -
+        member method public static <^0, ^1> of(^0, ^1) -> p.Gt<^0, ^1> throws -
         table abstract -
         table concrete E(java.lang.Object, #0); T(#1); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static of(java.lang.Object, java.lang.Object)

@@ -83,7 +83,13 @@ class MultiroundTest {
     private static List<String> withObject(String base, String... others) {
         return Stream.concat(
                         Stream.of(others),
-                        Stream.of("Object_", "Class_", "InterruptedException_", "String_")
+                        Stream.of(
+                                        "Object_",
+                                        "Class_",
+                                        "CloneNotSupportedException_",
+                                        "InterruptedException_",
+                                        "String_",
+                                        "Throwable_")
                                 .map(name -> base + ".java.lang." + name))
                 .toList();
     }
@@ -392,7 +398,11 @@ class MultiroundTest {
         // round 3 has every type: Other is a supertype, InterruptedException is only mentioned after all
         assertThat(rounds.writtenIn(3))
                 .containsExactly(
-                        "gen.facts.gen.Later_", "gen.facts.java.lang.InterruptedException_", "gen.facts.p.Other_");
+                        "gen.facts.gen.Later_",
+                        "gen.facts.java.lang.CloneNotSupportedException_",
+                        "gen.facts.java.lang.InterruptedException_",
+                        "gen.facts.java.lang.Throwable_",
+                        "gen.facts.p.Other_");
         // Holder_ of round 1 names Base_ of round 2 and Other_ of round 3
         assertThat(sources.get("gen.facts.p.Holder_"))
                 .contains("Base_.Data.SHAPE")
@@ -431,7 +441,9 @@ class MultiroundTest {
         assertThat(rounds.writtenIn(2))
                 .containsExactly(
                         "gen.facts.gen.Late_",
+                        "gen.facts.java.lang.CloneNotSupportedException_",
                         "gen.facts.java.lang.InterruptedException_",
+                        "gen.facts.java.lang.Throwable_",
                         "gen.facts.p.Base_",
                         "gen.facts.p.Other_",
                         "gen.facts.p.Sub_");
@@ -457,7 +469,13 @@ class MultiroundTest {
 
         assertThat(graph.complete()).isFalse();
         // what gen.Late may extend: not String or Class, which are final, nor Object, a supertype already
-        assertThat(graph.held()).containsExactly("java.lang.InterruptedException", "p.Base", "p.Other");
+        assertThat(graph.held())
+                .containsExactly(
+                        "java.lang.CloneNotSupportedException",
+                        "java.lang.InterruptedException",
+                        "java.lang.Throwable",
+                        "p.Base",
+                        "p.Other");
         assertThat(graph.missingSupertypes()).containsExactly(new TypeGraph.Edge.Supertype("p.Sub", "gen.Late"));
         assertThat(graph.nodes().get("gen.Late")).isEqualTo(new TypeGraph.Node.Absent("gen.Late"));
         // Base is only mentioned as far as this round knows
@@ -495,7 +513,11 @@ class MultiroundTest {
     }
 
     private static final String[] HELD_BACK = {
-        "gen.facts.java.lang.InterruptedException_", "gen.facts.p.Base_", "gen.facts.p.Other_"
+        "gen.facts.java.lang.CloneNotSupportedException_",
+        "gen.facts.java.lang.InterruptedException_",
+        "gen.facts.java.lang.Throwable_",
+        "gen.facts.p.Base_",
+        "gen.facts.p.Other_"
     };
 
     @Test

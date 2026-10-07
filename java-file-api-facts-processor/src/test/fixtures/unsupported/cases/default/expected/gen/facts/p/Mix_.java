@@ -45,7 +45,7 @@ import p.Mix;
 /// - `method markers()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method <T>marked(T)`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "407a0a25895d7b294c6532cc06ab62739090c7ee36e75173b52affcd0be79d4f", complete = true, format = 7)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "916e68c194d831fac8cc43ee2934d31aa5a59ebba33e7f0e3aa795be6fede327", complete = true, format = 8)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -57,7 +57,7 @@ public final class Mix_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mix] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "407a0a25895d7b294c6532cc06ab62739090c7ee36e75173b52affcd0be79d4f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "916e68c194d831fac8cc43ee2934d31aa5a59ebba33e7f0e3aa795be6fede327", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))))), List.of(), false);
 
         private Data() {
         }
@@ -68,27 +68,27 @@ public final class Mix_ {
     static final class Canonical {
         /// The canonical form of [Mix].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Mix open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor <^0>(^0, int) throws -
-        member ctor(java.util.Set<java.lang.String>) throws -
-        member field instance mutable java.util.function.Function<java.lang.String, java.lang.String> field
-        member method overridable <^0 extends p.Marker> marked(^0) -> void throws -
-        member method overridable <^0> id(^0) -> ^0 throws -
-        member method overridable array() -> java.util.List<java.lang.String>[] throws -
-        member method overridable dollar() -> p.Dol$lar throws -
-        member method overridable marker() -> p.Marker throws -
-        member method overridable markers() -> java.util.List<p.Marker> throws -
-        member method overridable names() -> java.util.List<java.lang.String> throws -
-        member method overridable plain() -> java.lang.String throws -
-        member method overridable raw() -> java.util.List throws -
-        member method overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -
+        members declared-accessible
+        member ctor public (java.util.Set<java.lang.String>) throws -
+        member ctor public <^0>(^0, int) throws -
+        member field public instance mutable java.util.function.Function<java.lang.String, java.lang.String> field
+        member method public overridable <^0 extends p.Marker> marked(^0) -> void throws -
+        member method public overridable <^0> id(^0) -> ^0 throws -
+        member method public overridable array() -> java.util.List<java.lang.String>[] throws -
+        member method public overridable dollar() -> p.Dol$lar throws -
+        member method public overridable marker() -> p.Marker throws -
+        member method public overridable markers() -> java.util.List<p.Marker> throws -
+        member method public overridable names() -> java.util.List<java.lang.String> throws -
+        member method public overridable plain() -> java.lang.String throws -
+        member method public overridable raw() -> java.util.List throws -
+        member method public overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -
         table abstract -
         table concrete array(); clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); marked(p.Marker); marker(); markers(); names(); notify(); notifyAll(); plain(); raw(); toString(); wait(); wait(long); wait(long, int); wild(java.util.Map)
         table static -

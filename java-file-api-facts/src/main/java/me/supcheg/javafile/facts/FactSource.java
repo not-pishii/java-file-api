@@ -12,7 +12,7 @@ import java.util.List;
 ///
 /// The typed lookups — `method("greet", STRING, STRING)` returning a
 /// `MethodRef1<O, String, String>`, and so on for every arity family and
-/// `ctor`/`abstractCtor` — ask the source's [MemberResolver] and introduce
+/// `ctor`/`superCtor` — ask the source's [MemberResolver] and introduce
 /// the fact only when it proves the member; otherwise the resolver's
 /// [FactLookupException] says what was looked for, what similar members
 /// exist, and where the type came from.
@@ -55,7 +55,7 @@ public final class FactSource<O> extends InvocableLookup<O> {
     /// @throws FactLookupException if the type has no such field
     public <T> FieldRef<O, T> field(String name, TypeToken<T> type) {
         resolve(MemberQuery.field(MemberKind.FIELD, name, type));
-        return new FieldRef<>(token, name, type);
+        return new FieldRef<>(token, name, type, Access.PUBLIC);
     }
 
     /// Proves a non-`final` instance field.
@@ -67,7 +67,7 @@ public final class FactSource<O> extends InvocableLookup<O> {
     /// @throws FactLookupException if the type has no such non-final field
     public <T> MutableFieldRef<O, T> mutableField(String name, TypeToken<T> type) {
         resolve(MemberQuery.field(MemberKind.MUTABLE_FIELD, name, type));
-        return new MutableFieldRef<>(token, name, type);
+        return new MutableFieldRef<>(token, name, type, Access.PUBLIC);
     }
 
     /// Proves a readable static field, recording its value if it is a
@@ -82,7 +82,7 @@ public final class FactSource<O> extends InvocableLookup<O> {
     ///     not fit `type`
     public <T> StaticFieldRef<T> staticField(String name, TypeToken<T> type) {
         Resolution resolution = resolve(MemberQuery.field(MemberKind.STATIC_FIELD, name, type));
-        return new StaticFieldRef<>(token, name, type, resolution.constantValue());
+        return new StaticFieldRef<>(token, name, type, resolution.constantValue(), Access.PUBLIC);
     }
 
     /// Proves a non-`final` static field.
@@ -94,7 +94,7 @@ public final class FactSource<O> extends InvocableLookup<O> {
     /// @throws FactLookupException if the type has no such non-final static field
     public <T> MutableStaticFieldRef<T> mutableStaticField(String name, TypeToken<T> type) {
         resolve(MemberQuery.field(MemberKind.MUTABLE_STATIC_FIELD, name, type));
-        return new MutableStaticFieldRef<>(token, name, type);
+        return new MutableStaticFieldRef<>(token, name, type, Access.PUBLIC);
     }
 
     @Override
@@ -105,16 +105,16 @@ public final class FactSource<O> extends InvocableLookup<O> {
         throw new FactLookupException(
                 "constructors for new",
                 describeKind() + " " + token,
-                token instanceof AbstractClassToken<?> ? List.of("abstractCtor(...), for a subclass") : List.of());
+                token instanceof ExtendableClassToken<?> ? List.of("superCtor(...), for a subclass") : List.of());
     }
 
     @Override
-    AbstractClassToken<O> abstractClassToken() {
-        if (token instanceof AbstractClassToken<O> abstractClass) {
-            return abstractClass;
+    ExtendableClassToken<O> extendableClassToken() {
+        if (token instanceof ExtendableClassToken<O> extendable) {
+            return extendable;
         }
         throw new FactLookupException(
-                "constructors of an abstract class",
+                "constructors for a subclass",
                 describeKind() + " " + token,
                 token instanceof ConcreteClassToken<?> ? List.of("ctor(...)") : List.of());
     }

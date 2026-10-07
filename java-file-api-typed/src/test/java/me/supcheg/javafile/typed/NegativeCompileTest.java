@@ -163,16 +163,39 @@ class NegativeCompileTest {
 
     @Test
     void newOfAnAbstractClassDoesNotCompile() {
-        // The constructor fact of an abstract class is an AbstractCtorRef0,
+        // The constructor fact of an abstract class is an SuperCtorRef0,
         // which new_ does not take; it exists only for a subclass constructor.
         assertRejected(
                 "NewAbstract",
                 """
-                void use(AbstractCtorRef0<Number> numberCtor) {
+                void use(SuperCtorRef0<Number> numberCtor) {
                     new_(numberCtor);
                 }
                 """,
-                "no suitable method found for new_(me.supcheg.javafile.facts.AbstractCtorRef0<java.lang.Number>)");
+                "no suitable method found for new_(me.supcheg.javafile.facts.SuperCtorRef0<java.lang.Number>)");
+    }
+
+    @Test
+    void aProtectedFactHeldBackIsNoFactACallTakes() {
+        // The fact of a protected member is held back in a Protected, which only the declaration of a
+        // subclass opens: no expression is built of it, nor is it defined as a member of the class.
+        assertRejected(
+                "ProtectedCall",
+                """
+                void use(Expr<Object> target) {
+                    call(target, Object_.clone);
+                }
+                """,
+                "no suitable method found for call(me.supcheg.javafile.typed.Expr<java.lang.Object>,"
+                        + "me.supcheg.javafile.facts.Protected<");
+        assertRejected(
+                "ProtectedDefine",
+                inClass("cb.define(Object_.clone, (b, self) -> b.return_(self));"),
+                "no suitable method found for define(");
+        assertRejected(
+                "ProtectedOpen",
+                "Object use() { return Object_.clone.fact(); }",
+                "fact() is not public in me.supcheg.javafile.facts.Protected");
     }
 
     @Test
@@ -217,7 +240,7 @@ class NegativeCompileTest {
                 """
                 void use() {
                     new TypeShape<DeclaredKind.FinalClass>(ShapeOrigin.UNSAFE, DeclaredKind.FINAL_CLASS,
-                            ClassDesc.of("a.B"), List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY,
+                            ClassDesc.of("a.B"), List.of(), List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY,
                             List.of(), false);
                 }
                 """,
@@ -230,7 +253,7 @@ class NegativeCompileTest {
         assertRejected("ClaimedBuiltin", """
                 void use() {
                     UnsafeFacts.shape(ShapeOrigin.BUILTIN, DeclaredKind.FINAL_CLASS, ClassDesc.of("a.B"),
-                            List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY, List.of(), false);
+                            List.of(), List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY, List.of(), false);
                 }
                 """, "no suitable method found for shape");
     }

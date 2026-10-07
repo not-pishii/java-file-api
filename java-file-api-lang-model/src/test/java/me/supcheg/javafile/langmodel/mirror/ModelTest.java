@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -69,7 +70,15 @@ class ModelTest {
 
     private static MethodModel run(boolean isStatic, List<TypeParam> typeParams, Overridability overridability) {
         return new MethodModel(
-                "run", isStatic, typeParams, Optional.empty(), List.of(), List.of(), List.of(), overridability);
+                "run",
+                isStatic,
+                typeParams,
+                Optional.empty(),
+                List.of(),
+                List.of(),
+                List.of(),
+                overridability,
+                Access.PUBLIC);
     }
 
     @Test
@@ -100,14 +109,14 @@ class ModelTest {
     @Test
     void aModelWithoutMembersHasNone() {
         ClassDesc desc = ClassDesc.of("p.T");
-        FieldModel field = new FieldModel("x", false, Types.INT, Mutability.MUTABLE);
+        FieldModel field = new FieldModel("x", false, Types.INT, Mutability.MUTABLE, Access.PUBLIC);
         SkippedMember skipped = new SkippedMember("field y", "why");
 
         assertThatThrownBy(() -> type(desc, MemberFilter.NONE, List.of(field), List.of()))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> type(desc, MemberFilter.NONE, List.of(), List.of(skipped)))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThat(type(desc, MemberFilter.DECLARED_PUBLIC, List.of(field), List.of(skipped))
+        assertThat(type(desc, MemberFilter.DECLARED_ACCESSIBLE, List.of(field), List.of(skipped))
                         .members())
                 .containsExactly(field);
     }
@@ -122,7 +131,8 @@ class ModelTest {
                         THIRTEEN,
                         List.of(),
                         List.of(),
-                        Overridability.OVERRIDABLE))
+                        Overridability.OVERRIDABLE,
+                        Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("method m has 13 parameters, more than 12");
         assertThatThrownBy(() -> new MethodModel(
@@ -133,7 +143,8 @@ class ModelTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        Overridability.OVERRIDABLE))
+                        Overridability.OVERRIDABLE,
+                        Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("static method m cannot be OVERRIDABLE");
         assertThatThrownBy(() -> new MethodModel(
@@ -144,7 +155,8 @@ class ModelTest {
                         List.of(),
                         List.of(),
                         List.of(),
-                        Overridability.FINAL))
+                        Overridability.FINAL,
+                        Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new MethodModel(
                         "m",
@@ -154,24 +166,25 @@ class ModelTest {
                         List.of(Types.INT),
                         List.of(),
                         List.of(),
-                        Overridability.FINAL))
+                        Overridability.FINAL,
+                        Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("method m has 1 parameters, but 0 are declared: []");
     }
 
     @Test
     void constructorsHaveAtMostTwelveParameters() {
-        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), List.of()))
+        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constructor has 13 parameters, more than 12");
-        assertThatThrownBy(() -> new CtorModel(List.of(), List.of(Types.INT), List.of(), List.of()))
+        assertThatThrownBy(() -> new CtorModel(List.of(), List.of(Types.INT), List.of(), List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constructor has 1 parameters, but 0 are declared: []");
     }
 
     @Test
     void constantsAreStaticAndOfAConstantType() {
-        assertThatThrownBy(() -> new FieldModel("x", false, Types.INT, new Mutability.Constant(1)))
+        assertThatThrownBy(() -> new FieldModel("x", false, Types.INT, new Mutability.Constant(1), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("instance field x cannot be a constant");
         assertThatThrownBy(() -> new Mutability.Constant(new Object()))

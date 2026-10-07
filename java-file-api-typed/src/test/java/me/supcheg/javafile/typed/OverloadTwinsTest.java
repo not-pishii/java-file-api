@@ -85,6 +85,7 @@ class OverloadTwinsTest {
                         .map(name -> new TypeParam(name, List.of()))
                         .toList(),
                 List.of(ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 methods,
                 List.of(),

@@ -36,7 +36,7 @@ import p.Point;
 ///
 /// `p.HLabel`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Point.class, fingerprint = "a3eebd8db5b2fbfdcef9e16ed0b766d272015db3326b2593910630f5f5a8f3c5", complete = true, format = 7)
+@GeneratedMetamodel(of = Point.class, fingerprint = "b9c39b4336203a43c35bd838248d0750b8d434dadbd1c8c3abc8c631e2bb1fc8", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Point_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Point] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Point_"), "a3eebd8db5b2fbfdcef9e16ed0b766d272015db3326b2593910630f5f5a8f3c5", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Point"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Point", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Point_"), "b9c39b4336203a43c35bd838248d0750b8d434dadbd1c8c3abc8c631e2bb1fc8", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Point"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HLabel")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Point", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
 
         private Data() {
         }
@@ -58,22 +58,22 @@ public final class Point_ {
     static final class Canonical {
         /// The canonical form of [Point].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Point final-class sealed=no
         tparams -
         superclasses java.lang.Record; java.lang.Object
         interfaces p.HLabel
         supertypes -
         enum -
-        members declared-public
-        member ctor(int, int) throws -
-        member field static constant java.lang.String NAME = "name"
-        member method final equals(java.lang.Object) -> boolean throws -
-        member method final hashCode() -> int throws -
-        member method final label() -> java.lang.String throws -
-        member method final toString() -> java.lang.String throws -
-        member method final x() -> int throws -
-        member method final y() -> int throws -
+        members declared-accessible
+        member ctor public (int, int) throws -
+        member field public static constant java.lang.String NAME = "name"
+        member method public final equals(java.lang.Object) -> boolean throws -
+        member method public final hashCode() -> int throws -
+        member method public final label() -> java.lang.String throws -
+        member method public final toString() -> java.lang.String throws -
+        member method public final x() -> int throws -
+        member method public final y() -> int throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); label(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x(); y()
         table static -

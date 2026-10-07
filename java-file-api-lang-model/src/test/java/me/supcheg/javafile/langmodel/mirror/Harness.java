@@ -65,7 +65,7 @@ final class Harness {
         }
 
         Translation<TypeModel> full(String canonicalName) {
-            return translator.type(element(canonicalName), MemberFilter.DECLARED_PUBLIC);
+            return translator.type(element(canonicalName), MemberFilter.DECLARED_ACCESSIBLE);
         }
 
         Translation<TypeModel> tokenOnly(String canonicalName) {

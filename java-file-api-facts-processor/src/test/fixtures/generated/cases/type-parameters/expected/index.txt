@@ -6,7 +6,9 @@ META-INF/javafile/metamodel/full/p.Data -> gen.facts.p.Data_
 META-INF/javafile/metamodel/full/p.Named -> gen.facts.p.Named_
 META-INF/javafile/metamodel/full/p.Uses -> gen.facts.p.Uses_
 META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> gen.facts.java.lang.CloneNotSupportedException_
 META-INF/javafile/metamodel/token/java.lang.Comparable -> gen.facts.java.lang.Comparable_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
+META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/p.Raw -> gen.facts.p.Raw_

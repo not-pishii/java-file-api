@@ -32,7 +32,7 @@ import p.Comp;
 ///
 /// A member [Comp] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comp.class, fingerprint = "de6eb03ed3511588435236520cb671924ad0d36dc26f2eb84e04123a9bb4c53b", complete = true, format = 7)
+@GeneratedMetamodel(of = Comp.class, fingerprint = "e139fb517a7b39e515c0ea05cbc4ec3144a377035544a26787939cfbb2b6b719", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Comp_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Comp] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Comp_"), "de6eb03ed3511588435236520cb671924ad0d36dc26f2eb84e04123a9bb4c53b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Comp"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Comp")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Comp_"), "e139fb517a7b39e515c0ea05cbc4ec3144a377035544a26787939cfbb2b6b719", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Comp"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Comp")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -54,17 +54,17 @@ public final class Comp_ {
     static final class Canonical {
         /// The canonical form of [Comp].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Comp interface sealed=no
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member method abstract compareTo(p.Comp) -> int throws -
-        member method abstract hashCode() -> int throws -
-        member method abstract toString() -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract compareTo(p.Comp) -> int throws -
+        member method public abstract hashCode() -> int throws -
+        member method public abstract toString() -> java.lang.String throws -
         sam compareTo(p.Comp) -> int throws -
         table abstract compareTo(p.Comp)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

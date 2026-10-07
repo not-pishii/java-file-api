@@ -72,7 +72,13 @@ class ReuseTest {
     private static Set<String> withObject(String base, String... others) {
         return Stream.concat(
                         Stream.of(others),
-                        Stream.of("Object_", "Class_", "InterruptedException_", "String_")
+                        Stream.of(
+                                        "Object_",
+                                        "Class_",
+                                        "CloneNotSupportedException_",
+                                        "InterruptedException_",
+                                        "String_",
+                                        "Throwable_")
                                 .map(name -> base + ".java.lang." + name))
                 .collect(Collectors.toSet());
     }

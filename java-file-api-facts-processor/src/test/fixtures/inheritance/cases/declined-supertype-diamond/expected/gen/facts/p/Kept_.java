@@ -36,7 +36,7 @@ import p.Kept;
 ///
 /// `p.HiddenI`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Kept.class, fingerprint = "119fd3451e9383f0a8f746fb5b818357be569c9904d4bbac1420ddf451a0de76", complete = true, format = 7)
+@GeneratedMetamodel(of = Kept.class, fingerprint = "b15dc8cb2db4cd45f6bf48db2a7d19118f392503a5308f3e668785fc7bd57f8c", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Kept_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Kept] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "119fd3451e9383f0a8f746fb5b818357be569c9904d4bbac1420ddf451a0de76", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "b15dc8cb2db4cd45f6bf48db2a7d19118f392503a5308f3e668785fc7bd57f8c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept"))), List.of(), false);
 
         private Data() {
         }
@@ -58,18 +58,18 @@ public final class Kept_ {
     static final class Canonical {
         /// The canonical form of [Kept].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Kept open-class sealed=no
         tparams -
         superclasses p.BadMid; java.lang.Object
         interfaces p.HiddenI
         supertypes p.BadMid<p.Secret>
         enum -
-        members declared-public
-        member ctor() throws -
-        member field static constant java.lang.String K = "k"
-        member method overridable more() -> java.lang.String throws -
-        member method overridable run() -> java.lang.String throws -
+        members declared-accessible
+        member ctor public () throws -
+        member field public static constant java.lang.String K = "k"
+        member method public overridable more() -> java.lang.String throws -
+        member method public overridable run() -> java.lang.String throws -
         table abstract -
         table concrete bad(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); more(); notify(); notifyAll(); run(); toString(); wait(); wait(long); wait(long, int)
         table static -

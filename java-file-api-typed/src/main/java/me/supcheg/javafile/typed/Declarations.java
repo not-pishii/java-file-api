@@ -54,7 +54,7 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
 
     /// The traits of a member declared here: `traits`, with the `throws` clause.
     private MemberTraits traits(MemberTraits traits) {
-        return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs());
+        return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access());
     }
 
     // ------------------------------------------------------------------

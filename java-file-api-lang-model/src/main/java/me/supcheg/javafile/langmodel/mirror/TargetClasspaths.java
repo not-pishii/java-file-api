@@ -87,7 +87,7 @@ public final class TargetClasspaths {
         return switch (find(elements, shape.desc())) {
             case Found.Type(TypeElement type) ->
                 MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(
-                        type, MemberFilter.DECLARED_PUBLIC)) {
+                        type, MemberFilter.DECLARED_ACCESSIBLE)) {
                     case Translation.Ok<TypeModel>(TypeModel model) ->
                         Conformance.of(origin.fingerprint(), origin.canonical(), model);
                     case Translation.Deferred<TypeModel>(String unresolved) ->

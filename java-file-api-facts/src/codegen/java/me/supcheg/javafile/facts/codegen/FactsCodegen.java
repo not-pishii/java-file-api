@@ -61,7 +61,7 @@ public final class FactsCodegen {
     private static final ClassDesc TYPE_TOKEN = ClassDesc.of(FACTS, "TypeToken");
     private static final ClassDesc DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
     private static final ClassDesc CONCRETE_CLASS_TOKEN = ClassDesc.of(FACTS, "ConcreteClassToken");
-    private static final ClassDesc ABSTRACT_CLASS_TOKEN = ClassDesc.of(FACTS, "AbstractClassToken");
+    private static final ClassDesc EXTENDABLE_CLASS_TOKEN = ClassDesc.of(FACTS, "ExtendableClassToken");
     private static final ClassDesc INTERFACE_TOKEN = ClassDesc.of(FACTS, "InterfaceToken");
     private static final ClassDesc INVOCABLE = ClassDesc.of(FACTS, "Invocable");
     private static final ClassDesc INVOCABLES = ClassDesc.of(FACTS, "Invocables");
@@ -152,7 +152,7 @@ public final class FactsCodegen {
         STATIC_METHOD("StaticMethodRef", "staticMethod", false, true, "STATIC_METHOD"),
         VOID_STATIC_METHOD("VoidStaticMethodRef", "voidStaticMethod", false, false, "STATIC_METHOD"),
         CTOR("CtorRef", "ctor", true, false, "CONSTRUCTOR"),
-        ABSTRACT_CTOR("AbstractCtorRef", "abstractCtor", true, false, "CONSTRUCTOR"),
+        SUPER_CTOR("SuperCtorRef", "superCtor", true, false, "CONSTRUCTOR"),
         SAM("Sam", "sam", true, true, ""),
         VOID_SAM("VoidSam", "voidSam", true, false, "");
 
@@ -175,7 +175,7 @@ public final class FactsCodegen {
         }
 
         boolean isCtor() {
-            return this == CTOR || this == ABSTRACT_CTOR;
+            return this == CTOR || this == SUPER_CTOR;
         }
 
         String ownerVar() {
@@ -236,7 +236,7 @@ public final class FactsCodegen {
             case METHOD, VOID_METHOD -> Types.parameterized(DECLARED_TOKEN, var("O"));
             case STATIC_METHOD, VOID_STATIC_METHOD -> Types.parameterized(DECLARED_TOKEN, Types.unbounded());
             case CTOR -> Types.parameterized(CONCRETE_CLASS_TOKEN, var("O"));
-            case ABSTRACT_CTOR -> Types.parameterized(ABSTRACT_CLASS_TOKEN, var("O"));
+            case SUPER_CTOR -> Types.parameterized(EXTENDABLE_CLASS_TOKEN, var("O"));
             case SAM, VOID_SAM -> Types.parameterized(INTERFACE_TOKEN, var("F"));
         };
     }
@@ -245,7 +245,7 @@ public final class FactsCodegen {
     private static String lookupOwner(Family family) {
         return switch (family) {
             case CTOR -> "concreteClassToken";
-            case ABSTRACT_CTOR -> "abstractClassToken";
+            case SUPER_CTOR -> "extendableClassToken";
             default -> "token";
         };
     }
@@ -369,7 +369,11 @@ public final class FactsCodegen {
                     DECLARED_PARAMS,
                     Types.parameterized(LIST, Types.of(TEMPLATE_PARAM)),
                     this_().field(DECLARED_PARAMS));
-            override(cb, "toString", Types.STRING, staticCall(INVOCABLES, "describe", this_()));
+            override(
+                    cb,
+                    "toString",
+                    Types.STRING,
+                    staticCall(INVOCABLES, family == Family.SUPER_CTOR ? "describeSuper" : "describe", this_()));
         });
     }
 
@@ -460,14 +464,14 @@ public final class FactsCodegen {
             cb.withAbstractMethod("token", Types.parameterized(DECLARED_TOKEN, var("O")));
             packagePrivateAbstract(cb, "resolve", Types.of(RESOLUTION), new Param("query", Types.of(MEMBER_QUERY)));
             packagePrivateAbstract(cb, "concreteClassToken", Types.parameterized(CONCRETE_CLASS_TOKEN, var("O")));
-            packagePrivateAbstract(cb, "abstractClassToken", Types.parameterized(ABSTRACT_CLASS_TOKEN, var("O")));
+            packagePrivateAbstract(cb, "extendableClassToken", Types.parameterized(EXTENDABLE_CLASS_TOKEN, var("O")));
             for (int n = 0; n <= MAX_ARITY; n++) {
                 lookupMethod(cb, Family.METHOD, "method", n);
                 lookupMethod(cb, Family.VOID_METHOD, "voidMethod", n);
                 lookupMethod(cb, Family.STATIC_METHOD, "staticMethod", n);
                 lookupMethod(cb, Family.VOID_STATIC_METHOD, "voidStaticMethod", n);
                 lookupMethod(cb, Family.CTOR, "constructor", n);
-                lookupMethod(cb, Family.ABSTRACT_CTOR, "constructor", n);
+                lookupMethod(cb, Family.SUPER_CTOR, "constructor", n);
             }
         });
     }

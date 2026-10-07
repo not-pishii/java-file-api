@@ -18,17 +18,20 @@ import java.util.Optional;
 /// against the field type when the fact is introduced.
 ///
 /// @param <T> the field type
-public sealed class StaticFieldRef<T> permits MutableStaticFieldRef {
+public sealed class StaticFieldRef<T> implements MemberFact permits MutableStaticFieldRef {
     private final DeclaredToken<?> owner;
     private final String name;
     private final TypeToken<T> type;
     private final Optional<Object> constantValue;
+    private final Access access;
 
-    StaticFieldRef(DeclaredToken<?> owner, String name, TypeToken<T> type, Optional<Object> constantValue) {
+    StaticFieldRef(
+            DeclaredToken<?> owner, String name, TypeToken<T> type, Optional<Object> constantValue, Access access) {
         this.owner = owner;
         this.name = Identifiers.requireValid(name);
         this.type = type;
         this.constantValue = constantValue;
+        this.access = access;
         constantValue.ifPresent(value -> requireConstantOf(type, value));
     }
 
@@ -48,6 +51,7 @@ public sealed class StaticFieldRef<T> permits MutableStaticFieldRef {
     /// The type owning the field.
     ///
     /// @return the owner token
+    @Override
     public final DeclaredToken<?> owner() {
         return owner;
     }
@@ -71,6 +75,14 @@ public sealed class StaticFieldRef<T> permits MutableStaticFieldRef {
     /// @return the value, or empty if the field is not a constant variable
     public final Optional<Object> constantValue() {
         return constantValue;
+    }
+
+    /// The access of the field.
+    ///
+    /// @return the access
+    @Override
+    public final Access access() {
+        return access;
     }
 
     @Override

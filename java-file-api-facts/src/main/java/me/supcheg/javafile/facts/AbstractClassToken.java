@@ -8,7 +8,7 @@ import java.util.List;
 /// A token of an abstract class: it can be extended but not instantiated.
 ///
 /// @param <T> the Java type this token stands for
-public final class AbstractClassToken<T> extends ClassTokenData implements ClassToken<T> {
+public final class AbstractClassToken<T> extends ClassTokenData implements ExtendableClassToken<T> {
 
     AbstractClassToken(TypeShape<DeclaredKind.AbstractClass> shape, List<TokenArg> args) {
         super(shape, args);

@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
-import me.supcheg.javafile.facts.AbstractCtorRef2;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -17,9 +16,13 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.Prim.Int;
+import me.supcheg.javafile.facts.Prim.Long;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.StaticMethodRef0;
+import me.supcheg.javafile.facts.SuperCtorRef0;
+import me.supcheg.javafile.facts.SuperCtorRef1;
+import me.supcheg.javafile.facts.SuperCtorRef2;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -29,13 +32,11 @@ import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
 import p.Abs;
 
-/// The full metamodel of [Abs], which `@Facts` asks for: a fact of every `public` member the type declares.
+/// The full metamodel of [Abs], which `@Facts` asks for: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
 /// A member [Abs] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
-///
-/// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abs.class, fingerprint = "33ea5d0d5db76653b2cd67bc7d9950b5fc0bd445d117a8bda89c1a6f92a64d46", complete = true, format = 7)
+@GeneratedMetamodel(of = Abs.class, fingerprint = "0dadb438c668cc2b90f868f75660164032c93267101ff43daefabaa4b6b0aa23", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +47,7 @@ public final class Abs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Abs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "33ea5d0d5db76653b2cd67bc7d9950b5fc0bd445d117a8bda89c1a6f92a64d46", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("clone"), Signature.of("done"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("make")), Set.of(Signature.of("Abs"), Signature.of("Abs", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Abs", Param.fixed(ConstantDescs.CD_long)))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "0dadb438c668cc2b90f868f75660164032c93267101ff43daefabaa4b6b0aa23", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("clone"), Signature.of("done"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("make")), Set.of(Signature.of("Abs"), Signature.of("Abs", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Abs", Param.fixed(ConstantDescs.CD_long)))), List.of(), false);
 
         private Data() {
         }
@@ -57,19 +58,20 @@ public final class Abs_ {
     static final class Canonical {
         /// The canonical form of [Abs].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Abs abstract-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member ctor(java.lang.String, int) throws -
-        member method abstract run() -> void throws -
-        member method overridable done() -> void throws -
-        member method static make() -> p.Abs throws -
+        members declared-accessible
+        member ctor protected (long) throws -
+        member ctor public () throws -
+        member ctor public (java.lang.String, int) throws -
+        member method public abstract run() -> void throws -
+        member method public overridable done() -> void throws -
+        member method public static make() -> p.Abs throws -
         table abstract run()
         table concrete clone(); done(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static make()
@@ -84,10 +86,13 @@ public final class Abs_ {
     public static final AbstractClassToken<Abs> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Abs#Abs()].
-    public static final AbstractCtorRef0<Abs> super_ = UnsafeFacts.abstractCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Abs> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Abs#Abs(String, int)].
-    public static final AbstractCtorRef2<Abs, String, Int> super_String_int = UnsafeFacts.abstractCtor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final SuperCtorRef2<Abs, String, Int> super_String_int = UnsafeFacts.superCtor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+
+    /// The fact of [Abs#Abs(long)], which is `protected`: a subclass alone uses it.
+    public static final SuperCtorRef1<Abs, Long> super_long = UnsafeFacts.superCtor(TOKEN, PrimitiveToken.LONG, MemberTraits.FINAL.with(Access.PROTECTED));
 
     /// The fact of [Abs#done()].
     public static final VoidMethodRef0<Abs> done = UnsafeFacts.voidMethod(TOKEN, "done", MemberTraits.OVERRIDABLE);

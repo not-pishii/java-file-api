@@ -303,7 +303,7 @@ class JdkTypesTest {
                         () -> Javac.plain().alone().options("--release", "17").inFirstRound(rendered))
                 .withMessageStartingWith(
                         "metamodel gen.facts.java.lang.String_ does not match java.lang.String on the target classpath:")
-                .withMessageContaining("\n  missing: method final indexOf(int, int, int) -> int throws -\n")
+                .withMessageContaining("\n  missing: method public final indexOf(int, int, int) -> int throws -\n")
                 .withMessageEndingWith("rebuild the generator against it, or align the versions.");
     }
 

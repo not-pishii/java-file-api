@@ -32,7 +32,7 @@ import p.List;
 ///
 /// A member [List] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = List.class, fingerprint = "fc0a4f8999b9036fd7ca7e62f28294a39cd6843d264535231d0fa5ab451c5592", complete = true, format = 7)
+@GeneratedMetamodel(of = List.class, fingerprint = "42891ecc1cb5f3e231804e5ae4b0fe3e2e541799e1ef2928aa5fd0b7b1688117", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class List_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [List] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.List_"), "fc0a4f8999b9036fd7ca7e62f28294a39cd6843d264535231d0fa5ab451c5592", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.List"), java.util.List.of(), java.util.List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("canonical", Param.fixed(ClassDesc.of("p.Data"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("load"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("List"))), java.util.List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.List_"), "42891ecc1cb5f3e231804e5ae4b0fe3e2e541799e1ef2928aa5fd0b7b1688117", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.List"), java.util.List.of(), java.util.List.of(ClassDesc.of("java.lang.Object")), java.util.List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("canonical", Param.fixed(ClassDesc.of("p.Data"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("load"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("List"))), java.util.List.of(), false);
 
         private Data() {
         }
@@ -54,20 +54,20 @@ public final class List_ {
     static final class Canonical {
         /// The canonical form of [List].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.List open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member field instance mutable int Supertypes
-        member field instance mutable int java
-        member field instance mutable int p
-        member method overridable canonical(p.Data) -> p.Canonical throws -
-        member method overridable load() -> p.Data throws -
+        members declared-accessible
+        member ctor public () throws -
+        member field public instance mutable int Supertypes
+        member field public instance mutable int java
+        member field public instance mutable int p
+        member method public overridable canonical(p.Data) -> p.Canonical throws -
+        member method public overridable load() -> p.Data throws -
         table abstract -
         table concrete canonical(p.Data); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); load(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

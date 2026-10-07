@@ -42,7 +42,7 @@ import p.Io;
 /// - `method hidden()`, which mentions types that are not public: p.Secret
 /// - `constructor Io(java.lang.String)`, which mentions types that are not public: p.Secret
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Io.class, fingerprint = "1e1fa2d02a8f92fc747213e0a7c7bbdecd9c3ccdd0c315b7cd53ffb78e7fa276", complete = true, format = 7)
+@GeneratedMetamodel(of = Io.class, fingerprint = "44d4c7563c15467ed287ea0e047ee40f0e36500833d1db87f582cd97498a48fa", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class Io_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Io] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Io_"), "1e1fa2d02a8f92fc747213e0a7c7bbdecd9c3ccdd0c315b7cd53ffb78e7fa276", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Io"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("custom"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("generic"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("locked"), Signature.of("multi"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("read"), Signature.of("toString"), Signature.of("unchecked"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("util")), Set.of(Signature.of("Io"), Signature.of("Io", Param.fixed(ConstantDescs.CD_int)), Signature.of("Io", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Io_"), "44d4c7563c15467ed287ea0e047ee40f0e36500833d1db87f582cd97498a48fa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Io"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("custom"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("generic"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("locked"), Signature.of("multi"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("read"), Signature.of("toString"), Signature.of("unchecked"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("util")), Set.of(Signature.of("Io"), Signature.of("Io", Param.fixed(ConstantDescs.CD_int)), Signature.of("Io", Param.fixed(ClassDesc.of("java.lang.String"))))), List.of(), false);
 
         private Data() {
         }
@@ -64,23 +64,23 @@ public final class Io_ {
     static final class Canonical {
         /// The canonical form of [Io].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Io open-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces -
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws java.io.IOException
-        member ctor(int) throws -
-        member method final locked() -> void throws p.Failure
-        member method overridable <^0 extends java.lang.Throwable> generic() -> void throws ^0
-        member method overridable custom() -> void throws p.Failure
-        member method overridable multi() -> void throws java.io.IOException, java.lang.IllegalStateException, java.lang.InterruptedException
-        member method overridable read() -> void throws java.io.IOException
-        member method overridable unchecked() -> int throws java.lang.IllegalArgumentException
-        member method static util() -> void throws java.lang.Exception
+        members declared-accessible
+        member ctor public () throws java.io.IOException
+        member ctor public (int) throws -
+        member method public final locked() -> void throws p.Failure
+        member method public overridable <^0 extends java.lang.Throwable> generic() -> void throws ^0
+        member method public overridable custom() -> void throws p.Failure
+        member method public overridable multi() -> void throws java.io.IOException, java.lang.IllegalStateException, java.lang.InterruptedException
+        member method public overridable read() -> void throws java.io.IOException
+        member method public overridable unchecked() -> int throws java.lang.IllegalArgumentException
+        member method public static util() -> void throws java.lang.Exception
         table abstract -
         table concrete clone(); custom(); equals(java.lang.Object); finalize(); generic(); getClass(); hashCode(); hidden(); locked(); multi(); notify(); notifyAll(); read(); toString(); unchecked(); wait(); wait(long); wait(long, int)
         table static util()

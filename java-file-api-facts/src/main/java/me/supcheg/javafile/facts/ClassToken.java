@@ -6,11 +6,12 @@ import java.util.List;
 
 /// A token of a class type. Which subtype a token is decides what the class
 /// can be used for: only [ConcreteClassToken]s are instantiated, only
-/// [OpenClassToken]s and [AbstractClassToken]s are extended.
+/// [ExtendableClassToken]s — [OpenClassToken]s and [AbstractClassToken]s — are
+/// extended.
 ///
 /// @param <T> the Java type this token stands for
 public sealed interface ClassToken<T> extends DeclaredToken<T>
-        permits AbstractClassToken, ConcreteClassToken, EnumToken {
+        permits ExtendableClassToken, ConcreteClassToken, EnumToken {
 
     /// The erasures of the superclass chain, the direct superclass first and
     /// `java.lang.Object` last; empty only for `Object` itself.

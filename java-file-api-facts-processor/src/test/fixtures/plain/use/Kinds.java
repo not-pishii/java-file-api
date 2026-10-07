@@ -5,8 +5,8 @@ import gen.facts.p.Iface_;
 import gen.facts.p.Open_;
 import gen.facts.p.Rec_;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
-import me.supcheg.javafile.facts.AbstractCtorRef2;
+import me.supcheg.javafile.facts.SuperCtorRef0;
+import me.supcheg.javafile.facts.SuperCtorRef2;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -59,8 +59,8 @@ public final class Kinds {
     /// An abstract class has no `CtorRef`: its constructors are facts for
     /// `super(…)` alone, named `super_…`.
     public static void theConstructorsOfAnAbstractClassAreForSuperAlone() {
-        AbstractCtorRef0<Abs> none = Abs_.super_;
-        AbstractCtorRef2<Abs, String, Prim.Int> two = Abs_.super_String_int;
+        SuperCtorRef0<Abs> none = Abs_.super_;
+        SuperCtorRef2<Abs, String, Prim.Int> two = Abs_.super_String_int;
 
         assertThat(none.owner()).isEqualTo(Abs_.TOKEN);
         assertThat(two.owner()).isEqualTo(Abs_.TOKEN);

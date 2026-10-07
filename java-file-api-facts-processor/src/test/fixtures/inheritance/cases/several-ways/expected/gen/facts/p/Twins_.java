@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -17,6 +16,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -31,7 +31,7 @@ import p.Twins;
 ///
 /// `p.Tight`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Twins.class, fingerprint = "a24b38b7ee9a6e33e456e80cd423f066abffec73f1659c4f9e006ceb39a86ddc", complete = true, format = 7)
+@GeneratedMetamodel(of = Twins.class, fingerprint = "f7254664189eced74ee83dc47bb881b946baf547b50d9d0f56ec13ba339205e5", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Twins_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Twins] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Twins_"), "a24b38b7ee9a6e33e456e80cd423f066abffec73f1659c4f9e006ceb39a86ddc", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Twins"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("twin")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Twins"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Twins_"), "f7254664189eced74ee83dc47bb881b946baf547b50d9d0f56ec13ba339205e5", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Twins"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Loose"), ClassDesc.of("p.Tight")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("twin")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Twins"))), List.of(), false);
 
         private Data() {
         }
@@ -53,16 +53,16 @@ public final class Twins_ {
     static final class Canonical {
         /// The canonical form of [Twins].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Twins abstract-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces p.Loose; p.Tight
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method abstract twin() -> java.lang.String throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public abstract twin() -> java.lang.String throws -
         table abstract twin()
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -77,7 +77,7 @@ public final class Twins_ {
     public static final AbstractClassToken<Twins> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Twins#Twins()].
-    public static final AbstractCtorRef0<Twins> super_ = UnsafeFacts.abstractCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Twins> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Twins#twin()], declared in `p.Tight`, which is not `public`.
     public static final MethodRef0<Twins, String> twin = UnsafeFacts.method(TOKEN, "twin", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);

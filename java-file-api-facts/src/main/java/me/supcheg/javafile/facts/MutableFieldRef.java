@@ -7,7 +7,7 @@ package me.supcheg.javafile.facts;
 /// @param <T> the field type
 public final class MutableFieldRef<O, T> extends FieldRef<O, T> {
 
-    MutableFieldRef(DeclaredToken<O> owner, String name, TypeToken<T> type) {
-        super(owner, name, type);
+    MutableFieldRef(DeclaredToken<O> owner, String name, TypeToken<T> type, Access access) {
+        super(owner, name, type, access);
     }
 }

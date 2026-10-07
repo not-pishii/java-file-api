@@ -35,6 +35,7 @@ class TypeShapeTest {
             BOX,
             List.of(new TypeParam("T", List.of(Types.parameterized(CD_COMPARABLE, Types.typeVar("T"))))),
             List.of(),
+            List.of(),
             new Supertypes(
                     List.of(Types.typeVar("T")),
                     List.of(Types.parameterized(CD_COMPARABLE, Types.parameterized(BOX, Types.typeVar("T"))))),
@@ -111,6 +112,7 @@ class TypeShapeTest {
                         new TypeParam("A", List.of(Types.of(ConstantDescs.CD_Number))),
                         new TypeParam("B", List.of(Types.typeVar("A")))),
                 List.of(ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 new MethodTableTemplate(Set.of(), Set.of(Signature.of("set", Param.var(0), Param.var(1))), Set.of()),
                 List.of(),
@@ -146,6 +148,7 @@ class TypeShapeTest {
                         BOX,
                         typeParameters,
                         List.of(),
+                        List.of(),
                         Supertypes.NONE,
                         MethodTableTemplate.EMPTY,
                         List.of(),
@@ -161,6 +164,7 @@ class TypeShapeTest {
                         BOX,
                         List.of(new TypeParam("T", List.of())),
                         List.of(),
+                        List.of(),
                         new Supertypes(List.of(Types.typeVar("E")), List.of()),
                         MethodTableTemplate.EMPTY,
                         List.of(),
@@ -172,6 +176,7 @@ class TypeShapeTest {
                         DeclaredKind.INTERFACE,
                         BOX,
                         List.of(new TypeParam("T", List.of())),
+                        List.of(),
                         List.of(),
                         Supertypes.NONE,
                         new MethodTableTemplate(Set.of(Signature.of("put", Param.var(1))), Set.of(), Set.of()),
@@ -250,6 +255,7 @@ class TypeShapeTest {
                         BOX,
                         List.of(new TypeParam("T", List.of())),
                         List.of(CD_ENUM, ConstantDescs.CD_Object),
+                        List.of(),
                         Supertypes.NONE,
                         MethodTableTemplate.EMPTY,
                         List.of(),
@@ -273,6 +279,7 @@ class TypeShapeTest {
                         desc,
                         List.of(),
                         superclasses,
+                        List.of(),
                         Supertypes.NONE,
                         MethodTableTemplate.EMPTY,
                         enumConstants,
@@ -291,6 +298,7 @@ class TypeShapeTest {
                         ConstantDescs.CD_Exception,
                         ConstantDescs.CD_Throwable,
                         ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
@@ -304,12 +312,70 @@ class TypeShapeTest {
     }
 
     @Test
+    void aShapeTellsTheInterfacesOfItsType() {
+        ClassDesc runnable = ClassDesc.of("java.lang", "Runnable");
+        ClassDesc closeable = ClassDesc.of("java.lang", "AutoCloseable");
+
+        assertThat(withInterfaces(List.of(closeable, runnable)).interfaces()).containsExactly(closeable, runnable);
+        assertThat(finalClass(ClassDesc.of("fixtures", "Plain")).interfaces()).isEmpty();
+        // made of a type reference, a shape records none
+        assertThat(UnsafeFacts.interfaceToken(Types.of(runnable), MethodTable.EMPTY)
+                        .shape()
+                        .interfaces())
+                .isEmpty();
+        // the metamodel of a type tells them all, those of its superclasses and superinterfaces included
+        assertThat(new me.supcheg.javafile.facts.testfacts.java.util.ArrayList_<>(String_.TOKEN)
+                        .token
+                        .shape()
+                        .interfaces())
+                .contains(
+                        ClassDesc.of("java.util", "List"),
+                        ClassDesc.of("java.util", "Collection"),
+                        ClassDesc.of("java.lang", "Iterable"),
+                        ClassDesc.of("java.util", "RandomAccess"));
+    }
+
+    @Test
+    void theInterfacesOfAShapeAreInterfacesEachOnceAndNoSuperclass() {
+        ClassDesc runnable = ClassDesc.of("java.lang", "Runnable");
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> withInterfaces(List.of(ConstantDescs.CD_int)))
+                .withMessage("an interface of final class fixtures.Impl is a class or interface type, got int");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> withInterfaces(List.of(runnable, runnable)))
+                .withMessage("the interfaces of final class fixtures.Impl repeat one:"
+                        + " [java.lang.Runnable, java.lang.Runnable]");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> withInterfaces(List.of(ClassDesc.of("fixtures", "Impl"))))
+                .withMessage("the interfaces of final class fixtures.Impl repeat one: [fixtures.Impl]");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> withInterfaces(List.of(ConstantDescs.CD_Object)))
+                .withMessage("final class fixtures.Impl has [java.lang.Object] both as a superclass and as an"
+                        + " interface");
+    }
+
+    private static TypeShape<DeclaredKind.FinalClass> withInterfaces(List<ClassDesc> interfaces) {
+        return UnsafeFacts.shape(
+                DeclaredKind.FINAL_CLASS,
+                ClassDesc.of("fixtures", "Impl"),
+                List.of(),
+                List.of(ConstantDescs.CD_Object),
+                interfaces,
+                Supertypes.NONE,
+                MethodTableTemplate.EMPTY,
+                List.of(),
+                false);
+    }
+
+    @Test
     void anEnumTokenCarriesTheConstantsOfItsShape() {
         TypeShape<DeclaredKind.EnumClass> color = UnsafeFacts.shape(
                 DeclaredKind.ENUM_CLASS,
                 ClassDesc.of("fixtures", "Color"),
                 List.of(),
                 List.of(CD_ENUM, ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of("RED", "GREEN"),
@@ -337,6 +403,7 @@ class TypeShapeTest {
                 ClassDesc.of("fixtures", "Plain"),
                 List.of(),
                 List.of(ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
@@ -408,6 +475,7 @@ class TypeShapeTest {
                 desc,
                 List.of(),
                 List.of(ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),

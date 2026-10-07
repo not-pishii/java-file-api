@@ -53,7 +53,7 @@ public final class Conformance {
     private static final String SUPERTYPES = "supertypes";
     private static final String MEMBER = "member ";
     private static final String SAM = "sam ";
-    private static final String FULL = "members declared-public";
+    private static final String FULL = "members declared-accessible";
 
     private Conformance() {}
 
@@ -73,13 +73,13 @@ public final class Conformance {
     ///
     /// @param fingerprint the fingerprint the metamodel records
     /// @param generated supplies the canonical form the metamodel records, asked only on the slow path
-    /// @param target the type as the classpath has it, with its members ([MemberFilter#DECLARED_PUBLIC])
+    /// @param target the type as the classpath has it, with its members ([MemberFilter#DECLARED_ACCESSIBLE])
     /// @return [TargetType#UNCHANGED] for the type the metamodel was generated from, [TargetType.Changed]
     ///         with the methods of `target` for another one every fact of the metamodel holds of, or what
     ///         differs
     /// @throws IllegalArgumentException if `target` is a model without members
     public static TargetType of(String fingerprint, Supplier<String> generated, TypeModel target) {
-        if (target.filter() != MemberFilter.DECLARED_PUBLIC) {
+        if (target.filter() != MemberFilter.DECLARED_ACCESSIBLE) {
             throw new IllegalArgumentException("a type is compared with its members, got a model without");
         }
         // which of the two a metamodel is, its canonical form tells: the fingerprint is of one of them
@@ -214,25 +214,27 @@ public final class Conformance {
     /// [Canonical] writes:
     ///
     /// ```
-    /// member ctor <^0>(^0) throws -
-    /// member field static constant java.lang.String NAME = "a = b"
-    /// member method static <^0 extends java.lang.Comparable<^0>> max(^0[]) -> ^0 throws -
+    /// member ctor public <^0>(^0) throws -
+    /// member field public static constant java.lang.String NAME = "a = b"
+    /// member method public static <^0 extends java.lang.Comparable<^0>> max(^0[]) -> ^0 throws -
     /// sam apply(#0) -> #1 throws -
     /// ```
     static String name(String fact) {
         if (fact.startsWith(SAM)) {
             return "sam";
         }
-        String[] words = fact.split(" ", 4);
+        String[] words = fact.split(" ", 5);
         return switch (words[1]) {
             case "method" -> {
-                // the mode is words[2]; then the type parameters, if any, and the name up to its parameters
-                String declaration = words[3].startsWith("<") ? afterTypeParameters(words[3]) : words[3];
+                // the access is words[2], the mode words[3]; then the type parameters, if any, and the name
+                // up to its parameters
+                String declaration = words[4].startsWith("<") ? afterTypeParameters(words[4]) : words[4];
                 yield "method " + declaration.substring(0, declaration.indexOf('('));
             }
             case "field" -> {
-                // static or instance is words[2]; then the mutability, the type, the name, and a constant's value
-                String declaration = words[3].split(" = ", 2)[0];
+                // the access is words[2], static or instance words[3]; then the mutability, the type, the name,
+                // and a constant's value
+                String declaration = words[4].split(" = ", 2)[0];
                 yield "field " + declaration.substring(declaration.lastIndexOf(' ') + 1);
             }
             default -> "ctor";

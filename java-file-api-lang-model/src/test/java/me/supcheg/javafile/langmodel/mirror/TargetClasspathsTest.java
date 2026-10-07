@@ -42,6 +42,7 @@ class TargetClasspathsTest {
                 ClassDesc.of(binaryName),
                 List.of(),
                 List.of(ConstantDescs.CD_Object),
+                List.of(),
                 Supertypes.NONE,
                 GENERATED,
                 List.of(),
@@ -78,7 +79,7 @@ class TargetClasspathsTest {
                                         Signature.of("m", Param.fixed(ConstantDescs.CD_String))));
         assertThat(read(svc, "package p; public class Svc {}"))
                 .isEqualTo(new TargetType.Mismatched(List.of(new Difference.MissingFact(
-                        "method overridable m(java.lang.String) -> java.lang.String throws -", List.of()))));
+                        "method public overridable m(java.lang.String) -> java.lang.String throws -", List.of()))));
     }
 
     @Test
@@ -142,13 +143,14 @@ class TargetClasspathsTest {
                 .isInstanceOfSatisfying(
                         TargetType.Mismatched.class,
                         mismatched -> assertThat(mismatched.differences())
-                                .contains(new Difference.MissingFact(
-                                        "method final indexOf(int, int, int) -> int throws -",
-                                        List.of(
-                                                "method final indexOf(int) -> int throws -",
-                                                "method final indexOf(int, int) -> int throws -",
-                                                "method final indexOf(java.lang.String) -> int throws -",
-                                                "method final indexOf(java.lang.String, int) -> int throws -"))));
+                                .contains(
+                                        new Difference.MissingFact(
+                                                "method public final indexOf(int, int, int) -> int throws -",
+                                                List.of(
+                                                        "method public final indexOf(int) -> int throws -",
+                                                        "method public final indexOf(int, int) -> int throws -",
+                                                        "method public final indexOf(java.lang.String) -> int throws -",
+                                                        "method public final indexOf(java.lang.String, int) -> int throws -"))));
     }
 
     @Test
@@ -170,7 +172,7 @@ class TargetClasspathsTest {
                         Signature.of("m", Param.fixed(ConstantDescs.CD_Object)));
         assertThat(failed).hasValue("""
                         metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath:
-                          missing: method overridable m(java.lang.String) -> java.lang.String throws -
+                          missing: method public overridable m(java.lang.String) -> java.lang.String throws -
                         The generator was compiled against another p.Svc than this compilation has (another version\
                          of its library, or another --release). Generate the metamodels against this version: rebuild\
                          the generator against it, or align the versions.""");

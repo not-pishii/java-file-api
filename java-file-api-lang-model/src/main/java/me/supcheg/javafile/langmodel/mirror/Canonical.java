@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
@@ -53,7 +54,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 5
+/// javafile-facts-canonical 6
 /// type java.util.List interface sealed=no
 /// tparams #0
 /// superclasses -
@@ -72,19 +73,20 @@ import java.util.stream.Stream;
 /// and any other is erased; a constructor is under the simple name of its
 /// class: `table ctor ArrayList(); ArrayList(int)`.
 ///
-/// With [MemberFilter#DECLARED_PUBLIC], `members declared-public` is
+/// With [MemberFilter#DECLARED_ACCESSIBLE], `members declared-accessible` is
 /// followed by a line per member: of those the type declares, and of those
 /// it adopts from its supertypes that are not `public`
 /// ([MirrorTranslator#members(javax.lang.model.element.TypeElement)]), as
 /// members of the type — so a change of such a supertype changes the
-/// fingerprint of the type that tells its members:
+/// fingerprint of the type that tells its members. A line tells the access
+/// of its member, `public` or `protected`: who may use the fact.
 ///
 /// ```
-/// member ctor <^0 extends java.lang.Number>(^0, int[]) throws java.io.IOException
-/// member field static constant java.lang.String DEFAULT = "hi"
-/// member field instance final #0 value
-/// member method abstract get(int) -> #0 throws -
-/// member method static <^0> of(^0[]) -> java.util.List<^0> throws -
+/// member ctor protected <^0 extends java.lang.Number>(^0, int[]) throws java.io.IOException
+/// member field public static constant java.lang.String DEFAULT = "hi"
+/// member field public instance final #0 value
+/// member method public abstract get(int) -> #0 throws -
+/// member method public static <^0> of(^0[]) -> java.util.List<^0> throws -
 /// ```
 ///
 /// A functional interface has a line for its single abstract method as a
@@ -99,7 +101,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 5";
+    public static final String HEADER = "javafile-facts-canonical 6";
 
     private final String text;
     private final String fingerprint;
@@ -139,7 +141,7 @@ public final class Canonical {
                                 "members "
                                         + switch (model.filter()) {
                                             case NONE -> "none";
-                                            case DECLARED_PUBLIC -> "declared-public";
+                                            case DECLARED_ACCESSIBLE -> "declared-accessible";
                                         }),
                         model.members().stream()
                                 .map(m -> member(m, model.typeParams()))
@@ -197,20 +199,20 @@ public final class Canonical {
                 String mode = method.isStatic()
                         ? "static"
                         : method.overridability().name().toLowerCase(Locale.ROOT);
-                yield "member method " + mode + " " + typeParamsPrefix(method.typeParams(), scope) + method.name()
+                yield "member method " + access(method.access()) + " " + mode + " "
+                        + typeParamsPrefix(method.typeParams(), scope) + method.name()
                         + params(method.params(), scope) + " -> "
                         + method.result().map(scope::type).orElse("void") + throwsClause(method.throwsTypes(), scope);
             }
             case CtorModel ctor -> {
                 Scope scope = new Scope(typeTypeParams, ctor.typeParams());
-                String typeParams = ctor.typeParams().isEmpty()
-                        ? ""
-                        : " " + typeParamsPrefix(ctor.typeParams(), scope).strip();
-                yield "member ctor" + typeParams + params(ctor.params(), scope)
+                yield "member ctor " + access(ctor.access()) + " "
+                        + typeParamsPrefix(ctor.typeParams(), scope).strip() + params(ctor.params(), scope)
                         + throwsClause(ctor.throwsTypes(), scope);
             }
             case FieldModel field -> {
-                String prefix = "member field " + (field.isStatic() ? "static " : "instance ");
+                String prefix =
+                        "member field " + access(field.access()) + (field.isStatic() ? " static " : " instance ");
                 String declaration = new Scope(typeTypeParams, List.of()).type(field.type()) + " " + field.name();
                 yield switch (field.mutability()) {
                     case Mutability.Mutable _ -> prefix + "mutable " + declaration;
@@ -260,6 +262,13 @@ public final class Canonical {
                         .collect(Collectors.joining(", ", s.name() + "(", ")")))
                 .sorted()
                 .toList();
+    }
+
+    private static String access(Access access) {
+        return switch (access) {
+            case PUBLIC -> "public";
+            case PROTECTED -> "protected";
+        };
     }
 
     private static String kind(DeclaredKind kind) {

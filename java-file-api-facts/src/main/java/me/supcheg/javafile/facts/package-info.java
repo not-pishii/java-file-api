@@ -5,8 +5,9 @@
 /// - Types: [me.supcheg.javafile.facts.TypeToken] and its sealed hierarchy.
 ///   The token kind decides what a type can be used for —
 ///   [me.supcheg.javafile.facts.InterfaceToken]s are implemented,
-///   [me.supcheg.javafile.facts.OpenClassToken]s and
-///   [me.supcheg.javafile.facts.AbstractClassToken]s are extended,
+///   [me.supcheg.javafile.facts.ExtendableClassToken]s
+///   ([me.supcheg.javafile.facts.OpenClassToken]s and
+///   [me.supcheg.javafile.facts.AbstractClassToken]s) are extended,
 ///   [me.supcheg.javafile.facts.ConcreteClassToken]s are instantiated,
 ///   [me.supcheg.javafile.facts.RefToken]s are type arguments. A declared
 ///   token is a [me.supcheg.javafile.facts.TypeShape] — the data of a type
@@ -17,7 +18,7 @@
 /// - Members, one overload per fact (§3.2), arity 0 to 12:
 ///   `MethodRefN<O, R, A1..AN>` and `VoidMethodRefN<O, A1..AN>` (instance
 ///   methods), `StaticMethodRefN<R, A1..AN>` and `VoidStaticMethodRefN<A1..AN>`,
-///   `CtorRefN<O, A1..AN>` and `AbstractCtorRefN<O, A1..AN>`, and the
+///   `CtorRefN<O, A1..AN>` and `SuperCtorRefN<O, A1..AN>`, and the
 ///   functional interface facts `SamN<F, R, A1..AN>` / `VoidSamN<F, A1..AN>`
 ///   that type lambdas (§6.4).
 ///   `void` methods are a family of their own, so a `void` call is never an
@@ -27,10 +28,10 @@
 /// - Fields: [me.supcheg.javafile.facts.FieldRef] /
 ///   [me.supcheg.javafile.facts.MutableFieldRef] and their static
 ///   counterparts; only the mutable ones can be assigned.
-/// - Runtime data generics cannot carry: throws-sets, overridability and
-///   explicit type arguments ([me.supcheg.javafile.facts.MemberTraits]),
-///   method tables, superclass chains, parameterized supertypes, enum
-///   constants.
+/// - Runtime data generics cannot carry: throws-sets, overridability,
+///   explicit type arguments and access
+///   ([me.supcheg.javafile.facts.MemberTraits]), method tables, superclass
+///   chains, interfaces, parameterized supertypes, enum constants.
 /// - Primitive types are typed by the phantom markers of
 ///   [me.supcheg.javafile.facts.Prim], never by their boxes (§6.1).
 ///
@@ -42,8 +43,12 @@
 /// [me.supcheg.javafile.facts.FactSource], or from typed declarations. A
 /// constructor fact exists in two families: `CtorRefN` of an instantiable
 /// class ([me.supcheg.javafile.facts.ConcreteClassToken]), the only one `new`
-/// accepts, and `AbstractCtorRefN` of an abstract class, only for a
-/// subclass constructor.
+/// accepts, and `SuperCtorRefN` of a class that can be extended
+/// ([me.supcheg.javafile.facts.ExtendableClassToken]) — of a constructor of
+/// an abstract class, and of a `protected` one —, only for a subclass
+/// constructor. The fact of any other `protected` member is held back in a
+/// [me.supcheg.javafile.facts.Protected], which the declaration of a
+/// subclass alone opens.
 @NullMarked
 package me.supcheg.javafile.facts;
 

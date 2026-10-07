@@ -29,7 +29,7 @@ import p.Sub3;
 ///
 /// A member [Sub3] inherits has its fact in the metamodel of the supertype that declares it: [Base_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub3.class, fingerprint = "0bba92d8290fbb89b331220127b3213bcf45959b9b4e4c391e4ddc714ba5591e", complete = true, format = 7)
+@GeneratedMetamodel(of = Sub3.class, fingerprint = "fd06ecf7d5d5d8665aefaefeaeba34dd4ea687d768e0e19693308b3dfabb17bf", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -40,7 +40,7 @@ public final class Sub3_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub3] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub3_"), "0bba92d8290fbb89b331220127b3213bcf45959b9b4e4c391e4ddc714ba5591e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub3"), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub3_"), "fd06ecf7d5d5d8665aefaefeaeba34dd4ea687d768e0e19693308b3dfabb17bf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub3"), List.of(), List.of(), List.of(ClassDesc.of("p.Base")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -51,15 +51,15 @@ public final class Sub3_ {
     static final class Canonical {
         /// The canonical form of [Sub3].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type p.Sub3 interface sealed=no
         tparams -
         superclasses -
         interfaces p.Base
         supertypes -
         enum -
-        members declared-public
-        member method abstract get() -> java.lang.String throws -
+        members declared-accessible
+        member method public abstract get() -> java.lang.String throws -
         sam get() -> java.lang.String throws -
         table abstract get()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.AbstractClassToken;
-import me.supcheg.javafile.facts.AbstractCtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.AbstractClass;
 import me.supcheg.javafile.facts.MemberTraits;
@@ -24,6 +23,7 @@ import me.supcheg.javafile.facts.Prim.Long;
 import me.supcheg.javafile.facts.Prim.Short;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -37,7 +37,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [Number] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_] and [Object_].
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "7d348aeb26b961e3249dfadbd195daa6e0bd83151a6961c610da7709a6a69ea9", complete = true, format = 7)
+@GeneratedMetamodel(of = Number.class, fingerprint = "deb1a447bb42f2f36f3f9da9e65df4b98a5eef68474f3bb35a961674230fbe04", complete = true, format = 8)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Number_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Number] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "7d348aeb26b961e3249dfadbd195daa6e0bd83151a6961c610da7709a6a69ea9", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), List.of(), false);
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "deb1a447bb42f2f36f3f9da9e65df4b98a5eef68474f3bb35a961674230fbe04", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), List.of(), false);
 
         private Data() {
         }
@@ -59,21 +59,21 @@ public final class Number_ {
     static final class Canonical {
         /// The canonical form of [Number].
         static final String TEXT = """
-        javafile-facts-canonical 5
+        javafile-facts-canonical 6
         type java.lang.Number abstract-class sealed=no
         tparams -
         superclasses java.lang.Object
         interfaces java.io.Serializable
         supertypes -
         enum -
-        members declared-public
-        member ctor() throws -
-        member method abstract doubleValue() -> double throws -
-        member method abstract floatValue() -> float throws -
-        member method abstract intValue() -> int throws -
-        member method abstract longValue() -> long throws -
-        member method overridable byteValue() -> byte throws -
-        member method overridable shortValue() -> short throws -
+        members declared-accessible
+        member ctor public () throws -
+        member method public abstract doubleValue() -> double throws -
+        member method public abstract floatValue() -> float throws -
+        member method public abstract intValue() -> int throws -
+        member method public abstract longValue() -> long throws -
+        member method public overridable byteValue() -> byte throws -
+        member method public overridable shortValue() -> short throws -
         table abstract doubleValue(); floatValue(); intValue(); longValue()
         table concrete byteValue(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); shortValue(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -88,7 +88,7 @@ public final class Number_ {
     public static final AbstractClassToken<Number> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Number#Number()].
-    public static final AbstractCtorRef0<Number> super_ = UnsafeFacts.abstractCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Number> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Number#byteValue()].
     public static final MethodRef0<Number, Byte> byteValue = UnsafeFacts.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.OVERRIDABLE);

@@ -33,6 +33,8 @@ META-INF/javafile/metamodel/full/p.WithDefault -> gen.facts.p.WithDefault_
 META-INF/javafile/metamodel/token/java.io.FileNotFoundException -> gen.facts.java.io.FileNotFoundException_
 META-INF/javafile/metamodel/token/java.io.IOException -> gen.facts.java.io.IOException_
 META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> gen.facts.java.lang.CloneNotSupportedException_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
+META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.sql.SQLException -> gen.facts.java.sql.SQLException_

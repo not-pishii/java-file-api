@@ -83,13 +83,14 @@ class SnapshotsTest {
         assertThat(comments(asSupertype))
                 .filteredOn(line -> !comments(asRequested).contains(line))
                 .containsExactly(
-                        "/// The full metamodel of [Base]: a fact of every `public` member the type declares.",
+                        "/// The full metamodel of [Base]: a fact of every `public` and every `protected` member the"
+                                + " type declares, the latter held back for a subclass.",
                         "/// `@Facts` does not ask for [Base]: it is here as a supertype of [p.Derived], whose"
                                 + " inherited members are called through this metamodel.");
         assertThat(comments(asRequested))
                 .filteredOn(line -> !comments(asSupertype).contains(line))
                 .containsExactly("/// The full metamodel of [Base], which `@Facts` asks for: a fact of every `public`"
-                        + " member the type declares.");
+                        + " and every `protected` member the type declares, the latter held back for a subclass.");
     }
 
     /// Every metamodel has documentation comments, and no other comment: a line is a comment or code, so

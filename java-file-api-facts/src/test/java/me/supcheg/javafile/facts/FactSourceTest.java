@@ -37,7 +37,7 @@ class FactSourceTest {
     void abstractClassHasOnlySubclassConstructorFacts() {
         FactSource<Number> source = source(NUMBER, Optional.empty());
 
-        AbstractCtorRef0<Number> ctor = source.abstractCtor();
+        SuperCtorRef0<Number> ctor = source.superCtor();
 
         assertThat(ctor.owner()).isSameAs(NUMBER);
         assertThat(ctor.kind()).isEqualTo(InvocableKind.CONSTRUCTOR);
@@ -45,7 +45,7 @@ class FactSourceTest {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(source::ctor)
                 .withMessageContaining("abstract class java.lang.Number")
-                .withMessageContaining("abstractCtor");
+                .withMessageContaining("superCtor");
     }
 
     @Test
@@ -57,7 +57,7 @@ class FactSourceTest {
         assertThat(ctor.owner()).isSameAs(String_.TOKEN);
         assertThat(asked).containsExactly(MemberQuery.constructor(String_.TOKEN));
         assertThatExceptionOfType(FactLookupException.class)
-                .isThrownBy(source::abstractCtor)
+                .isThrownBy(source::superCtor)
                 .withMessageContaining("class java.lang.String");
     }
 
