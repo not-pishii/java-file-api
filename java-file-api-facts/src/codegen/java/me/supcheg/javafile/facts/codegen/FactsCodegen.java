@@ -101,6 +101,10 @@ public final class FactsCodegen {
                 files.add(family.isSam() ? sam(family, n) : ref(family, n));
             }
         }
+        for (int n = 0; n <= MAX_ARITY; n++) {
+            files.add(implementation(true, n));
+            files.add(implementation(false, n));
+        }
         files.add(factories());
         files.add(lookup());
         return files;
@@ -433,7 +437,61 @@ public final class FactsCodegen {
                     factory(cb, family, n);
                 }
             }
+            for (int n = 0; n <= MAX_ARITY; n++) {
+                implementationFactory(cb, true, n);
+                implementationFactory(cb, false, n);
+            }
         });
+    }
+
+    private static final ClassDesc IMPLEMENTATION = ClassDesc.of(FACTS, "Implementation");
+    private static final ClassDesc IMPLEMENTED = ClassDesc.of(FACTS, "Implemented");
+
+    private static String implementationName(boolean hasResult, int n) {
+        return (hasResult ? "Implementation" : "VoidImplementation") + n;
+    }
+
+    /// The type variables of an implementation: the class, the result if the method has one, the parameters.
+    private static List<String> implementationVars(boolean hasResult, int n) {
+        return Stream.of(Stream.of("Self"), Stream.of("R").filter(_ -> hasResult), params(n).stream())
+                .flatMap(vars -> vars)
+                .toList();
+    }
+
+    /// `ImplementationN<Self, R, A1..AN>` or `VoidImplementationN<Self, A1..AN>`: how a class has a
+    /// method of that result and those parameters, see `Implementation`.
+    private static JavaFile implementation(boolean hasResult, int n) {
+        return JavaFile.class_(ClassDesc.of(FACTS, implementationName(hasResult, n)), cb -> {
+            generated(cb);
+            cb.withModifiers(Modifier.FINAL);
+            implementationVars(hasResult, n).forEach(v -> cb.withTypeParam(v));
+            cb.withInterface(Types.parameterized(IMPLEMENTATION, var("Self")));
+            cb.withField("how", Types.of(IMPLEMENTED), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
+            packagePrivateConstructor(
+                    cb,
+                    List.of(new Param("how", Types.of(IMPLEMENTED))),
+                    b -> b.assign(this_().field("how"), field("how")));
+            override(cb, "how", Types.of(IMPLEMENTED), this_().field("how"));
+            override(
+                    cb,
+                    "toString",
+                    Types.STRING,
+                    staticCall(ClassDesc.of(FACTS, "Invocables"), "describe", this_().field("how")));
+        });
+    }
+
+    private static void implementationFactory(ClassBuilder cb, boolean hasResult, int n) {
+        String name = implementationName(hasResult, n);
+        List<String> vars = implementationVars(hasResult, n);
+        cb.withMethod(
+                Character.toLowerCase(name.charAt(0)) + name.substring(1),
+                applied(ClassDesc.of(FACTS, name), vars),
+                mb -> {
+                    mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
+                    vars.forEach(v -> mb.withTypeParam(v));
+                    mb.withParam("how", Types.of(IMPLEMENTED));
+                    mb.withBody(b -> b.return_(instantiate(ClassDesc.of(FACTS, name), vars, List.of(field("how")))));
+                });
     }
 
     private static void factory(ClassBuilder cb, Family family, int n) {
