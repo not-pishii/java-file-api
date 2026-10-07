@@ -152,7 +152,7 @@ sealed interface Node {
             return Stream.concat(
                     cases.stream().map(Case::arm),
                     switch (otherwise) {
-                        case Default.None _ -> Stream.empty();
+                        case Default.None _ -> Stream.<Arm>empty();
                         case Default.Of(var arm) -> Stream.of(arm);
                     });
         }
