@@ -109,6 +109,49 @@ public final class UnsafeFacts extends InvocableFactories {
                 sealed);
     }
 
+    /// Vouches for the shape of a type a class can extend or implement, with
+    /// its [Heritage], as the full metamodel of such a type does. The
+    /// heritage is asked for when it is first needed, so a metamodel keeps it
+    /// in a class of its own, which nothing loads before.
+    ///
+    /// @param origin the generated metamodel and the fingerprint of the type
+    /// @param kind the kind of the type: a class that is not `final`, or an interface
+    /// @param desc the class or interface
+    /// @param typeParameters the type parameters with their bounds, see [TypeShape#typeParameters()]
+    /// @param superclasses the erased superclass chain, see [TypeShape#superclasses()]
+    /// @param interfaces the erased interfaces, see [TypeShape#interfaces()]
+    /// @param supertypes the parameterized supertypes, see [TypeShape#supertypes()]
+    /// @param methods the methods, instance and `static`, declared and inherited, see [TypeShape#methods()]
+    /// @param sealed whether the type is `sealed`
+    /// @param heritage supplies the heritage of the type, see [TypeShape#heritage()]
+    /// @param <K> the kind of the type
+    /// @return the shape
+    /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    public static <K extends DeclaredKind.Inheritable> TypeShape<K> shape(
+            ShapeOrigin.Metamodel origin,
+            K kind,
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
+            Supertypes supertypes,
+            MethodTableTemplate methods,
+            boolean sealed,
+            Supplier<Heritage.Told> heritage) {
+        return new TypeShape<>(
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                superclasses,
+                interfaces,
+                supertypes,
+                () -> methods,
+                List.of(),
+                sealed,
+                heritage);
+    }
+
     /// Vouches for the shape of a type by hand: the shape is of origin
     /// [ShapeOrigin#UNSAFE] and is never checked against the target
     /// classpath.

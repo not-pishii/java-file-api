@@ -5,6 +5,7 @@ import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -239,7 +240,8 @@ class TargetClasspathLoweringTest {
         TargetClasspath target = UnsafeFacts.targetClasspath(new Asked(Map.of(
                 OBJECT_TAKING.owner().shape(),
                 new TargetType.Changed(
-                        new MethodTableTemplate(Set.of(), Set.of(M_OF_STRING, M_OF_OBJECT), Set.of())))));
+                        new MethodTableTemplate(Set.of(), Set.of(M_OF_STRING, M_OF_OBJECT), Set.of()),
+                        Heritage.UNTOLD))));
 
         assertThat(render(target, OBJECT_TAKING.owner(), ofAString)).contains("return v0.m((Object) \"a\");");
     }
@@ -314,7 +316,9 @@ class TargetClasspathLoweringTest {
                 .contains("return v0.m(\"a\");");
 
         TargetClasspath target = UnsafeFacts.targetClasspath(new Asked(Map.of(
-                box, new TargetType.Changed(new MethodTableTemplate(Set.of(), Set.of(mOfT, M_OF_STRING), Set.of())))));
+                box,
+                new TargetType.Changed(
+                        new MethodTableTemplate(Set.of(), Set.of(mOfT, M_OF_STRING), Set.of()), Heritage.UNTOLD))));
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> render(target, boxOfString, body))
                 .withMessageContaining("m(java.lang.String)");

@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.TargetType;
 import me.supcheg.javafile.facts.TargetType.Difference;
 
@@ -99,7 +100,7 @@ public final class Conformance {
                         data(lines, targetLines), facts(facts(lines, full), facts(targetLines, full)))
                 .toList();
         return differences.isEmpty()
-                ? new TargetType.Changed(target.methods())
+                ? new TargetType.Changed(target.methods(), Heritage.UNTOLD)
                 : new TargetType.Mismatched(differences);
     }
 
