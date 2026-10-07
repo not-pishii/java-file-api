@@ -30,8 +30,10 @@ import org.jspecify.annotations.NullMarked;
 /// `@Facts` does not ask for [ConstantDesc]: it is here as a supertype of [Integer], whose inherited members are called through this metamodel.
 ///
 /// A member [ConstantDesc] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [ConstantDesc]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", complete = true, format = 10)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

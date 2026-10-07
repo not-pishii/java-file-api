@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -168,6 +169,7 @@ final class MetamodelEmitter {
     /// @param taken the names the body of the metamodel starts a name with, see [#takenNames]: no
     ///     parameter is named so
     /// @param about why the metamodel is there and where the inherited members are, for its comment
+    /// @param entry whether a generated class can extend or implement the type, for its comment
     /// @return the source file
     static JavaFile full(
             ClassDesc metamodel,
@@ -176,8 +178,15 @@ final class MetamodelEmitter {
             MemberPlan plan,
             Targets targets,
             Set<String> taken,
-            MetamodelDocs.About.Full about) {
-        return emit(metamodel, model, canonical, targets, Optional.of(new Full(plan, Optional.of(taken))), about)
+            MetamodelDocs.About.Full about,
+            Entry entry) {
+        return emit(
+                        metamodel,
+                        model,
+                        canonical,
+                        targets,
+                        Optional.of(new Full(plan, Optional.of(taken), Optional.of(entry))),
+                        about)
                 .file();
     }
 
@@ -214,8 +223,13 @@ final class MetamodelEmitter {
             MemberPlan probe,
             Targets targets,
             MetamodelDocs.About.Full about) {
-        Emitted emitted =
-                emit(metamodel, model, canonical, targets, Optional.of(new Full(probe, Optional.empty())), about);
+        Emitted emitted = emit(
+                metamodel,
+                model,
+                canonical,
+                targets,
+                Optional.of(new Full(probe, Optional.empty(), Optional.empty())),
+                about);
         return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render(FORMAT))
                 .filter(name -> !name.startsWith(MemberPlan.PROBE))
                 .filter(name -> !emitted.typeParameters().contains(name))
@@ -251,7 +265,7 @@ final class MetamodelEmitter {
     /// @param plan the facts
     /// @param taken the names no parameter may have; empty for the source [#takenNames] reads them off,
     ///     where what is local has a name no member has
-    private record Full(MemberPlan plan, Optional<Set<String>> taken) {}
+    private record Full(MemberPlan plan, Optional<Set<String>> taken, Optional<Entry> entry) {}
 
     /// A metamodel as written.
     ///
@@ -332,7 +346,15 @@ final class MetamodelEmitter {
         Expr shape = Exprs.staticField(data, MetamodelNames.SHAPE);
         MetamodelDocs.Generics generics = raw ? MetamodelDocs.Generics.RAW : MetamodelDocs.Generics.DECLARED;
         JavaFile file = JavaFile.class_(metamodel, cb -> {
-            cb.withDoc(MetamodelDocs.type(model.desc(), names, generics, about, full.map(Full::plan)))
+            cb.withDoc(MetamodelDocs.type(
+                            model.desc(),
+                            names,
+                            generics,
+                            about,
+                            full.map(Full::plan),
+                            full.flatMap(Full::entry)
+                                    .map(entry ->
+                                            new MetamodelDocs.EntryOf(MetamodelNames.heritage(metamodel), entry))))
                     .withModifiers(Modifier.FINAL)
                     .withAnnotation(CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                     .withAnnotation(
@@ -583,36 +605,160 @@ final class MetamodelEmitter {
     /// asked for, with a method per member, so that no initializer grows with the number of members of
     /// the type beyond what a method may hold.
     ///
+    /// The class has the entry of the type too, if it has one ([Entry.Offered]): `extend` of a class or
+    /// `implement` of an interface, which starts the proof that a class being declared has every abstract
+    /// method of the type, and a stage per abstract method, each with the step that takes the
+    /// implementation of its method and gives the next stage — the last, the proof. A type without
+    /// abstract methods gives the proof at once.
+    ///
     /// @param metamodel the metamodel class
     /// @param model the type, read with its members
+    /// @param entry whether a generated class can extend or implement the type
     /// @return the source file, if the type tells a heritage
-    static Optional<JavaFile> heritage(ClassDesc metamodel, TypeModel model) {
+    static Optional<JavaFile> heritage(ClassDesc metamodel, TypeModel model, Entry entry) {
         return switch (model.heritage()) {
             case Heritage.Told told -> {
                 ClassDesc holder = MetamodelNames.heritage(metamodel);
                 ClassDesc held = holder.nested(MetamodelNames.HELD);
-                yield Optional.of(JavaFile.class_(
-                        holder,
-                        cb -> cb.withDoc(MetamodelDocs.inherited(model.desc()))
-                                .withModifiers(Modifier.FINAL)
-                                .withAnnotation(
-                                        CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
-                                .withAnnotation(CD_GENERATED_METAMODEL_PART)
-                                .withAnnotation(CD_NULL_MARKED)
-                                .withInterface(Types.parameterized(CD_SUPPLIER, Types.of(CD_HERITAGE_TOLD)))
-                                .withConstructor(ctor -> ctor.withDoc(MetamodelDocs.heritageHolder()))
-                                .withMethod(
-                                        "get",
-                                        Types.of(CD_HERITAGE_TOLD),
-                                        mb -> mb.withDoc(MetamodelDocs.heritageGiven())
-                                                .withAnnotation(ClassDesc.of("java.lang.Override"))
-                                                .withModifiers(Modifier.PUBLIC)
-                                                .withBody(b ->
-                                                        b.return_(Exprs.staticField(held, MetamodelNames.HERITAGE))))
-                                .withNestedClass(held, hc -> held(hc, told, model.desc()))));
+                yield Optional.of(JavaFile.class_(holder, cb -> {
+                    cb.withDoc(MetamodelDocs.inherited(model.desc()))
+                            .withModifiers(Modifier.FINAL)
+                            .withAnnotation(
+                                    CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
+                            .withAnnotation(CD_GENERATED_METAMODEL_PART)
+                            .withAnnotation(
+                                    CD_SUPPRESS_WARNINGS,
+                                    // a raw or deprecated type of a signature is the business of the type it is of
+                                    ab -> ab.withMember(
+                                            "value",
+                                            AnnotationValues.array(Stream.of("rawtypes", "deprecation", "removal")
+                                                    .<SingleAnnotationValue>map(AnnotationValues::literal)
+                                                    .toList())))
+                            .withAnnotation(CD_NULL_MARKED)
+                            .withInterface(Types.parameterized(CD_SUPPLIER, Types.of(CD_HERITAGE_TOLD)))
+                            .withConstructor(ctor -> ctor.withDoc(MetamodelDocs.heritageHolder()))
+                            .withMethod(
+                                    "get",
+                                    Types.of(CD_HERITAGE_TOLD),
+                                    mb -> mb.withDoc(MetamodelDocs.heritageGiven())
+                                            .withAnnotation(ClassDesc.of("java.lang.Override"))
+                                            .withModifiers(Modifier.PUBLIC)
+                                            .withBody(b -> b.return_(Exprs.staticField(held, MetamodelNames.HERITAGE))))
+                            .withNestedClass(held, hc -> held(hc, told, model.desc()));
+                    switch (entry) {
+                        case Entry.Offered offered -> entry(cb, holder, model, offered);
+                        case Entry.Refused _ -> {}
+                    }
+                }));
             }
             case Heritage.Untold _ -> Optional.empty();
         };
+    }
+
+    private static final ClassDesc CD_COMPLETE = ClassDesc.of(FACTS, "Complete");
+    private static final ClassDesc CD_STEPS = ClassDesc.of(FACTS, "Steps");
+    private static final ClassDesc CD_DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
+
+    /// The entry of a type and its stages, in the class of its heritage.
+    private static void entry(ClassBuilder cb, ClassDesc holder, TypeModel model, Entry.Offered offered) {
+        boolean isInterface = model.kind() instanceof DeclaredKind.Interface;
+        String verb = isInterface ? "implement" : "extend";
+        String stage = isInterface ? "Implement" : "Extend";
+        List<TypeParam> typeParams = Stream.concat(
+                        model.typeParams().stream(), Stream.of(new TypeParam(offered.self(), List.of())))
+                .toList();
+        List<TypeRef> typeArgs = typeParams.stream()
+                .<TypeRef>map(param -> Types.typeVar(param.name()))
+                .toList();
+        TypeRef self = Types.typeVar(offered.self());
+        TypeRef type = model.typeParams().isEmpty()
+                ? Types.of(model.desc())
+                : new ParameterizedTypeRef(
+                        model.desc(),
+                        model.typeParams().stream()
+                                .<TypeArg>map(param -> Types.exact(Types.typeVar(param.name())))
+                                .toList());
+        TypeRef complete = Types.parameterized(CD_COMPLETE, self, type);
+        TypeRef steps = Types.parameterized(CD_STEPS, self, type);
+        List<Entry.Step> all = offered.steps();
+        // the stage that has taken `taken` steps, and what the step before it, or the entry, returns
+        Function<Integer, ClassDesc> stageClass = taken -> holder.nested(taken == 0 ? stage : stage + taken);
+        Function<Integer, TypeRef> after = taken -> taken == all.size()
+                ? complete
+                : new ParameterizedTypeRef(
+                        stageClass.apply(taken),
+                        typeArgs.stream().<TypeArg>map(Types::exact).toList());
+        BiFunction<Integer, Expr, Expr> made = (taken, stepsTaken) -> taken == all.size()
+                ? stepsTaken.call("complete")
+                : Exprs.newDiamond(stageClass.apply(taken), stepsTaken);
+        cb.withMethod(verb, after.apply(0), mb -> {
+            mb.withDoc(MetamodelDocs.entry(model.desc(), isInterface, typeParams, offered))
+                    .withModifiers(Modifier.PUBLIC, Modifier.STATIC);
+            typeParams.forEach(
+                    param -> mb.withTypeParam(param.name(), param.bounds().toArray(ClassOrInterfaceTypeRef[]::new)));
+            mb.withParam("type", Types.parameterized(CD_DECLARED_TOKEN, type))
+                    .withParam("self", Types.parameterized(CD_REF_TOKEN, self))
+                    .withBody(b -> b.return_(made.apply(
+                            0, Exprs.staticCall(CD_UNSAFE_FACTS, "steps", Exprs.field("type"), Exprs.field("self")))));
+        });
+        IntStream.range(0, all.size()).forEach(taken -> {
+            Entry.Step step = all.get(taken);
+            cb.withNestedClass(stageClass.apply(taken), sc -> {
+                sc.withDoc(MetamodelDocs.stage(model.desc(), isInterface, typeParams, offered, taken))
+                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
+                typeParams.forEach(sc::withTypeParam);
+                sc.withField("steps", steps, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
+                        .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)
+                                .withParam("steps", steps)
+                                .withBody(b -> b.assign(Exprs.this_().field("steps"), Exprs.field("steps"))))
+                        .withMethod(
+                                step.name(),
+                                after.apply(taken + 1),
+                                mb -> mb.withDoc(MetamodelDocs.step(step, taken + 1 == all.size()))
+                                        .withModifiers(Modifier.PUBLIC)
+                                        .withParam("how", implementation(step.method(), self))
+                                        .withBody(b -> b.return_(made.apply(
+                                                taken + 1,
+                                                Exprs.this_()
+                                                        .field("steps")
+                                                        .call(
+                                                                "with",
+                                                                signature(step.method()
+                                                                        .signature()),
+                                                                Exprs.field("how"))))));
+            });
+        });
+    }
+
+    /// The implementation a step takes: of exactly the parameters of its method, and of its result or a
+    /// subtype. A primitive is typed by its marker, as in a fact.
+    private static TypeRef implementation(Heritage.Method method, TypeRef self) {
+        Stream<TypeArg> result =
+                switch (method.result()) {
+                    case Heritage.Result.Nothing _ -> Stream.empty();
+                    case Heritage.Result.Of(TypeRef type) -> Stream.of(Types.extendsBound(phantom(type)));
+                };
+        String family =
+                switch (method.result()) {
+                            case Heritage.Result.Nothing _ -> "VoidImplementation";
+                            case Heritage.Result.Of _ -> "Implementation";
+                        }
+                        + method.params().size();
+        return new ParameterizedTypeRef(
+                ClassDesc.of(FACTS, family),
+                Stream.of(
+                                Stream.<TypeArg>of(Types.exact(self)),
+                                result,
+                                method.params().stream().<TypeArg>map(param -> Types.exact(phantom(param))))
+                        .flatMap(Function.identity())
+                        .toList());
+    }
+
+    /// The type a fact is typed by: the marker of a primitive, the type itself otherwise.
+    private static TypeRef phantom(TypeRef type) {
+        return type instanceof PrimitiveTypeRef primitive
+                ? Types.of(ClassDesc.of(FACTS, "Prim$" + MemberFacts.marker(primitive)))
+                : type;
     }
 
     private static void held(ClassBuilder hc, Heritage.Told heritage, ClassDesc type) {

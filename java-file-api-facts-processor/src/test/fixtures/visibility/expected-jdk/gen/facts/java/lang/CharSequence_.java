@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [CharSequence]: it is only mentioned in the signatures of [Integer]. For the facts of its members add `CharSequence.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CharSequence.class, fingerprint = "8f84a462c7d2e8fc4e852b6381c06b00cd1a92d4f8499bd02cc57883cb15b79f", complete = false, format = 10)
+@GeneratedMetamodel(of = CharSequence.class, fingerprint = "8f84a462c7d2e8fc4e852b6381c06b00cd1a92d4f8499bd02cc57883cb15b79f", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

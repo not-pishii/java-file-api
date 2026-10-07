@@ -30,8 +30,10 @@ import p.NoneB;
 /// `@Facts` does not ask for [NoneB]: it is here as a supertype of [p.OneWithout], whose inherited members are called through this metamodel.
 ///
 /// A member [NoneB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [NoneB] by the proof `NoneB_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NoneB.class, fingerprint = "cdbcd12fa03b2977611121866636d50b235062a25a4e3aae814b9070f0a0500c", complete = true, format = 10)
+@GeneratedMetamodel(of = NoneB.class, fingerprint = "cdbcd12fa03b2977611121866636d50b235062a25a4e3aae814b9070f0a0500c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

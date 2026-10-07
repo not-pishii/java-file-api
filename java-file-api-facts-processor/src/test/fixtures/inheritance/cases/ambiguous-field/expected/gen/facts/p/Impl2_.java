@@ -33,8 +33,10 @@ import p.Impl2;
 /// These members have no fact:
 ///
 /// - `field K of p.HIface`, which is ambiguous in p.Impl2 with field K of p.PubBase
+///
+/// A generated class extends or implements [Impl2] by the proof `Impl2_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl2.class, fingerprint = "b5de6cf7a6e67c4554f366c17b4deef22be1cd5901984223db2f1eee6e37c566", complete = true, format = 10)
+@GeneratedMetamodel(of = Impl2.class, fingerprint = "b5de6cf7a6e67c4554f366c17b4deef22be1cd5901984223db2f1eee6e37c566", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

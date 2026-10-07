@@ -32,8 +32,10 @@ import p.OnHid;
 /// A member [OnHid] inherits has its fact in the metamodel of the supertype that declares it: [a.facts.java.lang.Object_].
 ///
 /// `p.HidBase`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [OnHid] by the proof `OnHid_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OnHid.class, fingerprint = "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", complete = true, format = 10)
+@GeneratedMetamodel(of = OnHid.class, fingerprint = "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

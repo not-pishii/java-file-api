@@ -27,8 +27,10 @@ import p.Gen.St;
 /// The full metamodel of [St], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [St] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [St] by the proof `Gen_St_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = St.class, fingerprint = "576acd1fede5d0cfa6c95a10f0ae65535327c7cd5298d51abe8796361ef18c20", complete = true, format = 10)
+@GeneratedMetamodel(of = St.class, fingerprint = "576acd1fede5d0cfa6c95a10f0ae65535327c7cd5298d51abe8796361ef18c20", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

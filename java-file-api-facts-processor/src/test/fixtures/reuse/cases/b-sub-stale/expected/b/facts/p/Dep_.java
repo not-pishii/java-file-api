@@ -33,8 +33,10 @@ import p.Dep;
 /// `@Facts` does not ask for [Dep]: it is here as a supertype of [q.Sub], whose inherited members are called through this metamodel.
 ///
 /// A member [Dep] inherits has its fact in the metamodel of the supertype that declares it: [a.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Dep] by the proof `Dep_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Dep.class, fingerprint = "d94c6e26edf52cf429d75989dc6a49a5c6391dca40a3d4f244d54bec599054a3", complete = true, format = 10)
+@GeneratedMetamodel(of = Dep.class, fingerprint = "d94c6e26edf52cf429d75989dc6a49a5c6391dca40a3d4f244d54bec599054a3", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

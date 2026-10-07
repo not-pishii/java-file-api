@@ -31,8 +31,10 @@ import p.Fn2;
 /// The full metamodel of [Fn2], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Fn2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Fn2] by the proof `Fn2_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn2.class, fingerprint = "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", complete = true, format = 10)
+@GeneratedMetamodel(of = Fn2.class, fingerprint = "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

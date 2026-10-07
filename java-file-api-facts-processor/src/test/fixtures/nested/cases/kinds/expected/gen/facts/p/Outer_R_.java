@@ -32,8 +32,10 @@ import p.Outer.R;
 /// The full metamodel of [R], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [R] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Record_].
+///
+/// No generated class extends or implements [R]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = R.class, fingerprint = "24ea1a084945efbce240b8d1b1fda510e22acde411e525bb8dc8037dc36d68c2", complete = true, format = 10)
+@GeneratedMetamodel(of = R.class, fingerprint = "24ea1a084945efbce240b8d1b1fda510e22acde411e525bb8dc8037dc36d68c2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,7 +30,7 @@ import p.Raw;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [Raw] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Raw.class, fingerprint = "c678603fdc675a14cd3b0c5df94009214d6f835e24e35e96162112f8a02dd6bb", complete = false, format = 10)
+@GeneratedMetamodel(of = Raw.class, fingerprint = "c678603fdc675a14cd3b0c5df94009214d6f835e24e35e96162112f8a02dd6bb", complete = false, format = 11)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

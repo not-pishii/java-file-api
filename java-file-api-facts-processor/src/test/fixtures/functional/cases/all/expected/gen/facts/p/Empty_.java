@@ -25,8 +25,10 @@ import p.Empty;
 /// The full metamodel of [Empty], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Empty] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Empty] by the proof `Empty_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Empty.class, fingerprint = "e918bf1e27d764bcbc892322cfe2a7aa425496e21db566469480ace6f9430287", complete = true, format = 10)
+@GeneratedMetamodel(of = Empty.class, fingerprint = "e918bf1e27d764bcbc892322cfe2a7aa425496e21db566469480ace6f9430287", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

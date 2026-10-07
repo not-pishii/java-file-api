@@ -33,8 +33,10 @@ import p.Sup;
 /// These members have no fact:
 ///
 /// - `method lost(p.Secret)`, which mentions types that are not public: p.Secret
+///
+/// A generated class extends or implements [Sup] by the proof `Sup_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sup.class, fingerprint = "fce926502dbbfa74ebf546e2a92cd1ea05e95339f8d60315a53d8bb734813ede", complete = true, format = 10)
+@GeneratedMetamodel(of = Sup.class, fingerprint = "fce926502dbbfa74ebf546e2a92cd1ea05e95339f8d60315a53d8bb734813ede", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -28,8 +28,10 @@ import p.Nested;
 /// The full metamodel of [Nested], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Nested] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [NotFoundB_].
+///
+/// A generated class extends or implements [Nested] by the proof `Nested_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Nested.class, fingerprint = "9d3e709b58c183c2ed0ac28478ef52179cdd09b61411f7139d46613166ad5a08", complete = true, format = 10)
+@GeneratedMetamodel(of = Nested.class, fingerprint = "9d3e709b58c183c2ed0ac28478ef52179cdd09b61411f7139d46613166ad5a08", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

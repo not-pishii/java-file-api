@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Exception]: it is only mentioned in the signatures of [p.Poly]. For the facts of its members add `Exception.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Exception.class, fingerprint = "a1a93296e851bae02d370e7f03398f09d0f0df2012d16dbf4948332c716727cc", complete = false, format = 10)
+@GeneratedMetamodel(of = Exception.class, fingerprint = "a1a93296e851bae02d370e7f03398f09d0f0df2012d16dbf4948332c716727cc", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

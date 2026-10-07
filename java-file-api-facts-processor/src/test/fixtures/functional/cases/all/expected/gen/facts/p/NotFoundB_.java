@@ -31,8 +31,10 @@ import p.NotFoundB;
 /// `@Facts` does not ask for [NotFoundB]: it is here as a supertype of [p.Nested], whose inherited members are called through this metamodel.
 ///
 /// A member [NotFoundB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [NotFoundB] by the proof `NotFoundB_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", complete = true, format = 10)
+@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

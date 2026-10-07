@@ -31,8 +31,10 @@ import p.Outer.NonStatic;
 /// The full metamodel of [Outer], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Outer] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Outer] by the proof `Outer_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Outer.class, fingerprint = "8efdb594dc5f80b681f3822669b1bc1e9fcf4ce07c303b8e8c979327af260489", complete = true, format = 10)
+@GeneratedMetamodel(of = Outer.class, fingerprint = "8efdb594dc5f80b681f3822669b1bc1e9fcf4ce07c303b8e8c979327af260489", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

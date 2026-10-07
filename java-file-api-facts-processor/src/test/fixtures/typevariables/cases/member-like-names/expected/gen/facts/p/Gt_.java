@@ -40,10 +40,12 @@ import p.Gt;
 ///
 /// A member [Gt] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Gt] by the proof `Gt_Heritage` starts.
+///
 /// @param <T> a type argument of [Gt]
 /// @param <E> a type argument of [Gt]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 10)
+@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

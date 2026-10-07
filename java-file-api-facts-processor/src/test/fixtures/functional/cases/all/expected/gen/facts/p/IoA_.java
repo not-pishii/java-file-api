@@ -31,8 +31,10 @@ import p.IoA;
 /// `@Facts` does not ask for [IoA]: it is here as a supertype of [p.Disjoint], [p.Nested], [p.OneWithout] and 1 more requested type, whose inherited members are called through this metamodel.
 ///
 /// A member [IoA] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [IoA] by the proof `IoA_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 10)
+@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

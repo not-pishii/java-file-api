@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.Constructor;
 import me.supcheg.javafile.facts.Heritage.Dispatch;
@@ -17,16 +19,24 @@ import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
+import p.Poly;
 
-/// What a class that extends or implements [p.Poly] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
+/// What a class that extends or implements [Poly] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodelPart
+@SuppressWarnings({
+    "rawtypes",
+    "deprecation",
+    "removal"
+})
 @NullMarked
 public final class Poly_Heritage implements Supplier<Told> {
     /// For the shape of the metamodel.
@@ -42,7 +52,7 @@ public final class Poly_Heritage implements Supplier<Told> {
     }
 
     static final class Held {
-        /// Every constructor and method of [p.Poly] that is not private, as a member of it, whoever declares it.
+        /// Every constructor and method of [Poly] that is not private, as a member of it, whoever declares it.
         static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12(), m13(), m14(), m15(), m16(), m17(), m18()), List.of(c0(), c1()));
 
         private Held() {
@@ -131,5 +141,15 @@ public final class Poly_Heritage implements Supplier<Told> {
         private static Constructor c1() {
             return new Constructor(Visibility.PUBLIC, Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(new TypeParam("T", List.of())), List.of(Types.typeVar("T")), Arity.FIXED, List.of());
         }
+    }
+
+    /// Starts the proof that a class being declared extends [Poly], which has no abstract method: the proof is complete.
+    ///
+    /// @param type the token of the type
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof
+    public static <Self> Complete<Self, Poly> extend(DeclaredToken<Poly> type, RefToken<Self> self) {
+        return UnsafeFacts.steps(type, self).complete();
     }
 }

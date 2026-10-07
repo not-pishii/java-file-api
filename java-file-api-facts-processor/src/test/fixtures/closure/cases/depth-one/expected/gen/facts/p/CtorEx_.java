@@ -26,7 +26,7 @@ import p.CtorEx;
 ///
 /// `@Facts` does not ask for [CtorEx]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `CtorEx.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CtorEx.class, fingerprint = "d49e13af1fb89fa4328c888ff635980807f2cf3fbdebf636056c628147e36552", complete = false, format = 10)
+@GeneratedMetamodel(of = CtorEx.class, fingerprint = "d49e13af1fb89fa4328c888ff635980807f2cf3fbdebf636056c628147e36552", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

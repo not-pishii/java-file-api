@@ -30,8 +30,10 @@ import p.Derived;
 /// The full metamodel of [Derived], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Derived] inherits has its fact in the metamodel of the supertype that declares it: [Api_] and [Base_].
+///
+/// A generated class extends or implements [Derived] by the proof `Derived_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Derived.class, fingerprint = "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", complete = true, format = 10)
+@GeneratedMetamodel(of = Derived.class, fingerprint = "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

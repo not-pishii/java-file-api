@@ -27,8 +27,10 @@ import p.PubFn2;
 /// The full metamodel of [PubFn2], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [PubFn2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PStr_].
+///
+/// A generated class extends or implements [PubFn2] by the proof `PubFn2_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn2.class, fingerprint = "278e329990eeff3de4005ff998225be781462a490b48ab203d0c537bc956dd06", complete = true, format = 10)
+@GeneratedMetamodel(of = PubFn2.class, fingerprint = "278e329990eeff3de4005ff998225be781462a490b48ab203d0c537bc956dd06", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

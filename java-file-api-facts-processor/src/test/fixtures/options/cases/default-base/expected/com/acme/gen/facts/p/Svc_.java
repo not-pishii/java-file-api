@@ -33,8 +33,10 @@ import p.Svc;
 /// These members have no fact:
 ///
 /// - `method hidden()`, which mentions types that are not public: p.Hidden
+///
+/// A generated class extends or implements [Svc] by the proof `Svc_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "3d79144a13d59f7b495f5c189aa3ec82e5e8828d62db1b4149415b1247fca2b3", complete = true, format = 10)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "3d79144a13d59f7b495f5c189aa3ec82e5e8828d62db1b4149415b1247fca2b3", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

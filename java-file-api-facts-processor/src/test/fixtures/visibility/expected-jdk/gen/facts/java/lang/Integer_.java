@@ -45,8 +45,10 @@ import org.jspecify.annotations.NullMarked;
 /// The full metamodel of [Integer], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Integer] inherits has its fact in the metamodel of the supertype that declares it: [Comparable_], [Number_], [gen.facts.java.lang.constant.Constable_] and [gen.facts.java.lang.constant.ConstantDesc_].
+///
+/// No generated class extends or implements [Integer]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 10)
+@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -35,9 +35,11 @@ import p.T2;
 ///
 /// A member [T2] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [T2] by the proof `T2_Heritage` starts.
+///
 /// @param <T> a type argument of [T2]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = T2.class, fingerprint = "7635c4c03a05592359822e8826d5358cacafb66a81815fff2aa849b17e60a603", complete = true, format = 10)
+@GeneratedMetamodel(of = T2.class, fingerprint = "7635c4c03a05592359822e8826d5358cacafb66a81815fff2aa849b17e60a603", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -28,8 +28,10 @@ import p.Outer.Api;
 /// The full metamodel of [Api], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Api] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Api] by the proof `Outer_Api_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Api.class, fingerprint = "69291e4d041474e27fbcafa087fcb93bc456df96166b3f0377be52a1bbb48c36", complete = true, format = 10)
+@GeneratedMetamodel(of = Api.class, fingerprint = "69291e4d041474e27fbcafa087fcb93bc456df96166b3f0377be52a1bbb48c36", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

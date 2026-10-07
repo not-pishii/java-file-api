@@ -27,8 +27,10 @@ import p.Low;
 /// The full metamodel of [Low], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Low] inherits has its fact in the metamodel of the supertype that declares it: [High_].
+///
+/// A generated class extends or implements [Low] by the proof `Low_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "144db708622c11a42b0057afd2a6869cb69867361c4536afd87a9fcbfe547eb4", complete = true, format = 10)
+@GeneratedMetamodel(of = Low.class, fingerprint = "144db708622c11a42b0057afd2a6869cb69867361c4536afd87a9fcbfe547eb4", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

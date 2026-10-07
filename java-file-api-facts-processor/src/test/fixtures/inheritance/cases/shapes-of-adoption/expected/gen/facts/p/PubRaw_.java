@@ -32,8 +32,10 @@ import p.PubRaw;
 /// A member [PubRaw] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.HG`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [PubRaw] by the proof `PubRaw_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "1fa6a4ed1c609408552b2040d646d426d7d15b7a5f9065e590374ee79fc00c9a", complete = true, format = 10)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "1fa6a4ed1c609408552b2040d646d426d7d15b7a5f9065e590374ee79fc00c9a", complete = true, format = 11)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

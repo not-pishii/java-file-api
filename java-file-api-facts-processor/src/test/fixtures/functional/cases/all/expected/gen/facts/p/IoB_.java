@@ -31,8 +31,10 @@ import p.IoB;
 /// `@Facts` does not ask for [IoB]: it is here as a supertype of [p.Same], whose inherited members are called through this metamodel.
 ///
 /// A member [IoB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [IoB] by the proof `IoB_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoB.class, fingerprint = "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", complete = true, format = 10)
+@GeneratedMetamodel(of = IoB.class, fingerprint = "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

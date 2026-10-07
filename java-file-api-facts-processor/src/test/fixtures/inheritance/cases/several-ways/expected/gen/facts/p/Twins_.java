@@ -30,8 +30,10 @@ import p.Twins;
 /// A member [Twins] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.Tight`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [Twins] by the proof `Twins_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Twins.class, fingerprint = "2d1e9692161708596021fac1ddeb5697bc344257ed86539e522f6f17f1f6cf73", complete = true, format = 10)
+@GeneratedMetamodel(of = Twins.class, fingerprint = "2d1e9692161708596021fac1ddeb5697bc344257ed86539e522f6f17f1f6cf73", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

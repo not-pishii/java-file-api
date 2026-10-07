@@ -28,8 +28,10 @@ import p.Plain;
 /// The full metamodel of [Plain], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Plain] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Plain] by the proof `Plain_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plain.class, fingerprint = "c869b2076e91b858ac40a0af3e7a89d8b5f5befce16fe8afcbd140fa93635418", complete = true, format = 10)
+@GeneratedMetamodel(of = Plain.class, fingerprint = "c869b2076e91b858ac40a0af3e7a89d8b5f5befce16fe8afcbd140fa93635418", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

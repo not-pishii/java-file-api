@@ -34,8 +34,10 @@ import p.PubSame;
 /// A member [PubSame] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.HSame`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [PubSame] by the proof `PubSame_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 10)
+@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

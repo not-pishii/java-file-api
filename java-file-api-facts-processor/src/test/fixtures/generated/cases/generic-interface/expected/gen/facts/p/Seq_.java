@@ -36,9 +36,11 @@ import p.Seq;
 ///
 /// A member [Seq] inherits has its fact in the metamodel of the supertype that declares it: [Coll_].
 ///
+/// A generated class extends or implements [Seq] by the proof `Seq_Heritage` starts.
+///
 /// @param <E> a type argument of [Seq]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seq.class, fingerprint = "7a8e2333c5aade61ccb1941320e754759992ee4caf1d9cc4873ad3af1eb5d53c", complete = true, format = 10)
+@GeneratedMetamodel(of = Seq.class, fingerprint = "7a8e2333c5aade61ccb1941320e754759992ee4caf1d9cc4873ad3af1eb5d53c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

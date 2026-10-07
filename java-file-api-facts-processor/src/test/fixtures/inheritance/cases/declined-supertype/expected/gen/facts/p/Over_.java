@@ -32,8 +32,10 @@ import p.Over;
 /// The full metamodel of [Over], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// The members inherited from `p.Bounded`, which has no full metamodel, have no facts: the bounds of the type parameters of p.Bounded mention types that are not public: p.Secret.
+///
+/// A generated class extends or implements [Over] by the proof `Over_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 10)
+@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

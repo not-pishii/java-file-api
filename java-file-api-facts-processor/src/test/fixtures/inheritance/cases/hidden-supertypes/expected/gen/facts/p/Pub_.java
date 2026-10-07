@@ -48,8 +48,10 @@ import p.Pub;
 /// These members have no fact:
 ///
 /// - `method self() of p.Far`, which mentions types that are not public: p.Far
+///
+/// A generated class extends or implements [Pub] by the proof `Pub_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub.class, fingerprint = "c05865dd6bee406b78ffc64c196865abb68952427c4f35241e75db29955e8cbb", complete = true, format = 10)
+@GeneratedMetamodel(of = Pub.class, fingerprint = "c05865dd6bee406b78ffc64c196865abb68952427c4f35241e75db29955e8cbb", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

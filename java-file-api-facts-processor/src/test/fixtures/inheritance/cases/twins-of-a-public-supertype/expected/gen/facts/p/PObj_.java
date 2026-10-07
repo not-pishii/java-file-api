@@ -30,8 +30,10 @@ import p.PObj;
 /// `@Facts` does not ask for [PObj]: it is here as a supertype of [p.PubFn3], whose inherited members are called through this metamodel.
 ///
 /// A member [PObj] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [PObj] by the proof `PObj_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 10)
+@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

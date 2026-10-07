@@ -47,8 +47,10 @@ import p.Vis;
 /// - `method takes(p.Hidden)`, which mentions types that are not public: p.Hidden
 /// - `method arr()`, which mentions types that are not public: p.Hidden
 /// - `method nested(p.Outer.PkgNested)`, which mentions types that are not public: p.Outer$PkgNested
+///
+/// A generated class extends or implements [Vis] by the proof `Vis_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 10)
+@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

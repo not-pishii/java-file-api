@@ -28,8 +28,10 @@ import p.Same;
 /// The full metamodel of [Same], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Same] inherits has its fact in the metamodel of the supertype that declares it: [IoA_] and [IoB_].
+///
+/// A generated class extends or implements [Same] by the proof `Same_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Same.class, fingerprint = "949ff0e76e762109d052201062039cf046099c81f0ccbb0400916f4cc9cb6274", complete = true, format = 10)
+@GeneratedMetamodel(of = Same.class, fingerprint = "949ff0e76e762109d052201062039cf046099c81f0ccbb0400916f4cc9cb6274", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

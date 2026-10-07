@@ -28,8 +28,10 @@ import p.SubOv;
 /// The full metamodel of [SubOv], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [SubOv] inherits has its fact in the metamodel of the supertype that declares it: [Ov_].
+///
+/// A generated class extends or implements [SubOv] by the proof `SubOv_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SubOv.class, fingerprint = "9acb3ac8408610e8968dcc4d1ca8d72e154b765f34f534a6cde8b57407343e2c", complete = true, format = 10)
+@GeneratedMetamodel(of = SubOv.class, fingerprint = "9acb3ac8408610e8968dcc4d1ca8d72e154b765f34f534a6cde8b57407343e2c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

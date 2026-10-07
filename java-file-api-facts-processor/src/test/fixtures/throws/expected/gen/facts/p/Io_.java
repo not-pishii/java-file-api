@@ -41,8 +41,10 @@ import p.Io;
 ///
 /// - `method hidden()`, which mentions types that are not public: p.Secret
 /// - `constructor Io(java.lang.String)`, which mentions types that are not public: p.Secret
+///
+/// A generated class extends or implements [Io] by the proof `Io_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 10)
+@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,8 +30,10 @@ import p.PubOver;
 /// A member [PubOver] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
 /// `p.HOver`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [PubOver] by the proof `PubOver_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubOver.class, fingerprint = "c63f2ee360f99f2777e173f41b20111f7ee95636aac92b2d35a2b8de18656bc2", complete = true, format = 10)
+@GeneratedMetamodel(of = PubOver.class, fingerprint = "c63f2ee360f99f2777e173f41b20111f7ee95636aac92b2d35a2b8de18656bc2", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

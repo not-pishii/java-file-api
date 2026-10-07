@@ -35,8 +35,10 @@ import p.Impl;
 ///
 /// - `field K of p.HConst`, which is ambiguous in p.Impl with field K of p.PubConst
 /// - `field name of p.HConst`, which is ambiguous in p.Impl with field name of p.PubConst
+///
+/// A generated class extends or implements [Impl] by the proof `Impl_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl.class, fingerprint = "a7dcba1c46a0eff5bdb7029e6b4a91cbfd65134592df50d06c53d33f6e14dc2c", complete = true, format = 10)
+@GeneratedMetamodel(of = Impl.class, fingerprint = "a7dcba1c46a0eff5bdb7029e6b4a91cbfd65134592df50d06c53d33f6e14dc2c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

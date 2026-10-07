@@ -768,7 +768,8 @@ final class MemberFacts {
         };
     }
 
-    private static String marker(PrimitiveTypeRef primitive) {
+    /// The name of the marker of a primitive in `Prim`.
+    static String marker(PrimitiveTypeRef primitive) {
         return switch (primitive) {
             case INT -> "Int";
             case LONG -> "Long";

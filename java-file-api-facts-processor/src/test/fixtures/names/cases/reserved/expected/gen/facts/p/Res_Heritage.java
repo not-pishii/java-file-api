@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.Constructor;
 import me.supcheg.javafile.facts.Heritage.Dispatch;
@@ -17,15 +19,23 @@ import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
+import p.Res;
 
-/// What a class that extends or implements [p.Res] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
+/// What a class that extends or implements [Res] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodelPart
+@SuppressWarnings({
+    "rawtypes",
+    "deprecation",
+    "removal"
+})
 @NullMarked
 public final class Res_Heritage implements Supplier<Told> {
     /// For the shape of the metamodel.
@@ -41,7 +51,7 @@ public final class Res_Heritage implements Supplier<Told> {
     }
 
     static final class Held {
-        /// Every constructor and method of [p.Res] that is not private, as a member of it, whoever declares it.
+        /// Every constructor and method of [Res] that is not private, as a member of it, whoever declares it.
         static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12()), List.of(c0()));
 
         private Held() {
@@ -102,5 +112,15 @@ public final class Res_Heritage implements Supplier<Told> {
         private static Constructor c0() {
             return new Constructor(Visibility.PUBLIC, Signature.of("Res"), List.of(), List.of(), Arity.FIXED, List.of());
         }
+    }
+
+    /// Starts the proof that a class being declared extends [Res], which has no abstract method: the proof is complete.
+    ///
+    /// @param type the token of the type
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof
+    public static <Self> Complete<Self, Res> extend(DeclaredToken<Res> type, RefToken<Self> self) {
+        return UnsafeFacts.steps(type, self).complete();
     }
 }

@@ -33,8 +33,10 @@ import p.WithObject;
 /// The full metamodel of [WithObject], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [WithObject] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [WithObject] by the proof `WithObject_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithObject.class, fingerprint = "41f2902d15f7fecbfde357d6add482c5f2204db19afffddf2bd235b78ca6f95b", complete = true, format = 10)
+@GeneratedMetamodel(of = WithObject.class, fingerprint = "41f2902d15f7fecbfde357d6add482c5f2204db19afffddf2bd235b78ca6f95b", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -29,8 +29,10 @@ import p.StrFn;
 /// The full metamodel of [StrFn], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [StrFn] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.util.function.Function_].
+///
+/// A generated class extends or implements [StrFn] by the proof `StrFn_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrFn.class, fingerprint = "2671fe7b5dc70b9f83d5eb74ca8fe83f6d327871c75c0691a7a7c346d4bba206", complete = true, format = 10)
+@GeneratedMetamodel(of = StrFn.class, fingerprint = "2671fe7b5dc70b9f83d5eb74ca8fe83f6d327871c75c0691a7a7c346d4bba206", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

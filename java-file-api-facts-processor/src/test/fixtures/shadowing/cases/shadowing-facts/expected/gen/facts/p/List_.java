@@ -31,8 +31,10 @@ import p.List;
 /// The full metamodel of [List], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [List] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [List] by the proof `List_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = List.class, fingerprint = "bbea34df68170c3a5ba25d1978a56332b67834b04bf056820f5f258e98fdd3d8", complete = true, format = 10)
+@GeneratedMetamodel(of = List.class, fingerprint = "bbea34df68170c3a5ba25d1978a56332b67834b04bf056820f5f258e98fdd3d8", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

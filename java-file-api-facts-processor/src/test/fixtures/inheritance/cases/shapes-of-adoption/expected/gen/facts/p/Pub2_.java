@@ -30,8 +30,10 @@ import p.Pub2;
 /// A member [Pub2] inherits has its fact in the metamodel of the supertype that declares it: [Pub1_].
 ///
 /// `p.HBetween`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [Pub2] by the proof `Pub2_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub2.class, fingerprint = "0c0ba898aaaa2376bcf233e73f2d50e6ff9e2319d2afbb09774987f0b1b0c26b", complete = true, format = 10)
+@GeneratedMetamodel(of = Pub2.class, fingerprint = "0c0ba898aaaa2376bcf233e73f2d50e6ff9e2319d2afbb09774987f0b1b0c26b", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

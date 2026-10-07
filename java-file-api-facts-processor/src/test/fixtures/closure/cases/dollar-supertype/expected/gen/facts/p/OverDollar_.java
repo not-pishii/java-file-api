@@ -28,8 +28,10 @@ import p.OverDollar;
 /// The full metamodel of [OverDollar], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// The members inherited from `p.Dol$lar`, which has no full metamodel, have no facts: p.Dol$lar: a class with $ in its simple name is not supported yet.
+///
+/// A generated class extends or implements [OverDollar] by the proof `OverDollar_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OverDollar.class, fingerprint = "5e20b05c317b7c3762198b49a831d568c162008cd5b55d7853c5168ecaa5aec3", complete = true, format = 10)
+@GeneratedMetamodel(of = OverDollar.class, fingerprint = "5e20b05c317b7c3762198b49a831d568c162008cd5b55d7853c5168ecaa5aec3", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

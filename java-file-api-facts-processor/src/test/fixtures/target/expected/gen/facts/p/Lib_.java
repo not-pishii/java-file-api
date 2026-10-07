@@ -28,8 +28,10 @@ import p.Marker;
 /// The full metamodel of [Lib], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Lib] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// No generated class extends or implements [Lib]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lib.class, fingerprint = "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", complete = true, format = 10)
+@GeneratedMetamodel(of = Lib.class, fingerprint = "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

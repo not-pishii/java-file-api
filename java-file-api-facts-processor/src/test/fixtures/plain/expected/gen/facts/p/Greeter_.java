@@ -50,8 +50,10 @@ import p.Greeter;
 /// The full metamodel of [Greeter], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Greeter] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Greeter] by the proof `Greeter_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Greeter.class, fingerprint = "76dca1b1dbaa7ae26c70a7d42159ed8099ff74cd8bc119800bb758f3e703ed5d", complete = true, format = 10)
+@GeneratedMetamodel(of = Greeter.class, fingerprint = "76dca1b1dbaa7ae26c70a7d42159ed8099ff74cd8bc119800bb758f3e703ed5d", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

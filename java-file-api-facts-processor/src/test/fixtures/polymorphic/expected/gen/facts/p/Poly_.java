@@ -45,8 +45,10 @@ import p.Poly;
 /// These members have no fact:
 ///
 /// - `constructor <T>Poly(T)`, which is a generic constructor, whose type arguments a fact cannot give explicitly
+///
+/// A generated class extends or implements [Poly] by the proof `Poly_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", complete = true, format = 10)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

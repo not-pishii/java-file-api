@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Collection]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Collection.class, fingerprint = "39fad9767d0405c19e7db92e163693175fd18051de37c057d596bedb55177ec2", complete = false, format = 10)
+@GeneratedMetamodel(of = Collection.class, fingerprint = "39fad9767d0405c19e7db92e163693175fd18051de37c057d596bedb55177ec2", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

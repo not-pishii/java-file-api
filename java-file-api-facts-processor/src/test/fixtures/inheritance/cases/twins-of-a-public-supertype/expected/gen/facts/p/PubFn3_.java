@@ -30,8 +30,10 @@ import p.PubFn3;
 /// A member [PubFn3] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_] and [PObj_].
 ///
 /// `p.HStr`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [PubFn3] by the proof `PubFn3_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 10)
+@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

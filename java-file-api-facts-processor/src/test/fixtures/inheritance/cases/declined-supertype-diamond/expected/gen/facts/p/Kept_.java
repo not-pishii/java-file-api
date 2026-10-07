@@ -35,8 +35,10 @@ import p.Kept;
 /// The members inherited from `p.BadMid`, which has no full metamodel, have no facts: the bounds of the type parameters of p.BadMid mention types that are not public: p.Secret.
 ///
 /// `p.HiddenI`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
+///
+/// A generated class extends or implements [Kept] by the proof `Kept_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Kept.class, fingerprint = "11ce6538ba14219b78b7a5a405809a6717327f8f6e069ebf54c449e8e9b01cdc", complete = true, format = 10)
+@GeneratedMetamodel(of = Kept.class, fingerprint = "11ce6538ba14219b78b7a5a405809a6717327f8f6e069ebf54c449e8e9b01cdc", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

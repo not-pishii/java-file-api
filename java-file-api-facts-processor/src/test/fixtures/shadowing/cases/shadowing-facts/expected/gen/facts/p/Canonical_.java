@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [p.Canonical]: it is only mentioned in the signatures of [p.List]. For the facts of its members add `Canonical.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "76e2eb53de487522befe3b5d5f2c11d84c6cdb83ba615a9024557a35ff41c9c1", complete = false, format = 10)
+@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "76e2eb53de487522befe3b5d5f2c11d84c6cdb83ba615a9024557a35ff41c9c1", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

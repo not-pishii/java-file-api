@@ -27,8 +27,10 @@ import p.Marker;
 /// `@Facts` does not ask for [Marker]: it is here as a supertype of [p.Svc], whose inherited members are called through this metamodel.
 ///
 /// A member [Marker] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Marker] by the proof `Marker_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Marker.class, fingerprint = "6e63be25b7b64a095d96db0826deba0c4e47cb0e855d12602a1b175ffc938d9e", complete = true, format = 10)
+@GeneratedMetamodel(of = Marker.class, fingerprint = "6e63be25b7b64a095d96db0826deba0c4e47cb0e855d12602a1b175ffc938d9e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

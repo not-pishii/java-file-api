@@ -44,8 +44,10 @@ import p.Mix;
 /// - `method marker()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method markers()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
 /// - `method <T>marked(T)`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
+///
+/// A generated class extends or implements [Mix] by the proof `Mix_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "6b415661b0bea738a1614fc32936a4c173cae87474e7e75050d30fce52aecada", complete = true, format = 10)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "6b415661b0bea738a1614fc32936a4c173cae87474e7e75050d30fce52aecada", complete = true, format = 11)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

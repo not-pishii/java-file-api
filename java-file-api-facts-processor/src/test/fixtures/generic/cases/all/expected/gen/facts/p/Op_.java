@@ -33,9 +33,11 @@ import p.Op;
 ///
 /// A member [Op] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.util.function.Function_].
 ///
+/// A generated class extends or implements [Op] by the proof `Op_Heritage` starts.
+///
 /// @param <T> a type argument of [Op]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Op.class, fingerprint = "0cd31f4ae198556219a41d8f0f29752cf495611fb9e7fdcac34650d8c0809aef", complete = true, format = 10)
+@GeneratedMetamodel(of = Op.class, fingerprint = "0cd31f4ae198556219a41d8f0f29752cf495611fb9e7fdcac34650d8c0809aef", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

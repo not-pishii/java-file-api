@@ -29,9 +29,11 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [p.Canonical] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// No generated class extends or implements [p.Canonical]: its type parameter Data is named like a class the proof mentions.
+///
 /// @param <Data_> a type argument of [p.Canonical]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "c4b08fe3fa24c68b897985d9d71391db2478488231991f48316fbed066d5d48e", complete = true, format = 10)
+@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "c4b08fe3fa24c68b897985d9d71391db2478488231991f48316fbed066d5d48e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

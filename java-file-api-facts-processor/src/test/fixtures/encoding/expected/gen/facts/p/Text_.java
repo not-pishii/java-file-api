@@ -32,8 +32,10 @@ import p.Text;
 /// The full metamodel of [Text], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Text] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Text] by the proof `Text_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "6a5035fd9035915f6f90c9d20a0a648c34cbad243455d261751a66f8ae96a15a", complete = true, format = 10)
+@GeneratedMetamodel(of = Text.class, fingerprint = "6a5035fd9035915f6f90c9d20a0a648c34cbad243455d261751a66f8ae96a15a", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

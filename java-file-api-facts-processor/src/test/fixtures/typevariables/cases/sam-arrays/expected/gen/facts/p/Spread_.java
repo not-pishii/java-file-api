@@ -34,9 +34,11 @@ import p.Spread;
 ///
 /// A member [Spread] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// A generated class extends or implements [Spread] by the proof `Spread_Heritage` starts.
+///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "701da00332ad92ef40fedd84f263e3f03716ce29628699579a75307c9890f4da", complete = true, format = 10)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "701da00332ad92ef40fedd84f263e3f03716ce29628699579a75307c9890f4da", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

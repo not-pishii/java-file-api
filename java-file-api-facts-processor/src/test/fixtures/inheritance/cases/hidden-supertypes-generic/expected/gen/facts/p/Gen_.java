@@ -48,9 +48,11 @@ import p.Gen;
 ///
 /// - `method self() of p.Far`, which mentions types that are not public: p.Far
 ///
+/// No generated class extends or implements [Gen]: it is a final class, which no class extends.
+///
 /// @param <E> a type argument of [Gen]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "729053d2dd9b4f85bd7d2d59f23af62c04eead3f8256e6904e31fa542abe449e", complete = true, format = 10)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "729053d2dd9b4f85bd7d2d59f23af62c04eead3f8256e6904e31fa542abe449e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

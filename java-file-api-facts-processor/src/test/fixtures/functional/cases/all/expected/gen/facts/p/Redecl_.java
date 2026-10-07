@@ -28,8 +28,10 @@ import p.Redecl;
 /// The full metamodel of [Redecl], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Redecl] inherits has its fact in the metamodel of the supertype that declares it: [Fn_].
+///
+/// A generated class extends or implements [Redecl] by the proof `Redecl_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Redecl.class, fingerprint = "f3952533fcdfe719b5afe39f1b7c4dd72a4fb4793993d2ada66ada3fb4e8fe6e", complete = true, format = 10)
+@GeneratedMetamodel(of = Redecl.class, fingerprint = "f3952533fcdfe719b5afe39f1b7c4dd72a4fb4793993d2ada66ada3fb4e8fe6e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -25,8 +25,10 @@ import p.Iface;
 /// The full metamodel of [Iface], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Iface] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [Iface] by the proof `Iface_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", complete = true, format = 10)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "71d650202f897458dccd4783aa245ee1bef68a3cb9d00596e2a7c45d144f40fd", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -36,8 +36,10 @@ import org.jspecify.annotations.NullMarked;
 /// `@Facts` does not ask for [Number]: it is here as a supertype of [Integer], whose inherited members are called through this metamodel.
 ///
 /// A member [Number] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.io.Serializable_] and [Object_].
+///
+/// A generated class extends or implements [Number] by the proof `Number_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "bc95e3172a5e76ce3ee76850b599ebf945507fb5e02fbdc48cf8130172101fdb", complete = true, format = 10)
+@GeneratedMetamodel(of = Number.class, fingerprint = "bc95e3172a5e76ce3ee76850b599ebf945507fb5e02fbdc48cf8130172101fdb", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

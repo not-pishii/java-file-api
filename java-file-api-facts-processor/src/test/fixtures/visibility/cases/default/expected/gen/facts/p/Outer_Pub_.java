@@ -26,7 +26,7 @@ import p.Outer.Pub;
 ///
 /// `@Facts` does not ask for [Pub]: it is only mentioned in the signatures of [p.Vis]. For the facts of its members add `Outer.Pub.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub.class, fingerprint = "ebde8247fc62cd964177438aed674c0561085cf1d3e67113451a77d302a1679b", complete = false, format = 10)
+@GeneratedMetamodel(of = Pub.class, fingerprint = "ebde8247fc62cd964177438aed674c0561085cf1d3e67113451a77d302a1679b", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

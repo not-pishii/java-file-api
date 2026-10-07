@@ -28,7 +28,7 @@ import p.Mode;
 ///
 /// `@Facts` does not ask for [Mode]: it is only mentioned in the signatures of [p.Plan]. For the facts of its members add `Mode.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mode.class, fingerprint = "ee28c4f0b24c4e3f111d0db89db1cf0c6943caf54354b8544b02f88cec09672e", complete = false, format = 10)
+@GeneratedMetamodel(of = Mode.class, fingerprint = "ee28c4f0b24c4e3f111d0db89db1cf0c6943caf54354b8544b02f88cec09672e", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

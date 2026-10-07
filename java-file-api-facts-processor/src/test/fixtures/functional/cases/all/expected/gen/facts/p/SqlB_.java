@@ -31,8 +31,10 @@ import p.SqlB;
 /// `@Facts` does not ask for [SqlB]: it is here as a supertype of [p.Disjoint], whose inherited members are called through this metamodel.
 ///
 /// A member [SqlB] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [SqlB] by the proof `SqlB_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SqlB.class, fingerprint = "567fcfe151102db19d67b68f71e07eb3116cd1b22e41faaca5cede1dc2b29f0e", complete = true, format = 10)
+@GeneratedMetamodel(of = SqlB.class, fingerprint = "567fcfe151102db19d67b68f71e07eb3116cd1b22e41faaca5cede1dc2b29f0e", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -26,7 +26,7 @@ import p.Dep;
 ///
 /// `@Facts` does not ask for [Dep]: it is only mentioned in the signatures of [p.Other]. For the facts of its members add `Dep.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Dep.class, fingerprint = "4adda507a5046a3fd8a071c1808f03611d57733afcf95c7bbc58f22f5c01f6ec", complete = false, format = 10)
+@GeneratedMetamodel(of = Dep.class, fingerprint = "4adda507a5046a3fd8a071c1808f03611d57733afcf95c7bbc58f22f5c01f6ec", complete = false, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"

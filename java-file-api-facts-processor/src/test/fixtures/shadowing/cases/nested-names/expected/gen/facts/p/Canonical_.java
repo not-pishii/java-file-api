@@ -27,8 +27,10 @@ import org.jspecify.annotations.NullMarked;
 /// The full metamodel of [p.Canonical], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [p.Canonical] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
+///
+/// A generated class extends or implements [p.Canonical] by the proof `Canonical_Heritage` starts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "99cba4e28d2e9e1e8fa8b98282b66913161ce1a7ef18acfc8d09af7f0e506c1c", complete = true, format = 10)
+@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "99cba4e28d2e9e1e8fa8b98282b66913161ce1a7ef18acfc8d09af7f0e506c1c", complete = true, format = 11)
 @SuppressWarnings({
     "deprecation",
     "removal"
