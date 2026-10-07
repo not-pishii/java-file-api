@@ -39,6 +39,8 @@
     UnaryOperator.class,
     UnsupportedEncodingException.class,
     Holder.class,
+    Named.class,
+    Titled.class,
     Nothing.class,
     Op.class,
     Outer.Level.class,
@@ -49,6 +51,8 @@ package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
 import me.supcheg.javafile.typed.fixtures.Holder;
+import me.supcheg.javafile.typed.fixtures.Named;
+import me.supcheg.javafile.typed.fixtures.Titled;
 import me.supcheg.javafile.typed.fixtures.Nothing;
 import me.supcheg.javafile.typed.fixtures.Op;
 import me.supcheg.javafile.typed.fixtures.Outer;
