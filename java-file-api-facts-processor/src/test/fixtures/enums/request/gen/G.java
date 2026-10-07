@@ -3,7 +3,8 @@ package gen;
 import me.supcheg.javafile.facts.meta.Facts;
 import p.Day;
 import p.Op;
+import p.Plan;
 import p.Tok;
 
-@Facts({Day.class, Op.class, Tok.class})
+@Facts({Day.class, Op.class, Plan.class, Tok.class})
 class G {}

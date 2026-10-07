@@ -6,6 +6,7 @@ META-INF/javafile/metamodel/full/java.lang.Runnable -> gen.facts.java.lang.Runna
 META-INF/javafile/metamodel/full/java.lang.constant.Constable -> gen.facts.java.lang.constant.Constable_
 META-INF/javafile/metamodel/full/p.Day -> gen.facts.p.Day_
 META-INF/javafile/metamodel/full/p.Op -> gen.facts.p.Op_
+META-INF/javafile/metamodel/full/p.Plan -> gen.facts.p.Plan_
 META-INF/javafile/metamodel/full/p.Tok -> gen.facts.p.Tok_
 META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
 META-INF/javafile/metamodel/token/java.lang.Enum$EnumDesc -> gen.facts.java.lang.Enum_EnumDesc_
@@ -13,3 +14,4 @@ META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.ja
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
 META-INF/javafile/metamodel/token/java.lang.constant.ConstantDesc -> gen.facts.java.lang.constant.ConstantDesc_
 META-INF/javafile/metamodel/token/java.util.Optional -> gen.facts.java.util.Optional_
+META-INF/javafile/metamodel/token/p.Mode -> gen.facts.p.Mode_

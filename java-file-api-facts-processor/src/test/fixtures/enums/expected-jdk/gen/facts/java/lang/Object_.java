@@ -35,7 +35,7 @@ import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Object]: a fact of every `public` member the type declares.
 ///
-/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Day], [p.Op] and [p.Tok], whose inherited members are called through this metamodel.
+/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Day], [p.Op], [p.Plan] and 1 more requested type, whose inherited members are called through this metamodel.
 ///
 /// The `protected` members have no facts.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
