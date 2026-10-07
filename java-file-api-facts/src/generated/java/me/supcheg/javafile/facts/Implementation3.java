@@ -15,6 +15,10 @@ public final class Implementation3<Self, R, A1, A2, A3> implements Implementatio
         return this.how;
     }
 
+    public MethodRef3<Self, R, A1, A2, A3> method() {
+        return Invocables.own(this.how);
+    }
+
     @Override
     public String toString() {
         return Invocables.describe(this.how);

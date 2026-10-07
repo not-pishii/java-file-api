@@ -15,6 +15,10 @@ public final class Implementation8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> impl
         return this.how;
     }
 
+    public MethodRef8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> method() {
+        return Invocables.own(this.how);
+    }
+
     @Override
     public String toString() {
         return Invocables.describe(this.how);

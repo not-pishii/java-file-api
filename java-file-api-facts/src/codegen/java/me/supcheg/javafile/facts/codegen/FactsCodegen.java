@@ -472,6 +472,17 @@ public final class FactsCodegen {
                     List.of(new Param("how", Types.of(IMPLEMENTED))),
                     b -> b.assign(this_().field("how"), field("how")));
             override(cb, "how", Types.of(IMPLEMENTED), this_().field("how"));
+            // The method the class declares, as a fact of the class: what its body is defined by.
+            cb.withMethod(
+                    "method",
+                    applied(
+                            ClassDesc.of(FACTS, (hasResult ? "MethodRef" : "VoidMethodRef") + n),
+                            implementationVars(hasResult, n)),
+                    mb -> {
+                        mb.withModifiers(Modifier.PUBLIC);
+                        mb.withBody(b ->
+                                b.return_(staticCall(ClassDesc.of(FACTS, "Invocables"), "own", this_().field("how"))));
+                    });
             override(
                     cb,
                     "toString",
