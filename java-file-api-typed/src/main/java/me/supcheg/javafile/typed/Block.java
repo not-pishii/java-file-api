@@ -61,9 +61,28 @@ import java.util.function.Function;
 ///     this is a block of
 /// @param <B> the type of this block, which nested blocks share
 public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidBody, YieldBody {
-    private static final String LOOP_FOREVER_HINT =
-            "a loop that never completes ends the block: build it with loopForever, which returns the Terminated"
-                    + " of this block, or break_ out of it";
+    /// What to do instead of a statement form that cannot complete normally and so
+    /// cannot be continued: the way the author is told depends on the block the
+    /// form is in, for the `finally` block ([FinallyBody]) has no form that ends it.
+    private enum Instead {
+        IF_ELSE("build it with ifElse, which returns the Terminated of this block"),
+        LOOP_FOREVER("a loop that never completes ends the block: build it with loopForever, which returns the"
+                + " Terminated of this block, or break_ out of it"),
+        TRY_TERMINATED("build it with tryTerminated, which returns the Terminated of this block");
+
+        private final String advice;
+
+        Instead(String advice) {
+            this.advice = advice;
+        }
+
+        String advice(boolean inFinally) {
+            return inFinally
+                    ? "a finally block completes normally, so a form that cannot is not expressible in it:"
+                            + " give it a way to complete, or leave it out of the finally block"
+                    : advice;
+        }
+    }
 
     /// What a block is to the block it is nested in.
     enum Nesting {
@@ -83,6 +102,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     private final ExceptionScope exceptionScope;
     private final List<Instr> instrs = new ArrayList<>();
     private @Nullable String endedBy;
+    private boolean finallyBlock;
 
     Block(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
         this.parent = parent;
@@ -92,6 +112,15 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     }
 
     abstract B self();
+
+    /// Marks this block as the `finally` block of a `try`, which completes normally: what is
+    /// said of a form that cannot complete normally in it is said so.
+    ///
+    /// @return this block
+    final B markFinally() {
+        finallyBlock = true;
+        return self();
+    }
 
     /// Creates a block nested in this one, of the same kind.
     abstract B child(String what, ExceptionScope exceptionScope);
@@ -147,14 +176,14 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     /// Appends a statement form that returns this block to be continued; if
     /// it cannot complete normally, anything after it would be unreachable.
-    private B continueWith(Instr instr, String form, String hint) {
+    private B continueWith(Instr instr, String form, Instead instead) {
         requireOpen();
         ScopeCheck.check(instr, this);
         Exceptions.check(instr, this);
         if (!Reachability.canCompleteNormally(instr)) {
             throw new IllegalStateException(form + " in the " + path()
                     + " cannot complete normally, so a statement after it would be unreachable (JLS 14.22); "
-                    + hint);
+                    + instead.advice(finallyBlock));
         }
         instrs.add(instr);
         return self();
@@ -297,7 +326,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return continueWith(
                 new Instr.If(condition.node(), thenBlock, Optional.of(elseBlock)),
                 "if_ whose branches both end",
-                "build it with ifElse, which returns the Terminated of this block");
+                Instead.IF_ELSE);
     }
 
     /// Appends an `if`-`else` whose branches both end, and so ends this block.
@@ -385,7 +414,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return continueWith(
                 new Instr.While(ctl, condition.node(), bodyBlock),
                 "while_ with a constant true condition and no break_",
-                LOOP_FOREVER_HINT);
+                Instead.LOOP_FOREVER);
     }
 
     /// Appends `while (true) { body }`, which never completes normally and so
@@ -417,7 +446,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return continueWith(
                 new Instr.DoWhile(ctl, bodyBlock, condition.node()),
                 "doWhile whose body ends without continue_, or whose condition is constant true, and no break_",
-                LOOP_FOREVER_HINT);
+                Instead.LOOP_FOREVER);
     }
 
     /// Appends `for (T v = init; condition; update) { body }`.
@@ -447,7 +476,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return continueWith(
                 new Instr.For(ctl, var, init.node(), conditionExpr.node(), updateNode, bodyBlock),
                 "for_ with a constant true condition and no break_",
-                LOOP_FOREVER_HINT);
+                Instead.LOOP_FOREVER);
     }
 
     /// Appends `for (T v : iterable) { body }`.
@@ -531,9 +560,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         TryClauses clauses = collected.close();
         B bodyBlock = open("try block of try_", clauses.scope(), body);
         return continueWith(
-                clauses.statement(bodyBlock),
-                "try_ whose try block and every catch_ end",
-                "build it with tryTerminated, which returns the Terminated of this block");
+                clauses.statement(bodyBlock), "try_ whose try block and every catch_ end", Instead.TRY_TERMINATED);
     }
 
     /// Appends `try { body } catch ... finally ...` whose `try` block and
