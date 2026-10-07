@@ -425,7 +425,7 @@ class FixtureRunTest {
 
                     public static void theLibraryIsTheTargetClasspath(Typed typed) {
                         assertThat(typed.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
-                                .containsExactly("p.Dep: unchanged");
+                                .containsExactly("java.lang.Object: unchanged", "p.Dep: unchanged");
                         assertThat(typed.apply(PrimitiveToken.INT, Dep_.TOKEN, Checks::x, new Dep())).isEqualTo(0);
                     }
 
@@ -433,7 +433,7 @@ class FixtureRunTest {
                         Typed more = typed.against("more");
 
                         assertThat(more.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
-                                .containsExactly("p.Dep: changed");
+                                .containsExactly("java.lang.Object: unchanged", "p.Dep: changed");
                         assertThat(more.render(PrimitiveToken.INT, Dep_.TOKEN, Checks::x)).contains("return v0.x();");
                         assertThat(more.apply(PrimitiveToken.INT, Object_.TOKEN, o -> x(new_(Dep_.new_)), "a"))
                                 .isEqualTo(0);
@@ -443,7 +443,7 @@ class FixtureRunTest {
                         Typed less = typed.against("less");
 
                         assertThat(less.verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
-                                .containsExactly("p.Dep: mismatched");
+                                .containsExactly("java.lang.Object: unchanged", "p.Dep: mismatched");
                         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                                 .isThrownBy(() -> less.render(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
                                 .withMessageContaining("missing: method public overridable x() -> int throws -");
@@ -464,7 +464,7 @@ class FixtureRunTest {
 
                     public static void expectsWhatTheVersionDoesNotGive(Typed typed) {
                         assertThat(typed.against("less").verified(PrimitiveToken.INT, Dep_.TOKEN, Checks::x))
-                                .containsExactly("p.Dep: unchanged");
+                                .containsExactly("java.lang.Object: unchanged", "p.Dep: unchanged");
                     }
                 }
                 """);

@@ -398,4 +398,232 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         builder().define(ctor, body);
         return ctor;
     }
+
+    // ------------------------------------------------------------------
+    // Overrides: a method the class inherits, named by its fact
+    // ------------------------------------------------------------------
+
+    /// Overrides a method of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block and `this`
+    /// @param <R> the result type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <R> MethodRef0<Self, R> override(MethodRef0<Object, R> method, InstanceBody0<Self, Body<R>, R> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a method with one parameter of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <R> the result type
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <R, A1> MethodRef1<Self, R, A1> override(
+            MethodRef1<Object, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a method with two parameters of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <R, A1, A2> MethodRef2<Self, R, A1, A2> override(
+            MethodRef2<Object, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block and `this`
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public VoidMethodRef0<Self> override(VoidMethodRef0<Object> method, InstanceBody0<Self, VoidBody, Void> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method with one parameter of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <A1> VoidMethodRef1<Self, A1> override(
+            VoidMethodRef1<Object, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method with two parameters of `Object`: declares it anew, `@Override public`, and defines it.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <A1, A2> VoidMethodRef2<Self, A1, A2> override(
+            VoidMethodRef2<Object, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a method of a supertype the class has by the witness `up` — one that has a body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block and `this`
+    /// @param <O> the type that declares the method
+    /// @param <R> the result type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O, R> MethodRef0<Self, R> override(
+            Upcast<Self, ? extends O> up, MethodRef0<O, R> method, InstanceBody0<Self, Body<R>, R> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a method with one parameter of a supertype the class has by the witness `up` — one that has a body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <O> the type that declares the method
+    /// @param <R> the result type
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O, R, A1> MethodRef1<Self, R, A1> override(
+            Upcast<Self, ? extends O> up, MethodRef1<O, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a method with two parameters of a supertype the class has by the witness `up` — one that has a body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <O> the type that declares the method
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O, R, A1, A2> MethodRef2<Self, R, A1, A2> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef2<O, R, A1, A2> method,
+            InstanceBody2<Self, Body<R>, R, A1, A2> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method of a supertype the class has by the witness `up` — one that has a body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block and `this`
+    /// @param <O> the type that declares the method
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O> VoidMethodRef0<Self> override(
+            Upcast<Self, ? extends O> up, VoidMethodRef0<O> method, InstanceBody0<Self, VoidBody, Void> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method with one parameter of a supertype the class has by the witness `up` — one that has a
+    /// body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <O> the type that declares the method
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O, A1> VoidMethodRef1<Self, A1> override(
+            Upcast<Self, ? extends O> up, VoidMethodRef1<O, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
+        return overridden(method, body);
+    }
+
+    /// Overrides a `void` method with two parameters of a supertype the class has by the witness `up` — one that has a
+    /// body
+    /// there, a default method: an abstract one is implemented by the proof the supertype is
+    /// declared with.
+    ///
+    /// @param up the witness that the class is of a type that has the method
+    /// @param method the fact of the overridden method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <O> the type that declares the method
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    public <O, A1, A2> VoidMethodRef2<Self, A1, A2> override(
+            Upcast<Self, ? extends O> up,
+            VoidMethodRef2<O, A1, A2> method,
+            InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
+        return overridden(method, body);
+    }
+
+    private <R> MethodRef0<Self, R> overridden(MethodRef0<?, R> method, InstanceBody0<Self, Body<R>, R> body) {
+        MethodRef0<Self, R> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    private <R, A1> MethodRef1<Self, R, A1> overridden(
+            MethodRef1<?, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
+        MethodRef1<Self, R, A1> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    private <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
+            MethodRef2<?, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
+        MethodRef2<Self, R, A1, A2> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    private VoidMethodRef0<Self> overridden(VoidMethodRef0<?> method, InstanceBody0<Self, VoidBody, Void> body) {
+        VoidMethodRef0<Self> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    private <A1> VoidMethodRef1<Self, A1> overridden(
+            VoidMethodRef1<?, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
+        VoidMethodRef1<Self, A1> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    private <A1, A2> VoidMethodRef2<Self, A1, A2> overridden(
+            VoidMethodRef2<?, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
+        VoidMethodRef2<Self, A1, A2> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
 }

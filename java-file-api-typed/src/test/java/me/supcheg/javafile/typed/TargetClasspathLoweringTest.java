@@ -58,6 +58,10 @@ class TargetClasspathLoweringTest {
     private static final TypeShape<?> TYPED_STRING =
             me.supcheg.javafile.typed.jdk.facts.java.lang.String_.TOKEN.shape();
 
+    /// The Object metamodel of the typed layer itself: a class inherits what the target has of `Object`.
+    private static final TypeShape<?> TYPED_OBJECT =
+            me.supcheg.javafile.typed.jdk.facts.java.lang.Object_.TOKEN.shape();
+
     private static final String FINGERPRINT = "0123456789abcdef".repeat(4);
 
     /// Phantom of `fixtures.Svc`, and of `fixtures.Box<T>`.
@@ -180,7 +184,7 @@ class TargetClasspathLoweringTest {
         // the String the class returns is a metamodel too, that of the test and that of the typed layer, which renders
         // a
         // literal, and each is asked once like the others
-        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, SVC);
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, TYPED_OBJECT, SVC);
     }
 
     @Test
@@ -194,7 +198,7 @@ class TargetClasspathLoweringTest {
         assertThat(render(target, SVC_TOKEN, TargetClasspathLoweringTest::callM))
                 .contains("v0.m(\"a\")");
 
-        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, SVC);
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_STRING, TYPED_OBJECT, SVC);
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, unused, _ -> literal("a")))
                 .withMessageContaining("type fixtures.Unused gone");
@@ -226,7 +230,7 @@ class TargetClasspathLoweringTest {
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, boxOfSvc, _ -> literal("a")))
                 .withMessageContaining("type fixtures.Svc gone");
-        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), BOX, SVC);
+        assertThat(asked.shapes()).containsExactlyInAnyOrder(String_.TOKEN.shape(), TYPED_OBJECT, BOX, SVC);
     }
 
     @Test

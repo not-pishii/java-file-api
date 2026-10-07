@@ -32,6 +32,7 @@ import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
@@ -102,11 +103,20 @@ import java.util.function.Supplier;
 /// (see [Block]). A field initializer can throw no checked exception.
 ///
 /// **Signatures.** A member that javac would reject is rejected when it is
-/// declared: a duplicate by erasure, an override of a `final` method of
-/// `Object`, an override of `toString`/`hashCode`/`equals` with an
-/// incompatible return type or with a checked exception the overridden
-/// method does not declare, a static method hiding one of `Object`
-/// (§9.7; see [SignatureRegistry]).
+/// declared: a duplicate by erasure, a method with the signature of one the
+/// class inherits (§9.7; see [SignatureRegistry]).
+///
+/// **Overriding is by the fact.** A method the class inherits is overridden
+/// by naming its fact, never by declaring a method of its name:
+/// `cb.override(Object_.toString, (b, self) -> ...)` declares and defines
+/// `@Override public String toString()`. A method declared by name that
+/// would override or hide an inherited one — `declareMethod("toString",
+/// ...)` — is rejected where it is declared, so no method overrides by
+/// accident and none is rendered without `@Override` that does. The
+/// override has the parameters and the result of the method, and a `throws`
+/// clause — that of [#throwing] — the method allows (JLS 8.4.8.3). A class
+/// that overrides `equals` and not `hashCode` is rejected when its
+/// declaration completes.
 ///
 /// Members are declared and defined from the class specification only:
 /// doing so while a method body is being built, or after the declaration
@@ -135,7 +145,8 @@ public final class TypedClassBuilder<Self> extends Declarations<Self> {
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
         this.self = UnsafeFacts.finalClassToken(
                 new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), this::methodTable);
-        this.registry = new SignatureRegistry(described);
+        this.registry = new SignatureRegistry(
+                described, Inheritance.of(described, Inheritance.supertype(described, target, Object_.TOKEN)));
     }
 
     /// The fact of the class being declared: a [FinalClassToken], usable as
@@ -458,6 +469,7 @@ public final class TypedClassBuilder<Self> extends Declarations<Self> {
                     + " is complete, but these declared members are never defined: "
                     + String.join(", ", undefined) + "; define each declared member exactly once");
         }
+        registry.requireComplete();
         declaration = new Declaration.Complete(registry.table());
         return slots.stream().map(Slot::member).toList();
     }
@@ -482,8 +494,24 @@ public final class TypedClassBuilder<Self> extends Declarations<Self> {
     <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown) {
         String what = member.toString();
         requireOpen(what);
-        slot(member, member, what, thrown).overrides = registry.member(member);
+        registry.member(member);
+        slot(member, member, what, thrown);
         return member;
+    }
+
+    /// Declares a method of the class that overrides the methods of its signature the class
+    /// inherits; rendered with `@Override`.
+    ///
+    /// @param own its fact
+    /// @param thrown the exception classes of its `throws` clause, as its fact has them
+    /// @return the fact, `own`
+    /// @throws IllegalArgumentException if the class inherits no such method, or cannot override it
+    <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown) {
+        String what = own.toString();
+        requireOpen(what);
+        registry.override(own);
+        slot(own, own, what, thrown).overrides = true;
+        return own;
     }
 
     /// A member that is no method and no constructor: it has no fact to lower by.

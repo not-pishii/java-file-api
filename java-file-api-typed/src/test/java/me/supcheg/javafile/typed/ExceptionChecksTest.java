@@ -878,9 +878,9 @@ class ExceptionChecksTest {
         void anOverrideOfAMethodOfObjectDeclaresNoCheckedException() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .method("toString", String_.TOKEN, (b, _) -> b.return_(literal("x")))))
-                    .withMessageContaining("overrides toString() of java.lang.Object, which declares no exception:"
-                            + " an override cannot declare the checked exception java.io.IOException")
+                            .override(Object_.toString, (b, _) -> b.return_(literal("x")))))
+                    .withMessageContaining("cannot override toString() of java.lang.Object: the method declares no"
+                            + " exception: an override cannot declare the checked exception java.io.IOException")
                     .withMessageContaining("JLS 8.4.8.3");
             CompilationSubject.assertThat(compiled("public String toString() throws IOException { return \"x\"; }"))
                     .hadErrorContaining("overridden method does not throw java.io.IOException");
@@ -890,7 +890,7 @@ class ExceptionChecksTest {
         void anOverrideMayDeclareAnUncheckedException() {
             asJavacAccepts(
                     () -> declare(cb -> cb.throwing(RuntimeException_.TOKEN)
-                            .method("toString", String_.TOKEN, (b, _) -> b.return_(literal("x")))),
+                            .override(Object_.toString, (b, _) -> b.return_(literal("x")))),
                     "public String toString() throws RuntimeException { return \"x\"; }");
         }
     }
