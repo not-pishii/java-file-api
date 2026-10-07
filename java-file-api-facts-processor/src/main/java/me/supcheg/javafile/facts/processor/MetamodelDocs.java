@@ -385,6 +385,28 @@ final class MetamodelDocs {
                 words(" was when this metamodel was generated. Its tokens are made from it."));
     }
 
+    /// The comment of the nested class `Data.Inherited`.
+    ///
+    /// @param type the type the metamodel is of
+    /// @return the comment
+    static DocComment inherited(ClassDesc type) {
+        return sentence(
+                words("What a class that extends or implements "),
+                link(type),
+                words(" inherits, loaded only when one is declared."));
+    }
+
+    /// The comment of `Data.Inherited.HERITAGE`.
+    ///
+    /// @param type the type the metamodel is of
+    /// @return the comment
+    static DocComment heritage(ClassDesc type) {
+        return sentence(
+                words("Every constructor and method of "),
+                link(type),
+                words(" that is not private, as a member of it, whoever declares it."));
+    }
+
     /// The comment of the nested class `Canonical`.
     ///
     /// @param type the type the metamodel is of

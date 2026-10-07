@@ -51,6 +51,12 @@ final class MetamodelNames {
     /// The nested class holding the canonical form of the type.
     static final String CANONICAL = "Canonical";
 
+    /// The class nested in [#DATA] that holds the heritage of the type, loaded when it is asked for.
+    static final String INHERITED = "Inherited";
+
+    /// The field of [#INHERITED] holding the heritage.
+    static final String HERITAGE = "HERITAGE";
+
     /// The field of [#CANONICAL] holding the canonical form.
     static final String TEXT = "TEXT";
 

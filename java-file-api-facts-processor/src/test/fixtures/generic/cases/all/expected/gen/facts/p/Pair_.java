@@ -38,7 +38,7 @@ import p.Pair;
 /// @param <A> a type argument of [Pair]
 /// @param <B> a type argument of [Pair]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pair.class, fingerprint = "87a9d3f6c324abda7245f448eda7b89ab710ef2c1ca044444f67b7df1cc0189c", complete = true, format = 8)
+@GeneratedMetamodel(of = Pair.class, fingerprint = "339cebf7fa2856681622e9a48e48d653ff01cfb70709241bffe45b152e6c50ad", complete = true, format = 9)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Pair_<A, B> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Pair] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pair_"), "87a9d3f6c324abda7245f448eda7b89ab710ef2c1ca044444f67b7df1cc0189c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Pair"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("entry"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("swap"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Pair", Param.var(0), Param.var(1)))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pair_"), "339cebf7fa2856681622e9a48e48d653ff01cfb70709241bffe45b152e6c50ad", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Pair"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("entry"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("swap"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Pair", Param.var(0), Param.var(1)))), List.of(), false);
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class Pair_<A, B> {
     static final class Canonical {
         /// The canonical form of [Pair].
         static final String TEXT = """
-        javafile-facts-canonical 6
+        javafile-facts-canonical 7
         type p.Pair final-class sealed=no
         tparams #0; #1
         superclasses java.lang.Object

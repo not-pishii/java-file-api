@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,6 +54,11 @@ class CanonicalTest {
         return Harness.run(env -> Canonical.of(Harness.ok(env.translator().type(env.element(name), filter))), sources);
     }
 
+    /// A canonical form without the lines of the heritage, which [HeritageTest] tells.
+    private static String withoutHeritage(String text) {
+        return text.lines().filter(line -> !line.startsWith("inherit ")).collect(Collectors.joining("\n", "", "\n"));
+    }
+
     private static String fingerprint(String source) {
         return canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, source).fingerprint();
     }
@@ -61,8 +67,18 @@ class CanonicalTest {
     void textOfAType() {
         Canonical canonical = canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE);
 
-        assertThat(canonical.text()).isEqualTo("""
-                        javafile-facts-canonical 6
+        // the heritage of a type that can be extended is told after its members, before the method table
+        assertThat(canonical.text().lines().dropWhile(line -> !line.startsWith("inherit ")))
+                .startsWith(
+                        "inherit ctor public (#0) throws java.io.IOException, java.lang.InterruptedException",
+                        "inherit method package concrete p.T pack() -> void throws - erased () overrides -")
+                .contains(
+                        "inherit method public concrete p.T hidden(int) -> p.Hidden throws - erased (int) overrides -",
+                        "inherit method public concrete p.T run() -> void throws - erased () overrides"
+                                + " java.lang.Runnable",
+                        "table abstract -");
+        assertThat(withoutHeritage(canonical.text())).isEqualTo("""
+                        javafile-facts-canonical 7
                         type p.T open-class sealed=no
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -95,7 +111,7 @@ class CanonicalTest {
         String hidden = "package p; class Hidden<T> { public T get() { return null; } public static final int K = 1; }";
         Canonical canonical = canonical("p.Pub", MemberFilter.DECLARED_ACCESSIBLE, pub, hidden);
 
-        assertThat(canonical.text()).contains("""
+        assertThat(withoutHeritage(canonical.text())).contains("""
                         members declared-accessible
                         member ctor public () throws -
                         member field public static constant int K = 1
@@ -126,7 +142,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 6
+                        javafile-facts-canonical 7
                         type p.Day enum sealed=no
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -246,10 +262,19 @@ class CanonicalTest {
     }
 
     @Test
-    void skippedMembersAreNotHashed() {
+    void aSkippedMemberIsHashedOnlyAsAMemberAClassInherits() {
         String changed = BASE.replace("public Hidden hidden(int i)", "public Hidden2 hidden(int i)");
+        String finalBase = BASE.replace("public class T", "public final class T");
+        String finalChanged = changed.replace("public class T", "public final class T");
 
-        assertThat(fingerprint(changed)).isEqualTo(fingerprint(BASE));
+        // no fact tells a skipped member, so the members of a type that cannot be extended are the same
+        assertThat(fingerprint(finalChanged)).isEqualTo(fingerprint(finalBase));
+        // a class that extends the type inherits the member all the same: its heritage tells it
+        assertThat(fingerprint(changed)).isNotEqualTo(fingerprint(BASE));
+        assertThat(withoutHeritage(canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, changed)
+                        .text()))
+                .isEqualTo(withoutHeritage(
+                        canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, BASE).text()));
     }
 
     @Test
@@ -274,7 +299,11 @@ class CanonicalTest {
         assertThat(rounds.getFirst()).isInstanceOf(Translation.Deferred.class);
         // the generator makes an empty gen.Made
         assertThat(Canonical.of(Harness.ok(rounds.getLast())).text())
-                .isEqualTo(together.text().replace("m(); ", ""));
+                .isEqualTo(together.text()
+                        .replace("m(); ", "")
+                        .replace(
+                                "inherit method public concrete gen.Made m() -> void throws - erased () overrides -\n",
+                                ""));
     }
 
     // ---- sensitivity
@@ -360,7 +389,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 6
+                        javafile-facts-canonical 7
                         type p.T interface sealed=no
                         tparams -
                         superclasses -
