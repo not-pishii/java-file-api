@@ -7,7 +7,7 @@ import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -119,7 +119,7 @@ class DeclarationsCompileTest {
                                 "remaining",
                                 PrimitiveToken.INT,
                                 (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
-                        cb.method("toString", String_.TOKEN, (b, _) -> b.return_(literal("Counter")));
+                        cb.override(Object_.toString, (b, _) -> b.return_(literal("Counter")));
                     }
                 });
 

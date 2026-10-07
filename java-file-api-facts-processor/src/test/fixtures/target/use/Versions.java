@@ -56,7 +56,7 @@ public final class Versions {
     public static void theVersionTheMetamodelsWereGeneratedFromIsUnchangedAndReadOnce(Typed typed) {
         // the result and the parameter, then the receiver, the owner of the constructor and of the method
         assertThat(typed.verified(String_.TOKEN, String_.TOKEN, Versions::m))
-                .containsExactly("java.lang.String: unchanged", "p.Svc: unchanged");
+                .containsExactly("java.lang.Object: unchanged", "java.lang.String: unchanged", "p.Svc: unchanged");
         assertThat(applied(typed, Versions::m)).isEqualTo("m(String) a");
     }
 
@@ -64,7 +64,7 @@ public final class Versions {
         Typed added = typed.against("added-method");
 
         assertThat(added.verified(String_.TOKEN, String_.TOKEN, Versions::m))
-                .containsExactly("java.lang.String: unchanged", "p.Svc: changed");
+                .containsExactly("java.lang.Object: unchanged", "java.lang.String: unchanged", "p.Svc: changed");
         assertThat(applied(added, Versions::m)).isEqualTo("m(String) a");
     }
 
@@ -267,7 +267,7 @@ public final class Versions {
         Typed version = typed.against("unused-changes");
 
         assertThat(version.verified(String_.TOKEN, String_.TOKEN, Versions::m))
-                .containsExactly("java.lang.String: unchanged", "p.Svc: unchanged");
+                .containsExactly("java.lang.Object: unchanged", "java.lang.String: unchanged", "p.Svc: unchanged");
         assertThat(applied(version, Versions::m)).isEqualTo("m(String) a");
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> version.render(String_.TOKEN, Fn_.TOKEN, fn -> literal("a")))
@@ -278,7 +278,7 @@ public final class Versions {
         Box_<p.Dep> box = new Box_<>(Dep_.TOKEN);
 
         assertThat(typed.verified(String_.TOKEN, box.token, b -> literal("a")))
-                .containsExactly("java.lang.String: unchanged", "p.Box: unchanged", "p.Dep: unchanged");
+                .containsExactly("java.lang.Object: unchanged", "java.lang.String: unchanged", "p.Box: unchanged", "p.Dep: unchanged");
         // the rendered class names Dep only as the type argument of its parameter
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> typed.against("final-dep").render(String_.TOKEN, box.token, b -> literal("a")))

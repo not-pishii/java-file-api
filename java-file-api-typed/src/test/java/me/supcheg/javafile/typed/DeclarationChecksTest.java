@@ -147,22 +147,67 @@ class DeclarationChecksTest {
         }
 
         @Test
-        void anIncompatibleToStringIsRejected() {
+        void aMethodDeclaredByNameWithTheSignatureOfAnInheritedOneIsRejected() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> declare(cb -> cb.declareMethod("toString", String_.TOKEN)))
+                    .withMessageContaining("the method java.lang.String me.supcheg.example.Probe.toString() of class"
+                            + " me.supcheg.example.Probe has the signature of toString() of java.lang.Object, which"
+                            + " the class inherits: a method declared by its name overrides nothing")
+                    .withMessageContaining("override(fact, body)");
+            // whatever its result, which javac would call incompatible
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> cb.declareMethod("toString", PrimitiveToken.INT)))
-                    .withMessageContaining("int me.supcheg.example.Probe.toString() of class me.supcheg.example.Probe"
-                            + " overrides toString() of java.lang.Object, whose result is String: the return types"
-                            + " are incompatible");
+                    .withMessageContaining("has the signature of toString() of java.lang.Object");
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> declare(cb -> cb.declareVoidMethod("equals", Object_.TOKEN)))
+                    .withMessageContaining("has the signature of equals(java.lang.Object) of java.lang.Object");
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> declare(cb -> cb.declareMethod("hashCode", PrimitiveToken.LONG)))
+                    .withMessageContaining("has the signature of hashCode() of java.lang.Object");
+            // a protected method of Object too: its fact is held back for a subclass that opens it
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> declare(cb -> cb.declareMethod("clone", Object_.TOKEN)))
+                    .withMessageContaining("has the signature of clone() of java.lang.Object");
         }
 
         @Test
-        void anIncompatibleEqualsAndHashCodeAreRejected() {
+        void anOverloadOfAnInheritedMethodIsDeclaredByName() {
+            declare(cb ->
+                    cb.method("equals", PrimitiveToken.BOOLEAN, String_.TOKEN, (b, _, _) -> b.return_(literal(true))));
+        }
+
+        @Test
+        void aMethodIsOverriddenOnce() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> declare(cb -> cb.declareVoidMethod("equals", Object_.TOKEN)))
-                    .withMessageContaining("whose result is boolean");
+                    .isThrownBy(() -> declare(cb -> {
+                        cb.override(Object_.toString, (b, _) -> b.return_(literal("a")));
+                        cb.override(Object_.toString, (b, _) -> b.return_(literal("b")));
+                    }))
+                    .withMessageContaining(
+                            "clashes with the method java.lang.String me.supcheg.example.Probe.toString()"
+                                    + " declared before: both erase to toString() (JLS 8.4.2)");
+        }
+
+        @Test
+        void aFinalMethodIsNotOverriddenByItsFact() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> declare(cb -> cb.declareMethod("hashCode", PrimitiveToken.LONG)))
-                    .withMessageContaining("whose result is int");
+                    .isThrownBy(() -> declare(cb -> cb.override(Object_.notify, (b, _) -> b.end())))
+                    .withMessageContaining(
+                            "cannot override notify() of java.lang.Object: the method is final" + " (JLS 8.4.3.3)");
+        }
+
+        @Test
+        void equalsIsNotOverriddenWithoutHashCode() {
+            assertThatIllegalStateException()
+                    .isThrownBy(() ->
+                            declare(cb -> cb.override(Object_.equals_Object, (b, _, _) -> b.return_(literal(true)))))
+                    .withMessageContaining("overrides equals(java.lang.Object) but not hashCode()");
+            declare(cb -> {
+                cb.override(Object_.equals_Object, (b, _, _) -> b.return_(literal(true)));
+                cb.override(Object_.hashCode, (b, _) -> b.return_(literal(1)));
+            });
+            // hashCode alone is nothing javac warns of
+            declare(cb -> cb.override(Object_.hashCode, (b, _) -> b.return_(literal(1))));
         }
 
         @Test
