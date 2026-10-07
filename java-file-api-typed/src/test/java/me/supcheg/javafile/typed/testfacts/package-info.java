@@ -37,15 +37,27 @@
     TriConsumer.class,
     TriFunction.class,
     UnaryOperator.class,
-    UnsupportedEncodingException.class
+    UnsupportedEncodingException.class,
+    Holder.class,
+    Nothing.class,
+    Op.class,
+    Outer.Level.class,
+    Thrower.class,
+    Words.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
+import me.supcheg.javafile.typed.fixtures.Holder;
+import me.supcheg.javafile.typed.fixtures.Nothing;
+import me.supcheg.javafile.typed.fixtures.Op;
+import me.supcheg.javafile.typed.fixtures.Outer;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import me.supcheg.javafile.typed.fixtures.Tasks;
+import me.supcheg.javafile.typed.fixtures.Thrower;
 import me.supcheg.javafile.typed.fixtures.TriConsumer;
 import me.supcheg.javafile.typed.fixtures.TriFunction;
+import me.supcheg.javafile.typed.fixtures.Words;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

@@ -632,10 +632,11 @@ public final class Expressions {
     /// are built: the variables in scope, the exceptions caught or
     /// declared. A `switch` that has such a block is therefore used in the
     /// block it is built in, or in a block nested in that one and on the
-    /// same side of every lambda boundary — stricter than Java, which has
-    /// no expression apart from where it stands. One built outside of any
-    /// body, for a field initializer, uses no variable and throws no checked
-    /// exception.
+    /// same side of every lambda boundary. One built outside of any body,
+    /// for a field initializer, uses no variable and throws no checked
+    /// exception. Where this is stricter than Java, which has no expression
+    /// apart from where it stands, is listed with the cases
+    /// ([EnumSwitchCases]).
     ///
     /// @param enumType the enum of the selector, the witness of its constants
     /// @param selector the selector
@@ -678,16 +679,22 @@ public final class Expressions {
     //   clauses and the `throws` clause around the lambda cover nothing of
     //   it.
     //
-    // A lambda is used in the block it is built in, or in one nested in
-    // it: elsewhere the variables it captures are out of scope.
+    // Stricter than javac, each of these rejects code javac accepts:
     //
-    // Stricter than javac: a `MutVar` that is never assigned is effectively
-    // final to javac and captured, here it is rejected — declare it by `let`.
+    // - a `MutVar` that is never assigned is effectively final to javac and
+    //   captured; here it is rejected, read or not — declare it by `let`;
+    // - a lambda is used in the block it is built in, or in one nested in
+    //   it: its body was checked there, and elsewhere the variables it
+    //   captures may be out of scope. Java has no lambda apart from where it
+    //   stands, so the same lambda built where it is used is accepted;
+    // - a lambda built in the condition or the update of a `for_` is a
+    //   block of the code around the loop: it does not see the loop
+    //   variable, which javac would only refuse it for being assigned.
     //
     // Arity 0..3; arity 4..12 follow the identical pattern.
     // ------------------------------------------------------------------
 
-    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// A lambda with an expression body, `() -> value`, of the functional
     /// interface `sam` is the method of.
     ///
     /// @param sam the single abstract method of the functional interface
@@ -704,7 +711,7 @@ public final class Expressions {
                 _ -> new LambdaValue(List.of(), body.get().node()));
     }
 
-    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// A lambda with an expression body, `(A1 a1) -> value`, of the functional
     /// interface `sam` is the method of.
     ///
     /// @param sam the single abstract method of the functional interface
@@ -723,7 +730,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// A lambda with an expression body, `(A1 a1, A2 a2) -> value`, of the functional
     /// interface `sam` is the method of.
     ///
     /// @param sam the single abstract method of the functional interface
@@ -744,7 +751,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// A lambda with an expression body, `(A1 a1, A2 a2, A3 a3) -> value`, of the functional
     /// interface `sam` is the method of.
     ///
     /// @param sam the single abstract method of the functional interface
@@ -768,7 +775,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// A lambda with an expression body, `() -> effect`, of the functional
     /// interface whose `void` method `sam` is. The body is a statement
     /// expression: a call, an instance creation, or an assignment.
     ///
@@ -783,7 +790,7 @@ public final class Expressions {
                 sam.owner(), sam.method(), _ -> new LambdaValue(List.of(), Assignment.nodeOf(body.get())));
     }
 
-    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// A lambda with an expression body, `(A1 a1) -> effect`, of the functional
     /// interface whose `void` method `sam` is. The body is a statement
     /// expression: a call, an instance creation, or an assignment.
     ///
@@ -801,7 +808,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// A lambda with an expression body, `(A1 a1, A2 a2) -> effect`, of the functional
     /// interface whose `void` method `sam` is. The body is a statement
     /// expression: a call, an instance creation, or an assignment.
     ///
@@ -822,7 +829,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// A lambda with an expression body, `(A1 a1, A2 a2, A3 a3) -> effect`, of the functional
     /// interface whose `void` method `sam` is. The body is a statement
     /// expression: a call, an instance creation, or an assignment.
     ///
@@ -846,7 +853,7 @@ public final class Expressions {
         });
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `() -> { ... }`, of the functional
     /// interface `sam` is the method of. The block ends as the body of a
     /// method does, by `return_` or without completing normally.
     ///
@@ -855,13 +862,16 @@ public final class Expressions {
     /// @param <F> the functional interface
     /// @param <R> the result type of its method
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, R> Expr<F> lambdaBlock(Sam0<F, R> sam, Function<? super Body<R>, Terminated<R>> body) {
         Body<R> block =
                 Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
         return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1) -> { ... }`, of the functional
     /// interface `sam` is the method of. The block ends as the body of a
     /// method does, by `return_` or without completing normally.
     ///
@@ -871,6 +881,9 @@ public final class Expressions {
     /// @param <R> the result type of its method
     /// @param <A1> the type of the parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, R, A1> Expr<F> lambdaBlock(
             Sam1<F, R, A1> sam, BiFunction<? super Body<R>, ? super Var<A1>, Terminated<R>> body) {
         Body<R> block =
@@ -879,7 +892,7 @@ public final class Expressions {
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1, A2 a2) -> { ... }`, of the functional
     /// interface `sam` is the method of. The block ends as the body of a
     /// method does, by `return_` or without completing normally.
     ///
@@ -890,6 +903,9 @@ public final class Expressions {
     /// @param <A1> the type of the first parameter
     /// @param <A2> the type of the second parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, R, A1, A2> Expr<F> lambdaBlock(
             Sam2<F, R, A1, A2> sam, Function3<? super Body<R>, ? super Var<A1>, ? super Var<A2>, Terminated<R>> body) {
         Body<R> block =
@@ -899,7 +915,7 @@ public final class Expressions {
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1, A2 a2, A3 a3) -> { ... }`, of the functional
     /// interface `sam` is the method of. The block ends as the body of a
     /// method does, by `return_` or without completing normally.
     ///
@@ -911,6 +927,9 @@ public final class Expressions {
     /// @param <A2> the type of the second parameter
     /// @param <A3> the type of the third parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, R, A1, A2, A3> Expr<F> lambdaBlock(
             Sam3<F, R, A1, A2, A3> sam,
             Function4<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<R>> body) {
@@ -922,7 +941,7 @@ public final class Expressions {
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), b -> body.apply(b, p1, p2, p3));
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `() -> { ... }`, of the functional
     /// interface whose `void` method `sam` is. The block ends as the body of
     /// a `void` method does.
     ///
@@ -930,13 +949,16 @@ public final class Expressions {
     /// @param body builds the block
     /// @param <F> the functional interface
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F> Expr<F> lambdaBlock(VoidSam0<F> sam, Function<? super VoidBody, Terminated<Void>> body) {
         VoidBody block = VoidBody.lambdaBody(
                 Scopes.innermostBlock(), sam.method().traits().throwsTypes());
         return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1) -> { ... }`, of the functional
     /// interface whose `void` method `sam` is. The block ends as the body of
     /// a `void` method does.
     ///
@@ -945,6 +967,9 @@ public final class Expressions {
     /// @param <F> the functional interface
     /// @param <A1> the type of the parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, A1> Expr<F> lambdaBlock(
             VoidSam1<F, A1> sam, BiFunction<? super VoidBody, ? super Var<A1>, Terminated<Void>> body) {
         VoidBody block = VoidBody.lambdaBody(
@@ -953,7 +978,7 @@ public final class Expressions {
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1, A2 a2) -> { ... }`, of the functional
     /// interface whose `void` method `sam` is. The block ends as the body of
     /// a `void` method does.
     ///
@@ -963,6 +988,9 @@ public final class Expressions {
     /// @param <A1> the type of the first parameter
     /// @param <A2> the type of the second parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, A1, A2> Expr<F> lambdaBlock(
             VoidSam2<F, A1, A2> sam,
             Function3<? super VoidBody, ? super Var<A1>, ? super Var<A2>, Terminated<Void>> body) {
@@ -973,7 +1001,7 @@ public final class Expressions {
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
     }
 
-    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// A lambda with a block body, `(A1 a1, A2 a2, A3 a3) -> { ... }`, of the functional
     /// interface whose `void` method `sam` is. The block ends as the body of
     /// a `void` method does.
     ///
@@ -984,6 +1012,9 @@ public final class Expressions {
     /// @param <A2> the type of the second parameter
     /// @param <A3> the type of the third parameter
     /// @return the lambda
+    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
+    ///     or can throw a checked exception the method does not declare, where it is built; if the block
+    ///     ends with the token of another block
     public static <F, A1, A2, A3> Expr<F> lambdaBlock(
             VoidSam3<F, A1, A2, A3> sam,
             Function4<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<Void>> body) {

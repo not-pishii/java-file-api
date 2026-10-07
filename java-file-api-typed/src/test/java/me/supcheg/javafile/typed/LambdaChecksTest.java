@@ -7,14 +7,17 @@ import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.io.StringReader_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
+import me.supcheg.javafile.typed.testfacts.java.lang.RuntimeException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import me.supcheg.javafile.typed.testfacts.java.util.concurrent.Callable_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Function_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Thrower_;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -384,6 +387,30 @@ class LambdaChecksTest {
                     "in the lambda body in lambda body in body of static method m can throw the checked exception"
                             + " java.io.IOException",
                     "static void m() { Callable<Supplier<Integer>> c = () -> () -> new StringReader(\"a\").read(); }",
+                    "unreported exception java.io.IOException");
+        }
+
+        @Test
+        void aMethodThatThrowsItsTypeArgumentDeclaresWhatTheArgumentIs() {
+            Thrower_<IOException> io = new Thrower_<>(IOException_.TOKEN);
+            Thrower_<RuntimeException> unchecked = new Thrower_<>(RuntimeException_.TOKEN);
+
+            asJavacAccepts(
+                    () -> voidMethod(b -> b.let(
+                            io.token,
+                            lambdaBlock(io.sam, lb -> lb.throw_(new_(IOException_.new_String, literal("no")))),
+                            _ -> b.end())),
+                    "interface Thrower<X extends Throwable> { void run() throws X; }\n"
+                            + "static void m() { Thrower<IOException> t = () -> { throw new IOException(\"no\"); }; }");
+            asJavac(
+                    () -> voidMethod(b -> b.let(
+                            unchecked.token,
+                            lambdaBlock(unchecked.sam, lb -> lb.throw_(new_(IOException_.new_String, literal("no")))),
+                            _ -> b.end())),
+                    "the method of the functional interface of the lambda does not declare (declared:"
+                            + " java.lang.RuntimeException)",
+                    "interface Thrower<X extends Throwable> { void run() throws X; }\n"
+                            + "static void m() { Thrower<RuntimeException> t = () -> { throw new IOException(\"no\"); }; }",
                     "unreported exception java.io.IOException");
         }
 

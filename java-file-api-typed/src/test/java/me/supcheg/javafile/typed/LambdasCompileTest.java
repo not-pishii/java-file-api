@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.TriConsumer;
@@ -13,6 +14,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.StringBuilder_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Throwable_;
 import me.supcheg.javafile.typed.testfacts.java.util.ArrayList_;
 import me.supcheg.javafile.typed.testfacts.java.util.Comparator_;
 import me.supcheg.javafile.typed.testfacts.java.util.List_;
@@ -23,12 +25,15 @@ import me.supcheg.javafile.typed.testfacts.java.util.function.Function_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.IntBinaryOperator_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.UnaryOperator_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Holder_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Tasks_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Thrower_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.TriConsumer_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.TriFunction_;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +45,9 @@ import java.util.function.Supplier;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
+import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
+import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
@@ -51,6 +58,7 @@ import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unbox;
@@ -88,6 +96,8 @@ class LambdasCompileTest {
 
     private static final ArrayList_<Supplier<String>> SUPPLIER_LIST = new ArrayList_<>(STRINGS.token);
 
+    private static final Thrower_<IOException> IO_THROWER = new Thrower_<>(IOException_.TOKEN);
+
     private static CompiledClasses compiled;
 
     @BeforeAll
@@ -100,6 +110,7 @@ class LambdasCompileTest {
                         places(cb);
                         captures(cb);
                         exceptions(cb);
+                        morePlaces(cb);
                     }
                 }));
     }
@@ -252,7 +263,7 @@ class LambdasCompileTest {
                                         lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))))
                                 .return_(call(sb, StringBuilder_.toString))));
 
-        // list.sort((String a, String b) -> b.compareTo(a))
+        // list.sort((Comparator<String>) ((String a, String b) -> b.compareTo(a))): a Comparator<? super String>
         cb.voidStaticMethod(
                 "descending",
                 STRING_LIST.token,
@@ -416,6 +427,65 @@ class LambdasCompileTest {
                                 t -> t.return_(box(
                                         PrimitiveToken.INT,
                                         call(new_(StringReader_.new_String, s), StringReader_.read)))))));
+    }
+
+    /// More places: an argument of a constructor, an element of an array; and a functional interface
+    /// whose method throws its type argument.
+    private static <Self> void morePlaces(TypedClassBuilder<Self> cb) {
+        // return new Holder((Supplier<String>) (() -> s)).get();
+        cb.staticMethod(
+                "held",
+                String_.TOKEN,
+                String_.TOKEN,
+                (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
+
+        // Runnable[] a = new Runnable[1]; a[0] = (Runnable) (() -> sb.append("x")); a[0].run(); ...
+        ArrayToken<Runnable[], Runnable> runnables = ArrayToken.of(Runnable_.TOKEN);
+        cb.staticMethod(
+                "element",
+                String_.TOKEN,
+                StringBuilder_.TOKEN,
+                (b, sb) -> b.let(
+                        runnables,
+                        newArray(runnables, literal(1)),
+                        a -> b.exec(assignAt(
+                                        runnables,
+                                        a,
+                                        literal(0),
+                                        lambda(
+                                                Runnable_.sam,
+                                                () -> call(sb, StringBuilder_.append_String, literal("x")))))
+                                .exec(voidCall(at(runnables, a, literal(0)), Runnable_.run))
+                                .return_(call(sb, StringBuilder_.toString))));
+
+        // Thrower<IOException> t = () -> { throw new IOException(s); };
+        // try { t.run(); return "ran"; } catch (IOException e) { return e.getMessage(); }
+        cb.staticMethod(
+                "thrown",
+                String_.TOKEN,
+                String_.TOKEN,
+                (b, s) -> b.let(
+                        IO_THROWER.token,
+                        lambdaBlock(IO_THROWER.sam, lb -> lb.throw_(new_(IOException_.new_String, s))),
+                        t -> b.tryTerminated(
+                                h -> h.catch_(
+                                        IOException_.TOKEN,
+                                        (handler, e) -> handler.return_(call(e, Throwable_.getMessage))),
+                                body -> body.exec(voidCall(t, IO_THROWER.run)).return_(literal("ran")))));
+    }
+
+    @Test
+    void aLambdaIsAnArgumentOfAConstructorAndAnElementOfAnArray() throws Throwable {
+        assertThat(compiled.invoke("held", "a")).isEqualTo("a");
+        assertThat(compiled.invoke("element", new StringBuilder())).isEqualTo("x");
+        assertThat(compiled.source())
+                .contains("new Holder((Supplier<String>) (() -> v0)).get()")
+                .contains("v1[0] = (Runnable) (() -> v0.append(\"x\"));");
+    }
+
+    @Test
+    void theMethodOfAFunctionalInterfaceThrowsItsTypeArgument() throws Throwable {
+        assertThat(compiled.invoke("thrown", "why")).isEqualTo("why");
     }
 
     @Test

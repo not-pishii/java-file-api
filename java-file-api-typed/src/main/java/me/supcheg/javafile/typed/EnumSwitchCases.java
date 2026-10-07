@@ -35,14 +35,41 @@ import java.util.stream.Stream;
 /// - the `switch` has a result: a case that is a value, or a block that
 ///   yields (javac: *switch expression does not have any result
 ///   expressions*);
-/// - a case is added by the cases of the `switch` itself, one after another:
-///   not from inside the block of another case, not after the `default_`,
-///   which is the last, and not once the `switch` is made. The handle is in
-///   the hands of the generator's lambdas, so this is checked where it is
-///   called, as for the clauses of a `try` ([Handlers]).
+/// - a case is added while the cases of the `switch` are being added: not
+///   while the block of another case is being built, not after the
+///   `default_`, which is the last, and not once the `switch` is made. The
+///   handle is in the hands of the generator's lambdas, so this is checked
+///   where it is called, as for the clauses of a `try` ([Handlers]). The
+///   cases are rendered in the order they are added in, which is the order
+///   of the calls and nothing more: a `case_` called while the value of
+///   another is still being computed — from the cases of a `switch` nested
+///   in that value — comes before it, and the code is as valid.
 ///
-/// **Stricter than javac.** A `default` case may stand anywhere among the
-/// cases of Java; here it is the last.
+/// **Stricter than javac.** Each of these rejects code javac accepts; none
+/// accepts code javac rejects.
+///
+/// - *The `default` case is the last.* It may stand anywhere among the
+///   cases of Java.
+/// - *Primitive and reference results do not mix*
+///   ([Expressions#switch_(EnumToken, Expr, TypeToken, java.util.function.Consumer)]):
+///   Java boxes, unboxes and promotes them to one type (JLS 15.28.1).
+/// - *A `switch` with a block is used where it is built*: in the block it
+///   is built in or one nested in it, and not across a lambda boundary
+///   ([ScopeCheck]). Java has no expression apart from where it stands.
+/// - *A `catch_` around the use does not cover a block built outside it*:
+///   the statements of a block are checked against the block the `switch`
+///   is built in ([Exceptions]), so what they throw is caught or declared
+///   there, though the `switch` is then used in a `try_` that would catch
+///   it.
+/// - *A block built in the condition or the update of a `for_`* is a block
+///   of the code around the loop, and does not see the loop variable; a
+///   case that is a value does.
+/// - *A `switch` built outside of any body*, for a field initializer,
+///   throws no checked exception in a block; Java lets the initializer of
+///   an instance field throw what every constructor declares.
+/// - *A constant is of the fact of the enum the `switch` is over*, not of
+///   another fact of the same enum — another metamodel of it, which may
+///   list other constants.
 ///
 /// @param <E> the enum
 /// @param <R> the type of the `switch` expression
