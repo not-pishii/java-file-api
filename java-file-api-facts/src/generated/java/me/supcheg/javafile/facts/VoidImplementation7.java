@@ -15,6 +15,10 @@ public final class VoidImplementation7<Self, A1, A2, A3, A4, A5, A6, A7> impleme
         return this.how;
     }
 
+    public VoidMethodRef7<Self, A1, A2, A3, A4, A5, A6, A7> method() {
+        return Invocables.own(this.how);
+    }
+
     @Override
     public String toString() {
         return Invocables.describe(this.how);

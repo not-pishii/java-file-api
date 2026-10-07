@@ -15,6 +15,10 @@ public final class VoidImplementation0<Self> implements Implementation<Self> {
         return this.how;
     }
 
+    public VoidMethodRef0<Self> method() {
+        return Invocables.own(this.how);
+    }
+
     @Override
     public String toString() {
         return Invocables.describe(this.how);

@@ -15,6 +15,10 @@ public final class VoidImplementation5<Self, A1, A2, A3, A4, A5> implements Impl
         return this.how;
     }
 
+    public VoidMethodRef5<Self, A1, A2, A3, A4, A5> method() {
+        return Invocables.own(this.how);
+    }
+
     @Override
     public String toString() {
         return Invocables.describe(this.how);
