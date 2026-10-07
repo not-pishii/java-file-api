@@ -82,6 +82,11 @@ class FinallyChecksTest {
         }
     }
 
+    /// What a finally block says of a form that cannot complete normally: it has no method that ends it.
+    private static final String FINALLY_ADVICE =
+            "a finally block completes normally, so a form that cannot is not expressible in it: give it a way to"
+                    + " complete, or leave it out of the finally block";
+
     @Nested
     class RejectedWhereItIsBuilt {
 
@@ -91,7 +96,8 @@ class FinallyChecksTest {
                     () -> intMethod((b, s) -> b.tryTerminated(
                             h -> h.finally_(f -> f.while_(literal(true), (_, _) -> {})), t -> t.return_(literal(1)))),
                     "while_ with a constant true condition and no break_ in the finally block of tryTerminated in"
-                            + " body of static method m cannot complete normally",
+                            + " body of static method m cannot complete normally, so a statement after it would be"
+                            + " unreachable (JLS 14.22); " + FINALLY_ADVICE,
                     "static int m(Signal s) { try { return 1; } finally { while (true) { } } }",
                     WARNING);
         }
@@ -104,7 +110,8 @@ class FinallyChecksTest {
                                     f -> f.if_(isRed(s), t -> t.return_(literal(2)), e -> e.return_(literal(3)))),
                             t -> t.return_(literal(1)))),
                     "if_ whose branches both end in the finally block of tryTerminated in body of static method m"
-                            + " cannot complete normally",
+                            + " cannot complete normally, so a statement after it would be unreachable (JLS 14.22); "
+                            + FINALLY_ADVICE,
                     "static int m(Signal s) { try { return 1; } finally { if (s == Signal.RED) { return 2; } else { return 3; } } }",
                     WARNING);
         }
@@ -116,7 +123,8 @@ class FinallyChecksTest {
                             h -> h.finally_(f -> f.try_(g -> g.finally_(_ -> {}), t -> t.return_(literal(2)))),
                             t -> t.return_(literal(1)))),
                     "try_ whose try block and every catch_ end in the finally block of tryTerminated in body of"
-                            + " static method m cannot complete normally",
+                            + " static method m cannot complete normally, so a statement after it would be"
+                            + " unreachable (JLS 14.22); " + FINALLY_ADVICE,
                     "static int m(Signal s) { try { return 1; } finally { try { return 2; } finally { } } }",
                     WARNING);
         }
