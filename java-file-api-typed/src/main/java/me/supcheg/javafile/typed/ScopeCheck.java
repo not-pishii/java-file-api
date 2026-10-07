@@ -6,8 +6,16 @@ import java.util.List;
 
 /// The scope check of §6.2, run when a statement is appended: every [Var]
 /// the statement refers to must be owned by the block it is appended to or
-/// by a block that one is nested in, and a [MutVar] or [LoopCtl] must not be
-/// reached across a lambda boundary.
+/// by a block that one is nested in, a [MutVar] or [LoopCtl] must not be
+/// reached across a lambda boundary, nor a [LoopCtl] out of a block of a
+/// `switch` expression.
+///
+/// An expression that has a block of its own — a lambda, a `switch` with a
+/// case that is a block — was checked statement by statement against the
+/// block it was built in, so it is used in that block or one nested in it,
+/// and a `switch` on the same side of every lambda boundary: its block
+/// reads and assigns the [MutVar]s of the block it was built in, which a
+/// lambda body could not.
 ///
 /// HOAS makes use-before-declaration unrepresentable, but not a variable
 /// that is stored and used after its lambda returned; Java types could only
@@ -40,6 +48,7 @@ final class ScopeCheck {
             case Instr.ForEach(var ignored, var ignoredVar, var iterable, var ignoredBody) ->
                 node(iterable, block, block.path());
             case Instr.Return(var value) -> value.ifPresent(v -> node(v, block, block.path()));
+            case Instr.Yield(var value) -> node(value, block, block.path());
             case Instr.Throw(var value, var ignoredType) -> node(value, block, block.path());
             case Instr.Break(var ctl) -> loopCtl(ctl, block, "break_");
             case Instr.Continue(var ctl) -> loopCtl(ctl, block, "continue_");
@@ -55,6 +64,15 @@ final class ScopeCheck {
     /// @param where where it is used, for the message
     static void standalone(Node node, String where) {
         node(node, null, where);
+    }
+
+    /// Checks an expression that is the body of an expression lambda, where
+    /// the lambda is made: `scope` is the block that owns its parameters.
+    ///
+    /// @param node the expression
+    /// @param scope the lambda-boundary block of the lambda
+    static void lambdaValue(Node node, Block<?, ?> scope) {
+        node(node, scope, scope.path());
     }
 
     private static void node(Node node, @Nullable Block<?, ?> use, String where) {
@@ -94,12 +112,9 @@ final class ScopeCheck {
             case Node.Cast(var ignored, var operand) -> node(operand, use, where);
             case Node.InstanceOf(var operand, var ignored) -> node(operand, use, where);
             case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
-            case Node.Switch(var selector, var ignored, var cases, var otherwise) -> {
-                node(selector, use, where);
-                for (Node.Case c : cases) {
-                    node(c.value(), use, where);
-                }
-                otherwise.ifPresent(o -> node(o, use, where));
+            case Node.Switch switch_ -> {
+                node(switch_.selector().node(), use, where);
+                switch_.arms().forEach(arm -> arm(arm, use, where));
             }
             case Node.Assign(var target, var value) -> {
                 target(target, use, where);
@@ -146,6 +161,43 @@ final class ScopeCheck {
         }
     }
 
+    /// A value of a `switch` is an expression of the block the `switch` is
+    /// used in. A block of one was checked against the block the `switch`
+    /// was built in, as it was built: the `switch` is used in that block, or
+    /// in one nested in it that is not across a lambda boundary.
+    private static void arm(Node.Arm arm, @Nullable Block<?, ?> use, String where) {
+        switch (arm) {
+            case Node.Arm.Value(var value) -> node(value, use, where);
+            case Node.Arm.Block(var block) -> {
+                Block<?, ?> builtIn = block.parent();
+                if (builtIn == null) {
+                    return;
+                }
+                if (!encloses(builtIn, use)) {
+                    throw new IllegalStateException("a switch_ built in the " + builtIn.path() + " is used in the "
+                            + where + ", which is not inside that block: the variables its blocks use are out of"
+                            + " scope there (§6.2)");
+                }
+                if (crossesLambda(builtIn, use)) {
+                    throw new IllegalStateException("a switch_ built in the " + builtIn.path() + " is used in the "
+                            + where + ", across a lambda boundary: its blocks were checked as code of the block"
+                            + " it was built in, which may assign a MutVar and throw what that block catches or"
+                            + " declares, and a lambda body may not; build the switch_ inside the lambda (§6.2)");
+                }
+            }
+        }
+    }
+
+    /// Whether a lambda body is between `use` and `owner`, which encloses it.
+    private static boolean crossesLambda(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+        for (Block<?, ?> b = use; b != null && b != owner; b = b.parent()) {
+            if (b.nesting() == Block.Nesting.LAMBDA_BODY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean encloses(Block<?, ?> owner, @Nullable Block<?, ?> use) {
         for (Block<?, ?> b = use; b != null; b = b.parent()) {
             if (b == owner) {
@@ -167,7 +219,7 @@ final class ScopeCheck {
                 }
                 return;
             }
-            crossesLambda |= b.isLambdaBoundary();
+            crossesLambda |= b.nesting() == Block.Nesting.LAMBDA_BODY;
         }
         throw new IllegalStateException("the " + var + " declared in the " + owner.path() + " is used in the "
                 + where + ", which is not inside that block: the variable is out of scope there — it escaped the"
@@ -193,10 +245,16 @@ final class ScopeCheck {
                 throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
                         + loopBody.path() + ", which does not enclose it: the LoopCtl escaped its loop body (§6.3)");
             }
-            if (b.isLambdaBoundary()) {
-                throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
-                        + loopBody.path() + " across a lambda boundary: a lambda body cannot break or continue an"
-                        + " enclosing loop (§6.3)");
+            switch (b.nesting()) {
+                case PLAIN -> {}
+                case LAMBDA_BODY ->
+                    throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
+                            + loopBody.path() + " across a lambda boundary: a lambda body cannot break or continue"
+                            + " an enclosing loop (§6.3)");
+                case SWITCH_BLOCK ->
+                    throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
+                            + loopBody.path() + " out of a switch expression: a block of a switch expression"
+                            + " cannot break or continue a loop around the switch (JLS 15.28.1)");
             }
         }
     }

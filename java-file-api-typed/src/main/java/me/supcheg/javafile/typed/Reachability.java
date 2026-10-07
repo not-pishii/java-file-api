@@ -42,10 +42,21 @@ final class Reachability {
                 (canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body())))
                         && finallyBlock.map(Reachability::canCompleteNormally).orElse(true);
             case Instr.Return ignored -> false;
+            case Instr.Yield ignored -> false;
             case Instr.Throw ignored -> false;
             case Instr.Break ignored -> false;
             case Instr.Continue ignored -> false;
         };
+    }
+
+    /// Whether `block` holds a `yield`, at any depth: one of the `switch`
+    /// expression `block` is a block of, as a block of another `switch` is
+    /// part of an expression, not of a statement. A statement a block holds
+    /// is reachable, so the `yield` is.
+    static boolean yields(Block<?, ?> block) {
+        return block.instrs().stream()
+                .anyMatch(instr ->
+                        instr instanceof Instr.Yield || Instr.blocks(instr).anyMatch(Reachability::yields));
     }
 
     private static boolean ifCompletes(Block<?, ?> then, Optional<Block<?, ?>> otherwise) {
@@ -100,6 +111,7 @@ final class Reachability {
             case Instr.Exec ignored -> false;
             case Instr.Raw ignored -> false;
             case Instr.Return ignored -> false;
+            case Instr.Yield ignored -> false;
             case Instr.Throw ignored -> false;
         };
     }

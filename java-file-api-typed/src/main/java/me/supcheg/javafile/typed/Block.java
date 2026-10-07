@@ -26,12 +26,13 @@ import java.util.function.Function;
 /// and [LoopCtl] knows the block it belongs to. Appending a statement checks
 /// each variable it refers to: the variable's block must be this block or
 /// one this block is nested in, and a [MutVar] or [LoopCtl] must not be
-/// reached across a lambda boundary. A variable or loop capability that was
+/// reached across a lambda boundary, nor a [LoopCtl] from a block of a
+/// `switch` expression. A variable or loop capability that was
 /// smuggled out of its HOAS lambda — into a sibling branch, past the end of
 /// its block, into another method — is rejected right at the misuse.
 ///
 /// **Reachability (JLS 14.22).** Statements that end the block (`return_`,
-/// `throw_`, `break_`, `continue_`, and the constructs that cannot complete
+/// `yield_`, `throw_`, `break_`, `continue_`, and the constructs that cannot complete
 /// normally: `ifElse`, `ifInstanceOfElse`, `tryTerminated`, `loopForever`)
 /// return a [Terminated] token and close the block: appending after them,
 /// which would be unreachable code, fails fast. The statement forms that
@@ -56,23 +57,36 @@ import java.util.function.Function;
 /// Only the innermost block being built accepts statements; using the
 /// builder of an enclosing block inside a nested block or lambda fails fast.
 ///
-/// @param <R> the result type of the enclosing method or lambda
+/// @param <R> the result type of the enclosing method or lambda, or the type of the `switch` expression
+///     this is a block of
 /// @param <B> the type of this block, which nested blocks share
-public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidBody {
+public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidBody, YieldBody {
     private static final String LOOP_FOREVER_HINT =
             "a loop that never completes ends the block: build it with loopForever, which returns the Terminated"
                     + " of this block, or break_ out of it";
 
+    /// What a block is to the block it is nested in.
+    enum Nesting {
+        /// A block of a statement — a branch, a loop body, a `try`, `catch` or `finally` block — or
+        /// the body of a member.
+        PLAIN,
+        /// The body of a lambda: a [MutVar] and a [LoopCtl] do not cross into it.
+        LAMBDA_BODY,
+        /// The block of a case of a `switch` expression: a [LoopCtl] does not cross into it
+        /// (JLS 15.28.1), a [MutVar] does.
+        SWITCH_BLOCK
+    }
+
     private final @Nullable Block<?, ?> parent;
-    private final boolean lambdaBoundary;
+    private final Nesting nesting;
     private final String what;
     private final ExceptionScope exceptionScope;
     private final List<Instr> instrs = new ArrayList<>();
     private @Nullable String endedBy;
 
-    Block(@Nullable Block<?, ?> parent, boolean lambdaBoundary, String what, ExceptionScope exceptionScope) {
+    Block(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
         this.parent = parent;
-        this.lambdaBoundary = lambdaBoundary;
+        this.nesting = nesting;
         this.what = what;
         this.exceptionScope = exceptionScope;
     }
@@ -93,14 +107,15 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return exceptionScope;
     }
 
-    /// The block this one is nested in, or `null` for the body of a member.
+    /// The block this one is nested in, or `null` for the body of a member
+    /// and for a block of an expression built outside of any body.
     final @Nullable Block<?, ?> parent() {
         return parent;
     }
 
-    /// Whether this block is the body of a lambda of the generated code.
-    final boolean isLambdaBoundary() {
-        return lambdaBoundary;
+    /// What this block is to the block it is nested in.
+    final Nesting nesting() {
+        return nesting;
     }
 
     /// Where this block is, for diagnostics: `then-branch of if_ in body of method m`.
@@ -166,7 +181,13 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     /// Builds `child` from `spec`, which must hand back the token of `child`.
     final void fillEnding(B child, Function<? super B, Terminated<R>> spec) {
-        requireIssuedBy(Scopes.within(child, () -> spec.apply(child)), child);
+        build(child, spec);
+    }
+
+    /// Builds `block` from `spec`, with `block` the innermost scope; `spec`
+    /// must hand back the token of `block`.
+    static <R, B extends Block<R, B>> void build(B block, Function<? super B, Terminated<R>> spec) {
+        requireIssuedBy(Scopes.within(block, () -> spec.apply(block)), block);
     }
 
     private B open(String what, Consumer<? super B> spec) {

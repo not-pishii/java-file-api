@@ -7,7 +7,10 @@ import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
+import me.supcheg.javafile.facts.EnumConstant;
+import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FieldRef;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -18,6 +21,10 @@ import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.Sam0;
+import me.supcheg.javafile.facts.Sam1;
+import me.supcheg.javafile.facts.Sam2;
+import me.supcheg.javafile.facts.Sam3;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
@@ -28,6 +35,10 @@ import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
+import me.supcheg.javafile.facts.VoidSam0;
+import me.supcheg.javafile.facts.VoidSam1;
+import me.supcheg.javafile.facts.VoidSam2;
+import me.supcheg.javafile.facts.VoidSam3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
@@ -40,10 +51,15 @@ import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
 /// access, calls, `new`, arrays, `cond`, per-primitive operators, explicit
-/// conversions, and assignments.
+/// conversions, assignments, enum constants, `switch` expressions over an
+/// enum ([#switch_]) and lambdas (`lambda`, `lambdaBlock`).
 ///
 /// Primitive values are typed by their [Prim] markers: `literal(1)` is an
 /// `Expr<Prim.Int>`, never an `Expr<Integer>`. Boxing and unboxing are
@@ -384,7 +400,10 @@ public final class Expressions {
     /// @throws IllegalArgumentException if a branch is primitive and `T` is not, or the reverse
     public static <T> Expr<T> cond(
             Expr<Prim.Bool> condition, Expr<? extends T> whenTrue, Expr<? extends T> whenFalse, TypeToken<T> type) {
-        return Expr.of(new Node.Cond(condition.node(), branch(whenTrue, type), branch(whenFalse, type)), type);
+        return Expr.of(
+                new Node.Cond(
+                        condition.node(), result(whenTrue, type, Choice.COND), result(whenFalse, type, Choice.COND)),
+                type);
     }
 
     // ------------------------------------------------------------------
@@ -573,6 +592,441 @@ public final class Expressions {
     }
 
     // ------------------------------------------------------------------
+    // Enum constants and `switch`
+    // ------------------------------------------------------------------
+
+    /// An enum constant, `Day.MON`.
+    ///
+    /// @param constant the constant
+    /// @param <E> the enum
+    /// @return the constant
+    public static <E> Expr<E> enumConstant(EnumConstant<E> constant) {
+        return Expr.of(new Node.EnumConst(constant), constant.owner());
+    }
+
+    /// A `switch` expression over an enum, of exactly the type `R`:
+    ///
+    /// ```java
+    /// switch_(day, Day_.TOKEN, String_.TOKEN, c -> c
+    ///         .case_(Day_.MON, literal("mon"))
+    ///         .case_(List.of(Day_.TUE, Day_.WED), y -> y.yield_(literal("other"))));
+    /// ```
+    ///
+    /// The selector is evaluated first, then the one case of its value: a
+    /// value, or a block that yields one ([YieldBody]). A selector that is
+    /// `null` at run time is a `NullPointerException`, as in Java.
+    ///
+    /// The cases are checked as they are added and when they are complete
+    /// ([SwitchCases]): a constant has one case, and without a `default_`
+    /// every constant of the enum has one — the constants are those of the
+    /// facts of `enumType`, which hold of the target classpath or lowering
+    /// fails.
+    ///
+    /// As with [#cond(Expr, Expr, Expr, TypeToken)], the result type is
+    /// given explicitly and a result whose type is not `R` is cast to it,
+    /// so javac types the `switch` by `R` and never by its results (JLS
+    /// 15.28.1); primitive and reference results never mix.
+    ///
+    /// **Where it is used.** The block of a case is nested in the block the
+    /// `switch` is built in, and its statements are checked there as they
+    /// are built: the variables in scope, the exceptions caught or
+    /// declared. A `switch` that has such a block is therefore used in the
+    /// block it is built in, or in a block nested in that one and on the
+    /// same side of every lambda boundary — stricter than Java, which has
+    /// no expression apart from where it stands. One built outside of any
+    /// body, for a field initializer, uses no variable and throws no checked
+    /// exception.
+    ///
+    /// @param selector the selector
+    /// @param enumType the enum of the selector
+    /// @param type the type of the `switch`
+    /// @param cases adds the cases, in the order of the code
+    /// @param <E> the enum
+    /// @param <R> the type of the `switch`
+    /// @return the `switch` expression
+    /// @throws IllegalStateException if the cases are not exhaustive, or none has a result
+    public static <E, R> Expr<R> switch_(
+            Expr<? extends E> selector,
+            EnumToken<E> enumType,
+            TypeToken<R> type,
+            Consumer<? super SwitchCases<E, R>> cases) {
+        SwitchCases<E, R> collected = new SwitchCases<>(enumType, type, Scopes.innermostBlock());
+        cases.accept(collected);
+        return Expr.of(collected.close(operand(selector)), type);
+    }
+
+    // ------------------------------------------------------------------
+    // Lambdas (§6.4): typed by the `sam` fact of a functional interface,
+    // `lambda` with an expression body and `lambdaBlock` with a block.
+    //
+    // The parameters and the result are those of the fact, so a body of
+    // another arity or of other types does not compile. The lambda is an
+    // expression of the functional interface, usable wherever one is: an
+    // argument, the initializer of a variable or a field, a returned value,
+    // a receiver.
+    //
+    // The body is a scope of its own, nested in the block the lambda is
+    // built in — the innermost one being built, none for a field
+    // initializer — and checked where it is built:
+    //
+    // - it captures the variables of that block that are effectively final:
+    //   a `Var`, `this`. A `MutVar` is assignable and is rejected, read or
+    //   assigned (JLS 15.27.2); copy it into a `let` first. A `LoopCtl` of a
+    //   loop around the lambda is rejected too;
+    // - a checked exception thrown in it is caught in it or declared by the
+    //   method of the functional interface (JLS 11.2.3): the `catch_`
+    //   clauses and the `throws` clause around the lambda cover nothing of
+    //   it.
+    //
+    // A lambda is used in the block it is built in, or in one nested in
+    // it: elsewhere the variables it captures are out of scope.
+    //
+    // Stricter than javac: a `MutVar` that is never assigned is effectively
+    // final to javac and captured, here it is rejected — declare it by `let`.
+    //
+    // Arity 0..3; arity 4..12 follow the identical pattern.
+    // ------------------------------------------------------------------
+
+    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// interface `sam` is the method of.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the value
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, R> Expr<F> lambda(Sam0<F, R> sam, Supplier<? extends Expr<? extends R>> body) {
+        return expressionLambda(
+                sam.owner(),
+                sam.method(),
+                _ -> new LambdaValue(List.of(), body.get().node()));
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// interface `sam` is the method of.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the value, given the parameter
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, R, A1> Expr<F> lambda(
+            Sam1<F, R, A1> sam, Function<? super Var<A1>, ? extends Expr<? extends R>> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            return new LambdaValue(List.of(p1), body.apply(p1).node());
+        });
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// interface `sam` is the method of.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the value, given the parameters
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, R, A1, A2> Expr<F> lambda(
+            Sam2<F, R, A1, A2> sam, BiFunction<? super Var<A1>, ? super Var<A2>, ? extends Expr<? extends R>> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
+            return new LambdaValue(List.of(p1, p2), body.apply(p1, p2).node());
+        });
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> value`, of the functional
+    /// interface `sam` is the method of.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the value, given the parameters
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @param <A3> the type of the third parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, R, A1, A2, A3> Expr<F> lambda(
+            Sam3<F, R, A1, A2, A3> sam,
+            Function3<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? extends Expr<? extends R>> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = lambdaParameter(sam.param3(), scope);
+            return new LambdaValue(List.of(p1, p2, p3), body.apply(p1, p2, p3).node());
+        });
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// interface whose `void` method `sam` is. The body is a statement
+    /// expression: a call, an instance creation, or an assignment.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the effect
+    /// @param <F> the functional interface
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F> Expr<F> lambda(VoidSam0<F> sam, Supplier<? extends Effect> body) {
+        return expressionLambda(
+                sam.owner(), sam.method(), _ -> new LambdaValue(List.of(), Assignment.nodeOf(body.get())));
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// interface whose `void` method `sam` is. The body is a statement
+    /// expression: a call, an instance creation, or an assignment.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the effect, given the parameter
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, A1> Expr<F> lambda(VoidSam1<F, A1> sam, Function<? super Var<A1>, ? extends Effect> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            return new LambdaValue(List.of(p1), Assignment.nodeOf(body.apply(p1)));
+        });
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// interface whose `void` method `sam` is. The body is a statement
+    /// expression: a call, an instance creation, or an assignment.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the effect, given the parameters
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, A1, A2> Expr<F> lambda(
+            VoidSam2<F, A1, A2> sam, BiFunction<? super Var<A1>, ? super Var<A2>, ? extends Effect> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
+            return new LambdaValue(List.of(p1, p2), Assignment.nodeOf(body.apply(p1, p2)));
+        });
+    }
+
+    /// A lambda with an expression body, `(A1 v) -> effect`, of the functional
+    /// interface whose `void` method `sam` is. The body is a statement
+    /// expression: a call, an instance creation, or an assignment.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body gives the effect, given the parameters
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @param <A3> the type of the third parameter
+    /// @return the lambda
+    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
+    ///     checked exception the method does not declare
+    public static <F, A1, A2, A3> Expr<F> lambda(
+            VoidSam3<F, A1, A2, A3> sam,
+            Function3<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? extends Effect> body) {
+        return expressionLambda(sam.owner(), sam.method(), scope -> {
+            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = lambdaParameter(sam.param3(), scope);
+            return new LambdaValue(List.of(p1, p2, p3), Assignment.nodeOf(body.apply(p1, p2, p3)));
+        });
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface `sam` is the method of. The block ends as the body of a
+    /// method does, by `return_` or without completing normally.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @return the lambda
+    public static <F, R> Expr<F> lambdaBlock(Sam0<F, R> sam, Function<? super Body<R>, Terminated<R>> body) {
+        Body<R> block =
+                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface `sam` is the method of. The block ends as the body of a
+    /// method does, by `return_` or without completing normally.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameter
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the parameter
+    /// @return the lambda
+    public static <F, R, A1> Expr<F> lambdaBlock(
+            Sam1<F, R, A1> sam, BiFunction<? super Body<R>, ? super Var<A1>, Terminated<R>> body) {
+        Body<R> block =
+                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface `sam` is the method of. The block ends as the body of a
+    /// method does, by `return_` or without completing normally.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameters
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @return the lambda
+    public static <F, R, A1, A2> Expr<F> lambdaBlock(
+            Sam2<F, R, A1, A2> sam, Function3<? super Body<R>, ? super Var<A1>, ? super Var<A2>, Terminated<R>> body) {
+        Body<R> block =
+                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = lambdaParameter(sam.param2(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface `sam` is the method of. The block ends as the body of a
+    /// method does, by `return_` or without completing normally.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameters
+    /// @param <F> the functional interface
+    /// @param <R> the result type of its method
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @param <A3> the type of the third parameter
+    /// @return the lambda
+    public static <F, R, A1, A2, A3> Expr<F> lambdaBlock(
+            Sam3<F, R, A1, A2, A3> sam,
+            Function4<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<R>> body) {
+        Body<R> block =
+                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = lambdaParameter(sam.param3(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), b -> body.apply(b, p1, p2, p3));
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface whose `void` method `sam` is. The block ends as the body of
+    /// a `void` method does.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block
+    /// @param <F> the functional interface
+    /// @return the lambda
+    public static <F> Expr<F> lambdaBlock(VoidSam0<F> sam, Function<? super VoidBody, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(
+                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface whose `void` method `sam` is. The block ends as the body of
+    /// a `void` method does.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameter
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the parameter
+    /// @return the lambda
+    public static <F, A1> Expr<F> lambdaBlock(
+            VoidSam1<F, A1> sam, BiFunction<? super VoidBody, ? super Var<A1>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(
+                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface whose `void` method `sam` is. The block ends as the body of
+    /// a `void` method does.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameters
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @return the lambda
+    public static <F, A1, A2> Expr<F> lambdaBlock(
+            VoidSam2<F, A1, A2> sam,
+            Function3<? super VoidBody, ? super Var<A1>, ? super Var<A2>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(
+                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = lambdaParameter(sam.param2(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
+    }
+
+    /// A lambda with a block body, `(A1 v) -> { ... }`, of the functional
+    /// interface whose `void` method `sam` is. The block ends as the body of
+    /// a `void` method does.
+    ///
+    /// @param sam the single abstract method of the functional interface
+    /// @param body builds the block, given the parameters
+    /// @param <F> the functional interface
+    /// @param <A1> the type of the first parameter
+    /// @param <A2> the type of the second parameter
+    /// @param <A3> the type of the third parameter
+    /// @return the lambda
+    public static <F, A1, A2, A3> Expr<F> lambdaBlock(
+            VoidSam3<F, A1, A2, A3> sam,
+            Function4<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(
+                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = lambdaParameter(sam.param3(), block);
+        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), b -> body.apply(b, p1, p2, p3));
+    }
+
+    /// The parameters and the body of an expression lambda.
+    private record LambdaValue(List<Var<?>> params, Node value) {}
+
+    private static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
+        return new Var<>(type, "lambda parameter", scope);
+    }
+
+    /// Builds an expression lambda in the innermost block being built:
+    /// `body` runs with the lambda's own scope innermost, so a builder of
+    /// the block around it cannot be used inside, and what it gives is
+    /// checked against that scope right here.
+    private static <F> Expr<F> expressionLambda(
+            InterfaceToken<F> type, Invocable sam, Function<? super Block<?, ?>, LambdaValue> body) {
+        Body<Object> scope =
+                Body.lambdaBody(Scopes.innermostBlock(), sam.traits().throwsTypes());
+        LambdaValue made = Scopes.within(scope, () -> body.apply(scope));
+        ScopeCheck.lambdaValue(made.value(), scope);
+        Exceptions.lambdaValue(made.value(), scope);
+        return Expr.of(new Node.Lambda(sam, made.params(), new Node.LambdaBody.Value(scope, made.value())), type);
+    }
+
+    private static <F, R, B extends Block<R, B>> Expr<F> blockLambda(
+            InterfaceToken<F> type,
+            Invocable sam,
+            B block,
+            List<Var<?>> params,
+            Function<? super B, Terminated<R>> body) {
+        Block.build(block, body);
+        return Expr.of(new Node.Lambda(sam, params, new Node.LambdaBody.Block(block)), type);
+    }
+
+    // ------------------------------------------------------------------
     // Assignments
     // ------------------------------------------------------------------
 
@@ -661,15 +1115,38 @@ public final class Expressions {
         return new Node.New(ctor, args);
     }
 
-    /// A branch of [#cond(Expr, Expr, Expr, TypeToken)], cast to the type of
-    /// the conditional where its own type differs.
-    private static Node branch(Expr<?> branch, TypeToken<?> type) {
-        boolean primitive = type instanceof PrimitiveToken<?, ?, ?>;
-        if ((branch.type() instanceof PrimitiveToken<?, ?, ?>) != primitive) {
-            throw new IllegalArgumentException("cond of type " + type + " has a branch of type " + branch.type()
-                    + ": cond does not mix primitive and reference branches, which Java would box, unbox or"
-                    + " promote implicitly (JLS 15.25); box or unbox the branch explicitly");
+    /// The expressions that choose among results and are of an explicit type,
+    /// and what a result of theirs is called.
+    enum Choice {
+        /// [#cond(Expr, Expr, Expr, TypeToken)].
+        COND("cond", "branch", "branches"),
+        /// [#switch_(Expr, EnumToken, TypeToken, Consumer)].
+        SWITCH("switch_", "result", "results");
+
+        private final String form;
+        private final String one;
+        private final String many;
+
+        Choice(String form, String one, String many) {
+            this.form = form;
+            this.one = one;
+            this.many = many;
         }
-        return Tokens.sameType(branch.type(), type) ? branch.node() : new Node.Cast(type, branch.node());
+    }
+
+    /// A result of a `cond` or of a `switch_` of type `type`, cast to it
+    /// where its own type differs.
+    ///
+    /// @param of the expression the result is one of
+    /// @throws IllegalArgumentException if the result is primitive and `type` is not, or the reverse
+    static Node result(Expr<?> result, TypeToken<?> type, Choice of) {
+        boolean primitive = type instanceof PrimitiveToken<?, ?, ?>;
+        if ((result.type() instanceof PrimitiveToken<?, ?, ?>) != primitive) {
+            throw new IllegalArgumentException(of.form + " of type " + type + " has a " + of.one + " of type "
+                    + result.type() + ": " + of.form + " does not mix primitive and reference " + of.many
+                    + ", which Java would box, unbox or promote implicitly (JLS 15.25, 15.28.1); box or unbox the "
+                    + of.one + " explicitly");
+        }
+        return Tokens.sameType(result.type(), type) ? result.node() : new Node.Cast(type, result.node());
     }
 }

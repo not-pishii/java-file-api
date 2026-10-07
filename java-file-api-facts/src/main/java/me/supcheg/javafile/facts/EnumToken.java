@@ -6,8 +6,9 @@ import java.util.List;
 /// declaration order (§3.5).
 ///
 /// A constant is obtained with [#constant(String)], which fails fast for a
-/// name the enum does not declare. Lowering checks a `switch` over the enum
-/// for exhaustiveness against [#constants()].
+/// name the enum does not declare. The typed layer checks a `switch` over
+/// the enum for exhaustiveness against [#constants()], where the `switch`
+/// is built.
 ///
 /// @param <T> the Java type this token stands for
 public final class EnumToken<T> extends ClassTokenData implements ClassToken<T> {
