@@ -10,6 +10,7 @@ import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 
@@ -102,8 +103,12 @@ public final class FactsCodegen {
             }
         }
         for (int n = 0; n <= MAX_ARITY; n++) {
-            files.add(implementation(true, n));
-            files.add(implementation(false, n));
+            for (boolean hasResult : List.of(true, false)) {
+                files.add(implementation(hasResult, n));
+                for (Had had : Had.values()) {
+                    files.add(implemented(had, hasResult, n));
+                }
+            }
         }
         files.add(factories());
         files.add(lookup());
@@ -438,14 +443,16 @@ public final class FactsCodegen {
                 }
             }
             for (int n = 0; n <= MAX_ARITY; n++) {
-                implementationFactory(cb, true, n);
-                implementationFactory(cb, false, n);
+                for (boolean hasResult : List.of(true, false)) {
+                    for (Had had : Had.values()) {
+                        implementationFactory(cb, had, hasResult, n);
+                    }
+                }
             }
         });
     }
 
     private static final ClassDesc IMPLEMENTATION = ClassDesc.of(FACTS, "Implementation");
-    private static final ClassDesc IMPLEMENTED = ClassDesc.of(FACTS, "Implemented");
 
     private static String implementationName(boolean hasResult, int n) {
         return (hasResult ? "Implementation" : "VoidImplementation") + n;
@@ -458,31 +465,68 @@ public final class FactsCodegen {
                 .toList();
     }
 
+    /// How a class has a method of a supertype: the two classes of an implementation family.
+    private enum Had {
+        /// By a method of its own that overrides it: `OverridingN`, which gives the fact of that method.
+        OVERRIDING("Overriding", "ByOverride"),
+        /// By the one it inherits from its superclass: `InheritedN`, which has no method to give.
+        INHERITED("Inherited", "ByInheritance");
+
+        final String family;
+        final ClassDesc how;
+
+        Had(String family, String how) {
+            this.family = family;
+            this.how = ClassDesc.of(FACTS, "Implemented").nested(how);
+        }
+
+        String name(boolean hasResult, int n) {
+            return (hasResult ? "" : "Void") + family + n;
+        }
+    }
+
     /// `ImplementationN<Self, R, A1..AN>` or `VoidImplementationN<Self, A1..AN>`: how a class has a
-    /// method of that result and those parameters, see `Implementation`.
+    /// method of that result and those parameters, see `Implementation` — by overriding it or by
+    /// inheriting it, and nothing else.
     private static JavaFile implementation(boolean hasResult, int n) {
         return JavaFile.class_(ClassDesc.of(FACTS, implementationName(hasResult, n)), cb -> {
             generated(cb);
-            cb.withModifiers(Modifier.FINAL);
+            cb.withModifiers(Modifier.ABSTRACT);
             implementationVars(hasResult, n).forEach(v -> cb.withTypeParam(v));
             cb.withInterface(Types.parameterized(IMPLEMENTATION, var("Self")));
-            cb.withField("how", Types.of(IMPLEMENTED), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
+            cb.withPermits(Stream.of(Had.values())
+                    .map(had -> ClassDesc.of(FACTS, had.name(hasResult, n)))
+                    .toArray(ClassDesc[]::new));
+            packagePrivateConstructor(cb, List.of(), b -> {});
+        });
+    }
+
+    /// `OverridingN` or `InheritedN` of an implementation family. Only the first has the method
+    /// the class declares, as a fact of the class: what its body is defined by.
+    private static JavaFile implemented(Had had, boolean hasResult, int n) {
+        List<String> vars = implementationVars(hasResult, n);
+        return JavaFile.class_(ClassDesc.of(FACTS, had.name(hasResult, n)), cb -> {
+            generated(cb);
+            cb.withModifiers(Modifier.FINAL);
+            vars.forEach(v -> cb.withTypeParam(v));
+            cb.withSuperclass(
+                    (ClassOrInterfaceTypeRef) applied(ClassDesc.of(FACTS, implementationName(hasResult, n)), vars));
+            cb.withField("how", Types.of(had.how), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
             packagePrivateConstructor(
                     cb,
-                    List.of(new Param("how", Types.of(IMPLEMENTED))),
+                    List.of(new Param("how", Types.of(had.how))),
                     b -> b.assign(this_().field("how"), field("how")));
-            override(cb, "how", Types.of(IMPLEMENTED), this_().field("how"));
-            // The method the class declares, as a fact of the class: what its body is defined by.
-            cb.withMethod(
-                    "method",
-                    applied(
-                            ClassDesc.of(FACTS, (hasResult ? "MethodRef" : "VoidMethodRef") + n),
-                            implementationVars(hasResult, n)),
-                    mb -> {
-                        mb.withModifiers(Modifier.PUBLIC);
-                        mb.withBody(b ->
-                                b.return_(staticCall(ClassDesc.of(FACTS, "Invocables"), "own", this_().field("how"))));
-                    });
+            override(cb, "how", Types.of(had.how), this_().field("how"));
+            if (had == Had.OVERRIDING) {
+                cb.withMethod(
+                        "method",
+                        applied(ClassDesc.of(FACTS, (hasResult ? "MethodRef" : "VoidMethodRef") + n), vars),
+                        mb -> {
+                            mb.withModifiers(Modifier.PUBLIC);
+                            mb.withBody(b -> b.return_(
+                                    staticCall(ClassDesc.of(FACTS, "Invocables"), "own", this_().field("how"))));
+                        });
+            }
             override(
                     cb,
                     "toString",
@@ -491,8 +535,8 @@ public final class FactsCodegen {
         });
     }
 
-    private static void implementationFactory(ClassBuilder cb, boolean hasResult, int n) {
-        String name = implementationName(hasResult, n);
+    private static void implementationFactory(ClassBuilder cb, Had had, boolean hasResult, int n) {
+        String name = had.name(hasResult, n);
         List<String> vars = implementationVars(hasResult, n);
         cb.withMethod(
                 Character.toLowerCase(name.charAt(0)) + name.substring(1),
@@ -500,7 +544,7 @@ public final class FactsCodegen {
                 mb -> {
                     mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC);
                     vars.forEach(v -> mb.withTypeParam(v));
-                    mb.withParam("how", Types.of(IMPLEMENTED));
+                    mb.withParam("how", Types.of(had.how));
                     mb.withBody(b -> b.return_(instantiate(ClassDesc.of(FACTS, name), vars, List.of(field("how")))));
                 });
     }

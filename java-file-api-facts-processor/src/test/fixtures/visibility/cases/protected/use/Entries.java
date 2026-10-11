@@ -28,7 +28,7 @@ public final class Entries {
         MethodRef1<ProtAbs, String, String> hook =
                 UnsafeFacts.method(ProtAbs_.TOKEN, "hook", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
         Implementation1<String, String, String> how =
-                UnsafeFacts.implementation1(new Implemented.ByOverride(hook, own));
+                UnsafeFacts.overriding1(new Implemented.ByOverride(hook, own));
 
         Complete<String, ProtAbs> complete =
                 ProtAbs_.extend(String_.TOKEN).hook_String(how);
@@ -42,7 +42,7 @@ public final class Entries {
         MethodRef1<ProtAbs, String, String> other =
                 UnsafeFacts.method(ProtAbs_.TOKEN, "other", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
         Implementation1<String, String, String> ofAnother =
-                UnsafeFacts.implementation1(new Implemented.ByInheritance(other));
+                UnsafeFacts.inherited1(new Implemented.ByInheritance(other));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> ProtAbs_.extend(String_.TOKEN).hook_String(ofAnother))

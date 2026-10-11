@@ -10,6 +10,10 @@ package me.supcheg.javafile.facts;
 /// and of its result or a subtype (JLS 8.4.5). One implementation may answer
 /// the steps of several supertypes that have the method.
 ///
+/// Each family is two classes and no more: `OverridingN`, of a method the
+/// class declares, which gives the fact of that method; and `InheritedN`,
+/// of a method the class has from its superclass, which has none to give.
+///
 /// An implementation is made by the declaration of the class in the typed
 /// layer, and by no generator: the families are all there are, their
 /// constructors are not public, and the factories are those of [UnsafeFacts].

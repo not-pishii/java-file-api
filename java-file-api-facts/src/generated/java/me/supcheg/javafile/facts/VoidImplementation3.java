@@ -3,24 +3,7 @@ package me.supcheg.javafile.facts;
 import javax.annotation.processing.Generated;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
-public final class VoidImplementation3<Self, A1, A2, A3> implements Implementation<Self> {
-    private final Implemented how;
-
-    VoidImplementation3(Implemented how) {
-        this.how = how;
-    }
-
-    @Override
-    public Implemented how() {
-        return this.how;
-    }
-
-    public VoidMethodRef3<Self, A1, A2, A3> method() {
-        return Invocables.own(this.how);
-    }
-
-    @Override
-    public String toString() {
-        return Invocables.describe(this.how);
+public abstract sealed class VoidImplementation3<Self, A1, A2, A3> implements Implementation<Self> permits VoidOverriding3, VoidInherited3 {
+    VoidImplementation3() {
     }
 }

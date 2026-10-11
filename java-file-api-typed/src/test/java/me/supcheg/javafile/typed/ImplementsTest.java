@@ -375,7 +375,7 @@ class ImplementsTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(Runnable_.implement(h.self())
-                                            .run(UnsafeFacts.voidImplementation0(
+                                            .run(UnsafeFacts.voidInherited0(
                                                     new Implemented.ByInheritance(Runnable_.run))));
                         }
                     }))

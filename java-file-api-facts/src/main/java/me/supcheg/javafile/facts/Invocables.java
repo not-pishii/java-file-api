@@ -66,19 +66,12 @@ final class Invocables {
         return "super " + describe(constructor).substring("new ".length());
     }
 
-    /// The method a class declares to have a method of a supertype, as the fact its
-    /// `ImplementationN` types it by: of the class, with the result and the parameters of the
+    /// The method a class declares to override a method of a supertype, as the fact its
+    /// `OverridingN` types it by: of the class, with the result and the parameters of the
     /// implementation.
-    ///
-    /// @throws IllegalStateException if the class inherits the method and declares none
     @SuppressWarnings("unchecked")
-    static <F extends Invocable> F own(Implemented how) {
-        return switch (how) {
-            case Implemented.ByOverride(Invocable _, Invocable own) -> (F) own;
-            case Implemented.ByInheritance(Invocable inherited) ->
-                throw new IllegalStateException("the class inherits " + inherited
-                        + " and declares no method of its own for it: there is none to define or to call");
-        };
+    static <F extends Invocable> F own(Implemented.ByOverride how) {
+        return (F) how.own();
     }
 
     /// How a class has a method, as an `ImplementationN` tells it.
