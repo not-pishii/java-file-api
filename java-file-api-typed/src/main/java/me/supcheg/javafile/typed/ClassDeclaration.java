@@ -50,8 +50,7 @@ final class ClassDeclaration<Self> {
     ClassDeclaration(TargetClasspath target, ClassDesc desc) {
         this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.self = UnsafeFacts.finalClassToken(
-                new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), this::methodTable);
+        this.self = UnsafeFacts.declaredClassToken(new ClassTypeRef(desc), this::superclasses, this::methodTable);
     }
 
     TargetClasspath target() {
@@ -64,6 +63,17 @@ final class ClassDeclaration<Self> {
 
     FinalClassToken<Self> self() {
         return self;
+    }
+
+    /// The superclass chain of the class, as its token tells it: known once the header names the
+    /// superclass.
+    private List<ClassDesc> superclasses() {
+        return switch (phase) {
+            case Phase.Named<Self> _ ->
+                throw new IllegalStateException("the superclass of " + described + " is known only once its"
+                        + " header names it: say extendsObject() or extends_(proof) first");
+            case Phase.Heading<Self> _, Phase.Members<Self> _ -> List.of(ConstantDescs.CD_Object);
+        };
     }
 
     private MethodTable methodTable() {

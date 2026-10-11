@@ -303,6 +303,23 @@ public final class UnsafeFacts extends InvocableFactories {
         return new FinalClassToken<>(shape, typeRef, shape.boundErasures());
     }
 
+    /// Vouches that a final class exists whose superclass and methods are
+    /// known only later: the class being declared by a typed declaration
+    /// that names its superclass in its header (§6.5). `superclasses` is asked
+    /// whenever the chain is, and `methods` until it answers once; either may
+    /// throw while it has no answer yet.
+    ///
+    /// @param type the class
+    /// @param superclasses supplies the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param methods supplies the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    public static <T> FinalClassToken<T> declaredClassToken(
+            ClassTypeRef type, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTable> methods) {
+        TypeShape<DeclaredKind.FinalClass> shape = TypeShape.declared(type.desc(), superclasses, methods);
+        return new FinalClassToken<>(shape, type, shape.boundErasures());
+    }
+
     /// Vouches that a class that is neither abstract nor final exists.
     ///
     /// @param typeRef the class type, plain or parameterized
@@ -626,6 +643,19 @@ public final class UnsafeFacts extends InvocableFactories {
     ///                                  type of `owner`
     public static <O, F extends MemberFact> Protected<O, F> protected_(ExtendableClassToken<O> owner, F fact) {
         return new Protected<>(owner, fact);
+    }
+
+    /// Takes the fact of a `protected` member out for the declaration of a
+    /// subclass of its owner: the typed layer calls this where the builder of
+    /// the members of a class that extends `O`, or a subclass of `O`, is asked
+    /// for the fact, and checks every use of it against the place it stands
+    /// in (JLS 6.6.2). Nothing else has a reason to.
+    ///
+    /// @param held the fact, held back
+    /// @param <F> the fact
+    /// @return the fact
+    public static <F extends MemberFact> F open(Protected<?, F> held) {
+        return held.fact();
     }
 
     /// Vouches for a reader of the target classpath (§5): what `reader`

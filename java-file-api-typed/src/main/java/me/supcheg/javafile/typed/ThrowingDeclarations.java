@@ -14,17 +14,18 @@ import java.util.List;
 /// member are given to one `throwing`.
 ///
 /// @param <Self> the brand of the class being declared
-public final class ThrowingDeclarations<Self> extends Declarations<Self> {
-    private final TypedClassBuilder<Self> builder;
+public final class ThrowingDeclarations<Self> extends Declarations<Self>
+        implements ObjectConstructors<Self>, OverridingDeclarations<Self, Object> {
+    private final MemberBuilder<Self> builder;
     private final List<ClassToken<? extends Throwable>> thrown;
 
-    ThrowingDeclarations(TypedClassBuilder<Self> builder, List<ClassToken<? extends Throwable>> thrown) {
+    ThrowingDeclarations(MemberBuilder<Self> builder, List<ClassToken<? extends Throwable>> thrown) {
         this.builder = builder;
         this.thrown = List.copyOf(thrown);
     }
 
     @Override
-    TypedClassBuilder<Self> builder() {
+    MemberBuilder<Self> builder() {
         return builder;
     }
 
