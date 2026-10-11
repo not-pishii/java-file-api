@@ -9,6 +9,10 @@ public interface Origin {
         return new Object[] {"origin"};
     }
 
+    default Iterable<Object> each() {
+        return java.util.List.of("origin");
+    }
+
     default Exception failure() {
         return new Exception("origin");
     }

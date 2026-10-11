@@ -104,7 +104,10 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// var get = h.overriding(Source_.get, String_.TOKEN);   // Overriding0<Self, String>
     /// ```
     ///
-    /// A primitive and a `void` result have no narrower one, and no token to say it by.
+    /// A primitive and a `void` result have no narrower one, and no token to say it by. The
+    /// class itself is the result of a method whose result is `Object` alone — `clone` —: the
+    /// brand `Self` is a subtype of nothing else to the compiler of the generator, which holds
+    /// both the token and the step of a proof (`? extends R`) to the result of the method.
     ///
     /// @param method the fact of the overridden method
     /// @param result the result type of the method of the class

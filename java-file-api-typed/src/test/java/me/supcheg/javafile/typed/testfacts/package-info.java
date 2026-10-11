@@ -73,7 +73,10 @@
     Maker.class,
     Resetting.class,
     BaseTwin.class,
-    SubTwin.class
+    SubTwin.class,
+    Picked.class,
+    Linked.class,
+    Chained.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -116,6 +119,9 @@ import me.supcheg.javafile.typed.fixtures.Maker;
 import me.supcheg.javafile.typed.fixtures.Resetting;
 import me.supcheg.javafile.typed.fixtures.BaseTwin;
 import me.supcheg.javafile.typed.fixtures.SubTwin;
+import me.supcheg.javafile.typed.fixtures.Picked;
+import me.supcheg.javafile.typed.fixtures.Linked;
+import me.supcheg.javafile.typed.fixtures.Chained;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
