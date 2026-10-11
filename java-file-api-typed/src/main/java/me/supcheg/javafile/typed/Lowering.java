@@ -32,6 +32,8 @@ import me.supcheg.javafile.code.StatementExpr;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
+import me.supcheg.javafile.code.SuperConstructorCallStmt;
+import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.ThisExpr;
@@ -40,7 +42,9 @@ import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
+import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
@@ -198,6 +202,7 @@ import java.util.stream.Stream;
 final class Lowering {
 
     private final TargetClasspath target;
+    private final Place place;
     private final NameEnv names = new NameEnv();
     private Deque<LoopCtl> loopStack = new ArrayDeque<>();
     private final Map<LoopCtl, String> loopLabelNames = new HashMap<>();
@@ -212,16 +217,18 @@ final class Lowering {
     ///
     /// @param target the classpath the lowered code is compiled against
     Lowering(TargetClasspath target) {
-        this(target, null);
+        this(target, new Place.Standalone(), null);
     }
 
     /// A lowering of a body whose `return` statements return `result`.
     ///
     /// @param target the classpath the lowered code is compiled against
+    /// @param place the class whose body the code is in, or that it is in none
     /// @param result the result type, or `null` for a `void` body
     /// @throws TargetClasspathMismatchException if a metamodel of `result` does not hold on `target`
-    Lowering(TargetClasspath target, @Nullable TypeToken<?> result) {
+    Lowering(TargetClasspath target, Place place, @Nullable TypeToken<?> result) {
         this.target = target;
+        this.place = place;
         this.result = result;
         if (result != null) {
             target.verify(result);
@@ -292,6 +299,8 @@ final class Lowering {
                 yield new LocalVarDeclStmt.Typed(v.type().typeRef(), name, Optional.of(initExpr));
             }
             case Instr.Exec(var effect) -> effectStmt(effect);
+            // Every argument is of exactly its parameter's type, as those of `new` are.
+            case Instr.SuperInit(var ctor, var args) -> new SuperConstructorCallStmt(arguments(ctor, null, args));
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
@@ -340,7 +349,9 @@ final class Lowering {
                                 Optional.of(initStmt), Optional.of(conditionExpr), Optional.of(updateStmt), bodyCode));
             }
             case Instr.ForEach(var ctl, var var_, var iterable, var body) -> {
-                Expr iterableExpr = expr(iterable);
+                // javac takes the type of the iterated expression itself (JLS 14.14.2): one seen
+                // through a witness is of the supertype the witness names.
+                Expr iterableExpr = expr(iterable, iterable instanceof Node.Upcast);
                 names.push();
                 String name;
                 CodeBody bodyCode;
@@ -476,10 +487,20 @@ final class Lowering {
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());
             case Node.Call(var receiver, var method, var args) -> call(receiver, method, args, pin);
-            case Node.StaticCall(var method, var args) ->
-                new StaticMethodCallExpr(
+            case Node.SuperCall(var _, var superclass, var method, var args) -> superCall(superclass, method, args);
+            case Node.StaticCall(var method, var args) -> {
+                subclassReaching(method.access(), method.owner(), method);
+                yield new StaticMethodCallExpr(
                         raw(method.owner()), method.name(), arguments(method, null, args), typeArgs(method));
-            case Node.New(var ctor, var args) -> Exprs.new_(ctor.owner().typeRef(), arguments(ctor, null, args));
+            }
+            case Node.New(var ctor, var args) -> {
+                subclassReaching(ctor.access(), ctor.owner(), ctor).ifPresent(subclass -> {
+                    throw new IllegalStateException(ctor + " is protected: " + subclass + " calls it by the"
+                            + " super(...) of its constructor alone, a class instance creation is no access a"
+                            + " subclass has (JLS 6.6.2.2)");
+                });
+                yield Exprs.new_(ctor.owner().typeRef(), arguments(ctor, null, args));
+            }
             case Node.FieldGet(var receiver, var field) ->
                 fieldReceiver(receiver, field).field(field.name());
             case Node.StaticFieldGet(var field) -> Exprs.staticField(staticOwner(field), field.name());
@@ -561,7 +582,7 @@ final class Lowering {
     /// javac searches for `this.m(x)` are those of the class, whatever supertype the token names: the
     /// receiver of a call or a field and the selector of a `switch` are judged by the type before
     /// the witness, as any receiver of a subtype of the owner is.
-    private static Node.Operand seen(Node.Operand operand) {
+    static Node.Operand seen(Node.Operand operand) {
         return operand.node() instanceof Node.Upcast(var inner, var innerType, var _)
                 ? seen(new Node.Operand(inner, innerType))
                 : operand;
@@ -585,6 +606,10 @@ final class Lowering {
         Node.Operand receiving = seen(witnessed);
         DeclaredToken<?> owner = method.owner();
         target.verify(receiving.type());
+        Optional<ClassToken<?>> subclass = subclassReaching(method.access(), owner, method);
+        if (subclass.isPresent()) {
+            return protectedCall(subclass.get(), receiving, method, args, pin);
+        }
         Expr receiver;
         TypeToken<?> searched;
         if (!Tokens.sameType(receiving.type(), owner)
@@ -599,6 +624,81 @@ final class Lowering {
         }
         return new MethodCallExpr(
                 Optional.of(receiver), method.name(), arguments(method, searched, args), typeArgs(method));
+    }
+
+    /// `receiver.method(args)` of a `protected` method, in the body of `subclass`: the receiver is
+    /// of the class itself (JLS 6.6.2.1) and stays so — cast to the owner of the method it would
+    /// be an expression the class has no access to the member through. So where [#call] would
+    /// cast the receiver, the call is rejected.
+    private Expr protectedCall(
+            ClassToken<?> subclass, Node.Operand receiving, Invocable method, List<Node.Operand> args, boolean pin) {
+        if (!Tokens.sameType(receiving.type(), subclass)) {
+            throw new IllegalStateException(method + " is protected, and is called on an expression of "
+                    + receiving.type() + ": in the body of " + subclass + " a protected method of a superclass is"
+                    + " called on this or on another value of the class itself (JLS 6.6.2.1)");
+        }
+        String why = pin
+                ? "its result has to be of exactly its type where it stands, which only a receiver of the"
+                        + " type of its owner makes it — bind the result to a variable with let first"
+                : declaresCheckedException(method)
+                        ? "it declares a checked exception, of which the method the class has under its"
+                                + " signature may declare fewer (JLS 8.4.8.3) — call it as super." + method.name()
+                                + "(...) by superCall, or override it and call the override by its own fact"
+                        : hasTwin(subclass, method)
+                                ? "the class has another method that erases as it does, which javac would"
+                                        + " take for it — call it as super." + method.name() + "(...) by superCall"
+                                : "";
+        if (!why.isEmpty()) {
+            throw new IllegalStateException(method + " is protected, and cannot be called on a value of " + subclass
+                    + " here: " + why + ". The receiver cannot be cast to " + method.owner()
+                    + ", through which the class has no access to the member (JLS 6.6.2.1)");
+        }
+        return new MethodCallExpr(
+                Optional.of(expr(receiving.node(), true)),
+                method.name(),
+                arguments(method, subclass, args),
+                typeArgs(method));
+    }
+
+    /// `super.method(args)`: javac searches the methods of the superclass, and no cast of the
+    /// receiver is there to tell an overload of it that erases as the method does.
+    private Expr superCall(DeclaredToken<?> superclass, Invocable method, List<Node.Operand> args) {
+        target.verify(superclass);
+        subclassReaching(method.access(), method.owner(), method);
+        if (hasTwin(superclass, method)) {
+            throw new IllegalStateException("super." + method.name() + "(...) cannot name " + method + ": "
+                    + superclass + " has another method that erases as it does, which javac would take for it,"
+                    + " and super cannot be cast to " + method.owner());
+        }
+        return new MethodCallExpr(
+                Optional.of(new SuperExpr()), method.name(), arguments(method, superclass, args), typeArgs(method));
+    }
+
+    /// The class in whose body a member of `access` of `owner` is reached, if the member is
+    /// `protected`: a subclass of the owner, and nothing else reaches it (JLS 6.6.2).
+    ///
+    /// @return the class being declared, for a `protected` member; empty for a `public` one
+    /// @throws IllegalStateException if a `protected` member is reached outside the body of a subclass of
+    ///     its owner
+    private Optional<ClassToken<?>> subclassReaching(Access access, DeclaredToken<?> owner, Object member) {
+        return switch (access) {
+            case PUBLIC -> Optional.empty();
+            case PROTECTED ->
+                switch (place) {
+                    case Place.Standalone _ ->
+                        throw new IllegalStateException(member + " is protected: it is reached in the body of a"
+                                + " subclass of " + owner + " alone (JLS 6.6.2), and this code is in the body of"
+                                + " no class");
+                    case Place.InClass(var self) -> {
+                        if (!self.isSubclassOf(owner.erasure())) {
+                            throw new IllegalStateException(member + " is protected: it is reached in the body"
+                                    + " of a subclass of " + owner + " alone (JLS 6.6.2), and " + self
+                                    + " is none — the fact was taken out for another class");
+                        }
+                        yield Optional.of(self);
+                    }
+                };
+        };
     }
 
     /// Whether the `throws` clause of `method` has a checked exception. A
@@ -757,16 +857,39 @@ final class Lowering {
         uses(field);
         target.verify(receiving.type());
         DeclaredToken<?> owner = field.owner();
+        Optional<ClassToken<?>> subclass = subclassReaching(field.access(), owner, field);
+        if (subclass.isPresent()) {
+            return protectedFieldReceiver(subclass.get(), receiving, field);
+        }
         if (!Tokens.sameType(receiving.type(), owner)) {
             return Exprs.cast(owner.typeRef(), expr(receiving.node()));
         }
         return expr(receiving.node(), true);
     }
 
+    /// The receiver of a `protected` instance field, in the body of `subclass`: `super`. The
+    /// field is that of the direct superclass and is read on `this`, so `super.f` is the field —
+    /// whatever field the class declares by that name and whatever constant an interface of it
+    /// has (JLS 15.11.2), and with no cast to a type the class has no access to the member through.
+    private Expr protectedFieldReceiver(ClassToken<?> subclass, Node.Operand receiving, FieldRef<?, ?> field) {
+        if (!(receiving.node() instanceof Node.This)) {
+            throw new IllegalStateException(field + " is protected, and is reached on an expression that is not"
+                    + " this: the typed layer reads and assigns a protected field of the superclass as super."
+                    + field.name() + ", on this alone");
+        }
+        if (!subclass.superclasses().getFirst().equals(field.owner().erasure())) {
+            throw new IllegalStateException(field + " is protected, and is a field of a class above the superclass"
+                    + " of " + subclass + ": the typed layer cannot tell whether a class between hides it, and"
+                    + " reaches the protected fields of the direct superclass alone");
+        }
+        return new SuperExpr();
+    }
+
     /// The raw type qualifying a static field: its owner, whatever type the
     /// generator reached the fact through, so no field of a subtype hides
     /// it and no other supertype of one makes the name ambiguous.
     private ClassTypeRef staticOwner(StaticFieldRef<?> field) {
+        subclassReaching(field.access(), field.owner(), field);
         target.verify(field.owner());
         target.verify(field.type());
         return raw(field.owner());
@@ -800,6 +923,17 @@ final class Lowering {
     /// The explicit type arguments of a generic method's fact.
     private static List<TypeRef> typeArgs(Invocable method) {
         return method.traits().typeArgs().stream().map(TypeToken::typeRef).toList();
+    }
+
+    /// Where the lowered code stands: what decides whether it reaches a `protected` member.
+    sealed interface Place {
+        /// In the body of no class: a standalone expression.
+        record Standalone() implements Place {}
+
+        /// In the body of the class being declared: a member, or the initializer of a field.
+        ///
+        /// @param self the class
+        record InClass(ClassToken<?> self) implements Place {}
     }
 
     // ------------------------------------------------------------------

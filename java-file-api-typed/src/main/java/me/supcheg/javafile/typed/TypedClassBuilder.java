@@ -86,10 +86,10 @@ import java.util.List;
 /// @param <Self> the brand of the class being declared, unique to one
 ///     [TypedJavaFile#class_(TargetClasspath, java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call
 public final class TypedClassBuilder<Self> extends MemberBuilder<Self>
-        implements ObjectConstructors<Self>, OverridingDeclarations<Self, Object> {
+        implements ObjectConstructors<Self>, OverridingDeclarations<Self, Object>, SuperAccess<Self, Object> {
 
-    TypedClassBuilder(ClassDeclaration<Self> declared, Inheritance inherited) {
-        super(declared, inherited);
+    TypedClassBuilder(ClassDeclaration<Self> declared, Inheritance inherited, Superclass superclass) {
+        super(declared, inherited, superclass);
     }
 
     // ------------------------------------------------------------------

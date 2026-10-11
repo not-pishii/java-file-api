@@ -9,11 +9,13 @@ import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MutableFieldRef;
+import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TargetClasspath;
@@ -58,18 +60,21 @@ import java.util.function.Supplier;
 /// See [TypedClassBuilder] for how members are declared and defined.
 ///
 /// @param <Self> the brand of the class being declared
-public abstract sealed class MemberBuilder<Self> extends Declarations<Self> permits TypedClassBuilder {
+public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
+        permits TypedClassBuilder, TypedSubclassBuilder {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
 
     private final TargetClasspath target;
     private final String described;
     private final FinalClassToken<Self> self;
+    private final Superclass superclass;
     private final SignatureRegistry registry;
     private final List<Slot> slots = new ArrayList<>();
     private final Map<Object, Slot> slotsByFact = new IdentityHashMap<>();
     private Declaration declaration = new Declaration.Open();
 
-    MemberBuilder(ClassDeclaration<Self> declared, Inheritance inherited) {
+    MemberBuilder(ClassDeclaration<Self> declared, Inheritance inherited, Superclass superclass) {
+        this.superclass = superclass;
         this.target = declared.target();
         this.described = declared.described();
         this.self = declared.self();
@@ -152,7 +157,8 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self> perm
                 type.typeRef(),
                 List.of(),
                 modifiers,
-                Optional.of(new Lowering(target).lowerInitializer(initializer.node(), type)),
+                Optional.of(new Lowering(target, new Lowering.Place.InClass(self), null)
+                        .lowerInitializer(initializer.node(), type)),
                 Optional.empty()));
     }
 
@@ -331,6 +337,86 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self> perm
     }
 
     // ------------------------------------------------------------------
+    // What a class has of its superclass
+    // ------------------------------------------------------------------
+
+    /// Defines a declared constructor that begins with `super(...)`.
+    final <S> void defineWithSuper(CtorRef0<Self> ctor, TypedSubclassBuilder.CtorBody0<Self, S> body) {
+        Slot slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
+        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
+        slot.define(member(slot, root, List.of(), b -> body.build(site)));
+        requireCalled(site, ctor);
+    }
+
+    /// Defines a declared constructor with a parameter that begins with `super(...)`.
+    final <S, A1> void defineWithSuper(CtorRef1<Self, A1> ctor, TypedSubclassBuilder.CtorBody1<Self, S, A1> body) {
+        Slot slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
+        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        slot.define(member(slot, root, List.of(p1), b -> body.build(site, p1)));
+        requireCalled(site, ctor);
+    }
+
+    /// Defines a declared constructor with two parameters that begins with `super(...)`.
+    final <S, A1, A2> void defineWithSuper(
+            CtorRef2<Self, A1, A2> ctor, TypedSubclassBuilder.CtorBody2<Self, S, A1, A2> body) {
+        Slot slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
+        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        slot.define(member(slot, root, List.of(p1, p2), b -> body.build(site, p1, p2)));
+        requireCalled(site, ctor);
+    }
+
+    private void requireCalled(SuperSite<Self, ?> site, Invocable ctor) {
+        if (!site.called()) {
+            throw new IllegalStateException("the body of " + ctor + " of " + described + " does not begin with"
+                    + " super(...): end it by ctor.super_(constructor, arguments, rest)");
+        }
+    }
+
+    /// The fact of a `protected` member of a class this one is a subclass of.
+    final <F extends MemberFact> F opened(Protected<?, F> held) {
+        if (!self.isSubclassOf(held.owner().erasure())) {
+            throw new IllegalArgumentException(described + " cannot reach " + held + ": it is no subclass of "
+                    + held.owner() + ", and a protected member is reached by a subclass alone (JLS 6.6.2)");
+        }
+        return UnsafeFacts.open(held);
+    }
+
+    /// `super.method(args)`, on `this` of this class.
+    final Node superCall(This<Self> receiver, Invocable method, List<Node.Operand> args) {
+        if (receiver.type() != self || !(receiver.node() instanceof Node.This(var owner))) {
+            throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
+                    + ", got this of " + receiver.type());
+        }
+        superclass.member(described, method).forEach(member -> {
+            switch (member.method().dispatch()) {
+                case DEFAULT, CONCRETE, FINAL -> {}
+                case ABSTRACT ->
+                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                            + " calls no body: " + member + " is abstract in " + superclass.token()
+                            + " (JLS 15.12.3)");
+                case STATIC ->
+                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                            + " calls an instance method, and " + member + " is static in "
+                            + superclass.token());
+            }
+            switch (member.method().visibility()) {
+                case PUBLIC, PROTECTED -> {}
+                case PACKAGE ->
+                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                            + " cannot call " + member + ": the method has package access, and the typed layer"
+                            + " does not tell whether the class is in its package");
+            }
+        });
+        return new Node.SuperCall(owner, superclass.token(), method, args);
+    }
+
+    // ------------------------------------------------------------------
     // Escape hatch
     // ------------------------------------------------------------------
 
@@ -455,7 +541,8 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self> perm
 
     private ClassMember lower(Slot slot, Block<?, ?> root, List<Var<?>> params) {
         Invocable fact = slot.fact();
-        Lowering lowering = new Lowering(target, fact.resultType().orElse(null));
+        Lowering lowering = new Lowering(
+                target, new Lowering.Place.InClass(self), fact.resultType().orElse(null));
         List<Param> coreParams = new ArrayList<>(params.size());
         for (Var<?> param : params) {
             coreParams.add(

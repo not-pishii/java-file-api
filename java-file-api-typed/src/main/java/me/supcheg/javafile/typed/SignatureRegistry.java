@@ -171,6 +171,29 @@ final class SignatureRegistry {
                 }));
     }
 
+    /// Rejects `inherited`, a method the class has from its superclass with its body, as the
+    /// implementation of the methods of `group` the class has through `through`: what a method of
+    /// the class would have to observe to override them, the method of the superclass has to
+    /// (JLS 8.4.8.4).
+    ///
+    /// @param owner the class being declared, for messages
+    /// @param inherited the fact of the method of the superclass
+    /// @param through the interface whose methods it stands for
+    /// @param group the methods of its signature the class inherits
+    /// @throws IllegalArgumentException if it cannot stand for one of them
+    static void requireInherited(
+            String owner,
+            Invocable inherited,
+            me.supcheg.javafile.facts.DeclaredToken<?> through,
+            Inheritance.Group group) {
+        group.entries().stream()
+                .filter(entry -> entry.through() == through)
+                .forEach(entry -> overrideRefusal(inherited, entry).ifPresent(reason -> {
+                    throw new IllegalArgumentException(owner + " cannot have " + entry + " by inheriting " + inherited
+                            + " from its superclass: " + reason);
+                }));
+    }
+
     private static Optional<String> overrideRefusal(Invocable own, Inheritance.Entry entry) {
         Heritage.Method method = entry.method();
         return Stream.<java.util.function.Supplier<Optional<String>>>of(

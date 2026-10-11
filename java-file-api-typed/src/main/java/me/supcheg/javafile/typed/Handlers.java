@@ -36,6 +36,25 @@ public final class Handlers<B extends Block<?, B>> {
         return this;
     }
 
+    /// Adds a `catch` clause of a class that is an exception by a witness alone: the class being
+    /// declared, `catch_(cb.asSuper(), cb.self(), (c, e) -> ...)`.
+    ///
+    /// @param witness the witness that `type` is a `Throwable`
+    /// @param type the caught exception type
+    /// @param body builds the block of the clause, given the block and the caught exception
+    /// @param <E> the caught exception type
+    /// @return these handlers
+    /// @throws IllegalArgumentException if the witness is of another class than `type`
+    /// @throws IllegalStateException as [#catch_(ClassToken, BiConsumer)]
+    public <E> Handlers<B> catch_(
+            Upcast<E, ? extends Throwable> witness, ClassToken<E> type, BiConsumer<? super B, ? super Var<E>> body) {
+        clauses.catch_(
+                type,
+                Upcast.throwable(witness, type),
+                (block, binding) -> enclosing.fill(block, b -> body.accept(b, binding)));
+        return this;
+    }
+
     /// Adds `finally { body }`. The block completes normally: it has no
     /// statement that ends it ([FinallyBody]).
     ///

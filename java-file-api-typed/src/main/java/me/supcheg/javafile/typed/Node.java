@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.UnaryOp;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FieldRef;
@@ -41,6 +42,8 @@ sealed interface Node {
             case Lambda _ -> true;
             // javac types the expression by what it is of, not by the supertype its token tells.
             case Upcast _ -> false;
+            // The method is the one the superclass has, with the result of the fact (SuperAccess).
+            case SuperCall _ -> true;
             // Every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
             case Switch _ -> true;
             case Lit _,
@@ -91,6 +94,16 @@ sealed interface Node {
     /// the arguments keep their static types: lowering pins the member the
     /// fact names from them (§6.1).
     record Call(Operand target, Invocable method, List<Operand> args) implements Node {}
+
+    /// `super.method(args)`, in a body where `this` is that of `owner`: the method `superclass` —
+    /// the superclass of the class being declared — has as a member.
+    ///
+    /// @param owner the root block of the body whose `this` it is called on
+    /// @param superclass the superclass, whose methods javac searches
+    /// @param method the fact of the method
+    /// @param args the arguments, with their static types
+    record SuperCall(Block<?, ?> owner, DeclaredToken<?> superclass, Invocable method, List<Operand> args)
+            implements Node {}
 
     /// A static method call.
     record StaticCall(Invocable method, List<Operand> args) implements Node {}

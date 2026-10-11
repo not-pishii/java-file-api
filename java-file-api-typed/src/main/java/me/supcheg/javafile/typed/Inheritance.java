@@ -3,11 +3,13 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeShape;
+import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ExtendsTypeArg;
@@ -307,7 +309,16 @@ final class Inheritance {
     ///
     /// @param token the supertype
     /// @param told its heritage, in terms of the type arguments of `token`
-    record Supertype(DeclaredToken<?> token, Heritage.Told told) {}
+    record Supertype(DeclaredToken<?> token, Heritage.Told told) {
+
+        /// The methods the type has, as a member of its own, under a signature.
+        ///
+        /// @param signature the erased signature, in the type as `token` names it
+        /// @return the methods of that signature
+        Stream<Entry> members(MethodSignature signature) {
+            return entries(this).filter(entry -> entry.signature().equals(signature));
+        }
+    }
 
     /// A method a supertype has, as a member the class inherits.
     ///
@@ -322,6 +333,31 @@ final class Inheritance {
 
         boolean isAbstract() {
             return method.dispatch() == Heritage.Dispatch.ABSTRACT;
+        }
+
+        /// How the method differs from what `fact` tells of a method of this signature: its
+        /// parameters, its result or its `throws` clause. A fact of a class above the one that has
+        /// the method tells the method as that class has it, which a class between may have
+        /// overridden with a narrower result or clause.
+        ///
+        /// @param fact the fact of a method of the erased signature of this one
+        /// @return the difference, or empty if the method is as the fact tells it
+        Optional<String> differsFrom(Invocable fact) {
+            List<TypeRef> params =
+                    fact.params().stream().<TypeRef>map(TypeToken::typeRef).toList();
+            Heritage.Result result = fact.resultType()
+                    .<Heritage.Result>map(type -> new Heritage.Result.Of(type.typeRef()))
+                    .orElseGet(Heritage.Result.Nothing::new);
+            Set<TypeRef> thrown = fact.traits().throwsTypes().stream()
+                    .<TypeRef>map(TypeToken::typeRef)
+                    .collect(Collectors.toSet());
+            return !params.equals(method.params())
+                    ? Optional.of("its parameters are not those of the fact")
+                    : !result.equals(method.result())
+                            ? Optional.of("its result is not that of the fact")
+                            : !thrown.equals(Set.<TypeRef>copyOf(method.throwsTypes()))
+                                    ? Optional.of("its throws clause is not that of the fact")
+                                    : Optional.empty();
         }
 
         /// Whether the method comes with a body the class would inherit.

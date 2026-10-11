@@ -26,6 +26,7 @@ final class Reachability {
         return switch (instr) {
             case Instr.Let ignored -> true;
             case Instr.Exec ignored -> true;
+            case Instr.SuperInit ignored -> true;
             case Instr.Raw ignored -> true;
             case Instr.ForEach ignored -> true;
             case Instr.If(var ignored, var then, var otherwise) -> ifCompletes(then, otherwise);
@@ -102,6 +103,7 @@ final class Reachability {
                         || catches.stream().anyMatch(c -> exits(ctl, c.body(), isBreak));
             case Instr.Let ignored -> false;
             case Instr.Exec ignored -> false;
+            case Instr.SuperInit ignored -> false;
             case Instr.Raw ignored -> false;
             case Instr.Return ignored -> false;
             case Instr.Yield ignored -> false;

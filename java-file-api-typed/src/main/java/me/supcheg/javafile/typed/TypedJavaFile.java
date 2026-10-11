@@ -89,6 +89,10 @@ public final class TypedJavaFile {
         ClassDeclaration.Declared declared = declare(target, desc, spec);
         return JavaFile.class_(desc, cb -> {
             cb.withModifiers(Modifier.FINAL);
+            switch (declared.superclass()) {
+                case Superclass.OfObject _ -> {}
+                case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
+            }
             declared.interfaces().forEach(cb::withInterface);
             declared.members().forEach(cb);
         });

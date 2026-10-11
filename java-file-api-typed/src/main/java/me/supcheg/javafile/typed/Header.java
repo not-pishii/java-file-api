@@ -14,6 +14,9 @@ import java.util.List;
 /// ```
 /// ClassHeader<Self>  --extendsObject()-->  ObjectHeader<Self>  --body()-->  TypedClassBuilder<Self>
 ///                                            implements_(proof)
+///                    --extends_(proof)-->  SubclassHeader<Self, S>  --body(ctor -> ...)-->  TypedSubclassBuilder<Self,
+/// S>
+///                                            implements_(proof), inherited(fact)
 /// ```
 ///
 /// A class has a superclass before it names a superinterface, and all its

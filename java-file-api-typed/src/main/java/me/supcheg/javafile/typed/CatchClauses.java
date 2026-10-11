@@ -52,15 +52,26 @@ final class CatchClauses<B extends Block<?, B>> {
     /// @throws IllegalStateException if a clause added before catches `type`, or if this is not the time
     ///     to add a clause
     <E extends Throwable> void catch_(ClassToken<E> type, BiConsumer<? super B, ? super Var<E>> fill) {
+        catch_(type, type, fill);
+    }
+
+    /// Adds a `catch` clause of a class that is an exception by a witness alone.
+    ///
+    /// @param type the caught exception type, as the type of the binding
+    /// @param caught the same class, as the exception class it is ([Upcast#throwable])
+    /// @param fill builds the block of the clause, given the block and the binding
+    /// @throws IllegalStateException as [#catch_(ClassToken, BiConsumer)]
+    <E> void catch_(
+            ClassToken<E> type, ClassToken<? extends Throwable> caught, BiConsumer<? super B, ? super Var<E>> fill) {
         String clause = "catch_ of " + type;
         TryClauses before = open(clause);
-        Exceptions.requireNotCaught(new ExceptionType.OfClass(type), before.types(), statement());
+        Exceptions.requireNotCaught(new ExceptionType.OfClass(caught), before.types(), statement());
         phase = new Phase.Building(clause);
         B block = enclosing.child("catch block of " + form);
         Var<E> binding = new Var<>(type, "caught exception", block);
         fill.accept(block, binding);
         phase = new Phase.Open(new TryClauses(
-                Stream.concat(before.catches().stream(), Stream.of(new Instr.Catch(type, binding, block)))
+                Stream.concat(before.catches().stream(), Stream.of(new Instr.Catch(caught, binding, block)))
                         .toList(),
                 before.finallyBlock()));
     }

@@ -36,6 +36,7 @@ final class ScopeCheck {
         switch (instr) {
             case Instr.Let(var ignored, var init) -> node(init, block, block.path());
             case Instr.Exec(var effect) -> node(effect, block, block.path());
+            case Instr.SuperInit(var ignored, var args) -> operands(args, block, block.path());
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, block, block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
                 node(operand, block, block.path());
@@ -90,6 +91,10 @@ final class ScopeCheck {
             case Node.Unbox(var ignored, var operand) -> node(operand, use, where);
             case Node.Call(var target, var ignored, var args) -> {
                 node(target.node(), use, where);
+                operands(args, use, where);
+            }
+            case Node.SuperCall(var owner, var ignoredSuperclass, var ignored, var args) -> {
+                requireThisInScope(owner, use, where);
                 operands(args, use, where);
             }
             case Node.StaticCall(var ignored, var args) -> operands(args, use, where);

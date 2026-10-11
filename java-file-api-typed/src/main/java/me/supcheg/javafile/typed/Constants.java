@@ -43,6 +43,7 @@ final class Constants {
                     Node.Box _,
                     Node.Unbox _,
                     Node.Call _,
+                    Node.SuperCall _,
                     Node.StaticCall _,
                     Node.New _,
                     Node.FieldGet _,

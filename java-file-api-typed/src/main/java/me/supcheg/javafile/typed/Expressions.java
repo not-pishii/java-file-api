@@ -1122,13 +1122,13 @@ public final class Expressions {
         return operand;
     }
 
-    private static Node.Operand operand(Expr<?> expr) {
+    static Node.Operand operand(Expr<?> expr) {
         return new Node.Operand(expr.node(), expr.type());
     }
 
     /// The arguments of a call with their static types, from which lowering
     /// pins the overload the fact names (§6.1).
-    private static List<Node.Operand> arguments(Expr<?>... args) {
+    static List<Node.Operand> arguments(Expr<?>... args) {
         List<Node.Operand> operands = new ArrayList<>(args.length);
         for (Expr<?> arg : args) {
             operands.add(operand(arg));
