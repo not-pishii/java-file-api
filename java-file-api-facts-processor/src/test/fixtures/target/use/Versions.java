@@ -172,6 +172,33 @@ public final class Versions {
                 }
             };
 
+    private static final TypedJavaFile.TypedClassHeaderSpec EXTENDS_SVC =
+            new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    h.extends_(Svc_.extend(h.self())).body(ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
+                }
+            };
+
+    public static void aProofOfASuperclassHoldsOfTheClassItWasMadeOf(Typed typed) {
+        assertThat(typed.declare(EXTENDS_SVC))
+                .contains("public final class Out extends Svc {")
+                .contains("public Out() {\n        super();\n    }");
+        // a version that changes another type is the same class to the proof
+        assertThat(typed.against("final-dep").declare(EXTENDS_SVC)).contains("extends Svc {");
+    }
+
+    public static void aSuperclassTheVersionChangesIsNotExtendedByTheProofOfAnother(Typed typed) {
+        // abstract, the class has no constructor `new` calls, and is another kind of type to its metamodel
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("abstract-class").declare(EXTENDS_SVC))
+                .withMessageContaining("metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath");
+        // of another superclass, what the class inherits is not what the proof was made of
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("changed-superclass").declare(EXTENDS_SVC))
+                .withMessageContaining("changed: superclasses");
+    }
+
     public static void aProofHoldsOfTheTypeItWasMadeOf(Typed typed) {
         assertThat(typed.declare(IMPLEMENTS_FN))
                 .contains("public final class Out implements Fn {")
