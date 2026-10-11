@@ -4,6 +4,7 @@ import gen.facts.p.Box_;
 import gen.facts.p.Dep_;
 import gen.facts.p.Fn_;
 import gen.facts.p.Lib_;
+import gen.facts.p.Marker_;
 import gen.facts.p.Svc_;
 import java.lang.constant.ClassDesc;
 import java.util.function.Function;
@@ -14,9 +15,10 @@ import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TargetType.Difference;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.processor.harness.Typed;
+import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.Expr;
-import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
+import me.supcheg.javafile.typed.TypedClassBuilder;
 
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -25,6 +27,7 @@ import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /// The metamodels are generated from `lib/`; the typed layer renders
 /// against `lib/` itself, or against a version of `targets/`, as a generator
@@ -145,6 +148,62 @@ public final class Versions {
                 .isThrownBy(() -> typed.against("second-abstract-method").render(String_.TOKEN, Fn_.TOKEN, applied))
                 .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath:\n"
                         + "  missing: sam apply(java.lang.String) -> java.lang.String throws -\n");
+    }
+
+    /// A class `out.Out` that implements `p.Fn` by the proof of `Fn_`, with its one step.
+    private static final TypedJavaFile.TypedClassHeaderSpec IMPLEMENTS_FN = new TypedJavaFile.TypedClassHeaderSpec() {
+        @Override
+        public <Self> void build(ClassHeader<Self> h) {
+            var apply = h.overriding(Fn_.apply_String);
+            var oh = h.extendsObject();
+            oh.implements_(Fn_.implement(h.self()).apply_String(apply));
+            oh.body().define(apply.method(), (b, self, s) -> b.return_(s));
+        }
+    };
+
+    /// A class `out.Out` that implements `p.Marker` by the proof of `Marker_`, which has no step.
+    private static final TypedJavaFile.TypedClassHeaderSpec IMPLEMENTS_MARKER =
+            new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    var oh = h.extendsObject();
+                    oh.implements_(Marker_.implement(h.self()));
+                    oh.body();
+                }
+            };
+
+    public static void aProofHoldsOfTheTypeItWasMadeOf(Typed typed) {
+        assertThat(typed.render(IMPLEMENTS_FN))
+                .contains("public final class Out implements Fn {")
+                .contains("@Override\n    public String apply(String v0) {");
+        assertThat(typed.render(IMPLEMENTS_MARKER)).contains("public final class Out implements Marker {");
+        // a version that changes another type is the same type to the proof
+        assertThat(typed.against("added-method").render(IMPLEMENTS_FN)).contains("implements Fn {");
+    }
+
+    public static void anAbstractMethodTheVersionAddsHasNoStepInTheProof(Typed typed) {
+        // Marker_ has no fact the version breaks, so it holds: the heritage is that of the version
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> typed.against("marker-abstract-method").render(IMPLEMENTS_MARKER))
+                .withMessageContaining("class out.Out cannot implement p.Marker by")
+                .withMessageContaining("on the target classpath the type has the abstract method mark() of p.Marker,"
+                        + " which the proof has no step for");
+        // of a functional interface the second abstract method takes the fact of the first away
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("second-abstract-method").render(IMPLEMENTS_FN))
+                .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
+    }
+
+    public static void aMethodTheVersionRemovesIsNotImplemented(Typed typed) {
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("fn-removed-method").render(IMPLEMENTS_FN))
+                .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
+    }
+
+    public static void anAbstractMethodTheVersionGivesABodyIsAnotherFact(Typed typed) {
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> typed.against("fn-default-method").render(IMPLEMENTS_FN))
+                .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
     }
 
     public static void aTypeThatIsRemovedIsNotFound(Typed typed) {
