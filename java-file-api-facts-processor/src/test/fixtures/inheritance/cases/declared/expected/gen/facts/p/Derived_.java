@@ -35,7 +35,7 @@ import p.Derived;
 ///
 /// A generated class extends or implements [Derived] by the proof its metamodel starts, with the stages of `Derived_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Derived.class, fingerprint = "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", complete = true, format = 12)
+@GeneratedMetamodel(of = Derived.class, fingerprint = "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

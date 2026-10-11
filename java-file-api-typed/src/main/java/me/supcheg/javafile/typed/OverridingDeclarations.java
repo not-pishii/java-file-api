@@ -123,6 +123,63 @@ public sealed interface OverridingDeclarations<Self, S>
         return declarations().overridden(method, result, body);
     }
 
+    /// Overrides a method the class inherits from its superclass with a method whose result is the
+    /// class itself (JLS 8.4.5): that the class is of the result type of the method is said by a
+    /// witness, the brand `Self` being a subtype of nothing to the compiler of the generator, and
+    /// proven of every method the class inherits under the signature ([Subtyping]).
+    ///
+    /// ```java
+    /// cb.override(Shape_.copy, cb.asSuper(), (b, self) -> b.return_(self));   // public Square copy()
+    /// ```
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block and `this`
+    /// @param <R> the result type of the overridden method
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R> MethodRef0<Self, Self> override(
+            MethodRef0<? super S, R> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody0<Self, Body<Self>, Self> body) {
+        return declarations().overriddenOfSelf(method, body);
+    }
+
+    /// Overrides a method with one parameter of the superclass with a method whose result is the
+    /// class itself, see [#override(MethodRef0, Upcast, InstanceBody0)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <R> the result type of the overridden method
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R, A1> MethodRef1<Self, Self, A1> override(
+            MethodRef1<? super S, R, A1> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody1<Self, Body<Self>, Self, A1> body) {
+        return declarations().overriddenOfSelf(method, body);
+    }
+
+    /// Overrides a method with two parameters of the superclass with a method whose result is the
+    /// class itself, see [#override(MethodRef0, Upcast, InstanceBody0)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <R> the result type of the overridden method
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R, A1, A2> MethodRef2<Self, Self, A1, A2> override(
+            MethodRef2<? super S, R, A1, A2> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody2<Self, Body<Self>, Self, A1, A2> body) {
+        return declarations().overriddenOfSelf(method, body);
+    }
+
     /// Overrides a `void` method of `Object`: declares it anew, `@Override public`, and defines it.
     ///
     /// @param method the fact of the overridden method

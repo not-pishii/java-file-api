@@ -78,7 +78,8 @@ import java.util.stream.IntStream;
 /// - a primitive type as any other type, and an array of primitives as an
 ///   array of anything else: the result of a method that overrides a
 ///   primitive or a `void` one is the same (JLS 8.4.5);
-/// - the class being declared as a supertype it names later in its header.
+/// - the class being declared as a supertype it names later in its header and
+///   did not say it is about to name ([Overriding#becoming]).
 final class Subtyping {
     private static final ClassDesc CLONEABLE = ClassDesc.of("java.lang", "Cloneable");
     private static final ClassDesc SERIALIZABLE = ClassDesc.of("java.io", "Serializable");
@@ -177,7 +178,8 @@ final class Subtyping {
                         .anyMatch(supertype -> prove(declaring, supertype, sup) instanceof Verdict.Proven)
                 ? PROVEN
                 : unproven("no supertype the class has named so far is known to be one — a supertype that makes"
-                        + " the class of it is named before the one that asks for it");
+                        + " the class of it is named before the one that asks for it, or said first by"
+                        + " becoming(token)");
     }
 
     /// The parameterization of the generic type `raw` that the type of `declared` is, or is a subtype of.

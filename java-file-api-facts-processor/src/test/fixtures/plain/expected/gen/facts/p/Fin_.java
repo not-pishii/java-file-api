@@ -34,7 +34,7 @@ import p.Fin;
 ///
 /// No generated class extends or implements [Fin]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 12)
+@GeneratedMetamodel(of = Fin.class, fingerprint = "9ae2cbde2d1ceb95b401cb3d5e0fbbccfb6496df7fa00386bdcbf527f4edb7f9", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

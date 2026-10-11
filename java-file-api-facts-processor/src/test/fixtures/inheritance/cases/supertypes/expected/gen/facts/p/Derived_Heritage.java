@@ -154,13 +154,13 @@ public final class Derived_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared extends [Derived], which has no abstract method: the proof is complete.
+    /// Starts the proof that a class being declared extends [Derived], which has no abstract method: the proof is complete. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the proof
-    public <Self> Complete<Self, Derived> extend(DeclaredToken<Derived> type, RefToken<Self> self) {
+    final <Self> Complete<Self, Derived> extend(DeclaredToken<Derived> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [p.Data] by the proof its metamodel starts, with the stages of `Data_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Data.class, fingerprint = "da0087ef78609ee98300ff71b367454137a8069b7b626f29611bfde6e6ff798f", complete = true, format = 12)
+@GeneratedMetamodel(of = p.Data.class, fingerprint = "da0087ef78609ee98300ff71b367454137a8069b7b626f29611bfde6e6ff798f", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

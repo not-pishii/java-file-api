@@ -39,7 +39,7 @@ import p.Source;
 ///
 /// @param <T> a type argument of [Source]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Source.class, fingerprint = "f561a33ccfab8ec9d30a2399d5478ea8663573a31463702256261114e2b3262f", complete = true, format = 12)
+@GeneratedMetamodel(of = Source.class, fingerprint = "f561a33ccfab8ec9d30a2399d5478ea8663573a31463702256261114e2b3262f", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

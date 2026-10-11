@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -9,6 +10,9 @@ import me.supcheg.javafile.facts.Overriding0;
 import me.supcheg.javafile.facts.Overriding1;
 import me.supcheg.javafile.facts.Overriding2;
 import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.SelfOverriding0;
+import me.supcheg.javafile.facts.SelfOverriding1;
+import me.supcheg.javafile.facts.SelfOverriding2;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
@@ -105,9 +109,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// ```
     ///
     /// A primitive and a `void` result have no narrower one, and no token to say it by. The
-    /// class itself is the result of a method whose result is `Object` alone — `clone` —: the
-    /// brand `Self` is a subtype of nothing else to the compiler of the generator, which holds
-    /// both the token and the step of a proof (`? extends R`) to the result of the method.
+    /// class itself is the result by a witness, not by its token — the brand `Self` is a subtype
+    /// of `Object` alone to the compiler of the generator: [#overriding(MethodRef0, Upcast)].
     ///
     /// @param method the fact of the overridden method
     /// @param result the result type of the method of the class
@@ -162,6 +165,96 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
         return UnsafeFacts.overriding2(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /// The witness that the class is of a supertype it has not named yet and is about to: what an
+    /// intention to override a method of that very supertype with the class itself for its result
+    /// ([#overriding(MethodRef0, Upcast)]) needs before the proof the supertype is named by —
+    /// the proof takes the intention, and the witness of [ObjectHeader#implements_] comes of the
+    /// proof.
+    ///
+    /// ```java
+    /// var asNode = h.becoming(Node_.TOKEN);
+    /// var next = h.overriding(Node_.next, asNode);            // public Chain next()
+    /// var oh = h.extendsObject();
+    /// oh.implements_(Node_.implement(h.self()).next(next));
+    /// ```
+    ///
+    /// The witness is a promise the header is held to where it ends: a class that never names
+    /// the type — as its superclass or among its superinterfaces, of these very type arguments —
+    /// has no members, so no body is built by a witness that does not hold.
+    ///
+    /// @param supertype the type, with its type arguments
+    /// @param <X> the type
+    /// @return the witness that the class is of the type
+    /// @throws IllegalStateException if the header of the class has ended
+    public <X> Upcast<Self, X> becoming(DeclaredToken<X> supertype) {
+        return declaration().promise(supertype);
+    }
+
+    /// Says the class overrides a method with a method whose result is the class itself (JLS
+    /// 8.4.5): `public Chain next()` for `Node next()`. The brand `Self` is a subtype of nothing
+    /// to the compiler of the generator, so that the class is of the result of the method is
+    /// said by a witness — of the result type itself or of a subtype of it, which the compiler
+    /// holds the witness to; the typed layer proves it again of every method the class inherits
+    /// under the signature ([Subtyping]), where a supertype that has one is named.
+    ///
+    /// The implementation is typed by the supertype of the witness, by which a step of a proof
+    /// takes it (`? extends R`); its `method()` is the fact of the method of the class, of the
+    /// result `Self`. The witness of a supertype the class has yet to name is [#becoming].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <X> the supertype of the class the witness is of
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
+    ///     method of that signature already, or cannot override what it inherits under it
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, X extends R> SelfOverriding0<Self, X> overriding(MethodRef0<O, R> method, Upcast<Self, X> result) {
+        return UnsafeFacts.selfOverriding0(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /// Says the class overrides a method with one parameter with a method whose result is the
+    /// class itself, see [#overriding(MethodRef0, Upcast)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <X> the supertype of the class the witness is of
+    /// @param <A1> the parameter type
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException as [#overriding(MethodRef0, Upcast)]
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, X extends R, A1> SelfOverriding1<Self, X, A1> overriding(
+            MethodRef1<O, R, A1> method, Upcast<Self, X> result) {
+        return UnsafeFacts.selfOverriding1(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /// Says the class overrides a method with two parameters with a method whose result is the
+    /// class itself, see [#overriding(MethodRef0, Upcast)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <X> the supertype of the class the witness is of
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException as [#overriding(MethodRef0, Upcast)]
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, X extends R, A1, A2> SelfOverriding2<Self, X, A1, A2> overriding(
+            MethodRef2<O, R, A1, A2> method, Upcast<Self, X> result) {
+        return UnsafeFacts.selfOverriding2(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
     }
 
     /// Says the class overrides a `void` method.

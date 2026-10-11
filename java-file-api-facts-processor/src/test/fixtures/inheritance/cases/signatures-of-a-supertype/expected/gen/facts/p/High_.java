@@ -36,7 +36,7 @@ import p.Seen;
 ///
 /// A generated class extends or implements [High] by the proof its metamodel starts, with the stages of `High_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = High.class, fingerprint = "fe9d27fb2431e832b0f7efc05c82d39a941ce3dc3f1711c06633e789b9c9ec47", complete = true, format = 12)
+@GeneratedMetamodel(of = High.class, fingerprint = "fe9d27fb2431e832b0f7efc05c82d39a941ce3dc3f1711c06633e789b9c9ec47", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

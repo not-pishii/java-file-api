@@ -42,7 +42,7 @@ import p.Coll;
 ///
 /// @param <E> a type argument of [Coll]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 12)
+@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

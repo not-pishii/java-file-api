@@ -32,7 +32,7 @@ import p.Outer.Inner;
 ///
 /// A generated class extends or implements [Inner] by the proof its metamodel starts, with the stages of `Outer_Inner_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Inner.class, fingerprint = "0a9e31c995876aef1fc94e25aab3965b9b9e8cd1df1675909fdad19e4f727d26", complete = true, format = 12)
+@GeneratedMetamodel(of = Inner.class, fingerprint = "0a9e31c995876aef1fc94e25aab3965b9b9e8cd1df1675909fdad19e4f727d26", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

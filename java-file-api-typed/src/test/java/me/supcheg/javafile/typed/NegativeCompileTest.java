@@ -479,6 +479,28 @@ class NegativeCompileTest {
                         + " me.supcheg.javafile.typed.Expr<? extends java.lang.Throwable>");
     }
 
+    @Test
+    void theClassIsNotTheResultOfAnOverrideByTheWitnessOfAnUnrelatedSupertype() {
+        // Following next(): the witness that the class is a Runnable says nothing of a Following
+        assertRejected(
+                "SelfResultByAnUnrelatedWitness",
+                inHeader("h.overriding(Following_.next, h.becoming(Runnable_.TOKEN));"),
+                "no suitable method found for overriding(me.supcheg.javafile.facts.MethodRef0<"
+                        + "me.supcheg.javafile.typed.fixtures.Following,me.supcheg.javafile.typed.fixtures.Following>,"
+                        + "me.supcheg.javafile.typed.Upcast<Self,java.lang.Runnable>)");
+    }
+
+    @Test
+    void aStepDoesNotTakeAnOverrideWithTheClassForItsResultByTheWitnessOfAnUnrelatedSupertype() {
+        // Object next() of Linked is answered by the witness of a Runnable; the step of Following asks for one
+        assertRejected(
+                "SelfResultInAnUnrelatedStep",
+                inHeader("var next = h.overriding(Linked_.next, h.becoming(Runnable_.TOKEN));"
+                        + " Following_.implement(h.self()).next(next);"),
+                "cannot be converted to me.supcheg.javafile.facts.Implementation0<Self,? extends"
+                        + " me.supcheg.javafile.typed.fixtures.Following>");
+    }
+
     /// The header of a generated class, for fixtures of a class with a superclass: `%s` is the
     /// statements using `h`.
     private static String inHeader(String statements) {

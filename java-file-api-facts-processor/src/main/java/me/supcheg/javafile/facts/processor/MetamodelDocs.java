@@ -458,15 +458,16 @@ final class MetamodelDocs {
     /// @return the comment
     static DocComment entry(ClassDesc type, boolean isInterface, List<TypeParam> typeParams, Entry.Offered offered) {
         return new DocComment(
-                paragraph(
-                                Stream.of(
-                                        words("Starts the proof that a class being declared "
-                                                + (isInterface ? "implements " : "extends ")),
-                                        link(type),
-                                        words(
-                                                offered.steps().isEmpty()
-                                                        ? ", which has no abstract method: the proof is complete."
-                                                        : ": a step per abstract method follows, in the order of their names.")))
+                paragraph(Stream.of(
+                                words("Starts the proof that a class being declared "
+                                        + (isInterface ? "implements " : "extends ")),
+                                link(type),
+                                words(
+                                        offered.steps().isEmpty()
+                                                ? ", which has no abstract method: the proof is complete."
+                                                : ": a step per abstract method follows, in the order of their names."),
+                                words(" For the metamodel of the type, whose method of this name gives"
+                                        + " its own token: the entry of a generator.")))
                         .toList(),
                 Stream.of(
                                 Stream.<DocTag>of(

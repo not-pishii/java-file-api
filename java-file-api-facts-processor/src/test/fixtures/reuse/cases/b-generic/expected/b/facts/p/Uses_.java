@@ -36,7 +36,7 @@ import p.Uses;
 ///
 /// A generated class extends or implements [Uses] by the proof its metamodel starts, with the stages of `Uses_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "c82eb80dd500738d1bf97d8261df8019706b135b5f69d89f362acdff65e16029", complete = true, format = 12)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "c82eb80dd500738d1bf97d8261df8019706b135b5f69d89f362acdff65e16029", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

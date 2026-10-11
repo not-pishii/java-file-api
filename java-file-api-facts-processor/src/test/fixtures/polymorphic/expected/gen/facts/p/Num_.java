@@ -34,7 +34,7 @@ import p.Num;
 ///
 /// A generated class extends or implements [Num] by the proof its metamodel starts, with the stages of `Num_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Num.class, fingerprint = "b8689ad13df0569b0ab1f6d8f8b60d2f67bf4e81c9c0999800380a622ccaa7a9", complete = true, format = 12)
+@GeneratedMetamodel(of = Num.class, fingerprint = "b8689ad13df0569b0ab1f6d8f8b60d2f67bf4e81c9c0999800380a622ccaa7a9", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

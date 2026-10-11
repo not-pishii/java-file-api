@@ -751,8 +751,10 @@ final class MetamodelEmitter {
         cb.withMethod(verb, after.apply(0), mb -> {
             // of an object of the class, which a metamodel makes with `new`: a class named for a static method
             // is named where a field of the metamodel of its name would be meant
+            // of the package: the entry of a generator is the method of the metamodel, which gives its own token.
+            // `final` says nothing of a method of a final class; a method builder with no modifier is public
             mb.withDoc(MetamodelDocs.entry(model.desc(), isInterface, typeParams, offered))
-                    .withModifiers(Modifier.PUBLIC);
+                    .withModifiers(Modifier.FINAL);
             typeParams.forEach(
                     param -> mb.withTypeParam(param.name(), param.bounds().toArray(ClassOrInterfaceTypeRef[]::new)));
             mb.withParam("type", Types.parameterized(CD_DECLARED_TOKEN, type))

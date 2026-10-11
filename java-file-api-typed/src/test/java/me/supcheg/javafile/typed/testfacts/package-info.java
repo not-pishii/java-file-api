@@ -76,7 +76,9 @@
     SubTwin.class,
     Picked.class,
     Linked.class,
-    Chained.class
+    Chained.class,
+    Following.class,
+    Copied.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -122,6 +124,8 @@ import me.supcheg.javafile.typed.fixtures.SubTwin;
 import me.supcheg.javafile.typed.fixtures.Picked;
 import me.supcheg.javafile.typed.fixtures.Linked;
 import me.supcheg.javafile.typed.fixtures.Chained;
+import me.supcheg.javafile.typed.fixtures.Following;
+import me.supcheg.javafile.typed.fixtures.Copied;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

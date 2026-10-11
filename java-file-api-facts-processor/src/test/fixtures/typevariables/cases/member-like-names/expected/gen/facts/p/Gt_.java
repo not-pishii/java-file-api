@@ -46,7 +46,7 @@ import p.Gt;
 /// @param <T> a type argument of [Gt]
 /// @param <E> a type argument of [Gt]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 12)
+@GeneratedMetamodel(of = Gt.class, fingerprint = "7a38658709f350768bf4434f452a1f8f2bdaf2f03b5ccc9bfee6586873f8e25d", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

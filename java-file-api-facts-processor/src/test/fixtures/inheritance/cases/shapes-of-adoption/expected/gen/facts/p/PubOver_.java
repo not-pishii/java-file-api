@@ -35,7 +35,7 @@ import p.PubOver;
 ///
 /// A generated class extends or implements [PubOver] by the proof its metamodel starts, with the stages of `PubOver_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubOver.class, fingerprint = "c63f2ee360f99f2777e173f41b20111f7ee95636aac92b2d35a2b8de18656bc2", complete = true, format = 12)
+@GeneratedMetamodel(of = PubOver.class, fingerprint = "c63f2ee360f99f2777e173f41b20111f7ee95636aac92b2d35a2b8de18656bc2", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

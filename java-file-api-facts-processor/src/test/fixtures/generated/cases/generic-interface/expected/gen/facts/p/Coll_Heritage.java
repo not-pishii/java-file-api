@@ -62,14 +62,14 @@ public final class Coll_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared implements [Coll]: a step per abstract method follows, in the order of their names.
+    /// Starts the proof that a class being declared implements [Coll]: a step per abstract method follows, in the order of their names. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <E> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public <E, Self> Implement<E, Self> implement(DeclaredToken<Coll<E>> type, RefToken<Self> self) {
+    final <E, Self> Implement<E, Self> implement(DeclaredToken<Coll<E>> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

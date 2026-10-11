@@ -37,7 +37,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [Record]: no class extends java.lang.Record but an enum or a record does.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Record.class, fingerprint = "396eac89e161897400436ae4c5fc4ef1caccc412d97a4b4e0815eab8b62c39f4", complete = true, format = 12)
+@GeneratedMetamodel(of = Record.class, fingerprint = "396eac89e161897400436ae4c5fc4ef1caccc412d97a4b4e0815eab8b62c39f4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -35,7 +35,7 @@ import p.Fn;
 ///
 /// A generated class extends or implements [Fn] by the proof its metamodel starts, with the stages of `Fn_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn.class, fingerprint = "f3ab9025195e728ee1cbc1a64b10f62ef14965a5821eaa00ae25e0fd2b2c0438", complete = true, format = 12)
+@GeneratedMetamodel(of = Fn.class, fingerprint = "f3ab9025195e728ee1cbc1a64b10f62ef14965a5821eaa00ae25e0fd2b2c0438", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

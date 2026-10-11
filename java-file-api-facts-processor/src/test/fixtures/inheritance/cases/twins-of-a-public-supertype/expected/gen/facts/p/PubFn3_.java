@@ -35,7 +35,7 @@ import p.PubFn3;
 ///
 /// A generated class extends or implements [PubFn3] by the proof its metamodel starts, with the stages of `PubFn3_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 12)
+@GeneratedMetamodel(of = PubFn3.class, fingerprint = "072d166e652c3282ecf9c2525182ea9637bcaf3f022e28abaedb3e4e0477a23f", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

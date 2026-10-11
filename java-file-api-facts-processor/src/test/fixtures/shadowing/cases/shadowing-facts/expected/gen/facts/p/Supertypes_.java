@@ -41,7 +41,7 @@ import p.Supertypes;
 ///
 /// A generated class extends or implements [Supertypes] by the proof its metamodel starts, with the stages of `Supertypes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Supertypes.class, fingerprint = "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", complete = true, format = 12)
+@GeneratedMetamodel(of = Supertypes.class, fingerprint = "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

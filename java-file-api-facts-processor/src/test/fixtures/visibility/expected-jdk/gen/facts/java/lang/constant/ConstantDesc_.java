@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [ConstantDesc]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", complete = true, format = 12)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

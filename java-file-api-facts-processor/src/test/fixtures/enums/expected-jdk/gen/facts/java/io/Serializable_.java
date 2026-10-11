@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Serializable] by the proof its metamodel starts, with the stages of `Serializable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 12)
+@GeneratedMetamodel(of = Serializable.class, fingerprint = "cacee7631b9d7b754f03f0c889191cea41033d7c4a1b0ad64ee6d560efa1f434", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

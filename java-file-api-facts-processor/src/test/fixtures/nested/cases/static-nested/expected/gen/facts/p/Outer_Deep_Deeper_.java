@@ -32,7 +32,7 @@ import p.Outer.Deep.Deeper;
 ///
 /// A generated class extends or implements [Deeper] by the proof its metamodel starts, with the stages of `Outer_Deep_Deeper_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Deeper.class, fingerprint = "978eefb39c30f9019a3c496a12783e723975f20512931f362155d5a08be0053a", complete = true, format = 12)
+@GeneratedMetamodel(of = Deeper.class, fingerprint = "978eefb39c30f9019a3c496a12783e723975f20512931f362155d5a08be0053a", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

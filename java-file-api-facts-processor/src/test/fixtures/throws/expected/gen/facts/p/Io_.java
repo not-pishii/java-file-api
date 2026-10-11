@@ -45,7 +45,7 @@ import p.Io;
 ///
 /// A generated class extends or implements [Io] by the proof its metamodel starts, with the stages of `Io_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 12)
+@GeneratedMetamodel(of = Io.class, fingerprint = "4c0f4e0ced30c471aea93e901bcdc70e32de68db7fb74e8e7b3da05f9009446b", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

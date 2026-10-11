@@ -25,7 +25,7 @@ import u.facts.java.lang.InterruptedException_.Data;
 ///
 /// `@Facts` does not ask for [InterruptedException]: it is only mentioned in the signatures of [Object]. For the facts of its members add `InterruptedException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = InterruptedException.class, fingerprint = "a5d7fcbf1e84bb313984487dd8a29b675b320aa6b8ef86cf0c9c71c9bf0a939c", complete = false, format = 12)
+@GeneratedMetamodel(of = InterruptedException.class, fingerprint = "a5d7fcbf1e84bb313984487dd8a29b675b320aa6b8ef86cf0c9c71c9bf0a939c", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

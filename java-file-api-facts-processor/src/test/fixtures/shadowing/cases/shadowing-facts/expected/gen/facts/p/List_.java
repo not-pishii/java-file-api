@@ -36,7 +36,7 @@ import p.List;
 ///
 /// A generated class extends or implements [List] by the proof its metamodel starts, with the stages of `List_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = List.class, fingerprint = "bbea34df68170c3a5ba25d1978a56332b67834b04bf056820f5f258e98fdd3d8", complete = true, format = 12)
+@GeneratedMetamodel(of = List.class, fingerprint = "bbea34df68170c3a5ba25d1978a56332b67834b04bf056820f5f258e98fdd3d8", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -36,7 +36,7 @@ import p.IoA;
 ///
 /// A generated class extends or implements [IoA] by the proof its metamodel starts, with the stages of `IoA_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 12)
+@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

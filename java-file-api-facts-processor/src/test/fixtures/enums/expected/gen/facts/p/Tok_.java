@@ -36,7 +36,7 @@ import p.Tok;
 ///
 /// No generated class extends or implements [Tok]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 12)
+@GeneratedMetamodel(of = Tok.class, fingerprint = "914fcbdb08ae7d19b3b3f2be479466448744dbcf24fb761331f6db47cc776666", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -115,7 +115,7 @@ public final class Up_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared extends [Up], which has no abstract method: the proof is complete.
+    /// Starts the proof that a class being declared extends [Up], which has no abstract method: the proof is complete. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
@@ -123,7 +123,7 @@ public final class Up_Heritage implements Supplier<Told> {
     /// @param <Java> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public <Gen, Java, Self> Complete<Self, Up<Gen, Java>> extend(DeclaredToken<Up<Gen, Java>> type, RefToken<Self> self) {
+    final <Gen, Java, Self> Complete<Self, Up<Gen, Java>> extend(DeclaredToken<Up<Gen, Java>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

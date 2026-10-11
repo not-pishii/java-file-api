@@ -35,7 +35,7 @@ import p.PStr;
 ///
 /// A generated class extends or implements [PStr] by the proof its metamodel starts, with the stages of `PStr_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PStr.class, fingerprint = "386e0bd62a728af4b2fde0a1d44183ec518657b487cb0fe3ece4778e20890da3", complete = true, format = 12)
+@GeneratedMetamodel(of = PStr.class, fingerprint = "386e0bd62a728af4b2fde0a1d44183ec518657b487cb0fe3ece4778e20890da3", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -52,7 +52,7 @@ import p.Vis;
 ///
 /// A generated class extends or implements [Vis] by the proof its metamodel starts, with the stages of `Vis_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 12)
+@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

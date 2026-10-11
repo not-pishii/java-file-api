@@ -34,7 +34,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Runnable] by the proof its metamodel starts, with the stages of `Runnable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 12)
+@GeneratedMetamodel(of = Runnable.class, fingerprint = "f019670a715b7f5753bf0332943d877afa4e49dab5640f14e8b099c8b8c895c4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

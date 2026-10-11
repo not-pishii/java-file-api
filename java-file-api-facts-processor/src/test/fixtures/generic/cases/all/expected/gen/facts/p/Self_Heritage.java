@@ -117,14 +117,14 @@ public final class Self_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared extends [Self]: a step per abstract method follows, in the order of their names.
+    /// Starts the proof that a class being declared extends [Self]: a step per abstract method follows, in the order of their names. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <S> a type argument of the type
     /// @param <Self_> the class being declared
     /// @return the stage of the first step
-    public <S extends Self<S>, Self_> Extend<S, Self_> extend(DeclaredToken<Self<S>> type, RefToken<Self_> self) {
+    final <S extends Self<S>, Self_> Extend<S, Self_> extend(DeclaredToken<Self<S>> type, RefToken<Self_> self) {
         return new Extend<>(UnsafeFacts.steps(type, self));
     }
 

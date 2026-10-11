@@ -75,6 +75,24 @@ final class Overrides {
         return UnsafeFacts.method(self, method.name(), result, method.param1(), method.param2(), traits(thrown));
     }
 
+    /// The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+    static <Self> MethodRef0<Self, Self> ownOfSelf(
+            FinalClassToken<Self> self, MethodRef0<?, ?> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), self, traits(thrown));
+    }
+
+    /// The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+    static <Self, A1> MethodRef1<Self, Self, A1> ownOfSelf(
+            FinalClassToken<Self> self, MethodRef1<?, ?, A1> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), self, method.param1(), traits(thrown));
+    }
+
+    /// The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+    static <Self, A1, A2> MethodRef2<Self, Self, A1, A2> ownOfSelf(
+            FinalClassToken<Self> self, MethodRef2<?, ?, A1, A2> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), self, method.param1(), method.param2(), traits(thrown));
+    }
+
     /// The method of `self` that overrides `method`, declaring `thrown`.
     static <Self> VoidMethodRef0<Self> own(
             FinalClassToken<Self> self, VoidMethodRef0<?> method, List<ClassToken<? extends Throwable>> thrown) {
