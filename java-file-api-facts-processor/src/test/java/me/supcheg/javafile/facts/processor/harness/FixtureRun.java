@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
+import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.Expr;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
@@ -398,6 +399,15 @@ public final class FixtureRun {
         /// Renders in a compilation that has the library alone, against
         /// its target classpath.
         private Rendering rendering(TypedJavaFile.TypedClassSpec spec) {
+            return rendering(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    spec.build(h.extendsObject().body());
+                }
+            });
+        }
+
+        private Rendering rendering(TypedJavaFile.TypedClassHeaderSpec spec) {
             return Javac.plain().alone().classpath(library.get()).inFirstRound(processing -> render(processing, spec));
         }
 
@@ -412,7 +422,7 @@ public final class FixtureRun {
             };
         }
 
-        private static Rendering render(ProcessingEnvironment processing, TypedJavaFile.TypedClassSpec spec) {
+        private static Rendering render(ProcessingEnvironment processing, TypedJavaFile.TypedClassHeaderSpec spec) {
             List<String> verified = new CopyOnWriteArrayList<>();
             TargetReader reader = TargetClasspaths.reader(processing.getElementUtils(), processing.getTypeUtils());
             TargetClasspath target = UnsafeFacts.targetClasspath((shape, origin) -> {
@@ -437,6 +447,14 @@ public final class FixtureRun {
         @Override
         public <R, P> String render(TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
             return render(go(result, parameter, body));
+        }
+
+        @Override
+        public String render(TypedJavaFile.TypedClassHeaderSpec spec) {
+            return switch (rendering(spec)) {
+                case Rendering.Rendered(String source, List<String> _) -> source;
+                case Rendering.Rejected(RuntimeException reason, List<String> _) -> throw reason;
+            };
         }
 
         @Override

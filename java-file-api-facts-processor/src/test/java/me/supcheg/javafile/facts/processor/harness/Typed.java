@@ -48,6 +48,14 @@ public interface Typed {
     /// @return the source
     String render(TypedJavaFile.TypedClassSpec spec);
 
+    /// The source of class `out.Out` as `spec` declares it from its header on, rendered as
+    /// [#render(TypedJavaFile.TypedClassSpec)] renders: for a class that implements a type of the
+    /// library, whose proof is held against the type of the target classpath.
+    ///
+    /// @param spec declares the class, given the first stage of its header
+    /// @return the source
+    String render(TypedJavaFile.TypedClassHeaderSpec spec);
+
     /// Renders class `out.Out` with `public static R go(P p)` that returns
     /// `body` of its parameter, compiles it under every lint with warnings
     /// as errors against the library of the fixture alone — it is code of
