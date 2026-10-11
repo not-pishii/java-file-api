@@ -478,6 +478,108 @@ class NegativeCompileTest {
                         + " me.supcheg.javafile.typed.Expr<? extends java.lang.Throwable>");
     }
 
+    /// The header of a generated class, for fixtures of a class with a superclass: `%s` is the
+    /// statements using `h`.
+    private static String inHeader(String statements) {
+        return """
+                void use() {
+                    TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassHeaderSpec() {
+                        public <Self> void build(ClassHeader<Self> h) {
+                            %s
+                        }
+                    });
+                }
+                """.formatted(statements);
+    }
+
+    @Test
+    void aSubclassDeclaredByItsHeaderCompiles() {
+        assertThat(compile(
+                        "Subclass",
+                        inHeader("var cb = h.extends_(Base_.extend(h.self()))"
+                                + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
+                                + " var hook = cb.protected_(Base_.hook_String);"
+                                + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, hook,"
+                                + " literal(\"x\"))));")))
+                .succeeded();
+    }
+
+    @Test
+    void theMembersOfASubclassDoNotBeginWithoutAConstructor() {
+        assertRejected(
+                "NoConstructor",
+                inHeader("h.extends_(Base_.extend(h.self())).body();"),
+                "no suitable method found for body(no arguments)");
+    }
+
+    @Test
+    void aConstructorOfASubclassEndsBySuperAlone() {
+        assertRejected(
+                "NoSuper",
+                inHeader("h.extends_(Base_.extend(h.self())).body(ctor -> null).constructor("
+                        + "(b, self) -> b.end());"),
+                "incompatible parameter types in lambda expression");
+    }
+
+    @Test
+    void superCallsAConstructorOfTheSuperclass() {
+        assertRejected(
+                "SuperOfAnother",
+                inHeader(
+                        "h.extends_(Base_.extend(h.self())).body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
+                "no suitable method found for super_(me.supcheg.javafile.facts.CtorRef0<me.supcheg.javafile.typed.fixtures.Mid>");
+    }
+
+    @Test
+    void aProtectedFactIsTakenOutOfASupertypeOfTheSuperclassAlone() {
+        assertRejected(
+                "ProtectedOfAnother",
+                inHeader(
+                        "h.extends_(Base_.extend(h.self())).body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))"
+                                + ".protected_(Mid_.quiet);"),
+                "method protected_ in interface me.supcheg.javafile.typed.SuperAccess<Self,S> cannot be applied to given types");
+        assertRejected(
+                "ProtectedUsedHeldBack",
+                "void use() { call(literal(\"x\"), Base_.hook_String, literal(\"y\")); }",
+                "no suitable method found for call");
+    }
+
+    @Test
+    void superIsCalledOnThisAndOfAMethodOfTheSuperclass() {
+        assertRejected(
+                "SuperOnAValue",
+                inHeader("var cb = h.extends_(Base_.extend(h.self()))"
+                        + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
+                        + " cb.method(\"m\", String_.TOKEN, cb.self(), (b, self, other) ->"
+                        + " b.return_(cb.superCall(other, Base_.greet)));"),
+                "no suitable method found for superCall");
+        assertRejected(
+                "SuperOfAnotherClass",
+                inHeader("var cb = h.extends_(Base_.extend(h.self()))"
+                        + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
+                        + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, Mid_.label)));"),
+                "no suitable method found for superCall");
+    }
+
+    @Test
+    void aStepLeftOutOfTheProofOfASuperclassDoesNotCompile() {
+        assertRejected(
+                "MissingStep",
+                inHeader("var area = h.overriding(Shape_.area); h.extends_(Shape_.extend(h.self()).area(area));"),
+                "method extends_ in class me.supcheg.javafile.typed.ClassHeader<Self> cannot be applied to given types",
+                "cannot infer type-variable(s) S");
+    }
+
+    @Test
+    void aClassIsAnExceptionByItsWitnessAlone() {
+        assertRejected(
+                "ThrowingSelf",
+                inHeader("var cb = h.extends_(Exception_.extend(h.self()))"
+                        + ".body(ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));"
+                        + " cb.throwing(cb.self());"),
+                "no suitable method found for throwing");
+    }
+
     @Test
     void aCatchOfWhatIsNotThrowableDoesNotCompile() {
         assertRejected(
