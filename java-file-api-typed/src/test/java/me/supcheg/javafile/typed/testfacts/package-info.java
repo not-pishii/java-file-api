@@ -71,7 +71,9 @@
     Worded.class,
     Numbered.class,
     Maker.class,
-    Resetting.class
+    Resetting.class,
+    BaseTwin.class,
+    SubTwin.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -112,6 +114,8 @@ import me.supcheg.javafile.typed.fixtures.Worded;
 import me.supcheg.javafile.typed.fixtures.Numbered;
 import me.supcheg.javafile.typed.fixtures.Maker;
 import me.supcheg.javafile.typed.fixtures.Resetting;
+import me.supcheg.javafile.typed.fixtures.BaseTwin;
+import me.supcheg.javafile.typed.fixtures.SubTwin;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

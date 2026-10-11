@@ -664,7 +664,11 @@ final class Lowering {
                                 + "(...) by superCall, or override it and call the override by its own fact"
                         : hasTwin(subclass, method)
                                 ? "the class has another method that erases as it does, which javac would"
-                                        + " take for it — call it as super." + method.name() + "(...) by superCall"
+                                        + " take for it — "
+                                        + (method.traits().typeArgs().isEmpty()
+                                                ? "call it as super." + method.name() + "(...) by superCall"
+                                                : "a generic method of a superclass is not called in a class"
+                                                        + " that has such an overload")
                                 : "";
         if (!why.isEmpty()) {
             throw new IllegalStateException(method + " is protected, and cannot be called on a value of " + subclass

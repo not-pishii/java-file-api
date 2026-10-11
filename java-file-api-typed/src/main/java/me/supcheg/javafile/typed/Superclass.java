@@ -40,6 +40,13 @@ sealed interface Superclass {
     /// @throws IllegalArgumentException if the superclass has no such method on the target classpath, or
     ///     has it with other parameters, another result or another `throws` clause than `fact` tells
     default List<Inheritance.Entry> member(String owner, Invocable fact) {
+        if (!fact.traits().typeArgs().isEmpty()) {
+            // The heritage tells the method by its type parameters, the fact by its type arguments.
+            throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass " + token()
+                    + " in a way the typed layer can hold against the fact: the method is generic, and a generic"
+                    + " method of a superclass is neither called as super." + fact.name()
+                    + "(...) nor had for one of an interface");
+        }
         List<Inheritance.Entry> members = heritage().members(fact.signature()).toList();
         if (members.isEmpty()) {
             throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass " + token()
