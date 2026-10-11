@@ -36,6 +36,7 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.compiledClass;
+import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -226,9 +227,30 @@ class InheritanceVerdictTest {
 
     /// Where the typed layer rejects what javac accepts. Beside these: a method declared by its
     /// name with the signature of an inherited one, and `equals` overridden without `hashCode`
-    /// ([DeclarationChecksTest]); `clone` and `finalize` of `Object`, which have no fact a class
-    /// that extends `Object` can name. A method a class and an interface would both give a body,
-    /// which javac inherits from the class, has no class to show it by before one extends another.
+    /// ([DeclarationChecksTest]).
+    ///
+    /// Of a class with a superclass, each held against javac where it is told:
+    ///
+    /// - a method the superclass and an interface give a body each is overridden, where javac
+    ///   takes that of the class — `ExtendsTest.Inheriting`
+    ///   (`aMethodTheSuperclassAndAnInterfaceGiveABodyEachIsOverridden`); so a `final` method of
+    ///   the superclass beside a default one leaves no class to declare
+    ///   ([OfASuperclass#aFinalMethodOfTheSuperclassDoesNotStandForADefaultOne]);
+    /// - a method of package access of the superclass is neither overridden nor declared over,
+    ///   whatever the package of the class ([OfASuperclass#aMethodWithPackageAccessIsNotOverridden],
+    ///   `ExtendsTest.Inheriting.aMethodDeclaredByTheNameOfOneOfTheSuperclassIsRejected`), nor
+    ///   called as `super.m()`; a `static` one is not called through `super`
+    ///   ([ExtendsFormsTest#superCallsAMethodTheClassReachesAndAnInstanceOne]);
+    /// - a method of the superclass stands for that of an interface with its very result, not a
+    ///   narrower one ([ExtendsFormsTest#aMethodOfTheSuperclassStandsForThatOfAnInterfaceOnlyAsAnOverrideWould]);
+    /// - a `protected` field is reached on `this` alone and of the direct superclass alone
+    ///   (`ExtendsTest.SuperAndProtected.aProtectedFieldIsReachedOnThisAlone`); a `protected`
+    ///   method that declares a checked exception, or whose result has to be of exactly its
+    ///   type, is not called on the class itself (`aProtectedMethodThatThrowsIsCalledAsSuper`,
+    ///   `aProtectedCallWhoseTypeHasToBeExactIsBoundToAVariableFirst`); access from the same
+    ///   package is not offered;
+    /// - `super.m()` by the fact of a class above the one that narrowed the `throws` clause of
+    ///   the method (`ExtendsTest.SuperAndProtected.superCallsTheMethodAsTheSuperclassHasIt`).
     @Nested
     class StricterThanJavac {
 
@@ -317,7 +339,7 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
-                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                            began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                                     .override(asLocal, Local_.local, (b, _) -> b.return_(literal("")));
                         }
                     }),
@@ -337,7 +359,7 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             sh.implements_(Sealing_.implement(h.self()));
-                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "unrelated methods with a body each, and overrides neither",
@@ -349,7 +371,7 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
-                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                            began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                                     .override(asSealing, Sealing_.sealed, (b, _) -> b.return_(literal("")));
                         }
                     }))

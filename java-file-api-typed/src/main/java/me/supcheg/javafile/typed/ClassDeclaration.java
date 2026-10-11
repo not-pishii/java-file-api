@@ -50,6 +50,7 @@ final class ClassDeclaration<Self> {
     private final List<Intention> intentions = new ArrayList<>();
     private final List<Implemented.ByInheritance> inheritances = new ArrayList<>();
     private final List<Protected<?, ?>> opened = new ArrayList<>();
+    private final List<Intention> constructors = new ArrayList<>();
     private Phase<Self> phase = new Phase.Named<>();
 
     ClassDeclaration(TargetClasspath target, ClassDesc desc) {
@@ -138,7 +139,9 @@ final class ClassDeclaration<Self> {
     }
 
     /// Takes the fact of a `protected` member out before the superclass is named: that the class
-    /// is a subclass of its owner is checked when the superclass is ([#heading]).
+    /// is a subclass of its owner is known by the type of the stage that asks ([ExtendingHeader]),
+    /// and held again when the superclass is named ([#heading]) — a stage is a value, and the
+    /// class may come to extend another.
     ///
     /// @param held the fact, held back
     /// @param <F> the fact
@@ -205,6 +208,23 @@ final class ClassDeclaration<Self> {
         }
         intentions.add(intention);
         return own;
+    }
+
+    /// The class declares a constructor in its header, to be defined when the members begin or
+    /// among them.
+    ///
+    /// @param ctor the fact of the constructor
+    /// @param thrown the exception classes of its `throws` clause
+    /// @return `ctor`
+    /// @throws IllegalStateException if the class has no superclass yet, or its header has ended
+    <F extends Invocable> F intendConstructor(F ctor, List<ClassToken<? extends Throwable>> thrown) {
+        Scopes.requireNoneOpen("a constructor of " + described);
+        if (!(phase instanceof Phase.Heading<Self>)) {
+            throw new IllegalStateException(described + " cannot declare " + ctor + " in its header now: a"
+                    + " constructor is declared there after the superclass is named and before the members");
+        }
+        constructors.add(new Intention(ctor, ctor, thrown));
+        return ctor;
     }
 
     /// The class says it has `method` by inheriting it from its superclass, with its body: what a
@@ -382,6 +402,7 @@ final class ClassDeclaration<Self> {
         B builder = make.apply(inherited, superclass);
         phase = new Phase.Members<>(builder, superclass, interfaces);
         intentions.forEach(intention -> builder.declareOverride(intention.own(), intention.thrown()));
+        constructors.forEach(ctor -> builder.declare(ctor.own(), ctor.thrown()));
         return builder;
     }
 

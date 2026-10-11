@@ -11,6 +11,9 @@
     Base.class,
     Mid.class,
     Shape.class,
+    Joining.class,
+    Labelled.class,
+    Risking.class,
     Useful.class,
     Local.class,
     Sealing.class,
@@ -72,6 +75,9 @@ import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Mid;
 import me.supcheg.javafile.typed.fixtures.Shape;
+import me.supcheg.javafile.typed.fixtures.Joining;
+import me.supcheg.javafile.typed.fixtures.Labelled;
+import me.supcheg.javafile.typed.fixtures.Risking;
 import me.supcheg.javafile.typed.fixtures.Useful;
 import me.supcheg.javafile.typed.fixtures.Local;
 import me.supcheg.javafile.typed.fixtures.Sealing;

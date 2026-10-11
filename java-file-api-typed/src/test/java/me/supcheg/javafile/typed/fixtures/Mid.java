@@ -23,5 +23,19 @@ public class Mid extends Base implements Runnable {
         return "mid";
     }
 
+    public String join(String first, String second) {
+        return first + second;
+    }
+
+    public void put(String key) {
+        runs += 10;
+    }
+
+    public void put(String key, String value) {
+        runs += 100;
+    }
+
+    public void risk() throws java.io.IOException {}
+
     protected void quiet() {}
 }

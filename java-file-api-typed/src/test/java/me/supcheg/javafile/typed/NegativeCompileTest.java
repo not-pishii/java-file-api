@@ -35,6 +35,7 @@ class NegativeCompileTest {
             + Stream.of(
                             "me.supcheg.javafile.facts",
                             "me.supcheg.javafile.typed.testfacts.java.lang",
+                            "me.supcheg.javafile.typed.testfacts.java.util",
                             "me.supcheg.javafile.typed.testfacts.java.util.function",
                             "me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures",
                             "me.supcheg.javafile.typed.fixtures",
@@ -492,15 +493,26 @@ class NegativeCompileTest {
                 """.formatted(statements);
     }
 
+    /// The header and the first constructor of a class that extends `Base`: `sh` and `cb`.
+    private static final String SUBCLASS = "var sh = h.extends_(Base_.extend(h.self()));"
+            + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
+
     @Test
     void aSubclassDeclaredByItsHeaderCompiles() {
         assertThat(compile(
                         "Subclass",
-                        inHeader("var cb = h.extends_(Base_.extend(h.self()))"
-                                + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
-                                + " var hook = cb.protected_(Base_.hook_String);"
+                        inHeader(SUBCLASS + " var hook = cb.protected_(Base_.hook_String);"
                                 + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, hook,"
                                 + " literal(\"x\"))));")))
+                .succeeded();
+        assertThat(compile(
+                        "Extending",
+                        inHeader("var list = new AbstractList_<>(String_.TOKEN); var eh = h.extending(list.token);"
+                                + " var get = eh.overriding(list.get_int);"
+                                + " var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);"
+                                + " var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));"
+                                + " var make = sh.declareConstructor();"
+                                + " sh.body(make, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));")))
                 .succeeded();
     }
 
@@ -510,23 +522,31 @@ class NegativeCompileTest {
                 "NoConstructor",
                 inHeader("h.extends_(Base_.extend(h.self())).body();"),
                 "no suitable method found for body(no arguments)");
+        assertRejected(
+                "NoBody",
+                inHeader("var sh = h.extends_(Base_.extend(h.self())); sh.body(sh.declareConstructor());"),
+                "no suitable method found for body(me.supcheg.javafile.facts.CtorRef0<Self>)");
     }
 
     @Test
     void aConstructorOfASubclassEndsBySuperAlone() {
         assertRejected(
                 "NoSuper",
-                inHeader("h.extends_(Base_.extend(h.self())).body(ctor -> null).constructor("
-                        + "(b, self) -> b.end());"),
+                inHeader("var sh = h.extends_(Base_.extend(h.self()));"
+                        + " sh.body(sh.declareConstructor(), (b, self) -> b.end());"),
                 "incompatible parameter types in lambda expression");
+        assertRejected(
+                "DefinedWithoutSuper",
+                inHeader(SUBCLASS + " cb.define(cb.declareConstructor(String_.TOKEN), (b, self, s) -> b.end());"),
+                "no suitable method found for define(me.supcheg.javafile.facts.CtorRef1<Self,java.lang.String>");
     }
 
     @Test
     void superCallsAConstructorOfTheSuperclass() {
         assertRejected(
                 "SuperOfAnother",
-                inHeader(
-                        "h.extends_(Base_.extend(h.self())).body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
+                inHeader("var sh = h.extends_(Base_.extend(h.self()));"
+                        + " sh.body(sh.declareConstructor(), ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
                 "no suitable method found for super_(me.supcheg.javafile.facts.CtorRef0<me.supcheg.javafile.typed.fixtures.Mid>");
     }
 
@@ -534,10 +554,17 @@ class NegativeCompileTest {
     void aProtectedFactIsTakenOutOfASupertypeOfTheSuperclassAlone() {
         assertRejected(
                 "ProtectedOfAnother",
-                inHeader(
-                        "h.extends_(Base_.extend(h.self())).body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))"
-                                + ".protected_(Mid_.quiet);"),
+                inHeader(SUBCLASS + " cb.protected_(Mid_.quiet);"),
                 "method protected_ in interface me.supcheg.javafile.typed.SuperAccess<Self,S> cannot be applied to given types");
+        assertRejected(
+                "ProtectedOfAnotherInTheHeader",
+                inHeader("h.extending(Base_.TOKEN).protected_(Shape_.describe_String);"),
+                "method protected_ in class me.supcheg.javafile.typed.ExtendingHeader<Self,S> cannot be applied to given"
+                        + " types");
+        assertRejected(
+                "ProtectedBeforeTheSuperclassIsNamed",
+                inHeader("h.protected_(Shape_.describe_String);"),
+                "cannot find symbol");
         assertRejected(
                 "ProtectedUsedHeldBack",
                 "void use() { call(literal(\"x\"), Base_.hook_String, literal(\"y\")); }",
@@ -545,18 +572,24 @@ class NegativeCompileTest {
     }
 
     @Test
+    void aClassExtendsTheClassItSaidItIsAboutToExtend() {
+        assertRejected(
+                "ExtendsAnother",
+                inHeader("h.extending(Base_.TOKEN).extends_(Mid_.extend(h.self()));"),
+                "incompatible types",
+                "me.supcheg.javafile.typed.fixtures.Mid");
+    }
+
+    @Test
     void superIsCalledOnThisAndOfAMethodOfTheSuperclass() {
         assertRejected(
                 "SuperOnAValue",
-                inHeader("var cb = h.extends_(Base_.extend(h.self()))"
-                        + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
-                        + " cb.method(\"m\", String_.TOKEN, cb.self(), (b, self, other) ->"
+                inHeader(SUBCLASS + " cb.method(\"m\", String_.TOKEN, cb.self(), (b, self, other) ->"
                         + " b.return_(cb.superCall(other, Base_.greet)));"),
                 "no suitable method found for superCall");
         assertRejected(
                 "SuperOfAnotherClass",
-                inHeader("var cb = h.extends_(Base_.extend(h.self()))"
-                        + ".body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));"
+                inHeader(SUBCLASS
                         + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, Mid_.label)));"),
                 "no suitable method found for superCall");
     }
@@ -574,9 +607,9 @@ class NegativeCompileTest {
     void aClassIsAnExceptionByItsWitnessAlone() {
         assertRejected(
                 "ThrowingSelf",
-                inHeader("var cb = h.extends_(Exception_.extend(h.self()))"
-                        + ".body(ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));"
-                        + " cb.throwing(cb.self());"),
+                inHeader("var sh = h.extends_(Exception_.extend(h.self()));"
+                        + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Exception_.new_, (b, self) ->"
+                        + " b.end())); cb.throwing(cb.self());"),
                 "no suitable method found for throwing");
     }
 

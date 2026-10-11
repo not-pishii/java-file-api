@@ -8,6 +8,7 @@ public class Base {
     public final String name;
     public final Op op = Op.SUB;
     protected int hits;
+    protected static int limit = 3;
 
     public Base() {
         this.name = "base";

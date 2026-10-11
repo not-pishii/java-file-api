@@ -176,7 +176,8 @@ public final class Versions {
             new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
-                    h.extends_(Svc_.extend(h.self())).body(ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
+                    var sh = h.extends_(Svc_.extend(h.self()));
+                    sh.body(sh.declareConstructor(), ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
                 }
             };
 

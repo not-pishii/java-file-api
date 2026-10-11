@@ -1,8 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.Complete;
-import me.supcheg.javafile.facts.MemberFact;
-import me.supcheg.javafile.facts.Protected;
+import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 
 /// The first stage of the header of a class ([Header]): the class has a
@@ -27,20 +26,16 @@ public final class ClassHeader<Self> extends Header<Self> {
         return new ObjectHeader<>(declaration());
     }
 
-    /// Takes the fact of a `protected` method out of its wrapper before the class has its
-    /// superclass, for the one thing that needs it there: `h.overriding(h.protected_(base.hook))`,
-    /// the intention to override a `protected` abstract method, which the proof `extends_` takes
-    /// has a step for. Among the members the builder of a subclass does this by its type
-    /// ([SuperAccess#protected_]); here the superclass is not named yet, so that the class is a
-    /// subclass of the owner of the member is checked when it is — by `extends_` or `extendsObject`,
-    /// one of which every declaration comes to.
+    /// Names the class this one is about to extend, before it extends it: the stage that takes the
+    /// facts of the `protected` members of `S` out, for the intentions the proof needs
+    /// ([ExtendingHeader]). A class whose superclass has no `protected` abstract method goes
+    /// straight to [#extends_].
     ///
-    /// @param held the fact, held back
-    /// @param <F> the fact
-    /// @return the fact
-    /// @throws IllegalStateException if the class has its superclass already
-    public <F extends MemberFact> F protected_(Protected<?, F> held) {
-        return declaration().open(held);
+    /// @param superclass the class, with its type arguments — `list.token` of a metamodel instance
+    /// @param <S> the class
+    /// @return the stage of a class about to extend `S`
+    public <S> ExtendingHeader<Self, S> extending(ExtendableClassToken<S> superclass) {
+        return new ExtendingHeader<>(declaration(), superclass);
     }
 
     /// The class extends a class, by the proof that it has every abstract method of it — what the
