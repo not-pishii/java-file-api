@@ -61,7 +61,7 @@ class InheritanceVerdictTest {
     private static final Class<IllegalArgumentException> AT_THE_PLACE = IllegalArgumentException.class;
 
     private static JavaFile file(TypedJavaFile.TypedClassHeaderSpec spec) {
-        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, spec);
+        return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, spec);
     }
 
     @Nested

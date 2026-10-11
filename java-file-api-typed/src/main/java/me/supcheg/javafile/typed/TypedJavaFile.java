@@ -49,7 +49,7 @@ public final class TypedJavaFile {
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from; as the mismatch is, a [me.supcheg.javafile.facts.FactException]
     public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassSpec spec) {
-        return class_(target, desc, new TypedClassHeaderSpec() {
+        return declareClass(target, desc, new TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 spec.build(h.extendsObject().body());
@@ -62,7 +62,7 @@ public final class TypedJavaFile {
     /// extends and implements, and declares the members with the builder the header ends in:
     ///
     /// ```java
-    /// JavaFile file = TypedJavaFile.class_(target, desc, new TypedJavaFile.TypedClassHeaderSpec() {
+    /// JavaFile file = TypedJavaFile.declareClass(target, desc, new TypedJavaFile.TypedClassHeaderSpec() {
     ///     public <Self> void build(ClassHeader<Self> h) {
     ///         var cmp = new Comparable_<>(h.self());
     ///         var compareTo = h.overriding(cmp.compareTo_T);
@@ -83,7 +83,7 @@ public final class TypedJavaFile {
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from
-    public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassHeaderSpec spec) {
+    public static JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypedClassHeaderSpec spec) {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
         ClassDeclaration.Declared declared = declare(target, desc, spec);

@@ -173,36 +173,36 @@ public final class Versions {
             };
 
     public static void aProofHoldsOfTheTypeItWasMadeOf(Typed typed) {
-        assertThat(typed.render(IMPLEMENTS_FN))
+        assertThat(typed.declare(IMPLEMENTS_FN))
                 .contains("public final class Out implements Fn {")
                 .contains("@Override\n    public String apply(String v0) {");
-        assertThat(typed.render(IMPLEMENTS_MARKER)).contains("public final class Out implements Marker {");
+        assertThat(typed.declare(IMPLEMENTS_MARKER)).contains("public final class Out implements Marker {");
         // a version that changes another type is the same type to the proof
-        assertThat(typed.against("added-method").render(IMPLEMENTS_FN)).contains("implements Fn {");
+        assertThat(typed.against("added-method").declare(IMPLEMENTS_FN)).contains("implements Fn {");
     }
 
     public static void anAbstractMethodTheVersionAddsHasNoStepInTheProof(Typed typed) {
         // Marker_ has no fact the version breaks, so it holds: the heritage is that of the version
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> typed.against("marker-abstract-method").render(IMPLEMENTS_MARKER))
+                .isThrownBy(() -> typed.against("marker-abstract-method").declare(IMPLEMENTS_MARKER))
                 .withMessageContaining("class out.Out cannot implement p.Marker by")
                 .withMessageContaining("on the target classpath the type has the abstract method mark() of p.Marker,"
                         + " which the proof has no step for");
         // of a functional interface the second abstract method takes the fact of the first away
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
-                .isThrownBy(() -> typed.against("second-abstract-method").render(IMPLEMENTS_FN))
+                .isThrownBy(() -> typed.against("second-abstract-method").declare(IMPLEMENTS_FN))
                 .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
     }
 
     public static void aMethodTheVersionRemovesIsNotImplemented(Typed typed) {
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
-                .isThrownBy(() -> typed.against("fn-removed-method").render(IMPLEMENTS_FN))
+                .isThrownBy(() -> typed.against("fn-removed-method").declare(IMPLEMENTS_FN))
                 .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
     }
 
     public static void anAbstractMethodTheVersionGivesABodyIsAnotherFact(Typed typed) {
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
-                .isThrownBy(() -> typed.against("fn-default-method").render(IMPLEMENTS_FN))
+                .isThrownBy(() -> typed.against("fn-default-method").declare(IMPLEMENTS_FN))
                 .withMessageContaining("metamodel gen.facts.p.Fn_ does not match p.Fn on the target classpath");
     }
 

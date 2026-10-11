@@ -399,7 +399,7 @@ public final class FixtureRun {
         /// Renders in a compilation that has the library alone, against
         /// its target classpath.
         private Rendering rendering(TypedJavaFile.TypedClassSpec spec) {
-            return rendering(new TypedJavaFile.TypedClassHeaderSpec() {
+            return declaring(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     spec.build(h.extendsObject().body());
@@ -407,7 +407,7 @@ public final class FixtureRun {
             });
         }
 
-        private Rendering rendering(TypedJavaFile.TypedClassHeaderSpec spec) {
+        private Rendering declaring(TypedJavaFile.TypedClassHeaderSpec spec) {
             return Javac.plain().alone().classpath(library.get()).inFirstRound(processing -> render(processing, spec));
         }
 
@@ -436,7 +436,7 @@ public final class FixtureRun {
                 return found;
             });
             try {
-                String source = TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), spec)
+                String source = TypedJavaFile.declareClass(target, ClassDesc.of("out", "Out"), spec)
                         .render();
                 return new Rendering.Rendered(source, List.copyOf(verified));
             } catch (RuntimeException rejected) {
@@ -450,8 +450,8 @@ public final class FixtureRun {
         }
 
         @Override
-        public String render(TypedJavaFile.TypedClassHeaderSpec spec) {
-            return switch (rendering(spec)) {
+        public String declare(TypedJavaFile.TypedClassHeaderSpec spec) {
+            return switch (declaring(spec)) {
                 case Rendering.Rendered(String source, List<String> _) -> source;
                 case Rendering.Rejected(RuntimeException reason, List<String> _) -> throw reason;
             };

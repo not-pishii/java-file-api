@@ -47,7 +47,7 @@ class ImplementsTest {
     private static final Comparator_<String> COMPARATOR = new Comparator_<>(String_.TOKEN);
 
     private static JavaFile file(TypedJavaFile.TypedClassHeaderSpec spec) {
-        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, spec);
+        return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, spec);
     }
 
     @Nested
