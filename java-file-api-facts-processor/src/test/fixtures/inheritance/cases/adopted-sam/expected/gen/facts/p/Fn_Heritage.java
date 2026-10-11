@@ -60,13 +60,13 @@ public final class Fn_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared implements [Fn]: a step per abstract method follows, in the order of their names.
+    /// Starts the proof that a class being declared implements [Fn]: a step per abstract method follows, in the order of their names. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public <Self> Implement<Self> implement(DeclaredToken<Fn> type, RefToken<Self> self) {
+    final <Self> Implement<Self> implement(DeclaredToken<Fn> type, RefToken<Self> self) {
         return new Implement<>(UnsafeFacts.steps(type, self));
     }
 

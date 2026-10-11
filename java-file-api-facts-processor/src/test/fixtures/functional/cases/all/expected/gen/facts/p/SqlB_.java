@@ -36,7 +36,7 @@ import p.SqlB;
 ///
 /// A generated class extends or implements [SqlB] by the proof its metamodel starts, with the stages of `SqlB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SqlB.class, fingerprint = "567fcfe151102db19d67b68f71e07eb3116cd1b22e41faaca5cede1dc2b29f0e", complete = true, format = 12)
+@GeneratedMetamodel(of = SqlB.class, fingerprint = "567fcfe151102db19d67b68f71e07eb3116cd1b22e41faaca5cede1dc2b29f0e", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

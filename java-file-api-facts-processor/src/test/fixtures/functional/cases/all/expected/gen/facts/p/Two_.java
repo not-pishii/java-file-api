@@ -32,7 +32,7 @@ import p.Two;
 ///
 /// A generated class extends or implements [Two] by the proof its metamodel starts, with the stages of `Two_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Two.class, fingerprint = "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", complete = true, format = 12)
+@GeneratedMetamodel(of = Two.class, fingerprint = "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -37,7 +37,7 @@ import p.OnHid;
 ///
 /// A generated class extends or implements [OnHid] by the proof its metamodel starts, with the stages of `OnHid_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OnHid.class, fingerprint = "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", complete = true, format = 12)
+@GeneratedMetamodel(of = OnHid.class, fingerprint = "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

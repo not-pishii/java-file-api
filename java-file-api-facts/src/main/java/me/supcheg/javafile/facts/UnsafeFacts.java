@@ -63,7 +63,8 @@ import java.util.function.Supplier;
 ///
 /// How a class being declared has a method of a supertype is vouched for by
 /// `overriding0`..`overriding12` and `voidOverriding0`.., where the class
-/// declares a method that overrides it, and by `inherited0`..`inherited12`
+/// declares a method that overrides it — `selfOverriding0`.. where the
+/// result of that method is the class itself —, and by `inherited0`..`inherited12`
 /// and `voidInherited0`.., where it has the one of its superclass: the typed
 /// layer makes them, in the header of a class.
 ///

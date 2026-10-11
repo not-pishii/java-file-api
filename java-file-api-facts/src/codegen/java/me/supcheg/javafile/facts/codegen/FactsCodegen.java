@@ -105,7 +105,7 @@ public final class FactsCodegen {
         for (int n = 0; n <= MAX_ARITY; n++) {
             for (boolean hasResult : List.of(true, false)) {
                 files.add(implementation(hasResult, n));
-                for (Had had : Had.values()) {
+                for (Had had : Had.of(hasResult).toList()) {
                     files.add(implemented(had, hasResult, n));
                 }
             }
@@ -444,7 +444,7 @@ public final class FactsCodegen {
             }
             for (int n = 0; n <= MAX_ARITY; n++) {
                 for (boolean hasResult : List.of(true, false)) {
-                    for (Had had : Had.values()) {
+                    for (Had had : Had.of(hasResult).toList()) {
                         implementationFactory(cb, had, hasResult, n);
                     }
                 }
@@ -469,6 +469,10 @@ public final class FactsCodegen {
     private enum Had {
         /// By a method of its own that overrides it: `OverridingN`, which gives the fact of that method.
         OVERRIDING("Overriding", "ByOverride"),
+        /// By a method of its own whose result is the class itself: `SelfOverridingN`, typed by a
+        /// supertype of the class the result of the overridden method takes, which gives the fact of
+        /// a method of the result `Self`.
+        SELF_OVERRIDING("SelfOverriding", "ByOverride"),
         /// By the one it inherits from its superclass: `InheritedN`, which has no method to give.
         INHERITED("Inherited", "ByInheritance");
 
@@ -483,6 +487,11 @@ public final class FactsCodegen {
         String name(boolean hasResult, int n) {
             return (hasResult ? "" : "Void") + family + n;
         }
+
+        /// The classes of an implementation family: a `void` method has no result to be the class.
+        static Stream<Had> of(boolean hasResult) {
+            return Stream.of(values()).filter(had -> hasResult || had != SELF_OVERRIDING);
+        }
     }
 
     /// `ImplementationN<Self, R, A1..AN>` or `VoidImplementationN<Self, A1..AN>`: how a class has a
@@ -494,7 +503,7 @@ public final class FactsCodegen {
             cb.withModifiers(Modifier.ABSTRACT);
             implementationVars(hasResult, n).forEach(v -> cb.withTypeParam(v));
             cb.withInterface(Types.parameterized(IMPLEMENTATION, var("Self")));
-            cb.withPermits(Stream.of(Had.values())
+            cb.withPermits(Had.of(hasResult)
                     .map(had -> ClassDesc.of(FACTS, had.name(hasResult, n)))
                     .toArray(ClassDesc[]::new));
             packagePrivateConstructor(cb, List.of(), b -> {});
@@ -517,10 +526,14 @@ public final class FactsCodegen {
                     List.of(new Param("how", Types.of(had.how))),
                     b -> b.assign(this_().field("how"), field("how")));
             override(cb, "how", Types.of(had.how), this_().field("how"));
-            if (had == Had.OVERRIDING) {
+            if (had != Had.INHERITED) {
+                // the method of a `SelfOverridingN<Self, R, ..>` is of the result `Self`, not `R`
+                List<String> own = had == Had.SELF_OVERRIDING
+                        ? vars.stream().map(v -> v.equals("R") ? "Self" : v).toList()
+                        : vars;
                 cb.withMethod(
                         "method",
-                        applied(ClassDesc.of(FACTS, (hasResult ? "MethodRef" : "VoidMethodRef") + n), vars),
+                        applied(ClassDesc.of(FACTS, (hasResult ? "MethodRef" : "VoidMethodRef") + n), own),
                         mb -> {
                             mb.withModifiers(Modifier.PUBLIC);
                             mb.withBody(b -> b.return_(

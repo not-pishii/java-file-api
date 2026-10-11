@@ -28,7 +28,7 @@ import p.Shape;
 ///
 /// No generated class extends or implements [Shape]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shape.class, fingerprint = "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", complete = true, format = 12)
+@GeneratedMetamodel(of = Shape.class, fingerprint = "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

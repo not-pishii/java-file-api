@@ -30,7 +30,7 @@ import p.Sealed;
 ///
 /// No generated class extends or implements [Sealed]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sealed.class, fingerprint = "62078dbbf79a8c80553953d51f15540e04a825664b8de4cd9f7fa2ad7c153862", complete = true, format = 12)
+@GeneratedMetamodel(of = Sealed.class, fingerprint = "62078dbbf79a8c80553953d51f15540e04a825664b8de4cd9f7fa2ad7c153862", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

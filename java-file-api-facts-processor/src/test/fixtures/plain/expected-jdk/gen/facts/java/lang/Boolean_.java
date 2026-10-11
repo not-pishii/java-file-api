@@ -27,7 +27,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Boolean]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Boolean.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Boolean.class, fingerprint = "ee6f9a927c06f65d485074f2f21aca51879c70e566050b98cff42290af8710e4", complete = false, format = 12)
+@GeneratedMetamodel(of = Boolean.class, fingerprint = "ee6f9a927c06f65d485074f2f21aca51879c70e566050b98cff42290af8710e4", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

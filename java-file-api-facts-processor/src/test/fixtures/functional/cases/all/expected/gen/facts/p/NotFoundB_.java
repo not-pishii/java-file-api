@@ -36,7 +36,7 @@ import p.NotFoundB;
 ///
 /// A generated class extends or implements [NotFoundB] by the proof its metamodel starts, with the stages of `NotFoundB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", complete = true, format = 12)
+@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -40,7 +40,7 @@ import p.Grid;
 /// @param <A> a type argument of [Grid]
 /// @param <B> a type argument of [Grid]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 12)
+@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -33,7 +33,7 @@ import p.OverDollar;
 ///
 /// A generated class extends or implements [OverDollar] by the proof its metamodel starts, with the stages of `OverDollar_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OverDollar.class, fingerprint = "5e20b05c317b7c3762198b49a831d568c162008cd5b55d7853c5168ecaa5aec3", complete = true, format = 12)
+@GeneratedMetamodel(of = OverDollar.class, fingerprint = "5e20b05c317b7c3762198b49a831d568c162008cd5b55d7853c5168ecaa5aec3", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

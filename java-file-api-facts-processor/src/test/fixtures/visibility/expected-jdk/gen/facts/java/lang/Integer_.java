@@ -48,7 +48,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [Integer]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 12)
+@GeneratedMetamodel(of = Integer.class, fingerprint = "098916a55e76e82a51db243f50865b4167dd36a6ed3c6d96cc767b9728774ef2", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

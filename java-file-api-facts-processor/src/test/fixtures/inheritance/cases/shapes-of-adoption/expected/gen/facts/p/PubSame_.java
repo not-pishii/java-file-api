@@ -39,7 +39,7 @@ import p.PubSame;
 ///
 /// A generated class extends or implements [PubSame] by the proof its metamodel starts, with the stages of `PubSame_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 12)
+@GeneratedMetamodel(of = PubSame.class, fingerprint = "65b165413e5e82b527c4bd7bd43ae8bb2df6bae5eefb27536c789ece164918f7", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -204,7 +204,8 @@ class NarrowedCallTest {
                         + " me.supcheg.example.Probe: the return types are incompatible (JLS 8.4.8.3) — the result"
                         + " of an override is that of the method or a subtype of it the typed layer can prove one,"
                         + " and no supertype the class has named so far is known to be one — a supertype that makes"
-                        + " the class of it is named before the one that asks for it",
+                        + " the class of it is named before the one that asks for it, or said first by"
+                        + " becoming(token)",
                 "implements Chained, Linked",
                 "@Override public Probe next() { return this; }");
     }

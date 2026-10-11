@@ -51,6 +51,7 @@ final class ClassDeclaration<Self> {
     private final List<Implemented.ByInheritance> inheritances = new ArrayList<>();
     private final List<Protected<?, ?>> opened = new ArrayList<>();
     private final List<Intention> constructors = new ArrayList<>();
+    private final List<DeclaredToken<?>> promised = new ArrayList<>();
     private Phase<Self> phase = new Phase.Named<>();
 
     ClassDeclaration(TargetClasspath target, ClassDesc desc) {
@@ -151,6 +152,33 @@ final class ClassDeclaration<Self> {
         requireNamed();
         opened.add(held);
         return UnsafeFacts.open(held);
+    }
+
+    /// The class says it is about to name `supertype`, and has the witness of it at once: held to
+    /// where the header ends ([#members]).
+    ///
+    /// @param supertype the type, with its type arguments
+    /// @param <X> the type
+    /// @return the witness that the class is of the type
+    /// @throws IllegalStateException if the header of the class has ended
+    <X> Upcast<Self, X> promise(DeclaredToken<X> supertype) {
+        Scopes.requireNoneOpen("a supertype of " + described);
+        if (phase instanceof Phase.Members<Self>) {
+            throw new IllegalStateException(described + " cannot say it is about to be " + supertype
+                    + ": the header of the class has ended, and the witness of a supertype is the one"
+                    + " naming it gave");
+        }
+        promised.add(supertype);
+        return new Upcast<>(self, supertype);
+    }
+
+    /// The class as the proof of a subtype knows it in its header: of the supertypes it has named,
+    /// and of those it said it is about to name — which the end of the header holds it to.
+    private Subtyping.Declaring declaring(Inheritance inherited) {
+        return new Subtyping.Declaring(
+                self.erasure(),
+                Stream.concat(inherited.declaring(self).supertypes().stream(), promised.stream())
+                        .toList());
     }
 
     private void requireNamed() {
@@ -296,7 +324,7 @@ final class ClassDeclaration<Self> {
                 case Stepped.Inherited(var method) ->
                     merged.group(method.signature())
                             .ifPresent(group -> SignatureRegistry.requireInherited(
-                                    described, method, supertype, group, merged.declaring(self)));
+                                    described, method, supertype, group, declaring(merged)));
             }
         });
         requireOverrides(merged, intentions.stream());
@@ -401,6 +429,16 @@ final class ClassDeclaration<Self> {
             throw new IllegalStateException("the members of " + described + " do not begin here: they follow"
                     + " the header of the class, once");
         }
+        promised.stream()
+                .filter(supertype ->
+                        !Tokens.sameType(supertype, superclass.token()) && !interfaces.contains(supertype.typeRef()))
+                .findFirst()
+                .ifPresent(supertype -> {
+                    throw new IllegalArgumentException(described + " said it was about to be " + supertype
+                            + " (becoming), and its header ends without it: the class extends "
+                            + superclass.token() + " and implements " + interfaces + " — a witness is"
+                            + " of a type the class names, with these very type arguments");
+                });
         B builder = make.apply(inherited, superclass);
         phase = new Phase.Members<>(builder, superclass, interfaces);
         intentions.forEach(intention -> builder.declareOverride(intention.own(), intention.thrown()));
@@ -441,8 +479,8 @@ final class ClassDeclaration<Self> {
     private void requireOverrides(Inheritance inherited, Stream<Intention> intended) {
         intended.forEach(intention -> inherited
                 .group(intention.own().signature())
-                .ifPresent(group -> SignatureRegistry.requireOverrides(
-                        described, intention.own(), group, inherited.declaring(self))));
+                .ifPresent(group ->
+                        SignatureRegistry.requireOverrides(described, intention.own(), group, declaring(inherited))));
     }
 
     /// A method the class said it overrides, in its header.

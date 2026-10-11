@@ -35,7 +35,7 @@ import p.Other;
 ///
 /// A generated class extends or implements [Other] by the proof its metamodel starts, with the stages of `Other_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Other.class, fingerprint = "de999698d03588d9c90201f849d56b28ef40303740305cebd1f6612637bee2e2", complete = true, format = 12)
+@GeneratedMetamodel(of = Other.class, fingerprint = "de999698d03588d9c90201f849d56b28ef40303740305cebd1f6612637bee2e2", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

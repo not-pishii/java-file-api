@@ -47,12 +47,15 @@ package me.supcheg.javafile.facts.meta;
 ///   implement: `extend` or `implement`, and a step per abstract method.
 /// - 12: a metamodel has the entry as a method of its own, `extend` or
 ///   `implement`; a member of its type named so gives way to it.
+/// - 13: the entry of the class `X_Heritage` is of its package, for the
+///   metamodel alone: a generator starts a proof by the method of the
+///   metamodel, which gives the token of the type itself.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 12;
+    public static final int VERSION = 13;
 
     private MetamodelFormat() {}
 }

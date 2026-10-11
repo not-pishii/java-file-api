@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Number]: it is only mentioned in the signatures of [p.Mix]. For the facts of its members add `Number.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "3f44970a20d3e54958502222886ebd9376488a2f68acdad68970b61426e7039d", complete = false, format = 12)
+@GeneratedMetamodel(of = Number.class, fingerprint = "3f44970a20d3e54958502222886ebd9376488a2f68acdad68970b61426e7039d", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -32,7 +32,7 @@ import p.Sub;
 ///
 /// A generated class extends or implements [Sub] by the proof its metamodel starts, with the stages of `Sub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub.class, fingerprint = "a1e7263914436c6d09320927dafa24a13c04ea98979d62e09f62e6cef8bd29a4", complete = true, format = 12)
+@GeneratedMetamodel(of = Sub.class, fingerprint = "a1e7263914436c6d09320927dafa24a13c04ea98979d62e09f62e6cef8bd29a4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

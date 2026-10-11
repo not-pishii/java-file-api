@@ -35,7 +35,7 @@ import p.PObj;
 ///
 /// A generated class extends or implements [PObj] by the proof its metamodel starts, with the stages of `PObj_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 12)
+@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

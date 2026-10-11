@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Lookup]: it is only mentioned in the signatures of [Integer] and [java.lang.constant.ConstantDesc]. For the facts of its members add `MethodHandles.Lookup.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lookup.class, fingerprint = "5ca41d3d53f4e061c29fbdbe99d67d5db492aab255b0936148493534154de047", complete = false, format = 12)
+@GeneratedMetamodel(of = Lookup.class, fingerprint = "5ca41d3d53f4e061c29fbdbe99d67d5db492aab255b0936148493534154de047", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -108,14 +108,14 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared extends [Uses], which has no abstract method: the proof is complete.
+    /// Starts the proof that a class being declared extends [Uses], which has no abstract method: the proof is complete. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the proof
-    public <T extends Data & Canonical<Data>, Self> Complete<Self, Uses<T>> extend(DeclaredToken<Uses<T>> type, RefToken<Self> self) {
+    final <T extends Data & Canonical<Data>, Self> Complete<Self, Uses<T>> extend(DeclaredToken<Uses<T>> type, RefToken<Self> self) {
         return UnsafeFacts.steps(type, self).complete();
     }
 }

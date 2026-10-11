@@ -31,7 +31,7 @@ import p.Gen;
 ///
 /// No generated class extends or implements [Gen]: its abstract method id(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "8c8bd4e6ba03225c6f269ff0d5c2fa489e6fbe296cac687241f00aecfd494da5", complete = true, format = 12)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "8c8bd4e6ba03225c6f269ff0d5c2fa489e6fbe296cac687241f00aecfd494da5", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

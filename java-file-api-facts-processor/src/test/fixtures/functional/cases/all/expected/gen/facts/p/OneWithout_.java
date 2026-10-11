@@ -32,7 +32,7 @@ import p.OneWithout;
 ///
 /// A generated class extends or implements [OneWithout] by the proof its metamodel starts, with the stages of `OneWithout_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OneWithout.class, fingerprint = "9d2f73ff01017a851cc9f610d93c72976b7e45eef0619759b492aaa56154d7d8", complete = true, format = 12)
+@GeneratedMetamodel(of = OneWithout.class, fingerprint = "9d2f73ff01017a851cc9f610d93c72976b7e45eef0619759b492aaa56154d7d8", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

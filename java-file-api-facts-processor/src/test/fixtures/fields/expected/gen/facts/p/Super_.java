@@ -36,7 +36,7 @@ import p.Super;
 ///
 /// A generated class extends or implements [Super] by the proof its metamodel starts, with the stages of `Super_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Super.class, fingerprint = "dc72f327b0601b92377dd13a5ec8a0a831740928ba7d42ce9ec2336446400d7a", complete = true, format = 12)
+@GeneratedMetamodel(of = Super.class, fingerprint = "dc72f327b0601b92377dd13a5ec8a0a831740928ba7d42ce9ec2336446400d7a", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,7 +30,7 @@ import p.Empty;
 ///
 /// A generated class extends or implements [Empty] by the proof its metamodel starts, with the stages of `Empty_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Empty.class, fingerprint = "e918bf1e27d764bcbc892322cfe2a7aa425496e21db566469480ace6f9430287", complete = true, format = 12)
+@GeneratedMetamodel(of = Empty.class, fingerprint = "e918bf1e27d764bcbc892322cfe2a7aa425496e21db566469480ace6f9430287", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

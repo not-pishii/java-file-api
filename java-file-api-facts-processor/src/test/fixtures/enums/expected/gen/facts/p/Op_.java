@@ -39,7 +39,7 @@ import p.Op;
 ///
 /// No generated class extends or implements [Op]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Op.class, fingerprint = "d4e1800ed71c2f5b6d6fb21117d8af63c60573ceb692ca9ba04eb09a9239327f", complete = true, format = 12)
+@GeneratedMetamodel(of = Op.class, fingerprint = "d4e1800ed71c2f5b6d6fb21117d8af63c60573ceb692ca9ba04eb09a9239327f", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

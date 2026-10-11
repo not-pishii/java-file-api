@@ -48,7 +48,7 @@ import p.Covariant;
 ///
 /// A generated class extends or implements [Covariant] by the proof its metamodel starts, with the stages of `Covariant_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 12)
+@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

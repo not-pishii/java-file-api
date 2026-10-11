@@ -39,7 +39,7 @@ import p.Both;
 ///
 /// A generated class extends or implements [Both] by the proof its metamodel starts, with the stages of `Both_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "a3eeda83c9ccbbd945ffc15c4c38a71d57b03537e229dc83fbfb6183ebde5b9f", complete = true, format = 12)
+@GeneratedMetamodel(of = Both.class, fingerprint = "a3eeda83c9ccbbd945ffc15c4c38a71d57b03537e229dc83fbfb6183ebde5b9f", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -43,7 +43,7 @@ import u.facts.java.lang.Object_.Data;
 ///
 /// A generated class extends or implements [Object] by the proof its metamodel starts, with the stages of `Object_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 12)
+@GeneratedMetamodel(of = Object.class, fingerprint = "b716d7db63ea43130722258ae34b0c8024a890129e775f7201aa8a93f34d6244", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

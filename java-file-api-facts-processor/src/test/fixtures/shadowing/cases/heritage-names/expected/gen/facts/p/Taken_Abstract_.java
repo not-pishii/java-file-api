@@ -36,7 +36,7 @@ import p.Taken.Abstract;
 ///
 /// A generated class extends or implements [Abstract] by the proof its metamodel starts, with the stages of `Taken_Abstract_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abstract.class, fingerprint = "6c69fab365611ca425bfde461aabafb5b7a4e9752d7dfa3ff0ee4cdfaee6534a", complete = true, format = 12)
+@GeneratedMetamodel(of = Abstract.class, fingerprint = "6c69fab365611ca425bfde461aabafb5b7a4e9752d7dfa3ff0ee4cdfaee6534a", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

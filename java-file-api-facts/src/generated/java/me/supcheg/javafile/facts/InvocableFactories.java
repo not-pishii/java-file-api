@@ -426,6 +426,10 @@ abstract class InvocableFactories {
         return new Overriding0<>(how);
     }
 
+    public static <Self, R> SelfOverriding0<Self, R> selfOverriding0(ByOverride how) {
+        return new SelfOverriding0<>(how);
+    }
+
     public static <Self, R> Inherited0<Self, R> inherited0(ByInheritance how) {
         return new Inherited0<>(how);
     }
@@ -440,6 +444,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1> Overriding1<Self, R, A1> overriding1(ByOverride how) {
         return new Overriding1<>(how);
+    }
+
+    public static <Self, R, A1> SelfOverriding1<Self, R, A1> selfOverriding1(ByOverride how) {
+        return new SelfOverriding1<>(how);
     }
 
     public static <Self, R, A1> Inherited1<Self, R, A1> inherited1(ByInheritance how) {
@@ -458,6 +466,10 @@ abstract class InvocableFactories {
         return new Overriding2<>(how);
     }
 
+    public static <Self, R, A1, A2> SelfOverriding2<Self, R, A1, A2> selfOverriding2(ByOverride how) {
+        return new SelfOverriding2<>(how);
+    }
+
     public static <Self, R, A1, A2> Inherited2<Self, R, A1, A2> inherited2(ByInheritance how) {
         return new Inherited2<>(how);
     }
@@ -472,6 +484,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1, A2, A3> Overriding3<Self, R, A1, A2, A3> overriding3(ByOverride how) {
         return new Overriding3<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3> SelfOverriding3<Self, R, A1, A2, A3> selfOverriding3(ByOverride how) {
+        return new SelfOverriding3<>(how);
     }
 
     public static <Self, R, A1, A2, A3> Inherited3<Self, R, A1, A2, A3> inherited3(ByInheritance how) {
@@ -490,6 +506,10 @@ abstract class InvocableFactories {
         return new Overriding4<>(how);
     }
 
+    public static <Self, R, A1, A2, A3, A4> SelfOverriding4<Self, R, A1, A2, A3, A4> selfOverriding4(ByOverride how) {
+        return new SelfOverriding4<>(how);
+    }
+
     public static <Self, R, A1, A2, A3, A4> Inherited4<Self, R, A1, A2, A3, A4> inherited4(ByInheritance how) {
         return new Inherited4<>(how);
     }
@@ -504,6 +524,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1, A2, A3, A4, A5> Overriding5<Self, R, A1, A2, A3, A4, A5> overriding5(ByOverride how) {
         return new Overriding5<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5> SelfOverriding5<Self, R, A1, A2, A3, A4, A5> selfOverriding5(ByOverride how) {
+        return new SelfOverriding5<>(how);
     }
 
     public static <Self, R, A1, A2, A3, A4, A5> Inherited5<Self, R, A1, A2, A3, A4, A5> inherited5(ByInheritance how) {
@@ -522,6 +546,10 @@ abstract class InvocableFactories {
         return new Overriding6<>(how);
     }
 
+    public static <Self, R, A1, A2, A3, A4, A5, A6> SelfOverriding6<Self, R, A1, A2, A3, A4, A5, A6> selfOverriding6(ByOverride how) {
+        return new SelfOverriding6<>(how);
+    }
+
     public static <Self, R, A1, A2, A3, A4, A5, A6> Inherited6<Self, R, A1, A2, A3, A4, A5, A6> inherited6(ByInheritance how) {
         return new Inherited6<>(how);
     }
@@ -536,6 +564,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Overriding7<Self, R, A1, A2, A3, A4, A5, A6, A7> overriding7(ByOverride how) {
         return new Overriding7<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7> SelfOverriding7<Self, R, A1, A2, A3, A4, A5, A6, A7> selfOverriding7(ByOverride how) {
+        return new SelfOverriding7<>(how);
     }
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Inherited7<Self, R, A1, A2, A3, A4, A5, A6, A7> inherited7(ByInheritance how) {
@@ -554,6 +586,10 @@ abstract class InvocableFactories {
         return new Overriding8<>(how);
     }
 
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> SelfOverriding8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> selfOverriding8(ByOverride how) {
+        return new SelfOverriding8<>(how);
+    }
+
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> Inherited8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> inherited8(ByInheritance how) {
         return new Inherited8<>(how);
     }
@@ -568,6 +604,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Overriding9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> overriding9(ByOverride how) {
         return new Overriding9<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> SelfOverriding9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> selfOverriding9(ByOverride how) {
+        return new SelfOverriding9<>(how);
     }
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Inherited9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> inherited9(ByInheritance how) {
@@ -586,6 +626,10 @@ abstract class InvocableFactories {
         return new Overriding10<>(how);
     }
 
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> SelfOverriding10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> selfOverriding10(ByOverride how) {
+        return new SelfOverriding10<>(how);
+    }
+
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Inherited10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> inherited10(ByInheritance how) {
         return new Inherited10<>(how);
     }
@@ -602,6 +646,10 @@ abstract class InvocableFactories {
         return new Overriding11<>(how);
     }
 
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> SelfOverriding11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> selfOverriding11(ByOverride how) {
+        return new SelfOverriding11<>(how);
+    }
+
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Inherited11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> inherited11(ByInheritance how) {
         return new Inherited11<>(how);
     }
@@ -616,6 +664,10 @@ abstract class InvocableFactories {
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Overriding12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> overriding12(ByOverride how) {
         return new Overriding12<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> SelfOverriding12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> selfOverriding12(ByOverride how) {
+        return new SelfOverriding12<>(how);
     }
 
     public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Inherited12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> inherited12(ByInheritance how) {

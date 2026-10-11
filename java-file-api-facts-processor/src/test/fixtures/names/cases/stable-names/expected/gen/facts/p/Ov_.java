@@ -42,7 +42,7 @@ import p.Ov;
 ///
 /// A generated class extends or implements [Ov] by the proof its metamodel starts, with the stages of `Ov_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "ec95643e100ae9f4a4810980f017ea15f29356afd3f39ccc5277dcb6e60cd6a0", complete = true, format = 12)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "ec95643e100ae9f4a4810980f017ea15f29356afd3f39ccc5277dcb6e60cd6a0", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

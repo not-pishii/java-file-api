@@ -592,6 +592,91 @@ public abstract sealed class Declarations<Self>
         return own;
     }
 
+    /// Overrides a method of a supertype the class has by the witness `up` with a method whose
+    /// result is the class itself (JLS 8.4.5): that the class is of the result type of the method
+    /// is said by the witness `result`, and proven of every method the class inherits under the
+    /// signature ([Subtyping]).
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block and `this`
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R> MethodRef0<Self, Self> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef0<O, R> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody0<Self, Body<Self>, Self> body) {
+        return overriddenOfSelf(method, body);
+    }
+
+    /// Overrides a method with one parameter of a supertype the class has by the witness `up` with
+    /// a method whose result is the class itself, see [#override(Upcast, MethodRef0, Upcast, InstanceBody0)].
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R, A1> MethodRef1<Self, Self, A1> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef1<O, R, A1> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody1<Self, Body<Self>, Self, A1> body) {
+        return overriddenOfSelf(method, body);
+    }
+
+    /// Overrides a method with two parameters of a supertype the class has by the witness `up` with
+    /// a method whose result is the class itself, see [#override(Upcast, MethodRef0, Upcast, InstanceBody0)].
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R, A1, A2> MethodRef2<Self, Self, A1, A2> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef2<O, R, A1, A2> method,
+            Upcast<Self, ? extends R> result,
+            InstanceBody2<Self, Body<Self>, Self, A1, A2> body) {
+        return overriddenOfSelf(method, body);
+    }
+
+    final MethodRef0<Self, Self> overriddenOfSelf(MethodRef0<?, ?> method, InstanceBody0<Self, Body<Self>, Self> body) {
+        MethodRef0<Self, Self> own =
+                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    final <A1> MethodRef1<Self, Self, A1> overriddenOfSelf(
+            MethodRef1<?, ?, A1> method, InstanceBody1<Self, Body<Self>, Self, A1> body) {
+        MethodRef1<Self, Self, A1> own =
+                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    final <A1, A2> MethodRef2<Self, Self, A1, A2> overriddenOfSelf(
+            MethodRef2<?, ?, A1, A2> method, InstanceBody2<Self, Body<Self>, Self, A1, A2> body) {
+        MethodRef2<Self, Self, A1, A2> own =
+                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
     final VoidMethodRef0<Self> overridden(VoidMethodRef0<?> method, InstanceBody0<Self, VoidBody, Void> body) {
         VoidMethodRef0<Self> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());

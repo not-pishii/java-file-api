@@ -28,7 +28,7 @@ import p.Outer.E;
 ///
 /// `@Facts` does not ask for [E]: it is only mentioned in the signatures of [p.Outer]. For the facts of its members add `Outer.E.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = E.class, fingerprint = "9657a4f3df52edbf8bbcfad3b146578bbf4c681c414159cc3643739a73059c0a", complete = false, format = 12)
+@GeneratedMetamodel(of = E.class, fingerprint = "9657a4f3df52edbf8bbcfad3b146578bbf4c681c414159cc3643739a73059c0a", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

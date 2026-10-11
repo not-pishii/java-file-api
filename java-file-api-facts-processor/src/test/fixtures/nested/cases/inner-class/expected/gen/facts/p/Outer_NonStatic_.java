@@ -37,7 +37,7 @@ import p.Outer.NonStatic;
 ///
 /// No generated class extends or implements [NonStatic]: it is an inner class, which is extended with an instance of the class it is nested in.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NonStatic.class, fingerprint = "e0b75abc0dc33e16f40b3ca4966fe96e9168146a089e7c551322094e155eea6d", complete = true, format = 12)
+@GeneratedMetamodel(of = NonStatic.class, fingerprint = "e0b75abc0dc33e16f40b3ca4966fe96e9168146a089e7c551322094e155eea6d", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

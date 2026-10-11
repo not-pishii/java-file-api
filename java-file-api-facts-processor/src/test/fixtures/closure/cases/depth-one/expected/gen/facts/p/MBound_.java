@@ -26,7 +26,7 @@ import p.MBound;
 ///
 /// `@Facts` does not ask for [MBound]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `MBound.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = MBound.class, fingerprint = "eea1a61f2fa31712544332219ed82d8eb3119a877cc0d9c444dc69882dff7e15", complete = false, format = 12)
+@GeneratedMetamodel(of = MBound.class, fingerprint = "eea1a61f2fa31712544332219ed82d8eb3119a877cc0d9c444dc69882dff7e15", complete = false, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

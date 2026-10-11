@@ -37,7 +37,7 @@ import p.Rec;
 ///
 /// No generated class extends or implements [Rec]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Rec.class, fingerprint = "4cda76d7eb737465310031b2ef8d9339ed2fc56d820830272ea2a1877e1a46b8", complete = true, format = 12)
+@GeneratedMetamodel(of = Rec.class, fingerprint = "4cda76d7eb737465310031b2ef8d9339ed2fc56d820830272ea2a1877e1a46b8", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

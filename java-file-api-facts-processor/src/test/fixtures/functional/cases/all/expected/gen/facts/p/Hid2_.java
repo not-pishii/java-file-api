@@ -32,7 +32,7 @@ import p.Hid2;
 ///
 /// No generated class extends or implements [Hid2]: its abstract method s() mentions p.Secret, which a class of another package cannot name.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Hid2.class, fingerprint = "6f3a6ea15fa0fee6d0714c75e7cc140a7aaf86363bebedaf642ac0bce5c327f8", complete = true, format = 12)
+@GeneratedMetamodel(of = Hid2.class, fingerprint = "6f3a6ea15fa0fee6d0714c75e7cc140a7aaf86363bebedaf642ac0bce5c327f8", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

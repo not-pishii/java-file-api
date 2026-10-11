@@ -117,14 +117,14 @@ public final class Abs_Heritage implements Supplier<Told> {
         }
     }
 
-    /// Starts the proof that a class being declared extends [Abs]: a step per abstract method follows, in the order of their names.
+    /// Starts the proof that a class being declared extends [Abs]: a step per abstract method follows, in the order of their names. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
     ///
     /// @param type the token of the type
     /// @param self the token of the class being declared
     /// @param <T> a type argument of the type
     /// @param <Self> the class being declared
     /// @return the stage of the first step
-    public <T, Self> Extend<T, Self> extend(DeclaredToken<Abs<T>> type, RefToken<Self> self) {
+    final <T, Self> Extend<T, Self> extend(DeclaredToken<Abs<T>> type, RefToken<Self> self) {
         return new Extend<>(UnsafeFacts.steps(type, self));
     }
 

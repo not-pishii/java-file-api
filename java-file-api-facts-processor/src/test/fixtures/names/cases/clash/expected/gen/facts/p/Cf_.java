@@ -40,7 +40,7 @@ import p.Cf;
 ///
 /// A generated class extends or implements [Cf] by the proof its metamodel starts, with the stages of `Cf_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Cf.class, fingerprint = "caf2972b0aa2513df9602d8d91e854f4bd016e3ebb4f5e8fd30d12babac8c091", complete = true, format = 12)
+@GeneratedMetamodel(of = Cf.class, fingerprint = "caf2972b0aa2513df9602d8d91e854f4bd016e3ebb4f5e8fd30d12babac8c091", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

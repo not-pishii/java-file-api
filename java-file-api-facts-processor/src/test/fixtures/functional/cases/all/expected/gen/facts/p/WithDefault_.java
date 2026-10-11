@@ -36,7 +36,7 @@ import p.WithDefault;
 ///
 /// A generated class extends or implements [WithDefault] by the proof its metamodel starts, with the stages of `WithDefault_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithDefault.class, fingerprint = "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", complete = true, format = 12)
+@GeneratedMetamodel(of = WithDefault.class, fingerprint = "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"

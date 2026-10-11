@@ -37,7 +37,7 @@ import p.Over;
 ///
 /// A generated class extends or implements [Over] by the proof its metamodel starts, with the stages of `Over_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 12)
+@GeneratedMetamodel(of = Over.class, fingerprint = "0de1e531ecaabac9dbd77105a1b3f2ca7e6e5cb3ba47adb29723c6ce1e3b367c", complete = true, format = 13)
 @SuppressWarnings({
     "deprecation",
     "removal"
