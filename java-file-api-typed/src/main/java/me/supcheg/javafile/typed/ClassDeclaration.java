@@ -15,17 +15,22 @@ import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.TypeParam;
+import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The declaration of one class, as its stages share it: the header
@@ -52,12 +57,177 @@ final class ClassDeclaration<Self> {
     private final List<Protected<?, ?>> opened = new ArrayList<>();
     private final List<Intention> constructors = new ArrayList<>();
     private final List<DeclaredToken<?>> promised = new ArrayList<>();
+    private final List<Variable> variables;
     private Phase<Self> phase = new Phase.Named<>();
 
-    ClassDeclaration(TargetClasspath target, ClassDesc desc) {
+    /// @param target the classpath the class is compiled against
+    /// @param desc the class
+    /// @param parameters the type parameters of the class, in order
+    /// @throws IllegalArgumentException if a type parameter has the name of another or of the class, or
+    ///     its bound is a raw type
+    /// @throws IllegalStateException if a bound mentions a type parameter of another class
+    ClassDeclaration(TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters) {
         this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.self = UnsafeFacts.declaredClassToken(new ClassTypeRef(desc), this::superclasses, this::methodTable);
+        IntStream.range(0, parameters.size()).forEach(i -> {
+            TypeParameter<?> parameter = parameters.get(i);
+            if (parameters.subList(0, i).stream()
+                    .anyMatch(before -> before.name().equals(parameter.name()))) {
+                throw new IllegalArgumentException(described + " has two type parameters " + parameter.name()
+                        + ": a type parameter has a name of its own (JLS 6.4)");
+            }
+            if (parameter.name().equals(desc.displayName())) {
+                throw new IllegalArgumentException(described + " cannot have the type parameter "
+                        + parameter.name() + ": in the class the name would mean the type parameter, and"
+                        + " the class is named there by its simple name");
+            }
+            requireNotRaw(parameter.bound(), parameter.name());
+            headerScope().require(parameter.bound());
+            target.verify(parameter.bound());
+        });
+        this.variables = parameters.stream()
+                .map(parameter -> new Variable(
+                        UnsafeFacts.declaredTypeVarToken(
+                                new TypeVarRef(parameter.name()),
+                                parameter.bound().erasure(),
+                                this),
+                        parameter.bound(),
+                        new ArrayList<>()))
+                .toList();
+        this.self = variables.isEmpty()
+                ? UnsafeFacts.declaredClassToken(new ClassTypeRef(desc), this::superclasses, this::methodTable)
+                : UnsafeFacts.declaredClassToken(
+                        desc,
+                        variables.stream()
+                                .map(variable ->
+                                        new TypeParam(variable.token().typeRef().name(), leftmost(variable.first())))
+                                .toList(),
+                        variables.stream().map(Variable::token).toList(),
+                        this::superclasses,
+                        this::methodTable);
+    }
+
+    /// The token of a type parameter of the class.
+    ///
+    /// @param index its index
+    /// @return the token
+    TypeVarToken<?> variable(int index) {
+        return variables.get(index).token();
+    }
+
+    /// The type parameters of the class as the proof of a subtype knows them: each with its bounds.
+    List<Subtyping.Bounded> bounded() {
+        return variables.stream()
+                .map(variable -> new Subtyping.Bounded(
+                        variable.token(),
+                        Stream.concat(Stream.of(variable.first()), variable.more().stream())
+                                .toList()))
+                .toList();
+    }
+
+    /// The type parameters of the class as they are rendered. The leftmost bound is written
+    /// whenever another follows it, `<T extends Object & Comparable<T>>`: the erasure of a type
+    /// variable is that of its leftmost bound (JLS 4.6), and the token of the variable tells it
+    /// from the first.
+    List<TypeParam> typeParams() {
+        return variables.stream()
+                .map(variable -> new TypeParam(
+                        variable.token().typeRef().name(),
+                        variable.more().isEmpty()
+                                ? leftmost(variable.first())
+                                : Stream.concat(Stream.of(variable.first()), variable.more().stream())
+                                        .<ClassOrInterfaceTypeRef>map(DeclaredToken::typeRef)
+                                        .toList()))
+                .toList();
+    }
+
+    private static List<ClassOrInterfaceTypeRef> leftmost(DeclaredToken<?> first) {
+        return first.erasure().equals(ConstantDescs.CD_Object) ? List.of() : List.of(first.typeRef());
+    }
+
+    private void requireNotRaw(DeclaredToken<?> bound, String variable) {
+        if (bound.typeRef() instanceof ClassTypeRef
+                && !bound.shape().typeParameters().isEmpty()) {
+            throw new IllegalArgumentException("the type parameter " + variable + " of " + described
+                    + " cannot have the raw bound " + bound + ": the type is generic, name it with its type"
+                    + " arguments");
+        }
+    }
+
+    /// The scope of the header and of an instance member: the type parameters of the class are in scope.
+    ///
+    /// @param where the place, for messages
+    /// @return the scope
+    TypeScope scope(String where) {
+        return new TypeScope.Instance(this, where + " of " + described);
+    }
+
+    /// The scope of a `static` member: no type parameter of the class is in scope (JLS 8.1.2).
+    ///
+    /// @param where the place, for messages
+    /// @return the scope
+    TypeScope staticScope(String where) {
+        return new TypeScope.Static(this, where + " of " + described);
+    }
+
+    private TypeScope headerScope() {
+        return scope("the header");
+    }
+
+    /// A type parameter of the class gets one more bound, an interface, said by a witness.
+    ///
+    /// @param variable the token of the type parameter
+    /// @param bound the interface, with its type arguments
+    /// @param <T> the type parameter
+    /// @param <B> the interface
+    /// @return the witness that the type parameter is of the interface
+    /// @throws IllegalArgumentException if the bound cannot be one, see [ClassHeader#bound]
+    /// @throws IllegalStateException if the class has its superclass already
+    <T, B> Upcast<T, B> bound(TypeVarToken<T> variable, InterfaceToken<B> bound) {
+        Scopes.requireNoneOpen("a bound of a type parameter of " + described);
+        requireNamed();
+        Variable bounded = variables.stream()
+                .filter(mine -> mine.token() == variable)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        variable + " is no type parameter of " + described + ": a class bounds its own"));
+        String name = variable.typeRef().name();
+        requireNotRaw(bound, name);
+        headerScope().require(bound);
+        target.verify(bound);
+        String owner = "the type parameter " + name + " of " + described;
+        // What a type variable of several bounds has is what a class of those supertypes inherits (JLS 4.9):
+        // a bound twice, two parameterizations of one interface and methods that clash are rejected so.
+        Inheritance.Supertype first;
+        try {
+            first = Inheritance.supertype(owner, target, bounded.first());
+        } catch (IllegalArgumentException untold) {
+            throw new IllegalArgumentException(
+                    owner + " cannot have the bound " + bound + " beside " + bounded.first()
+                            + ": what the two give the type variable together is not known, for "
+                            + untold.getMessage(),
+                    untold);
+        }
+        Stream.concat(bounded.more().stream(), Stream.of(bound))
+                .reduce(
+                        Inheritance.of(owner, first),
+                        (merged, next) -> merged.with(Inheritance.supertype(owner, target, next)),
+                        (a, b) -> a)
+                .groups()
+                .filter(group -> group.entries().stream()
+                                .map(entry -> entry.method().result())
+                                .distinct()
+                                .count()
+                        > 1)
+                .findFirst()
+                .ifPresent(group -> {
+                    throw new IllegalArgumentException(owner + " cannot have the bound " + bound + ": with it the"
+                            + " bounds have the methods " + group.entries() + " of one signature and of"
+                            + " different results — one has to be return-type-substitutable for the others"
+                            + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
+                });
+        bounded.more().add(bound);
+        return new Upcast<>(variable, bound);
     }
 
     TargetClasspath target() {
@@ -122,6 +292,12 @@ final class ClassDeclaration<Self> {
             throw new IllegalArgumentException(described + " cannot extend " + proof.supertype()
                     + ": it is an interface, which a class implements (JLS 8.1.4)");
         }
+        if (!variables.isEmpty() && superclass.isSubclassOf(ConstantDescs.CD_Throwable)) {
+            throw new IllegalArgumentException(described + " cannot extend " + superclass
+                    + ": a generic class is no subclass of Throwable (JLS 8.1.2) — the catch of an exception"
+                    + " is by its class, which tells no type argument");
+        }
+        headerScope().require(superclass);
         target.verify(superclass);
         Inheritance.Supertype heritage = Inheritance.supertype(described, target, superclass);
         Inheritance inherited = Inheritance.of(described, heritage);
@@ -168,6 +344,7 @@ final class ClassDeclaration<Self> {
                     + ": the header of the class has ended, and the witness of a supertype is the one"
                     + " naming it gave");
         }
+        headerScope().require(supertype);
         promised.add(supertype);
         return new Upcast<>(self, supertype);
     }
@@ -178,7 +355,8 @@ final class ClassDeclaration<Self> {
         return new Subtyping.Declaring(
                 self.erasure(),
                 Stream.concat(inherited.declaring(self).supertypes().stream(), promised.stream())
-                        .toList());
+                        .toList(),
+                bounded());
     }
 
     private void requireNamed() {
@@ -316,6 +494,7 @@ final class ClassDeclaration<Self> {
             throw new IllegalArgumentException(described + " cannot implement " + supertype
                     + ": it is a class, which a class extends (JLS 8.1.5)");
         }
+        headerScope().require(supertype);
         target.verify(supertype);
         Inheritance merged = inherited.with(Inheritance.supertype(described, target, supertype));
         requireHolds(proof, merged, "implement").forEach(stepped -> {
@@ -458,7 +637,7 @@ final class ClassDeclaration<Self> {
                         + " header never came to the members: end it with extendsObject().body(), or with"
                         + " body(ctor -> ...) of the header extends_ gave, whatever the class declares");
             case Phase.Members<Self>(var builder, var superclass, var interfaces) ->
-                new Declared(superclass, interfaces, builder.complete());
+                new Declared(typeParams(), superclass, interfaces, builder.complete());
         };
     }
 
@@ -527,10 +706,22 @@ final class ClassDeclaration<Self> {
 
     /// The class as it is rendered.
     ///
+    /// @param typeParams its type parameters
     /// @param superclass its superclass
     /// @param interfaces its superinterfaces, in the order they were named
     /// @param members its members, in declaration order
-    record Declared(Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces, List<ClassMember> members) {}
+    record Declared(
+            List<TypeParam> typeParams,
+            Superclass superclass,
+            List<ClassOrInterfaceTypeRef> interfaces,
+            List<ClassMember> members) {}
+
+    /// A type parameter of the class.
+    ///
+    /// @param token its token
+    /// @param first its leftmost bound, `Object` for none: a type of the generator
+    /// @param more its further bounds, said by witnesses in the header, in order
+    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first, List<InterfaceToken<?>> more) {}
 
     /// Where the declaration stands.
     private sealed interface Phase<Self> {

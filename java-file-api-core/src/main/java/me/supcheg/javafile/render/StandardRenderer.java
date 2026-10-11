@@ -4,13 +4,18 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
 import me.supcheg.javafile.RenderableFile;
+import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.ClassDecl;
+import me.supcheg.javafile.model.DefaultMethodDecl;
 import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
+import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.ModuleDirective;
 import me.supcheg.javafile.model.RecordDecl;
+import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
+import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
@@ -51,7 +56,10 @@ public final class StandardRenderer implements SourceRenderer {
     private String renderClassFile(JavaFile.Meta meta, Format format) {
         List<ClassDesc> declared = new ArrayList<>();
         collectDeclared(meta.typeDecl(), declared);
-        var imports = new ImportManager(meta.packageName(), declared);
+        var imports = new ImportManager(
+                meta.packageName(),
+                declared,
+                typeVariables(meta.typeDecl()).map(TypeParam::name).toList());
         Context ctx = Context.of(format, imports);
         String first = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
         // how a comment names a type depends on what the code after it claims: see ImportManager
@@ -107,6 +115,36 @@ public final class StandardRenderer implements SourceRenderer {
                 collectDeclared(nested, found);
             }
         }
+    }
+
+    /// The type parameters a file declares: those of `decl`, of its methods and of the types nested in
+    /// it, at any depth. A method of an anonymous class is not looked into.
+    private static Stream<TypeParam> typeVariables(TypeDecl decl) {
+        List<TypeParam> own =
+                switch (decl) {
+                    case ClassDecl c -> c.typeParams();
+                    case InterfaceDecl i -> i.typeParams();
+                    case RecordDecl r -> r.typeParams();
+                    case EnumDecl _, AnnotationTypeDecl _ -> List.of();
+                };
+        List<?> members =
+                switch (decl) {
+                    case ClassDecl c -> c.members();
+                    case InterfaceDecl i -> i.members();
+                    case RecordDecl r -> r.members();
+                    case EnumDecl e ->
+                        Stream.concat(e.constants().stream().flatMap(c -> c.body().stream()), e.members().stream())
+                                .toList();
+                    case AnnotationTypeDecl _ -> List.of();
+                };
+        return Stream.concat(own.stream(), members.stream().flatMap(member -> switch (member) {
+            case TypeDecl nested -> typeVariables(nested);
+            case MethodDecl method -> method.typeParams().stream();
+            case AbstractMethodDecl method -> method.typeParams().stream();
+            case DefaultMethodDecl method -> method.typeParams().stream();
+            case StaticMethodDecl method -> method.typeParams().stream();
+            default -> Stream.<TypeParam>empty();
+        }));
     }
 
     private String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {

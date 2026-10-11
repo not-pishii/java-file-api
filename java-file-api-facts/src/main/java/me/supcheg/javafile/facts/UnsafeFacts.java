@@ -317,8 +317,36 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @return the token
     public static <T> FinalClassToken<T> declaredClassToken(
             ClassTypeRef type, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTable> methods) {
-        TypeShape<DeclaredKind.FinalClass> shape = TypeShape.declared(type.desc(), superclasses, methods);
+        TypeShape<DeclaredKind.FinalClass> shape = TypeShape.declared(type.desc(), List.of(), superclasses, methods);
         return new FinalClassToken<>(shape, type, shape.boundErasures());
+    }
+
+    /// Vouches that a generic final class exists whose superclass and methods are known only
+    /// later, as [#declaredClassToken(ClassTypeRef, Supplier, Supplier)] does of one that is not
+    /// generic: the token is of the class with its own type parameters for its type arguments,
+    /// `Box<T>` — the type of `this`.
+    ///
+    /// @param desc the class
+    /// @param typeParameters its type parameters, each with its leftmost bound
+    /// @param variables the tokens of the type parameters, in order: the type arguments of the token
+    /// @param superclasses supplies the erased superclass chain, see [ClassToken#superclasses()]
+    /// @param methods supplies the class's instance methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if there is not one variable per type parameter, or none
+    public static <T> FinalClassToken<T> declaredClassToken(
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<? extends TypeVarToken<?>> variables,
+            Supplier<List<ClassDesc>> superclasses,
+            Supplier<MethodTable> methods) {
+        if (variables.isEmpty() || variables.size() != typeParameters.size()) {
+            throw new IllegalArgumentException("a generic class has a token for each of its type parameters: "
+                    + typeParameters + " and " + variables);
+        }
+        return new FinalClassToken<>(
+                TypeShape.declared(desc, typeParameters, superclasses, methods),
+                variables.stream().map(TokenArg::exact).toList());
     }
 
     /// Vouches that a class that is neither abstract nor final exists.
@@ -435,7 +463,19 @@ public final class UnsafeFacts extends InvocableFactories {
     /// @param <T> the type variable the token stands for
     /// @return the token
     public static <T> TypeVarToken<T> typeVarToken(TypeVarRef typeRef, ClassDesc erasure) {
-        return new TypeVarToken<>(typeRef, erasure);
+        return new TypeVarToken<>(typeRef, erasure, new TypeVarToken.Origin.Vouched());
+    }
+
+    /// The token of a type parameter of a declaration of the typed layer: in scope in that
+    /// declaration alone, which the typed layer holds every type it writes to.
+    ///
+    /// @param typeRef the type variable
+    /// @param erasure the erasure of its leftmost bound, `java.lang.Object` for none
+    /// @param declaration the declaration, known by its identity
+    /// @param <T> the type variable the token stands for
+    /// @return the token
+    public static <T> TypeVarToken<T> declaredTypeVarToken(TypeVarRef typeRef, ClassDesc erasure, Object declaration) {
+        return new TypeVarToken<>(typeRef, erasure, new TypeVarToken.Origin.Declared(declaration));
     }
 
     /// Vouches for how a method or constructor declares a parameter: by a

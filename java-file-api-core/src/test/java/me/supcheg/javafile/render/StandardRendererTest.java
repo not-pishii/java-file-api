@@ -150,4 +150,27 @@ class StandardRendererTest {
                         import javax.annotation.ParametersAreNonnullByDefault;
                         """);
     }
+
+    @Test
+    void aTypeOfTheNameOfATypeParameterOfTheFileIsWrittenQualified() {
+        String source = JavaFile.class_(
+                        java.lang.constant.ClassDesc.of("me.supcheg.example", "Box"),
+                        cb -> cb.withTypeParam("T")
+                                .withTypeParam("String")
+                                .withField("own", me.supcheg.javafile.type.Types.typeVar("T"), fb -> {})
+                                .withField(
+                                        "other",
+                                        me.supcheg.javafile.type.Types.of(
+                                                java.lang.constant.ClassDesc.of("other", "T")),
+                                        fb -> {})
+                                .withField("text", me.supcheg.javafile.type.Types.STRING, fb -> {}))
+                .render();
+
+        assertThat(source)
+                .doesNotContain("import ")
+                .contains("class Box<T, String> {")
+                .contains(" T own;")
+                .contains(" other.T other;")
+                .contains(" java.lang.String text;");
+    }
 }

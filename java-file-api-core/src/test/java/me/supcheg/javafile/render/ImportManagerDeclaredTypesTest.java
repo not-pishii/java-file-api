@@ -84,4 +84,26 @@ class ImportManagerDeclaredTypesTest {
 
         assertThat(file.render()).contains("private java.util.List items;").doesNotContain("import");
     }
+
+    @Test
+    void aTypeOfTheNameOfATypeParameterIsWrittenQualified() {
+        ImportManager imports = new ImportManager("me.supcheg.example", List.of(TOP), List.of("T", "String"));
+
+        assertThat(imports.reference(ClassDesc.of("other", "T"))).isEqualTo("other.T");
+        assertThat(imports.reference(ClassDesc.of("me.supcheg.example", "T"))).isEqualTo("me.supcheg.example.T");
+        assertThat(imports.reference(ClassDesc.of("java.lang", "String"))).isEqualTo("java.lang.String");
+        assertThat(imports.mention(ClassDesc.of("other", "T"))).isEqualTo("other.T");
+        assertThat(imports.reference(TOP)).isEqualTo("Registry");
+        assertThat(imports.sortedImports()).isEmpty();
+    }
+
+    @Test
+    void aTypeIsNotNamedWhereATypeParameterObscuresItsQualifiedName() {
+        ImportManager imports = new ImportManager("me.supcheg.example", List.of(TOP), List.of("other", "T"));
+
+        org.assertj.core.api.Assertions.assertThatIllegalStateException()
+                .isThrownBy(() -> imports.reference(ClassDesc.of("other", "T")))
+                .withMessageContaining("cannot name other.T in a file that declares the type parameter other");
+        assertThat(imports.reference(ClassDesc.of("other", "U"))).isEqualTo("U");
+    }
 }

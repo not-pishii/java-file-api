@@ -58,6 +58,7 @@ final class SignatureRegistry {
 
     private final String owner;
     private final Inheritance inherited;
+    private final List<Subtyping.Bounded> variables;
     private final Map<MethodSignature, Invocable> methods = new LinkedHashMap<>();
     private final Set<MethodSignature> overrides = new HashSet<>();
     private final Map<List<ClassDesc>, Invocable> constructors = new HashMap<>();
@@ -65,9 +66,11 @@ final class SignatureRegistry {
 
     /// @param owner the class being declared, for messages
     /// @param inherited what the class inherits
-    SignatureRegistry(String owner, Inheritance inherited) {
+    /// @param variables the type parameters of the class, each with its bounds
+    SignatureRegistry(String owner, Inheritance inherited, List<Subtyping.Bounded> variables) {
         this.owner = owner;
         this.inherited = inherited;
+        this.variables = List.copyOf(variables);
     }
 
     /// Registers a field.
@@ -123,7 +126,7 @@ final class SignatureRegistry {
                 .orElseThrow(() -> new IllegalArgumentException("the method " + own + " of " + owner
                         + " overrides nothing: no supertype of the class has a method " + signature
                         + "; a class overrides the methods of the types it extends or implements"));
-        requireOverrides(owner, own, group, inherited.declaring(own.owner()));
+        requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         methods.put(signature, own);
         overrides.add(signature);
     }

@@ -501,6 +501,62 @@ class NegativeCompileTest {
                         + " me.supcheg.javafile.typed.fixtures.Following>");
     }
 
+    /// The header of a generic class `Generated<N extends Number>`: `%s` is the statements using `h` and `n`.
+    private static String inGenericHeader(String statements) {
+        return """
+                void use() {
+                    TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), TypedJavaFile.typeParam("N", Number_.TOKEN), new TypedJavaFile.TypedGenericClassSpec1<Number>() {
+                        public <Self, N extends Number> void build(ClassHeader<Self> h, TypeVarToken<N> n) {
+                            %s
+                        }
+                    });
+                }
+                """.formatted(statements);
+    }
+
+    @Test
+    void aFurtherBoundOfATypeParameterIsAnInterface() {
+        // JLS 4.4: a class is the leftmost bound alone, which is a type of the generator
+        assertRejected(
+                "ClassForAFurtherBound",
+                inGenericHeader("h.bound(n, Object_.TOKEN);"),
+                "me.supcheg.javafile.facts.OpenClassToken<java.lang.Object> cannot be converted to"
+                        + " me.supcheg.javafile.facts.InterfaceToken<B>");
+    }
+
+    @Test
+    void aValueOfATypeParameterHasNoMethodOfATypeThatIsNotItsBound() {
+        assertRejected(
+                "MethodOfAnUnrelatedType",
+                inGenericHeader(
+                        "var cb = h.extendsObject().body();"
+                                + " cb.method(\"m\", PrimitiveToken.INT, n, (b, self, v) -> b.return_(call(v, String_.length)));"),
+                "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
+                        + "me.supcheg.javafile.facts.MethodRef0<java.lang.String,me.supcheg.javafile.facts.Prim.Int>)");
+    }
+
+    @Test
+    void aTypeParameterIsNoExceptionOfAThrowsClause() {
+        // JLS 8.1.2 leaves a type variable no place in a catch; the typed layer gives it none in a throws clause
+        assertRejected(
+                "ThrowsOfATypeParameter",
+                inGenericHeader("h.extendsObject().body().throwing(n);"),
+                "me.supcheg.javafile.facts.TypeVarToken<N> cannot be converted to"
+                        + " me.supcheg.javafile.facts.ClassToken<? extends java.lang.Throwable>");
+    }
+
+    @Test
+    void theClassIsItselfWithItsTypeParametersAndNothingElse() {
+        // Self is Generated<N>: a method of the class is not called on a value of another type
+        assertRejected(
+                "SelfIsNoOtherType",
+                inGenericHeader("var cb = h.extendsObject().body();"
+                        + " var m = cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.return_(literal(1)));"
+                        + " cb.method(\"k\", PrimitiveToken.INT, n, (b, self, v) -> b.return_(call(v, m)));"),
+                "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
+                        + "me.supcheg.javafile.facts.MethodRef0<Self,me.supcheg.javafile.facts.Prim.Int>)");
+    }
+
     /// The header of a generated class, for fixtures of a class with a superclass: `%s` is the
     /// statements using `h`.
     private static String inHeader(String statements) {

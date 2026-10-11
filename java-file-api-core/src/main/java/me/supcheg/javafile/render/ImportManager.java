@@ -22,6 +22,10 @@ import java.util.Set;
 // another type of the same simple name is written qualified. It is imported
 // only if something refers to it.
 //
+// A type parameter of a type or of a method the file declares claims its name too,
+// wherever in the file it is declared: where it is in scope the name means the type
+// variable, so a type of that simple name is written qualified throughout the file.
+//
 // A documentation comment claims nothing (`mention`): it names a type by its
 // simple name only where the code of the file gives the name that meaning, so
 // a comment adds no import — an import of a type that is not accessible does
@@ -36,6 +40,7 @@ final class ImportManager implements TypeContext {
     private final Map<String, ClassDesc> claims = new LinkedHashMap<>();
 
     private final Set<ClassDesc> unreferencedDeclared = new HashSet<>();
+    private final Set<String> typeVariables;
     private boolean mentioned;
 
     ImportManager(String currentPackage) {
@@ -43,7 +48,12 @@ final class ImportManager implements TypeContext {
     }
 
     ImportManager(String currentPackage, Collection<ClassDesc> declared) {
+        this(currentPackage, declared, Set.of());
+    }
+
+    ImportManager(String currentPackage, Collection<ClassDesc> declared, Collection<String> typeVariables) {
         this.currentPackage = currentPackage;
+        this.typeVariables = Set.copyOf(typeVariables);
         for (ClassDesc desc : declared) {
             if (claims.putIfAbsent(ClassDescNames.leafSimpleName(desc), desc) == null) {
                 unreferencedDeclared.add(desc);
@@ -58,6 +68,9 @@ final class ImportManager implements TypeContext {
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
 
         String leafSimpleName = chain.getLast();
+        if (typeVariables.contains(leafSimpleName)) {
+            return qualified(desc);
+        }
         ClassDesc existing = claims.get(leafSimpleName);
         if (existing == null) {
             claims.put(leafSimpleName, desc);
@@ -75,6 +88,9 @@ final class ImportManager implements TypeContext {
     @Override
     public String mention(ClassDesc desc) {
         mentioned = true;
+        if (typeVariables.contains(ClassDescNames.leafSimpleName(desc))) {
+            return qualified(desc);
+        }
         ClassDesc claimed = claims.get(ClassDescNames.leafSimpleName(desc));
         boolean bySimpleName = claimed == null ? visibleWithoutImport(desc) : claimed.equals(desc);
         return bySimpleName ? ClassDescNames.leafSimpleName(desc) : qualified(desc);
@@ -88,6 +104,14 @@ final class ImportManager implements TypeContext {
     private String qualified(ClassDesc desc) {
         String dotted = ClassDescNames.qualifiedByDots(desc);
         String packageName = desc.packageName();
+        String whole = packageName.isEmpty() ? dotted : packageName;
+        String first = whole.indexOf('.') < 0 ? whole : whole.substring(0, whole.indexOf('.'));
+        if (typeVariables.contains(first)) {
+            // a simple name that could be a type or a package is the type (JLS 6.4.2)
+            throw new IllegalStateException("cannot name " + (packageName.isEmpty() ? "" : packageName + ".")
+                    + dotted + " in a file that declares the type parameter " + first
+                    + ": the name of the type parameter obscures the first name of the qualified one");
+        }
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
         return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()
                 ? dotted

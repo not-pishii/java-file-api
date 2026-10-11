@@ -73,8 +73,9 @@ import java.util.stream.IntStream;
 ///   another generic type, `ArrayList<? extends T>` of `List<? extends T>`
 ///   (capture conversion), and a raw type as a parameterized one (unchecked
 ///   conversion, JLS 5.1.9);
-/// - a type variable as anything but itself and `Object`: its token does not
-///   tell its bounds;
+/// - a type variable as anything but itself, `Object` and what a bound of it
+///   is a subtype of — where it is a type parameter of the class being
+///   declared ([Declaring]): the token of another does not tell its bounds;
 /// - a primitive type as any other type, and an array of primitives as an
 ///   array of anything else: the result of a method that overrides a
 ///   primitive or a `void` one is the same (JLS 8.4.5);
@@ -128,7 +129,7 @@ final class Subtyping {
                 sup.desc().equals(CLONEABLE) || sup.desc().equals(SERIALIZABLE)
                         ? PROVEN
                         : unproven("an array is of Object, Cloneable and java.io.Serializable alone (JLS 4.10.3)");
-            case TypeVarToken<?> variable -> ofVariable(variable);
+            case TypeVarToken<?> variable -> ofVariable(declaring, variable, sup);
         };
     }
 
@@ -146,7 +147,7 @@ final class Subtyping {
                                 + TypeNames.describe(sup.raw()) + " it is of — the supertype is not recorded, or"
                                 + " the type is raw or has a wildcard type argument"));
             case ArrayToken<?, ?> _ -> unproven("an array is of no parameterized type");
-            case TypeVarToken<?> variable -> ofVariable(variable);
+            case TypeVarToken<?> variable -> ofVariable(declaring, variable, sup);
         };
     }
 
@@ -163,13 +164,20 @@ final class Subtyping {
                         unproven("an array of a primitive type is a subtype of no other array type (JLS 4.10.3)");
                 };
             case DeclaredToken<?> _ -> unproven("a class or an interface is no array");
-            case TypeVarToken<?> variable -> ofVariable(variable);
+            case TypeVarToken<?> variable -> ofVariable(declaring, variable, sup);
         };
     }
 
-    private static Verdict ofVariable(TypeVarToken<?> variable) {
-        return unproven("the token of the type variable " + variable.typeRef().name()
-                + " does not tell its bounds: it is known to be of itself and of Object alone");
+    /// A type parameter of the class being declared is of what a bound of it is of.
+    private static Verdict ofVariable(Declaring declaring, TypeVarToken<?> variable, TypeRef sup) {
+        return declaring.variables().stream()
+                        .filter(bounded -> bounded.variable() == variable)
+                        .flatMap(bounded -> bounded.bounds().stream())
+                        .anyMatch(bound -> prove(declaring, bound, sup) instanceof Verdict.Proven)
+                ? PROVEN
+                : unproven("the type variable " + variable.typeRef().name() + " is known to be of itself, of"
+                        + " Object and of what its bounds are of — where it is a type parameter of the class"
+                        + " being declared —, and no bound of it is known to be one");
     }
 
     /// The class being declared is of what a supertype it has named is of.
@@ -250,13 +258,35 @@ final class Subtyping {
     ///
     /// @param self the class being declared
     /// @param supertypes the supertypes it has named so far, the superclass first
-    record Declaring(ClassDesc self, List<DeclaredToken<?>> supertypes) {
+    /// @param variables its type parameters, each with its bounds
+    record Declaring(ClassDesc self, List<DeclaredToken<?>> supertypes, List<Bounded> variables) {
         Declaring {
             supertypes = List.copyOf(supertypes);
+            variables = List.copyOf(variables);
+        }
+
+        /// A class without type parameters.
+        Declaring(ClassDesc self, List<DeclaredToken<?>> supertypes) {
+            this(self, supertypes, List.of());
+        }
+
+        /// The class with its type parameters.
+        Declaring knowing(List<Bounded> variables) {
+            return new Declaring(self, supertypes, variables);
         }
 
         boolean is(DeclaredToken<?> token) {
             return token.shape().desc().equals(self);
+        }
+    }
+
+    /// A type parameter of the class being declared, known by the identity of its token.
+    ///
+    /// @param variable the token of the type parameter
+    /// @param bounds its bounds: the leftmost, a type of the generator, then those said by a witness
+    record Bounded(TypeVarToken<?> variable, List<DeclaredToken<?>> bounds) {
+        Bounded {
+            bounds = List.copyOf(bounds);
         }
     }
 
