@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TypeToken;
@@ -498,6 +499,95 @@ public abstract sealed class Declarations<Self>
             MethodRef2<?, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
         MethodRef2<Self, R, A1, A2> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    /// Overrides a method of a supertype the class has by the witness `up` with a method of a
+    /// narrower result (JLS 8.4.5): `result` is a subtype of the result of the method — which the
+    /// compiler of the generator holds the token to — and is proven one of the result of every
+    /// method the class inherits under the signature ([Subtyping]).
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block and `this`
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R, R2 extends R> MethodRef0<Self, R2> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef0<O, R> method,
+            RefToken<R2> result,
+            InstanceBody0<Self, Body<R2>, R2> body) {
+        return overridden(method, result, body);
+    }
+
+    /// Overrides a method with one parameter of a supertype the class has by the witness `up`
+    /// with a method of a narrower result, see [#override(Upcast, MethodRef0, RefToken, InstanceBody0)].
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R, R2 extends R, A1> MethodRef1<Self, R2, A1> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef1<O, R, A1> method,
+            RefToken<R2> result,
+            InstanceBody1<Self, Body<R2>, R2, A1> body) {
+        return overridden(method, result, body);
+    }
+
+    /// Overrides a method with two parameters of a supertype the class has by the witness `up`
+    /// with a method of a narrower result, see [#override(Upcast, MethodRef0, RefToken, InstanceBody0)].
+    ///
+    /// @param up the witness that the class is of the supertype
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    public <O, R, R2 extends R, A1, A2> MethodRef2<Self, R2, A1, A2> override(
+            Upcast<Self, ? extends O> up,
+            MethodRef2<O, R, A1, A2> method,
+            RefToken<R2> result,
+            InstanceBody2<Self, Body<R2>, R2, A1, A2> body) {
+        return overridden(method, result, body);
+    }
+
+    final <R> MethodRef0<Self, R> overridden(
+            MethodRef0<?, ? super R> method, RefToken<R> result, InstanceBody0<Self, Body<R>, R> body) {
+        MethodRef0<Self, R> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    final <R, A1> MethodRef1<Self, R, A1> overridden(
+            MethodRef1<?, ? super R, A1> method, RefToken<R> result, InstanceBody1<Self, Body<R>, R, A1> body) {
+        MethodRef1<Self, R, A1> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
+        builder().define(own, body);
+        return own;
+    }
+
+    final <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
+            MethodRef2<?, ? super R, A1, A2> method, RefToken<R> result, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
+        MethodRef2<Self, R, A1, A2> own =
+                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
         builder().define(own, body);
         return own;
     }

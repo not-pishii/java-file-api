@@ -66,7 +66,12 @@
     Op.class,
     Outer.Level.class,
     Thrower.class,
-    Words.class
+    Words.class,
+    Origin.class,
+    Worded.class,
+    Numbered.class,
+    Maker.class,
+    Resetting.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -102,6 +107,11 @@ import me.supcheg.javafile.typed.fixtures.Thrower;
 import me.supcheg.javafile.typed.fixtures.TriConsumer;
 import me.supcheg.javafile.typed.fixtures.TriFunction;
 import me.supcheg.javafile.typed.fixtures.Words;
+import me.supcheg.javafile.typed.fixtures.Origin;
+import me.supcheg.javafile.typed.fixtures.Worded;
+import me.supcheg.javafile.typed.fixtures.Numbered;
+import me.supcheg.javafile.typed.fixtures.Maker;
+import me.supcheg.javafile.typed.fixtures.Resetting;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

@@ -8,6 +8,7 @@ import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.Overriding0;
 import me.supcheg.javafile.facts.Overriding1;
 import me.supcheg.javafile.facts.Overriding2;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
@@ -90,6 +91,74 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     public <O, R, A1, A2> Overriding2<Self, R, A1, A2> overriding(MethodRef2<O, R, A1, A2> method) {
         return UnsafeFacts.overriding2(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /// Says the class overrides a method with a method of a narrower result (JLS 8.4.5): `result`
+    /// is the result type of the method the class declares, a subtype of that of the overridden
+    /// one — which the compiler of the generator holds the token to, and the typed layer proves
+    /// again of every method the class inherits under the signature ([Subtyping]), where a
+    /// supertype that has one is named. A step of a proof takes the implementation as it takes one
+    /// of the result of its method.
+    ///
+    /// ```java
+    /// var get = h.overriding(Source_.get, String_.TOKEN);   // Overriding0<Self, String>
+    /// ```
+    ///
+    /// A primitive and a `void` result have no narrower one, and no token to say it by.
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
+    ///     method of that signature already, or cannot override what it inherits under it — `result`
+    ///     is not proven a subtype of the result of a method among them
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, R2 extends R> Overriding0<Self, R2> overriding(MethodRef0<O, R> method, RefToken<R2> result) {
+        return UnsafeFacts.overriding0(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /// Says the class overrides a method with one parameter with a method of a narrower result,
+    /// see [#overriding(MethodRef0, RefToken)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the parameter type
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException as [#overriding(MethodRef0, RefToken)]
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, R2 extends R, A1> Overriding1<Self, R2, A1> overriding(
+            MethodRef1<O, R, A1> method, RefToken<R2> result) {
+        return UnsafeFacts.overriding1(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /// Says the class overrides a method with two parameters with a method of a narrower result,
+    /// see [#overriding(MethodRef0, RefToken)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <O> the type that has the method
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return how the class has the method: by one of its own, `method()` of the result
+    /// @throws IllegalArgumentException as [#overriding(MethodRef0, RefToken)]
+    /// @throws IllegalStateException if the header of the class has ended
+    public <O, R, R2 extends R, A1, A2> Overriding2<Self, R2, A1, A2> overriding(
+            MethodRef2<O, R, A1, A2> method, RefToken<R2> result) {
+        return UnsafeFacts.overriding2(new Implemented.ByOverride(
+                method,
+                declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
     }
 
     /// Says the class overrides a `void` method.

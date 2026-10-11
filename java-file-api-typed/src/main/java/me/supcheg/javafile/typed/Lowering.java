@@ -142,7 +142,14 @@ import java.util.stream.Stream;
 ///   by its fact; where the type matters — as an argument, a receiver, a
 ///   branch of a conditional — its receiver is cast to the owner,
 ///   `((Owner) recv).m()`, which types it by the fact again. A cast is never
-///   added where javac would find it redundant.
+///   added where javac would find it redundant. So is a call by the fact of
+///   a supertype of a method the class being declared overrides with a
+///   narrower result (JLS 8.4.5): `this.get()` is of the result of the class
+///   to javac. The type matters, beside the above, in an operand of `==` and
+///   `!=` (JLS 15.21.3), in the receiver of a method that takes arguments —
+///   the narrower type may have an overload that erases as the method does —,
+///   in an array an element of which is assigned (JLS 15.26.1), and in a
+///   value thrown, which is checked by its token ([Exceptions]).
 /// - **Witnesses.** An expression an [Upcast] witness was applied to is
 ///   rendered as it was: its token names a supertype, javac types it by the
 ///   class. Its receiver, argument and selector positions are judged by the
@@ -368,7 +375,11 @@ final class Lowering {
             case Instr.Yield(var value) -> new YieldStmt(expr(value, true));
             case Instr.Throw(var value, var type) -> {
                 target.verify(type.token());
-                yield new ThrowStmt(expr(value));
+                // The statement was checked by the type of the value (Exceptions): a value seen
+                // through a witness by the class it is of, as javac types it; any other javac may
+                // type narrower by exactly its token, or a catch of another subclass would be one
+                // of an exception javac says is never thrown (JLS 11.2.3).
+                yield new ThrowStmt(expr(value, !(value instanceof Node.Upcast)));
             }
             case Instr.Break(var ctl) -> breakOrContinue(ctl, true);
             case Instr.Continue(var ctl) -> breakOrContinue(ctl, false);
@@ -457,8 +468,9 @@ final class Lowering {
                         new FieldAccessExpr(Optional.of(fieldReceiver(t, field)), field.name());
                     case Node.Target.StaticField(var field) ->
                         new StaticFieldAccessExpr(staticOwner(field), field.name());
+                    // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
                     case Node.Target.Element(var array, var index) ->
-                        expr(array).arrayAccess(expr(index));
+                        expr(array, true).arrayAccess(expr(index));
                     case Node.Target.Init(var field) -> {
                         uses(field);
                         yield new FieldAccessExpr(Optional.of(new ThisExpr()), field.name());
@@ -590,10 +602,12 @@ final class Lowering {
 
     /// An operand of a binary operator. javac rejects `==` and `!=` of two references neither of
     /// which can be cast to the other (JLS 15.21.3), and the typed layer went by the tokens: an
-    /// expression an [Upcast] witness was applied to is compared as of the supertype.
+    /// expression an [Upcast] witness was applied to is compared as of the supertype, and so is any
+    /// other javac may type narrower than its token ([Node#isExact(Node)]) — a call of a method the
+    /// type of the receiver overrides with a narrower result.
     private Expr compared(BinaryOp op, Node operand) {
         boolean ofReferences = op == BinaryOp.EQ || op == BinaryOp.NEQ;
-        return expr(operand, ofReferences && operand instanceof Node.Upcast);
+        return expr(operand, ofReferences && !Node.isExact(operand));
     }
 
     /// `target.method(args)`. The receiver is cast to the method's owner
@@ -619,7 +633,11 @@ final class Lowering {
         } else {
             boolean settled = IntStream.range(0, args.size())
                     .allMatch(i -> settled(args.get(i), method.params().get(i)));
-            receiver = expr(receiving.node(), pin || !settled);
+            // A receiver javac may type narrower than its token is of a type whose methods are not
+            // known here: it may have an overload that erases as the method does, as a type
+            // variable may (hasTwin), which no method without parameters has.
+            boolean narrowed = !args.isEmpty() && !Node.isExact(receiving.node());
+            receiver = expr(receiving.node(), pin || !settled || narrowed);
             searched = receiving.type();
         }
         return new MethodCallExpr(

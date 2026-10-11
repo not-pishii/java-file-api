@@ -15,7 +15,6 @@ import me.supcheg.javafile.typed.testfacts.java.util.AbstractList_;
 import me.supcheg.javafile.typed.testfacts.java.util.concurrent.Callable_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Joining_;
-import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Labelled_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Mid_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Risking_;
 import org.junit.jupiter.api.Test;
@@ -213,20 +212,8 @@ class ExtendsFormsTest {
 
     @Test
     void aMethodOfTheSuperclassStandsForThatOfAnInterfaceOnlyAsAnOverrideWould() {
-        // javac takes label() of Mid, a String, for the CharSequence of the interface: until an
-        // override has a narrower result (§8f), an inherited method has not either
-        classUnlikeJavac(
-                IllegalArgumentException.class,
-                () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                    @Override
-                    public <Self> void build(ClassHeader<Self> h) {
-                        var sh = h.extends_(Mid_.extend(h.self()));
-                        sh.implements_(Labelled_.implement(h.self()).label(sh.inherited(Mid_.label)));
-                    }
-                }),
-                "by inheriting java.lang.String me.supcheg.javafile.typed.fixtures.Mid.label() from its superclass",
-                "extends Mid implements Labelled",
-                "");
+        // label() of Mid, a String, stands for the CharSequence of Labelled as an override of that
+        // result would (CovariantReturnTest); risk() of Mid declares what that of Risking does not
         classAsJavac(
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {

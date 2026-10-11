@@ -241,8 +241,15 @@ class InheritanceVerdictTest {
     ///   `ExtendsTest.Inheriting.aMethodDeclaredByTheNameOfOneOfTheSuperclassIsRejected`), nor
     ///   called as `super.m()`; a `static` one is not called through `super`
     ///   ([ExtendsFormsTest#superCallsAMethodTheClassReachesAndAnInstanceOne]);
-    /// - a method of the superclass stands for that of an interface with its very result, not a
-    ///   narrower one ([ExtendsFormsTest#aMethodOfTheSuperclassStandsForThatOfAnInterfaceOnlyAsAnOverrideWould]);
+    /// - the result of an override, and of a method of the superclass that stands for one of an
+    ///   interface, is a subtype of the result of every method of the signature only where the
+    ///   facts prove it one ([Subtyping], [SubtypingTest]): not by a wildcard whose bound is
+    ///   another type than the type argument
+    ///   (`CovariantReturnTest.StricterThanJavac.aWildcardBoundIsMetByTheVeryTypeAlone`), by the
+    ///   bound of a type variable, by capture or unchecked conversion, by a supertype a metamodel
+    ///   does not record, nor — of the class itself — by a supertype the header names later; and
+    ///   a result that is the class itself is said of a method whose result is `Object` alone,
+    ///   the brand of the class being no subtype to the compiler of the generator;
     /// - a `protected` field is reached on `this` alone and of the direct superclass alone
     ///   (`ExtendsTest.SuperAndProtected.aProtectedFieldIsReachedOnThisAlone`); a `protected`
     ///   method that declares a checked exception, or whose result has to be of exactly its

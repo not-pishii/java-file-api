@@ -202,6 +202,8 @@ final class ClassDeclaration<Self> {
                             + intention.overridden() + ": a class declares a method once (JLS 8.4.2) — give"
                             + " the one implementation to every step that takes the method");
                 });
+        // What a result is a subtype of is told by its metamodel, which has to hold on the target.
+        own.resultType().ifPresent(target::verify);
         Intention intention = new Intention(overridden, own, thrown);
         if (phase instanceof Phase.Heading<Self>(var inherited, var _, var _)) {
             requireOverrides(inherited, Stream.of(intention));
@@ -293,8 +295,8 @@ final class ClassDeclaration<Self> {
                 case Stepped.Own _ -> {}
                 case Stepped.Inherited(var method) ->
                     merged.group(method.signature())
-                            .ifPresent(
-                                    group -> SignatureRegistry.requireInherited(described, method, supertype, group));
+                            .ifPresent(group -> SignatureRegistry.requireInherited(
+                                    described, method, supertype, group, merged.declaring(self)));
             }
         });
         requireOverrides(merged, intentions.stream());
@@ -439,7 +441,8 @@ final class ClassDeclaration<Self> {
     private void requireOverrides(Inheritance inherited, Stream<Intention> intended) {
         intended.forEach(intention -> inherited
                 .group(intention.own().signature())
-                .ifPresent(group -> SignatureRegistry.requireOverrides(described, intention.own(), group)));
+                .ifPresent(group -> SignatureRegistry.requireOverrides(
+                        described, intention.own(), group, inherited.declaring(self))));
     }
 
     /// A method the class said it overrides, in its header.

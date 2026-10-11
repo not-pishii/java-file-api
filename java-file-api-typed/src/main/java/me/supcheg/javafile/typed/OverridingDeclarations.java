@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
@@ -64,6 +65,62 @@ public sealed interface OverridingDeclarations<Self, S>
     default <R, A1, A2> MethodRef2<Self, R, A1, A2> override(
             MethodRef2<? super S, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
         return declarations().overridden(method, body);
+    }
+
+    /// Overrides a method the class inherits from its superclass with a method of a narrower result
+    /// (JLS 8.4.5): `result` is a subtype of the result of the method — which the compiler of the
+    /// generator holds the token to — and is proven one of the result of every method the class
+    /// inherits under the signature ([Subtyping]).
+    ///
+    /// ```java
+    /// cb.override(cb.protected_(Object_.clone), cb.self(), (b, self) -> b.return_(self));
+    /// ```
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block and `this`
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R, R2 extends R> MethodRef0<Self, R2> override(
+            MethodRef0<? super S, R> method, RefToken<R2> result, InstanceBody0<Self, Body<R2>, R2> body) {
+        return declarations().overridden(method, result, body);
+    }
+
+    /// Overrides a method with one parameter of the superclass with a method of a narrower result,
+    /// see [#override(MethodRef0, RefToken, InstanceBody0)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R, R2 extends R, A1> MethodRef1<Self, R2, A1> override(
+            MethodRef1<? super S, R, A1> method, RefToken<R2> result, InstanceBody1<Self, Body<R2>, R2, A1> body) {
+        return declarations().overridden(method, result, body);
+    }
+
+    /// Overrides a method with two parameters of the superclass with a method of a narrower
+    /// result, see [#override(MethodRef0, RefToken, InstanceBody0)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    default <R, R2 extends R, A1, A2> MethodRef2<Self, R2, A1, A2> override(
+            MethodRef2<? super S, R, A1, A2> method,
+            RefToken<R2> result,
+            InstanceBody2<Self, Body<R2>, R2, A1, A2> body) {
+        return declarations().overridden(method, result, body);
     }
 
     /// Overrides a `void` method of `Object`: declares it anew, `@Override public`, and defines it.

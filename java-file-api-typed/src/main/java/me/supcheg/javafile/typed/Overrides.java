@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
@@ -45,6 +46,33 @@ final class Overrides {
             FinalClassToken<Self> self, MethodRef2<?, R, A1, A2> method, List<ClassToken<? extends Throwable>> thrown) {
         return UnsafeFacts.method(
                 self, method.name(), method.result(), method.param1(), method.param2(), traits(thrown));
+    }
+
+    /// The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+    static <Self, R> MethodRef0<Self, R> own(
+            FinalClassToken<Self> self,
+            MethodRef0<?, ? super R> method,
+            RefToken<R> result,
+            List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), result, traits(thrown));
+    }
+
+    /// The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+    static <Self, R, A1> MethodRef1<Self, R, A1> own(
+            FinalClassToken<Self> self,
+            MethodRef1<?, ? super R, A1> method,
+            RefToken<R> result,
+            List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), result, method.param1(), traits(thrown));
+    }
+
+    /// The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+    static <Self, R, A1, A2> MethodRef2<Self, R, A1, A2> own(
+            FinalClassToken<Self> self,
+            MethodRef2<?, ? super R, A1, A2> method,
+            RefToken<R> result,
+            List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeFacts.method(self, method.name(), result, method.param1(), method.param2(), traits(thrown));
     }
 
     /// The method of `self` that overrides `method`, declaring `thrown`.

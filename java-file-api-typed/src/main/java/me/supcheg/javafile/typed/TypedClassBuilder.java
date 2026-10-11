@@ -72,7 +72,9 @@ import java.util.List;
 /// would override or hide an inherited one — `declareMethod("toString",
 /// ...)` — is rejected where it is declared, so no method overrides by
 /// accident and none is rendered without `@Override` that does. The
-/// override has the parameters and the result of the method, and a `throws`
+/// override has the parameters and the result of the method — or a narrower
+/// result, said by its token, `cb.override(fact, token, body)` (JLS 8.4.5;
+/// [Subtyping]) — and a `throws`
 /// clause — that of [#throwing] — the method allows (JLS 8.4.8.3). A class
 /// that overrides `equals` and not `hashCode` is rejected when its
 /// declaration completes.
