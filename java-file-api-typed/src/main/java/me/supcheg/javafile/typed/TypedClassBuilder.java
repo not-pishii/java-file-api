@@ -78,10 +78,17 @@ import java.util.List;
 /// doing so while a method body is being built, or after the declaration
 /// completed, is rejected.
 ///
-/// This phase covers non-generic `final` classes, methods and constructors
-/// up to arity 2 (static methods up to 1); `extends`/`implements`, type
-/// parameters and `abstract`/open classes come later, as does a generator of
-/// the arity families analogous to `java-file-api-facts`'s `FactsCodegen`.
+/// **`clone` and `finalize`.** The `protected` methods of `Object` are
+/// overridden and called as those of any superclass are ([SuperAccess]):
+/// `cb.protected_(Object_.clone)` gives the fact, `override` and `superCall`
+/// take it.
+///
+/// This builder is of a class that extends `Object`; one with another
+/// superclass has a [TypedSubclassBuilder]. This phase covers non-generic
+/// `final` classes, methods and constructors up to arity 2 (static methods
+/// up to 1); type parameters and `abstract`/open classes come later, as does
+/// a generator of the arity families analogous to `java-file-api-facts`'s
+/// `FactsCodegen`.
 ///
 /// @param <Self> the brand of the class being declared, unique to one
 ///     [TypedJavaFile#class_(TargetClasspath, java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call

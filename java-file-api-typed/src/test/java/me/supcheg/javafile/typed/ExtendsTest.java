@@ -666,6 +666,91 @@ class ExtendsTest {
         }
 
         @Test
+        void aProtectedCallWhoseTypeHasToBeExactIsBoundToAVariableFirst() throws Throwable {
+            // among the overloads of pick the argument is of exactly its type, which a call on the
+            // class itself is not known to be, and the receiver cannot be cast to Base
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var cb = h.extends_(Base_.extend(h.self()))
+                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            Upcast<Self, Base> asBase = cb.asSuper();
+                            var hook = cb.protected_(Base_.hook_String);
+                            cb.method(
+                                    "picked",
+                                    String_.TOKEN,
+                                    (b, self) -> b.return_(call(
+                                            asBase.apply(self),
+                                            Base_.pick_String,
+                                            call(asBase.apply(self), hook, literal("x")))));
+                        }
+                    }))
+                    .withMessageContaining("bind the result to a variable with let first");
+            CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    var cb = h.extends_(Base_.extend(h.self()))
+                            .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    Upcast<Self, Base> asBase = cb.asSuper();
+                    var hook = cb.protected_(Base_.hook_String);
+                    cb.method(
+                            "picked",
+                            String_.TOKEN,
+                            (b, self) -> b.let(
+                                    String_.TOKEN,
+                                    call(asBase.apply(self), hook, literal("x")),
+                                    hooked -> b.return_(call(asBase.apply(self), Base_.pick_String, hooked))));
+                }
+            }));
+
+            assertThat(compiled.invoke("picked")).isEqualTo("string");
+        }
+
+        @Test
+        void aProtectedFieldIsReachedOnThisAlone() {
+            // stricter than javac, which lets a class reach the field on any value of the class
+            classUnlikeJavac(
+                    IllegalStateException.class,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var cb = h.extends_(Base_.extend(h.self()))
+                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var hits = cb.protected_(Base_.hits);
+                            cb.method(
+                                    "peek",
+                                    PrimitiveToken.INT,
+                                    cb.self(),
+                                    (b, self, other) ->
+                                            b.return_(field(cb.asSuper().apply(other), hits)));
+                        }
+                    }),
+                    "is reached on an expression that is not this",
+                    "extends Base",
+                    "public int peek(Probe other) { return other.hits; }");
+        }
+
+        @Test
+        void aClassThatIsACheckedExceptionIsDeclaredWhereItIsThrown() {
+            classAsJavac(
+                    IllegalStateException.class,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var cb = h.extends_(Exception_.extend(h.self()))
+                                    .body(ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
+                            cb.voidMethod(
+                                    "raise", (b, self) -> b.throw_(cb.asSuper().apply(self)));
+                        }
+                    }),
+                    "can throw the checked exception me.supcheg.example.Probe",
+                    "extends Exception",
+                    "public void raise() { throw this; }",
+                    "unreported exception");
+        }
+
+        @Test
         void aProtectedFactIsOfNoUseToAClassThatIsNoSubclass() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
