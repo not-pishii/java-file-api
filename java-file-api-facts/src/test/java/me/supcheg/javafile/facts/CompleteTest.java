@@ -31,7 +31,7 @@ class CompleteTest {
     @Test
     void theProofHasTheStepsTakenInTheirOrder() {
         Implementation1<SelfP, Prim.Int, String> how =
-                UnsafeFacts.implementation1(new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN));
+                UnsafeFacts.overriding1(new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN));
 
         Complete<SelfP, Comparable<String>> complete =
                 UnsafeFacts.steps(COMPARABLE.token, SELF).with(COMPARE_TO, how).complete();
@@ -46,13 +46,14 @@ class CompleteTest {
 
     @Test
     void anImplementationTellsHowTheClassHasTheMethod() {
-        Implemented overriding = new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN);
-        Implemented inheriting = new Implemented.ByInheritance(String_.length);
-        Implementation1<SelfP, Prim.Int, String> own = UnsafeFacts.implementation1(overriding);
-        Implementation0<SelfP, Prim.Int> inherited = UnsafeFacts.implementation0(inheriting);
-        VoidImplementation0<SelfP> ofVoid = UnsafeFacts.voidImplementation0(inheriting);
+        Implemented.ByOverride overriding = new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN);
+        Implemented.ByInheritance inheriting = new Implemented.ByInheritance(String_.length);
+        Overriding1<SelfP, Prim.Int, String> own = UnsafeFacts.overriding1(overriding);
+        Implementation0<SelfP, Prim.Int> inherited = UnsafeFacts.inherited0(inheriting);
+        VoidImplementation0<SelfP> ofVoid = UnsafeFacts.voidInherited0(inheriting);
 
         assertThat(own.how()).isSameAs(overriding);
+        assertThat(own.method()).isSameAs(OWN);
         assertThat(overriding.satisfies()).isSameAs(COMPARABLE.compareTo_T);
         assertThat(inheriting.satisfies()).isSameAs(String_.length);
         assertThat(ofVoid.how()).isSameAs(inheriting);
@@ -65,7 +66,7 @@ class CompleteTest {
     @Test
     void aStepTakesAnImplementationOfItsMethodAlone() {
         Implementation0<SelfP, Prim.Int> ofAnother =
-                UnsafeFacts.implementation0(new Implemented.ByInheritance(String_.length));
+                UnsafeFacts.inherited0(new Implemented.ByInheritance(String_.length));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeFacts.steps(COMPARABLE.token, SELF).with(COMPARE_TO, ofAnother))

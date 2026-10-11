@@ -1,26 +1,26 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.Implementation0;
-import me.supcheg.javafile.facts.Implementation1;
-import me.supcheg.javafile.facts.Implementation2;
 import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
+import me.supcheg.javafile.facts.Overriding0;
+import me.supcheg.javafile.facts.Overriding1;
+import me.supcheg.javafile.facts.Overriding2;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.VoidImplementation0;
-import me.supcheg.javafile.facts.VoidImplementation1;
-import me.supcheg.javafile.facts.VoidImplementation2;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
+import me.supcheg.javafile.facts.VoidOverriding0;
+import me.supcheg.javafile.facts.VoidOverriding1;
+import me.supcheg.javafile.facts.VoidOverriding2;
 
 import java.util.List;
 
 /// The intentions of a class to override methods of its supertypes, said
 /// in its header: `overriding(fact)` says the class declares a method that
-/// overrides the method of the fact, and gives the `ImplementationN` a step
+/// overrides the method of the fact, and gives the `OverridingN` — an `ImplementationN` — a step
 /// of the proof that the class has a supertype takes for the method —
 /// `cmp.implement(h.self()).compareTo_T(compareTo)`.
 ///
@@ -56,8 +56,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O, R> Implementation0<Self, R> overriding(MethodRef0<O, R> method) {
-        return UnsafeFacts.implementation0(new Implemented.ByOverride(
+    public <O, R> Overriding0<Self, R> overriding(MethodRef0<O, R> method) {
+        return UnsafeFacts.overriding0(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -71,8 +71,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O, R, A1> Implementation1<Self, R, A1> overriding(MethodRef1<O, R, A1> method) {
-        return UnsafeFacts.implementation1(new Implemented.ByOverride(
+    public <O, R, A1> Overriding1<Self, R, A1> overriding(MethodRef1<O, R, A1> method) {
+        return UnsafeFacts.overriding1(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -87,8 +87,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O, R, A1, A2> Implementation2<Self, R, A1, A2> overriding(MethodRef2<O, R, A1, A2> method) {
-        return UnsafeFacts.implementation2(new Implemented.ByOverride(
+    public <O, R, A1, A2> Overriding2<Self, R, A1, A2> overriding(MethodRef2<O, R, A1, A2> method) {
+        return UnsafeFacts.overriding2(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -100,8 +100,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O> VoidImplementation0<Self> overriding(VoidMethodRef0<O> method) {
-        return UnsafeFacts.voidImplementation0(new Implemented.ByOverride(
+    public <O> VoidOverriding0<Self> overriding(VoidMethodRef0<O> method) {
+        return UnsafeFacts.voidOverriding0(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -114,8 +114,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O, A1> VoidImplementation1<Self, A1> overriding(VoidMethodRef1<O, A1> method) {
-        return UnsafeFacts.voidImplementation1(new Implemented.ByOverride(
+    public <O, A1> VoidOverriding1<Self, A1> overriding(VoidMethodRef1<O, A1> method) {
+        return UnsafeFacts.voidOverriding1(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -129,8 +129,8 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalArgumentException if the method is `final` or generic, the class overrides a
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
-    public <O, A1, A2> VoidImplementation2<Self, A1, A2> overriding(VoidMethodRef2<O, A1, A2> method) {
-        return UnsafeFacts.voidImplementation2(new Implemented.ByOverride(
+    public <O, A1, A2> VoidOverriding2<Self, A1, A2> overriding(VoidMethodRef2<O, A1, A2> method) {
+        return UnsafeFacts.voidOverriding2(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 }

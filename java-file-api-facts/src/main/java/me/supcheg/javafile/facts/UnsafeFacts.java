@@ -62,8 +62,10 @@ import java.util.function.Supplier;
 /// fact of a constructor of an abstract class, and of a `protected` one.
 ///
 /// How a class being declared has a method of a supertype is vouched for by
-/// `implementation0`..`implementation12` and `voidImplementation0`..: the
-/// typed layer makes one where a class declares that it overrides a method.
+/// `overriding0`..`overriding12` and `voidOverriding0`.., where the class
+/// declares a method that overrides it, and by `inherited0`..`inherited12`
+/// and `voidInherited0`.., where it has the one of its superclass: the typed
+/// layer makes them, in the header of a class.
 ///
 /// The fact of any other `protected` member is made as that of a `public`
 /// one, with [Access#PROTECTED] — in the [MemberTraits] of a method, as the

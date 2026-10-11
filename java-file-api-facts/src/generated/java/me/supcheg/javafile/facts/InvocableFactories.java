@@ -1,6 +1,8 @@
 package me.supcheg.javafile.facts;
 
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Implemented.ByInheritance;
+import me.supcheg.javafile.facts.Implemented.ByOverride;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
 abstract class InvocableFactories {
@@ -420,107 +422,211 @@ abstract class InvocableFactories {
         return new VoidSam12<>(method);
     }
 
-    public static <Self, R> Implementation0<Self, R> implementation0(Implemented how) {
-        return new Implementation0<>(how);
+    public static <Self, R> Overriding0<Self, R> overriding0(ByOverride how) {
+        return new Overriding0<>(how);
     }
 
-    public static <Self> VoidImplementation0<Self> voidImplementation0(Implemented how) {
-        return new VoidImplementation0<>(how);
+    public static <Self, R> Inherited0<Self, R> inherited0(ByInheritance how) {
+        return new Inherited0<>(how);
     }
 
-    public static <Self, R, A1> Implementation1<Self, R, A1> implementation1(Implemented how) {
-        return new Implementation1<>(how);
+    public static <Self> VoidOverriding0<Self> voidOverriding0(ByOverride how) {
+        return new VoidOverriding0<>(how);
     }
 
-    public static <Self, A1> VoidImplementation1<Self, A1> voidImplementation1(Implemented how) {
-        return new VoidImplementation1<>(how);
+    public static <Self> VoidInherited0<Self> voidInherited0(ByInheritance how) {
+        return new VoidInherited0<>(how);
     }
 
-    public static <Self, R, A1, A2> Implementation2<Self, R, A1, A2> implementation2(Implemented how) {
-        return new Implementation2<>(how);
+    public static <Self, R, A1> Overriding1<Self, R, A1> overriding1(ByOverride how) {
+        return new Overriding1<>(how);
     }
 
-    public static <Self, A1, A2> VoidImplementation2<Self, A1, A2> voidImplementation2(Implemented how) {
-        return new VoidImplementation2<>(how);
+    public static <Self, R, A1> Inherited1<Self, R, A1> inherited1(ByInheritance how) {
+        return new Inherited1<>(how);
     }
 
-    public static <Self, R, A1, A2, A3> Implementation3<Self, R, A1, A2, A3> implementation3(Implemented how) {
-        return new Implementation3<>(how);
+    public static <Self, A1> VoidOverriding1<Self, A1> voidOverriding1(ByOverride how) {
+        return new VoidOverriding1<>(how);
     }
 
-    public static <Self, A1, A2, A3> VoidImplementation3<Self, A1, A2, A3> voidImplementation3(Implemented how) {
-        return new VoidImplementation3<>(how);
+    public static <Self, A1> VoidInherited1<Self, A1> voidInherited1(ByInheritance how) {
+        return new VoidInherited1<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4> Implementation4<Self, R, A1, A2, A3, A4> implementation4(Implemented how) {
-        return new Implementation4<>(how);
+    public static <Self, R, A1, A2> Overriding2<Self, R, A1, A2> overriding2(ByOverride how) {
+        return new Overriding2<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4> VoidImplementation4<Self, A1, A2, A3, A4> voidImplementation4(Implemented how) {
-        return new VoidImplementation4<>(how);
+    public static <Self, R, A1, A2> Inherited2<Self, R, A1, A2> inherited2(ByInheritance how) {
+        return new Inherited2<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5> Implementation5<Self, R, A1, A2, A3, A4, A5> implementation5(Implemented how) {
-        return new Implementation5<>(how);
+    public static <Self, A1, A2> VoidOverriding2<Self, A1, A2> voidOverriding2(ByOverride how) {
+        return new VoidOverriding2<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5> VoidImplementation5<Self, A1, A2, A3, A4, A5> voidImplementation5(Implemented how) {
-        return new VoidImplementation5<>(how);
+    public static <Self, A1, A2> VoidInherited2<Self, A1, A2> voidInherited2(ByInheritance how) {
+        return new VoidInherited2<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6> Implementation6<Self, R, A1, A2, A3, A4, A5, A6> implementation6(Implemented how) {
-        return new Implementation6<>(how);
+    public static <Self, R, A1, A2, A3> Overriding3<Self, R, A1, A2, A3> overriding3(ByOverride how) {
+        return new Overriding3<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6> VoidImplementation6<Self, A1, A2, A3, A4, A5, A6> voidImplementation6(Implemented how) {
-        return new VoidImplementation6<>(how);
+    public static <Self, R, A1, A2, A3> Inherited3<Self, R, A1, A2, A3> inherited3(ByInheritance how) {
+        return new Inherited3<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Implementation7<Self, R, A1, A2, A3, A4, A5, A6, A7> implementation7(Implemented how) {
-        return new Implementation7<>(how);
+    public static <Self, A1, A2, A3> VoidOverriding3<Self, A1, A2, A3> voidOverriding3(ByOverride how) {
+        return new VoidOverriding3<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7> VoidImplementation7<Self, A1, A2, A3, A4, A5, A6, A7> voidImplementation7(Implemented how) {
-        return new VoidImplementation7<>(how);
+    public static <Self, A1, A2, A3> VoidInherited3<Self, A1, A2, A3> voidInherited3(ByInheritance how) {
+        return new VoidInherited3<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> Implementation8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> implementation8(Implemented how) {
-        return new Implementation8<>(how);
+    public static <Self, R, A1, A2, A3, A4> Overriding4<Self, R, A1, A2, A3, A4> overriding4(ByOverride how) {
+        return new Overriding4<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8> VoidImplementation8<Self, A1, A2, A3, A4, A5, A6, A7, A8> voidImplementation8(Implemented how) {
-        return new VoidImplementation8<>(how);
+    public static <Self, R, A1, A2, A3, A4> Inherited4<Self, R, A1, A2, A3, A4> inherited4(ByInheritance how) {
+        return new Inherited4<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Implementation9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> implementation9(Implemented how) {
-        return new Implementation9<>(how);
+    public static <Self, A1, A2, A3, A4> VoidOverriding4<Self, A1, A2, A3, A4> voidOverriding4(ByOverride how) {
+        return new VoidOverriding4<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidImplementation9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> voidImplementation9(Implemented how) {
-        return new VoidImplementation9<>(how);
+    public static <Self, A1, A2, A3, A4> VoidInherited4<Self, A1, A2, A3, A4> voidInherited4(ByInheritance how) {
+        return new VoidInherited4<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Implementation10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation10(Implemented how) {
-        return new Implementation10<>(how);
+    public static <Self, R, A1, A2, A3, A4, A5> Overriding5<Self, R, A1, A2, A3, A4, A5> overriding5(ByOverride how) {
+        return new Overriding5<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidImplementation10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> voidImplementation10(Implemented how) {
-        return new VoidImplementation10<>(how);
+    public static <Self, R, A1, A2, A3, A4, A5> Inherited5<Self, R, A1, A2, A3, A4, A5> inherited5(ByInheritance how) {
+        return new Inherited5<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Implementation11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> implementation11(Implemented how) {
-        return new Implementation11<>(how);
+    public static <Self, A1, A2, A3, A4, A5> VoidOverriding5<Self, A1, A2, A3, A4, A5> voidOverriding5(ByOverride how) {
+        return new VoidOverriding5<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidImplementation11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> voidImplementation11(Implemented how) {
-        return new VoidImplementation11<>(how);
+    public static <Self, A1, A2, A3, A4, A5> VoidInherited5<Self, A1, A2, A3, A4, A5> voidInherited5(ByInheritance how) {
+        return new VoidInherited5<>(how);
     }
 
-    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Implementation12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> implementation12(Implemented how) {
-        return new Implementation12<>(how);
+    public static <Self, R, A1, A2, A3, A4, A5, A6> Overriding6<Self, R, A1, A2, A3, A4, A5, A6> overriding6(ByOverride how) {
+        return new Overriding6<>(how);
     }
 
-    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidImplementation12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidImplementation12(Implemented how) {
-        return new VoidImplementation12<>(how);
+    public static <Self, R, A1, A2, A3, A4, A5, A6> Inherited6<Self, R, A1, A2, A3, A4, A5, A6> inherited6(ByInheritance how) {
+        return new Inherited6<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6> VoidOverriding6<Self, A1, A2, A3, A4, A5, A6> voidOverriding6(ByOverride how) {
+        return new VoidOverriding6<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6> VoidInherited6<Self, A1, A2, A3, A4, A5, A6> voidInherited6(ByInheritance how) {
+        return new VoidInherited6<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Overriding7<Self, R, A1, A2, A3, A4, A5, A6, A7> overriding7(ByOverride how) {
+        return new Overriding7<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7> Inherited7<Self, R, A1, A2, A3, A4, A5, A6, A7> inherited7(ByInheritance how) {
+        return new Inherited7<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7> VoidOverriding7<Self, A1, A2, A3, A4, A5, A6, A7> voidOverriding7(ByOverride how) {
+        return new VoidOverriding7<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7> VoidInherited7<Self, A1, A2, A3, A4, A5, A6, A7> voidInherited7(ByInheritance how) {
+        return new VoidInherited7<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> Overriding8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> overriding8(ByOverride how) {
+        return new Overriding8<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8> Inherited8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> inherited8(ByInheritance how) {
+        return new Inherited8<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8> VoidOverriding8<Self, A1, A2, A3, A4, A5, A6, A7, A8> voidOverriding8(ByOverride how) {
+        return new VoidOverriding8<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8> VoidInherited8<Self, A1, A2, A3, A4, A5, A6, A7, A8> voidInherited8(ByInheritance how) {
+        return new VoidInherited8<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Overriding9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> overriding9(ByOverride how) {
+        return new Overriding9<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Inherited9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> inherited9(ByInheritance how) {
+        return new Inherited9<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidOverriding9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> voidOverriding9(ByOverride how) {
+        return new VoidOverriding9<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidInherited9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> voidInherited9(ByInheritance how) {
+        return new VoidInherited9<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Overriding10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> overriding10(ByOverride how) {
+        return new Overriding10<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Inherited10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> inherited10(ByInheritance how) {
+        return new Inherited10<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidOverriding10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> voidOverriding10(ByOverride how) {
+        return new VoidOverriding10<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidInherited10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> voidInherited10(ByInheritance how) {
+        return new VoidInherited10<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Overriding11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> overriding11(ByOverride how) {
+        return new Overriding11<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Inherited11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> inherited11(ByInheritance how) {
+        return new Inherited11<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidOverriding11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> voidOverriding11(ByOverride how) {
+        return new VoidOverriding11<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidInherited11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> voidInherited11(ByInheritance how) {
+        return new VoidInherited11<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Overriding12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> overriding12(ByOverride how) {
+        return new Overriding12<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Inherited12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> inherited12(ByInheritance how) {
+        return new Inherited12<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidOverriding12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidOverriding12(ByOverride how) {
+        return new VoidOverriding12<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInherited12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidInherited12(ByInheritance how) {
+        return new VoidInherited12<>(how);
     }
 }
