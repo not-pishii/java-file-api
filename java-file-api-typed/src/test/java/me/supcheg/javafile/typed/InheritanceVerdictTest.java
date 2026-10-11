@@ -2,43 +2,35 @@ package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.CompilationSubject;
 import me.supcheg.javafile.JavaFile;
-import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.Heritage;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
-import me.supcheg.javafile.facts.Heritage.Visibility;
-import me.supcheg.javafile.facts.MemberTraits;
-import me.supcheg.javafile.facts.MethodRef0;
-import me.supcheg.javafile.facts.MethodTable;
-import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
-import me.supcheg.javafile.facts.OpenClassToken;
-import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.type.ClassTypeRef;
-import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Counted;
 import me.supcheg.javafile.typed.fixtures.Joiner;
+import me.supcheg.javafile.typed.fixtures.Local;
+import me.supcheg.javafile.typed.fixtures.Sealing;
 import me.supcheg.javafile.typed.fixtures.Sourced;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Counted_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Joiner_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Local_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Measured_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Named_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Numbers_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Renamed_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Sealing_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Sourced_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.TakesNumbers_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.TakesTexts_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Texts_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Unnamed_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Useful_;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
-import java.lang.constant.ConstantDescs;
-import java.util.List;
-import java.util.Set;
 
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
@@ -289,53 +281,79 @@ class InheritanceVerdictTest {
         }
     }
 
-    /// The rules no class that extends `Object` meets.
+    /// The rules a class meets only with a superclass that is not `Object`: what [Base] has beside
+    /// what an interface has.
     @Nested
-    class OnData {
-        private static final ClassDesc BASE = ClassDesc.of("x", "Base");
-        private static final ClassToken<Object> OWNER = UnsafeFacts.<Object>openClassToken(
-                new ClassTypeRef(ClassDesc.of("x", "Self")), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
-        private static final MethodRef0<Object, me.supcheg.javafile.facts.Prim.Int> OWN =
-                UnsafeFacts.method((OpenClassToken<Object>) OWNER, "m", PrimitiveToken.INT, MemberTraits.FINAL);
+    class OfASuperclass {
 
-        private static Inheritance.Group group(Visibility visibility, Dispatch dispatch) {
-            Heritage.Method method = new Heritage.Method(
-                    visibility,
-                    dispatch,
-                    BASE,
-                    Signature.of("m"),
-                    List.of(),
-                    List.of(),
-                    Heritage.Arity.FIXED,
-                    new Heritage.Result.Of(PrimitiveTypeRef.INT),
-                    List.of(),
-                    Set.of(List.of()),
-                    List.of());
-            return new Inheritance.Group(
-                    OWN.signature(), List.of(new Inheritance.Entry(Object_.TOKEN, method, OWN.signature())));
+        private static <Self> SubclassHeader<Self, Base> extendsBase(ClassHeader<Self> h) {
+            return h.extends_(Base_.extend(h.self()));
         }
 
         @Test
-        void anInstanceMethodDoesNotOverrideAStaticOne() {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> SignatureRegistry.requireOverrides(
-                            "class x.Self", OWN, group(Visibility.PUBLIC, Dispatch.STATIC)))
-                    .withMessageContaining("an instance method cannot override a static one (JLS 8.4.8.1)");
-            CompilationSubject.assertThat(compiledClass(
-                            "",
-                            "static class B { public static int m() { return 0; } }"
-                                    + " static class S extends B { public int m() { return 1; } }"))
-                    .hadErrorContaining("overridden method is static");
+        void aStaticMethodAndAnInstanceOneOfOneSignatureAreNotInheritedTogether() {
+            classAsJavac(
+                    AT_THE_PLACE,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            extendsBase(h).implements_(Useful_.implement(h.self()));
+                        }
+                    }),
+                    "one is static and the other an instance method of the same signature",
+                    "extends Base implements Useful",
+                    "",
+                    "overriding method is static");
         }
 
         @Test
         void aMethodWithPackageAccessIsNotOverridden() {
-            // stricter than javac, which goes by the package of the class
+            // stricter than javac, which goes by the package of the class: to a class of another
+            // package the method of Base is no member, and the one of the interface is overridden
+            classUnlikeJavac(
+                    AT_THE_PLACE,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var sh = extendsBase(h);
+                            Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
+                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                                    .override(asLocal, Local_.local, (b, _) -> b.return_(literal("")));
+                        }
+                    }),
+                    "the method has package access",
+                    "extends Base implements Local",
+                    "@Override public String local() { return \"\"; }");
+        }
+
+        @Test
+        void aFinalMethodOfTheSuperclassDoesNotStandForADefaultOne() {
+            // javac takes the method of the class for that of the interface; the typed layer has a
+            // class that gets a body from each say which it is, and a final method cannot be said
+            classUnlikeJavac(
+                    IllegalStateException.class,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var sh = extendsBase(h);
+                            sh.implements_(Sealing_.implement(h.self()));
+                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        }
+                    }),
+                    "unrelated methods with a body each, and overrides neither",
+                    "extends Base implements Sealing",
+                    "");
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> SignatureRegistry.requireOverrides(
-                            "class x.Self", OWN, group(Visibility.PACKAGE, Dispatch.CONCRETE)))
-                    .withMessageContaining("the method has package access");
-            SignatureRegistry.requireOverrides("class x.Self", OWN, group(Visibility.PROTECTED, Dispatch.CONCRETE));
+                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var sh = extendsBase(h);
+                            Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
+                            sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                                    .override(asSealing, Sealing_.sealed, (b, _) -> b.return_(literal("")));
+                        }
+                    }))
+                    .withMessageContaining("the method is final (JLS 8.4.3.3)");
         }
     }
 }
