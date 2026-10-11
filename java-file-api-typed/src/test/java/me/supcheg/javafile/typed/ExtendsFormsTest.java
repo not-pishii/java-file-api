@@ -230,6 +230,25 @@ class ExtendsFormsTest {
     }
 
     @Test
+    void twoConstructorsOfOneSignatureDeclaredInTheHeaderAreRejectedWhereTheMembersBegin() {
+        classAsJavac(
+                IllegalArgumentException.class,
+                () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> void build(ClassHeader<Self> h) {
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var first = sh.declareConstructor(String_.TOKEN);
+                        sh.declareConstructor(String_.TOKEN);
+                        sh.body(first, (ctor, name) -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    }
+                }),
+                "clashes with the constructor",
+                "extends Base",
+                "public Probe(String a) { super(); } public Probe(String b) { super(); }",
+                "constructor Probe(java.lang.String) is already defined");
+    }
+
+    @Test
     void superCallsAMethodTheClassReachesAndAnInstanceOne() {
         classAsJavac(
                 IllegalArgumentException.class,
