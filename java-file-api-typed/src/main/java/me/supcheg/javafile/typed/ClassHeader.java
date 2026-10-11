@@ -2,7 +2,9 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.ExtendableClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
+import me.supcheg.javafile.facts.TypeVarToken;
 
 /// The first stage of the header of a class ([Header]): the class has a
 /// name, and says what it extends.
@@ -71,5 +73,44 @@ public final class ClassHeader<Self> extends Header<Self> {
     ///     of it, does not hold on the target classpath
     public <S> SubclassHeader<Self, S> extends_(Complete<Self, S> proof) {
         return new SubclassHeader<>(declaration(), declaration().extend(proof));
+    }
+
+    /// Gives a type parameter of the class one more bound, an interface: `<T extends Number &
+    /// Comparable<T>>`. The leftmost bound of a type parameter is a type of the generator
+    /// ([TypeParameter]); every other is said here, before the class names its superclass, and
+    /// gives the witness by which an expression of the type parameter is one of the interface —
+    /// as a supertype of the class gives one of the class ([Upcast]).
+    ///
+    /// ```java
+    /// var comparable = new Comparable_<>(t);
+    /// Upcast<T, Comparable<T>> asComparable = h.bound(t, comparable.token);
+    /// ...
+    /// call(asComparable.apply(mine), comparable.compareTo_T, other)
+    /// ```
+    ///
+    /// A bound may mention the type parameter itself and the others of the class, which a
+    /// leftmost bound cannot: `T extends Comparable<T>` is rendered `<T extends Object &
+    /// Comparable<T>>` — the erasure of `T` is that of its leftmost bound (JLS 4.6), which the
+    /// token of `T` was made with.
+    ///
+    /// The bounds of a type parameter are held to what a class with those supertypes is held to
+    /// (JLS 4.4, 4.9): an interface is a bound once, a generic interface is not reached with other
+    /// type arguments through two bounds, and the methods of the bounds do not clash. So a further
+    /// bound needs the heritage of every bound — a leftmost bound that is a `final` class, has a
+    /// wildcard type argument or has no full metamodel takes no further bound.
+    ///
+    /// @param variable the token of the type parameter, as the specification of the class was given it
+    /// @param bound the interface, with its type arguments
+    /// @param <T> the type parameter
+    /// @param <B> the interface
+    /// @return the witness that the type parameter is of the interface
+    /// @throws IllegalArgumentException if `variable` is no type parameter of this class; `bound` is raw,
+    ///     has a wildcard type argument or tells no heritage; is a bound of the type parameter already,
+    ///     or a generic supertype of two bounds with other type arguments; or the methods of the bounds
+    ///     clash
+    /// @throws IllegalStateException if the class has its superclass already, or `bound` mentions a type
+    ///     parameter of another class
+    public <T, B> Upcast<T, B> bound(TypeVarToken<T> variable, InterfaceToken<B> bound) {
+        return declaration().bound(variable, bound);
     }
 }

@@ -78,7 +78,8 @@
     Linked.class,
     Chained.class,
     Following.class,
-    Copied.class
+    Copied.class,
+    Carrier.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -126,6 +127,7 @@ import me.supcheg.javafile.typed.fixtures.Linked;
 import me.supcheg.javafile.typed.fixtures.Chained;
 import me.supcheg.javafile.typed.fixtures.Following;
 import me.supcheg.javafile.typed.fixtures.Copied;
+import me.supcheg.javafile.typed.fixtures.Carrier;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

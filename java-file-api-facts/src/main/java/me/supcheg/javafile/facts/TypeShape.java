@@ -227,12 +227,15 @@ public final class TypeShape<K extends DeclaredKind> {
     /// declaration names it, and its methods once the declaration is complete. Either supplier
     /// may throw while it has no answer yet.
     static TypeShape<DeclaredKind.FinalClass> declared(
-            ClassDesc desc, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTable> methods) {
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            Supplier<List<ClassDesc>> superclasses,
+            Supplier<MethodTable> methods) {
         return new TypeShape<>(
                 ShapeOrigin.UNSAFE,
                 DeclaredKind.FINAL_CLASS,
                 desc,
-                List.of(),
+                typeParameters,
                 new Superclasses.Awaited(superclasses),
                 List.of(),
                 Supertypes.NONE,

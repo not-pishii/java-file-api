@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
@@ -49,6 +50,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /// The builder of the members of a class being declared (§6.5), branded
 /// with `Self`: what [TypedClassBuilder] — of a class that extends `Object` —
@@ -69,6 +71,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     private final FinalClassToken<Self> self;
     private final Superclass superclass;
     private final SignatureRegistry registry;
+    private final ClassDeclaration<Self> owner;
     private final List<Slot> slots = new ArrayList<>();
     private final Map<Object, Slot> slotsByFact = new IdentityHashMap<>();
     private Declaration declaration = new Declaration.Open();
@@ -78,7 +81,22 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
         this.target = declared.target();
         this.described = declared.described();
         this.self = declared.self();
-        this.registry = new SignatureRegistry(described, inherited);
+        this.registry = new SignatureRegistry(described, inherited, declared.bounded());
+        this.owner = declared;
+    }
+
+    /// The scope of the types a member mentions: of an instance member, or of a `static` one (JLS 8.1.2).
+    private TypeScope scope(InvocableKind kind, String where) {
+        return switch (kind) {
+            case CONSTRUCTOR, INSTANCE_METHOD -> owner.scope(where);
+            case STATIC_METHOD -> owner.staticScope(where);
+        };
+    }
+
+    /// Holds the types of the signature of a member to its scope, where it is declared.
+    private void requireInScope(Invocable member) {
+        TypeScope scope = scope(member.kind(), "the signature of " + member);
+        Stream.concat(member.params().stream(), member.resultType().stream()).forEach(scope::require);
     }
 
     /// The fact of the class being declared: a [FinalClassToken], usable as
@@ -148,6 +166,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     private void declareField(
             FieldRef<Self, ?> field, String name, TypeToken<?> type, Set<Modifier> modifiers, Expr<?> initializer) {
         requireOpen("field " + name + " of " + described);
+        owner.scope("the type of field " + name).require(type);
         registry.field(name);
         ScopeCheck.standalone(initializer.node(), "initializer of field " + name);
         Exceptions.initializer(initializer.node(), "initializer of field " + name);
@@ -157,7 +176,10 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
                 type.typeRef(),
                 List.of(),
                 modifiers,
-                Optional.of(new Lowering(target, new Lowering.Place.InClass(self), null)
+                Optional.of(new Lowering(
+                                target,
+                                new Lowering.Place.InClass(self, owner.scope("the initializer of field " + name)),
+                                null)
                         .lowerInitializer(initializer.node(), type)),
                 Optional.empty()));
     }
@@ -479,6 +501,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown) {
         String what = member.toString();
         requireOpen(what);
+        requireInScope(member);
         registry.member(member);
         slot(member, member, what, thrown);
         return member;
@@ -494,6 +517,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown) {
         String what = own.toString();
         requireOpen(what);
+        requireInScope(own);
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
         own.resultType().ifPresent(target::verify);
         registry.override(own);
@@ -545,7 +569,9 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     private ClassMember lower(Slot slot, Block<?, ?> root, List<Var<?>> params) {
         Invocable fact = slot.fact();
         Lowering lowering = new Lowering(
-                target, new Lowering.Place.InClass(self), fact.resultType().orElse(null));
+                target,
+                new Lowering.Place.InClass(self, scope(fact.kind(), "the body of " + slot.what)),
+                fact.resultType().orElse(null));
         List<Param> coreParams = new ArrayList<>(params.size());
         for (Var<?> param : params) {
             coreParams.add(
