@@ -1,9 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.CtorRef1;
-import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
@@ -26,10 +23,15 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/// The declarations of the methods and constructors of a class being
-/// declared (§6.5): what a [TypedClassBuilder] declares of them itself, and
-/// what [TypedClassBuilder#throwing] declares with a `throws` clause
+/// The declarations of the methods of a class being declared (§6.5): what
+/// the builder of its members ([MemberBuilder]) declares of them itself, and
+/// what its `throwing` declares with a `throws` clause
 /// ([ThrowingDeclarations]). The two differ in the clause alone.
+///
+/// What depends on the superclass of the class is declared by the interfaces
+/// a builder has beside: the overrides of the methods it inherits from the
+/// superclass ([OverridingDeclarations]) and its constructors
+/// ([ObjectConstructors]).
 ///
 /// A method or constructor is declared, which gives its fact, and defined
 /// with a body by the builder of the class
@@ -38,22 +40,30 @@ import java.util.function.Function;
 /// `constructor` do both in one call.
 ///
 /// @param <Self> the brand of the class being declared
-public abstract sealed class Declarations<Self> permits TypedClassBuilder, ThrowingDeclarations {
+public abstract sealed class Declarations<Self> permits MemberBuilder, ThrowingDeclarations {
 
     Declarations() {}
 
     /// The builder of the class the members are declared in and defined by.
-    abstract TypedClassBuilder<Self> builder();
+    abstract MemberBuilder<Self> builder();
+
+    /// These declarations themselves: what the default methods of the interfaces a builder has —
+    /// [OverridingDeclarations], [ObjectConstructors] — reach it by. Of no use to a generator.
+    ///
+    /// @return these declarations
+    public final Declarations<Self> declarations() {
+        return this;
+    }
 
     /// The exception classes of the `throws` clause of every member declared here.
     abstract List<ClassToken<? extends Throwable>> thrown();
 
-    private <F extends Invocable> F declare(F member) {
+    final <F extends Invocable> F declare(F member) {
         return builder().declare(member, thrown());
     }
 
     /// The traits of a member declared here: `traits`, with the `throws` clause.
-    private MemberTraits traits(MemberTraits traits) {
+    final MemberTraits traits(MemberTraits traits) {
         return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access());
     }
 
@@ -179,36 +189,6 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
     /// @throws IllegalArgumentException if javac would reject the method
     public <A1> VoidStaticMethodRef1<A1> declareVoidStaticMethod(String name, TypeToken<A1> p1) {
         return declare(UnsafeFacts.voidStaticMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [TypedClassBuilder#define(CtorRef0, InstanceBody0)].
-    ///
-    /// @return the fact of the constructor, which `new_` accepts
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public CtorRef0<Self> declareConstructor() {
-        return declare(UnsafeFacts.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [TypedClassBuilder#define(CtorRef1, InstanceBody1)].
-    ///
-    /// @param p1 the parameter type
-    /// @param <A1> the parameter type
-    /// @return the fact of the constructor
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public <A1> CtorRef1<Self, A1> declareConstructor(TypeToken<A1> p1) {
-        return declare(UnsafeFacts.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
-    }
-
-    /// Declares a `public` constructor, to be defined with [TypedClassBuilder#define(CtorRef2, InstanceBody2)].
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the constructor
-    /// @throws IllegalArgumentException if a constructor with the same erased parameters is declared already
-    public <A1, A2> CtorRef2<Self, A1, A2> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
     }
 
     // ------------------------------------------------------------------
@@ -362,119 +342,9 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         return method;
     }
 
-    /// Declares and defines a constructor, see [#declareConstructor()].
-    ///
-    /// @param body the body, given its block and `this`
-    /// @return the fact of the constructor
-    public CtorRef0<Self> constructor(InstanceBody0<Self, VoidBody, Void> body) {
-        CtorRef0<Self> ctor = declareConstructor();
-        builder().define(ctor, body);
-        return ctor;
-    }
-
-    /// Declares and defines a constructor, see [#declareConstructor(TypeToken)].
-    ///
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @return the fact of the constructor
-    public <A1> CtorRef1<Self, A1> constructor(TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        CtorRef1<Self, A1> ctor = declareConstructor(p1);
-        builder().define(ctor, body);
-        return ctor;
-    }
-
-    /// Declares and defines a constructor, see [#declareConstructor(TypeToken, TypeToken)].
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the constructor
-    public <A1, A2> CtorRef2<Self, A1, A2> constructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        CtorRef2<Self, A1, A2> ctor = declareConstructor(p1, p2);
-        builder().define(ctor, body);
-        return ctor;
-    }
-
     // ------------------------------------------------------------------
     // Overrides: a method the class inherits, named by its fact
     // ------------------------------------------------------------------
-
-    /// Overrides a method of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block and `this`
-    /// @param <R> the result type
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <R> MethodRef0<Self, R> override(MethodRef0<Object, R> method, InstanceBody0<Self, Body<R>, R> body) {
-        return overridden(method, body);
-    }
-
-    /// Overrides a method with one parameter of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <R, A1> MethodRef1<Self, R, A1> override(
-            MethodRef1<Object, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
-        return overridden(method, body);
-    }
-
-    /// Overrides a method with two parameters of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <R, A1, A2> MethodRef2<Self, R, A1, A2> override(
-            MethodRef2<Object, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        return overridden(method, body);
-    }
-
-    /// Overrides a `void` method of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block and `this`
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public VoidMethodRef0<Self> override(VoidMethodRef0<Object> method, InstanceBody0<Self, VoidBody, Void> body) {
-        return overridden(method, body);
-    }
-
-    /// Overrides a `void` method with one parameter of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <A1> VoidMethodRef1<Self, A1> override(
-            VoidMethodRef1<Object, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        return overridden(method, body);
-    }
-
-    /// Overrides a `void` method with two parameters of `Object`: declares it anew, `@Override public`, and defines it.
-    ///
-    /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the fact of the overriding method
-    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <A1, A2> VoidMethodRef2<Self, A1, A2> override(
-            VoidMethodRef2<Object, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        return overridden(method, body);
-    }
 
     /// Overrides a method of a supertype the class has by the witness `up` — one that has a body
     /// there, a default method: an abstract one is implemented by the proof the supertype is
@@ -581,14 +451,14 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         return overridden(method, body);
     }
 
-    private <R> MethodRef0<Self, R> overridden(MethodRef0<?, R> method, InstanceBody0<Self, Body<R>, R> body) {
+    final <R> MethodRef0<Self, R> overridden(MethodRef0<?, R> method, InstanceBody0<Self, Body<R>, R> body) {
         MethodRef0<Self, R> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
         builder().define(own, body);
         return own;
     }
 
-    private <R, A1> MethodRef1<Self, R, A1> overridden(
+    final <R, A1> MethodRef1<Self, R, A1> overridden(
             MethodRef1<?, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
         MethodRef1<Self, R, A1> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
@@ -596,7 +466,7 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         return own;
     }
 
-    private <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
+    final <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
             MethodRef2<?, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
         MethodRef2<Self, R, A1, A2> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
@@ -604,14 +474,14 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         return own;
     }
 
-    private VoidMethodRef0<Self> overridden(VoidMethodRef0<?> method, InstanceBody0<Self, VoidBody, Void> body) {
+    final VoidMethodRef0<Self> overridden(VoidMethodRef0<?> method, InstanceBody0<Self, VoidBody, Void> body) {
         VoidMethodRef0<Self> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
         builder().define(own, body);
         return own;
     }
 
-    private <A1> VoidMethodRef1<Self, A1> overridden(
+    final <A1> VoidMethodRef1<Self, A1> overridden(
             VoidMethodRef1<?, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
         VoidMethodRef1<Self, A1> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
@@ -619,7 +489,7 @@ public abstract sealed class Declarations<Self> permits TypedClassBuilder, Throw
         return own;
     }
 
-    private <A1, A2> VoidMethodRef2<Self, A1, A2> overridden(
+    final <A1, A2> VoidMethodRef2<Self, A1, A2> overridden(
             VoidMethodRef2<?, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         VoidMethodRef2<Self, A1, A2> own =
                 builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());

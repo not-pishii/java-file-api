@@ -19,7 +19,7 @@ import me.supcheg.javafile.facts.TypeToken;
 /// public constructor.
 ///
 /// @param <T> the Java type of the expression
-public sealed class Expr<T> permits Var, Invocation {
+public sealed class Expr<T> permits Var, Invocation, This {
     private final Node node;
     private final TypeToken<T> type;
 

@@ -47,7 +47,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final ClassDesc desc;
     private final List<TypeParam> typeParameters;
     private final List<ClassDesc> boundErasures;
-    private final List<ClassDesc> superclasses;
+    private final Superclasses superclasses;
     private final List<ClassDesc> interfaces;
     private final Supertypes supertypes;
     private final Supplier<MethodTableTemplate> methods;
@@ -123,6 +123,32 @@ public final class TypeShape<K extends DeclaredKind> {
             List<String> enumConstants,
             boolean sealed,
             Supplier<? extends Heritage> heritage) {
+        this(
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                new Superclasses.Known(List.copyOf(superclasses)),
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed,
+                heritage);
+    }
+
+    private TypeShape(
+            ShapeOrigin origin,
+            K kind,
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            Superclasses superclasses,
+            List<ClassDesc> interfaces,
+            Supertypes supertypes,
+            Supplier<MethodTableTemplate> methods,
+            List<String> enumConstants,
+            boolean sealed,
+            Supplier<? extends Heritage> heritage) {
         this.origin = origin;
         this.kind = kind;
         if (!desc.isClassOrInterface()) {
@@ -131,7 +157,7 @@ public final class TypeShape<K extends DeclaredKind> {
         this.desc = desc;
         this.typeParameters = List.copyOf(typeParameters);
         this.boundErasures = boundErasures(this.typeParameters);
-        this.superclasses = List.copyOf(superclasses);
+        this.superclasses = superclasses;
         this.interfaces = List.copyOf(interfaces);
         this.supertypes = supertypes;
         this.methods = methods;
@@ -139,7 +165,10 @@ public final class TypeShape<K extends DeclaredKind> {
         this.sealed = sealed;
         this.heritage = heritage;
         requireSupertypesOfTheTypeParameters();
-        requireSuperclasses();
+        switch (superclasses) {
+            case Superclasses.Known(var chain) -> requireSuperclasses(chain);
+            case Superclasses.Awaited _ -> {}
+        }
         requireInterfaces();
         requireKindData();
     }
@@ -194,6 +223,25 @@ public final class TypeShape<K extends DeclaredKind> {
                 false);
     }
 
+    /// The shape of a final class that is being declared: its superclass is known once the
+    /// declaration names it, and its methods once the declaration is complete. Either supplier
+    /// may throw while it has no answer yet.
+    static TypeShape<DeclaredKind.FinalClass> declared(
+            ClassDesc desc, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTable> methods) {
+        return new TypeShape<>(
+                ShapeOrigin.UNSAFE,
+                DeclaredKind.FINAL_CLASS,
+                desc,
+                List.of(),
+                new Superclasses.Awaited(superclasses),
+                List.of(),
+                Supertypes.NONE,
+                () -> MethodTableTemplate.of(methods.get()),
+                List.of(),
+                false,
+                () -> Heritage.UNTOLD);
+    }
+
     /// The shape of a type this module knows by definition.
     static TypeShape<DeclaredKind.FinalClass> builtin(ClassDesc desc, List<ClassDesc> superclasses) {
         return new TypeShape<>(
@@ -243,7 +291,10 @@ public final class TypeShape<K extends DeclaredKind> {
     ///
     /// @return the superclass chain
     public List<ClassDesc> superclasses() {
-        return superclasses;
+        return switch (superclasses) {
+            case Superclasses.Known(var chain) -> chain;
+            case Superclasses.Awaited(var chain) -> requireSuperclasses(List.copyOf(chain.get()));
+        };
     }
 
     /// The erasures of the interfaces the type implements or extends,
@@ -399,20 +450,20 @@ public final class TypeShape<K extends DeclaredKind> {
         }
     }
 
-    private void requireSuperclasses() {
+    private List<ClassDesc> requireSuperclasses(List<ClassDesc> superclasses) {
         if (kind instanceof DeclaredKind.Interface) {
             if (!superclasses.isEmpty()) {
                 throw new IllegalArgumentException("interface " + TypeNames.describe(desc)
                         + " has no superclasses, got " + describe(superclasses));
             }
-            return;
+            return superclasses;
         }
         if (desc.equals(ConstantDescs.CD_Object)) {
             if (!superclasses.isEmpty()) {
                 throw new IllegalArgumentException(
                         "java.lang.Object has no superclasses, got " + describe(superclasses));
             }
-            return;
+            return superclasses;
         }
         if (superclasses.isEmpty() || !superclasses.getLast().equals(ConstantDescs.CD_Object)) {
             throw new IllegalArgumentException(
@@ -422,6 +473,7 @@ public final class TypeShape<K extends DeclaredKind> {
             throw new IllegalArgumentException(
                     "the superclass chain of " + this + " repeats a class: " + describe(superclasses));
         }
+        return superclasses;
     }
 
     private void requireInterfaces() {
@@ -433,7 +485,7 @@ public final class TypeShape<K extends DeclaredKind> {
             throw new IllegalArgumentException("the interfaces of " + this + " repeat one: " + describe(interfaces));
         }
         List<ClassDesc> both =
-                interfaces.stream().filter(superclasses::contains).toList();
+                interfaces.stream().filter(i -> superclasses().contains(i)).toList();
         if (!both.isEmpty()) {
             throw new IllegalArgumentException(
                     this + " has " + describe(both) + " both as a superclass and as an interface");
@@ -453,14 +505,23 @@ public final class TypeShape<K extends DeclaredKind> {
         if (!typeParameters.isEmpty()) {
             throw new IllegalArgumentException("an enum class cannot be generic: " + this);
         }
-        if (!superclasses.equals(List.of(CD_ENUM, ConstantDescs.CD_Object))) {
+        if (!superclasses().equals(List.of(CD_ENUM, ConstantDescs.CD_Object))) {
             throw new IllegalArgumentException("the superclass chain of " + this
-                    + " must be java.lang.Enum, java.lang.Object, got " + describe(superclasses));
+                    + " must be java.lang.Enum, java.lang.Object, got " + describe(superclasses()));
         }
         Identifiers.requireValid(enumConstants);
         if (Set.copyOf(enumConstants).size() != enumConstants.size()) {
             throw new IllegalArgumentException("duplicate enum constants in " + this + ": " + enumConstants);
         }
+    }
+
+    /// The superclass chain of a shape: known, or awaited from the declaration of the class.
+    private sealed interface Superclasses {
+        /// The chain, checked when the shape was made.
+        record Known(List<ClassDesc> chain) implements Superclasses {}
+
+        /// The chain a declaration gives once it names the superclass, checked whenever it is asked.
+        record Awaited(Supplier<List<ClassDesc>> chain) implements Superclasses {}
     }
 
     private static String describe(List<ClassDesc> classes) {
