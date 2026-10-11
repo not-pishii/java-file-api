@@ -1,6 +1,9 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef2;
 
 import java.util.List;
 
@@ -129,6 +132,33 @@ public final class TypedClassBuilder<Self> extends MemberBuilder<Self>
     @SuppressWarnings("varargs")
     public final ThrowingDeclarations<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
         return new ThrowingDeclarations<>(this, List.of(exceptions));
+    }
+
+    /// Defines a declared constructor; the body gets `this`.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given its block and `this`
+    public void define(CtorRef0<Self> ctor, InstanceBody0<Self, VoidBody, Void> body) {
+        defineConstructor(ctor, body);
+    }
+
+    /// Defines a declared constructor; the body gets `this` and the parameter.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given its block, `this` and the parameter
+    /// @param <A1> the parameter type
+    public <A1> void define(CtorRef1<Self, A1> ctor, InstanceBody1<Self, VoidBody, Void, A1> body) {
+        defineConstructor(ctor, body);
+    }
+
+    /// Defines a declared constructor; the body gets `this` and the parameters.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given its block, `this` and the parameters
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    public <A1, A2> void define(CtorRef2<Self, A1, A2> ctor, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
+        defineConstructor(ctor, body);
     }
 
     // ------------------------------------------------------------------

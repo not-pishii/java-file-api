@@ -25,11 +25,6 @@ public final class ThrowingSubclassDeclarations<Self, S> extends Declarations<Se
         return builder;
     }
 
-    /// The builder of the class, with its superclass.
-    TypedSubclassBuilder<Self, S> subclass() {
-        return builder;
-    }
-
     @Override
     List<ClassToken<? extends Throwable>> thrown() {
         return thrown;

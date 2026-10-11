@@ -340,6 +340,12 @@ final class Inheritance {
         /// the method tells the method as that class has it, which a class between may have
         /// overridden with a narrower result or clause.
         ///
+        /// The types are compared as they are written. A fact and the heritage of a type are
+        /// written by one translator of one model of the type, and the heritage is applied to the
+        /// type arguments the token of the fact's owner has: a type that is the same is written the
+        /// same — a primitive, an array, a parameterization with a wildcard, a type argument of the
+        /// class. Were one written otherwise, the method would be rejected here, not let through.
+        ///
         /// @param fact the fact of a method of the erased signature of this one
         /// @return the difference, or empty if the method is as the fact tells it
         Optional<String> differsFrom(Invocable fact) {

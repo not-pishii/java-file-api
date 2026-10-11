@@ -24,6 +24,7 @@ import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
+import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// An [Upcast] witness changes the token of an expression and nothing in
@@ -143,8 +144,9 @@ class UpcastLoweringTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = h.extends_(Base_.extend(h.self()))
-                                .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var cb = began(
+                                h.extends_(Base_.extend(h.self())),
+                                ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // the class has a field `name` of its own: the one of Base is read through the witness
                         cb.field("name", String_.TOKEN, literal("own"));
@@ -174,8 +176,9 @@ class UpcastLoweringTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = h.extends_(Base_.extend(h.self()))
-                                .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var cb = began(
+                                h.extends_(Base_.extend(h.self())),
+                                ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // javac would resolve this.pick("x") to the override of pick(String), or to the
                         // overload the class adds: the fact names pick(Object) of Base

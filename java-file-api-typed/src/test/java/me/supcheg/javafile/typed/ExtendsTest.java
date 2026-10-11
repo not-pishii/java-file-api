@@ -41,6 +41,7 @@ import static me.supcheg.javafile.typed.Expressions.subInt;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
+import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -77,7 +78,7 @@ class ExtendsTest {
                     var sh = h.extends_(list.extend(h.self()).get_int(get).size(size));
                     Upcast<Self, Comparable<Self>> asComparable =
                             sh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
-                    var cb = sh.body(ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
+                    var cb = began(sh, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
                     Upcast<Self, AbstractList<String>> asList = cb.asSuper();
 
                     cb.define(get.method(), (b, self, i) -> b.return_(literal("item")));
@@ -124,8 +125,8 @@ class ExtendsTest {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Exception_.extend(h.self()));
-                    var cb = sh.body(
-                            ctor -> ctor.super_(Exception_.new_String, literal("failed"), (b, self) -> b.end()));
+                    var cb = began(
+                            sh, ctor -> ctor.super_(Exception_.new_String, literal("failed"), (b, self) -> b.end()));
                     Upcast<Self, Exception> asException = cb.asSuper();
                     var ofMessage = cb.constructor(
                             String_.TOKEN,
@@ -174,7 +175,7 @@ class ExtendsTest {
                     var sh = h.extends_(Thread_.extend(h.self()));
                     Upcast<Self, Runnable> asRunnable =
                             sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Thread_.run)));
-                    var cb = sh.body(ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
+                    var cb = began(sh, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
                     cb.voidMethod(
                             "ranAsRunnable",
                             (b, self) -> b.exec(voidCall(asRunnable.apply(self), Runnable_.run))
@@ -196,7 +197,7 @@ class ExtendsTest {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Base_.extend(h.self()));
-                    var cb = sh.body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    var cb = began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     cb.constructor(
                             String_.TOKEN,
                             (ctor, name) ->
@@ -247,12 +248,13 @@ class ExtendsTest {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var area = h.overriding(Shape_.area);
-                    var describe = h.overriding(h.protected_(Shape_.describe_String));
-                    var sh = h.extends_(Shape_.extend(h.self()).area(area).describe_String(describe));
-                    var cb = sh.throwing(IOException_.TOKEN)
-                            .body(
-                                    String_.TOKEN,
-                                    (ctor, label) -> ctor.super_(Shape_.super_String, label, (b, self) -> b.end()));
+                    var eh = h.extending(Shape_.TOKEN);
+                    var describe = eh.overriding(eh.protected_(Shape_.describe_String));
+                    var sh = eh.extends_(Shape_.extend(h.self()).area(area).describe_String(describe));
+                    var cb = began(
+                            sh.throwing(IOException_.TOKEN),
+                            String_.TOKEN,
+                            (ctor, label) -> ctor.super_(Shape_.super_String, label, (b, self) -> b.end()));
                     cb.define(area.method(), (b, self) -> b.return_(literal(4)));
                     cb.define(describe.method(), (b, self, prefix) -> b.return_(concat(prefix, literal("="))));
                     var check = cb.protected_(Shape_.check);
@@ -302,7 +304,7 @@ class ExtendsTest {
                     var sh = h.extends_(Mid_.extend(h.self()));
                     Upcast<Self, Runnable> asRunnable =
                             sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Mid_.run)));
-                    var cb = sh.body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                    var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                     Upcast<Self, Mid> asMid = cb.asSuper();
                     var hook = cb.protected_(Mid_.hook_String);
                     cb.method(
@@ -385,7 +387,7 @@ class ExtendsTest {
                                     ClassDesc.of("java.lang.Throwable"),
                                     ClassDesc.of("java.lang.Object"));
                     assertThat(h.self().isCheckedException()).isTrue();
-                    sh.body(ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
+                    began(sh, ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
                 }
             });
         }
@@ -396,8 +398,9 @@ class ExtendsTest {
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var describe = h.overriding(h.protected_(Shape_.describe_String));
-                            h.extends_(Shape_.extend(h.self())
+                            var eh = h.extending(Shape_.TOKEN);
+                            var describe = eh.overriding(eh.protected_(Shape_.describe_String));
+                            eh.extends_(Shape_.extend(h.self())
                                     .area(UnsafeFacts.inherited0(
                                             new me.supcheg.javafile.facts.Implemented.ByInheritance(Shape_.area)))
                                     .describe_String(describe));
@@ -412,7 +415,7 @@ class ExtendsTest {
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            h.protected_(Shape_.describe_String);
+                            h.extending(Shape_.TOKEN).protected_(Shape_.describe_String);
                             h.extends_(Base_.extend(h.self()));
                         }
                     }))
@@ -430,8 +433,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             cb.override(Base_.sealed, (b, self) -> b.return_(literal("x")));
                         }
                     }),
@@ -448,8 +452,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             cb.method("greet", String_.TOKEN, (b, self) -> b.return_(literal("x")));
                         }
                     }),
@@ -461,8 +466,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             cb.method("util", String_.TOKEN, (b, self) -> b.return_(literal("x")));
                         }
                     }),
@@ -476,8 +482,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             cb.method("local", String_.TOKEN, (b, self) -> b.return_(literal("x")));
                         }
                     }),
@@ -496,7 +503,7 @@ class ExtendsTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = h.extends_(Mid_.extend(h.self()));
                             sh.implements_(Named_.implement(h.self()));
-                            sh.body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                            began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "unrelated methods with a body each, and overrides neither",
@@ -507,7 +514,7 @@ class ExtendsTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Mid_.extend(h.self()));
                     sh.implements_(Named_.implement(h.self()));
-                    var cb = sh.body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                    var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                     cb.override(
                             Mid_.label, (b, self) -> b.return_(concat(cb.superCall(self, Mid_.label), literal("!"))));
                 }
@@ -550,9 +557,12 @@ class ExtendsTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var area = h.overriding(Shape_.area);
-                            var describe = h.overriding(h.protected_(Shape_.describe_String));
-                            h.extends_(Shape_.extend(h.self()).area(area).describe_String(describe))
-                                    .body(ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
+                            var eh = h.extending(Shape_.TOKEN);
+                            var describe = eh.overriding(eh.protected_(Shape_.describe_String));
+                            began(
+                                    eh.extends_(
+                                            Shape_.extend(h.self()).area(area).describe_String(describe)),
+                                    ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
                         }
                     }),
                     "can throw the checked exception java.io.IOException",
@@ -569,7 +579,7 @@ class ExtendsTest {
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            h.extends_(Base_.extend(h.self())).body(ctor -> {
+                            began(h.extends_(Base_.extend(h.self())), ctor -> {
                                 ctor.super_(Base_.new_, (b, self) -> b.end());
                                 return ctor.super_(Base_.new_, (b, self) -> b.end());
                             });
@@ -581,8 +591,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             cb.constructor(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
@@ -604,11 +615,14 @@ class ExtendsTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var area = h.overriding(Shape_.area);
-                            var describe = h.overriding(h.protected_(Shape_.describe_String));
-                            var cb = h.extends_(
-                                            Shape_.extend(h.self()).area(area).describe_String(describe))
-                                    .throwing(IOException_.TOKEN)
-                                    .body(ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
+                            var eh = h.extending(Shape_.TOKEN);
+                            var describe = eh.overriding(eh.protected_(Shape_.describe_String));
+                            var cb = began(
+                                    eh.extends_(Shape_.extend(h.self())
+                                                    .area(area)
+                                                    .describe_String(describe))
+                                            .throwing(IOException_.TOKEN),
+                                    ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
                             cb.define(area.method(), (b, self) -> b.return_(cb.superCall(self, Shape_.area)));
                         }
                     }),
@@ -628,12 +642,13 @@ class ExtendsTest {
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Mid_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Mid_.extend(h.self())),
+                                    ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                             var risky = cb.protected_(Base_.risky);
                             cb.throwing(IOException_.TOKEN)
                                     .voidMethod(
-                                            "risk",
+                                            "venture",
                                             (b, self) -> b.exec(cb.superCall(self, risky))
                                                     .end());
                         }
@@ -649,8 +664,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             var hook = cb.protected_(Base_.hook_String);
                             cb.method(
                                     "other",
@@ -673,8 +689,9 @@ class ExtendsTest {
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             Upcast<Self, Base> asBase = cb.asSuper();
                             var hook = cb.protected_(Base_.hook_String);
                             cb.method(
@@ -690,8 +707,8 @@ class ExtendsTest {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
-                    var cb = h.extends_(Base_.extend(h.self()))
-                            .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    var cb = began(
+                            h.extends_(Base_.extend(h.self())), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     Upcast<Self, Base> asBase = cb.asSuper();
                     var hook = cb.protected_(Base_.hook_String);
                     cb.method(
@@ -715,8 +732,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Base_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Base_.extend(h.self())),
+                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             var hits = cb.protected_(Base_.hits);
                             cb.method(
                                     "peek",
@@ -738,8 +756,9 @@ class ExtendsTest {
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
-                            var cb = h.extends_(Exception_.extend(h.self()))
-                                    .body(ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
+                            var cb = began(
+                                    h.extends_(Exception_.extend(h.self())),
+                                    ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
                             cb.voidMethod(
                                     "raise", (b, self) -> b.throw_(cb.asSuper().apply(self)));
                         }
@@ -775,11 +794,14 @@ class ExtendsTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var area = h.overriding(Shape_.area);
-                            var describe = h.overriding(h.protected_(Shape_.describe_String));
-                            var cb = h.extends_(
-                                            Shape_.extend(h.self()).area(area).describe_String(describe))
-                                    .throwing(IOException_.TOKEN)
-                                    .body(ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
+                            var eh = h.extending(Shape_.TOKEN);
+                            var describe = eh.overriding(eh.protected_(Shape_.describe_String));
+                            var cb = began(
+                                    eh.extends_(Shape_.extend(h.self())
+                                                    .area(area)
+                                                    .describe_String(describe))
+                                            .throwing(IOException_.TOKEN),
+                                    ctor -> ctor.super_(Shape_.super_String, literal("s"), (b, self) -> b.end()));
                             cb.define(area.method(), (b, self) -> b.return_(literal(0)));
                             cb.define(describe.method(), (b, self, p) -> b.return_(p));
                             var check = cb.protected_(Shape_.check);

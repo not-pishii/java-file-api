@@ -301,7 +301,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     ///
     /// @param ctor the declared constructor
     /// @param body the body, given its block and `this`
-    public final void define(CtorRef0<Self> ctor, InstanceBody0<Self, VoidBody, Void> body) {
+    final void defineConstructor(CtorRef0<Self> ctor, InstanceBody0<Self, VoidBody, Void> body) {
         Slot slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         This<Self> self = thisOf(root);
@@ -313,7 +313,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     /// @param ctor the declared constructor
     /// @param body the body, given its block, `this` and the parameter
     /// @param <A1> the parameter type
-    public final <A1> void define(CtorRef1<Self, A1> ctor, InstanceBody1<Self, VoidBody, Void, A1> body) {
+    final <A1> void defineConstructor(CtorRef1<Self, A1> ctor, InstanceBody1<Self, VoidBody, Void, A1> body) {
         Slot slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         This<Self> self = thisOf(root);
@@ -327,7 +327,8 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     /// @param body the body, given its block, `this` and the parameters
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
-    public final <A1, A2> void define(CtorRef2<Self, A1, A2> ctor, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
+    final <A1, A2> void defineConstructor(
+            CtorRef2<Self, A1, A2> ctor, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         Slot slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         This<Self> self = thisOf(root);

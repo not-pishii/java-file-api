@@ -1,6 +1,9 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 
 import java.util.List;
@@ -19,8 +22,9 @@ import java.util.stream.Stream;
 ///
 /// **Every constructor calls one of the superclass.** A constructor is
 /// declared with the place of its `super(...)` ([SubclassConstructors],
-/// [SuperSite]) and has `this` only after it; the first one is declared by
-/// the header ([SubclassOverriding#body]), which is how this builder is got.
+/// [SuperSite]) and has `this` only after it; the first one is declared in
+/// the header and defined by the step that ends it ([SubclassOverriding#body]),
+/// which is how this builder is got.
 ///
 /// **Overriding** a method the class inherits from `S` is by its fact
 /// ([OverridingDeclarations]): `cb.override(coll.toString, (b, self) -> ...)`.
@@ -81,6 +85,36 @@ public final class TypedSubclassBuilder<Self, S> extends MemberBuilder<Self>
                 this,
                 Stream.concat(Stream.of(Upcast.throwable(witness, exception)), Stream.of(others))
                         .toList());
+    }
+
+    /// Defines a declared constructor: its body begins with `super(...)`.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given the place of its `super(...)`
+    /// @throws IllegalStateException if the constructor is defined already, or was not declared by this class
+    public void define(CtorRef0<Self> ctor, CtorBody0<Self, S> body) {
+        defineWithSuper(ctor, body);
+    }
+
+    /// Defines a declared constructor with a parameter: its body begins with `super(...)`.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given the place of its `super(...)` and the parameter
+    /// @param <A1> the parameter type
+    /// @throws IllegalStateException if the constructor is defined already, or was not declared by this class
+    public <A1> void define(CtorRef1<Self, A1> ctor, CtorBody1<Self, S, A1> body) {
+        defineWithSuper(ctor, body);
+    }
+
+    /// Defines a declared constructor with two parameters: its body begins with `super(...)`.
+    ///
+    /// @param ctor the declared constructor
+    /// @param body the body, given the place of its `super(...)` and the parameters
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @throws IllegalStateException if the constructor is defined already, or was not declared by this class
+    public <A1, A2> void define(CtorRef2<Self, A1, A2> ctor, CtorBody2<Self, S, A1, A2> body) {
+        defineWithSuper(ctor, body);
     }
 
     // ------------------------------------------------------------------

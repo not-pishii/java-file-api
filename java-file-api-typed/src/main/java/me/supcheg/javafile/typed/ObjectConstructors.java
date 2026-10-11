@@ -65,7 +65,7 @@ public sealed interface ObjectConstructors<Self> permits TypedClassBuilder, Thro
     /// @return the fact of the constructor
     default CtorRef0<Self> constructor(InstanceBody0<Self, VoidBody, Void> body) {
         CtorRef0<Self> ctor = declareConstructor();
-        declarations().builder().define(ctor, body);
+        declarations().builder().defineConstructor(ctor, body);
         return ctor;
     }
 
@@ -77,7 +77,7 @@ public sealed interface ObjectConstructors<Self> permits TypedClassBuilder, Thro
     /// @return the fact of the constructor
     default <A1> CtorRef1<Self, A1> constructor(TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
         CtorRef1<Self, A1> ctor = declareConstructor(p1);
-        declarations().builder().define(ctor, body);
+        declarations().builder().defineConstructor(ctor, body);
         return ctor;
     }
 
@@ -92,7 +92,7 @@ public sealed interface ObjectConstructors<Self> permits TypedClassBuilder, Thro
     default <A1, A2> CtorRef2<Self, A1, A2> constructor(
             TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         CtorRef2<Self, A1, A2> ctor = declareConstructor(p1, p2);
-        declarations().builder().define(ctor, body);
+        declarations().builder().defineConstructor(ctor, body);
         return ctor;
     }
 }
