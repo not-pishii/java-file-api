@@ -422,19 +422,23 @@ final class Exceptions {
                         ? rethrows.of(value).orElseGet(() -> List.of(type)).stream()
                                 .filter(ExceptionType::isChecked)
                                 .map(thrown -> new Raise(thrown, "throw_"))
-                        : Stream.empty());
+                        : instr instanceof Instr.SuperInit(var ctor, var _) ? invoked(ctor) : Stream.empty());
     }
 
     /// The checked exceptions evaluating `node` can throw. A lambda in it
     /// throws nothing where it stands: its body runs elsewhere.
     private static Stream<Raise> raised(Node node) {
         return descendants(node).flatMap(n -> switch (act(n)) {
-            case Act.Invokes(var member) ->
-                ExceptionType.ofAll(member.traits().throwsTypes()).stream()
-                        .filter(ExceptionType::isChecked)
-                        .map(type -> new Raise(type, member.toString()));
+            case Act.Invokes(var member) -> invoked(member);
             case Act.Defers _, Act.Computes _ -> Stream.empty();
         });
+    }
+
+    /// What a call of `member` raises: the checked exceptions of its `throws` clause.
+    private static Stream<Raise> invoked(Invocable member) {
+        return ExceptionType.ofAll(member.traits().throwsTypes()).stream()
+                .filter(ExceptionType::isChecked)
+                .map(type -> new Raise(type, member.toString()));
     }
 
     /// The expression lambdas of `node`, not those in the body of another.
@@ -448,6 +452,7 @@ final class Exceptions {
     private static Act act(Node node) {
         return switch (node) {
             case Node.Call(var _, var method, var _) -> new Act.Invokes(method);
+            case Node.SuperCall(var _, var _, var method, var _) -> new Act.Invokes(method);
             case Node.StaticCall(var method, var _) -> new Act.Invokes(method);
             case Node.New(var ctor, var _) -> new Act.Invokes(ctor);
             case Node.Lambda(var _, var _, Node.LambdaBody.Value(var scope, var value)) -> new Act.Defers(scope, value);
@@ -494,6 +499,7 @@ final class Exceptions {
         return switch (instr) {
             case Instr.Let(var _, var init) -> Stream.of(init);
             case Instr.Exec(var effect) -> Stream.of(effect);
+            case Instr.SuperInit(var _, var args) -> args.stream().map(Node.Operand::node);
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
             case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);
             case Instr.While(var _, var condition, var _) -> Stream.of(condition);
@@ -553,6 +559,7 @@ final class Exceptions {
             case Node.FieldGet(var target, var _) -> Stream.of(target.node());
             case Node.Call(var target, var _, var args) ->
                 Stream.concat(Stream.of(target.node()), args.stream().map(Node.Operand::node));
+            case Node.SuperCall(var _, var _, var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.StaticCall(var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.New(var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);

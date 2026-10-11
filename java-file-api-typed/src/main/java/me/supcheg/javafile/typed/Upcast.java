@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.RefToken;
 
 /// The witness that the class `Self` being declared is a subtype of `X`:
@@ -34,6 +35,26 @@ public final class Upcast<Self, X> {
     /// @return the token of the supertype
     public RefToken<X> supertype() {
         return supertype;
+    }
+
+    /// A class that is an exception by a witness alone, as the exception class a `throws`
+    /// clause, a `catch` or a `throw` takes: the class being declared, whose brand has no bound
+    /// `extends Throwable` to tell it.
+    ///
+    /// @param witness the witness that the class is a `Throwable`
+    /// @param type the class
+    /// @param <E> the class
+    /// @return `type`, as the exception class it is
+    /// @throws IllegalArgumentException if the witness is of another class than `type`
+    static <E> ClassToken<? extends Throwable> throwable(Upcast<E, ? extends Throwable> witness, ClassToken<E> type) {
+        if (!Tokens.sameType(witness.self, type)) {
+            throw new IllegalArgumentException(
+                    "the witness that " + witness + " is no witness that " + type + " is an exception");
+        }
+        // The witness is that E is a subtype of Throwable, which the brand E cannot say.
+        @SuppressWarnings("unchecked")
+        ClassToken<? extends Throwable> exception = (ClassToken<? extends Throwable>) (ClassToken<?>) type;
+        return exception;
     }
 
     /// `expr` as an expression of the supertype; rendered as `expr` itself.

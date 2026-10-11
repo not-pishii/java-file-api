@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
@@ -544,7 +545,30 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @throws IllegalArgumentException if the type of `exception` is neither a class nor a type variable,
     ///     which only an expression of `Unsafe` can be
     public final Terminated<R> throw_(Expr<? extends Throwable> exception) {
-        return appendFinal(new Instr.Throw(exception.node(), ExceptionType.of(exception.type())), "throw_");
+        // javac goes by the expression itself: one seen through a witness is of the class it is of.
+        TypeToken<?> thrown = Lowering.seen(new Node.Operand(exception.node(), exception.type()))
+                .type();
+        return appendFinal(new Instr.Throw(exception.node(), ExceptionType.of(thrown)), "throw_");
+    }
+
+    /// Ends the block with `throw exception;` of a class that is an exception by a witness alone:
+    /// the class being declared, `b.throw_(cb.asSuper(), new_(ctor))`. The statement is checked by
+    /// that class, as javac checks it.
+    ///
+    /// @param witness the witness that the class of `exception` is a `Throwable`
+    /// @param exception the thrown expression
+    /// @param <E> the class of the exception
+    /// @return the proof that this block ended
+    /// @throws IllegalArgumentException if the witness is of another class than `exception`
+    /// @throws IllegalStateException as [#throw_(Expr)]
+    public final <E> Terminated<R> throw_(Upcast<E, ? extends Throwable> witness, Expr<E> exception) {
+        if (!(exception.type() instanceof ClassToken<E> type)) {
+            throw new IllegalArgumentException("the witness that " + witness + " is no witness that " + exception.type()
+                    + ", which is no class, is an exception");
+        }
+        return appendFinal(
+                new Instr.Throw(exception.node(), new ExceptionType.OfClass(Upcast.throwable(witness, type))),
+                "throw_");
     }
 
     /// Appends `try { body } catch ... finally ...` as a statement. It must

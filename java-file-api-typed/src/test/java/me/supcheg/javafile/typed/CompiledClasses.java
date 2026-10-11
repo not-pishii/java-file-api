@@ -33,13 +33,27 @@ record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
     /// @param fixtures the fixture classes, as `{binary name, source}` pairs
     /// @return the loaded classes
     static CompiledClasses of(JavaFile file, String... fixtures) {
+        return compiled("-Xlint:all", file, fixtures);
+    }
+
+    /// Renders, compiles and loads `file`, a class that is `Serializable` by its superclass — an
+    /// exception: javac warns that it declares no `serialVersionUID`, which the typed layer has no
+    /// static field to declare, and of nothing else.
+    ///
+    /// @param file the generated class
+    /// @return the loaded classes
+    static CompiledClasses ofSerializable(JavaFile file) {
+        return compiled("-Xlint:all,-serial", file);
+    }
+
+    private static CompiledClasses compiled(String lint, JavaFile file, String... fixtures) {
         String source = file.render();
         List<JavaFileObject> sources = new ArrayList<>();
         sources.add(JavaFileObjects.forSourceString(file.qualifiedName(), source));
         for (int i = 0; i < fixtures.length; i += 2) {
             sources.add(JavaFileObjects.forSourceString(fixtures[i], fixtures[i + 1]));
         }
-        Compilation compilation = javac().withOptions("-Xlint:all").compile(sources);
+        Compilation compilation = javac().withOptions(lint).compile(sources);
         assertThat(compilation).succeededWithoutWarnings();
         ClassLoader loader = new GeneratedClassLoader(compilation);
         try {

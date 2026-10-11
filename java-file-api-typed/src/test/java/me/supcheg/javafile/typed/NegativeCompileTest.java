@@ -484,7 +484,7 @@ class NegativeCompileTest {
                 "CatchOfAString",
                 inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(h -> h.catch_(String_.TOKEN, (c, e) -> {}), t -> {})"
                         + ".end());"),
-                "method catch_ in class me.supcheg.javafile.typed.Handlers<B> cannot be applied to given types",
+                "no suitable method found for catch_(",
                 "upper bounds: java.lang.Throwable");
     }
 

@@ -1,6 +1,9 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.CtorRef0;
+import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
@@ -40,7 +43,8 @@ import java.util.function.Function;
 /// `constructor` do both in one call.
 ///
 /// @param <Self> the brand of the class being declared
-public abstract sealed class Declarations<Self> permits MemberBuilder, ThrowingDeclarations {
+public abstract sealed class Declarations<Self>
+        permits MemberBuilder, ThrowingDeclarations, ThrowingSubclassDeclarations {
 
     Declarations() {}
 
@@ -48,7 +52,8 @@ public abstract sealed class Declarations<Self> permits MemberBuilder, ThrowingD
     abstract MemberBuilder<Self> builder();
 
     /// These declarations themselves: what the default methods of the interfaces a builder has —
-    /// [OverridingDeclarations], [ObjectConstructors] — reach it by. Of no use to a generator.
+    /// [OverridingDeclarations], [ObjectConstructors], [SubclassConstructors], [SuperAccess] — reach it
+    /// by. Of no use to a generator.
     ///
     /// @return these declarations
     public final Declarations<Self> declarations() {
@@ -65,6 +70,29 @@ public abstract sealed class Declarations<Self> permits MemberBuilder, ThrowingD
     /// The traits of a member declared here: `traits`, with the `throws` clause.
     final MemberTraits traits(MemberTraits traits) {
         return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access());
+    }
+
+    // ------------------------------------------------------------------
+    // Constructors of a class with a superclass (SubclassConstructors)
+    // ------------------------------------------------------------------
+
+    final <S> CtorRef0<Self> constructed(TypedSubclassBuilder.CtorBody0<Self, S> body) {
+        CtorRef0<Self> ctor = declare(UnsafeFacts.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
+        builder().defineWithSuper(ctor, body);
+        return ctor;
+    }
+
+    final <S, A1> CtorRef1<Self, A1> constructed(TypeToken<A1> p1, TypedSubclassBuilder.CtorBody1<Self, S, A1> body) {
+        CtorRef1<Self, A1> ctor = declare(UnsafeFacts.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
+        builder().defineWithSuper(ctor, body);
+        return ctor;
+    }
+
+    final <S, A1, A2> CtorRef2<Self, A1, A2> constructed(
+            TypeToken<A1> p1, TypeToken<A2> p2, TypedSubclassBuilder.CtorBody2<Self, S, A1, A2> body) {
+        CtorRef2<Self, A1, A2> ctor = declare(UnsafeFacts.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
+        builder().defineWithSuper(ctor, body);
+        return ctor;
     }
 
     // ------------------------------------------------------------------

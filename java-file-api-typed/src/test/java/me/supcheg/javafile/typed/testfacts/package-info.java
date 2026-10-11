@@ -6,7 +6,12 @@
 /// With them the fixtures of the tests ([me.supcheg.javafile.typed.fixtures]): the functional interfaces of the
 /// lambda tests and the enum of the `switch` tests are known by generated facts, as a generator knows its own.
 @Facts({
+    AbstractList.class,
     ArrayList.class,
+    Base.class,
+    Mid.class,
+    Shape.class,
+    Thread.class,
     BiConsumer.class,
     BiFunction.class,
     Callable.class,
@@ -60,7 +65,10 @@
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
+import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
+import me.supcheg.javafile.typed.fixtures.Mid;
+import me.supcheg.javafile.typed.fixtures.Shape;
 import me.supcheg.javafile.typed.fixtures.Named;
 import me.supcheg.javafile.typed.fixtures.Sourced;
 import me.supcheg.javafile.typed.fixtures.Texts;
@@ -87,6 +95,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

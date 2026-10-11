@@ -20,7 +20,8 @@ import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody2;
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public sealed interface OverridingDeclarations<Self, S> permits TypedClassBuilder, ThrowingDeclarations {
+public sealed interface OverridingDeclarations<Self, S>
+        permits TypedClassBuilder, ThrowingDeclarations, TypedSubclassBuilder, ThrowingSubclassDeclarations {
 
     /// The declarations these are of.
     ///

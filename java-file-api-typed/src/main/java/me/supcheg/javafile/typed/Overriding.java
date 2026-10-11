@@ -39,7 +39,7 @@ import java.util.List;
 /// is not overridden.
 ///
 /// @param <Self> the brand of the class being declared
-public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding {
+public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding, SubclassOverriding {
     Overriding() {}
 
     abstract ClassDeclaration<Self> declaration();
