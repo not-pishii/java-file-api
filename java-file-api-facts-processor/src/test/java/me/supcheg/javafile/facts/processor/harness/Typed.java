@@ -54,7 +54,7 @@ public interface Typed {
     ///
     /// @param spec declares the class, given the first stage of its header
     /// @return the source
-    String render(TypedJavaFile.TypedClassHeaderSpec spec);
+    String declare(TypedJavaFile.TypedClassHeaderSpec spec);
 
     /// Renders class `out.Out` with `public static R go(P p)` that returns
     /// `body` of its parameter, compiles it under every lint with warnings

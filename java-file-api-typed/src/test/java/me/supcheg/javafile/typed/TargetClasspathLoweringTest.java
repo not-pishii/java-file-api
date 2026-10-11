@@ -162,9 +162,7 @@ class TargetClasspathLoweringTest {
                         "fixtures.Entry", source.formatted("UnsafeFacts.unverifiedClasspath(), ", spec)));
 
         assertThat(without).failed();
-        // both entries take a target classpath: neither is applicable
-        assertThat(without).hadErrorContaining("no suitable method found for class_(");
-        assertThat(without).hadErrorContaining("actual and formal argument lists differ in length");
+        assertThat(without).hadErrorContaining("required: me.supcheg.javafile.facts.TargetClasspath,");
         assertThat(with).succeeded();
     }
 

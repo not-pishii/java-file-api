@@ -495,7 +495,7 @@ class ScopeChecksTest {
         @Test
         void aMemberDeclaredAfterTheClassWasBuiltIsRejected() {
             List<TypedClassBuilder<?>> leaked = new ArrayList<>();
-            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, (TypedJavaFile.TypedClassSpec) leaked::add);
+            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, leaked::add);
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> leaked.getFirst().field("late", PrimitiveToken.INT, literal(1)))
