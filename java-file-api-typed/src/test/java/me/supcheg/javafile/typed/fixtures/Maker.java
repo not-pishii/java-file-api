@@ -27,4 +27,8 @@ public class Maker {
     }
 
     public void reset() {}
+
+    protected RuntimeException fault() {
+        return new IllegalStateException("maker");
+    }
 }
