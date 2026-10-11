@@ -494,6 +494,8 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
     <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown) {
         String what = own.toString();
         requireOpen(what);
+        // What a result is a subtype of is told by its metamodel, which has to hold on the target.
+        own.resultType().ifPresent(target::verify);
         registry.override(own);
         slot(own, own, what, thrown).overrides = true;
         return own;

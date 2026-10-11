@@ -42,8 +42,11 @@ import java.util.stream.Stream;
 ///   as one that one overrides: the bridge javac makes would be the method
 ///   (JLS 8.4.8.3);
 /// - an override ([#override(Invocable)]) of a method that is `final` or
-///   `static`, of other parameters or another result, or that declares a
-///   checked exception a method it overrides does not (JLS 8.4.8.3).
+///   `static`, of other parameters, of a result that is neither that of the
+///   method nor proven a subtype of it ([Subtyping]; JLS 8.4.5), or that
+///   declares a checked exception a method it overrides does not (JLS
+///   8.4.8.3). Each is held against every method the class inherits under
+///   the signature, not the one the override names alone.
 ///
 /// When the declaration is complete ([#requireComplete()]): a method two
 /// unrelated supertypes give a body each is overridden (JLS 8.4.8.4,
@@ -120,7 +123,7 @@ final class SignatureRegistry {
                 .orElseThrow(() -> new IllegalArgumentException("the method " + own + " of " + owner
                         + " overrides nothing: no supertype of the class has a method " + signature
                         + "; a class overrides the methods of the types it extends or implements"));
-        requireOverrides(owner, own, group);
+        requireOverrides(owner, own, group, inherited.declaring(own.owner()));
         methods.put(signature, own);
         overrides.add(signature);
     }
@@ -162,10 +165,11 @@ final class SignatureRegistry {
     /// @param owner the class being declared, for messages
     /// @param own the method the class declares
     /// @param group the methods of its signature the class inherits
+    /// @param declaring the class, and what it is a subtype of so far
     /// @throws IllegalArgumentException if it cannot override one of them
-    static void requireOverrides(String owner, Invocable own, Inheritance.Group group) {
+    static void requireOverrides(String owner, Invocable own, Inheritance.Group group, Subtyping.Declaring declaring) {
         group.entries()
-                .forEach(entry -> overrideRefusal(own, entry).ifPresent(reason -> {
+                .forEach(entry -> overrideRefusal(own, entry, declaring).ifPresent(reason -> {
                     throw new IllegalArgumentException(
                             "the method " + own + " of " + owner + " cannot override " + entry + ": " + reason);
                 }));
@@ -180,28 +184,31 @@ final class SignatureRegistry {
     /// @param inherited the fact of the method of the superclass
     /// @param through the interface whose methods it stands for
     /// @param group the methods of its signature the class inherits
+    /// @param declaring the class, and what it is a subtype of so far
     /// @throws IllegalArgumentException if it cannot stand for one of them
     static void requireInherited(
             String owner,
             Invocable inherited,
             me.supcheg.javafile.facts.DeclaredToken<?> through,
-            Inheritance.Group group) {
+            Inheritance.Group group,
+            Subtyping.Declaring declaring) {
         group.entries().stream()
                 .filter(entry -> entry.through() == through)
-                .forEach(entry -> overrideRefusal(inherited, entry).ifPresent(reason -> {
+                .forEach(entry -> overrideRefusal(inherited, entry, declaring).ifPresent(reason -> {
                     throw new IllegalArgumentException(owner + " cannot have " + entry + " by inheriting " + inherited
                             + " from its superclass: " + reason);
                 }));
     }
 
-    private static Optional<String> overrideRefusal(Invocable own, Inheritance.Entry entry) {
+    private static Optional<String> overrideRefusal(
+            Invocable own, Inheritance.Entry entry, Subtyping.Declaring declaring) {
         Heritage.Method method = entry.method();
         return Stream.<java.util.function.Supplier<Optional<String>>>of(
                         () -> byDispatch(method),
                         () -> byVisibility(method),
                         () -> byForm(method),
                         () -> byParameters(own, method),
-                        () -> byResult(own, method),
+                        () -> byResult(own, method, declaring),
                         () -> byThrows(own, method))
                 .flatMap(refusal -> refusal.get().stream())
                 .findFirst();
@@ -247,21 +254,30 @@ final class SignatureRegistry {
                         + " (JLS 8.4.8.3)");
     }
 
-    private static Optional<String> byResult(Invocable own, Heritage.Method method) {
-        Optional<TypeRef> result = own.resultType().map(TypeToken::typeRef);
-        Optional<TypeRef> overridden =
-                switch (method.result()) {
-                    case Heritage.Result.Nothing _ -> Optional.empty();
-                    case Heritage.Result.Of(TypeRef type) -> Optional.of(type);
-                };
-        return result.equals(overridden)
-                ? Optional.empty()
-                : Optional.of(
-                        "its result is " + overridden.map(TypeNames::describe).orElse("void")
-                                + ", and that of the method "
-                                + result.map(TypeNames::describe).orElse("void")
-                                + ": the return types are incompatible (JLS 8.4.8.3) — an override has the result of"
-                                + " the method it overrides, a narrower one is not supported yet");
+    /// The result of a method is that of the one it overrides, or — a reference type — a subtype of
+    /// it the typed layer can prove one ([Subtyping]); `void` answers `void` alone (JLS 8.4.5).
+    private static Optional<String> byResult(Invocable own, Heritage.Method method, Subtyping.Declaring declaring) {
+        Optional<TypeToken<?>> result = own.resultType();
+        String incompatible = "its result is "
+                + switch (method.result()) {
+                    case Heritage.Result.Nothing _ -> "void";
+                    case Heritage.Result.Of(TypeRef type) -> TypeNames.describe(type);
+                }
+                + ", and that of the method "
+                + result.map(type -> TypeNames.describe(type.typeRef())).orElse("void")
+                + ": the return types are incompatible (JLS 8.4.8.3)";
+        return switch (method.result()) {
+            case Heritage.Result.Nothing _ ->
+                result.map(_ -> incompatible + " — a method that overrides a void one is void");
+            case Heritage.Result.Of(TypeRef overridden) ->
+                result.map(type -> switch (Subtyping.prove(declaring, type, overridden)) {
+                            case Subtyping.Verdict.Proven _ -> Optional.<String>empty();
+                            case Subtyping.Verdict.Unproven(var why) ->
+                                Optional.of(incompatible + " — the result of an override is that of the method"
+                                        + " or a subtype of it the typed layer can prove one, and " + why);
+                        })
+                        .orElseGet(() -> Optional.of(incompatible + " — a void method overrides a void one alone"));
+        };
     }
 
     private static Optional<String> byThrows(Invocable own, Heritage.Method method) {

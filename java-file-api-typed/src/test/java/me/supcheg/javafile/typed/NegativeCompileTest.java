@@ -497,6 +497,10 @@ class NegativeCompileTest {
     private static final String SUBCLASS = "var sh = h.extends_(Base_.extend(h.self()));"
             + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
 
+    /// The header and the first constructor of a class that extends `Maker`: `sh` and `cb`.
+    private static final String SUBCLASS_OF_MAKER = "var sh = h.extends_(Maker_.extend(h.self()));"
+            + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));";
+
     @Test
     void aSubclassDeclaredByItsHeaderCompiles() {
         assertThat(compile(
@@ -539,6 +543,70 @@ class NegativeCompileTest {
                 "DefinedWithoutSuper",
                 inHeader(SUBCLASS + " cb.define(cb.declareConstructor(String_.TOKEN), (b, self, s) -> b.end());"),
                 "no suitable method found for define(me.supcheg.javafile.facts.CtorRef1<Self,java.lang.String>");
+    }
+
+    @Test
+    void anOverrideOfANarrowerResultCompiles() {
+        assertThat(
+                        compile(
+                                "Narrower",
+                                inHeader(
+                                        "var get = h.overriding(Origin_.get, String_.TOKEN); var oh = h.extendsObject();"
+                                                + " Upcast<Self, Origin> up = oh.implements_(Origin_.implement(h.self()).get(get));"
+                                                + " oh.implements_(Worded_.implement(h.self()).get(get)); var cb = oh.body();"
+                                                + " cb.define(get.method(), (b, self) -> b.return_(literal(\"\")));"
+                                                + " cb.override(up, Origin_.all, ArrayToken.of(String_.TOKEN),"
+                                                + " (b, self) -> b.return_(newArray(ArrayToken.of(String_.TOKEN), literal(1))));"
+                                                + " cb.override(cb.protected_(Object_.clone), cb.self(), (b, self) -> b.return_(self));")))
+                .succeeded();
+    }
+
+    @Test
+    void theResultOfAnOverrideIsASubtypeOfThatOfTheNamedMethodAndOfEveryStep() {
+        // an Integer is no CharSequence
+        assertRejected(
+                "Unrelated",
+                inHeader("h.overriding(Worded_.get, Integer_.TOKEN);"),
+                "no suitable method found for overriding");
+        // a String answers Origin and not Numbered, whose get() is an Integer
+        assertRejected(
+                "UnrelatedStep",
+                inHeader("var get = h.overriding(Origin_.get, String_.TOKEN);"
+                        + " Numbered_.implement(h.self()).get(get);"),
+                "incompatible types");
+        // the body returns what the token says
+        assertRejected(
+                "BodyOfTheOverriddenResult",
+                inHeader(SUBCLASS_OF_MAKER + " cb.override(Maker_.make, String_.TOKEN,"
+                        + " (b, self) -> b.return_(new_(Object_.new_)));"),
+                "incompatible types");
+        // a method of the superclass stands for one of an interface by a result that is of its type
+        assertRejected(
+                "InheritedUnrelated",
+                inHeader("var sh = h.extends_(Maker_.extend(h.self()));"
+                        + " Numbered_.implement(h.self()).get(sh.inherited(Maker_.get));"),
+                "incompatible types");
+    }
+
+    @Test
+    void aPrimitiveAndAVoidResultHaveNoNarrowerOne() {
+        assertRejected(
+                "PrimitiveResult",
+                inHeader("h.overriding(Maker_.count, PrimitiveToken.INT);"),
+                "no suitable method found for overriding");
+        assertRejected(
+                "BoxOfAPrimitive",
+                inHeader("h.overriding(Maker_.count, Integer_.TOKEN);"),
+                "no suitable method found for overriding");
+        assertRejected(
+                "ResultOfAVoid",
+                inHeader("h.overriding(Maker_.reset, String_.TOKEN);"),
+                "no suitable method found for overriding");
+        assertRejected(
+                "PrimitiveAmongTheMembers",
+                inHeader(SUBCLASS_OF_MAKER + " cb.override(Maker_.count, Integer_.TOKEN,"
+                        + " (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
+                "no suitable method found for override");
     }
 
     @Test

@@ -170,6 +170,16 @@ final class Inheritance {
         return supertypes;
     }
 
+    /// The class as a proof of subtyping knows it: of the supertypes it has so far.
+    ///
+    /// @param self the token of the class being declared
+    /// @return the class with its supertypes
+    Subtyping.Declaring declaring(DeclaredToken<?> self) {
+        return new Subtyping.Declaring(
+                self.erasure(),
+                supertypes.stream().<DeclaredToken<?>>map(Supertype::token).toList());
+    }
+
     // ------------------------------------------------------------------
     // The merge
     // ------------------------------------------------------------------
