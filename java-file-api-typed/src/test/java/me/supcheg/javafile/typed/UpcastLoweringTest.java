@@ -3,10 +3,13 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Op_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +24,6 @@ import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
-import static me.supcheg.javafile.typed.Fixtures.BASE;
-import static me.supcheg.javafile.typed.Fixtures.NAME_OF_BASE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// An [Upcast] witness changes the token of an expression and nothing in
@@ -32,8 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 ///
 /// The witness of a class that extends `Object` is of `Object`; the class
 /// declares the overloads `Object` has no notion of. Where the supertype
-/// would have to be one the class cannot have yet — the owner of a field, an
-/// enum — the rendered code is read, not compiled.
+/// is a superclass — the owner of a field, of an overload — the class is
+/// declared from its header on; where it would have to be one no class has,
+/// an enum, the rendered code is read, not compiled.
 class UpcastLoweringTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Witnessed");
@@ -136,15 +138,79 @@ class UpcastLoweringTest {
     }
 
     @Test
-    void aFieldAndASwitchThroughAWitnessGoByTheClass() {
+    void aFieldAndTheSelectorOfASwitchThroughAWitnessAreThoseOfTheSuperclass() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> void build(ClassHeader<Self> h) {
+                        var cb = h.extends_(Base_.extend(h.self()))
+                                .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        Upcast<Self, Base> asBase = cb.asSuper();
+                        // the class has a field `name` of its own: the one of Base is read through the witness
+                        cb.field("name", String_.TOKEN, literal("own"));
+                        cb.method(
+                                "nameOfBase",
+                                String_.TOKEN,
+                                (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
+                        cb.method(
+                                "op",
+                                String_.TOKEN,
+                                (b, self) -> b.return_(switch_(
+                                        Op_.TOKEN,
+                                        field(asBase.apply(self), Base_.op),
+                                        String_.TOKEN,
+                                        c -> c.case_(Op_.SUB, literal("sub")).default_(literal("other")))));
+                    }
+                }));
+
+        assertThat(compiled.source()).contains("((Base) this).name").contains("switch (((Base) this).op)");
+        assertThat(compiled.invoke("nameOfBase")).isEqualTo("base");
+        assertThat(compiled.invoke("op")).isEqualTo("sub");
+    }
+
+    @Test
+    void aCallThroughTheWitnessOfTheSuperclassIsNotTakenByAnOverloadOfTheClass() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> void build(ClassHeader<Self> h) {
+                        var cb = h.extends_(Base_.extend(h.self()))
+                                .body(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        Upcast<Self, Base> asBase = cb.asSuper();
+                        // javac would resolve this.pick("x") to the override of pick(String), or to the
+                        // overload the class adds: the fact names pick(Object) of Base
+                        cb.override(Base_.pick_String, (b, self, s) -> b.return_(literal("override")));
+                        cb.method(
+                                "pick",
+                                String_.TOKEN,
+                                me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN,
+                                (b, self, s) -> b.return_(literal("overload")));
+                        cb.method(
+                                "picked",
+                                String_.TOKEN,
+                                (b, self) -> b.return_(call(asBase.apply(self), Base_.pick_Object, literal("x"))));
+                        cb.method(
+                                "pickedBySuper",
+                                String_.TOKEN,
+                                (b, self) -> b.return_(cb.superCall(self, Base_.pick_Object, literal("x"))));
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .contains("return this.pick((Object) \"x\");")
+                .contains("return super.pick((Object) \"x\");");
+        assertThat(compiled.invoke("picked")).isEqualTo("object");
+        assertThat(compiled.invoke("pickedBySuper")).isEqualTo("object");
+    }
+
+    @Test
+    void theSelectorOfASwitchThroughAWitnessGoesByTheClass() {
+        // no class being declared is of an enum, so no declaration gives this witness: the rendered
+        // code is read, not compiled
         String source = file(new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        // witnesses no declaration gives yet: the rendered code is read only
-                        Upcast<Self, Fixtures.BaseP> asBase = new Upcast<>(cb.self(), BASE);
                         Upcast<Self, Signal> asSignal = new Upcast<>(cb.self(), Signal_.TOKEN);
-                        cb.method(
-                                "name", String_.TOKEN, (b, self) -> b.return_(field(asBase.apply(self), NAME_OF_BASE)));
                         cb.method(
                                 "signal",
                                 String_.TOKEN,
@@ -157,7 +223,7 @@ class UpcastLoweringTest {
                 })
                 .render();
 
-        assertThat(source).contains("((Base) this).name").contains("switch ((Signal) this)");
+        assertThat(source).contains("switch ((Signal) this)");
     }
 
     @Test

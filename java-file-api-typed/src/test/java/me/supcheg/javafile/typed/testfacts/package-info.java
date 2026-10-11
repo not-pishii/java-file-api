@@ -11,6 +11,9 @@
     Base.class,
     Mid.class,
     Shape.class,
+    Useful.class,
+    Local.class,
+    Sealing.class,
     Thread.class,
     BiConsumer.class,
     BiFunction.class,
@@ -69,6 +72,9 @@ import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Mid;
 import me.supcheg.javafile.typed.fixtures.Shape;
+import me.supcheg.javafile.typed.fixtures.Useful;
+import me.supcheg.javafile.typed.fixtures.Local;
+import me.supcheg.javafile.typed.fixtures.Sealing;
 import me.supcheg.javafile.typed.fixtures.Named;
 import me.supcheg.javafile.typed.fixtures.Sourced;
 import me.supcheg.javafile.typed.fixtures.Texts;
