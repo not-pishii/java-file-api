@@ -40,6 +40,16 @@
     UnsupportedEncodingException.class,
     Holder.class,
     Named.class,
+    Sourced.class,
+    Texts.class,
+    Numbers.class,
+    TakesTexts.class,
+    TakesNumbers.class,
+    Renamed.class,
+    Unnamed.class,
+    Counted.class,
+    Measured.class,
+    Joiner.class,
     Titled.class,
     Nothing.class,
     Op.class,
@@ -52,6 +62,16 @@ package me.supcheg.javafile.typed.testfacts;
 import me.supcheg.javafile.facts.meta.Facts;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Named;
+import me.supcheg.javafile.typed.fixtures.Sourced;
+import me.supcheg.javafile.typed.fixtures.Texts;
+import me.supcheg.javafile.typed.fixtures.Numbers;
+import me.supcheg.javafile.typed.fixtures.TakesTexts;
+import me.supcheg.javafile.typed.fixtures.TakesNumbers;
+import me.supcheg.javafile.typed.fixtures.Renamed;
+import me.supcheg.javafile.typed.fixtures.Unnamed;
+import me.supcheg.javafile.typed.fixtures.Counted;
+import me.supcheg.javafile.typed.fixtures.Measured;
+import me.supcheg.javafile.typed.fixtures.Joiner;
 import me.supcheg.javafile.typed.fixtures.Titled;
 import me.supcheg.javafile.typed.fixtures.Nothing;
 import me.supcheg.javafile.typed.fixtures.Op;

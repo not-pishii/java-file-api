@@ -41,6 +41,42 @@ final class JavacVerdict {
                 .compile(JavaFileObjects.forSourceString("Probe", IMPORTS + "class Probe {\n" + members + "\n}\n"));
     }
 
+    /// What javac says of a `public final class Probe` of a header — its `implements` clause — and
+    /// members, in a package of its own with the fixtures of the tests imported.
+    static Compilation compiledClass(String header, String members) {
+        return javac().withOptions("-Xlint:all")
+                .compile(JavaFileObjects.forSourceString(
+                        "me.supcheg.example.Probe",
+                        "package me.supcheg.example;\nimport java.util.*;\n"
+                                + "import me.supcheg.javafile.typed.fixtures.*;\n"
+                                + "public final class Probe " + header + " {\n" + members + "\n}\n"));
+    }
+
+    /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects
+    /// the class of that header and those members with `error`.
+    static void classAsJavac(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String header,
+            String members,
+            String error) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
+        CompilationSubject.assertThat(compiledClass(header, members)).hadErrorContaining(error);
+    }
+
+    /// The typed layer rejects `typed` with an exception of `rejection` and `message` though javac
+    /// accepts the class of that header and those members, with a warning or without.
+    static void classUnlikeJavac(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String header,
+            String members) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
+        CompilationSubject.assertThat(compiledClass(header, members)).succeeded();
+    }
+
     /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects
     /// the Java it stands for with `error`.
     static void asJavac(
