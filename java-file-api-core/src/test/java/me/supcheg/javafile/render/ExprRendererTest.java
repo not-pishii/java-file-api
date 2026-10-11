@@ -33,6 +33,7 @@ import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.Stmt;
+import me.supcheg.javafile.code.SuperConstructorCallStmt;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
@@ -779,6 +780,16 @@ class ExprRendererTest {
                 stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
 
         assertThat(rendered).isEqualTo("    for (; ; while (true) {\n}) {\n    }");
+    }
+
+    @Test
+    void superConstructorCallStmtRendersSuperAndItsArguments() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad();
+
+        assertThat(ExprRenderer.renderStmt(new SuperConstructorCallStmt(List.of()), ctx))
+                .isEqualTo("    super();");
+        assertThat(ExprRenderer.renderStmt(new SuperConstructorCallStmt(List.of(literal("a"), literal(1))), ctx))
+                .isEqualTo("    super(\"a\", 1);");
     }
 
     @Test

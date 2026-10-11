@@ -223,6 +223,17 @@ public final class CodeBuilder implements Consumer<Stmt> {
         return this;
     }
 
+    /// Appends an explicit invocation of a superclass constructor,
+    /// `super(args);`. Java accepts it as the first statement of the body of
+    /// a constructor only.
+    ///
+    /// @param args the arguments of the superclass constructor
+    /// @return this builder
+    public CodeBuilder superConstructor(Expr... args) {
+        statements.add(new SuperConstructorCallStmt(List.of(args)));
+        return this;
+    }
+
     /// Appends a `throw` statement.
     ///
     /// @param exception the thrown expression
