@@ -1,7 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -27,7 +25,6 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
@@ -51,15 +48,6 @@ class ImplementsTest {
 
     private static JavaFile file(TypedJavaFile.TypedClassHeaderSpec spec) {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, spec);
-    }
-
-    /// Whether javac compiles a class `Probe` of this header and these members.
-    private static Compilation javacOf(String header, String members) {
-        return javac().withOptions("-Xlint:all")
-                .compile(JavaFileObjects.forSourceString(
-                        "me.supcheg.example.Probe",
-                        "package me.supcheg.example;\nimport me.supcheg.javafile.typed.fixtures.*;\n"
-                                + "public final class Probe " + header + " {\n" + members + "\n}\n"));
     }
 
     @Nested
@@ -277,7 +265,7 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("never defined: void me.supcheg.example.Probe.run()");
-            assertThat(javacOf("implements Runnable", ""))
+            assertThat(JavacVerdict.compiledClass("implements Runnable", ""))
                     .hadErrorContaining("Probe is not abstract and does not override abstract method run()");
         }
 
@@ -289,7 +277,7 @@ class ImplementsTest {
                         h.extendsObject().body();
                     }))
                     .withMessageContaining("overrides nothing: no supertype of the class has a method run()");
-            assertThat(javacOf("", "@Override public void run() {}"))
+            assertThat(JavacVerdict.compiledClass("", "@Override public void run() {}"))
                     .hadErrorContaining("method does not override or implement a method from a supertype");
         }
 
@@ -326,7 +314,8 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("cannot implement java.lang.Exception: it is a class");
-            assertThat(javacOf("implements Exception", "")).hadErrorContaining("interface expected here");
+            assertThat(JavacVerdict.compiledClass("implements Exception", ""))
+                    .hadErrorContaining("interface expected here");
         }
 
         @Test
@@ -341,7 +330,8 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("has the supertype me.supcheg.javafile.typed.fixtures.Named already");
-            assertThat(javacOf("implements Named, Named", "")).hadErrorContaining("repeated interface");
+            assertThat(JavacVerdict.compiledClass("implements Named, Named", ""))
+                    .hadErrorContaining("repeated interface");
         }
 
         @Test
@@ -356,7 +346,8 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("a supertype has no wildcard type argument");
-            assertThat(javacOf("implements Comparable<?>", "public int compareTo(Object o) { return 0; }"))
+            assertThat(JavacVerdict.compiledClass(
+                            "implements Comparable<?>", "public int compareTo(Object o) { return 0; }"))
                     .hadErrorContaining("unexpected type");
         }
 
@@ -404,7 +395,8 @@ class ImplementsTest {
                     }))
                     .withMessageContaining("cannot override run() of java.lang.Runnable: the method declares no"
                             + " exception: an override cannot declare the checked exception java.io.IOException");
-            assertThat(javacOf("implements Runnable", "public void run() throws java.io.IOException {}"))
+            assertThat(JavacVerdict.compiledClass(
+                            "implements Runnable", "public void run() throws java.io.IOException {}"))
                     .hadErrorContaining("overridden method does not throw java.io.IOException");
         }
 
@@ -434,7 +426,7 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("name clash");
-            assertThat(javacOf(
+            assertThat(JavacVerdict.compiledClass(
                             "implements Comparable<Probe>",
                             "public int compareTo(Probe o) { return 0; } public int compareTo(Object o) { return 0; }"))
                     .hadErrorContaining("name clash");
@@ -453,7 +445,7 @@ class ImplementsTest {
                         }
                     }))
                     .withMessageContaining("unrelated methods with a body each, and overrides neither");
-            assertThat(javacOf("implements Named, Titled", ""))
+            assertThat(JavacVerdict.compiledClass("implements Named, Titled", ""))
                     .hadErrorContaining("inherits unrelated defaults for label()");
         }
     }
