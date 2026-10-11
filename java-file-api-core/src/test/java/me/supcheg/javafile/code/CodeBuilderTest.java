@@ -425,6 +425,14 @@ class CodeBuilderTest {
     }
 
     @Test
+    void superConstructorAddsASuperConstructorCallStmt() {
+        CodeBuilder cb = new CodeBuilder();
+        cb.superConstructor(literal("a"));
+
+        assertThat(cb.build().statements()).containsExactly(new SuperConstructorCallStmt(List.of(literal("a"))));
+    }
+
+    @Test
     void throwAddsAThrowStmt() {
         CodeBuilder cb = new CodeBuilder();
         cb.throw_(new_(java.lang.constant.ClassDesc.of("java.lang", "IllegalStateException"), literal("bad")));

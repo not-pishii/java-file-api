@@ -57,6 +57,7 @@ import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
+import me.supcheg.javafile.code.SuperConstructorCallStmt;
 import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
@@ -378,6 +379,10 @@ final class ExprRenderer {
                         + "}";
             case YieldStmt(var value) -> ctx.pad() + "yield " + renderExpr(value, ctx) + ";";
             case ThrowStmt(var exception) -> ctx.pad() + "throw " + renderExpr(exception, ctx) + ";";
+            case SuperConstructorCallStmt(var args) ->
+                ctx.pad() + "super("
+                        + args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "))
+                        + ");";
             case BreakStmt(var label) ->
                 ctx.pad() + "break" + label.map(l -> " " + l).orElse("") + ";";
             case ContinueStmt(var label) ->

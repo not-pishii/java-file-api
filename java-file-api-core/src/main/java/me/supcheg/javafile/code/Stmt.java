@@ -16,6 +16,7 @@ public sealed interface Stmt
                 SwitchStmt,
                 YieldStmt,
                 ThrowStmt,
+                SuperConstructorCallStmt,
                 BreakStmt,
                 ContinueStmt,
                 TryStmt,
