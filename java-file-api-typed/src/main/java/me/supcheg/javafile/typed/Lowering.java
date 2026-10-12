@@ -98,6 +98,16 @@ import java.util.stream.Stream;
 /// both when the statement is built ([ScopeCheck]); these are defence in
 /// depth.
 ///
+/// **A body is lowered where it is defined.** The members of a class are
+/// all declared before the first body is built ([MemberBuilder],
+/// [MemberBodies]), so the methods of the class — which decide the casts
+/// below as those of any other type do — are known to the lowering of every
+/// body, and `define` lowers the body it is given. What lowering rejects —
+/// a `protected` member reached where it cannot be, an overload no argument
+/// tells from the one meant, a type parameter out of its scope, a metamodel
+/// that does not hold on the target — is so rejected by the call of the
+/// generator that gave the body.
+///
 /// One instance lowers exactly one top-level body (a method, constructor, or
 /// lambda); nested blocks and lambdas share its [NameEnv] so names stay
 /// unique, and nested blocks share its loop stack so `break`/`continue`

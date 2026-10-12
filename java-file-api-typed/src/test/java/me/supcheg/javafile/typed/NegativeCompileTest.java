@@ -823,6 +823,32 @@ class NegativeCompileTest {
     }
 
     @Test
+    void aMemberIsDeclaredByTheBuilderAndDefinedByItsBodiesAlone() {
+        // the declarations and the bodies are two stages and two types: a member is not defined before the
+        // declarations end, nor declared after
+        assertRejected(
+                "DefinedByTheBuilder",
+                inClass("var m = cb.declareVoidStaticMethod(\"m\"); cb.define(m, VoidBody::end);"),
+                "cannot find symbol",
+                "symbol:   method define(");
+        assertRejected(
+                "InitializedByTheBuilder",
+                inClass("var f = cb.declareField(\"f\", PrimitiveToken.INT); cb.initialize(f, literal(1));"),
+                "cannot find symbol",
+                "symbol:   method initialize(");
+        assertRejected(
+                "DeclaredByTheBodies",
+                inClass("cb.bodies().declareVoidStaticMethod(\"m\");"),
+                "cannot find symbol",
+                "symbol:   method declareVoidStaticMethod(");
+        assertRejected(
+                "FieldDeclaredByTheBodies",
+                inClass("cb.bodies().declareField(\"f\", PrimitiveToken.INT);"),
+                "cannot find symbol",
+                "symbol:   method declareField(");
+    }
+
+    @Test
     void aThrowsClauseDeclaresNoField() {
         assertRejected(
                 "ThrowingField",

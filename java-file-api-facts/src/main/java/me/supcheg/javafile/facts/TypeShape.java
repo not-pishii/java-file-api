@@ -224,7 +224,7 @@ public final class TypeShape<K extends DeclaredKind> {
     }
 
     /// The shape of a final class that is being declared: its superclass is known once the
-    /// declaration names it, and its methods once the declaration is complete. Either supplier
+    /// declaration names it, and its methods once its members are all declared. Either supplier
     /// may throw while it has no answer yet.
     static TypeShape<DeclaredKind.FinalClass> declared(
             ClassDesc desc,
