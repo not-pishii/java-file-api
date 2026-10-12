@@ -111,7 +111,7 @@ public final class EnumSwitchCases<E, R> {
     /// @throws IllegalStateException if the constant has a case already; if this is not the time to add
     ///     a case
     /// @throws IllegalArgumentException if the constant is not one of the enum of the `switch`; if `value`
-    ///     is primitive and the type of the `switch` is not, or the reverse
+    ///     is primitive and the type of the `switch` is not
     public EnumSwitchCases<E, R> case_(EnumConstant<E> constant, Expr<? extends R> value) {
         return case_(List.of(constant), value);
     }
@@ -125,7 +125,7 @@ public final class EnumSwitchCases<E, R> {
     /// @throws IllegalStateException if a constant has a case already; if this is not the time to add a
     ///     case
     /// @throws IllegalArgumentException if there is no constant, or one is not of the enum of the
-    ///     `switch`; if `value` is primitive and the type of the `switch` is not, or the reverse
+    ///     `switch`; if `value` is primitive and the type of the `switch` is not
     public EnumSwitchCases<E, R> case_(List<EnumConstant<E>> constants, Expr<? extends R> value) {
         String label = label(constants);
         List<Node.Case> before = open(label, constants);

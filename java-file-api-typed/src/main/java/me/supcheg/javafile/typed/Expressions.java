@@ -1,7 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import me.supcheg.javafile.code.BinaryOp;
-import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
@@ -397,7 +395,7 @@ public final class Expressions {
     /// @param type the type of the conditional
     /// @param <T> the type of the conditional
     /// @return the conditional
-    /// @throws IllegalArgumentException if a branch is primitive and `T` is not, or the reverse
+    /// @throws IllegalArgumentException if a branch is primitive and `T` is not
     public static <T> Expr<T> cond(
             Expr<Prim.Bool> condition, Expr<? extends T> whenTrue, Expr<? extends T> whenFalse, TypeToken<T> type) {
         return Expr.of(
@@ -411,47 +409,47 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static Expr<Prim.Int> addInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.ADD, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.ADD_INT, l, r, PrimitiveToken.INT);
     }
 
     public static Expr<Prim.Int> subInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.SUB, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.SUB_INT, l, r, PrimitiveToken.INT);
     }
 
     public static Expr<Prim.Int> mulInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.MUL, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.MUL_INT, l, r, PrimitiveToken.INT);
     }
 
     public static Expr<Prim.Int> divInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.DIV, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.DIV_INT, l, r, PrimitiveToken.INT);
     }
 
     public static Expr<Prim.Int> modInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.MOD, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.MOD_INT, l, r, PrimitiveToken.INT);
     }
 
     public static Expr<Prim.Bool> eqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.EQ, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.EQ_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> neqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.NEQ, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.NEQ_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> ltInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.LT, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.LT_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> leInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.LE, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.LE_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> gtInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.GT, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.GT_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> geInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(BinaryOp.GE, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.GE_INT, l, r, PrimitiveToken.BOOLEAN);
     }
 
     // ------------------------------------------------------------------
@@ -459,19 +457,19 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static Expr<Prim.Long> addLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
-        return binary(BinaryOp.ADD, l, r, PrimitiveToken.LONG);
+        return binary(Node.Operator.ADD_LONG, l, r, PrimitiveToken.LONG);
     }
 
     public static Expr<Prim.Long> mulLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
-        return binary(BinaryOp.MUL, l, r, PrimitiveToken.LONG);
+        return binary(Node.Operator.MUL_LONG, l, r, PrimitiveToken.LONG);
     }
 
     public static Expr<Prim.Double> addDouble(Expr<Prim.Double> l, Expr<Prim.Double> r) {
-        return binary(BinaryOp.ADD, l, r, PrimitiveToken.DOUBLE);
+        return binary(Node.Operator.ADD_DOUBLE, l, r, PrimitiveToken.DOUBLE);
     }
 
     public static Expr<Prim.Double> mulDouble(Expr<Prim.Double> l, Expr<Prim.Double> r) {
-        return binary(BinaryOp.MUL, l, r, PrimitiveToken.DOUBLE);
+        return binary(Node.Operator.MUL_DOUBLE, l, r, PrimitiveToken.DOUBLE);
     }
 
     // ------------------------------------------------------------------
@@ -479,15 +477,15 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static Expr<Prim.Bool> and(Expr<Prim.Bool> l, Expr<Prim.Bool> r) {
-        return binary(BinaryOp.AND, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.AND, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> or(Expr<Prim.Bool> l, Expr<Prim.Bool> r) {
-        return binary(BinaryOp.OR, l, r, PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.OR, l, r, PrimitiveToken.BOOLEAN);
     }
 
     public static Expr<Prim.Bool> not(Expr<Prim.Bool> operand) {
-        return Expr.of(new Node.Unary(UnaryOp.NOT, operand.node(), PrimitiveToken.BOOLEAN), PrimitiveToken.BOOLEAN);
+        return Expr.of(new Node.Not(operand.node()), PrimitiveToken.BOOLEAN);
     }
 
     /// Reference identity, `l == r`: never `equals`, and never numeric
@@ -502,7 +500,7 @@ public final class Expressions {
     /// @return the comparison
     /// @throws IllegalArgumentException if an operand is of a primitive type
     public static <T> Expr<Prim.Bool> eqRef(Expr<T> l, Expr<? extends T> r) {
-        return binary(BinaryOp.EQ, reference(l, "eqRef"), reference(r, "eqRef"), PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.EQ_REF, reference(l, "eqRef"), reference(r, "eqRef"), PrimitiveToken.BOOLEAN);
     }
 
     /// Reference non-identity, `l != r`; see [#eqRef(Expr, Expr)].
@@ -513,7 +511,7 @@ public final class Expressions {
     /// @return the comparison
     /// @throws IllegalArgumentException if an operand is of a primitive type
     public static <T> Expr<Prim.Bool> neqRef(Expr<T> l, Expr<? extends T> r) {
-        return binary(BinaryOp.NEQ, reference(l, "neqRef"), reference(r, "neqRef"), PrimitiveToken.BOOLEAN);
+        return binary(Node.Operator.NEQ_REF, reference(l, "neqRef"), reference(r, "neqRef"), PrimitiveToken.BOOLEAN);
     }
 
     // ------------------------------------------------------------------
@@ -524,7 +522,7 @@ public final class Expressions {
     /// of `add`: mixing arithmetic and concatenation under one name is a
     /// classic Java footgun the typed layer refuses to reproduce.
     public static Expr<String> concat(Expr<String> l, Expr<String> r) {
-        return binary(BinaryOp.ADD, l, r, String_.TOKEN);
+        return binary(Node.Operator.CONCAT, l, r, String_.TOKEN);
     }
 
     // ------------------------------------------------------------------
@@ -533,17 +531,17 @@ public final class Expressions {
 
     /// Widening, `(long) operand`; it never loses information.
     public static Expr<Prim.Long> widenIntToLong(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.LONG, operand.node()), PrimitiveToken.LONG);
+        return Expr.of(new Node.Convert(Node.Conversion.TO_LONG, operand.node()), PrimitiveToken.LONG);
     }
 
     /// Widening, `(double) operand`; it never loses information.
     public static Expr<Prim.Double> widenIntToDouble(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Convert(Node.Conversion.TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Widening, `(double) operand`; it may round a large value (JLS 5.1.2).
     public static Expr<Prim.Double> widenLongToDouble(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Convert(Node.Conversion.TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Checked narrowing, `Math.toIntExact(operand)`: throws
@@ -555,13 +553,13 @@ public final class Expressions {
     /// Truncating narrowing, `(int) operand`: keeps the low 32 bits of a
     /// value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingLongToInt(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.INT, operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Convert(Node.Conversion.TO_INT, operand.node()), PrimitiveToken.INT);
     }
 
     /// Truncating narrowing, `(int) operand`: rounds toward zero and clamps
     /// a value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingDoubleToInt(Expr<Prim.Double> operand) {
-        return Expr.of(new Node.Cast(PrimitiveToken.INT, operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Convert(Node.Conversion.TO_INT, operand.node()), PrimitiveToken.INT);
     }
 
     // ------------------------------------------------------------------
@@ -1098,8 +1096,8 @@ public final class Expressions {
 
     // ------------------------------------------------------------------
 
-    private static <A, B, R> Expr<R> binary(BinaryOp op, Expr<A> l, Expr<B> r, TypeToken<R> type) {
-        return Expr.of(new Node.Binary(op, l.node(), r.node(), type), type);
+    private static <A, B, R> Expr<R> binary(Node.Operator op, Expr<A> l, Expr<B> r, TypeToken<R> type) {
+        return Expr.of(new Node.Binary(op, l.node(), r.node()), type);
     }
 
     /// A primitive has no members: `5.toString()` is not Java. A marker is a
@@ -1169,15 +1167,22 @@ public final class Expressions {
     /// where its own type differs.
     ///
     /// @param of the expression the result is one of
-    /// @throws IllegalArgumentException if the result is primitive and `type` is not, or the reverse
+    /// @throws IllegalArgumentException if the result is primitive and `type` is not
     static Node result(Expr<?> result, TypeToken<?> type, Choice of) {
-        boolean primitive = type instanceof PrimitiveToken<?, ?, ?>;
-        if ((result.type() instanceof PrimitiveToken<?, ?, ?>) != primitive) {
-            throw new IllegalArgumentException(of.form + " of type " + type + " has a " + of.one + " of type "
-                    + result.type() + ": " + of.form + " does not mix primitive and reference " + of.many
-                    + ", which Java would box, unbox or promote implicitly (JLS 15.25, 15.28.1); box or unbox the "
-                    + of.one + " explicitly");
-        }
-        return Tokens.sameType(result.type(), type) ? result.node() : new Node.Cast(type, result.node());
+        return switch (type) {
+            // A primitive type has no subtype ([Prim]): a result of it is of exactly it.
+            case PrimitiveToken<?, ?, ?> _ -> result.node();
+            case RefToken<?> reference -> {
+                if (result.type() instanceof PrimitiveToken<?, ?, ?>) {
+                    throw new IllegalArgumentException(of.form + " of type " + type + " has a " + of.one
+                            + " of type " + result.type() + ": " + of.form + " does not mix primitive and reference "
+                            + of.many + ", which Java would box, unbox or promote implicitly (JLS 15.25, 15.28.1);"
+                            + " box or unbox the " + of.one + " explicitly");
+                }
+                yield Tokens.sameType(result.type(), reference)
+                        ? result.node()
+                        : new Node.Cast(reference, result.node());
+            }
+        };
     }
 }

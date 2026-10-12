@@ -111,14 +111,14 @@ final class ScopeCheck {
                 node(whenTrue, use, where);
                 node(whenFalse, use, where);
             }
-            case Node.Binary(var ignored, var left, var right, var ignoredType) -> {
+            case Node.Binary(var ignored, var left, var right) -> {
                 node(left, use, where);
                 node(right, use, where);
             }
-            case Node.Unary(var ignored, var operand, var ignoredType) -> node(operand, use, where);
+            case Node.Not(var operand) -> node(operand, use, where);
+            case Node.Convert(var ignored, var operand) -> node(operand, use, where);
             case Node.Cast(var ignored, var operand) -> node(operand, use, where);
             case Node.Upcast(var inner, var ignoredInner, var ignored) -> node(inner, use, where);
-            case Node.InstanceOf(var operand, var ignored) -> node(operand, use, where);
             case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
             case Node.Switch switch_ -> {
                 node(switch_.selector().node(), use, where);

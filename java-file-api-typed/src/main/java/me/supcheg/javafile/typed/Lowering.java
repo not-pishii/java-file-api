@@ -4,7 +4,6 @@ import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
 import me.supcheg.javafile.code.BinaryExpr;
-import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
@@ -40,6 +39,7 @@ import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.UnaryExpr;
+import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.facts.Access;
@@ -564,9 +564,11 @@ final class Lowering {
             // conditional is of exactly that type (JLS 15.25).
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 Exprs.cond(expr(condition), expr(whenTrue, true), expr(whenFalse, true));
-            case Node.Binary(var op, var left, var right, var ignoredType) ->
-                new BinaryExpr(compared(op, left), op, compared(op, right));
-            case Node.Unary(var op, var operand, var ignoredType) -> new UnaryExpr(op, expr(operand));
+            case Node.Binary(var op, var left, var right) ->
+                new BinaryExpr(compared(op, left), op.rendered(), compared(op, right));
+            case Node.Not(var operand) -> new UnaryExpr(UnaryOp.NOT, expr(operand));
+            case Node.Convert(var conversion, var operand) ->
+                Exprs.cast(conversion.type().typeRef(), expr(operand, true));
             case Node.Cast(var type, var operand) -> {
                 mentions(type);
                 yield Exprs.cast(written(type).typeRef(), expr(operand, true));
@@ -576,10 +578,6 @@ final class Lowering {
             case Node.Upcast(var inner, var _, var type) -> {
                 mentions(type);
                 yield pin ? Exprs.cast(written(type).typeRef(), expr(inner)) : expr(inner);
-            }
-            case Node.InstanceOf(var operand, var type) -> {
-                mentions(type);
-                yield expr(operand, true).instanceOf(written(type).typeRef());
             }
             // No target type is known here: the cast gives the lambda the one of its fact.
             case Node.Lambda lambda -> Exprs.cast(written(lambda.sam().owner()).typeRef(), lambda(lambda));
@@ -639,8 +637,8 @@ final class Lowering {
     /// expression an [Upcast] witness was applied to is compared as of the supertype, and so is any
     /// other javac may type narrower than its token ([Node#isExact(Node)]) — a call of a method the
     /// type of the receiver overrides with a narrower result.
-    private Expr compared(BinaryOp op, Node operand) {
-        boolean ofReferences = op == BinaryOp.EQ || op == BinaryOp.NEQ;
+    private Expr compared(Node.Operator op, Node operand) {
+        boolean ofReferences = op == Node.Operator.EQ_REF || op == Node.Operator.NEQ_REF;
         return expr(operand, ofReferences && !Node.isExact(operand));
     }
 
