@@ -65,9 +65,9 @@ class LambdaChecksTest {
     /// Declares `static void m()` with the given body.
     private static JavaFile voidMethod(Function<VoidBody, Terminated<Void>> body) {
         return declare(cb -> {
-            var own1 = cb.declareVoidStaticMethod("m");
+            var m = cb.declareVoidStaticMethod("m");
             var bodies = cb.bodies();
-            bodies.define(own1, body);
+            bodies.define(m, body);
         });
     }
 
@@ -144,10 +144,10 @@ class LambdaChecksTest {
         void anImmutableVariableAParameterAndAVariableOfAForEachLoopAreCaptured() {
             asJavacAccepts(
                     () -> declare(cb -> {
-                        var own2 = cb.declareVoidStaticMethod("m", new List_<>(Integer_.TOKEN).token);
+                        var m = cb.declareVoidStaticMethod("m", new List_<>(Integer_.TOKEN).token);
                         var bodies = cb.bodies();
                         bodies.define(
-                                own2,
+                                m,
                                 (b, list) -> b.let(
                                         Integer_.TOKEN,
                                         box(PrimitiveToken.INT, literal(0)),
@@ -229,9 +229,9 @@ class LambdaChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own3 = cb.declareStaticMethod("m", Integer_.TOKEN);
+                        var m = cb.declareStaticMethod("m", Integer_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.define(own3, b -> {
+                        bodies.define(m, b -> {
                             lambda(INT_FN.sam, v -> {
                                 escaped.set(v);
                                 return v;
@@ -262,10 +262,10 @@ class LambdaChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own4 = cb.declareStaticMethod("m", INTS.token, Integer_.TOKEN);
+                        var m = cb.declareStaticMethod("m", INTS.token, Integer_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                own4,
+                                m,
                                 (b, p) -> b.if_(
                                                 literal(true),
                                                 t -> t.let(Integer_.TOKEN, p, v -> {
@@ -305,9 +305,9 @@ class LambdaChecksTest {
         void aBlockLambdaEndsWithItsOwnToken() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own5 = cb.declareStaticMethod("m", INTS.token);
+                        var m = cb.declareStaticMethod("m", INTS.token);
                         var bodies = cb.bodies();
-                        bodies.define(own5, b -> {
+                        bodies.define(m, b -> {
                             Body<Integer> elsewhere = Body.root("body of another method");
                             Terminated<Integer> other = Scopes.within(
                                     elsewhere, () -> elsewhere.return_(box(PrimitiveToken.INT, literal(1))));
@@ -352,10 +352,10 @@ class LambdaChecksTest {
         void theThrowsClauseOfTheMemberAroundTheLambdaCoversNothingOfIt() {
             asJavac(
                     () -> declare(cb -> {
-                        var own6 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var m = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
                         var bodies = cb.bodies();
                         bodies.define(
-                                own6, b -> b.let(INTS.token, lambda(INTS.sam, LambdaChecksTest::read), _ -> b.end()));
+                                m, b -> b.let(INTS.token, lambda(INTS.sam, LambdaChecksTest::read), _ -> b.end()));
                     }),
                     "the method of the functional interface of the lambda does not declare",
                     "static void m() throws IOException { Supplier<Integer> s = () -> new StringReader(\"a\").read(); }",
@@ -437,18 +437,18 @@ class LambdaChecksTest {
         void aLambdaOfAFieldInitializerIsCheckedAsAnyOther() {
             asJavac(
                     () -> declare(cb -> {
-                        var field7 = cb.declareField("f", INTS.token);
+                        var f = cb.declareField("f", INTS.token);
                         var bodies = cb.bodies();
-                        bodies.initialize(field7, lambda(INTS.sam, LambdaChecksTest::read));
+                        bodies.initialize(f, lambda(INTS.sam, LambdaChecksTest::read));
                     }),
                     "in the lambda body can throw the checked exception java.io.IOException",
                     "Supplier<Integer> f = () -> new StringReader(\"a\").read();",
                     "unreported exception java.io.IOException");
             asJavacAccepts(
                     () -> declare(cb -> {
-                        var field8 = cb.declareField("f", INT_CALL.token);
+                        var f = cb.declareField("f", INT_CALL.token);
                         var bodies = cb.bodies();
-                        bodies.initialize(field8, lambda(INT_CALL.sam, LambdaChecksTest::read));
+                        bodies.initialize(f, lambda(INT_CALL.sam, LambdaChecksTest::read));
                     }),
                     "Callable<Integer> f = () -> new StringReader(\"a\").read();");
         }

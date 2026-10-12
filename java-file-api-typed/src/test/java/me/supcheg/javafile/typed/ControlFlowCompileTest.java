@@ -53,47 +53,47 @@ class ControlFlowCompileTest {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         // while (true) { if (flag) { return 1; } } — no return after it
-                        var member1 = cb.declareStaticMethod("forever", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+                        var forever = cb.declareStaticMethod("forever", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
 
                         // try { return Integer.parseInt(s); } catch (NumberFormatException e) { return -1; }
                         // finally { System.out.println(); }
-                        var member2 = cb.declareStaticMethod("parse", PrimitiveToken.INT, String_.TOKEN);
+                        var parse = cb.declareStaticMethod("parse", PrimitiveToken.INT, String_.TOKEN);
 
                         // if (flag) {} else { return; } — a void body may fall off the end
-                        var member3 = cb.declareVoidStaticMethod("maybe", PrimitiveToken.BOOLEAN);
+                        var maybe = cb.declareVoidStaticMethod("maybe", PrimitiveToken.BOOLEAN);
 
                         // a try_ statement whose catch completes normally is continued
-                        var member4 = cb.declareStaticMethod("recover", PrimitiveToken.INT);
+                        var recover = cb.declareStaticMethod("recover", PrimitiveToken.INT);
 
                         // while (true) { if (i >= n) break; i = i + 1; } return i;
-                        var member5 = cb.declareStaticMethod("count", PrimitiveToken.INT, PrimitiveToken.INT);
+                        var count = cb.declareStaticMethod("count", PrimitiveToken.INT, PrimitiveToken.INT);
 
                         // outer: while (flag) { while (true) { break outer; } } return 0;
-                        var member6 = cb.declareStaticMethod("labeled", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+                        var labeled = cb.declareStaticMethod("labeled", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
 
                         // do { if (flag) continue; println(1); } while (flag); return 0;
-                        var member7 = cb.declareStaticMethod("doLoop", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+                        var doLoop = cb.declareStaticMethod("doLoop", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                member1,
+                                forever,
                                 (b, flag) -> b.loopForever(loop -> loop.if_(flag, t -> t.return_(literal(1)))));
                         bodies.define(
-                                member2,
+                                parse,
                                 (b, s) -> b.tryTerminated(
                                         h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
                                                 .finally_(f -> f.exec(
                                                         voidCall(staticField(System_.out), PrintStream_.println))),
                                         t -> t.return_(staticCall(Integer_.parseInt_String, s))));
-                        bodies.define(member3, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
+                        bodies.define(maybe, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
                         bodies.define(
-                                member4,
+                                recover,
                                 b -> b.try_(
                                                 h -> h.catch_(
                                                         RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))),
                                                 t -> t.return_(literal(1)))
                                         .return_(literal(2)));
                         bodies.define(
-                                member5,
+                                count,
                                 (b, n) -> b.letVar(
                                         PrimitiveToken.INT,
                                         literal(0),
@@ -103,13 +103,13 @@ class ControlFlowCompileTest {
                                                                 .exec(assign(i, addInt(i, literal(1)))))
                                                 .return_(i)));
                         bodies.define(
-                                member6,
+                                labeled,
                                 (b, flag) -> b.while_(
                                                 flag,
                                                 (outer, outerCtl) -> outer.loopForever(inner -> inner.break_(outerCtl)))
                                         .return_(literal(0)));
                         bodies.define(
-                                member7,
+                                doLoop,
                                 (b, flag) -> b.doWhile(
                                                 (loop, ctl) -> loop.if_(flag, t -> t.continue_(ctl))
                                                         .exec(print(literal(1))),
@@ -130,10 +130,10 @@ class ControlFlowCompileTest {
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        var member8 = cb.declareStaticMethod("nested", PrimitiveToken.INT, PrimitiveToken.INT);
+                        var nested = cb.declareStaticMethod("nested", PrimitiveToken.INT, PrimitiveToken.INT);
                         var bodies = cb.bodies();
                         bodies.define(
-                                member8,
+                                nested,
                                 (b, n) -> b.let(
                                         PrimitiveToken.INT,
                                         addInt(n, literal(1)),

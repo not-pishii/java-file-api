@@ -79,9 +79,9 @@ class SuperTwinsTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
-                        var member1 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
-                        bodies.define(member1, (b, self) -> b.return_(bodies.superCall(self, BASE.m_T, literal("x"))));
+                        bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, BASE.m_T, literal("x"))));
                     }
                 }),
                 "super.m(...) cannot name",
@@ -96,10 +96,9 @@ class SuperTwinsTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
-                        var member2 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
-                        bodies.define(
-                                member2, (b, self) -> b.return_(bodies.superCall(self, SUB.m_String, literal("x"))));
+                        bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, SUB.m_String, literal("x"))));
                     }
                 }),
                 "as the overload declared m(#0) is",
@@ -115,9 +114,9 @@ class SuperTwinsTest {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var p = cb.protected_(BASE.p_T);
-                        var member3 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
-                        bodies.define(member3, (b, self) -> b.return_(bodies.superCall(self, p, literal("x"))));
+                        bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, p, literal("x"))));
                     }
                 }),
                 "super.p(...) cannot name",
@@ -135,11 +134,11 @@ class SuperTwinsTest {
                 var twins = overriding(h);
                 var cb = twins.cb();
                 var p = cb.protected_(BASE.p_T);
-                var member4 = cb.declareMethod("f", String_.TOKEN);
-                var member5 = cb.declareMethod("g", String_.TOKEN);
+                var f = cb.declareMethod("f", String_.TOKEN);
+                var g = cb.declareMethod("g", String_.TOKEN);
                 var bodies = twins.bodies();
-                bodies.define(member4, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
-                bodies.define(member5, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
+                bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
+                bodies.define(g, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
             }
         }));
 
@@ -180,12 +179,11 @@ class SuperTwinsTest {
                         var cb = twins.cb();
                         var member6 = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                        var member7 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
                         bodies.define(member6, (b, self, v) -> b.return_(literal("own")));
                         bodies.define(
-                                member7,
-                                (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                                f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
                     }
                 }),
                 "the class has another method that erases as it does, which javac would take for it — a"
@@ -201,9 +199,9 @@ class SuperTwinsTest {
                 var twins = overriding(h);
                 var cb = twins.cb();
                 var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                var member8 = cb.declareMethod("f", String_.TOKEN);
+                var f = cb.declareMethod("f", String_.TOKEN);
                 var bodies = twins.bodies();
-                bodies.define(member8, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
             }
         }));
 
@@ -223,9 +221,9 @@ class SuperTwinsTest {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                        var member9 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
-                        bodies.define(member9, (b, self) -> b.return_(bodies.superCall(self, g, literal("x"))));
+                        bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, g, literal("x"))));
                     }
                 }),
                 "the method is generic, and a generic method of a superclass is neither called as super.g(...)",

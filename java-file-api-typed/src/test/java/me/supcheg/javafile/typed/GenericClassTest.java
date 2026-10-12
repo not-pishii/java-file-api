@@ -96,12 +96,11 @@ class GenericClassTest {
                         var cb = h.extendsObject().members();
                         var item = cb.declareMethod("item", n, n);
                         // an expression of N is one of Number to the compiler of the generator
-                        var member2 = cb.declareMethod("asInt", PrimitiveToken.INT, n);
+                        var asInt = cb.declareMethod("asInt", PrimitiveToken.INT, n);
                         var bodies = cb.bodies();
                         bodies.define(item, (b, self, value) -> b.return_(value));
                         bodies.define(
-                                member2,
-                                (b, self, value) -> b.return_(call(call(self, item, value), Number_.intValue)));
+                                asInt, (b, self, value) -> b.return_(call(call(self, item, value), Number_.intValue)));
                     }
                 }));
 
@@ -128,14 +127,15 @@ class GenericClassTest {
                 var first = sh.declareConstructor(t);
                 var cb = sh.members();
                 // what the class has from Carrier<T> is in terms of its own T
-                var member3 = cb.declareMethod("mine", t);
-                var member4 = cb.declareMethod("same", PrimitiveToken.INT);
-                var own1 = cb.declareOverride(carrier.described_T);
+                var mine = cb.declareMethod("mine", t);
+                var same = cb.declareMethod("same", PrimitiveToken.INT);
+                var described = cb.declareOverride(carrier.described_T);
                 var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
                 bodies.define(compareTo.method(), (b, self, other) -> b.return_(literal(7)));
-                bodies.define(own1, (b, self, other) -> b.return_(bodies.superCall(self, carrier.described_T, other)));
-                bodies.define(member3, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
-                bodies.define(member4, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
+                bodies.define(
+                        described, (b, self, other) -> b.return_(bodies.superCall(self, carrier.described_T, other)));
+                bodies.define(mine, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
+                bodies.define(same, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
             }
         }));
 
@@ -166,15 +166,15 @@ class GenericClassTest {
                         var comparable = new Comparable_<>(t);
                         Upcast<T, Comparable<T>> asComparable = h.bound(t, comparable.token);
                         var cb = h.extendsObject().members();
-                        var member5 = cb.declareMethod("less", PrimitiveToken.BOOLEAN, t, t);
+                        var less = cb.declareMethod("less", PrimitiveToken.BOOLEAN, t, t);
                         // the leftmost bound is the type of the generator, the further one a witness
-                        var member6 = cb.declareMethod("asInt", PrimitiveToken.INT, t);
+                        var asInt = cb.declareMethod("asInt", PrimitiveToken.INT, t);
                         var bodies = cb.bodies();
                         bodies.define(
-                                member5,
+                                less,
                                 (b, self, one, other) -> b.return_(ltInt(
                                         call(asComparable.apply(one), comparable.compareTo_T, other), literal(0))));
-                        bodies.define(member6, (b, self, one) -> b.return_(call(one, Number_.intValue)));
+                        bodies.define(asInt, (b, self, one) -> b.return_(call(one, Number_.intValue)));
                     }
                 }));
 
@@ -200,16 +200,16 @@ class GenericClassTest {
                 var comparable = new Comparable_<>(t);
                 var asComparable = h.bound(t, comparable.token);
                 var cb = h.extendsObject().members();
-                var member7 = cb.declareMethod("compare", PrimitiveToken.INT, t, t);
+                var compare = cb.declareMethod("compare", PrimitiveToken.INT, t, t);
                 // the erasure of T is that of its leftmost bound, Object: the two methods are two to javac too
-                var member8 = cb.declareMethod("show", String_.TOKEN, t);
+                var show = cb.declareMethod("show", String_.TOKEN, t);
                 var member9 = cb.declareMethod("show", String_.TOKEN, new Comparable_<>(String_.TOKEN).token);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member7,
+                        compare,
                         (b, self, one, other) ->
                                 b.return_(call(asComparable.apply(one), comparable.compareTo_T, other)));
-                bodies.define(member8, (b, self, one) -> b.return_(literal("T")));
+                bodies.define(show, (b, self, one) -> b.return_(literal("T")));
                 bodies.define(member9, (b, self, one) -> b.return_(literal("Comparable")));
             }
         }));
@@ -264,14 +264,14 @@ class GenericClassTest {
                     public <Self, A, B extends Number, C extends Comparable<String>> void build(
                             ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
                         var cb = h.extendsObject().members();
-                        var member10 = cb.declareMethod("first", a, a, b);
-                        var member11 = cb.declareMethod("second", PrimitiveToken.INT, b, c);
-                        var member12 = cb.declareMethod("third", PrimitiveToken.INT, c);
+                        var first = cb.declareMethod("first", a, a, b);
+                        var second = cb.declareMethod("second", PrimitiveToken.INT, b, c);
+                        var third = cb.declareMethod("third", PrimitiveToken.INT, c);
                         var bodies = cb.bodies();
-                        bodies.define(member10, (body, self, one, two) -> body.return_(one));
-                        bodies.define(member11, (body, self, two, three) -> body.return_(call(two, Number_.intValue)));
+                        bodies.define(first, (body, self, one, two) -> body.return_(one));
+                        bodies.define(second, (body, self, two, three) -> body.return_(call(two, Number_.intValue)));
                         bodies.define(
-                                member12,
+                                third,
                                 (body, self, three) -> body.return_(
                                         call(three, new Comparable_<>(String_.TOKEN).compareTo_T, literal("b"))));
                     }
@@ -295,13 +295,13 @@ class GenericClassTest {
                     @Override
                     public <Self, T1, T2> void build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
                         var cb = h.extendsObject().members();
-                        var member13 = cb.declareMethod("text", String_.TOKEN, t1);
-                        var member14 = cb.declareMethod("shape", Shape_.TOKEN, t2);
-                        var member15 = cb.declareMethod("own", Object_.TOKEN, t1);
+                        var text = cb.declareMethod("text", String_.TOKEN, t1);
+                        var shape = cb.declareMethod("shape", Shape_.TOKEN, t2);
+                        var own = cb.declareMethod("own", Object_.TOKEN, t1);
                         var bodies = cb.bodies();
-                        bodies.define(member13, (b, self, one) -> b.return_(literal("text")));
-                        bodies.define(member14, (b, self, two) -> b.return_(literalNull(Shape_.TOKEN)));
-                        bodies.define(member15, (b, self, one) -> b.return_(one));
+                        bodies.define(text, (b, self, one) -> b.return_(literal("text")));
+                        bodies.define(shape, (b, self, two) -> b.return_(literalNull(Shape_.TOKEN)));
+                        bodies.define(own, (b, self, one) -> b.return_(one));
                     }
                 }));
 

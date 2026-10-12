@@ -81,9 +81,9 @@ class DeclarationChecksTest {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var late = cb.declareVoidMethod("late");
-                                    var member1 = cb.declareVoidMethod("outer");
+                                    var outer = cb.declareVoidMethod("outer");
                                     var bodies = cb.bodies();
-                                    bodies.define(member1, (b, _) -> {
+                                    bodies.define(outer, (b, _) -> {
                                         bodies.define(late, (x, _) -> x.end());
                                         return b.end();
                                     });
@@ -116,10 +116,10 @@ class DeclarationChecksTest {
         void aDuplicateMethodByErasureIsRejected() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        var member2 = cb.declareStaticMethod("m", PrimitiveToken.INT, PrimitiveToken.INT);
+                        var m = cb.declareStaticMethod("m", PrimitiveToken.INT, PrimitiveToken.INT);
                         cb.declareMethod("m", String_.TOKEN, PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(member2, Body::return_);
+                        bodies.define(m, Body::return_);
                     }))
                     .withMessageContaining("the method java.lang.String me.supcheg.example.Probe.m(int) of class"
                             + " me.supcheg.example.Probe clashes with the method static int"
@@ -142,10 +142,10 @@ class DeclarationChecksTest {
         void aDuplicateFieldIsRejected() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        var field1 = cb.declareField("x", PrimitiveToken.INT);
+                        var x = cb.declareField("x", PrimitiveToken.INT);
                         var field2 = cb.declareMutableField("x", String_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.initialize(field1, literal(1));
+                        bodies.initialize(x, literal(1));
                         bodies.initialize(field2, literal("x"));
                     }))
                     .withMessageContaining("field x of class me.supcheg.example.Probe is already declared");
@@ -188,9 +188,9 @@ class DeclarationChecksTest {
         @Test
         void anOverloadOfAnInheritedMethodIsDeclaredByName() {
             declare(cb -> {
-                var own3 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                var equals = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(own3, (b, _, _) -> b.return_(literal(true)));
+                bodies.define(equals, (b, _, _) -> b.return_(literal(true)));
             });
         }
 
@@ -198,10 +198,10 @@ class DeclarationChecksTest {
         void aMethodIsOverriddenOnce() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own4 = cb.declareOverride(Object_.toString);
+                        var toString = cb.declareOverride(Object_.toString);
                         var own5 = cb.declareOverride(Object_.toString);
                         var bodies = cb.bodies();
-                        bodies.define(own4, (b, _) -> b.return_(literal("a")));
+                        bodies.define(toString, (b, _) -> b.return_(literal("a")));
                         bodies.define(own5, (b, _) -> b.return_(literal("b")));
                     }))
                     .withMessageContaining(
@@ -213,9 +213,9 @@ class DeclarationChecksTest {
         void aFinalMethodIsNotOverriddenByItsFact() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own6 = cb.declareOverride(Object_.notify);
+                        var notify = cb.declareOverride(Object_.notify);
                         var bodies = cb.bodies();
-                        bodies.define(own6, (b, _) -> b.end());
+                        bodies.define(notify, (b, _) -> b.end());
                     }))
                     .withMessageContaining(
                             "cannot override notify() of java.lang.Object: the method is final" + " (JLS 8.4.3.3)");
@@ -225,23 +225,23 @@ class DeclarationChecksTest {
         void equalsIsNotOverriddenWithoutHashCode() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own7 = cb.declareOverride(Object_.equals_Object);
+                        var equals = cb.declareOverride(Object_.equals_Object);
                         var bodies = cb.bodies();
-                        bodies.define(own7, (b, _, _) -> b.return_(literal(true)));
+                        bodies.define(equals, (b, _, _) -> b.return_(literal(true)));
                     }))
                     .withMessageContaining("overrides equals(java.lang.Object) but not hashCode()");
             declare(cb -> {
-                var own8 = cb.declareOverride(Object_.equals_Object);
-                var own9 = cb.declareOverride(Object_.hashCode);
+                var equals = cb.declareOverride(Object_.equals_Object);
+                var hashCode = cb.declareOverride(Object_.hashCode);
                 var bodies = cb.bodies();
-                bodies.define(own8, (b, _, _) -> b.return_(literal(true)));
-                bodies.define(own9, (b, _) -> b.return_(literal(1)));
+                bodies.define(equals, (b, _, _) -> b.return_(literal(true)));
+                bodies.define(hashCode, (b, _) -> b.return_(literal(1)));
             });
             // hashCode alone is nothing javac warns of
             declare(cb -> {
-                var own10 = cb.declareOverride(Object_.hashCode);
+                var hashCode = cb.declareOverride(Object_.hashCode);
                 var bodies = cb.bodies();
-                bodies.define(own10, (b, _) -> b.return_(literal(1)));
+                bodies.define(hashCode, (b, _) -> b.return_(literal(1)));
             });
         }
 
@@ -262,10 +262,10 @@ class DeclarationChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own11 = cb.declareVoidMethod("a");
+                        var a = cb.declareVoidMethod("a");
                         var own12 = cb.declareMethod("b", String_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.define(own11, (b, self) -> {
+                        bodies.define(a, (b, self) -> {
                             stash.set(self);
                             return b.end();
                         });
@@ -281,9 +281,9 @@ class DeclarationChecksTest {
             // the scope check still catches it.
             AtomicReference<Expr<?>> stash = new AtomicReference<>();
             declare(cb -> {
-                var own13 = cb.declareVoidMethod("a");
+                var a = cb.declareVoidMethod("a");
                 var bodies = cb.bodies();
-                bodies.define(own13, (b, self) -> {
+                bodies.define(a, (b, self) -> {
                     stash.set(self);
                     return b.end();
                 });
@@ -310,14 +310,14 @@ class DeclarationChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        var own14 = cb.declareConstructor();
-                        var field15 = cb.declareField("f", String_.TOKEN);
+                        var constructor = cb.declareConstructor();
+                        var f = cb.declareField("f", String_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.define(own14, (b, self) -> {
+                        bodies.define(constructor, (b, self) -> {
                             stash.set(self);
                             return b.end();
                         });
-                        bodies.initialize(field15, call(stash.get(), Object_.toString));
+                        bodies.initialize(f, call(stash.get(), Object_.toString));
                     }))
                     .withMessageContaining("the this of the body of constructor is used in the initializer of field f");
         }

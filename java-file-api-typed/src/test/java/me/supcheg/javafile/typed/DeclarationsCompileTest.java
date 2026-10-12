@@ -65,7 +65,7 @@ class DeclarationsCompileTest {
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         var isEven = cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                         var isOdd = cb.declareMethod("isOdd", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
-                        var member1 = cb.declareConstructor();
+                        var constructor = cb.declareConstructor();
                         var bodies = cb.bodies();
                         bodies.define(
                                 isEven,
@@ -79,7 +79,7 @@ class DeclarationsCompileTest {
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(false)),
                                         e -> e.return_(call(self, isEven, subInt(n, literal(1))))));
-                        bodies.define(member1, (b, _) -> b.end());
+                        bodies.define(constructor, (b, _) -> b.end());
                     }
                 });
 
@@ -112,9 +112,9 @@ class DeclarationsCompileTest {
                         var count = cb.declareMutableField("count", PrimitiveToken.INT);
                         var ctor = cb.declareConstructor(PrimitiveToken.INT);
                         // a static factory uses the constructor before it is defined
-                        var member2 = cb.declareStaticMethod("create", cb.self());
-                        var member3 = cb.declareMethod("remaining", PrimitiveToken.INT);
-                        var own1 = cb.declareOverride(Object_.toString);
+                        var create = cb.declareStaticMethod("create", cb.self());
+                        var remaining = cb.declareMethod("remaining", PrimitiveToken.INT);
+                        var toString = cb.declareOverride(Object_.toString);
                         var bodies = cb.bodies();
                         bodies.initialize(limit, literal(10));
                         bodies.initialize(count, literal(0));
@@ -122,9 +122,10 @@ class DeclarationsCompileTest {
                                 ctor,
                                 (b, self, start) ->
                                         b.exec(assignField(self, count, start)).end());
-                        bodies.define(own1, (b, _) -> b.return_(literal("Counter")));
-                        bodies.define(member2, b -> b.return_(new_(ctor, literal(4))));
-                        bodies.define(member3, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
+                        bodies.define(toString, (b, _) -> b.return_(literal("Counter")));
+                        bodies.define(create, b -> b.return_(new_(ctor, literal(4))));
+                        bodies.define(
+                                remaining, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
                     }
                 });
 
