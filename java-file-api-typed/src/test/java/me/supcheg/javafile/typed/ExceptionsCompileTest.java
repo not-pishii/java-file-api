@@ -46,13 +46,13 @@ class ExceptionsCompileTest {
         compiled = CompiledClasses.of(
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
-                        members(cb);
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        return members(cb);
                     }
                 }));
     }
 
-    private static <Self> void members(TypedClassBuilder<Self> cb) {
+    private static <Self> TypedClassBodies<Self> members(TypedClassBuilder<Self> cb) {
         // public Throwing() throws IOException { new StringReader("a").read(); }
         var ctor = cb.throwing(IOException_.TOKEN).declareConstructor();
 
@@ -224,6 +224,7 @@ class ExceptionsCompileTest {
                                 t -> t.throw_(new_(FileNotFoundException_.new_)))));
         bodies.define(unchecked, b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
         bodies.define(declaresUnchecked, b -> b.throw_(new_(RuntimeException_.new_String, literal("declared"))));
+        return bodies;
     }
 
     @Test

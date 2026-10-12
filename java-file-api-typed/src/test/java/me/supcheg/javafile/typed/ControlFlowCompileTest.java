@@ -51,7 +51,7 @@ class ControlFlowCompileTest {
         JavaFile file =
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         // while (true) { if (flag) { return 1; } } — no return after it
                         var forever = cb.declareStaticMethod("forever", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
 
@@ -115,6 +115,7 @@ class ControlFlowCompileTest {
                                                         .exec(print(literal(1))),
                                                 flag)
                                         .return_(literal(0)));
+                        return bodies;
                     }
                 });
 
@@ -129,7 +130,7 @@ class ControlFlowCompileTest {
         JavaFile file =
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var nested = cb.declareStaticMethod("nested", PrimitiveToken.INT, PrimitiveToken.INT);
                         var bodies = cb.bodies();
                         bodies.define(
@@ -168,6 +169,7 @@ class ControlFlowCompileTest {
                                                         gtInt(a, n),
                                                         t -> t.return_(a),
                                                         e -> e.let(PrimitiveToken.INT, literal(4), e::return_))));
+                        return bodies;
                     }
                 });
 

@@ -105,10 +105,11 @@ class LambdasCompileTest {
         compiled = CompiledClasses.of(TypedJavaFile.class_(
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var defined = List.of(forms(cb), places(cb), captures(cb), exceptions(cb), morePlaces(cb));
                         var bodies = cb.bodies();
                         defined.forEach(define -> define.accept(bodies));
+                        return bodies;
                     }
                 }));
     }

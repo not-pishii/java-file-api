@@ -9,6 +9,7 @@ import me.supcheg.javafile.example.typed.facts.java.util.AbstractCollection_;
 import me.supcheg.javafile.example.typed.facts.java.util.AbstractList_;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.ClassHeader;
+import me.supcheg.javafile.typed.MemberBodies;
 import me.supcheg.javafile.typed.TypedJavaFile;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ class TypedExtendsImplementsCompileTest {
                 // TargetClasspaths.of(processingEnv) of java-file-api-lang-model
                 UnsafeFacts.unverifiedClasspath(), NAMES, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var list = new AbstractList_<>(String_.TOKEN);
                         var collection = new AbstractCollection_<>(String_.TOKEN);
                         var comparable = new Comparable_<>(h.self());
@@ -75,6 +76,7 @@ class TypedExtendsImplementsCompileTest {
                                 (b, self) -> b.return_(
                                         concat(literal("names"), bodies.superCall(self, collection.toString))));
                         bodies.define(first, (b, self) -> b.return_(call(self, get.method(), literal(0))));
+                        return bodies;
                     }
                 });
 

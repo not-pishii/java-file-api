@@ -48,7 +48,7 @@ class VariableArityTest {
     void aDefaultMethodOfVariableArityIsOverriddenByOne() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var oh = h.extendsObject();
                 Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                 var cb = oh.members();
@@ -57,6 +57,7 @@ class VariableArityTest {
                 var bodies = cb.bodies();
                 bodies.define(join, (b, self, parts) -> b.return_(literal("mine")));
                 bodies.define(constructor, (b, self) -> b.end());
+                return bodies;
             }
         }));
 
@@ -69,7 +70,7 @@ class VariableArityTest {
     void anAbstractMethodOfVariableArityIsImplementedAndCalledByItsFactWithAnArray() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var spread = h.overriding(Spreading_.spread_StringArray);
                 var oh = h.extendsObject();
                 oh.implements_(Spreading_.implement(h.self()).spread_StringArray(spread));
@@ -83,6 +84,7 @@ class VariableArityTest {
                         go,
                         (b, self) -> b.return_(
                                 call(self, spread.method(), newArray(ArrayToken.of(String_.TOKEN), literal(2)))));
+                return bodies;
             }
         }));
 
@@ -102,13 +104,15 @@ class VariableArityTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var oh = h.extendsObject();
                         Upcast<Self, Scattering<List<String>>> asScattering =
                                 oh.implements_(scattering.implement(h.self()));
                         var cb = oh.members();
                         var scatter = cb.declareOverride(asScattering, scattering.scatter_TArray);
-                        cb.bodies().define(scatter, (b, self, all) -> b.return_(literal(0)));
+                        var bodies = cb.bodies();
+                        bodies.define(scatter, (b, self, all) -> b.return_(literal(0)));
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("of variable arity and of the element type")
@@ -125,7 +129,7 @@ class VariableArityTest {
         Scattering_<String> scattering = new Scattering_<>(String_.TOKEN);
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var oh = h.extendsObject();
                 Upcast<Self, Scattering<String>> asScattering = oh.implements_(scattering.implement(h.self()));
                 var cb = oh.members();
@@ -134,6 +138,7 @@ class VariableArityTest {
                 var bodies = cb.bodies();
                 bodies.define(scatter, (b, self, all) -> b.return_(literal(7)));
                 bodies.define(constructor, (b, self) -> b.end());
+                return bodies;
             }
         }));
 
@@ -152,7 +157,7 @@ class VariableArityTest {
                 "non-varargs call of varargs method with inexact argument type for last parameter");
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var cb = h.extendsObject().members();
                 var m = cb.declareStaticMethod("m", PrimitiveToken.INT);
                 var bodies = cb.bodies();
@@ -160,6 +165,7 @@ class VariableArityTest {
                         m,
                         b -> b.return_(staticCall(
                                 Objects_.hash_ObjectArray, newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
+                return bodies;
             }
         }));
 
@@ -173,14 +179,16 @@ class VariableArityTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var oh = h.extendsObject();
                         Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                         Upcast<Self, Taking> asTaking = oh.implements_(Taking_.implement(h.self()));
                         assertThat(asTaking.supertype()).isEqualTo(Taking_.TOKEN);
                         var cb = oh.members();
                         var join = cb.declareOverride(asJoiner, Joiner_.join_StringArray);
-                        cb.bodies().define(join, (b, self, parts) -> b.return_(literal("")));
+                        var bodies = cb.bodies();
+                        bodies.define(join, (b, self, parts) -> b.return_(literal("")));
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("cannot override both")
@@ -196,12 +204,12 @@ class VariableArityTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Gathered_.extend(h.self()));
                         sh.implements_(Joiner_.implement(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
-                        cb.bodies(constructor, ctor -> ctor.super_(Gathered_.new_, (b, self) -> b.end()));
+                        return cb.bodies(constructor, ctor -> ctor.super_(Gathered_.new_, (b, self) -> b.end()));
                     }
                 }))
                 .withMessageContaining("cannot stand for join(java.lang.String[]) of"

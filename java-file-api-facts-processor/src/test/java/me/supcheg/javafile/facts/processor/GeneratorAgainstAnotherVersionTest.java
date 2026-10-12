@@ -48,6 +48,7 @@ class GeneratorAgainstAnotherVersionTest {
             import me.supcheg.javafile.facts.meta.Facts;
             import me.supcheg.javafile.filer.JavaFileWriter;
             import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
+            import me.supcheg.javafile.typed.TypedClassBodies;
             import me.supcheg.javafile.typed.TypedClassBuilder;
             import me.supcheg.javafile.typed.TypedJavaFile;
             import p.Svc;
@@ -87,10 +88,11 @@ class GeneratorAgainstAnotherVersionTest {
                         JavaFile file = TypedJavaFile.class_(
                                 target, ClassDesc.of("app", "Generated"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
-                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                         var only = cb.declareStaticMethod("only", String_.TOKEN, String_.TOKEN);
                                         var bodies = cb.bodies();
                                         bodies.define(only, (b, s) -> b.return_(call(new_(Svc_.new_), Svc_.only_Object, s)));
+                                        return bodies;
                                     }
                                 });
                         JavaFileWriter.writeTo(file, processingEnv.getFiler());

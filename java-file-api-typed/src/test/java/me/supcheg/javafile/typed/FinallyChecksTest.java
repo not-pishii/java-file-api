@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.constant.ClassDesc;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
@@ -51,9 +51,11 @@ class FinallyChecksTest {
 
     /// Declares `static int m(Signal s)` of a class `Probe` with the given body.
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
-        Consumer<TypedClassBuilder<Object>> members = cb -> {
+        Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members = cb -> {
             var m = cb.throwing(IOException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
-            cb.bodies().define(m, body);
+            var bodies = cb.bodies();
+            bodies.define(m, body);
+            return bodies;
         };
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }

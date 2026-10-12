@@ -37,7 +37,7 @@ class InheritedStaticsTest {
         // static String pick(String) of StaticPick is more specific than pick(Object) of the class
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticPick_.extend(h.self()));
                 var cb = sh.members();
                 var constructor = cb.declareConstructor();
@@ -46,6 +46,7 @@ class InheritedStaticsTest {
                 var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
                 bodies.define(pick, (b, self, v) -> b.return_(literal("own")));
                 bodies.define(go, (b, self) -> b.return_(call(self, pick, literal("s"))));
+                return bodies;
             }
         }));
 
@@ -58,7 +59,7 @@ class InheritedStaticsTest {
         // String m(Object) and static String m(String) of StaticTwin
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticTwin_.extend(h.self()));
                 var cb = sh.members();
                 var constructor = cb.declareConstructor();
@@ -66,6 +67,7 @@ class InheritedStaticsTest {
                 var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
                 bodies.define(
                         go, (b, self) -> b.return_(call(cb.asSuper().apply(self), StaticTwin_.m_Object, literal("s"))));
+                return bodies;
             }
         }));
 
@@ -79,7 +81,7 @@ class InheritedStaticsTest {
         Comparator_<String> comparator = new Comparator_<>(String_.TOKEN);
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var compare = h.overriding(comparator.compare_T_T);
                 var oh = h.extendsObject();
                 oh.implements_(comparator.implement(h.self()).compare_T_T(compare));
@@ -90,6 +92,7 @@ class InheritedStaticsTest {
                 bodies.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
                 bodies.define(constructor, (b, self) -> b.end());
                 bodies.define(reverseOrder, (b, self) -> b.return_(literal("mine")));
+                return bodies;
             }
         }));
 
@@ -101,7 +104,7 @@ class InheritedStaticsTest {
         // static String label() of Stated, default String label() of Named
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var oh = h.extendsObject();
                 oh.implements_(Stated_.implement(h.self()));
                 Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
@@ -111,6 +114,7 @@ class InheritedStaticsTest {
                 var bodies = cb.bodies();
                 bodies.define(constructor, (b, self) -> b.end());
                 bodies.define(go, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                return bodies;
             }
         }));
 
@@ -123,13 +127,14 @@ class InheritedStaticsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
                         var util = cb.declareMethod("util", String_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(util, (b, self) -> b.return_(literal("x")));
+                        return bodies;
                     }
                 }),
                 "has the signature of the static method util() of me.supcheg.javafile.typed.fixtures.Base, which"

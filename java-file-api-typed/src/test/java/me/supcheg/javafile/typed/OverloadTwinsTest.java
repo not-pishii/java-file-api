@@ -137,10 +137,11 @@ class OverloadTwinsTest {
                         ClassDesc.of("me.supcheg.example", "Twins"),
                         new TypedJavaFile.TypedClassSpec() {
                             @Override
-                            public <Self> void build(TypedClassBuilder<Self> cb) {
+                            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                 var call = cb.declareStaticMethod("call", String_.TOKEN, receiver);
                                 var bodies = cb.bodies();
                                 bodies.define(call, (b, r) -> b.return_(body.apply(r)));
+                                return bodies;
                             }
                         })
                 .render();

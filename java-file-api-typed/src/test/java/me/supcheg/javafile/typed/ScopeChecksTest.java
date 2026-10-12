@@ -43,10 +43,11 @@ class ScopeChecksTest {
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Prim.Bool>, Terminated<Prim.Int>> body) {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var m = cb.declareMethod("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
                 var bodies = cb.bodies();
                 bodies.define(m, (b, _, flag) -> body.apply(b, flag));
+                return bodies;
             }
         });
     }
@@ -101,7 +102,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
-                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var a = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
                                     var member3 = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
@@ -110,6 +111,7 @@ class ScopeChecksTest {
                                         return b.return_(p);
                                     });
                                     bodies.define(member3, (b, _) -> b.return_(host.getFirst()));
+                                    return bodies;
                                 }
                             }))
                     .withMessageContaining("parameter of type int declared in the body of method a is used in the"
@@ -124,7 +126,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
-                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var a = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
                                     var f = cb.declareField("f", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
@@ -133,6 +135,7 @@ class ScopeChecksTest {
                                         return b.return_(p);
                                     });
                                     bodies.initialize(f, host.getFirst());
+                                    return bodies;
                                 }
                             }))
                     .withMessageContaining("is used in the initializer of field f");
@@ -445,7 +448,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
-                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var a = cb.declareMethod("a", PrimitiveToken.INT);
                                     var member6 = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
@@ -454,6 +457,7 @@ class ScopeChecksTest {
                                         return other.get();
                                     });
                                     bodies.define(member6, (_, _) -> other.get());
+                                    return bodies;
                                 }
                             }))
                     .withMessageContaining("handed back for the body of method b was issued by the body of method a");
@@ -472,7 +476,9 @@ class ScopeChecksTest {
                                 ClassDesc.of("me.supcheg.example", "Inner"),
                                 new TypedJavaFile.TypedClassSpec() {
                                     @Override
-                                    public <Self> void build(TypedClassBuilder<Self> cb) {}
+                                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                                        return Unreached.here();
+                                    }
                                 });
                         return b.return_(literal(0));
                     }))
@@ -486,7 +492,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> TypedJavaFile.class_(
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
-                                public <Self> void build(TypedClassBuilder<Self> cb) {
+                                public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var outer = cb.declareMethod("outer", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
                                     bodies.define(
@@ -495,6 +501,7 @@ class ScopeChecksTest {
                                                             literal(true),
                                                             _ -> cb.declareMethod("inner", PrimitiveToken.INT))
                                                     .return_(literal(0)));
+                                    return bodies;
                                 }
                             }))
                     .withMessageContaining("cannot declare int me.supcheg.example.Probe.inner()")
@@ -506,7 +513,7 @@ class ScopeChecksTest {
             List<TypedClassBuilder<?>> leaked = new ArrayList<>();
             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(cb -> {
                 leaked.add(cb);
-                cb.bodies();
+                return cb.bodies();
             }));
 
             assertThatIllegalStateException()

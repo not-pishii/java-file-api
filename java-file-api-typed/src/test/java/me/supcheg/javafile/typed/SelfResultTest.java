@@ -38,7 +38,7 @@ class SelfResultTest {
             throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 // Following next()
                 Upcast<Self, Following> asFollowing = h.becoming(Following_.TOKEN);
                 var next = h.overriding(Following_.next, asFollowing);
@@ -50,6 +50,7 @@ class SelfResultTest {
                 var bodies = cb.bodies();
                 bodies.define(next.method(), (b, self) -> b.return_(self));
                 bodies.define(twice, (b, self) -> b.return_(call(call(self, next.method()), next.method())));
+                return bodies;
             }
         }));
 
@@ -66,7 +67,7 @@ class SelfResultTest {
     void theMethodsOfASuperclassAreAnsweredWithTheClass() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 // abstract Copied copy(): the intention is what the proof takes, so the witness is a promise
                 var copy = h.overriding(Copied_.copy, h.becoming(Copied_.TOKEN));
                 var sh = h.extends_(Copied_.extend(h.self()).copy(copy));
@@ -81,6 +82,7 @@ class SelfResultTest {
                 bodies.define(same, (b, self) -> b.return_(self));
                 bodies.define(asSuper, (b, self, label) -> b.return_(self));
                 bodies.define(chain, (b, self) -> b.return_(call(call(self, copy.method()), same)));
+                return bodies;
             }
         }));
 
@@ -101,13 +103,15 @@ class SelfResultTest {
         // Linked next() of Chained has a body and is named first; that the class is a Linked is said before
         String source = file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var next = h.overriding(Linked_.next, h.becoming(Linked_.TOKEN));
                         var oh = h.extendsObject();
                         oh.implements_(Chained_.implement(h.self()));
                         oh.implements_(Linked_.implement(h.self()).next(next));
                         var cb = oh.members();
-                        cb.bodies().define(next.method(), (b, self) -> b.return_(self));
+                        var bodies = cb.bodies();
+                        bodies.define(next.method(), (b, self) -> b.return_(self));
+                        return bodies;
                     }
                 })
                 .render();
@@ -127,11 +131,11 @@ class SelfResultTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         h.becoming(Following_.TOKEN);
                         var oh = h.extendsObject();
                         oh.implements_(Runnable_.implement(h.self()).run(h.overriding(Runnable_.run)));
-                        oh.members().bodies();
+                        return oh.members().bodies();
                     }
                 }))
                 .withMessageContaining("class me.supcheg.example.Probe said it was about to be"
@@ -143,10 +147,11 @@ class SelfResultTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var oh = h.extendsObject();
-                        oh.members().bodies();
+                        var bodies = oh.members().bodies();
                         h.becoming(Following_.TOKEN);
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("the header of the class has ended");
@@ -160,10 +165,11 @@ class SelfResultTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         h.overriding(Linked_.next, h.becoming(Origin_.TOKEN));
                         var oh = h.extendsObject();
                         oh.implements_(Chained_.implement(h.self()));
+                        return Unreached.here();
                     }
                 }),
                 "cannot override next() of me.supcheg.javafile.typed.fixtures.Chained: its result is"
@@ -179,14 +185,16 @@ class SelfResultTest {
         // the implementation is typed by the supertype, for the step; its method by the class
         file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var next = h.overriding(Following_.next, h.becoming(Following_.TOKEN));
                 assertThat(next.method().result()).isSameAs(h.self());
                 assertThat(next.method().owner()).isSameAs(h.self());
                 var oh = h.extendsObject();
                 oh.implements_(Following_.implement(h.self()).next(next));
                 var cb = oh.members();
-                cb.bodies().define(next.method(), (b, self) -> b.return_(self));
+                var bodies = cb.bodies();
+                bodies.define(next.method(), (b, self) -> b.return_(self));
+                return bodies;
             }
         });
     }

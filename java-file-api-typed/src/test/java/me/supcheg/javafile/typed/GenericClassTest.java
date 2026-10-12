@@ -44,7 +44,7 @@ class GenericClassTest {
     void aContainerHoldsAValueOfItsTypeParameter() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
             @Override
-            public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+            public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var cb = h.extendsObject().members();
                 var item = cb.declareMutableField("item", t);
                 var ctor = cb.declareConstructor();
@@ -67,6 +67,7 @@ class GenericClassTest {
                                 new_(ctor),
                                 copy -> b.exec(voidCall(copy, put, call(self, get)))
                                         .return_(copy)));
+                return bodies;
             }
         }));
 
@@ -92,7 +93,8 @@ class GenericClassTest {
                 typeParam("N", Number_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
-                    public <Self, N extends Number> void build(ClassHeader<Self> h, TypeVarToken<N> n) {
+                    public <Self, N extends Number> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<N> n) {
                         var cb = h.extendsObject().members();
                         var item = cb.declareMethod("item", n, n);
                         // an expression of N is one of Number to the compiler of the generator
@@ -101,6 +103,7 @@ class GenericClassTest {
                         bodies.define(item, (b, self, value) -> b.return_(value));
                         bodies.define(
                                 asInt, (b, self, value) -> b.return_(call(call(self, item, value), Number_.intValue)));
+                        return bodies;
                     }
                 }));
 
@@ -117,7 +120,7 @@ class GenericClassTest {
     void aGenericClassExtendsAndImplementsTypesOfItsTypeParameterAndOfItself() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
             @Override
-            public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+            public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var carrier = new Carrier_<>(t);
                 var cmp = new Comparable_<>(h.self());
                 var compareTo = h.overriding(cmp.compareTo_T);
@@ -136,6 +139,7 @@ class GenericClassTest {
                         described, (b, self, other) -> b.return_(bodies.superCall(self, carrier.described_T, other)));
                 bodies.define(mine, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
                 bodies.define(same, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
+                return bodies;
             }
         }));
 
@@ -162,7 +166,8 @@ class GenericClassTest {
                 typeParam("T", Number_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
-                    public <Self, T extends Number> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T extends Number> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T> t) {
                         var comparable = new Comparable_<>(t);
                         Upcast<T, Comparable<T>> asComparable = h.bound(t, comparable.token);
                         var cb = h.extendsObject().members();
@@ -175,6 +180,7 @@ class GenericClassTest {
                                 (b, self, one, other) -> b.return_(ltInt(
                                         call(asComparable.apply(one), comparable.compareTo_T, other), literal(0))));
                         bodies.define(asInt, (b, self, one) -> b.return_(call(one, Number_.intValue)));
+                        return bodies;
                     }
                 }));
 
@@ -196,7 +202,7 @@ class GenericClassTest {
     void aBoundThatMentionsTheTypeParameterItselfIsAWitnessBesideObject() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
             @Override
-            public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+            public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var comparable = new Comparable_<>(t);
                 var asComparable = h.bound(t, comparable.token);
                 var cb = h.extendsObject().members();
@@ -211,6 +217,7 @@ class GenericClassTest {
                                 b.return_(call(asComparable.apply(one), comparable.compareTo_T, other)));
                 bodies.define(show, (b, self, one) -> b.return_(literal("T")));
                 bodies.define(member9, (b, self, one) -> b.return_(literal("Comparable")));
+                return bodies;
             }
         }));
 
@@ -232,7 +239,8 @@ class GenericClassTest {
                 typeParam("N", Number_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
-                    public <Self, N extends Number> void build(ClassHeader<Self> h, TypeVarToken<N> n) {
+                    public <Self, N extends Number> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<N> n) {
                         // Number get() of Supplier<Number>, answered by N get(): N is a Number by its bound
                         var numbers = new Supplier_<>(Number_.TOKEN);
                         var get = h.overriding(numbers.get, n);
@@ -241,6 +249,7 @@ class GenericClassTest {
                         var cb = oh.members();
                         var bodies = cb.bodies();
                         bodies.define(get.method(), (b, self) -> b.return_(literalNull(n)));
+                        return bodies;
                     }
                 }));
 
@@ -261,7 +270,7 @@ class GenericClassTest {
                 typeParam("C", new Comparable_<>(String_.TOKEN).token),
                 new TypedJavaFile.TypedGenericClassSpec3<>() {
                     @Override
-                    public <Self, A, B extends Number, C extends Comparable<String>> void build(
+                    public <Self, A, B extends Number, C extends Comparable<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
                         var cb = h.extendsObject().members();
                         var first = cb.declareMethod("first", a, a, b);
@@ -274,6 +283,7 @@ class GenericClassTest {
                                 third,
                                 (body, self, three) -> body.return_(
                                         call(three, new Comparable_<>(String_.TOKEN).compareTo_T, literal("b"))));
+                        return bodies;
                     }
                 }));
 
@@ -293,7 +303,8 @@ class GenericClassTest {
                 typeParam("Shape"),
                 new TypedJavaFile.TypedGenericClassSpec2<>() {
                     @Override
-                    public <Self, T1, T2> void build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
+                    public <Self, T1, T2> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
                         var cb = h.extendsObject().members();
                         var text = cb.declareMethod("text", String_.TOKEN, t1);
                         var shape = cb.declareMethod("shape", Shape_.TOKEN, t2);
@@ -302,6 +313,7 @@ class GenericClassTest {
                         bodies.define(text, (b, self, one) -> b.return_(literal("text")));
                         bodies.define(shape, (b, self, two) -> b.return_(literalNull(Shape_.TOKEN)));
                         bodies.define(own, (b, self, one) -> b.return_(one));
+                        return bodies;
                     }
                 }));
 

@@ -53,7 +53,7 @@ class UpcastLoweringTest {
     void aCallThroughAWitnessDoesNotReachTheOverloadOfTheClass() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // the class has equals(String) beside the equals(Object) it inherits
                 var equals = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
@@ -75,6 +75,7 @@ class UpcastLoweringTest {
                                                 literal("object"),
                                                 String_.TOKEN)),
                                 f -> b.return_(call(f, STRINGS.get))));
+                return bodies;
             }
         }));
 
@@ -87,7 +88,7 @@ class UpcastLoweringTest {
     void anArgumentThroughAWitnessIsOfTheSupertype() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 var which = cb.declareStaticMethod("which", String_.TOKEN, cb.self());
                 var whichObject = cb.declareStaticMethod("which", String_.TOKEN, Object_.TOKEN);
@@ -96,6 +97,7 @@ class UpcastLoweringTest {
                 bodies.define(which, (b, o) -> b.return_(literal("self")));
                 bodies.define(whichObject, (b, o) -> b.return_(literal("object")));
                 bodies.define(pick, (b, self) -> b.return_(staticCall(whichObject, up.apply(self))));
+                return bodies;
             }
         }));
 
@@ -107,7 +109,7 @@ class UpcastLoweringTest {
     void aWitnessedExpressionIsOfTheSupertypeWhereJavacChecksItsType() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // `(String) this` and `this == "x"` are no Java for a final class that is no String
                 var cast = cb.declareMethod("cast", String_.TOKEN);
@@ -133,6 +135,7 @@ class UpcastLoweringTest {
                                 Object_.equals_Object,
                                 literal("x"))));
                 bodies.define(equals, (b, self, s) -> b.return_(literal(true)));
+                return bodies;
             }
         }));
 
@@ -150,7 +153,7 @@ class UpcastLoweringTest {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
@@ -169,6 +172,7 @@ class UpcastLoweringTest {
                                         field(asBase.apply(self), Base_.op),
                                         String_.TOKEN,
                                         c -> c.case_(Op_.SUB, literal("sub")).default_(literal("other")))));
+                        return bodies;
                     }
                 }));
 
@@ -182,7 +186,7 @@ class UpcastLoweringTest {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
@@ -205,6 +209,7 @@ class UpcastLoweringTest {
                         bodies.define(
                                 pickedBySuper,
                                 (b, self) -> b.return_(bodies.superCall(self, Base_.pick_Object, literal("x"))));
+                        return bodies;
                     }
                 }));
 
@@ -221,7 +226,7 @@ class UpcastLoweringTest {
         // code is read, not compiled
         String source = file(new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         Upcast<Self, Signal> asSignal = new Upcast<>(cb.self(), Signal_.TOKEN);
                         var signal = cb.declareMethod("signal", String_.TOKEN);
                         var bodies = cb.bodies();
@@ -232,6 +237,7 @@ class UpcastLoweringTest {
                                         asSignal.apply(self),
                                         String_.TOKEN,
                                         c -> c.default_(literal("none")))));
+                        return bodies;
                     }
                 })
                 .render();
@@ -243,7 +249,7 @@ class UpcastLoweringTest {
     void anUnusedWitnessLeavesTheExpressionAsItIs() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // no overload of the class is in question: `this` stands as it is, no redundant cast
                 var me = cb.declareMethod("me", Object_.TOKEN);
@@ -251,6 +257,7 @@ class UpcastLoweringTest {
                 var bodies = cb.bodies();
                 bodies.define(me, (b, self) -> b.return_(up.apply(self)));
                 bodies.define(text, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
+                return bodies;
             }
         }));
 

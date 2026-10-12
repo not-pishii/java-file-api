@@ -43,7 +43,7 @@ class GenericInheritanceTest {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
-                    public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var carrier = new Carrier_<>(t);
                         var carrying = new Carrying_<>(t);
                         var sh = h.extends_(carrier.extend(h.self()));
@@ -54,6 +54,7 @@ class GenericInheritanceTest {
                         var go = cb.declareMethod("go", t);
                         var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
                         bodies.define(go, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
+                        return bodies;
                     }
                 }));
 
@@ -71,7 +72,7 @@ class GenericInheritanceTest {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
-                    public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var base = new BaseTwin_<>(t);
                         var sh = h.extends_(base.extend(h.self()));
                         var cb = sh.members();
@@ -84,6 +85,7 @@ class GenericInheritanceTest {
                                 go, (b, self, v) -> b.return_(call(cb.asSuper().apply(self), p, v)));
                         bodies.define(
                                 pub, (b, self, v) -> b.return_(call(cb.asSuper().apply(self), base.m_T, v)));
+                        return bodies;
                     }
                 }));
 
@@ -106,7 +108,7 @@ class GenericInheritanceTest {
                 typeParam("E", Op_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<Op>() {
                     @Override
-                    public <Self, E extends Op> void build(ClassHeader<Self> h, TypeVarToken<E> e) {
+                    public <Self, E extends Op> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<E> e) {
                         var cb = h.extendsObject().members();
                         var constructor = cb.declareConstructor();
                         var go = cb.declareMethod("go", PrimitiveToken.INT, e);
@@ -119,6 +121,7 @@ class GenericInheritanceTest {
                                         v,
                                         PrimitiveToken.INT,
                                         c -> c.case_(Op_.ADD, literal(1)).case_(Op_.SUB, literal(2)))));
+                        return bodies;
                     }
                 }));
 
@@ -139,7 +142,8 @@ class GenericInheritanceTest {
                 typeParam("T", CharSequence_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<CharSequence>() {
                     @Override
-                    public <Self, T extends CharSequence> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T extends CharSequence> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T> t) {
                         var label = h.overriding(Labelled_.label, t);
                         var oh = h.extendsObject();
                         oh.implements_(Labelled_.implement(h.self()).label(label));
@@ -153,6 +157,7 @@ class GenericInheritanceTest {
                                 constructor,
                                 (b, self, v) ->
                                         b.exec(assignField(self, held, v)).end());
+                        return bodies;
                     }
                 }));
 
@@ -172,7 +177,8 @@ class GenericInheritanceTest {
                 typeParam("T", Number_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<Number>() {
                     @Override
-                    public <Self, T extends Number> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T extends Number> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T> t) {
                         var consumer = new Consumer_<>(t);
                         var accept = h.overriding(consumer.accept_T);
                         var oh = h.extendsObject();
@@ -187,6 +193,7 @@ class GenericInheritanceTest {
                                 (b, self, v) -> b.exec(assignField(self, seen, call(v, Number_.intValue)))
                                         .end());
                         bodies.define(constructor, (b, self) -> b.end());
+                        return bodies;
                     }
                 }));
 

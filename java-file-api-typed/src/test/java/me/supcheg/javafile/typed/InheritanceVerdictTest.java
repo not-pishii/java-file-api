@@ -71,10 +71,11 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Texts_.implement(h.self()));
                             oh.implements_(Numbers_.implement(h.self()));
+                            return Unreached.here();
                         }
                     }),
                     "cannot inherit me.supcheg.javafile.typed.fixtures.Sourced<java.lang.String> and"
@@ -91,10 +92,11 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(new Sourced_<>(Integer_.TOKEN).implement(h.self()));
                             oh.implements_(Texts_.implement(h.self()));
+                            return Unreached.here();
                         }
                     }),
                     "a class has one parameterization of a generic type among its supertypes",
@@ -105,10 +107,11 @@ class InheritanceVerdictTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Texts_.implement(h.self()));
                             oh.implements_(new Sourced_<>(Integer_.TOKEN).implement(h.self()));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("a class has one parameterization of a generic type");
@@ -118,13 +121,14 @@ class InheritanceVerdictTest {
         void theSameArgumentsThroughTwoInterfacesAreOneSupertype() {
             String source = file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             Upcast<Self, Sourced<String>> asSourced =
                                     oh.implements_(new Sourced_<>(String_.TOKEN).implement(h.self()));
                             oh.implements_(Texts_.implement(h.self()));
-                            oh.members().bodies();
+                            var bodies = oh.members().bodies();
                             assertThat(asSourced.supertype()).isNotNull();
+                            return bodies;
                         }
                     })
                     .render();
@@ -140,10 +144,11 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(TakesTexts_.implement(h.self()));
                             oh.implements_(TakesNumbers_.implement(h.self()));
+                            return Unreached.here();
                         }
                     }),
                     "name clash, both erase to take(java.util.List) and neither overrides the other (JLS 8.4.8.3)",
@@ -159,13 +164,15 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
                             var cb = oh.members();
                             var size = cb.declareOverride(asCounted, Counted_.size);
-                            cb.bodies().define(size, (b, _) -> b.return_(literal(1)));
+                            var bodies = cb.bodies();
+                            bodies.define(size, (b, _) -> b.return_(literal(1)));
+                            return bodies;
                         }
                     }),
                     "cannot override size() of me.supcheg.javafile.typed.fixtures.Measured: its result is long, and"
@@ -178,11 +185,11 @@ class InheritanceVerdictTest {
                     IllegalStateException.class,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
-                            oh.members().bodies();
+                            return oh.members().bodies();
                         }
                     }),
                     "are unrelated methods with a body each",
@@ -196,11 +203,11 @@ class InheritanceVerdictTest {
             // Renamed overrides label() of Named: one body, no override wanted — to javac neither
             String source = file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Renamed_.implement(h.self()));
-                            oh.members().bodies();
+                            return oh.members().bodies();
                         }
                     })
                     .render();
@@ -215,13 +222,15 @@ class InheritanceVerdictTest {
             // the proof of Unnamed has the step: without it there is no proof, as there is no class to javac
             String source = file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var label = h.overriding(Unnamed_.label);
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Unnamed_.implement(h.self()).label(label));
                             var cb = oh.members();
-                            cb.bodies().define(label.method(), (b, _) -> b.return_(literal("mine")));
+                            var bodies = cb.bodies();
+                            bodies.define(label.method(), (b, _) -> b.return_(literal("mine")));
+                            return bodies;
                         }
                     })
                     .render();
@@ -278,12 +287,14 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                             var cb = oh.members();
                             var pick = cb.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
-                            cb.bodies().define(pick, (b, _, picked) -> b.return_(picked));
+                            var bodies = cb.bodies();
+                            bodies.define(pick, (b, _, picked) -> b.return_(picked));
+                            return bodies;
                         }
                     }),
                     "the method is generic, and the typed layer declares no generic method",
@@ -292,8 +303,9 @@ class InheritanceVerdictTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.overriding(Joiner_.pick_T(Object_.TOKEN));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("the method is generic");
@@ -302,12 +314,14 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Joiner_.implement(h.self()));
                             var cb = oh.members();
                             var pick = cb.declareMethod("pick", Object_.TOKEN, Object_.TOKEN);
-                            cb.bodies().define(pick, (b, _, picked) -> b.return_(picked));
+                            var bodies = cb.bodies();
+                            bodies.define(pick, (b, _, picked) -> b.return_(picked));
+                            return bodies;
                         }
                     }),
                     "The inherited method is generic, and the typed layer declares no generic method: the class"
@@ -332,8 +346,9 @@ class InheritanceVerdictTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             extendsBase(h).implements_(Useful_.implement(h.self()));
+                            return Unreached.here();
                         }
                     }),
                     "one is static and the other an instance method of the same signature",
@@ -352,12 +367,12 @@ class InheritanceVerdictTest {
                     IllegalStateException.class,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             sh.implements_(Local_.implement(h.self()));
                             var cb = sh.members();
                             var constructor = cb.declareConstructor();
-                            cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            return cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "IllegalAccessError",
@@ -365,28 +380,30 @@ class InheritanceVerdictTest {
                     "");
             CompiledClasses overridden = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = extendsBase(h);
                     Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
                     var sh109 = sh;
                     var cb = sh109.members();
                     var constructor = cb.declareConstructor();
                     var local = cb.declareOverride(asLocal, Local_.local);
-                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                            .define(local, (b, _) -> b.return_(literal("mine")));
+                    var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    bodies.define(local, (b, _) -> b.return_(literal("mine")));
+                    return bodies;
                 }
             }));
             assertThat(overridden.invoke("local")).isEqualTo("mine");
 
             CompiledClasses declared = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = extendsBase(h);
                     var cb = sh.members();
                     var constructor = cb.declareConstructor();
                     var local = cb.declareMethod("local", String_.TOKEN);
-                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                            .define(local, (b, self) -> b.return_(literal("named")));
+                    var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    bodies.define(local, (b, self) -> b.return_(literal("named")));
+                    return bodies;
                 }
             }));
             assertThat(declared.invoke("local")).isEqualTo("named");
@@ -400,8 +417,9 @@ class InheritanceVerdictTest {
                     .isThrownBy(() -> TypedJavaFile.declareClass(
                             UnsafeFacts.unverifiedClasspath(), near, new TypedJavaFile.TypedClassHeaderSpec() {
                                 @Override
-                                public <Self> void build(ClassHeader<Self> h) {
+                                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                                     extendsBase(h).implements_(Local_.implement(h.self()));
+                                    return Unreached.here();
                                 }
                             }))
                     .withMessageContaining("the first has package access");
@@ -416,13 +434,15 @@ class InheritanceVerdictTest {
                     .isThrownBy(() -> TypedJavaFile.declareClass(
                             UnsafeFacts.unverifiedClasspath(), near, new TypedJavaFile.TypedClassHeaderSpec() {
                                 @Override
-                                public <Self> void build(ClassHeader<Self> h) {
+                                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                                     var sh = extendsBase(h);
                                     var cb = sh.members();
                                     var constructor = cb.declareConstructor();
                                     var local = cb.declareMethod("local", String_.TOKEN);
-                                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                                            .define(local, (b, self) -> b.return_(literal("")));
+                                    var bodies = cb.bodies(
+                                            constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                                    bodies.define(local, (b, self) -> b.return_(literal("")));
+                                    return bodies;
                                 }
                             }))
                     .withMessageContaining("a method declared by its name overrides nothing");
@@ -443,12 +463,12 @@ class InheritanceVerdictTest {
                     IllegalStateException.class,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Mid_.extend(h.self()));
                             sh.implements_(Defaulted_.implement(h.self()));
                             var cb = sh.members();
                             var constructor = cb.declareConstructor();
-                            cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                            return cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "cannot stand for label() of me.supcheg.javafile.typed.fixtures.Defaulted: its result is not"
@@ -462,7 +482,7 @@ class InheritanceVerdictTest {
             // final String sealed() of Base, default String sealed() of Sealing: the class wins, as to javac
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = extendsBase(h);
                     Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
                     var cb = sh.members();
@@ -470,21 +490,23 @@ class InheritanceVerdictTest {
                     var go = cb.declareMethod("go", String_.TOKEN);
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     bodies.define(go, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
+                    return bodies;
                 }
             }));
             assertThat(compiled.invoke("go")).isEqualTo("base");
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
                             var sh122 = sh;
                             var cb = sh122.members();
                             var constructor = cb.declareConstructor();
                             var own125 = cb.declareOverride(asSealing, Sealing_.sealed);
-                            cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                                    .define(own125, (b, _) -> b.return_(literal("")));
+                            var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            bodies.define(own125, (b, _) -> b.return_(literal("")));
+                            return bodies;
                         }
                     }))
                     .withMessageContaining("the method is final (JLS 8.4.3.3)");

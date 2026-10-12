@@ -49,7 +49,7 @@ class NarrowedCallTest {
     void theTypeOfTheFactIsKeptWhereItDecides() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var get = h.overriding(Origin_.get, String_.TOKEN);
                 var oh = h.extendsObject();
                 Upcast<Self, Origin> asOrigin =
@@ -108,6 +108,7 @@ class NarrowedCallTest {
                                                 call(asOrigin.apply(self), Origin_.each),
                                                 (loop, _, _) -> loop.exec(assign(n, addInt(n, literal(1)))))
                                         .return_(n)));
+                return bodies;
             }
         }));
 
@@ -131,7 +132,7 @@ class NarrowedCallTest {
                 IllegalStateException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Maker_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
@@ -139,6 +140,7 @@ class NarrowedCallTest {
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                         bodies.define(f, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
+                        return bodies;
                     }
                 }),
                 "bind the result to a variable with let first",
@@ -147,7 +149,7 @@ class NarrowedCallTest {
 
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Maker_.extend(h.self()));
                 var cb = sh.members();
                 var constructor = cb.declareConstructor();
@@ -158,6 +160,7 @@ class NarrowedCallTest {
                         f,
                         (b, self) -> b.let(
                                 RuntimeException_.TOKEN, call(cb.asSuper().apply(self), fault), e -> b.throw_(e)));
+                return bodies;
             }
         }));
 
@@ -172,13 +175,15 @@ class NarrowedCallTest {
         // Object next() of Linked, answered by Probe next(); Linked next() of Chained has a body
         String source = file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var next = h.overriding(Linked_.next, h.self());
                         var oh = h.extendsObject();
                         oh.implements_(Linked_.implement(h.self()).next(next));
                         oh.implements_(Chained_.implement(h.self()));
                         var cb = oh.members();
-                        cb.bodies().define(next.method(), (b, self) -> b.return_(self));
+                        var bodies = cb.bodies();
+                        bodies.define(next.method(), (b, self) -> b.return_(self));
+                        return bodies;
                     }
                 })
                 .render();
@@ -197,10 +202,11 @@ class NarrowedCallTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         h.overriding(Linked_.next, h.self());
                         var oh = h.extendsObject();
                         oh.implements_(Chained_.implement(h.self()));
+                        return Unreached.here();
                     }
                 }),
                 "cannot override next() of me.supcheg.javafile.typed.fixtures.Chained: its result is"

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -58,7 +57,7 @@ class LambdaChecksTest {
             "local variables referenced from a lambda expression must be final or effectively final";
 
     /// Declares the class `Probe` with the given members.
-    private static JavaFile declare(Consumer<TypedClassBuilder<Object>> members) {
+    private static JavaFile declare(Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members) {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
@@ -68,6 +67,7 @@ class LambdaChecksTest {
             var m = cb.declareVoidStaticMethod("m");
             var bodies = cb.bodies();
             bodies.define(m, body);
+            return bodies;
         });
     }
 
@@ -164,6 +164,7 @@ class LambdaChecksTest {
                                                                                 () -> lambda(INTS.sam, () -> each)),
                                                                         _ -> loop))
                                                         .end())));
+                        return bodies;
                     }),
                     """
                     static void m(List<Integer> list) {
@@ -238,6 +239,7 @@ class LambdaChecksTest {
                             });
                             return b.return_(escaped.get());
                         });
+                        return bodies;
                     }))
                     .withMessageContaining("the lambda parameter of type java.lang.Integer declared in the lambda"
                             + " body in body of static method m is used in the body of static method m, which is"
@@ -273,6 +275,7 @@ class LambdaChecksTest {
                                                     return t;
                                                 }))
                                         .return_(escaped.get()));
+                        return bodies;
                     }))
                     .withMessageContaining("a lambda built in the then-branch of if_ in body of static method m is"
                             + " used in the body of static method m, which is not inside that block: the variables"
@@ -313,6 +316,7 @@ class LambdaChecksTest {
                                     elsewhere, () -> elsewhere.return_(box(PrimitiveToken.INT, literal(1))));
                             return b.return_(lambdaBlock(INTS.sam, _ -> other));
                         });
+                        return bodies;
                     }))
                     .withMessageContaining("the Terminated token handed back for the lambda body in body of static"
                             + " method m was issued by the body of another method");
@@ -356,6 +360,7 @@ class LambdaChecksTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 m, b -> b.let(INTS.token, lambda(INTS.sam, LambdaChecksTest::read), _ -> b.end()));
+                        return bodies;
                     }),
                     "the method of the functional interface of the lambda does not declare",
                     "static void m() throws IOException { Supplier<Integer> s = () -> new StringReader(\"a\").read(); }",
@@ -440,6 +445,7 @@ class LambdaChecksTest {
                         var f = cb.declareField("f", INTS.token);
                         var bodies = cb.bodies();
                         bodies.initialize(f, lambda(INTS.sam, LambdaChecksTest::read));
+                        return bodies;
                     }),
                     "in the lambda body can throw the checked exception java.io.IOException",
                     "Supplier<Integer> f = () -> new StringReader(\"a\").read();",
@@ -449,6 +455,7 @@ class LambdaChecksTest {
                         var f = cb.declareField("f", INT_CALL.token);
                         var bodies = cb.bodies();
                         bodies.initialize(f, lambda(INT_CALL.sam, LambdaChecksTest::read));
+                        return bodies;
                     }),
                     "Callable<Integer> f = () -> new StringReader(\"a\").read();");
         }

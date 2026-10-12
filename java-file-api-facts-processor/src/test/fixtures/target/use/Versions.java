@@ -18,6 +18,8 @@ import me.supcheg.javafile.facts.processor.harness.Typed;
 import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.Expr;
 import me.supcheg.javafile.typed.TypedJavaFile;
+import me.supcheg.javafile.typed.MemberBodies;
+import me.supcheg.javafile.typed.TypedClassBodies;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 
 import static me.supcheg.javafile.typed.Expressions.call;
@@ -153,11 +155,13 @@ public final class Versions {
     /// A class `out.Out` that implements `p.Fn` by the proof of `Fn_`, with its one step.
     private static final TypedJavaFile.TypedClassHeaderSpec IMPLEMENTS_FN = new TypedJavaFile.TypedClassHeaderSpec() {
         @Override
-        public <Self> void build(ClassHeader<Self> h) {
+        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
             var apply = h.overriding(Fn_.apply_String);
             var oh = h.extendsObject();
             oh.implements_(Fn_.implement(h.self()).apply_String(apply));
-            oh.members().bodies().define(apply.method(), (b, self, s) -> b.return_(s));
+            var bodies = oh.members().bodies();
+            bodies.define(apply.method(), (b, self, s) -> b.return_(s));
+            return bodies;
         }
     };
 
@@ -165,21 +169,21 @@ public final class Versions {
     private static final TypedJavaFile.TypedClassHeaderSpec IMPLEMENTS_MARKER =
             new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var oh = h.extendsObject();
                     oh.implements_(Marker_.implement(h.self()));
-                    oh.members().bodies();
+                    return oh.members().bodies();
                 }
             };
 
     private static final TypedJavaFile.TypedClassHeaderSpec EXTENDS_SVC =
             new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Svc_.extend(h.self()));
                     var cb = sh.members();
                     var make = cb.declareConstructor();
-                    cb.bodies(make, ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
+                    return cb.bodies(make, ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
                 }
             };
 
@@ -382,10 +386,11 @@ public final class Versions {
         String source = TypedJavaFile.class_(
                         UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                             @Override
-                            public <Self> void build(TypedClassBuilder<Self> cb) {
+                            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                 var go = cb.declareStaticMethod("go", String_.TOKEN, String_.TOKEN);
                                 var bodies = cb.bodies();
                                 bodies.define(go, (b, s) -> b.return_(m(s)));
+                                return bodies;
                             }
                         })
                 .render();

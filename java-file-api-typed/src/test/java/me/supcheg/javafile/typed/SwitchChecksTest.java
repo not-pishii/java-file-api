@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
@@ -51,7 +52,7 @@ class SwitchChecksTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
 
     /// Declares the class `Probe` with the given members.
-    private static JavaFile declare(Consumer<TypedClassBuilder<Object>> members) {
+    private static JavaFile declare(Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members) {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
@@ -61,6 +62,7 @@ class SwitchChecksTest {
             var m = cb.declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
             var bodies = cb.bodies();
             bodies.define(m, body);
+            return bodies;
         });
     }
 
@@ -319,6 +321,7 @@ class SwitchChecksTest {
                                 m,
                                 (b, s) -> b.return_(
                                         switch_(Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(literal(1)))));
+                        return bodies;
                     }),
                     "switch_ of type java.lang.Object has a result of type int: switch_ does not mix primitive and"
                             + " reference results",
@@ -332,6 +335,7 @@ class SwitchChecksTest {
                                 m,
                                 (b, s) -> b.return_(switch_(
                                         Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))));
+                        return bodies;
                     }),
                     "switch_ of type java.lang.Object has a result of type int",
                     "static Object m(Signal s) { return switch (s) { default -> { yield 1; } }; }");
@@ -474,6 +478,7 @@ class SwitchChecksTest {
                                         Expressions.enumConstant(Signal_.RED),
                                         PrimitiveToken.INT,
                                         c -> c.default_(y -> y.yield_(read()))));
+                        return bodies;
                     }),
                     "int java.io.StringReader.read() in the block of default_ of switch_ can throw the checked"
                             + " exception java.io.IOException, which no catch_ of an enclosing try catches and"

@@ -69,8 +69,9 @@ class NegativeCompileTest {
         return """
                 void use() {
                     TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassSpec() {
-                        public <Self> void build(TypedClassBuilder<Self> cb) {
+                        public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                             %s
+                            return null;
                         }
                     });
                 }
@@ -382,10 +383,10 @@ class NegativeCompileTest {
                 """
                 void use() {
                     TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
-                        public <A> void build(TypedClassBuilder<A> a) {
+                        public <A> TypedClassBodies<A> build(TypedClassBuilder<A> a) {
                             var x = a.declareField("x", PrimitiveToken.INT);
                             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
-                                public <B> void build(TypedClassBuilder<B> b) {
+                                public <B> TypedClassBodies<B> build(TypedClassBuilder<B> b) {
                                     b.bodies().define(b.declareMethod("m", PrimitiveToken.INT), (body, self) -> body.return_(field(self, x)));
                                 }
                             });
@@ -399,6 +400,67 @@ class NegativeCompileTest {
                 "lower bounds: B");
     }
 
+    /// A specification of a class `fixtures.Generated` that extends `Object`, whole: `%s` is the
+    /// return type and the body of its `build`.
+    private static String specification(String returning, String body) {
+        return """
+                void use() {
+                    TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassHeaderSpec() {
+                        public <Self> %s build(ClassHeader<Self> h) {
+                            %s
+                        }
+                    });
+                }
+                """.formatted(returning, body);
+    }
+
+    @Test
+    void aSpecificationReturnsTheBodiesOfItsMembers() {
+        // that a header came to its members and the members to their bodies is the return type of build
+        assertThat(compile(
+                        "ComesToTheBodies",
+                        specification("MemberBodies<Self, ?>", "return h.extendsObject().members().bodies();")))
+                .succeeded();
+        // javac tells it twice: the method does not implement that of the specification, and the class has none
+        assertThat(compile("ReturnsNothing", specification("void", "h.extendsObject().members().bodies();")))
+                .hadErrorContaining(
+                        "return type void is not compatible with me.supcheg.javafile.typed.MemberBodies<Self,?>");
+        assertRejected(
+                "EndsInItsHeader",
+                specification("MemberBodies<Self, ?>", "return h.extendsObject();"),
+                "incompatible types: me.supcheg.javafile.typed.ObjectHeader<Self> cannot be converted to"
+                        + " me.supcheg.javafile.typed.MemberBodies<Self,?>");
+        assertRejected(
+                "EndsInItsDeclarations",
+                specification("MemberBodies<Self, ?>", "return h.extendsObject().members();"),
+                "incompatible types: me.supcheg.javafile.typed.TypedClassBuilder<Self> cannot be converted to"
+                        + " me.supcheg.javafile.typed.MemberBodies<Self,?>");
+        assertRejected("SaysNothing", specification("MemberBodies<Self, ?>", ""), "missing return statement");
+    }
+
+    @Test
+    void aSpecificationReturnsTheBodiesOfItsOwnClass() {
+        assertRejected(
+                "ForeignBodies",
+                """
+                void use() {
+                    TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
+                        public <A> TypedClassBodies<A> build(TypedClassBuilder<A> a) {
+                            var bodies = a.bodies();
+                            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
+                                public <B> TypedClassBodies<B> build(TypedClassBuilder<B> b) {
+                                    return bodies;
+                                }
+                            });
+                            return bodies;
+                        }
+                    });
+                }
+                """,
+                "incompatible types: me.supcheg.javafile.typed.TypedClassBodies<A> cannot be converted to"
+                        + " me.supcheg.javafile.typed.TypedClassBodies<B>");
+    }
+
     @Test
     void aMemberOfAnotherClassCannotBeDefined() {
         assertRejected(
@@ -406,10 +468,10 @@ class NegativeCompileTest {
                 """
                 void use() {
                     TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
-                        public <A> void build(TypedClassBuilder<A> a) {
+                        public <A> TypedClassBodies<A> build(TypedClassBuilder<A> a) {
                             var m = a.declareMethod("m", PrimitiveToken.INT);
                             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
-                                public <B> void build(TypedClassBuilder<B> b) {
+                                public <B> TypedClassBodies<B> build(TypedClassBuilder<B> b) {
                                     b.bodies().define(m, (body, self) -> body.return_(literal(1)));
                                 }
                             });
@@ -508,8 +570,9 @@ class NegativeCompileTest {
         return """
                 void use() {
                     TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), TypedJavaFile.typeParam("N", Number_.TOKEN), new TypedJavaFile.TypedGenericClassSpec1<Number>() {
-                        public <Self, N extends Number> void build(ClassHeader<Self> h, TypeVarToken<N> n) {
+                        public <Self, N extends Number> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<N> n) {
                             %s
+                            return null;
                         }
                     });
                 }
@@ -566,8 +629,9 @@ class NegativeCompileTest {
         return """
                 void use() {
                     TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Generated"), new TypedJavaFile.TypedClassHeaderSpec() {
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             %s
+                            return null;
                         }
                     });
                 }
