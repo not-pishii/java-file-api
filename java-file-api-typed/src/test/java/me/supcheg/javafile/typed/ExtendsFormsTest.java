@@ -267,7 +267,7 @@ class ExtendsFormsTest {
                                                 Base_.TOKEN, "local", String_.TOKEN, MemberTraits.OVERRIDABLE))));
                     }
                 }),
-                "the method has package access",
+                "has no method local() that is a member to class me.supcheg.example.Probe",
                 "extends Base",
                 "public String m() { return super.local(); }",
                 "cannot be accessed from outside package");

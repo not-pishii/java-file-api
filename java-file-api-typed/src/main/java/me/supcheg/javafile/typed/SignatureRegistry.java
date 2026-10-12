@@ -48,10 +48,11 @@ import java.util.stream.Stream;
 ///   8.4.8.3). Each is held against every method the class inherits under
 ///   the signature, not the one the override names alone.
 ///
-/// When the declaration is complete ([#requireComplete()]): a method two
-/// unrelated supertypes give a body each is overridden (JLS 8.4.8.4,
-/// 9.4.1.3 — and stricter than javac where one of the bodies is that of a
-/// class), and a class that overrides `equals` overrides `hashCode`.
+/// When the declaration is complete ([#requireComplete()]): methods the
+/// class cannot have together without one of its own — the bodies of two
+/// unrelated interfaces, a method of the superclass that cannot stand for the
+/// default one of an interface — are overridden (JLS 8.4.8.4, 9.4.1.3), and
+/// a class that overrides `equals` overrides `hashCode`.
 final class SignatureRegistry {
     private static final MethodSignature EQUALS = new MethodSignature("equals", List.of(ConstantDescs.CD_Object));
     private static final MethodSignature HASH_CODE = new MethodSignature("hashCode", List.of());
@@ -141,18 +142,20 @@ final class SignatureRegistry {
 
     /// Why a method declared by name cannot have the signature of an inherited one.
     private String declaredOverInherited(Invocable member, Inheritance.Group group) {
-        Inheritance.Entry entry = group.entries().getFirst();
-        if (member.kind() == InvocableKind.STATIC_METHOD && !entry.isStatic()) {
+        Inheritance.Entry entry = group.stands();
+        Heritage.Dispatch standing = group.standing();
+        if (member.kind() == InvocableKind.STATIC_METHOD && standing != Heritage.Dispatch.STATIC) {
             return "the static method " + member + " of " + owner + " would hide the instance method " + entry
                     + ", which a static method cannot (JLS 8.4.8.2)";
         }
-        return switch (entry.method().dispatch()) {
+        return switch (standing) {
             case FINAL ->
                 "the method " + member + " of " + owner + " would override the final method " + entry
                         + " (JLS 8.4.3.3)";
             case STATIC ->
                 "the method " + member + " of " + owner + " has the signature of the static method " + entry
-                        + ": the typed layer declares no method that hides or would override a static one"
+                        + ", which the class has from its superclass: an instance method cannot override a"
+                        + " static one, and the typed layer declares no static method that hides one"
                         + " (JLS 8.4.8.1, 8.4.8.2)";
             case ABSTRACT, DEFAULT, CONCRETE ->
                 "the method " + member + " of " + owner + " has the signature of " + entry
@@ -234,8 +237,9 @@ final class SignatureRegistry {
     private static Optional<String> byVisibility(Inheritance.Member method) {
         return switch (method.visibility()) {
             case PACKAGE ->
-                Optional.of("the method has package access, and the typed layer does not tell whether the"
-                        + " class is in its package (JLS 8.4.8.1)");
+                Optional.of("the method has package access and the class is in its package: whether the class"
+                        + " inherits it, and so overrides it, depends on the packages of the classes between"
+                        + " (JLS 8.4.8.1), which the typed layer does not tell");
             case PUBLIC, PROTECTED -> Optional.empty();
         };
     }
@@ -326,18 +330,20 @@ final class SignatureRegistry {
 
     /// Rejects a complete declaration that leaves undone what only a method of the class can do.
     ///
-    /// @throws IllegalStateException if a method two unrelated supertypes give a body each is not
-    ///     overridden, or `equals` is overridden and `hashCode` is not
+    /// @throws IllegalStateException if the methods the class inherits under a signature cannot be had
+    ///     together ([Inheritance.Group#unsettled()]) and the class does not override them, or `equals` is
+    ///     overridden and `hashCode` is not
     void requireComplete() {
         inherited
                 .groups()
-                .filter(group -> group.bodies().size() > 1 && !overrides.contains(group.signature()))
+                .filter(group -> !overrides.contains(group.signature()))
+                .flatMap(group -> group.unsettled().stream())
                 .findFirst()
-                .ifPresent(group -> {
-                    throw new IllegalStateException("the declaration of " + owner + " is complete, but it inherits "
-                            + group.bodies().stream().map(Object::toString).collect(Collectors.joining(" and "))
-                            + ", unrelated methods with a body each, and overrides neither: a class that has"
-                            + " a method from several supertypes overrides it (JLS 8.4.8.4, 9.4.1.3)");
+                .ifPresent(why -> {
+                    throw new IllegalStateException("the declaration of " + owner + " is complete, but it inherits"
+                            + " methods it cannot have together and overrides none of them: " + why
+                            + " — a class that has a method from several supertypes that do not agree on it"
+                            + " overrides it");
                 });
         if (overrides.contains(EQUALS) && !overrides.contains(HASH_CODE)) {
             throw new IllegalStateException("the declaration of " + owner + " is complete, and it overrides"
@@ -347,19 +353,27 @@ final class SignatureRegistry {
     }
 
     /// The methods of the class: the instance methods declared and those inherited, and the
-    /// `static` ones. The class is final, so no method is abstract.
+    /// `static` ones, declared and inherited from the superclass — javac takes both kinds for the
+    /// candidates of a call on a value of the class (JLS 15.12.2.1). The class is final, so no
+    /// method is abstract.
     MethodTable table() {
         Map<Boolean, Set<MethodSignature>> declared = methods.entrySet().stream()
                 .collect(Collectors.partitioningBy(
                         e -> e.getValue().kind() == InvocableKind.INSTANCE_METHOD,
                         Collectors.mapping(Map.Entry::getKey, Collectors.toSet())));
-        Set<MethodSignature> concrete = Stream.concat(
-                        declared.get(true).stream(),
-                        inherited
-                                .groups()
-                                .filter(group -> group.entries().stream().noneMatch(Inheritance.Entry::isStatic))
-                                .map(Inheritance.Group::signature))
-                .collect(Collectors.toSet());
-        return new MethodTable(Set.of(), concrete, declared.get(false));
+        Map<Boolean, Set<MethodSignature>> had = inherited
+                .groups()
+                .collect(Collectors.partitioningBy(
+                        group -> switch (group.standing()) {
+                            case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
+                            case STATIC -> false;
+                        },
+                        Collectors.mapping(Inheritance.Group::signature, Collectors.toSet())));
+        return new MethodTable(
+                Set.of(),
+                Stream.concat(declared.get(true).stream(), had.get(true).stream())
+                        .collect(Collectors.toSet()),
+                Stream.concat(declared.get(false).stream(), had.get(false).stream())
+                        .collect(Collectors.toSet()));
     }
 }

@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.CompilationSubject;
+import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.Base;
@@ -14,9 +15,11 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Counted_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Defaulted_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Joiner_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Local_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Measured_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Mid_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Named_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Numbers_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Renamed_;
@@ -32,6 +35,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
@@ -179,7 +184,7 @@ class InheritanceVerdictTest {
                             oh.body();
                         }
                     }),
-                    "unrelated methods with a body each, and overrides neither",
+                    "are unrelated methods with a body each",
                     "implements Counted, Measured",
                     "",
                     "both define size(), but with unrelated return types");
@@ -231,15 +236,18 @@ class InheritanceVerdictTest {
     ///
     /// Of a class with a superclass, each held against javac where it is told:
     ///
-    /// - a method the superclass and an interface give a body each is overridden, where javac
-    ///   takes that of the class — `ExtendsTest.Inheriting`
-    ///   (`aMethodTheSuperclassAndAnInterfaceGiveABodyEachIsOverridden`); so a `final` method of
-    ///   the superclass beside a default one leaves no class to declare
-    ///   ([OfASuperclass#aFinalMethodOfTheSuperclassDoesNotStandForADefaultOne]);
-    /// - a method of package access of the superclass is neither overridden nor declared over,
-    ///   whatever the package of the class ([OfASuperclass#aMethodWithPackageAccessIsNotOverridden],
-    ///   `ExtendsTest.Inheriting.aMethodDeclaredByTheNameOfOneOfTheSuperclassIsRejected`), nor
-    ///   called as `super.m()`; a `static` one is not called through `super`
+    /// - the method of the superclass stands for the default one of an interface, as to javac
+    ///   (`ExtendsTest.Inheriting.theMethodOfTheSuperclassStandsForTheDefaultOneOfAnInterface`,
+    ///   [OfASuperclass#aFinalMethodOfTheSuperclassStandsForADefaultOne]) — where it is `public`,
+    ///   of the very result and of no exception the other does not write: a narrower result or an
+    ///   unchecked exception javac would let stand is for an override to settle
+    ///   ([OfASuperclass#aMethodOfTheSuperclassOfANarrowerResultIsOverriddenToStandForADefaultOne]);
+    /// - a method of package access of a superclass is none to a class of another package, as to
+    ///   javac ([OfASuperclass#aMethodWithPackageAccessIsNoMemberOfAClassOfAnotherPackage]); in
+    ///   its package it is neither overridden nor declared over nor had beside one of an
+    ///   interface, whatever the packages of the classes between
+    ///   ([OfASuperclass#aMethodWithPackageAccessIsNotOverriddenInItsPackage]); a `static` one
+    ///   is not called through `super`
     ///   ([ExtendsFormsTest#superCallsAMethodTheClassReachesAndAnInstanceOne]);
     /// - the result of an override, and of a method of the superclass that stands for one of an
     ///   interface, is a subtype of the result of every method of the signature only where the
@@ -336,42 +344,118 @@ class InheritanceVerdictTest {
         }
 
         @Test
-        void aMethodWithPackageAccessIsNotOverridden() {
-            // stricter than javac, which goes by the package of the class: to a class of another
-            // package the method of Base is no member, and the one of the interface is overridden
-            classUnlikeJavac(
-                    AT_THE_PLACE,
-                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> void build(ClassHeader<Self> h) {
-                            var sh = extendsBase(h);
-                            Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
-                            began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                                    .override(asLocal, Local_.local, (b, _) -> b.return_(literal("")));
-                        }
-                    }),
-                    "the method has package access",
-                    "extends Base implements Local",
-                    "@Override public String local() { return \"\"; }");
-        }
-
-        @Test
-        void aFinalMethodOfTheSuperclassDoesNotStandForADefaultOne() {
-            // javac takes the method of the class for that of the interface; the typed layer has a
-            // class that gets a body from each say which it is, and a final method cannot be said
+        void aMethodWithPackageAccessIsNoMemberOfAClassOfAnotherPackage() throws Throwable {
+            // String local() of Base has package access: to a class of another package it is no member,
+            // and the default one of Local is overridden, or a method is declared by its name
+            // — it has to be: javac compiles the class that has neither, and where it runs a call of
+            // local() is an IllegalAccessError, the virtual machine selecting the method of Base
             classUnlikeJavac(
                     IllegalStateException.class,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
-                            sh.implements_(Sealing_.implement(h.self()));
+                            sh.implements_(Local_.implement(h.self()));
                             began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
-                    "unrelated methods with a body each, and overrides neither",
-                    "extends Base implements Sealing",
+                    "IllegalAccessError",
+                    "extends Base implements Local",
                     "");
+            CompiledClasses overridden = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    var sh = extendsBase(h);
+                    Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
+                    began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                            .override(asLocal, Local_.local, (b, _) -> b.return_(literal("mine")));
+                }
+            }));
+            assertThat(overridden.invoke("local")).isEqualTo("mine");
+
+            CompiledClasses declared = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    began(extendsBase(h), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                            .method("local", String_.TOKEN, (b, self) -> b.return_(literal("named")));
+                }
+            }));
+            assertThat(declared.invoke("local")).isEqualTo("named");
+        }
+
+        @Test
+        void aMethodWithPackageAccessIsNotOverriddenInItsPackage() {
+            ClassDesc near = ClassDesc.of("me.supcheg.javafile.typed.fixtures", "Probe");
+            // as javac: there the class inherits the method of Base, which is not public as that of Local is
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> TypedJavaFile.declareClass(
+                            UnsafeFacts.unverifiedClasspath(), near, new TypedJavaFile.TypedClassHeaderSpec() {
+                                @Override
+                                public <Self> void build(ClassHeader<Self> h) {
+                                    extendsBase(h).implements_(Local_.implement(h.self()));
+                                }
+                            }))
+                    .withMessageContaining("the first has package access");
+            CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
+                            .compile(JavaFileObjects.forSourceString(
+                                    "me.supcheg.javafile.typed.fixtures.Probe",
+                                    "package me.supcheg.javafile.typed.fixtures;\n"
+                                            + "public final class Probe extends Base implements Local {}\n")))
+                    .hadErrorContaining("attempting to assign weaker access privileges; was public");
+            // stricter than javac, which lets a class of the package override the method
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> TypedJavaFile.declareClass(
+                            UnsafeFacts.unverifiedClasspath(), near, new TypedJavaFile.TypedClassHeaderSpec() {
+                                @Override
+                                public <Self> void build(ClassHeader<Self> h) {
+                                    began(extendsBase(h), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                                            .method("local", String_.TOKEN, (b, self) -> b.return_(literal("")));
+                                }
+                            }))
+                    .withMessageContaining("a method declared by its name overrides nothing");
+            CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
+                            .compile(JavaFileObjects.forSourceString(
+                                    "me.supcheg.javafile.typed.fixtures.Probe",
+                                    "package me.supcheg.javafile.typed.fixtures;\n"
+                                            + "public final class Probe extends Base {"
+                                            + " @Override public String local() { return \"\"; } }\n")))
+                    .succeeded();
+        }
+
+        @Test
+        void aMethodOfTheSuperclassOfANarrowerResultIsOverriddenToStandForADefaultOne() {
+            // stricter than javac, which takes String label() of Mid for CharSequence label(): the typed
+            // layer proves a subtype by the fact of a method, and no method of the class is there
+            classUnlikeJavac(
+                    IllegalStateException.class,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var sh = h.extends_(Mid_.extend(h.self()));
+                            sh.implements_(Defaulted_.implement(h.self()));
+                            began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                        }
+                    }),
+                    "cannot stand for label() of me.supcheg.javafile.typed.fixtures.Defaulted: its result is not"
+                            + " the one the other has",
+                    "extends Mid implements Defaulted",
+                    "");
+        }
+
+        @Test
+        void aFinalMethodOfTheSuperclassStandsForADefaultOne() throws Throwable {
+            // final String sealed() of Base, default String sealed() of Sealing: the class wins, as to javac
+            CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    var sh = extendsBase(h);
+                    Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
+                    var cb = began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    cb.method(
+                            "go", String_.TOKEN, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
+                }
+            }));
+            assertThat(compiled.invoke("go")).isEqualTo("base");
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override

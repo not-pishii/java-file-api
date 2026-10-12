@@ -243,16 +243,40 @@ public final class TypedJavaFile {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
         ClassDeclaration.Declared declared = declare(target, desc, parameters, spec);
-        return JavaFile.class_(desc, cb -> {
-            cb.withModifiers(Modifier.FINAL);
-            declared.typeParams().forEach(cb::withTypeParam);
-            switch (declared.superclass()) {
-                case Superclass.OfObject _ -> {}
-                case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
-            }
-            declared.interfaces().forEach(cb::withInterface);
-            declared.members().forEach(cb);
-        });
+        JavaFile file = JavaFile.class_(desc, cb -> {
+                    cb.withModifiers(Modifier.FINAL);
+                    declared.typeParams().forEach(cb::withTypeParam);
+                    switch (declared.superclass()) {
+                        case Superclass.OfObject _ -> {}
+                        case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
+                    }
+                    declared.interfaces().forEach(cb::withInterface);
+                    declared.members().forEach(cb);
+                })
+                .inheriting(declared.named());
+        requireWritable(declared.described(), file);
+        return file;
+    }
+
+    /// Holds a declared class to what a file can write: the renderer writes a type a field, a
+    /// variable, a member type or a type parameter of the file hides by its qualified name, and
+    /// refuses the file where that name begins with such a name too (JLS 6.4.2) — when it renders.
+    /// The class is rendered here, where it is declared, so a file the entry gives is one that
+    /// renders.
+    ///
+    /// @throws IllegalStateException if a type the class names cannot be written in its file
+    private static void requireWritable(String described, JavaFile file) {
+        try {
+            file.render();
+        } catch (IllegalStateException unwritable) {
+            throw new IllegalStateException(
+                    described + " cannot be written: " + unwritable.getMessage()
+                            + ". The names are those of the fields the class declares and inherits, of the"
+                            + " member types it inherits and of its type parameters: a field of the class can"
+                            + " be given another name, a name a supertype takes cannot — a type it hides is"
+                            + " then none the class can mention",
+                    unwritable);
+        }
     }
 
     private static <Self> ClassDeclaration.Declared declare(

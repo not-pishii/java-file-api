@@ -18,10 +18,11 @@ sealed interface Superclass {
     /// @return the token
     ClassToken<?> token();
 
-    /// The superclass with its heritage.
+    /// What the class has from the superclass alone: its methods as members of its own, each as
+    /// the class being declared has it.
     ///
-    /// @return the heritage, in terms of the type arguments of the token
-    Inheritance.Supertype heritage();
+    /// @return the inheritance of a class that extends the superclass and implements nothing
+    Inheritance alone();
 
     /// The erased superclass chain of the class being declared: the superclass, then its own.
     ///
@@ -31,15 +32,17 @@ sealed interface Superclass {
                 .toList();
     }
 
-    /// The methods the superclass has, as a member of its own, under the signature of `fact`: what
+    /// The method the superclass has, as a member of its own, under the signature of `fact`: what
     /// `super.m()` calls, and what the class has from the superclass without a method of its own.
+    /// The declaration that stands ([Inheritance.Group#stands()]) is as `fact` tells the method; where
+    /// no class declares it, every declaration is.
     ///
     /// @param owner the class being declared, for messages
     /// @param fact the fact of a method of the superclass, or of a class above it
-    /// @return the members of that signature, at least one, each as `fact` tells it
+    /// @return the declarations the superclass has under that signature
     /// @throws IllegalArgumentException if the superclass has no such method on the target classpath, or
     ///     has it with other parameters, another result or another `throws` clause than `fact` tells
-    default List<Inheritance.Entry> member(String owner, Invocable fact) {
+    default Inheritance.Group member(String owner, Invocable fact) {
         if (!fact.traits().typeArgs().isEmpty()) {
             // The heritage tells the method by its type parameters, the fact by its type arguments.
             throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass " + token()
@@ -47,28 +50,31 @@ sealed interface Superclass {
                     + " method of a superclass is neither called as super." + fact.name()
                     + "(...) nor had for one of an interface");
         }
-        List<Inheritance.Entry> members = heritage().members(fact.signature()).toList();
-        if (members.isEmpty()) {
-            throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass " + token()
-                    + ": on the target classpath the class has no method " + fact.signature());
-        }
-        members.forEach(member -> member.differsFrom(fact).ifPresent(difference -> {
-            throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass " + token()
-                    + " as the fact tells it: as a member of the superclass the method is " + member + ", and "
-                    + difference + " — a class between overrides it; name the method by the fact of that class");
-        }));
-        return members;
+        Inheritance.Group group = alone().group(fact.signature())
+                .orElseThrow(() -> new IllegalArgumentException(owner + " does not have " + fact
+                        + " from its superclass " + token() + ": on the target classpath the class has no method "
+                        + fact.signature() + " that is a member to " + owner
+                        + " — none at all, or one with package access of another package"));
+        Inheritance.Entry standing = group.stands();
+        (standing.ofInterface() ? group.entries().stream() : Stream.of(standing))
+                .forEach(member -> member.differsFrom(fact).ifPresent(difference -> {
+                    throw new IllegalArgumentException(owner + " does not have " + fact + " from its superclass "
+                            + token() + " as the fact tells it: as a member of the superclass the method is "
+                            + member + ", and " + difference
+                            + " — a class between overrides it; name the method by the fact of that class");
+                }));
+        return group;
     }
 
     /// `java.lang.Object`: the class has no `extends` clause.
     ///
     /// @param token `Object`
-    /// @param heritage `Object` with its heritage
-    record OfObject(ClassToken<?> token, Inheritance.Supertype heritage) implements Superclass {}
+    /// @param alone what the class has from `Object` alone
+    record OfObject(ClassToken<?> token, Inheritance alone) implements Superclass {}
 
     /// The class of the `extends` clause.
     ///
     /// @param token the superclass
-    /// @param heritage the superclass with its heritage
-    record Named(ExtendableClassToken<?> token, Inheritance.Supertype heritage) implements Superclass {}
+    /// @param alone what the class has from the superclass alone
+    record Named(ExtendableClassToken<?> token, Inheritance alone) implements Superclass {}
 }

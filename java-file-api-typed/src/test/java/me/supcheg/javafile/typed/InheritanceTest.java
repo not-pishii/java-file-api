@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 /// shapes the JDK has none of at hand: the diamonds.
 class InheritanceTest {
     private static final String OWNER = "class x.Self";
+    private static final Inheritance.Heir HEIR = new Inheritance.Heir.OfClass(OWNER, "x");
     private static final TargetClasspath TARGET = UnsafeFacts.unverifiedClasspath();
 
     private static final ClassDesc I = ClassDesc.of("x", "I");
@@ -44,7 +45,7 @@ class InheritanceTest {
     private static final ClassDesc CD_LIST = ClassDesc.of("java.util.List");
 
     private static Inheritance ofObject() {
-        return Inheritance.of(OWNER, Inheritance.supertype(OWNER, TARGET, Object_.TOKEN));
+        return Inheritance.of(HEIR, Inheritance.supertype(OWNER, TARGET, Object_.TOKEN));
     }
 
     private static Supertype real(DeclaredToken<?> token) {
@@ -57,6 +58,19 @@ class InheritanceTest {
         return new Supertype(
                 UnsafeFacts.interfaceToken(new ClassTypeRef(desc), MethodTable.EMPTY),
                 new Heritage.Applied(List.of(methods), List.of()));
+    }
+
+    /// A class made by hand, with the methods it has as a member.
+    @SafeVarargs
+    private static Supertype klass(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
+        return new Supertype(
+                UnsafeFacts.openClassToken(new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY),
+                new Heritage.Applied(List.of(methods), List.of()));
+    }
+
+    /// The methods of a group that come with a body.
+    private static List<Inheritance.Entry> bodies(Inheritance.Group group) {
+        return group.entries().stream().filter(Inheritance.Entry::hasBody).toList();
     }
 
     private static Heritage.Method<Heritage.Inherited> m(
@@ -103,12 +117,14 @@ class InheritanceTest {
 
         assertThat(inheritance.group(sig("toString"))).isPresent();
         assertThat(inheritance.group(sig("compareTo", ConstantDescs.CD_String))).hasValueSatisfying(group -> {
-            assertThat(group.entries()).singleElement().matches(Inheritance.Entry::isAbstract);
+            assertThat(group.entries()).singleElement().matches(Inheritance.Entry::leftAbstract);
+            assertThat(group.standing()).isEqualTo(Dispatch.ABSTRACT);
             assertThat(group.entries().getFirst().method().declared())
                     .isInstanceOfSatisfying(
                             Heritage.Plain.class,
                             plain -> assertThat(plain.params()).containsExactly(Types.of(String.class)));
-            assertThat(group.bodies()).isEmpty();
+            assertThat(bodies(group)).isEmpty();
+            assertThat(group.conflict()).isEmpty();
         });
         assertThat(inheritance.group(sig("compareTo", ConstantDescs.CD_Object))).isEmpty();
         // the bridge javac makes of compareTo(String) is compareTo(Object)
@@ -134,9 +150,10 @@ class InheritanceTest {
         Inheritance inheritance =
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, I))).with(iface(J, m(Dispatch.DEFAULT, J, I)));
 
-        assertThat(inheritance.group(sig("m")).orElseThrow().bodies())
+        assertThat(bodies(inheritance.group(sig("m")).orElseThrow()))
                 .singleElement()
                 .matches(entry -> entry.method().declaredBy().equals(J));
+        assertThat(inheritance.group(sig("m")).orElseThrow().conflict()).isEmpty();
     }
 
     @Test
@@ -145,7 +162,8 @@ class InheritanceTest {
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, I))).with(iface(J, m(Dispatch.ABSTRACT, J, I)));
 
         assertThat(inheritance.group(sig("m")).orElseThrow())
-                .matches(group -> group.bodies().isEmpty())
+                .matches(group -> bodies(group).isEmpty())
+                .matches(group -> group.standing() == Dispatch.ABSTRACT)
                 .matches(group -> group.entries().size() == 1);
     }
 
@@ -154,7 +172,87 @@ class InheritanceTest {
         Inheritance inheritance =
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, I))).with(iface(J, m(Dispatch.DEFAULT, J)));
 
-        assertThat(inheritance.group(sig("m")).orElseThrow().bodies()).hasSize(2);
+        Inheritance.Group group = inheritance.group(sig("m")).orElseThrow();
+        assertThat(bodies(group)).hasSize(2);
+        assertThat(group.conflict())
+                .hasValueSatisfying(why ->
+                        assertThat(why).contains("m() of x.I and m() of x.J are unrelated methods with a body each"));
+        assertThat(group.unsettled()).isEqualTo(group.conflict());
+    }
+
+    @Test
+    void aDefaultMethodBesideAnAbstractOneOfAnUnrelatedInterfaceIsForAMethodOfTheClassToSettle() {
+        Inheritance inheritance =
+                ofObject().with(iface(I, m(Dispatch.DEFAULT, I))).with(iface(J, m(Dispatch.ABSTRACT, J)));
+
+        Inheritance.Group group = inheritance.group(sig("m")).orElseThrow();
+        assertThat(group.standing()).isEqualTo(Dispatch.ABSTRACT);
+        assertThat(group.conflict())
+                .hasValueSatisfying(why -> assertThat(why).contains("one gives a body and another leaves abstract"));
+        // the step of the proof for J settles the abstract one: by a method of the class
+        assertThat(group.unsettled()).isEmpty();
+    }
+
+    @Test
+    void theMethodOfAClassStandsWhateverAnInterfaceDeclares() {
+        Inheritance inheritance = Inheritance.of(HEIR, klass(K, m(Dispatch.CONCRETE, K)))
+                .with(iface(I, m(Dispatch.DEFAULT, I)))
+                .with(iface(J, m(Dispatch.ABSTRACT, J)));
+
+        Inheritance.Group group = inheritance.group(sig("m")).orElseThrow();
+        assertThat(group.standing()).isEqualTo(Dispatch.CONCRETE);
+        assertThat(group.stands().method().declaredBy()).isEqualTo(K);
+        assertThat(group.conflict()).isEmpty();
+    }
+
+    @Test
+    void aMethodOfAClassThatIsNotPublicDoesNotStandForOneOfAnInterface() {
+        Heritage.Method<Heritage.Inherited> hidden = new Heritage.Method<>(
+                Signature.of("m"),
+                List.of(new Heritage.Plain(
+                        new Heritage.Declarer.OfClass(K, Heritage.Visibility.PROTECTED, Heritage.ClassMethod.CONCRETE),
+                        Heritage.Arity.FIXED,
+                        List.of(),
+                        new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
+                        List.of())),
+                Set.of(List.of()),
+                List.of());
+        Inheritance inheritance = Inheritance.of(HEIR, klass(K, hidden)).with(iface(I, m(Dispatch.DEFAULT, I)));
+
+        assertThat(inheritance.group(sig("m")).orElseThrow().conflict())
+                .hasValueSatisfying(why -> assertThat(why).contains("it is not public"));
+    }
+
+    @Test
+    void aMethodWithPackageAccessOfAnotherPackageIsNoMemberOfAClassAndIsOneOfATypeVariable() {
+        ClassDesc far = ClassDesc.of("y", "Far");
+        Heritage.Method<Heritage.Inherited> hidden = new Heritage.Method<>(
+                Signature.of("m"),
+                List.of(new Heritage.Plain(
+                        new Heritage.Declarer.OfClass(far, Heritage.Visibility.PACKAGE, Heritage.ClassMethod.CONCRETE),
+                        Heritage.Arity.FIXED,
+                        List.of(),
+                        new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
+                        List.of())),
+                Set.of(List.of()),
+                List.of());
+
+        Inheritance ofClass = Inheritance.of(HEIR, klass(far, hidden)).with(iface(I, m(Dispatch.DEFAULT, I)));
+        assertThat(ofClass.group(sig("m")).orElseThrow().entries())
+                .singleElement()
+                .matches(entry -> entry.method().declaredBy().equals(I));
+        // and yet the method the virtual machine selects: for a method of the class to settle
+        assertThat(ofClass.group(sig("m")).orElseThrow().unsettled())
+                .hasValueSatisfying(why -> assertThat(why).contains("IllegalAccessError"));
+        // in the package of the method the class may inherit it, and a type variable is held to
+        Inheritance near = Inheritance.of(new Inheritance.Heir.OfClass("class y.Self", "y"), klass(far, hidden));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> near.with(iface(I, m(Dispatch.DEFAULT, I))))
+                .withMessageContaining("the first has package access");
+        Inheritance ofVariable = Inheritance.of(new Inheritance.Heir.OfVariable("T"), klass(far, hidden));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> ofVariable.with(iface(I, m(Dispatch.DEFAULT, I))))
+                .withMessageContaining("the first has package access");
     }
 
     @Test
@@ -162,12 +260,14 @@ class InheritanceTest {
         Inheritance inheritance =
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, K))).with(iface(J, m(Dispatch.DEFAULT, K)));
 
-        assertThat(inheritance.group(sig("m")).orElseThrow().bodies()).hasSize(1);
+        assertThat(bodies(inheritance.group(sig("m")).orElseThrow())).hasSize(1);
     }
 
     @Test
-    void aStaticAndAnInstanceMethodOfOneSignatureAreRejected() {
-        Inheritance inheritance = ofObject().with(iface(I, m(Dispatch.STATIC, I)));
+    void aStaticMethodOfTheSuperclassAndAnInstanceOneOfOneSignatureAreRejected() {
+        // a static method is one of a class alone: those of an interface are not inherited (JLS 8.4.8)
+        Inheritance inheritance = Inheritance.of(HEIR, klass(I, m(Dispatch.STATIC, I)));
+        assertThat(inheritance.group(sig("m")).orElseThrow().standing()).isEqualTo(Dispatch.STATIC);
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> inheritance.with(iface(J, m(Dispatch.ABSTRACT, J))))

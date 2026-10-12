@@ -43,34 +43,48 @@ import java.util.stream.Stream;
 ///   [Group] is one method to the class, which it inherits, overrides or has
 ///   to implement. A method one of the same group overrides is not inherited:
 ///   that of the subinterface is.
+/// - A method with package access of a class of another package is no member
+///   of a class being declared ([Heir.OfClass]): it is neither inherited nor
+///   overridden (JLS 8.4.8.1), and is no method of its group — but is kept
+///   beside it ([Group#hidden()]), for the virtual machine finds it where
+///   javac does not. The class a type variable is of by its bounds
+///   ([Heir.OfVariable]) is in no package the typed layer knows, and has
+///   every such method.
 /// - The supertypes have to agree, and a disagreement is rejected when the
 ///   supertype that brings it is added: a `static` method and an instance one
-///   of one signature, methods of one erasure whose parameters differ, two
-///   methods one of which would get the bridge of the other (JLS 8.4.8.3),
-///   one interface with two parameterizations (JLS 8.1.5).
+///   of one signature, methods of one erasure whose parameters differ, a
+///   method with package access beside one of an interface, two methods one
+///   of which would get the bridge of the other (JLS 8.4.8.3), one interface
+///   with two parameterizations (JLS 8.1.5).
+/// - What a group is to the class is what [Heritage.Method#standing()] makes
+///   of its declarations ([Group#standing()]): the method of a class stands,
+///   whatever an interface declares. Whether the methods can be had together
+///   without a method of the class is [Group#conflict()].
 ///
 /// What a member the class declares has to observe is told here as data —
 /// the group a signature is of, the method whose erasure it would clash with
 /// — and judged by the [SignatureRegistry] of the class.
 final class Inheritance {
+    private final Heir heir;
     private final String owner;
     private final List<Supertype> supertypes;
     private final Map<MethodSignature, Group> groups;
 
-    private Inheritance(String owner, List<Supertype> supertypes) {
-        this.owner = owner;
+    private Inheritance(Heir heir, List<Supertype> supertypes) {
+        this.heir = heir;
+        this.owner = heir.described();
         this.supertypes = List.copyOf(supertypes);
-        this.groups = merged(owner, this.supertypes);
+        this.groups = merged(heir, this.supertypes);
     }
 
     /// The inheritance of a class that extends `superclass` and implements nothing yet.
     ///
-    /// @param owner the class being declared, for messages
+    /// @param heir who inherits
     /// @param superclass the superclass with its heritage
     /// @return the inheritance
     /// @throws IllegalArgumentException if the heritage disagrees with itself
-    static Inheritance of(String owner, Supertype superclass) {
-        return new Inheritance(owner, List.of(superclass));
+    static Inheritance of(Heir heir, Supertype superclass) {
+        return new Inheritance(heir, List.of(superclass));
     }
 
     /// The inheritance with one more supertype.
@@ -89,7 +103,7 @@ final class Inheritance {
         List<Supertype> all =
                 Stream.concat(supertypes.stream(), Stream.of(supertype)).toList();
         requireOneParameterization(owner, all);
-        return new Inheritance(owner, all);
+        return new Inheritance(heir, all);
     }
 
     /// The supertype `token` with its heritage as the target classpath has the type.
@@ -183,10 +197,12 @@ final class Inheritance {
     // The merge
     // ------------------------------------------------------------------
 
-    private static Map<MethodSignature, Group> merged(String owner, List<Supertype> supertypes) {
+    private static Map<MethodSignature, Group> merged(Heir heir, List<Supertype> supertypes) {
+        String owner = heir.described();
+        requireImplementable(heir, supertypes);
         Set<MethodSignature> ofObject = supertypes.stream()
                 .filter(supertype -> !isInterface(supertype))
-                .flatMap(Inheritance::entries)
+                .flatMap(supertype -> entries(heir, supertype))
                 .filter(entry -> entry.method().visibility() == Heritage.Visibility.PUBLIC
                         && (entry.method().declaredBy().equals(ConstantDescs.CD_Object)
                                 || entry.method().overrides().contains(ConstantDescs.CD_Object)))
@@ -194,13 +210,20 @@ final class Inheritance {
                 .collect(Collectors.toSet());
         Map<MethodSignature, List<Entry>> bySignature = supertypes.stream()
                 .flatMap(supertype -> isInterface(supertype)
-                        ? entries(supertype).filter(entry -> !ofObject.contains(entry.signature()))
-                        : entries(supertype))
+                        ? entries(heir, supertype).filter(entry -> !ofObject.contains(entry.signature()))
+                        : entries(heir, supertype))
                 .collect(Collectors.groupingBy(Entry::signature, LinkedHashMap::new, Collectors.toList()));
+        Map<MethodSignature, List<Entry>> hidden = supertypes.stream()
+                .flatMap(Inheritance::told)
+                .filter(entry -> !reached(heir, entry))
+                .collect(Collectors.groupingBy(Entry::signature));
         Map<MethodSignature, Group> groups = bySignature.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> new Group(entry.getKey(), inherited(entry.getValue())),
+                        entry -> new Group(
+                                entry.getKey(),
+                                inherited(entry.getValue()),
+                                hidden.getOrDefault(entry.getKey(), List.of())),
                         (first, _) -> first,
                         LinkedHashMap::new));
         groups.values().forEach(group -> requireAgreed(owner, group));
@@ -212,13 +235,53 @@ final class Inheritance {
         return supertype.token() instanceof InterfaceToken<?>;
     }
 
-    private static Stream<Entry> entries(Supertype supertype) {
+    /// Every declaration of a supertype, as an entry.
+    private static Stream<Entry> told(Supertype supertype) {
         List<ClassDesc> erasures = supertype.token().argumentErasures();
         return supertype.told().methods().stream().flatMap(method -> {
             MethodSignature signature = method.signature().instantiate(erasures);
             return method.declarations().stream()
                     .map(declared -> new Entry(supertype.token(), new Member(method, declared), signature));
         });
+    }
+
+    /// The declarations of a supertype that are something to `heir`: not the method with package
+    /// access of a class of another package than that of a class being declared.
+    private static Stream<Entry> entries(Heir heir, Supertype supertype) {
+        return told(supertype).filter(entry -> reached(heir, entry));
+    }
+
+    private static boolean reached(Heir heir, Entry entry) {
+        return switch (entry.method().visibility()) {
+            case PUBLIC, PROTECTED -> true;
+            case PACKAGE ->
+                switch (heir) {
+                    case Heir.OfClass(var _, var packageName) ->
+                        entry.method().declaredBy().packageName().equals(packageName);
+                    case Heir.OfVariable _ -> true;
+                };
+        };
+    }
+
+    /// Rejects, for a class being declared, an abstract method with package access: the typed layer
+    /// declares no method that overrides one of package access, and outside the package none can.
+    private static void requireImplementable(Heir heir, List<Supertype> supertypes) {
+        switch (heir) {
+            case Heir.OfVariable _ -> {}
+            case Heir.OfClass ofClass ->
+                supertypes.stream()
+                        .flatMap(Inheritance::told)
+                        .filter(entry -> entry.method().visibility() == Heritage.Visibility.PACKAGE
+                                && entry.method().dispatch() == Heritage.Dispatch.ABSTRACT)
+                        .findFirst()
+                        .ifPresent(entry -> {
+                            throw new IllegalArgumentException(ofClass.described() + " cannot have the supertype "
+                                    + entry.through() + ": " + entry + " is abstract and has package access, so"
+                                    + " a class of another package cannot implement it, and the typed layer"
+                                    + " declares no method that overrides one of package access (JLS 8.1.1.1,"
+                                    + " 8.4.8.1)");
+                        });
+        }
     }
 
     /// The methods of one signature the class inherits: not the one another overrides, and one
@@ -252,6 +315,19 @@ final class Inheritance {
                         + " and neither overrides the other (JLS 8.4.8.3)");
             }
         });
+        group.entries().stream()
+                .filter(entry -> entry.method().visibility() == Heritage.Visibility.PACKAGE)
+                .findFirst()
+                .ifPresent(hidden -> group.entries().stream()
+                        .filter(Entry::ofInterface)
+                        .findFirst()
+                        .ifPresent(other -> {
+                            throw new IllegalArgumentException(owner + " cannot inherit both " + hidden + " and "
+                                    + other + ": the first has package access, and a method that stands for one"
+                                    + " of an interface is public (JLS 8.4.8.3) — the typed layer does not tell"
+                                    + " whether a method with package access is inherited, and holds it to"
+                                    + " what it would have to be");
+                        }));
     }
 
     /// Rejects two groups one of which has a method whose bridge would be a method of the other.
@@ -320,15 +396,28 @@ final class Inheritance {
     ///
     /// @param token the supertype
     /// @param told its heritage, in terms of the type arguments of `token`
-    record Supertype(DeclaredToken<?> token, Heritage.Applied told) {
+    record Supertype(DeclaredToken<?> token, Heritage.Applied told) {}
 
-        /// The methods the type has, as a member of its own, under a signature.
+    /// Who inherits: what decides whether a method with package access is a member to inherit.
+    sealed interface Heir {
+
+        /// The heir, for messages.
         ///
-        /// @param signature the erased signature, in the type as `token` names it
-        /// @return the methods of that signature
-        Stream<Entry> members(MethodSignature signature) {
-            return entries(this).filter(entry -> entry.signature().equals(signature));
-        }
+        /// @return the description
+        String described();
+
+        /// A class being declared: a method with package access of a class of another package is
+        /// none of its members (JLS 8.4.8.1), and it has to implement every abstract method.
+        ///
+        /// @param described the class, for messages
+        /// @param packageName the package of the class
+        record OfClass(String described, String packageName) implements Heir {}
+
+        /// A type variable, by the class javac makes of its bounds (JLS 4.9): an abstract class of
+        /// no package the typed layer knows, so every method with package access is held one of its.
+        ///
+        /// @param described the type variable, for messages
+        record OfVariable(String described) implements Heir {}
     }
 
     /// One declaration of a method of a heritage, with what holds of every declaration the supertype
@@ -376,11 +465,61 @@ final class Inheritance {
             };
         }
 
-        /// What tells the result of the method apart from that of another of its signature.
-        Object result() {
+        /// Whether the two methods, of the same parameters, have the same result as it is written.
+        boolean sameResult(Member other) {
             return switch (declared) {
-                case Heritage.Plain plain -> plain.result();
-                case Heritage.Generic(Heritage.Declaration told) -> told.result();
+                case Heritage.Plain plain ->
+                    other.declared() instanceof Heritage.Plain otherPlain
+                            && plain.result().equals(otherPlain.result());
+                case Heritage.Generic(Heritage.Declaration told) ->
+                    other.declared() instanceof Heritage.Generic(Heritage.Declaration otherTold)
+                            && told.result().equals(otherTold.result());
+            };
+        }
+
+        /// The exception types of the `throws` clause the other method does not have in its own, as
+        /// they are written.
+        private List<String> undeclaredBy(Member other) {
+            return switch (declared) {
+                case Heritage.Plain plain ->
+                    other.declared() instanceof Heritage.Plain otherPlain
+                            ? plain.throwsTypes().stream()
+                                    .filter(thrown -> !otherPlain.throwsTypes().contains(thrown))
+                                    .map(TypeNames::describe)
+                                    .toList()
+                            : List.of("of a method that is not generic, as the other is");
+                case Heritage.Generic(Heritage.Declaration told) ->
+                    other.declared() instanceof Heritage.Generic(Heritage.Declaration otherTold)
+                            ? told.throwsTypes().stream()
+                                    .filter(thrown -> !otherTold.throwsTypes().contains(thrown))
+                                    .map(Object::toString)
+                                    .toList()
+                            : List.of("of a generic method, as the other is not");
+            };
+        }
+
+        /// Why the method, one of a class, cannot be had for `other`, one of an interface of the same
+        /// parameters, without a method that overrides both: what an override has to observe, the
+        /// method of the class has to (JLS 8.4.8.3, 8.4.8.4) — held to the types as they are
+        /// written, there being no fact of either to prove a subtype by.
+        ///
+        /// @param other a method of an interface
+        /// @return the reason, or empty if the method stands for the other
+        Optional<String> cannotStandFor(Member other) {
+            return switch (visibility()) {
+                case PROTECTED, PACKAGE ->
+                    Optional.of("it is not public, and the method of an interface is: weaker access (JLS 8.4.8.3)");
+                case PUBLIC ->
+                    !sameResult(other)
+                            ? Optional.of("its result is not the one the other has — a result that is a subtype"
+                                    + " would do (JLS 8.4.5), which the typed layer proves by the fact of a"
+                                    + " method alone, and there is none here")
+                            : undeclaredBy(other).isEmpty()
+                                    ? Optional.empty()
+                                    : Optional.of("it declares the exception "
+                                            + String.join(", ", undeclaredBy(other))
+                                            + ", which the other does not (JLS 8.4.8.3) — an unchecked one"
+                                            + " would do, which the typed layer does not tell here");
             };
         }
     }
@@ -399,8 +538,18 @@ final class Inheritance {
             };
         }
 
-        boolean isAbstract() {
-            return switch (method.dispatch()) {
+        /// Whether an interface declares the method.
+        boolean ofInterface() {
+            return switch (method.declared().by()) {
+                case Heritage.Declarer.OfInterface _ -> true;
+                case Heritage.Declarer.OfClass _ -> false;
+            };
+        }
+
+        /// Whether the supertype the class has the method through leaves it abstract: what the
+        /// proof that the class extends or implements that supertype has a step for.
+        boolean leftAbstract() {
+            return switch (method.group().standing()) {
                 case ABSTRACT -> true;
                 case STATIC, DEFAULT, CONCRETE, FINAL -> false;
             };
@@ -460,17 +609,115 @@ final class Inheritance {
     ///
     /// @param signature the erased signature, in the class
     /// @param entries the methods, none of which overrides another; at least one
-    record Group(MethodSignature signature, List<Entry> entries) {
+    /// @param hidden the methods of that signature with package access of the classes of another
+    ///     package above the class: no members of the class to javac, and yet the methods the
+    ///     virtual machine finds first when the method is called on the class (JVMS 5.4.3.3, 5.4.6)
+    record Group(MethodSignature signature, List<Entry> entries, List<Entry> hidden) {
         Group {
             entries = List.copyOf(entries);
+            hidden = List.copyOf(hidden);
         }
 
-        /// The methods with a body. More than one are bodies of unrelated supertypes, none of
-        /// which the class can be said to inherit.
+        /// What the method is to the class, without a method of its own: the declarations told as
+        /// those of one type ([Heritage.Method#standing()]).
         ///
-        /// @return the methods that are neither abstract nor `static`
-        List<Entry> bodies() {
-            return entries.stream().filter(Entry::hasBody).toList();
+        /// @return the dispatch
+        Heritage.Dispatch standing() {
+            return new Heritage.Method<>(
+                            entries.getFirst().method().signature(),
+                            entries.stream()
+                                    .map(entry -> entry.method().declared())
+                                    .toList(),
+                            entries.stream()
+                                    .flatMap(entry -> entry.method().erasures().stream())
+                                    .collect(Collectors.toSet()),
+                            entries.stream()
+                                    .flatMap(entry -> entry.method().overrides().stream())
+                                    .distinct()
+                                    .toList())
+                    .standing();
+        }
+
+        /// The declaration that tells the standing: that of a class the heir reaches, which stands
+        /// whatever an interface declares, or the first there is.
+        ///
+        /// @return the entry
+        Entry stands() {
+            return ofClass(entries).orElseGet(entries::getFirst);
+        }
+
+        /// Why a class that has these methods and declares none of their signature is rejected.
+        ///
+        /// @return the reason, or empty if the class can have them together
+        Optional<String> conflict() {
+            return conflict(entries).or(this::unreached);
+        }
+
+        /// A method with package access of a class of another package above the class, beside
+        /// methods of interfaces alone: javac compiles the class, which has the method of the
+        /// interface for its own, and a call of it fails where it runs — the virtual machine
+        /// selects the method of the class above, which the class does not reach.
+        private Optional<String> unreached() {
+            return hidden.stream()
+                    .findFirst()
+                    .filter(_ -> ofClass(entries).isEmpty())
+                    .map(unreached -> unreached + " has package access in another package, where the class has "
+                            + entries.getFirst() + " under its signature: javac takes the method of the"
+                            + " interface for a member of the class, and the virtual machine selects the one"
+                            + " with package access, which the class does not reach — IllegalAccessError"
+                            + " where it is called (JVMS 5.4.6)");
+        }
+
+        /// As [#conflict()], of the methods no step of a proof settles: a method the supertype it
+        /// comes through leaves abstract is implemented by what the step for it took — a method
+        /// of the class, or one of the superclass held to it by its fact.
+        ///
+        /// @return the reason, or empty if nothing is left for a method of the class to settle
+        Optional<String> unsettled() {
+            return conflict(entries.stream()
+                            .filter(entry -> !entry.leftAbstract())
+                            .toList())
+                    .or(this::unreached);
+        }
+
+        private static Optional<Entry> ofClass(List<Entry> entries) {
+            return ofClasses(entries).findFirst();
+        }
+
+        private static Stream<Entry> ofClasses(List<Entry> entries) {
+            return entries.stream()
+                    .filter(entry ->
+                            !entry.ofInterface() && entry.method().visibility() != Heritage.Visibility.PACKAGE);
+        }
+
+        /// JLS 8.4.8.4, 9.4.1.3: the method of a class stands for those of the interfaces, and has
+        /// to be what an override of them is; without one, an interface that gives a body leaves
+        /// no other interface a say.
+        private static Optional<String> conflict(List<Entry> entries) {
+            List<Entry> ofInterfaces =
+                    entries.stream().filter(Entry::ofInterface).toList();
+            if (ofClasses(entries).count() > 1) {
+                // m(T) of a Base<String> and m(String) of its subclass: two methods, one signature
+                return Optional.of(ofClasses(entries).map(Object::toString).collect(Collectors.joining(" and "))
+                        + " are unrelated methods of the classes above, of one signature in the class and"
+                        + " neither overriding the other (JLS 8.4.8.3)");
+            }
+            return ofClass(entries)
+                    .map(standing -> ofInterfaces.stream()
+                            .flatMap(other -> standing.method().cannotStandFor(other.method()).stream()
+                                    .map(why -> standing + " cannot stand for " + other + ": " + why))
+                            .findFirst())
+                    .orElseGet(() -> ofInterfaces.size() < 2
+                                    || ofInterfaces.stream().noneMatch(Entry::hasBody)
+                            ? Optional.empty()
+                            : Optional.of(
+                                    ofInterfaces.stream().map(Object::toString).collect(Collectors.joining(" and "))
+                                            + (ofInterfaces.stream().allMatch(Entry::hasBody)
+                                                    ? " are unrelated methods with a body each"
+                                                    : " are unrelated methods of which one gives a body and another"
+                                                            + " leaves abstract")
+                                            + ", and no class among the supertypes declares the method"
+                                            + " (JLS 8.4.8.4, 9.4.1.3)"));
         }
     }
 }

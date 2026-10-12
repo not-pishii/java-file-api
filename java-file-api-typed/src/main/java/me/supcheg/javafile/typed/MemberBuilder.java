@@ -416,26 +416,25 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
             throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
                     + ", got this of " + receiver.type());
         }
-        superclass.member(described, method).forEach(member -> {
-            switch (member.method().dispatch()) {
-                case DEFAULT, CONCRETE, FINAL -> {}
-                case ABSTRACT ->
-                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
-                            + " calls no body: " + member + " is abstract in " + superclass.token()
-                            + " (JLS 15.12.3)");
-                case STATIC ->
-                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
-                            + " calls an instance method, and " + member + " is static in "
-                            + superclass.token());
-            }
-            switch (member.method().visibility()) {
-                case PUBLIC, PROTECTED -> {}
-                case PACKAGE ->
-                    throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
-                            + " cannot call " + member + ": the method has package access, and the typed layer"
-                            + " does not tell whether the class is in its package");
-            }
-        });
+        Inheritance.Group group = superclass.member(described, method);
+        Inheritance.Entry member = group.stands();
+        switch (group.standing()) {
+            case DEFAULT, CONCRETE, FINAL -> {}
+            case ABSTRACT ->
+                throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                        + " calls no body: " + member + " is abstract in " + superclass.token() + " (JLS 15.12.3)");
+            case STATIC ->
+                throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                        + " calls an instance method, and " + member + " is static in " + superclass.token());
+        }
+        switch (member.method().visibility()) {
+            case PUBLIC, PROTECTED -> {}
+            case PACKAGE ->
+                throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                        + " cannot call " + member + ": the method has package access and the class is in its"
+                        + " package — whether the class reaches it depends on the packages of the classes"
+                        + " between, which the typed layer does not tell");
+        }
         return new Node.SuperCall(owner, superclass.token(), method, args);
     }
 

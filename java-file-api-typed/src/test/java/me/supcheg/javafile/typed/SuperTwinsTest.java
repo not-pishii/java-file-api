@@ -134,7 +134,7 @@ class SuperTwinsTest {
                         began(h.extends_(SUB.extend(h.self())), ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
                     }
                 }),
-                "unrelated methods with a body each, and overrides neither",
+                "are unrelated methods of the classes above, of one signature in the class",
                 "extends SubTwin<String>",
                 "",
                 "are inherited with the same signature");
