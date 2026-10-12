@@ -58,6 +58,8 @@
     TakesNumbers.class,
     Renamed.class,
     Unnamed.class,
+    Wide.class,
+    Widening.class,
     Counted.class,
     Measured.class,
     Joiner.class,
@@ -107,6 +109,8 @@ import me.supcheg.javafile.typed.fixtures.Joining;
 import me.supcheg.javafile.typed.fixtures.Labelled;
 import me.supcheg.javafile.typed.fixtures.Risking;
 import me.supcheg.javafile.typed.fixtures.Useful;
+import me.supcheg.javafile.typed.fixtures.Wide;
+import me.supcheg.javafile.typed.fixtures.Widening;
 import me.supcheg.javafile.typed.fixtures.Local;
 import me.supcheg.javafile.typed.fixtures.Sealing;
 import me.supcheg.javafile.typed.fixtures.Named;
