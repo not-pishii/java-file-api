@@ -8,11 +8,14 @@ import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -41,7 +44,9 @@ import java.util.stream.Stream;
 ///   as one that one overrides: the bridge javac makes would be the method
 ///   (JLS 8.4.8.3);
 /// - an override ([#override(Invocable)]) of a method that is `final` or
-///   `static`, of other parameters, of a result that is neither that of the
+///   `static`, of variable arity with an element type that is not
+///   reifiable, or beside one of the same signature that is not of variable
+///   arity, of other parameters, of a result that is neither that of the
 ///   method nor proven a subtype of it ([Subtyping]; JLS 8.4.5), or that
 ///   declares a checked exception a method it overrides does not (JLS
 ///   8.4.8.3). Each is held against every method the class inherits under
@@ -168,9 +173,11 @@ final class SignatureRegistry {
     /// Registers a method that overrides the methods of its signature the class inherits.
     ///
     /// @param own the method the class declares
+    /// @return whether the last parameter of the method is of variable arity, as that of the methods
+    ///     it overrides is
     /// @throws IllegalArgumentException if the class inherits no method of that signature, or the
     ///     method cannot override one it inherits
-    void override(Invocable own) {
+    Heritage.Arity override(Invocable own) {
         MethodSignature signature = own.signature();
         requireUndeclared(own, signature);
         Inheritance.Group group = inherited
@@ -182,6 +189,7 @@ final class SignatureRegistry {
                         + " body()"));
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         members = members.withOverride(own);
+        return group.arity();
     }
 
     private void requireUndeclared(Invocable member, MethodSignature signature) {
@@ -237,6 +245,15 @@ final class SignatureRegistry {
                     throw new IllegalArgumentException(
                             "the method " + own + " of " + owner + " cannot override " + entry + ": " + reason);
                 }));
+        group.entries().stream()
+                .filter(entry -> entry.method().declared().arity() != group.arity())
+                .findFirst()
+                .ifPresent(other -> {
+                    throw new IllegalArgumentException("the method " + own + " of " + owner + " cannot override both "
+                            + group.entries().getFirst() + " and " + other + ": the last parameter of one is of"
+                            + " variable arity and that of the other an array, and javac warns of an override"
+                            + " that is not as the method it overrides is, whichever it is");
+                });
     }
 
     /// Rejects `inherited`, a method the class has from its superclass with its body, as the
@@ -258,10 +275,17 @@ final class SignatureRegistry {
             Subtyping.Declaring declaring) {
         group.entries().stream()
                 .filter(entry -> entry.through() == through)
-                .forEach(entry -> overrideRefusal(inherited, entry, declaring).ifPresent(reason -> {
-                    throw new IllegalArgumentException(owner + " cannot have " + entry + " by inheriting " + inherited
-                            + " from its superclass: " + reason);
-                }));
+                .forEach(entry -> overrideRefusal(inherited, entry, declaring)
+                        .or(() -> entry.method().declared().arity()
+                                        == group.stands().method().declared().arity()
+                                ? Optional.empty()
+                                : Optional.of("the last parameter of one is of variable arity and that of the"
+                                        + " other an array, and javac warns of a method that implements one"
+                                        + " of the other form"))
+                        .ifPresent(reason -> {
+                            throw new IllegalArgumentException(owner + " cannot have " + entry + " by inheriting "
+                                    + inherited + " from its superclass: " + reason);
+                        }));
     }
 
     private static Optional<String> overrideRefusal(
@@ -302,12 +326,30 @@ final class SignatureRegistry {
         };
     }
 
+    /// A method of variable arity is overridden by one of variable arity, `T... v`: of an element
+    /// type that is not reifiable javac warns where the method is declared, of heap pollution
+    /// (JLS 8.4.1), and the typed layer renders no code javac warns of.
     private static Optional<String> byForm(Heritage.Plain method) {
         return switch (method.arity()) {
             case VARIABLE ->
-                Optional.of("the method is of variable arity, and the typed layer declares none: javac would"
-                        + " warn of an override that is not");
+                method.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component())
+                        ? Optional.of("the method is of variable arity and of the element type "
+                                + TypeNames.describe(array.component()) + ", which is not reifiable: javac warns"
+                                + " of possible heap pollution where such a method is declared (JLS 8.4.1)")
+                        : Optional.empty();
             case FIXED -> Optional.empty();
+        };
+    }
+
+    /// Whether a type is reifiable (JLS 4.7): no type variable, and no parameterization but that of
+    /// unbounded wildcards alone.
+    private static boolean reifiable(TypeRef type) {
+        return switch (type) {
+            case PrimitiveTypeRef _, ClassTypeRef _ -> true;
+            case ArrayTypeRef array -> reifiable(array.component());
+            case TypeVarRef _ -> false;
+            case ParameterizedTypeRef parameterized ->
+                parameterized.args().stream().allMatch(UnboundedTypeArg.class::isInstance);
         };
     }
 

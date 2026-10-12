@@ -190,12 +190,13 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
                 .anyMatch(declaration -> !declaration.typeParams().isEmpty())) {
             return Either.left("is generic, and a generated method has no type parameters yet");
         }
-        boolean variable = declarations.stream().anyMatch(declaration -> switch (declaration.arity()) {
-            case VARIABLE -> true;
-            case FIXED -> false;
-        });
-        if (variable) {
-            return Either.left("is of variable arity, and a generated method is not yet");
+        if (declarations.stream().map(Heritage.Declaration::arity).distinct().count() > 1) {
+            return Either.left("is of variable arity in one of "
+                    + declarations.stream()
+                            .map(declaration ->
+                                    Models.binaryName(declaration.by().type()))
+                            .collect(Collectors.joining(" and "))
+                    + " and not in another, so javac warns of whichever a generated method is");
         }
         List<Heritage.Plain> plain = declarations.stream()
                 .map(declaration -> declaration.applied(model.typeParams().stream()
@@ -217,6 +218,16 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         }
         if (first.params().size() > MAX_ARITY) {
             return Either.left("has " + first.params().size() + " parameters, more than " + MAX_ARITY);
+        }
+        boolean pollutes =
+                switch (first.arity()) {
+                    case FIXED -> false;
+                    case VARIABLE ->
+                        first.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component());
+                };
+        if (pollutes) {
+            return Either.left("is of variable arity with an element type that is not reifiable, so javac warns"
+                    + " of heap pollution where a generated method overrides it");
         }
         Optional<String> unnameable = mentions(first)
                 .filter(mentioned -> !nameable(mentioned, elements))
@@ -356,6 +367,18 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
             case ExtendsTypeArg bound -> mentions(bound.bound());
             case SuperTypeArg bound -> mentions(bound.bound());
             case UnboundedTypeArg _ -> Stream.empty();
+        };
+    }
+
+    /// Whether a type is reifiable (JLS 4.7): no type variable, and no parameterization but that of
+    /// unbounded wildcards alone.
+    private static boolean reifiable(TypeRef type) {
+        return switch (type) {
+            case PrimitiveTypeRef _, ClassTypeRef _ -> true;
+            case ArrayTypeRef array -> reifiable(array.component());
+            case TypeVarRef _ -> false;
+            case ParameterizedTypeRef parameterized ->
+                parameterized.args().stream().allMatch(UnboundedTypeArg.class::isInstance);
         };
     }
 

@@ -270,24 +270,6 @@ class InheritanceVerdictTest {
     class StricterThanJavac {
 
         @Test
-        void aMethodOfVariableArityIsNotOverridden() {
-            // javac takes String[] for String... and warns
-            classUnlikeJavac(
-                    AT_THE_PLACE,
-                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> void build(ClassHeader<Self> h) {
-                            var oh = h.extendsObject();
-                            Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
-                            oh.body().override(asJoiner, Joiner_.join_StringArray, (b, _, _) -> b.return_(literal("")));
-                        }
-                    }),
-                    "the method is of variable arity, and the typed layer declares none",
-                    "implements Joiner",
-                    "@Override public String join(String[] parts) { return \"\"; }");
-        }
-
-        @Test
         void aGenericMethodIsNotOverridden() {
             // javac takes the erasure of <T> T pick(T) for an override
             classUnlikeJavac(
