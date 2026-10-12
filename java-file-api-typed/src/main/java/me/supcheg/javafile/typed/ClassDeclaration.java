@@ -29,11 +29,11 @@ import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -48,9 +48,12 @@ import java.util.stream.Stream;
 /// an ordinary value a generator may keep.
 ///
 /// The methods the class said it overrides before it had members
-/// ([#intend]) are held here until the members begin: each is checked against
-/// what the class inherits as soon as a supertype that has the method is
-/// named, and all of them when the header ends.
+/// ([#intend]) are held by the phase until the members begin: each is checked
+/// against what the class inherits as soon as a supertype that has the
+/// method is named, and all of them when the header ends. What can be said
+/// in one phase alone — a `protected` fact taken out before the superclass,
+/// a method had by inheritance and a constructor after it — is a part of that
+/// phase and of no other.
 ///
 /// @param <Self> the brand of the class being declared
 final class ClassDeclaration<Self> {
@@ -59,13 +62,8 @@ final class ClassDeclaration<Self> {
     private final Inheritance.Heir heir;
     private final DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
-    private final List<Intention> intentions = new ArrayList<>();
-    private final List<Implemented.ByInheritance> inheritances = new ArrayList<>();
-    private final List<Protected<?, ?>> opened = new ArrayList<>();
-    private final List<Intention> constructors = new ArrayList<>();
-    private final List<DeclaredToken<?>> promised = new ArrayList<>();
-    private final List<Variable> variables;
-    private Phase<Self> phase = new Phase.Named<>();
+    private List<Variable> variables;
+    private Phase<Self> phase = new Phase.Named<>(new Said(List.of(), List.of()), List.of());
 
     /// @param target the classpath the class is compiled against
     /// @param desc the class
@@ -101,7 +99,7 @@ final class ClassDeclaration<Self> {
                                 parameter.bound().erasure(),
                                 identity),
                         parameter.bound(),
-                        new ArrayList<>()))
+                        List.of()))
                 .toList();
         this.self = variables.isEmpty()
                 ? UnsafeFacts.declaredClassToken(new ClassTypeRef(desc), this::superclasses, this::methodTable)
@@ -241,7 +239,10 @@ final class ClassDeclaration<Self> {
                             + " different results — one has to be return-type-substitutable for the others"
                             + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
                 });
-        bounded.more().add(bound);
+        variables = variables.stream()
+                .map(mine ->
+                        mine == bounded ? new Variable(mine.token(), mine.first(), with(mine.more(), bound)) : mine)
+                .toList();
         return new Upcast<>(variable, bound);
     }
 
@@ -264,7 +265,7 @@ final class ClassDeclaration<Self> {
             case Phase.Named<Self> _ ->
                 throw new IllegalStateException("the superclass of " + described + " is known only once its"
                         + " header names it: say extendsObject() or extends_(proof) first");
-            case Phase.Heading<Self>(var _, var superclass, var _) -> superclass.chain();
+            case Phase.Heading<Self> heading -> heading.superclass().chain();
             case Phase.Members<Self>(var _, var superclass, var _, var _) -> superclass.chain();
         };
     }
@@ -287,9 +288,9 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the class has a superclass already
     void extendsObject() {
         Scopes.requireNoneOpen("the superclass of " + described);
-        requireNamed();
+        Phase.Named<Self> named = requireNamed();
         Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, Object_.TOKEN));
-        heading(inherited, new Superclass.OfObject(Object_.TOKEN, inherited), List.of());
+        heading(named, inherited, new Superclass.OfObject(Object_.TOKEN, inherited));
     }
 
     /// The class extends the class of `proof`.
@@ -301,7 +302,7 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the class has a superclass already
     <S> ExtendableClassToken<S> extend(Complete<Self, S> proof) {
         Scopes.requireNoneOpen("the superclass of " + described);
-        requireNamed();
+        Phase.Named<Self> named = requireNamed();
         requireAbout(proof);
         if (!(proof.supertype() instanceof ExtendableClassToken<S> superclass)) {
             throw new IllegalArgumentException(described + " cannot extend " + proof.supertype()
@@ -315,7 +316,7 @@ final class ClassDeclaration<Self> {
         headerScope().require(superclass);
         target.verify(superclass);
         Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, superclass));
-        requireHolds(proof, inherited, "extend").forEach(stepped -> {
+        requireHolds(proof, inherited, "extend", named.said(), List.of()).forEach(stepped -> {
             switch (stepped) {
                 case Stepped.Own _ -> {}
                 case Stepped.Inherited(var method) ->
@@ -325,7 +326,7 @@ final class ClassDeclaration<Self> {
                             + " (JLS 8.1.1.1)");
             }
         });
-        heading(inherited, new Superclass.Named(superclass, inherited), List.of());
+        heading(named, inherited, new Superclass.Named(superclass, inherited));
         return superclass;
     }
 
@@ -339,8 +340,8 @@ final class ClassDeclaration<Self> {
     /// @return the fact
     /// @throws IllegalStateException if the class has its superclass already
     <F extends MemberFact> F open(Protected<?, F> held) {
-        requireNamed();
-        opened.add(held);
+        Phase.Named<Self> named = requireNamed();
+        phase = new Phase.Named<>(named.said(), with(named.opened(), held));
         return UnsafeFacts.open(held);
     }
 
@@ -353,33 +354,55 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the header of the class has ended
     <X> Upcast<Self, X> promise(DeclaredToken<X> supertype) {
         Scopes.requireNoneOpen("a supertype of " + described);
-        if (phase instanceof Phase.Members<Self>) {
-            throw new IllegalStateException(described + " cannot say it is about to be " + supertype
-                    + ": the header of the class has ended, and the witness of a supertype is the one"
-                    + " naming it gave");
-        }
+        Said said = saying(() -> new IllegalStateException(described + " cannot say it is about to be " + supertype
+                + ": the header of the class has ended, and the witness of a supertype is the one"
+                + " naming it gave"));
         headerScope().require(supertype);
-        promised.add(supertype);
+        say(new Said(said.intentions(), with(said.promised(), supertype)));
         return new Upcast<>(self, supertype);
     }
 
     /// The class as the proof of a subtype knows it in its header: of the supertypes it has named,
     /// and of those it said it is about to name — which the end of the header holds it to.
-    private Subtyping.Declaring declaring(Inheritance inherited) {
+    private Subtyping.Declaring declaring(Inheritance inherited, Said said) {
         return new Subtyping.Declaring(
                 self.erasure(),
-                Stream.concat(inherited.declaring(self).supertypes().stream(), promised.stream())
+                Stream.concat(inherited.declaring(self).supertypes().stream(), said.promised().stream())
                         .toList(),
                 bounded());
     }
 
-    private void requireNamed() {
-        switch (phase) {
-            case Phase.Named<Self> _ -> {}
+    private Phase.Named<Self> requireNamed() {
+        return switch (phase) {
+            case Phase.Named<Self> named -> named;
             case Phase.Heading<Self> _, Phase.Members<Self> _ ->
                 throw new IllegalStateException(described + " has its superclass already: a class header is"
                         + " used once, and what follows is declared through the stage it gave");
-        }
+        };
+    }
+
+    /// What the header said so far, while it lasts.
+    ///
+    /// @param ended what to throw if the header has ended
+    private Said saying(Supplier<IllegalStateException> ended) {
+        return switch (phase) {
+            case Phase.Named<Self> named -> named.said();
+            case Phase.Heading<Self> heading -> heading.said();
+            case Phase.Members<Self> _ -> throw ended.get();
+        };
+    }
+
+    /// The header says one thing more: the phase it is in, with `said` for what it said.
+    private void say(Said said) {
+        phase = switch (phase) {
+            case Phase.Named<Self> named -> new Phase.Named<>(said, named.opened());
+            case Phase.Heading<Self> heading -> heading.saying(said);
+            case Phase.Members<Self> members -> members;
+        };
+    }
+
+    private static <T> List<T> with(List<? extends T> list, T added) {
+        return Stream.concat(list.stream(), Stream.of(added)).toList();
     }
 
     private void requireAbout(Complete<Self, ?> proof) {
@@ -400,11 +423,9 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the header of the class has ended
     <F extends Invocable> F intend(Invocable overridden, F own, List<ClassToken<? extends Throwable>> thrown) {
         Scopes.requireNoneOpen("an override of " + described);
-        if (phase instanceof Phase.Members<Self>) {
-            throw new IllegalStateException("cannot say that " + described + " overrides " + overridden
-                    + ": the header of the class has ended; a method is overridden among the members by"
-                    + " override(fact, body)");
-        }
+        Said said = saying(() -> new IllegalStateException("cannot say that " + described + " overrides "
+                + overridden + ": the header of the class has ended; a method is overridden among the members by"
+                + " override(fact, body)"));
         if (overridden.traits().overridability() == Overridability.FINAL) {
             throw new IllegalArgumentException(
                     described + " cannot override " + overridden + ": the method is final, or static (JLS 8.4.3.3)");
@@ -414,7 +435,7 @@ final class ClassDeclaration<Self> {
                     + ": the method is generic, and the typed layer declares no generic method");
         }
         MethodSignature signature = own.signature();
-        intentions.stream()
+        said.intentions().stream()
                 .filter(intention -> intention.own().signature().equals(signature))
                 .findFirst()
                 .ifPresent(intention -> {
@@ -425,10 +446,10 @@ final class ClassDeclaration<Self> {
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
         own.resultType().ifPresent(target::verify);
         Intention intention = new Intention(overridden, own, thrown);
-        if (phase instanceof Phase.Heading<Self>(var inherited, var _, var _)) {
-            requireOverrides(inherited, Stream.of(intention));
+        if (phase instanceof Phase.Heading<Self> heading) {
+            requireOverrides(heading.inherited(), Stream.of(intention), said);
         }
-        intentions.add(intention);
+        say(new Said(with(said.intentions(), intention), said.promised()));
         return own;
     }
 
@@ -441,11 +462,17 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the class has no superclass yet, or its header has ended
     <F extends Invocable> F intendConstructor(F ctor, List<ClassToken<? extends Throwable>> thrown) {
         Scopes.requireNoneOpen("a constructor of " + described);
-        if (!(phase instanceof Phase.Heading<Self>)) {
+        if (!(phase instanceof Phase.Heading<Self> heading)) {
             throw new IllegalStateException(described + " cannot declare " + ctor + " in its header now: a"
                     + " constructor is declared there after the superclass is named and before the members");
         }
-        constructors.add(new Intention(ctor, ctor, thrown));
+        phase = new Phase.Heading<>(
+                heading.inherited(),
+                heading.superclass(),
+                heading.interfaces(),
+                heading.said(),
+                heading.inheritances(),
+                with(heading.constructors(), new Intention(ctor, ctor, thrown)));
         return ctor;
     }
 
@@ -461,11 +488,12 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the class has no superclass yet, or its header has ended
     Implemented.ByInheritance inherit(Invocable method) {
         Scopes.requireNoneOpen("an inherited method of " + described);
-        if (!(phase instanceof Phase.Heading<Self>(var _, var superclass, var _))) {
+        if (!(phase instanceof Phase.Heading<Self> heading)) {
             throw new IllegalStateException(described + " cannot be said to inherit " + method
                     + " now: what a class has from its superclass is said after the superclass is named"
                     + " and before the members");
         }
+        Superclass superclass = heading.superclass();
         Inheritance.Group group = superclass.member(described, method);
         Inheritance.Entry member = group.stands();
         Heritage.Dispatch standing = group.standing();
@@ -486,7 +514,13 @@ final class ClassDeclaration<Self> {
                         + " and the method of an interface is (JLS 8.4.8.3) — override it");
         }
         Implemented.ByInheritance inheritance = new Implemented.ByInheritance(method);
-        inheritances.add(inheritance);
+        phase = new Phase.Heading<>(
+                heading.inherited(),
+                superclass,
+                heading.interfaces(),
+                heading.said(),
+                with(heading.inheritances(), inheritance),
+                heading.constructors());
         return inheritance;
     }
 
@@ -499,10 +533,11 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the class has no superclass yet, or its header has ended
     <I> Upcast<Self, I> implement(Complete<Self, I> proof) {
         Scopes.requireNoneOpen("a superinterface of " + described);
-        if (!(phase instanceof Phase.Heading<Self>(var inherited, var superclass, var interfaces))) {
+        if (!(phase instanceof Phase.Heading<Self> heading)) {
             throw new IllegalStateException(described + " cannot implement " + proof.supertype()
                     + " now: a superinterface is named after the superclass and before the members");
         }
+        Said said = heading.said();
         DeclaredToken<I> supertype = proof.supertype();
         requireAbout(proof);
         if (!(supertype instanceof InterfaceToken<I>)) {
@@ -511,22 +546,24 @@ final class ClassDeclaration<Self> {
         }
         headerScope().require(supertype);
         target.verify(supertype);
-        Inheritance merged = inherited.with(Inheritance.supertype(described, target, supertype));
-        requireHolds(proof, merged, "implement").forEach(stepped -> {
+        Inheritance merged = heading.inherited().with(Inheritance.supertype(described, target, supertype));
+        requireHolds(proof, merged, "implement", said, heading.inheritances()).forEach(stepped -> {
             switch (stepped) {
                 case Stepped.Own _ -> {}
                 case Stepped.Inherited(var method) ->
                     merged.group(method.signature())
                             .ifPresent(group -> SignatureRegistry.requireInherited(
-                                    described, method, supertype, group, declaring(merged)));
+                                    described, method, supertype, group, declaring(merged, said)));
             }
         });
-        requireOverrides(merged, intentions.stream());
-        heading(
+        requireOverrides(merged, said.intentions().stream(), said);
+        phase = new Phase.Heading<>(
                 merged,
-                superclass,
-                Stream.concat(interfaces.stream(), Stream.of(supertype.typeRef()))
-                        .toList());
+                heading.superclass(),
+                with(heading.interfaces(), supertype.typeRef()),
+                said,
+                heading.inheritances(),
+                heading.constructors());
         return new Upcast<>(self, supertype);
     }
 
@@ -537,10 +574,19 @@ final class ClassDeclaration<Self> {
     /// @param proof the proof
     /// @param merged what the class inherits with the type of the proof
     /// @param verb what the class does with the type, for messages
+    /// @param said what the header said so far: the methods the class overrides
+    /// @param inheritances the methods the class said it has from its superclass
     /// @return how the class has the method of each step
-    private List<Stepped> requireHolds(Complete<Self, ?> proof, Inheritance merged, String verb) {
+    private List<Stepped> requireHolds(
+            Complete<Self, ?> proof,
+            Inheritance merged,
+            String verb,
+            Said said,
+            List<Implemented.ByInheritance> inheritances) {
         DeclaredToken<?> supertype = proof.supertype();
-        List<Stepped> stepped = proof.steps().stream().map(this::stepped).toList();
+        List<Stepped> stepped = proof.steps().stream()
+                .map(step -> stepped(step, said, inheritances))
+                .toList();
         Set<MethodTableTemplate.Signature> proven =
                 proof.steps().stream().map(Complete.Step::method).collect(Collectors.toSet());
         merged.groups()
@@ -569,10 +615,10 @@ final class ClassDeclaration<Self> {
 
     /// How the class has the method of a step of a proof: by one it said it overrides, or by one it
     /// said it inherits.
-    private Stepped stepped(Complete.Step<Self> step) {
+    private Stepped stepped(Complete.Step<Self> step, Said said, List<Implemented.ByInheritance> inheritances) {
         return switch (step.how().how()) {
             case Implemented.ByOverride(Invocable overridden, Invocable own) ->
-                intentions.stream()
+                said.intentions().stream()
                         .filter(intention -> intention.own() == own)
                         .findFirst()
                         .<Stepped>map(Stepped.Own::new)
@@ -587,7 +633,8 @@ final class ClassDeclaration<Self> {
                         .orElseThrow(() -> new IllegalArgumentException(described + " cannot have "
                                 + inheritance.inherited() + " by inheritance: "
                                 + switch (phase) {
-                                    case Phase.Heading<Self>(var _, Superclass.OfObject _, var _) ->
+                                    case Phase.Heading<Self> heading
+                                    when heading.superclass() instanceof Superclass.OfObject ->
                                         "it extends Object, which has no such method";
                                     case Phase.Named<Self> _, Phase.Heading<Self> _, Phase.Members<Self> _ ->
                                         "a step takes what inherited(fact) of the header of the class gave";
@@ -619,11 +666,14 @@ final class ClassDeclaration<Self> {
     /// inherits, and is declared.
     private <B extends MemberBuilder<Self>> B members(BiFunction<Inheritance, Superclass, B> make) {
         Scopes.requireNoneOpen("the members of " + described);
-        if (!(phase instanceof Phase.Heading<Self>(var inherited, var superclass, var interfaces))) {
+        if (!(phase instanceof Phase.Heading<Self> heading)) {
             throw new IllegalStateException("the members of " + described + " do not begin here: they follow"
                     + " the header of the class, once");
         }
-        promised.stream()
+        Inheritance inherited = heading.inherited();
+        Superclass superclass = heading.superclass();
+        List<ClassOrInterfaceTypeRef> interfaces = heading.interfaces();
+        heading.said().promised().stream()
                 .filter(supertype ->
                         !Tokens.sameType(supertype, superclass.token()) && !interfaces.contains(supertype.typeRef()))
                 .findFirst()
@@ -635,8 +685,8 @@ final class ClassDeclaration<Self> {
                 });
         B builder = make.apply(inherited, superclass);
         phase = new Phase.Members<>(builder, superclass, interfaces, named(inherited));
-        intentions.forEach(intention -> builder.declareOverride(intention.own(), intention.thrown()));
-        constructors.forEach(ctor -> builder.declare(ctor.own(), ctor.thrown()));
+        heading.said().intentions().forEach(intention -> builder.declareOverride(intention.own(), intention.thrown()));
+        heading.constructors().forEach(ctor -> builder.declare(ctor.own(), ctor.thrown()));
         return builder;
     }
 
@@ -672,8 +722,9 @@ final class ClassDeclaration<Self> {
         };
     }
 
-    private void heading(Inheritance inherited, Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces) {
-        opened.stream()
+    /// The class has its superclass: what it said before holds of it.
+    private void heading(Phase.Named<Self> named, Inheritance inherited, Superclass superclass) {
+        named.opened().stream()
                 .filter(held -> !superclass.chain().contains(held.owner().erasure()))
                 .findFirst()
                 .ifPresent(held -> {
@@ -681,16 +732,27 @@ final class ClassDeclaration<Self> {
                             + " no subclass of " + held.owner() + ": its superclass is " + superclass.token()
                             + ", and a protected member is reached by a subclass alone (JLS 6.6.2)");
                 });
-        requireOverrides(inherited, intentions.stream());
-        phase = new Phase.Heading<>(inherited, superclass, interfaces);
+        requireOverrides(inherited, named.said().intentions().stream(), named.said());
+        phase = new Phase.Heading<>(inherited, superclass, List.of(), named.said(), List.of(), List.of());
     }
 
     /// Rejects the intentions that cannot override what the class inherits under their signature.
-    private void requireOverrides(Inheritance inherited, Stream<Intention> intended) {
+    private void requireOverrides(Inheritance inherited, Stream<Intention> intended, Said said) {
         intended.forEach(intention -> inherited
                 .group(intention.own().signature())
-                .ifPresent(group ->
-                        SignatureRegistry.requireOverrides(described, intention.own(), group, declaring(inherited))));
+                .ifPresent(group -> SignatureRegistry.requireOverrides(
+                        described, intention.own(), group, declaring(inherited, said))));
+    }
+
+    /// What a header said so far that the stages after hold it to, in whatever phase it was said.
+    ///
+    /// @param intentions the methods the class said it overrides, in order
+    /// @param promised the supertypes the class said it is about to name
+    private record Said(List<Intention> intentions, List<DeclaredToken<?>> promised) {
+        Said {
+            intentions = List.copyOf(intentions);
+            promised = List.copyOf(promised);
+        }
     }
 
     /// A method the class said it overrides, in its header.
@@ -756,20 +818,50 @@ final class ClassDeclaration<Self> {
     /// @param token its token
     /// @param first its leftmost bound, `Object` for none: a type of the generator
     /// @param more its further bounds, said by witnesses in the header, in order
-    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first, List<InterfaceToken<?>> more) {}
+    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first, List<InterfaceToken<?>> more) {
+        Variable {
+            more = List.copyOf(more);
+        }
+    }
 
     /// Where the declaration stands.
     private sealed interface Phase<Self> {
-        /// The class has a name and nothing else.
-        record Named<Self>() implements Phase<Self> {}
+        /// The class has a name and no superclass yet.
+        ///
+        /// @param said what its header said so far
+        /// @param opened the `protected` facts taken out, each of a class the superclass has to be or extend
+        record Named<Self>(Said said, List<Protected<?, ?>> opened) implements Phase<Self> {
+            public Named {
+                opened = List.copyOf(opened);
+            }
+        }
 
         /// The class has its superclass, and names its superinterfaces.
         ///
         /// @param inherited what it inherits so far
         /// @param superclass its superclass
         /// @param interfaces its superinterfaces so far
-        record Heading<Self>(Inheritance inherited, Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces)
-                implements Phase<Self> {}
+        /// @param said what its header said so far
+        /// @param inheritances the methods it said it has from its superclass
+        /// @param constructors the constructors it declared in its header
+        record Heading<Self>(
+                Inheritance inherited,
+                Superclass superclass,
+                List<ClassOrInterfaceTypeRef> interfaces,
+                Said said,
+                List<Implemented.ByInheritance> inheritances,
+                List<Intention> constructors)
+                implements Phase<Self> {
+            public Heading {
+                interfaces = List.copyOf(interfaces);
+                inheritances = List.copyOf(inheritances);
+                constructors = List.copyOf(constructors);
+            }
+
+            Heading<Self> saying(Said said) {
+                return new Heading<>(inherited, superclass, interfaces, said, inheritances, constructors);
+            }
+        }
 
         /// The class declares its members.
         ///
