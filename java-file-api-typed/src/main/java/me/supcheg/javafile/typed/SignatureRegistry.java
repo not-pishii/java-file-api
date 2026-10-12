@@ -16,9 +16,6 @@ import me.supcheg.javafile.type.TypeVarRef;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,10 +59,58 @@ final class SignatureRegistry {
     private final String owner;
     private final Inheritance inherited;
     private final List<Subtyping.Bounded> variables;
-    private final Map<MethodSignature, Invocable> methods = new LinkedHashMap<>();
-    private final Set<MethodSignature> overrides = new HashSet<>();
-    private final Map<List<ClassDesc>, Invocable> constructors = new HashMap<>();
-    private final Set<String> fields = new HashSet<>();
+    private Members members = new Members(List.of(), Set.of(), List.of(), Set.of());
+
+    /// What the class declared so far.
+    ///
+    /// @param methods the methods, in the order they were declared
+    /// @param overrides the signatures of those that override
+    /// @param constructors the constructors
+    /// @param fields the names of the fields
+    private record Members(
+            List<Invocable> methods, Set<MethodSignature> overrides, List<Invocable> constructors, Set<String> fields) {
+        Members {
+            methods = List.copyOf(methods);
+            overrides = Set.copyOf(overrides);
+            constructors = List.copyOf(constructors);
+            fields = Set.copyOf(fields);
+        }
+
+        Optional<Invocable> method(MethodSignature signature) {
+            return methods.stream()
+                    .filter(method -> method.signature().equals(signature))
+                    .findFirst();
+        }
+
+        Members withMethod(Invocable method) {
+            return new Members(with(methods, method), overrides, constructors, fields);
+        }
+
+        Members withOverride(Invocable method) {
+            return new Members(
+                    with(methods, method),
+                    Stream.concat(overrides.stream(), Stream.of(method.signature()))
+                            .collect(Collectors.toSet()),
+                    constructors,
+                    fields);
+        }
+
+        Members withConstructor(Invocable constructor) {
+            return new Members(methods, overrides, with(constructors, constructor), fields);
+        }
+
+        Members withField(String name) {
+            return new Members(
+                    methods,
+                    overrides,
+                    constructors,
+                    Stream.concat(fields.stream(), Stream.of(name)).collect(Collectors.toSet()));
+        }
+
+        private static List<Invocable> with(List<Invocable> members, Invocable added) {
+            return Stream.concat(members.stream(), Stream.of(added)).toList();
+        }
+    }
 
     /// @param owner the class being declared, for messages
     /// @param inherited what the class inherits
@@ -81,10 +126,11 @@ final class SignatureRegistry {
     /// @param name the field name
     /// @throws IllegalArgumentException if a field of that name is declared already
     void field(String name) {
-        if (!fields.add(name)) {
+        if (members.fields().contains(name)) {
             throw new IllegalArgumentException("field " + name + " of " + owner
-                    + " is already declared: field names are unique in a class" + " (JLS 8.3)");
+                    + " is already declared: field names are unique in a class (JLS 8.3)");
         }
+        members = members.withField(name);
     }
 
     /// Registers a method or constructor declared by its name: one that overrides nothing.
@@ -95,12 +141,15 @@ final class SignatureRegistry {
     void member(Invocable member) {
         if (member.kind() == InvocableKind.CONSTRUCTOR) {
             List<ClassDesc> params = member.signature().params();
-            Invocable clash = constructors.putIfAbsent(params, member);
-            if (clash != null) {
-                throw new IllegalArgumentException("the constructor " + member + " of " + owner
-                        + " clashes with the constructor " + clash + " declared before: both erase to the"
-                        + " parameters " + member.signature() + " (JLS 8.8.2)");
-            }
+            members.constructors().stream()
+                    .filter(declared -> declared.signature().params().equals(params))
+                    .findFirst()
+                    .ifPresent(clash -> {
+                        throw new IllegalArgumentException("the constructor " + member + " of " + owner
+                                + " clashes with the constructor " + clash + " declared before: both erase to"
+                                + " the parameters " + member.signature() + " (JLS 8.8.2)");
+                    });
+            members = members.withConstructor(member);
             return;
         }
         MethodSignature signature = member.signature();
@@ -113,7 +162,7 @@ final class SignatureRegistry {
                     + ": name clash, it erases as that method or one it overrides does, and does not override"
                     + " it (JLS 8.4.8.3)");
         });
-        methods.put(signature, member);
+        members = members.withMethod(member);
     }
 
     /// Registers a method that overrides the methods of its signature the class inherits.
@@ -132,16 +181,14 @@ final class SignatureRegistry {
                         + " header names before its members begin — extends_ and implements_ come before"
                         + " body()"));
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
-        methods.put(signature, own);
-        overrides.add(signature);
+        members = members.withOverride(own);
     }
 
     private void requireUndeclared(Invocable member, MethodSignature signature) {
-        Invocable clash = methods.get(signature);
-        if (clash != null) {
+        members.method(signature).ifPresent(clash -> {
             throw new IllegalArgumentException("the method " + member + " of " + owner + " clashes with the method "
                     + clash + " declared before: both erase to " + signature + " (JLS 8.4.2)");
-        }
+        });
     }
 
     /// Why a method declared by name cannot have the signature of an inherited one.
@@ -347,7 +394,7 @@ final class SignatureRegistry {
     void requireComplete() {
         inherited
                 .groups()
-                .filter(group -> !overrides.contains(group.signature()))
+                .filter(group -> !members.overrides().contains(group.signature()))
                 .flatMap(group -> group.unsettled().stream())
                 .findFirst()
                 .ifPresent(why -> {
@@ -356,7 +403,7 @@ final class SignatureRegistry {
                             + " — a class that has a method from several supertypes that do not agree on it"
                             + " overrides it");
                 });
-        if (overrides.contains(EQUALS) && !overrides.contains(HASH_CODE)) {
+        if (members.overrides().contains(EQUALS) && !members.overrides().contains(HASH_CODE)) {
             throw new IllegalStateException("the declaration of " + owner + " is complete, and it overrides"
                     + " equals(java.lang.Object) but not hashCode(): equal objects must have equal hash codes,"
                     + " override both (javac -Xlint:overrides)");
@@ -368,10 +415,10 @@ final class SignatureRegistry {
     /// candidates of a call on a value of the class (JLS 15.12.2.1). The class is final, so no
     /// method is abstract.
     MethodTable table() {
-        Map<Boolean, Set<MethodSignature>> declared = methods.entrySet().stream()
+        Map<Boolean, Set<MethodSignature>> declared = members.methods().stream()
                 .collect(Collectors.partitioningBy(
-                        e -> e.getValue().kind() == InvocableKind.INSTANCE_METHOD,
-                        Collectors.mapping(Map.Entry::getKey, Collectors.toSet())));
+                        method -> method.kind() == InvocableKind.INSTANCE_METHOD,
+                        Collectors.mapping(Invocable::signature, Collectors.toSet())));
         Map<Boolean, Set<MethodSignature>> had = inherited
                 .groups()
                 .collect(Collectors.partitioningBy(
