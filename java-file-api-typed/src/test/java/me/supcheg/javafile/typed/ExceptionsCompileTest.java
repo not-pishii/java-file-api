@@ -65,7 +65,6 @@ class ExceptionsCompileTest {
 
         // static int twice(String s) throws IOException { return declared(s) + declared(s); }
         var member2 = cb.throwing(IOException_.TOKEN).declareStaticMethod("twice", PrimitiveToken.INT, String_.TOKEN);
-        cb.define(declared, (b, s) -> b.return_(call(new_(StringReader_.new_String, s), StringReader_.read)));
 
         // static int caught(String s) {
         //     StringReader r = new StringReader(s); r.close();
@@ -138,17 +137,19 @@ class ExceptionsCompileTest {
 
         // static void declaresUnchecked() throws RuntimeException { unchecked(); }
         var member16 = cb.throwing(RuntimeException_.TOKEN).declareVoidStaticMethod("declaresUnchecked");
-        cb.define(
+        var bodies = cb.bodies();
+        bodies.define(declared, (b, s) -> b.return_(call(new_(StringReader_.new_String, s), StringReader_.read)));
+        bodies.define(
                 ctor,
                 (b, _) -> b.exec(call(new_(StringReader_.new_String, literal("a")), StringReader_.read))
                         .end());
-        cb.define(
+        bodies.define(
                 member1,
                 b -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
                         t -> t.exec(new_(ctor)).return_(literal(1))));
-        cb.define(member2, (b, s) -> b.return_(addInt(staticCall(declared, s), staticCall(declared, s))));
-        cb.define(
+        bodies.define(member2, (b, s) -> b.return_(addInt(staticCall(declared, s), staticCall(declared, s))));
+        bodies.define(
                 member3,
                 (b, s) -> b.let(
                         StringReader_.TOKEN,
@@ -157,19 +158,19 @@ class ExceptionsCompileTest {
                                 .tryTerminated(
                                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))),
                                         t -> t.return_(call(r, StringReader_.read)))));
-        cb.define(
+        bodies.define(
                 member4,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
                         t -> t.throw_(new_(FileNotFoundException_.new_String, s))));
-        cb.define(
+        bodies.define(
                 member5,
                 (b, missing) -> b.tryTerminated(
                         h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1)))
                                 .catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
                         t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
                                 .throw_(new_(IOException_.new_))));
-        cb.define(
+        bodies.define(
                 member6,
                 (b, missing) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
@@ -177,18 +178,18 @@ class ExceptionsCompileTest {
                                 h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
                                 t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
                                         .throw_(new_(IOException_.new_)))));
-        cb.define(
+        bodies.define(
                 member7,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
                                 .finally_(f -> f.exec(call(s, String_.length))),
                         t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
-        cb.define(
+        bodies.define(
                 member8,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e))),
                         t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
-        cb.define(
+        bodies.define(
                 member9,
                 (b, s) -> b.letVar(
                         PrimitiveToken.INT,
@@ -199,30 +200,30 @@ class ExceptionsCompileTest {
                                         t -> t.exec(assign(
                                                 result, call(new_(StringReader_.new_String, s), StringReader_.read))))
                                 .return_(result)));
-        cb.define(
+        bodies.define(
                 member10,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(Exception_.TOKEN, (c, _) -> c.return_(literal(-1))),
                         t -> t.return_(staticCall(Integer_.parseInt_String, s))));
-        cb.define(
+        bodies.define(
                 member11,
                 (b, io) -> b.ifElse(
                         io, t -> t.throw_(new_(IOException_.new_)), e -> e.throw_(new_(InterruptedException_.new_))));
-        cb.define(member12, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
-        cb.define(
+        bodies.define(member12, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+        bodies.define(
                 member13,
                 (b, r) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
                         t -> t.exec(voidCall(r, Reader_.close)).return_(literal(1))));
-        cb.define(
+        bodies.define(
                 member14,
                 b -> b.tryTerminated(
                         h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
                         o -> o.tryTerminated(
                                 h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
                                 t -> t.throw_(new_(FileNotFoundException_.new_)))));
-        cb.define(member15, b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
-        cb.define(member16, b -> b.throw_(new_(RuntimeException_.new_String, literal("declared"))));
+        bodies.define(member15, b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
+        bodies.define(member16, b -> b.throw_(new_(RuntimeException_.new_String, literal("declared"))));
     }
 
     @Test

@@ -402,7 +402,7 @@ public final class FixtureRun {
             return declaring(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
-                    spec.build(h.extendsObject().body());
+                    spec.build(h.extendsObject().members());
                 }
             });
         }
@@ -417,7 +417,9 @@ public final class FixtureRun {
             return new TypedJavaFile.TypedClassSpec() {
                 @Override
                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                    cb.staticMethod("go", result, parameter, (b, p) -> b.return_(body.apply(p)));
+                    var own1 = cb.declareStaticMethod("go", result, parameter);
+                    var bodies = cb.bodies();
+                    bodies.define(own1, (b, p) -> b.return_(body.apply(p)));
                 }
             };
         }

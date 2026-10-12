@@ -19,100 +19,113 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
-import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody0;
-import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody1;
-import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody2;
 
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
-/// The declarations of the methods of a class being declared (§6.5): what
-/// the builder of its members ([MemberBuilder]) declares of them itself, and
-/// what its `throwing` declares with a `throws` clause
-/// ([ThrowingDeclarations]). The two differ in the clause alone.
+/// The declarations of the methods and constructors of a class being
+/// declared (§6.5): what the builder of its members ([MemberBuilder])
+/// declares of them itself, and what its `throwing` declares with a `throws`
+/// clause ([ThrowingDeclarations]). The two differ in the clause alone.
 ///
-/// What depends on the superclass of the class is declared by the interfaces
-/// a builder has beside: the overrides of the methods it inherits from the
-/// superclass ([OverridingDeclarations]) and its constructors
-/// ([ObjectConstructors]).
+/// **A declaration has no body.** It gives the fact of the member; the body
+/// is given to the stage after, [MemberBodies], which the builder of the
+/// members ends in. So every member of the class is declared before any body
+/// is built, and a body is lowered where it is defined, against all the
+/// class has.
 ///
-/// A method or constructor is declared, which gives its fact, and defined
-/// with a body by the builder of the class
-/// ([TypedClassBuilder#define(MethodRef0, InstanceBody0)] and its
-/// overloads); `method`, `voidMethod`, `staticMethod`, `voidStaticMethod` and
-/// `constructor` do both in one call.
+/// **Overriding is by the fact.** A method the class inherits is overridden
+/// by naming its fact, never by declaring a method of its name:
+/// `declareOverride(Object_.toString)` declares `@Override public String
+/// toString()`. A fact of the superclass `S` or of a class above it is taken
+/// as it is — javac holds the generator to it, `S` being the type the class
+/// was declared to extend; the method of an interface by the witness that
+/// the class is of the interface, `declareOverride(up, fact)`. The witness is
+/// asked for its type alone: that the compiler of the generator takes it is
+/// the proof that the class is of a type that has the method, and nothing of
+/// it is read. What the class inherits under the signature is held against
+/// the method where it is declared ([SignatureRegistry]).
 ///
 /// @param <Self> the brand of the class being declared
-public abstract sealed class Declarations<Self>
-        permits MemberBuilder, ThrowingDeclarations, ThrowingSubclassDeclarations {
+/// @param <S> the superclass of the class
+public abstract sealed class Declarations<Self, S> permits MemberBuilder, ThrowingDeclarations {
 
     Declarations() {}
 
-    /// The builder of the class the members are declared in and defined by.
-    abstract MemberBuilder<Self> builder();
-
-    /// These declarations themselves: what the default methods of the interfaces a builder has —
-    /// [OverridingDeclarations], [ObjectConstructors], [SubclassConstructors], [SuperAccess] — reach it
-    /// by. Of no use to a generator.
-    ///
-    /// @return these declarations
-    public final Declarations<Self> declarations() {
-        return this;
-    }
+    /// The builder of the class the members are declared in.
+    abstract MemberBuilder<Self, S> builder();
 
     /// The exception classes of the `throws` clause of every member declared here.
     abstract List<ClassToken<? extends Throwable>> thrown();
 
-    final <F extends Invocable> F declare(F member) {
+    private <F extends Invocable> F declare(F member) {
         return builder().declare(member, thrown());
     }
 
+    private <F extends Invocable> F overriding(F own) {
+        return builder().declareOverride(own, thrown());
+    }
+
     /// The traits of a member declared here: `traits`, with the `throws` clause.
-    final MemberTraits traits(MemberTraits traits) {
+    private MemberTraits traits(MemberTraits traits) {
         return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access());
     }
 
     // ------------------------------------------------------------------
-    // Constructors of a class with a superclass (SubclassConstructors)
+    // Constructors
     // ------------------------------------------------------------------
 
-    final <S> CtorRef0<Self> constructed(TypedSubclassBuilder.CtorBody0<Self, S> body) {
-        CtorRef0<Self> ctor = declare(UnsafeFacts.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
-        builder().defineWithSuper(ctor, body);
-        return ctor;
+    /// Declares a `public` constructor without parameters, to be defined by the bodies of the
+    /// class ([MemberBodies]).
+    ///
+    /// @return the fact of the constructor
+    /// @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public CtorRef0<Self> declareConstructor() {
+        return declare(UnsafeFacts.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
     }
 
-    final <S, A1> CtorRef1<Self, A1> constructed(TypeToken<A1> p1, TypedSubclassBuilder.CtorBody1<Self, S, A1> body) {
-        CtorRef1<Self, A1> ctor = declare(UnsafeFacts.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
-        builder().defineWithSuper(ctor, body);
-        return ctor;
+    /// Declares a `public` constructor with one parameter.
+    ///
+    /// @param p1 the parameter type
+    /// @param <A1> the parameter type
+    /// @return the fact of the constructor
+    /// @throws IllegalArgumentException if javac would reject the constructor
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <A1> CtorRef1<Self, A1> declareConstructor(TypeToken<A1> p1) {
+        return declare(UnsafeFacts.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
     }
 
-    final <S, A1, A2> CtorRef2<Self, A1, A2> constructed(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypedSubclassBuilder.CtorBody2<Self, S, A1, A2> body) {
-        CtorRef2<Self, A1, A2> ctor = declare(UnsafeFacts.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
-        builder().defineWithSuper(ctor, body);
-        return ctor;
+    /// Declares a `public` constructor with two parameters.
+    ///
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the constructor
+    /// @throws IllegalArgumentException if javac would reject the constructor
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <A1, A2> CtorRef2<Self, A1, A2> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
+        return declare(UnsafeFacts.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
     }
 
     // ------------------------------------------------------------------
-    // Declarations
+    // Methods
     // ------------------------------------------------------------------
 
-    /// Declares a `public` method returning `R`, to be defined with
-    /// [TypedClassBuilder#define(MethodRef0, InstanceBody0)].
+    /// Declares a `public` method returning `R`, to be defined by the bodies of the class
+    /// ([MemberBodies#define(MethodRef0, MemberBodies.InstanceBody0)]).
     ///
     /// @param name the method name
     /// @param result the result type
     /// @param <R> the result type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <R> MethodRef0<Self, R> declareMethod(String name, TypeToken<R> result) {
         return declare(UnsafeFacts.method(builder().self(), name, result, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public` method, to be defined with [TypedClassBuilder#define(MethodRef1, InstanceBody1)].
+    /// Declares a `public` method with one parameter.
     ///
     /// @param name the method name
     /// @param result the result type
@@ -121,11 +134,12 @@ public abstract sealed class Declarations<Self>
     /// @param <A1> the parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1> MethodRef1<Self, R, A1> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
         return declare(UnsafeFacts.method(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public` method, to be defined with [TypedClassBuilder#define(MethodRef2, InstanceBody2)].
+    /// Declares a `public` method with two parameters.
     ///
     /// @param name the method name
     /// @param result the result type
@@ -136,32 +150,35 @@ public abstract sealed class Declarations<Self>
     /// @param <A2> the second parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1, A2> MethodRef2<Self, R, A1, A2> declareMethod(
             String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2) {
         return declare(UnsafeFacts.method(builder().self(), name, result, p1, p2, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public void` method, to be defined with [TypedClassBuilder#define(VoidMethodRef0, InstanceBody0)].
+    /// Declares a `public void` method.
     ///
     /// @param name the method name
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public VoidMethodRef0<Self> declareVoidMethod(String name) {
         return declare(UnsafeFacts.voidMethod(builder().self(), name, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public void` method, to be defined with [TypedClassBuilder#define(VoidMethodRef1, InstanceBody1)].
+    /// Declares a `public void` method with one parameter.
     ///
     /// @param name the method name
     /// @param p1 the parameter type
     /// @param <A1> the parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <A1> VoidMethodRef1<Self, A1> declareVoidMethod(String name, TypeToken<A1> p1) {
         return declare(UnsafeFacts.voidMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public void` method, to be defined with [TypedClassBuilder#define(VoidMethodRef2, InstanceBody2)].
+    /// Declares a `public void` method with two parameters.
     ///
     /// @param name the method name
     /// @param p1 the first parameter type
@@ -170,22 +187,24 @@ public abstract sealed class Declarations<Self>
     /// @param <A2> the second parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <A1, A2> VoidMethodRef2<Self, A1, A2> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2) {
         return declare(UnsafeFacts.voidMethod(builder().self(), name, p1, p2, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public static` method, to be defined with [TypedClassBuilder#define(StaticMethodRef0, Function)].
+    /// Declares a `public static` method.
     ///
     /// @param name the method name
     /// @param result the result type
     /// @param <R> the result type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <R> StaticMethodRef0<R> declareStaticMethod(String name, TypeToken<R> result) {
         return declare(UnsafeFacts.staticMethod(builder().self(), name, result, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public static` method, to be defined with [TypedClassBuilder#define(StaticMethodRef1, BiFunction)].
+    /// Declares a `public static` method with one parameter.
     ///
     /// @param name the method name
     /// @param result the result type
@@ -194,318 +213,301 @@ public abstract sealed class Declarations<Self>
     /// @param <A1> the parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1> StaticMethodRef1<R, A1> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
         return declare(UnsafeFacts.staticMethod(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public static void` method, to be defined with
-    /// [TypedClassBuilder#define(VoidStaticMethodRef0, Function)].
+    /// Declares a `public static void` method.
     ///
     /// @param name the method name
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public VoidStaticMethodRef0 declareVoidStaticMethod(String name) {
         return declare(UnsafeFacts.voidStaticMethod(builder().self(), name, traits(MemberTraits.FINAL)));
     }
 
-    /// Declares a `public static void` method, to be defined with
-    /// [TypedClassBuilder#define(VoidStaticMethodRef1, BiFunction)].
+    /// Declares a `public static void` method with one parameter.
     ///
     /// @param name the method name
     /// @param p1 the parameter type
     /// @param <A1> the parameter type
     /// @return the fact of the method
     /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
     public <A1> VoidStaticMethodRef1<A1> declareVoidStaticMethod(String name, TypeToken<A1> p1) {
         return declare(UnsafeFacts.voidStaticMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
     }
 
     // ------------------------------------------------------------------
-    // Declare and define in one call
+    // Overrides of the methods of the superclass
     // ------------------------------------------------------------------
 
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken)].
+    /// Overrides a method the class inherits from its superclass: declares it anew, `@Override public`.
     ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param body the body, given its block and `this`
+    /// @param method the fact of the overridden method
     /// @param <R> the result type
-    /// @return the fact of the method
-    public <R> MethodRef0<Self, R> method(String name, TypeToken<R> result, InstanceBody0<Self, Body<R>, R> body) {
-        MethodRef0<Self, R> method = declareMethod(name, result);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R> MethodRef0<Self, R> declareOverride(MethodRef0<? super S, R> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken, TypeToken)].
+    /// Overrides a method with one parameter the class inherits from its superclass.
     ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
+    /// @param method the fact of the overridden method
     /// @param <R> the result type
     /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <R, A1> MethodRef1<Self, R, A1> method(
-            String name, TypeToken<R> result, TypeToken<A1> p1, InstanceBody1<Self, Body<R>, R, A1> body) {
-        MethodRef1<Self, R, A1> method = declareMethod(name, result, p1);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, A1> MethodRef1<Self, R, A1> declareOverride(MethodRef1<? super S, R, A1> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a method, see [#declareMethod(String, TypeToken, TypeToken, TypeToken)].
+    /// Overrides a method with two parameters the class inherits from its superclass.
     ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
+    /// @param method the fact of the overridden method
     /// @param <R> the result type
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    public <R, A1, A2> MethodRef2<Self, R, A1, A2> method(
-            String name,
-            TypeToken<R> result,
-            TypeToken<A1> p1,
-            TypeToken<A2> p2,
-            InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        MethodRef2<Self, R, A1, A2> method = declareMethod(name, result, p1, p2);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, A1, A2> MethodRef2<Self, R, A1, A2> declareOverride(MethodRef2<? super S, R, A1, A2> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String)].
+    /// Overrides a `void` method the class inherits from its superclass.
     ///
-    /// @param name the method name
-    /// @param body the body, given its block and `this`
-    /// @return the fact of the method
-    public VoidMethodRef0<Self> voidMethod(String name, InstanceBody0<Self, VoidBody, Void> body) {
-        VoidMethodRef0<Self> method = declareVoidMethod(name);
-        builder().define(method, body);
-        return method;
+    /// @param method the fact of the overridden method
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public VoidMethodRef0<Self> declareOverride(VoidMethodRef0<? super S> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String, TypeToken)].
+    /// Overrides a `void` method with one parameter the class inherits from its superclass.
     ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
+    /// @param method the fact of the overridden method
     /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <A1> VoidMethodRef1<Self, A1> voidMethod(
-            String name, TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        VoidMethodRef1<Self, A1> method = declareVoidMethod(name, p1);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <A1> VoidMethodRef1<Self, A1> declareOverride(VoidMethodRef1<? super S, A1> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a `void` method, see [#declareVoidMethod(String, TypeToken, TypeToken)].
+    /// Overrides a `void` method with two parameters the class inherits from its superclass.
     ///
-    /// @param name the method name
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
+    /// @param method the fact of the overridden method
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
-    /// @return the fact of the method
-    public <A1, A2> VoidMethodRef2<Self, A1, A2> voidMethod(
-            String name, TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        VoidMethodRef2<Self, A1, A2> method = declareVoidMethod(name, p1, p2);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <A1, A2> VoidMethodRef2<Self, A1, A2> declareOverride(VoidMethodRef2<? super S, A1, A2> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Declares and defines a static method, see [#declareStaticMethod(String, TypeToken)].
+    /// Overrides a method the class inherits from its superclass with a method of a narrower result
+    /// (JLS 8.4.5): `result` is a subtype of the result of the method — which the compiler of the
+    /// generator holds the token to — and is proven one of the result of every method the class
+    /// inherits under the signature ([Subtyping]).
     ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param body the body, given its block
-    /// @param <R> the result type
-    /// @return the fact of the method
-    public <R> StaticMethodRef0<R> staticMethod(
-            String name, TypeToken<R> result, Function<Body<R>, Terminated<R>> body) {
-        StaticMethodRef0<R> method = declareStaticMethod(name, result);
-        builder().define(method, body);
-        return method;
+    /// ```java
+    /// var clone = cb.declareOverride(cb.protected_(Object_.clone), cb.self());
+    /// ```
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, R2 extends R> MethodRef0<Self, R2> declareOverride(
+            MethodRef0<? super S, R> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
-    /// Declares and defines a static method, see [#declareStaticMethod(String, TypeToken, TypeToken)].
+    /// Overrides a method with one parameter of the superclass with a method of a narrower result,
+    /// see [#declareOverride(MethodRef0, RefToken)].
     ///
-    /// @param name the method name
-    /// @param result the result type
-    /// @param p1 the parameter type
-    /// @param body the body, given its block and the parameter
-    /// @param <R> the result type
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
     /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <R, A1> StaticMethodRef1<R, A1> staticMethod(
-            String name, TypeToken<R> result, TypeToken<A1> p1, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
-        StaticMethodRef1<R, A1> method = declareStaticMethod(name, result, p1);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, R2 extends R, A1> MethodRef1<Self, R2, A1> declareOverride(
+            MethodRef1<? super S, R, A1> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
-    /// Declares and defines a static `void` method, see [#declareVoidStaticMethod(String)].
+    /// Overrides a method with two parameters of the superclass with a method of a narrower
+    /// result, see [#declareOverride(MethodRef0, RefToken)].
     ///
-    /// @param name the method name
-    /// @param body the body, given its block
-    /// @return the fact of the method
-    public VoidStaticMethodRef0 voidStaticMethod(String name, Function<VoidBody, Terminated<Void>> body) {
-        VoidStaticMethodRef0 method = declareVoidStaticMethod(name);
-        builder().define(method, body);
-        return method;
+    /// @param method the fact of the overridden method
+    /// @param result the result type of the method of the class
+    /// @param <R> the result type of the overridden method
+    /// @param <R2> the result type of the method of the class
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, R2 extends R, A1, A2> MethodRef2<Self, R2, A1, A2> declareOverride(
+            MethodRef2<? super S, R, A1, A2> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
-    /// Declares and defines a static `void` method, see [#declareVoidStaticMethod(String, TypeToken)].
+    /// Overrides a method the class inherits from its superclass with a method whose result is the
+    /// class itself (JLS 8.4.5): that the class is of the result type of the method is said by the
+    /// witness `result` — the brand `Self` is a subtype of `Object` alone to the compiler of the
+    /// generator — and proven of every method the class inherits under the signature ([Subtyping]).
     ///
-    /// @param name the method name
-    /// @param p1 the parameter type
-    /// @param body the body, given its block and the parameter
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <R> the result type of the overridden method
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R> MethodRef0<Self, Self> declareOverride(
+            MethodRef0<? super S, R> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /// Overrides a method with one parameter of the superclass with a method whose result is the
+    /// class itself, see [#declareOverride(MethodRef0, Upcast)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <R> the result type of the overridden method
     /// @param <A1> the parameter type
-    /// @return the fact of the method
-    public <A1> VoidStaticMethodRef1<A1> voidStaticMethod(
-            String name, TypeToken<A1> p1, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
-        VoidStaticMethodRef1<A1> method = declareVoidStaticMethod(name, p1);
-        builder().define(method, body);
-        return method;
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, A1> MethodRef1<Self, Self, A1> declareOverride(
+            MethodRef1<? super S, R, A1> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /// Overrides a method with two parameters of the superclass with a method whose result is the
+    /// class itself, see [#declareOverride(MethodRef0, Upcast)].
+    ///
+    /// @param method the fact of the overridden method
+    /// @param result the witness that the class is of the result type of the method
+    /// @param <R> the result type of the overridden method
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the overriding method
+    /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <R, A1, A2> MethodRef2<Self, Self, A1, A2> declareOverride(
+            MethodRef2<? super S, R, A1, A2> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
     }
 
     // ------------------------------------------------------------------
-    // Overrides: a method the class inherits, named by its fact
+    // Overrides of the methods of an interface, by the witness of it
     // ------------------------------------------------------------------
 
     /// Overrides a method of a supertype the class has by the witness `up` — one that has a body
     /// there, a default method: an abstract one is implemented by the proof the supertype is
     /// declared with.
     ///
-    /// The witness is asked for its type alone, here and in every overload: that the compiler of
-    /// the generator takes it is the proof that the class is of a type that has the method, and
-    /// nothing of it is read. What the class inherits under the signature is held against the
-    /// method where it is declared ([SignatureRegistry]).
-    ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block and `this`
     /// @param <O> the type that declares the method
     /// @param <R> the result type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O, R> MethodRef0<Self, R> override(
-            Upcast<Self, ? extends O> up, MethodRef0<O, R> method, InstanceBody0<Self, Body<R>, R> body) {
-        return overridden(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R> MethodRef0<Self, R> declareOverride(Upcast<Self, ? extends O> up, MethodRef0<O, R> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Overrides a method with one parameter of a supertype the class has by the witness `up` — one that has a body
-    /// there, a default method: an abstract one is implemented by the proof the supertype is
-    /// declared with.
+    /// Overrides a method with one parameter of a supertype the class has by the witness `up`,
+    /// see [#declareOverride(Upcast, MethodRef0)].
     ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameter
     /// @param <O> the type that declares the method
     /// @param <R> the result type
     /// @param <A1> the parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O, R, A1> MethodRef1<Self, R, A1> override(
-            Upcast<Self, ? extends O> up, MethodRef1<O, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
-        return overridden(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, A1> MethodRef1<Self, R, A1> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef1<O, R, A1> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Overrides a method with two parameters of a supertype the class has by the witness `up` — one that has a body
-    /// there, a default method: an abstract one is implemented by the proof the supertype is
-    /// declared with.
+    /// Overrides a method with two parameters of a supertype the class has by the witness `up`,
+    /// see [#declareOverride(Upcast, MethodRef0)].
     ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameters
     /// @param <O> the type that declares the method
     /// @param <R> the result type
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O, R, A1, A2> MethodRef2<Self, R, A1, A2> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef2<O, R, A1, A2> method,
-            InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        return overridden(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, A1, A2> MethodRef2<Self, R, A1, A2> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef2<O, R, A1, A2> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Overrides a `void` method of a supertype the class has by the witness `up` — one that has a body
-    /// there, a default method: an abstract one is implemented by the proof the supertype is
-    /// declared with.
+    /// Overrides a `void` method of a supertype the class has by the witness `up`, see
+    /// [#declareOverride(Upcast, MethodRef0)].
     ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block and `this`
     /// @param <O> the type that declares the method
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O> VoidMethodRef0<Self> override(
-            Upcast<Self, ? extends O> up, VoidMethodRef0<O> method, InstanceBody0<Self, VoidBody, Void> body) {
-        return overridden(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O> VoidMethodRef0<Self> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef0<O> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Overrides a `void` method with one parameter of a supertype the class has by the witness `up` — one that has a
-    /// body
-    /// there, a default method: an abstract one is implemented by the proof the supertype is
-    /// declared with.
+    /// Overrides a `void` method with one parameter of a supertype the class has by the witness
+    /// `up`, see [#declareOverride(Upcast, MethodRef0)].
     ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameter
     /// @param <O> the type that declares the method
     /// @param <A1> the parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O, A1> VoidMethodRef1<Self, A1> override(
-            Upcast<Self, ? extends O> up, VoidMethodRef1<O, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        return overridden(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, A1> VoidMethodRef1<Self, A1> declareOverride(
+            Upcast<Self, ? extends O> up, VoidMethodRef1<O, A1> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
-    /// Overrides a `void` method with two parameters of a supertype the class has by the witness `up` — one that has a
-    /// body
-    /// there, a default method: an abstract one is implemented by the proof the supertype is
-    /// declared with.
+    /// Overrides a `void` method with two parameters of a supertype the class has by the witness
+    /// `up`, see [#declareOverride(Upcast, MethodRef0)].
     ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
-    /// @param body the body, given its block, `this` and the parameters
     /// @param <O> the type that declares the method
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
-    public <O, A1, A2> VoidMethodRef2<Self, A1, A2> override(
-            Upcast<Self, ? extends O> up,
-            VoidMethodRef2<O, A1, A2> method,
-            InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        return overridden(method, body);
-    }
-
-    final <R> MethodRef0<Self, R> overridden(MethodRef0<?, R> method, InstanceBody0<Self, Body<R>, R> body) {
-        MethodRef0<Self, R> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <R, A1> MethodRef1<Self, R, A1> overridden(
-            MethodRef1<?, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
-        MethodRef1<Self, R, A1> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
-            MethodRef2<?, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        MethodRef2<Self, R, A1, A2> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, A1, A2> VoidMethodRef2<Self, A1, A2> declareOverride(
+            Upcast<Self, ? extends O> up, VoidMethodRef2<O, A1, A2> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 
     /// Overrides a method of a supertype the class has by the witness `up` with a method of a
@@ -516,48 +518,41 @@ public abstract sealed class Declarations<Self>
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the result type of the method of the class
-    /// @param body the body, given its block and `this`
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @param <R2> the result type of the method of the class
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R, R2 extends R> MethodRef0<Self, R2> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef0<O, R> method,
-            RefToken<R2> result,
-            InstanceBody0<Self, Body<R2>, R2> body) {
-        return overridden(method, result, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, R2 extends R> MethodRef0<Self, R2> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef0<O, R> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
     /// Overrides a method with one parameter of a supertype the class has by the witness `up`
-    /// with a method of a narrower result, see [#override(Upcast, MethodRef0, RefToken, InstanceBody0)].
+    /// with a method of a narrower result, see [#declareOverride(Upcast, MethodRef0, RefToken)].
     ///
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the result type of the method of the class
-    /// @param body the body, given its block, `this` and the parameter
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @param <R2> the result type of the method of the class
     /// @param <A1> the parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R, R2 extends R, A1> MethodRef1<Self, R2, A1> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef1<O, R, A1> method,
-            RefToken<R2> result,
-            InstanceBody1<Self, Body<R2>, R2, A1> body) {
-        return overridden(method, result, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, R2 extends R, A1> MethodRef1<Self, R2, A1> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef1<O, R, A1> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
     /// Overrides a method with two parameters of a supertype the class has by the witness `up`
-    /// with a method of a narrower result, see [#override(Upcast, MethodRef0, RefToken, InstanceBody0)].
+    /// with a method of a narrower result, see [#declareOverride(Upcast, MethodRef0, RefToken)].
     ///
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the result type of the method of the class
-    /// @param body the body, given its block, `this` and the parameters
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @param <R2> the result type of the method of the class
@@ -565,36 +560,10 @@ public abstract sealed class Declarations<Self>
     /// @param <A2> the second parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R, R2 extends R, A1, A2> MethodRef2<Self, R2, A1, A2> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef2<O, R, A1, A2> method,
-            RefToken<R2> result,
-            InstanceBody2<Self, Body<R2>, R2, A1, A2> body) {
-        return overridden(method, result, body);
-    }
-
-    final <R> MethodRef0<Self, R> overridden(
-            MethodRef0<?, ? super R> method, RefToken<R> result, InstanceBody0<Self, Body<R>, R> body) {
-        MethodRef0<Self, R> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <R, A1> MethodRef1<Self, R, A1> overridden(
-            MethodRef1<?, ? super R, A1> method, RefToken<R> result, InstanceBody1<Self, Body<R>, R, A1> body) {
-        MethodRef1<Self, R, A1> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <R, A1, A2> MethodRef2<Self, R, A1, A2> overridden(
-            MethodRef2<?, ? super R, A1, A2> method, RefToken<R> result, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        MethodRef2<Self, R, A1, A2> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, result, thrown()), thrown());
-        builder().define(own, body);
-        return own;
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, R2 extends R, A1, A2> MethodRef2<Self, R2, A1, A2> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef2<O, R, A1, A2> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
     }
 
     /// Overrides a method of a supertype the class has by the witness `up` with a method whose
@@ -605,103 +574,48 @@ public abstract sealed class Declarations<Self>
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the witness that the class is of the result type of the method
-    /// @param body the body, given its block and `this`
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R> MethodRef0<Self, Self> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef0<O, R> method,
-            Upcast<Self, ? extends R> result,
-            InstanceBody0<Self, Body<Self>, Self> body) {
-        return overriddenOfSelf(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R> MethodRef0<Self, Self> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef0<O, R> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
     }
 
     /// Overrides a method with one parameter of a supertype the class has by the witness `up` with
-    /// a method whose result is the class itself, see [#override(Upcast, MethodRef0, Upcast, InstanceBody0)].
+    /// a method whose result is the class itself, see [#declareOverride(Upcast, MethodRef0, Upcast)].
     ///
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the witness that the class is of the result type of the method
-    /// @param body the body, given its block, `this` and the parameter
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @param <A1> the parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R, A1> MethodRef1<Self, Self, A1> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef1<O, R, A1> method,
-            Upcast<Self, ? extends R> result,
-            InstanceBody1<Self, Body<Self>, Self, A1> body) {
-        return overriddenOfSelf(method, body);
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, A1> MethodRef1<Self, Self, A1> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef1<O, R, A1> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
     }
 
     /// Overrides a method with two parameters of a supertype the class has by the witness `up` with
-    /// a method whose result is the class itself, see [#override(Upcast, MethodRef0, Upcast, InstanceBody0)].
+    /// a method whose result is the class itself, see [#declareOverride(Upcast, MethodRef0, Upcast)].
     ///
     /// @param up the witness that the class is of the supertype
     /// @param method the fact of the overridden method
     /// @param result the witness that the class is of the result type of the method
-    /// @param body the body, given its block, `this` and the parameters
     /// @param <O> the type that has the method
     /// @param <R> the result type of the overridden method
     /// @param <A1> the first parameter type
     /// @param <A2> the second parameter type
     /// @return the fact of the overriding method
     /// @throws IllegalArgumentException if the method cannot be overridden so, see [SignatureRegistry]
-    public <O, R, A1, A2> MethodRef2<Self, Self, A1, A2> override(
-            Upcast<Self, ? extends O> up,
-            MethodRef2<O, R, A1, A2> method,
-            Upcast<Self, ? extends R> result,
-            InstanceBody2<Self, Body<Self>, Self, A1, A2> body) {
-        return overriddenOfSelf(method, body);
-    }
-
-    final MethodRef0<Self, Self> overriddenOfSelf(MethodRef0<?, ?> method, InstanceBody0<Self, Body<Self>, Self> body) {
-        MethodRef0<Self, Self> own =
-                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <A1> MethodRef1<Self, Self, A1> overriddenOfSelf(
-            MethodRef1<?, ?, A1> method, InstanceBody1<Self, Body<Self>, Self, A1> body) {
-        MethodRef1<Self, Self, A1> own =
-                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <A1, A2> MethodRef2<Self, Self, A1, A2> overriddenOfSelf(
-            MethodRef2<?, ?, A1, A2> method, InstanceBody2<Self, Body<Self>, Self, A1, A2> body) {
-        MethodRef2<Self, Self, A1, A2> own =
-                builder().declareOverride(Overrides.ownOfSelf(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final VoidMethodRef0<Self> overridden(VoidMethodRef0<?> method, InstanceBody0<Self, VoidBody, Void> body) {
-        VoidMethodRef0<Self> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <A1> VoidMethodRef1<Self, A1> overridden(
-            VoidMethodRef1<?, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        VoidMethodRef1<Self, A1> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
-    }
-
-    final <A1, A2> VoidMethodRef2<Self, A1, A2> overridden(
-            VoidMethodRef2<?, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        VoidMethodRef2<Self, A1, A2> own =
-                builder().declareOverride(Overrides.own(builder().self(), method, thrown()), thrown());
-        builder().define(own, body);
-        return own;
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public <O, R, A1, A2> MethodRef2<Self, Self, A1, A2> declareOverride(
+            Upcast<Self, ? extends O> up, MethodRef2<O, R, A1, A2> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
     }
 }

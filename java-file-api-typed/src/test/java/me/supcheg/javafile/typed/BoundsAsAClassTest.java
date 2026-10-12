@@ -50,7 +50,7 @@ class BoundsAsAClassTest {
                     @Override
                     public <Self, T extends B> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         h.bound(t, further);
-                        h.extendsObject().body();
+                        h.extendsObject().members().bodies();
                     }
                 });
     }
@@ -139,11 +139,12 @@ class BoundsAsAClassTest {
                     @Override
                     public <Self, T extends Base> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         Upcast<T, Sealing> asSealing = h.bound(t, Sealing_.TOKEN);
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var member1 = cb.declareConstructor();
                         var member2 = cb.declareMethod("go", String_.TOKEN, t);
-                        cb.define(member1, (b, self) -> b.end());
-                        cb.define(member2, (b, self, v) -> b.return_(call(asSealing.apply(v), Sealing_.sealed)));
+                        var bodies = cb.bodies();
+                        bodies.define(member1, (b, self) -> b.end());
+                        bodies.define(member2, (b, self, v) -> b.return_(call(asSealing.apply(v), Sealing_.sealed)));
                     }
                 }));
 

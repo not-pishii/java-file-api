@@ -264,11 +264,9 @@ class JdkTypesTest {
                         return TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.staticMethod(
-                                                "go",
-                                                PrimitiveToken.INT,
-                                                String_.TOKEN,
-                                                (b, s) -> b.return_(call(
+                                        var go = cb.declareStaticMethod("go", PrimitiveToken.INT, String_.TOKEN);
+                                        var bodies = cb.bodies();
+                                        bodies.define(go, (b, s) -> b.return_(call(
                                                         s,
                                                         String_.indexOf_int_int_int,
                                                         literal(1),
@@ -403,16 +401,11 @@ class JdkTypesTest {
                     me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.staticMethod(
-                                                "capacity",
-                                                PrimitiveToken.INT,
-                                                StringBuilder_.TOKEN,
-                                                (b, builder) -> b.return_(call(builder, StringBuilder_.capacity)));
-                                        cb.staticMethod(
-                                                "locsig",
-                                                PrimitiveToken.LONG,
-                                                StringBuilder_.TOKEN,
-                                                (b, builder) -> b.return_(staticField(ZipFile_.LOCSIG)));
+                                        var capacity = cb.declareStaticMethod("capacity", PrimitiveToken.INT, StringBuilder_.TOKEN);
+                                        var locsig = cb.declareStaticMethod("locsig", PrimitiveToken.LONG, StringBuilder_.TOKEN);
+                                        var bodies = cb.bodies();
+                                        bodies.define(capacity, (b, builder) -> b.return_(call(builder, StringBuilder_.capacity)));
+                                        bodies.define(locsig, (b, builder) -> b.return_(staticField(ZipFile_.LOCSIG)));
                                     }
                                 })
                                 .render();

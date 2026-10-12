@@ -1,7 +1,9 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.FactLookupException;
+import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.SubTwin;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -16,7 +18,6 @@ import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
-import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// A superclass with overloads that erase alike under its type arguments
@@ -40,12 +41,32 @@ class SuperTwinsTest {
         return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, spec);
     }
 
-    /// The members of a class that extends `SubTwin<String>` and overrides both pairs.
-    private static <Self> TypedSubclassBuilder<Self, SubTwin<String>> overriding(ClassHeader<Self> h) {
-        var cb = began(h.extends_(SUB.extend(h.self())), ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
-        cb.override(BASE.m_T, (b, self, v) -> b.return_(concat(literal("mine:"), v)));
-        cb.override(cb.protected_(BASE.p_T), (b, self, v) -> b.return_(concat(literal("mine:"), v)));
-        return cb;
+    /// The members of a class that extends `SubTwin<String>` and overrides both pairs, as they are declared.
+    ///
+    /// @param cb the builder of the members, for what a test declares more
+    /// @param ctor the constructor
+    /// @param m the override of `m`
+    /// @param p the override of `p`
+    private record Twins<Self>(
+            TypedSubclassBuilder<Self, SubTwin<String>> cb,
+            CtorRef0<Self> ctor,
+            MethodRef1<Self, String, String> m,
+            MethodRef1<Self, String, String> p) {
+
+        /// Ends the declarations and defines what the helper declared.
+        TypedSubclassBodies<Self, SubTwin<String>> bodies() {
+            var bodies = cb.bodies(ctor, c -> c.super_(SUB.new_, (b, self) -> b.end()));
+            bodies.define(m, (b, self, v) -> b.return_(concat(literal("mine:"), v)));
+            bodies.define(p, (b, self, v) -> b.return_(concat(literal("mine:"), v)));
+            return bodies;
+        }
+    }
+
+    private static <Self> Twins<Self> overriding(ClassHeader<Self> h) {
+        var sh = h.extends_(SUB.extend(h.self()));
+        var ctor = sh.declareConstructor();
+        var cb = sh.members();
+        return new Twins<>(cb, ctor, cb.declareOverride(BASE.m_T), cb.declareOverride(cb.protected_(BASE.p_T)));
     }
 
     @Test
@@ -56,9 +77,11 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = overriding(h);
+                        var twins = overriding(h);
+                        var cb = twins.cb();
                         var member1 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(member1, (b, self) -> b.return_(cb.superCall(self, BASE.m_T, literal("x"))));
+                        var bodies = twins.bodies();
+                        bodies.define(member1, (b, self) -> b.return_(bodies.superCall(self, BASE.m_T, literal("x"))));
                     }
                 }),
                 "super.m(...) cannot name",
@@ -71,9 +94,12 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = overriding(h);
+                        var twins = overriding(h);
+                        var cb = twins.cb();
                         var member2 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(member2, (b, self) -> b.return_(cb.superCall(self, SUB.m_String, literal("x"))));
+                        var bodies = twins.bodies();
+                        bodies.define(
+                                member2, (b, self) -> b.return_(bodies.superCall(self, SUB.m_String, literal("x"))));
                     }
                 }),
                 "as the overload declared m(#0) is",
@@ -86,10 +112,12 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = overriding(h);
+                        var twins = overriding(h);
+                        var cb = twins.cb();
                         var p = cb.protected_(BASE.p_T);
                         var member3 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(member3, (b, self) -> b.return_(cb.superCall(self, p, literal("x"))));
+                        var bodies = twins.bodies();
+                        bodies.define(member3, (b, self) -> b.return_(bodies.superCall(self, p, literal("x"))));
                     }
                 }),
                 "super.p(...) cannot name",
@@ -104,12 +132,14 @@ class SuperTwinsTest {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
-                var cb = overriding(h);
+                var twins = overriding(h);
+                var cb = twins.cb();
                 var p = cb.protected_(BASE.p_T);
                 var member4 = cb.declareMethod("f", String_.TOKEN);
                 var member5 = cb.declareMethod("g", String_.TOKEN);
-                cb.define(member4, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
-                cb.define(member5, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
+                var bodies = twins.bodies();
+                bodies.define(member4, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
+                bodies.define(member5, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
             }
         }));
 
@@ -126,7 +156,9 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        began(h.extends_(SUB.extend(h.self())), ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
+                        var sh = h.extends_(SUB.extend(h.self()));
+                        var ctor4 = sh.declareConstructor();
+                        sh.members().bodies(ctor4, ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
                     }
                 }),
                 "are unrelated methods of the classes above, of one signature in the class",
@@ -144,12 +176,14 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = overriding(h);
+                        var twins = overriding(h);
+                        var cb = twins.cb();
                         var member6 = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
                         var member7 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(member6, (b, self, v) -> b.return_(literal("own")));
-                        cb.define(
+                        var bodies = twins.bodies();
+                        bodies.define(member6, (b, self, v) -> b.return_(literal("own")));
+                        bodies.define(
                                 member7,
                                 (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
                     }
@@ -164,10 +198,12 @@ class SuperTwinsTest {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
-                var cb = overriding(h);
+                var twins = overriding(h);
+                var cb = twins.cb();
                 var g = cb.protected_(BASE.g_U(String_.TOKEN));
                 var member8 = cb.declareMethod("f", String_.TOKEN);
-                cb.define(member8, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                var bodies = twins.bodies();
+                bodies.define(member8, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
             }
         }));
 
@@ -184,10 +220,12 @@ class SuperTwinsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = overriding(h);
+                        var twins = overriding(h);
+                        var cb = twins.cb();
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
                         var member9 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(member9, (b, self) -> b.return_(cb.superCall(self, g, literal("x"))));
+                        var bodies = twins.bodies();
+                        bodies.define(member9, (b, self) -> b.return_(bodies.superCall(self, g, literal("x"))));
                     }
                 }),
                 "the method is generic, and a generic method of a superclass is neither called as super.g(...)",

@@ -49,11 +49,11 @@ class GenericInheritanceTest {
                         var sh = h.extends_(carrier.extend(h.self()));
                         Upcast<Self, Carrying<T>> asCarrying =
                                 sh.implements_(carrying.implement(h.self()).carried(sh.inherited(carrier.carried)));
-                        var cb = sh.body(
-                                sh.declareConstructor(t),
-                                (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
+                        var first = sh.declareConstructor(t);
+                        var cb = sh.members();
                         var member1 = cb.declareMethod("go", t);
-                        cb.define(member1, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
+                        var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
+                        bodies.define(member1, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
                     }
                 }));
 
@@ -74,14 +74,16 @@ class GenericInheritanceTest {
                     public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var base = new BaseTwin_<>(t);
                         var sh = h.extends_(base.extend(h.self()));
-                        var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(base.new_, (b, self) -> b.end()));
+                        var first = sh.declareConstructor();
+                        var cb = sh.members();
                         var p = cb.protected_(base.p_T);
                         var member2 = cb.declareMethod("go", String_.TOKEN, t);
                         var member3 = cb.declareMethod("pub", String_.TOKEN, t);
-                        cb.define(
+                        var bodies = cb.bodies(first, ctor -> ctor.super_(base.new_, (b, self) -> b.end()));
+                        bodies.define(
                                 member2,
                                 (b, self, v) -> b.return_(call(cb.asSuper().apply(self), p, v)));
-                        cb.define(
+                        bodies.define(
                                 member3,
                                 (b, self, v) -> b.return_(call(cb.asSuper().apply(self), base.m_T, v)));
                     }
@@ -107,11 +109,12 @@ class GenericInheritanceTest {
                 new TypedJavaFile.TypedGenericClassSpec1<Op>() {
                     @Override
                     public <Self, E extends Op> void build(ClassHeader<Self> h, TypeVarToken<E> e) {
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var member4 = cb.declareConstructor();
                         var member5 = cb.declareMethod("go", PrimitiveToken.INT, e);
-                        cb.define(member4, (b, self) -> b.end());
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(member4, (b, self) -> b.end());
+                        bodies.define(
                                 member5,
                                 (b, self, v) -> b.return_(switch_(
                                         Op_.TOKEN,
@@ -142,11 +145,13 @@ class GenericInheritanceTest {
                         var label = h.overriding(Labelled_.label, t);
                         var oh = h.extendsObject();
                         oh.implements_(Labelled_.implement(h.self()).label(label));
-                        var cb = oh.body();
-                        var held = cb.mutableField("held", t, literalNull(t));
+                        var cb = oh.members();
+                        var held = cb.declareMutableField("held", t);
                         var member6 = cb.declareConstructor(t);
-                        cb.define(label.method(), (b, self) -> b.return_(field(self, held)));
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.initialize(held, literalNull(t));
+                        bodies.define(label.method(), (b, self) -> b.return_(field(self, held)));
+                        bodies.define(
                                 member6,
                                 (b, self, v) ->
                                         b.exec(assignField(self, held, v)).end());
@@ -174,14 +179,16 @@ class GenericInheritanceTest {
                         var accept = h.overriding(consumer.accept_T);
                         var oh = h.extendsObject();
                         oh.implements_(consumer.implement(h.self()).accept_T(accept));
-                        var cb = oh.body();
-                        var seen = cb.mutableField("seen", PrimitiveToken.INT, literal(0));
+                        var cb = oh.members();
+                        var seen = cb.declareMutableField("seen", PrimitiveToken.INT);
                         var member7 = cb.declareConstructor();
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.initialize(seen, literal(0));
+                        bodies.define(
                                 accept.method(),
                                 (b, self, v) -> b.exec(assignField(self, seen, call(v, Number_.intValue)))
                                         .end());
-                        cb.define(member7, (b, self) -> b.end());
+                        bodies.define(member7, (b, self) -> b.end());
                     }
                 }));
 

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
@@ -66,21 +67,19 @@ class SwitchCompileTest {
 
     @BeforeAll
     static void compile() {
-        compiled = CompiledClasses.of(
-                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+        compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cases(cb);
-                        places(cb);
-                        blocks(cb);
-                        enums(cb);
-                        syntax(cb);
+                        var defined = List.of(cases(cb), places(cb), blocks(cb), enums(cb), syntax(cb));
+                        var bodies = cb.bodies();
+                        defined.forEach(define -> define.accept(bodies));
                     }
                 }));
     }
 
     /// The shapes of the cases: values and blocks, one constant and several, with and without a default.
-    private static <Self> void cases(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> cases(TypedClassBuilder<Self> cb) {
         // return switch (s) { case RED -> "stop"; case AMBER -> "wait"; case GREEN -> "go"; };
         var member1 = cb.declareStaticMethod("advice", String_.TOKEN, Signal_.TOKEN);
 
@@ -99,66 +98,71 @@ class SwitchCompileTest {
         // static Signal next(Signal s): enum constants as values
         var member6 = cb.declareStaticMethod("next", Signal_.TOKEN, Signal_.TOKEN);
         var member7 = cb.declareStaticMethod("isRed", PrimitiveToken.BOOLEAN, Signal_.TOKEN);
-        cb.define(
-                member1,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        String_.TOKEN,
-                        c -> c.case_(Signal_.RED, literal("stop"))
-                                .case_(Signal_.AMBER, literal("wait"))
-                                .case_(Signal_.GREEN, literal("go")))));
-        cb.define(
-                member2,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        PrimitiveToken.BOOLEAN,
-                        c -> c.case_(List.of(Signal_.RED, Signal_.AMBER), literal(false))
-                                .default_(literal(true)))));
-        cb.define(
-                member3,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        String_.TOKEN,
-                        c -> c.case_(
-                                        Signal_.GREEN,
-                                        y -> y.let(String_.TOKEN, literal("g"), v -> y.yield_(concat(v, literal("o")))))
-                                .default_(y -> y.yield_(literal("no"))))));
-        cb.define(
-                member4,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        String_.TOKEN,
-                        c -> c.case_(
-                                        Signal_.AMBER,
-                                        y -> y.throw_(new_(IllegalStateException_.new_String, literal("amber"))))
-                                .case_(List.of(Signal_.RED, Signal_.GREEN), y -> y.yield_(literal("fine"))))));
-        cb.define(
-                member5,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        Object_.TOKEN,
-                        c -> c.case_(Signal_.RED, literal("red"))
-                                .case_(Signal_.AMBER, y -> y.yield_(box(PrimitiveToken.INT, literal(1))))
-                                .default_(s))));
-        cb.define(
-                member6,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        Signal_.TOKEN,
-                        c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
-                                .case_(Signal_.GREEN, enumConstant(Signal_.AMBER))
-                                .case_(Signal_.AMBER, enumConstant(Signal_.RED)))));
-        cb.define(member7, (b, s) -> b.return_(eqRef(s, enumConstant(Signal_.RED))));
+        return bodies -> {
+            bodies.define(
+                    member1,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.case_(Signal_.RED, literal("stop"))
+                                    .case_(Signal_.AMBER, literal("wait"))
+                                    .case_(Signal_.GREEN, literal("go")))));
+            bodies.define(
+                    member2,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            PrimitiveToken.BOOLEAN,
+                            c -> c.case_(List.of(Signal_.RED, Signal_.AMBER), literal(false))
+                                    .default_(literal(true)))));
+            bodies.define(
+                    member3,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.case_(
+                                            Signal_.GREEN,
+                                            y -> y.let(
+                                                    String_.TOKEN,
+                                                    literal("g"),
+                                                    v -> y.yield_(concat(v, literal("o")))))
+                                    .default_(y -> y.yield_(literal("no"))))));
+            bodies.define(
+                    member4,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.case_(
+                                            Signal_.AMBER,
+                                            y -> y.throw_(new_(IllegalStateException_.new_String, literal("amber"))))
+                                    .case_(List.of(Signal_.RED, Signal_.GREEN), y -> y.yield_(literal("fine"))))));
+            bodies.define(
+                    member5,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            Object_.TOKEN,
+                            c -> c.case_(Signal_.RED, literal("red"))
+                                    .case_(Signal_.AMBER, y -> y.yield_(box(PrimitiveToken.INT, literal(1))))
+                                    .default_(s))));
+            bodies.define(
+                    member6,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            Signal_.TOKEN,
+                            c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
+                                    .case_(Signal_.GREEN, enumConstant(Signal_.AMBER))
+                                    .case_(Signal_.AMBER, enumConstant(Signal_.RED)))));
+            bodies.define(member7, (b, s) -> b.return_(eqRef(s, enumConstant(Signal_.RED))));
+        };
     }
 
     /// The places a `switch` stands in: an operand, a receiver, a selector, a lambda, a field.
-    private static <Self> void places(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> places(TypedClassBuilder<Self> cb) {
         // return (switch (s) { ... }).length() + switch (s) { ... };
         var member8 = cb.declareStaticMethod("lengthPlusRank", PrimitiveToken.INT, Signal_.TOKEN);
 
@@ -172,74 +176,77 @@ class SwitchCompileTest {
         var member11 = cb.declareStaticMethod("supplier", STRINGS.token, Signal_.TOKEN);
 
         // public final String initial = switch (Signal.valueOf("RED")) { case RED -> { yield "r"; } default -> "?"; };
-        var initial = cb.field(
-                "initial",
-                String_.TOKEN,
-                switch_(
-                        Signal_.TOKEN,
-                        staticCall(Signal_.valueOf_String, literal("RED")),
-                        String_.TOKEN,
-                        c -> c.case_(Signal_.RED, y -> y.yield_(literal("r"))).default_(literal("?"))));
+        var initial = cb.declareField("initial", String_.TOKEN);
         var member12 = cb.declareMethod("initial", String_.TOKEN);
-        cb.define(
-                member8,
-                (b, s) -> b.return_(addInt(
-                        call(
-                                switch_(
-                                        Signal_.TOKEN,
-                                        s,
-                                        String_.TOKEN,
-                                        c -> c.case_(Signal_.RED, literal("stop"))
-                                                .default_(literal("go"))),
-                                String_.length),
-                        switch_(
-                                Signal_.TOKEN,
-                                s,
-                                PrimitiveToken.INT,
-                                c -> c.case_(Signal_.RED, literal(10))
-                                        .case_(Signal_.AMBER, literal(20))
-                                        .case_(Signal_.GREEN, literal(30))))));
-        cb.define(
-                member9,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        switch_(
-                                Signal_.TOKEN,
-                                s,
-                                Signal_.TOKEN,
-                                c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
-                                        .default_(enumConstant(Signal_.RED))),
-                        String_.TOKEN,
-                        c -> c.case_(Signal_.GREEN, literal("go"))
-                                .default_(switch_(
-                                        Signal_.TOKEN,
-                                        s,
-                                        String_.TOKEN,
-                                        inner -> inner.case_(Signal_.GREEN, literal("was green"))
-                                                .default_(literal("was amber")))))));
-        cb.define(
-                member10,
-                (b, s) -> b.return_(lambda(
-                        STRINGS.sam,
-                        () -> switch_(
-                                Signal_.TOKEN,
-                                s,
-                                String_.TOKEN,
-                                c -> c.case_(Signal_.RED, y -> y.yield_(literal("stop")))
-                                        .default_(literal("go"))))));
-        cb.define(
-                member11,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        STRINGS.token,
-                        c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
-                                .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
-        cb.define(member12, (b, self) -> b.return_(Expressions.field(self, initial)));
+        return bodies -> {
+            bodies.initialize(
+                    initial,
+                    switch_(
+                            Signal_.TOKEN,
+                            staticCall(Signal_.valueOf_String, literal("RED")),
+                            String_.TOKEN,
+                            c -> c.case_(Signal_.RED, y -> y.yield_(literal("r")))
+                                    .default_(literal("?"))));
+            bodies.define(
+                    member8,
+                    (b, s) -> b.return_(addInt(
+                            call(
+                                    switch_(
+                                            Signal_.TOKEN,
+                                            s,
+                                            String_.TOKEN,
+                                            c -> c.case_(Signal_.RED, literal("stop"))
+                                                    .default_(literal("go"))),
+                                    String_.length),
+                            switch_(
+                                    Signal_.TOKEN,
+                                    s,
+                                    PrimitiveToken.INT,
+                                    c -> c.case_(Signal_.RED, literal(10))
+                                            .case_(Signal_.AMBER, literal(20))
+                                            .case_(Signal_.GREEN, literal(30))))));
+            bodies.define(
+                    member9,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            switch_(
+                                    Signal_.TOKEN,
+                                    s,
+                                    Signal_.TOKEN,
+                                    c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
+                                            .default_(enumConstant(Signal_.RED))),
+                            String_.TOKEN,
+                            c -> c.case_(Signal_.GREEN, literal("go"))
+                                    .default_(switch_(
+                                            Signal_.TOKEN,
+                                            s,
+                                            String_.TOKEN,
+                                            inner -> inner.case_(Signal_.GREEN, literal("was green"))
+                                                    .default_(literal("was amber")))))));
+            bodies.define(
+                    member10,
+                    (b, s) -> b.return_(lambda(
+                            STRINGS.sam,
+                            () -> switch_(
+                                    Signal_.TOKEN,
+                                    s,
+                                    String_.TOKEN,
+                                    c -> c.case_(Signal_.RED, y -> y.yield_(literal("stop")))
+                                            .default_(literal("go"))))));
+            bodies.define(
+                    member11,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            STRINGS.token,
+                            c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
+                                    .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
+            bodies.define(member12, (b, self) -> b.return_(Expressions.field(self, initial)));
+        };
     }
 
     /// What the block of a case may do: assign a variable of the code around it, loop, catch, throw.
-    private static <Self> void blocks(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> blocks(TypedClassBuilder<Self> cb) {
         // int n = 0; String r = switch (s) { case RED -> { n = 1; yield "r"; } default -> { n = 2; yield "x"; } };
         var member13 = cb.declareStaticMethod("counted", String_.TOKEN, Signal_.TOKEN);
 
@@ -252,117 +259,125 @@ class SwitchCompileTest {
 
         // ... or of a try in the block, or around the switch
         var member16 = cb.declareStaticMethod("caught", PrimitiveToken.INT, Signal_.TOKEN);
-        cb.define(
-                member13,
-                (b, s) -> b.letVar(
-                        PrimitiveToken.INT,
-                        literal(0),
-                        n -> b.let(
-                                String_.TOKEN,
-                                switch_(
-                                        Signal_.TOKEN,
-                                        s,
-                                        String_.TOKEN,
-                                        c -> c.case_(
-                                                        Signal_.RED,
-                                                        y -> y.exec(assign(n, literal(1)))
-                                                                .yield_(literal("r")))
-                                                .default_(y -> y.exec(assign(n, literal(2)))
-                                                        .yield_(literal("x")))),
-                                r -> b.return_(concat(r, call(box(PrimitiveToken.INT, n), Integer_.toString))))));
-        cb.define(
-                member14,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        PrimitiveToken.INT,
-                        c -> c.case_(
-                                        Signal_.RED,
-                                        y -> y.letVar(
-                                                PrimitiveToken.INT,
-                                                literal(0),
-                                                i -> y.while_(
-                                                                literal(true),
-                                                                (loop, ctl) -> loop.if_(
-                                                                                geInt(i, literal(3)),
-                                                                                t -> t.break_(ctl))
-                                                                        .exec(assign(i, addInt(i, literal(1)))))
-                                                        .yield_(i)))
-                                .default_(y -> y.ifElse(
-                                        eqRef(s, enumConstant(Signal_.AMBER)),
-                                        t -> t.yield_(literal(-1)),
-                                        e -> e.yield_(literal(-2)))))));
-        cb.define(
-                member15,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        PrimitiveToken.INT,
-                        c -> c.case_(
-                                        Signal_.RED,
-                                        y -> y.yield_(
-                                                call(new_(StringReader_.new_String, literal("")), StringReader_.read)))
-                                .case_(Signal_.AMBER, y -> y.throw_(new_(IOException_.new_String, literal("amber"))))
-                                .default_(call(new_(StringReader_.new_String, literal("g")), StringReader_.read)))));
-        cb.define(
-                member16,
-                (b, s) -> b.tryTerminated(
-                        h -> h.catch_(IOException_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
-                        t -> t.return_(switch_(
-                                Signal_.TOKEN,
-                                s,
-                                PrimitiveToken.INT,
-                                c -> c.case_(
-                                                Signal_.RED,
-                                                y -> y.tryTerminated(
-                                                        h -> h.catch_(
-                                                                IOException_.TOKEN,
-                                                                (handler, _) -> handler.yield_(literal(-2))),
-                                                        body -> body.throw_(
-                                                                new_(IOException_.new_String, literal("red")))))
-                                        .default_(y -> y.throw_(new_(IOException_.new_String, literal("other"))))))));
+        return bodies -> {
+            bodies.define(
+                    member13,
+                    (b, s) -> b.letVar(
+                            PrimitiveToken.INT,
+                            literal(0),
+                            n -> b.let(
+                                    String_.TOKEN,
+                                    switch_(
+                                            Signal_.TOKEN,
+                                            s,
+                                            String_.TOKEN,
+                                            c -> c.case_(
+                                                            Signal_.RED,
+                                                            y -> y.exec(assign(n, literal(1)))
+                                                                    .yield_(literal("r")))
+                                                    .default_(y -> y.exec(assign(n, literal(2)))
+                                                            .yield_(literal("x")))),
+                                    r -> b.return_(concat(r, call(box(PrimitiveToken.INT, n), Integer_.toString))))));
+            bodies.define(
+                    member14,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            PrimitiveToken.INT,
+                            c -> c.case_(
+                                            Signal_.RED,
+                                            y -> y.letVar(
+                                                    PrimitiveToken.INT,
+                                                    literal(0),
+                                                    i -> y.while_(
+                                                                    literal(true),
+                                                                    (loop, ctl) -> loop.if_(
+                                                                                    geInt(i, literal(3)),
+                                                                                    t -> t.break_(ctl))
+                                                                            .exec(assign(i, addInt(i, literal(1)))))
+                                                            .yield_(i)))
+                                    .default_(y -> y.ifElse(
+                                            eqRef(s, enumConstant(Signal_.AMBER)),
+                                            t -> t.yield_(literal(-1)),
+                                            e -> e.yield_(literal(-2)))))));
+            bodies.define(
+                    member15,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            PrimitiveToken.INT,
+                            c -> c.case_(
+                                            Signal_.RED,
+                                            y -> y.yield_(call(
+                                                    new_(StringReader_.new_String, literal("")), StringReader_.read)))
+                                    .case_(
+                                            Signal_.AMBER,
+                                            y -> y.throw_(new_(IOException_.new_String, literal("amber"))))
+                                    .default_(
+                                            call(new_(StringReader_.new_String, literal("g")), StringReader_.read)))));
+            bodies.define(
+                    member16,
+                    (b, s) -> b.tryTerminated(
+                            h -> h.catch_(IOException_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
+                            t -> t.return_(switch_(
+                                    Signal_.TOKEN,
+                                    s,
+                                    PrimitiveToken.INT,
+                                    c -> c.case_(
+                                                    Signal_.RED,
+                                                    y -> y.tryTerminated(
+                                                            h -> h.catch_(
+                                                                    IOException_.TOKEN,
+                                                                    (handler, _) -> handler.yield_(literal(-2))),
+                                                            body -> body.throw_(
+                                                                    new_(IOException_.new_String, literal("red")))))
+                                            .default_(
+                                                    y -> y.throw_(new_(IOException_.new_String, literal("other"))))))));
+        };
     }
 
     /// The enums a `switch` is over: constants with bodies, a nested enum, constants that are contextual
     /// keywords, an enum without a constant.
-    private static <Self> void enums(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> enums(TypedClassBuilder<Self> cb) {
         var member17 = cb.declareStaticMethod("named", String_.TOKEN, Op_.TOKEN);
         var member18 = cb.declareStaticMethod("rank", PrimitiveToken.INT, Outer_Level_.TOKEN);
         var member19 = cb.declareStaticMethod("word", String_.TOKEN, Words_.TOKEN);
         var member20 = cb.declareStaticMethod("ofNothing", String_.TOKEN, Nothing_.TOKEN);
-        cb.define(
-                member17,
-                (b, op) -> b.return_(switch_(
-                        Op_.TOKEN,
-                        op,
-                        String_.TOKEN,
-                        c -> c.case_(Op_.ADD, literal("add")).case_(Op_.SUB, literal("sub")))));
-        cb.define(
-                member18,
-                (b, level) -> b.return_(switch_(
-                        Outer_Level_.TOKEN,
-                        level,
-                        PrimitiveToken.INT,
-                        c -> c.case_(Outer_Level_.LOW, literal(0)).case_(Outer_Level_.HIGH, literal(1)))));
-        cb.define(
-                member19,
-                (b, w) -> b.return_(switch_(
-                        Words_.TOKEN,
-                        w,
-                        String_.TOKEN,
-                        c -> c.case_(Words_.when, literal("when"))
-                                .case_(Words_.yield, y -> y.yield_(literal("yield")))
-                                .case_(List.of(Words_.record, Words_.var), literal("record or var"))
-                                .case_(Words_.sealed, literal("sealed"))
-                                .case_(Words_.permits, literal("permits")))));
-        cb.define(
-                member20,
-                (b, n) -> b.return_(switch_(Nothing_.TOKEN, n, String_.TOKEN, c -> c.default_(literal("none")))));
+        return bodies -> {
+            bodies.define(
+                    member17,
+                    (b, op) -> b.return_(switch_(
+                            Op_.TOKEN,
+                            op,
+                            String_.TOKEN,
+                            c -> c.case_(Op_.ADD, literal("add")).case_(Op_.SUB, literal("sub")))));
+            bodies.define(
+                    member18,
+                    (b, level) -> b.return_(switch_(
+                            Outer_Level_.TOKEN,
+                            level,
+                            PrimitiveToken.INT,
+                            c -> c.case_(Outer_Level_.LOW, literal(0)).case_(Outer_Level_.HIGH, literal(1)))));
+            bodies.define(
+                    member19,
+                    (b, w) -> b.return_(switch_(
+                            Words_.TOKEN,
+                            w,
+                            String_.TOKEN,
+                            c -> c.case_(Words_.when, literal("when"))
+                                    .case_(Words_.yield, y -> y.yield_(literal("yield")))
+                                    .case_(List.of(Words_.record, Words_.var), literal("record or var"))
+                                    .case_(Words_.sealed, literal("sealed"))
+                                    .case_(Words_.permits, literal("permits")))));
+            bodies.define(
+                    member20,
+                    (b, n) -> b.return_(switch_(Nothing_.TOKEN, n, String_.TOKEN, c -> c.default_(literal("none")))));
+        };
     }
 
     /// Where the rendered code needs care: a `yield` before a parenthesis, and a `switch` as an index, an
     /// array, the target of an assignment and the operand of `!`.
-    private static <Self> void syntax(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> syntax(TypedClassBuilder<Self> cb) {
         ArrayToken<int[], Prim.Int> ints = PrimitiveToken.INT.array();
 
         // yield (String) null;
@@ -379,54 +394,63 @@ class SwitchCompileTest {
         var member25 = cb.declareStaticMethod("indexed", PrimitiveToken.INT, Signal_.TOKEN);
         // return !switch (s) { case RED -> true; default -> false; };
         var member26 = cb.declareStaticMethod("notRed", PrimitiveToken.BOOLEAN, Signal_.TOKEN);
-        cb.define(
-                member21,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN, s, String_.TOKEN, c -> c.default_(y -> y.yield_(literalNull(String_.TOKEN))))));
-        cb.define(
-                member22,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        PrimitiveToken.INT,
-                        c -> c.default_(y -> y.yield_(call(concat(literal("a"), literal("b")), String_.length))))));
-        cb.define(
-                member23,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        String_.TOKEN,
-                        c -> c.default_(y -> y.yield_(call(
-                                switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in "))),
-                                String_.trim))))));
-        cb.define(
-                member24,
-                (b, s) -> b.return_(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        String_.TOKEN,
-                        c -> c.default_(y -> y.yield_(call(lambda(STRINGS.sam, () -> literal("l")), STRINGS.get))))));
-        cb.define(
-                member25,
-                (b, s) -> b.let(
-                        ints,
-                        newArray(ints, literal(3)),
-                        a -> b.exec(assignAt(ints, a, rank(s), literal(7)))
-                                .exec(assignAt(
-                                        ints,
-                                        switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)),
-                                        literal(0),
-                                        literal(5)))
-                                .return_(addInt(
-                                        at(ints, a, rank(s)),
-                                        at(ints, switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)), literal(0))))));
-        cb.define(
-                member26,
-                (b, s) -> b.return_(not(switch_(
-                        Signal_.TOKEN,
-                        s,
-                        PrimitiveToken.BOOLEAN,
-                        c -> c.case_(Signal_.RED, literal(true)).default_(literal(false))))));
+        return bodies -> {
+            bodies.define(
+                    member21,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.default_(y -> y.yield_(literalNull(String_.TOKEN))))));
+            bodies.define(
+                    member22,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            PrimitiveToken.INT,
+                            c -> c.default_(y -> y.yield_(call(concat(literal("a"), literal("b")), String_.length))))));
+            bodies.define(
+                    member23,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.default_(y -> y.yield_(call(
+                                    switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in "))),
+                                    String_.trim))))));
+            bodies.define(
+                    member24,
+                    (b, s) -> b.return_(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            String_.TOKEN,
+                            c -> c.default_(y ->
+                                    y.yield_(call(lambda(STRINGS.sam, () -> literal("l")), STRINGS.get))))));
+            bodies.define(
+                    member25,
+                    (b, s) -> b.let(
+                            ints,
+                            newArray(ints, literal(3)),
+                            a -> b.exec(assignAt(ints, a, rank(s), literal(7)))
+                                    .exec(assignAt(
+                                            ints,
+                                            switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)),
+                                            literal(0),
+                                            literal(5)))
+                                    .return_(addInt(
+                                            at(ints, a, rank(s)),
+                                            at(
+                                                    ints,
+                                                    switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)),
+                                                    literal(0))))));
+            bodies.define(
+                    member26,
+                    (b, s) -> b.return_(not(switch_(
+                            Signal_.TOKEN,
+                            s,
+                            PrimitiveToken.BOOLEAN,
+                            c -> c.case_(Signal_.RED, literal(true)).default_(literal(false))))));
+        };
     }
 
     /// `switch (s) { case RED -> 1; default -> 2; }`.

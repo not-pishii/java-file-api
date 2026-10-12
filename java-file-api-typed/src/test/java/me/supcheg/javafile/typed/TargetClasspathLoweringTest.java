@@ -121,8 +121,9 @@ class TargetClasspathLoweringTest {
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         var member1 = cb.declareStaticMethod("go", String_.TOKEN, parameter);
                         var member2 = cb.declareStaticMethod("again", String_.TOKEN, parameter);
-                        cb.define(member1, (b, p) -> b.return_(body.apply(p)));
-                        cb.define(member2, (b, p) -> b.return_(body.apply(p)));
+                        var bodies = cb.bodies();
+                        bodies.define(member1, (b, p) -> b.return_(body.apply(p)));
+                        bodies.define(member2, (b, p) -> b.return_(body.apply(p)));
                     }
                 })
                 .render();

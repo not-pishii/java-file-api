@@ -112,27 +112,28 @@ class PrimitivesTest {
                         var member5 = cb.declareStaticMethod("stringArray", PrimitiveToken.INT);
                         var member6 = cb.declareStaticMethod("checked", PrimitiveToken.INT);
                         var member7 = cb.declareStaticMethod("truncated", PrimitiveToken.INT);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(
                                 member1,
                                 b -> b.return_(staticCall(Objects_.equals_Object_Object, literal(1), literal(1L))));
-                        cb.define(member2, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
-                        cb.define(member3, (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
-                        cb.define(
+                        bodies.define(member2, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                        bodies.define(member3, (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
+                        bodies.define(
                                 member4,
                                 b -> b.let(
                                         ints,
                                         newArray(ints, literal(3)),
                                         array -> b.exec(assignAt(ints, array, literal(0), literal(7)))
                                                 .return_(addInt(at(ints, array, literal(0)), length(ints, array)))));
-                        cb.define(
+                        bodies.define(
                                 member5,
                                 b -> b.let(
                                         strings,
                                         newArray(strings, literal(2)),
                                         array -> b.exec(assignAt(strings, array, literal(1), literal("abc")))
                                                 .return_(call(at(strings, array, literal(1)), String_.length))));
-                        cb.define(member6, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
-                        cb.define(member7, b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
+                        bodies.define(member6, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
+                        bodies.define(member7, b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
                     }
                 });
 

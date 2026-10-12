@@ -37,7 +37,7 @@ public final class Unsafe {
     }
 
     /// Wraps an untyped core class member so it can be appended to a
-    /// [TypedClassBuilder] with [TypedClassBuilder#add(UnsafeMember)].
+    /// [TypedClassBuilder] with [MemberBuilder#add(UnsafeMember)].
     ///
     /// @param member the untyped core member
     /// @return an unsafe member

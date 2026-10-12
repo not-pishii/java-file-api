@@ -157,7 +157,7 @@ public final class Versions {
             var apply = h.overriding(Fn_.apply_String);
             var oh = h.extendsObject();
             oh.implements_(Fn_.implement(h.self()).apply_String(apply));
-            oh.body().define(apply.method(), (b, self, s) -> b.return_(s));
+            oh.members().bodies().define(apply.method(), (b, self, s) -> b.return_(s));
         }
     };
 
@@ -168,7 +168,7 @@ public final class Versions {
                 public <Self> void build(ClassHeader<Self> h) {
                     var oh = h.extendsObject();
                     oh.implements_(Marker_.implement(h.self()));
-                    oh.body();
+                    oh.members().bodies();
                 }
             };
 
@@ -177,7 +177,8 @@ public final class Versions {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Svc_.extend(h.self()));
-                    sh.body(sh.declareConstructor(), ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
+                    var make = sh.declareConstructor();
+                    sh.members().bodies(make, ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
                 }
             };
 
@@ -381,7 +382,9 @@ public final class Versions {
                         UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                             @Override
                             public <Self> void build(TypedClassBuilder<Self> cb) {
-                                cb.staticMethod("go", String_.TOKEN, String_.TOKEN, (b, s) -> b.return_(m(s)));
+                                var own1 = cb.declareStaticMethod("go", String_.TOKEN, String_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own1, (b, s) -> b.return_(m(s)));
                             }
                         })
                 .render();

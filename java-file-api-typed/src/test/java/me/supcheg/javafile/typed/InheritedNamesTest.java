@@ -16,7 +16,6 @@ import java.lang.constant.ClassDesc;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
-import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The simple names the fields and member types of a class take in its body
@@ -40,9 +39,11 @@ class InheritedNamesTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Nesting_.extend(h.self()));
-                var cb = began(sh, ctor -> ctor.super_(Nesting_.new_, (b, self) -> b.end()));
+                var ctor1 = sh.declareConstructor();
+                var cb = sh.members();
                 var member1 = cb.declareMethod("which", Op_.TOKEN);
-                cb.define(member1, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Nesting_.new_, (b, self) -> b.end()));
+                bodies.define(member1, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -60,9 +61,11 @@ class InheritedNamesTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Obscuring_.extend(h.self()));
-                var cb = began(sh, ctor -> ctor.super_(Obscuring_.new_, (b, self) -> b.end()));
+                var ctor2 = sh.declareConstructor();
+                var cb = sh.members();
                 var member2 = cb.declareMethod("which", Op_.TOKEN);
-                cb.define(member2, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var bodies = cb.bodies(ctor2, ctor -> ctor.super_(Obscuring_.new_, (b, self) -> b.end()));
+                bodies.define(member2, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -75,12 +78,14 @@ class InheritedNamesTest {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
-                var cb = h.extendsObject().body();
+                var cb = h.extendsObject().members();
                 var member3 = cb.declareConstructor();
-                cb.field("Op", PrimitiveToken.INT, literal(1));
+                var field3 = cb.declareField("Op", PrimitiveToken.INT);
                 var member4 = cb.declareMethod("which", Op_.TOKEN);
-                cb.define(member3, (b, self) -> b.end());
-                cb.define(member4, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var bodies = cb.bodies();
+                bodies.initialize(field3, literal(1));
+                bodies.define(member3, (b, self) -> b.end());
+                bodies.define(member4, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -97,10 +102,13 @@ class InheritedNamesTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Rooted_.extend(h.self()));
-                        var cb = began(sh, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
-                        cb.field("Op", PrimitiveToken.INT, literal(1));
+                        var ctor4 = sh.declareConstructor();
+                        var cb = sh.members();
+                        var field5 = cb.declareField("Op", PrimitiveToken.INT);
                         var member5 = cb.declareMethod("which", Op_.TOKEN);
-                        cb.define(member5, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var bodies = cb.bodies(ctor4, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
+                        bodies.initialize(field5, literal(1));
+                        bodies.define(member5, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " before a member in a file"
@@ -117,11 +125,14 @@ class InheritedNamesTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = h.extendsObject().body();
-                        cb.field("Op", PrimitiveToken.INT, literal(1));
-                        cb.field("me", PrimitiveToken.INT, literal(2));
+                        var cb = h.extendsObject().members();
+                        var field6 = cb.declareField("Op", PrimitiveToken.INT);
+                        var field7 = cb.declareField("me", PrimitiveToken.INT);
                         var member6 = cb.declareMethod("which", Op_.TOKEN);
-                        cb.define(member6, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var bodies = cb.bodies();
+                        bodies.initialize(field6, literal(1));
+                        bodies.initialize(field7, literal(2));
+                        bodies.define(member6, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " before a member in a file"
@@ -141,9 +152,11 @@ class InheritedNamesTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Planted_.extend(h.self()));
-                        var cb = began(sh, ctor -> ctor.super_(Planted_.new_, (b, self) -> b.end()));
+                        var ctor8 = sh.declareConstructor();
+                        var cb = sh.members();
                         var member7 = cb.declareMethod("which", Op_.TOKEN);
-                        cb.define(member7, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var bodies = cb.bodies(ctor8, ctor -> ctor.super_(Planted_.new_, (b, self) -> b.end()));
+                        bodies.define(member7, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " in a file whose type"

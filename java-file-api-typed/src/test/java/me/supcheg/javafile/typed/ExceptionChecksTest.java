@@ -69,13 +69,17 @@ class ExceptionChecksTest {
     private static final String READ = "new StringReader(\"a\").read()";
 
     /// Declares the class `Probe` with the given members.
-    private static void declare(Consumer<TypedClassBuilder<?>> members) {
-        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static void declare(Consumer<TypedClassBuilder<Object>> members) {
+        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     /// Declares `static int m()` with the given body.
     private static void intMethod(Function<Body<Prim.Int>, Terminated<Prim.Int>> body) {
-        declare(cb -> cb.staticMethod("m", PrimitiveToken.INT, body));
+        declare(cb -> {
+            var own1 = cb.declareStaticMethod("m", PrimitiveToken.INT);
+            var bodies = cb.bodies();
+            bodies.define(own1, body);
+        });
     }
 
     /// `new StringReader("a").read()`.
@@ -155,8 +159,11 @@ class ExceptionChecksTest {
         void aConstructorThatThrowsACheckedExceptionIsRejected() {
             asJavac(
                     () -> declare(cb -> {
-                        var ctor = cb.throwing(IOException_.TOKEN).constructor((b, _) -> b.end());
-                        cb.voidStaticMethod("m", b -> b.exec(new_(ctor)).end());
+                        var ctor = cb.throwing(IOException_.TOKEN).declareConstructor();
+                        var own2 = cb.declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(ctor, (b, _) -> b.end());
+                        bodies.define(own2, b -> b.exec(new_(ctor)).end());
                     }),
                     "new me.supcheg.example.Probe() in the body of static method m can throw the checked exception"
                             + " java.io.IOException",
@@ -167,8 +174,11 @@ class ExceptionChecksTest {
         @Test
         void theBodyOfAConstructorIsToldToDeclareTheConstructor() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(
-                            cb -> cb.constructor((b, _) -> b.exec(read()).end())))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own3 = cb.declareConstructor();
+                        var bodies = cb.bodies();
+                        bodies.define(own3, (b, _) -> b.exec(read()).end());
+                    }))
                     .withMessageContaining("in the body of constructor can throw")
                     .withMessageContaining("the constructor does not declare (declared: nothing): catch it, or"
                             + " declare the constructor through cb.throwing(...)");
@@ -202,19 +212,23 @@ class ExceptionChecksTest {
         @Test
         void aDeclaredSuperclassCoversTheException() {
             asJavacAccepts(
-                    () -> declare(cb -> cb.throwing(Exception_.TOKEN)
-                            .staticMethod(
-                                    "m",
-                                    PrimitiveToken.INT,
-                                    b -> b.exec(read()).throw_(new_(FileNotFoundException_.new_)))),
+                    () -> declare(cb -> {
+                        var own4 = cb.throwing(Exception_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(own4, b -> b.exec(read()).throw_(new_(FileNotFoundException_.new_)));
+                    }),
                     "static int m() throws Exception { " + READ + "; throw new FileNotFoundException(); }");
         }
 
         @Test
         void aDeclaredSubclassDoesNotCoverTheException() {
             asJavac(
-                    () -> declare(cb -> cb.throwing(FileNotFoundException_.TOKEN)
-                            .staticMethod("m", PrimitiveToken.INT, b -> b.return_(read()))),
+                    () -> declare(cb -> {
+                        var own5 =
+                                cb.throwing(FileNotFoundException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(own5, b -> b.return_(read()));
+                    }),
                     "does not declare (declared: java.io.FileNotFoundException)",
                     "static int m() throws FileNotFoundException { return " + READ + "; }",
                     "unreported exception java.io.IOException");
@@ -226,7 +240,8 @@ class ExceptionChecksTest {
                     () -> declare(cb -> {
                         var read = cb.throwing(IOException_.TOKEN).declareStaticMethod("read", PrimitiveToken.INT);
                         var member2 = cb.declareStaticMethod("m", PrimitiveToken.INT);
-                        cb.define(member2, b -> b.return_(staticCall(read)));
+                        var bodies = cb.bodies();
+                        bodies.define(member2, b -> b.return_(staticCall(read)));
                     }),
                     "static int me.supcheg.example.Probe.read() in the body of static method m can throw the"
                             + " checked exception java.io.IOException",
@@ -242,13 +257,18 @@ class ExceptionChecksTest {
 
         private static <Self> void define(TypedClassBuilder<Self> cb) {
             var read = cb.throwing(IOException_.TOKEN).declareMethod("read", PrimitiveToken.INT);
-            cb.define(read, (b, _) -> b.return_(read()));
+            var bodies = cb.bodies();
+            bodies.define(read, (b, _) -> b.return_(read()));
         }
 
         @Test
         void aFieldInitializerThrowsNoCheckedException() {
             asJavac(
-                    () -> declare(cb -> cb.field("first", PrimitiveToken.INT, read())),
+                    () -> declare(cb -> {
+                        var field6 = cb.declareField("first", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.initialize(field6, read());
+                    }),
                     "int java.io.StringReader.read() in the initializer of field first can throw the checked"
                             + " exception java.io.IOException: the typed layer accepts no checked exception in a"
                             + " field initializer",
@@ -260,8 +280,11 @@ class ExceptionChecksTest {
         void aFieldInitializerThrowsNoCheckedExceptionThoughEveryConstructorDeclaresIt() {
             unlikeJavac(
                     () -> declare(cb -> {
-                        cb.throwing(IOException_.TOKEN).constructor((b, _) -> b.end());
-                        cb.field("first", PrimitiveToken.INT, read());
+                        var own7 = cb.throwing(IOException_.TOKEN).declareConstructor();
+                        var field8 = cb.declareField("first", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(own7, (b, _) -> b.end());
+                        bodies.initialize(field8, read());
                     }),
                     "stricter than Java, which lets the initializer of an instance field throw what every"
                             + " constructor declares",
@@ -278,10 +301,13 @@ class ExceptionChecksTest {
         @Test
         void theCallThrowsWhatTheFactDeclaresWhateverTheOverrideOfTheReceiverDoes() {
             asJavac(
-                    () -> declare(cb -> cb.voidStaticMethod(
-                            "m",
-                            StringReader_.TOKEN,
-                            (b, r) -> b.exec(voidCall(r, Reader_.close)).end())),
+                    () -> declare(cb -> {
+                        var own9 = cb.declareVoidStaticMethod("m", StringReader_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own9,
+                                (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+                    }),
                     "void java.io.Reader.close() in the body of static method m can throw the checked exception"
                             + " java.io.IOException",
                     "static void m(StringReader r) { ((Reader) r).close(); }",
@@ -499,14 +525,15 @@ class ExceptionChecksTest {
         void aCatchOfASubclassOfWhatTheTryBlockThrowsIsAllowed() {
             // read() declares IOException, which may be a FileNotFoundException at run time
             asJavacAccepts(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .staticMethod(
-                                    "m",
-                                    PrimitiveToken.INT,
-                                    b -> b.tryTerminated(
-                                            h -> h.catch_(
-                                                    FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(0))),
-                                            t -> t.return_(read())))),
+                    () -> declare(cb -> {
+                        var own10 = cb.throwing(IOException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own10,
+                                b -> b.tryTerminated(
+                                        h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(0))),
+                                        t -> t.return_(read())));
+                    }),
                     "static int m() throws IOException { try { return " + READ
                             + "; } catch (FileNotFoundException e) { return 0; } }");
         }
@@ -603,18 +630,21 @@ class ExceptionChecksTest {
         void aRethrownBindingThrowsWhatItsTryBlockThrowsOfTheClause() {
             // the inner try rethrows FileNotFoundException, not every IOException
             asJavac(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .voidStaticMethod(
-                                    "m",
-                                    b -> b.try_(
-                                                    h -> h.catch_(UnsupportedEncodingException_.TOKEN, (_, _) -> {}),
-                                                    o -> o.if_(
-                                                            literal(true),
-                                                            i -> i.tryTerminated(
-                                                                    h -> h.catch_(
-                                                                            IOException_.TOKEN, (c, e) -> c.throw_(e)),
-                                                                    t -> t.throw_(new_(FileNotFoundException_.new_)))))
-                                            .end())),
+                    () -> declare(cb -> {
+                        var own11 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own11,
+                                b -> b.try_(
+                                                h -> h.catch_(UnsupportedEncodingException_.TOKEN, (_, _) -> {}),
+                                                o -> o.if_(
+                                                        literal(true),
+                                                        i -> i.tryTerminated(
+                                                                h -> h.catch_(
+                                                                        IOException_.TOKEN, (c, e) -> c.throw_(e)),
+                                                                t -> t.throw_(new_(FileNotFoundException_.new_)))))
+                                        .end());
+                    }),
                     "catch_ of java.io.UnsupportedEncodingException: the try block of try_ in body of static method"
                             + " m cannot throw this checked exception (it can throw: java.io.FileNotFoundException)",
                     "static void m() throws IOException { try { if (true) { try { throw new"
@@ -626,15 +656,18 @@ class ExceptionChecksTest {
         @Test
         void aRethrownBindingOfExceptionThrowsTheCheckedExceptionsOfItsTryBlock() {
             asJavac(
-                    () -> declare(cb -> cb.throwing(Exception_.TOKEN)
-                            .voidStaticMethod(
-                                    "m",
-                                    b -> b.try_(
-                                                    h -> h.catch_(InterruptedException_.TOKEN, (_, _) -> {}),
-                                                    o -> o.try_(
-                                                            h -> h.catch_(Exception_.TOKEN, (c, e) -> c.throw_(e)),
-                                                            t -> t.exec(read())))
-                                            .end())),
+                    () -> declare(cb -> {
+                        var own12 = cb.throwing(Exception_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own12,
+                                b -> b.try_(
+                                                h -> h.catch_(InterruptedException_.TOKEN, (_, _) -> {}),
+                                                o -> o.try_(
+                                                        h -> h.catch_(Exception_.TOKEN, (c, e) -> c.throw_(e)),
+                                                        t -> t.exec(read())))
+                                        .end());
+                    }),
                     "catch_ of java.lang.InterruptedException: the try block of try_ in body of static method m"
                             + " cannot throw this checked exception (it can throw: java.io.IOException)",
                     "static void m() throws Exception { try { try { " + READ + "; } catch (Exception e) { throw e; }"
@@ -646,20 +679,23 @@ class ExceptionChecksTest {
         void aClauseBeforeTakesWhatItCatchesFromWhatTheBindingRethrows() {
             // e is no FileNotFoundException: the clause before caught that
             asJavac(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .voidStaticMethod(
-                                    "m",
-                                    b -> b.try_(
-                                                    h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {}),
-                                                    o -> o.try_(
-                                                            h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {})
-                                                                    .catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
-                                                            t -> t.if_(
-                                                                            literal(true),
-                                                                            x -> x.throw_(
-                                                                                    new_(FileNotFoundException_.new_)))
-                                                                    .throw_(new_(UnsupportedEncodingException_.new_))))
-                                            .end())),
+                    () -> declare(cb -> {
+                        var own13 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own13,
+                                b -> b.try_(
+                                                h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {}),
+                                                o -> o.try_(
+                                                        h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {})
+                                                                .catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
+                                                        t -> t.if_(
+                                                                        literal(true),
+                                                                        x -> x.throw_(
+                                                                                new_(FileNotFoundException_.new_)))
+                                                                .throw_(new_(UnsupportedEncodingException_.new_))))
+                                        .end());
+                    }),
                     "cannot throw this checked exception (it can throw: java.io.UnsupportedEncodingException)",
                     "static void m() throws IOException { try { try { if (true) { throw new"
                             + " FileNotFoundException(); } throw new UnsupportedEncodingException(); }"
@@ -672,18 +708,21 @@ class ExceptionChecksTest {
         void aTryInACatchBlockIsCheckedAgainOnceWhatTheBindingRethrowsIsKnown() {
             // e is an UnsupportedEncodingException, known once the outer try block is built
             asJavac(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .voidStaticMethod(
-                                    "m",
-                                    b -> b.try_(
-                                                    h -> h.catch_(
-                                                            IOException_.TOKEN,
-                                                            (c, e) -> c.try_(
-                                                                    inner -> inner.catch_(
-                                                                            FileNotFoundException_.TOKEN, (_, _) -> {}),
-                                                                    t -> t.throw_(e))),
-                                                    t -> t.throw_(new_(UnsupportedEncodingException_.new_)))
-                                            .end())),
+                    () -> declare(cb -> {
+                        var own14 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own14,
+                                b -> b.try_(
+                                                h -> h.catch_(
+                                                        IOException_.TOKEN,
+                                                        (c, e) -> c.try_(
+                                                                inner -> inner.catch_(
+                                                                        FileNotFoundException_.TOKEN, (_, _) -> {}),
+                                                                t -> t.throw_(e))),
+                                                t -> t.throw_(new_(UnsupportedEncodingException_.new_)))
+                                        .end());
+                    }),
                     "catch_ of java.io.FileNotFoundException: the try block of try_ in catch block of try_ in body"
                             + " of static method m cannot throw this checked exception (it can throw:"
                             + " java.io.UnsupportedEncodingException)",
@@ -697,17 +736,21 @@ class ExceptionChecksTest {
             // throw (FileNotFoundException) e; is no rethrow of the binding, which would be an
             // UnsupportedEncodingException
             asJavacAccepts(
-                    () -> declare(cb -> cb.voidStaticMethod(
-                            "m",
-                            b -> b.try_(
-                                            h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {}),
-                                            o -> o.tryTerminated(
-                                                    h -> h.catch_(
-                                                            IOException_.TOKEN,
-                                                            (c, e) -> c.throw_(
-                                                                    castChecked(FileNotFoundException_.TOKEN, e))),
-                                                    t -> t.throw_(new_(UnsupportedEncodingException_.new_))))
-                                    .end())),
+                    () -> declare(cb -> {
+                        var own15 = cb.declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own15,
+                                b -> b.try_(
+                                                h -> h.catch_(FileNotFoundException_.TOKEN, (_, _) -> {}),
+                                                o -> o.tryTerminated(
+                                                        h -> h.catch_(
+                                                                IOException_.TOKEN,
+                                                                (c, e) -> c.throw_(
+                                                                        castChecked(FileNotFoundException_.TOKEN, e))),
+                                                        t -> t.throw_(new_(UnsupportedEncodingException_.new_))))
+                                        .end());
+                    }),
                     "static void m() { try { try { throw new UnsupportedEncodingException(); }"
                             + " catch (IOException e) { throw (FileNotFoundException) e; } }"
                             + " catch (FileNotFoundException x) { } }");
@@ -717,13 +760,15 @@ class ExceptionChecksTest {
         void whereItIsThrownARethrownBindingMustBeCoveredAtTheTypeOfItsClause() {
             // stricter: the try block of the clause is not built yet when throw_(e) is
             unlikeJavac(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .staticMethod(
-                                    "m",
-                                    PrimitiveToken.INT,
-                                    b -> b.tryTerminated(
-                                            h -> h.catch_(Exception_.TOKEN, (c, e) -> c.throw_(e)),
-                                            t -> t.return_(read())))),
+                    () -> declare(cb -> {
+                        var own16 = cb.throwing(IOException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own16,
+                                b -> b.tryTerminated(
+                                        h -> h.catch_(Exception_.TOKEN, (c, e) -> c.throw_(e)),
+                                        t -> t.return_(read())));
+                    }),
                     "throw_ in the catch block of tryTerminated in body of static method m can throw the checked"
                             + " exception java.lang.Exception",
                     "static int m() throws IOException { try { return " + READ
@@ -878,8 +923,11 @@ class ExceptionChecksTest {
         @Test
         void anOverrideOfAMethodOfObjectDeclaresNoCheckedException() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .override(Object_.toString, (b, _) -> b.return_(literal("x")))))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own17 = cb.throwing(IOException_.TOKEN).declareOverride(Object_.toString);
+                        var bodies = cb.bodies();
+                        bodies.define(own17, (b, _) -> b.return_(literal("x")));
+                    }))
                     .withMessageContaining("cannot override toString() of java.lang.Object: the method declares no"
                             + " exception: an override cannot declare the checked exception java.io.IOException")
                     .withMessageContaining("JLS 8.4.8.3");
@@ -890,8 +938,11 @@ class ExceptionChecksTest {
         @Test
         void anOverrideMayDeclareAnUncheckedException() {
             asJavacAccepts(
-                    () -> declare(cb -> cb.throwing(RuntimeException_.TOKEN)
-                            .override(Object_.toString, (b, _) -> b.return_(literal("x")))),
+                    () -> declare(cb -> {
+                        var own18 = cb.throwing(RuntimeException_.TOKEN).declareOverride(Object_.toString);
+                        var bodies = cb.bodies();
+                        bodies.define(own18, (b, _) -> b.return_(literal("x")));
+                    }),
                     "public String toString() throws RuntimeException { return \"x\"; }");
         }
     }

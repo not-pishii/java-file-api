@@ -18,7 +18,6 @@ import java.lang.constant.ClassDesc;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
-import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The `static` methods a class has from its supertypes (JLS 8.4.8): those
@@ -40,11 +39,13 @@ class InheritedStaticsTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticPick_.extend(h.self()));
-                var cb = began(sh, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
+                var ctor1 = sh.declareConstructor();
+                var cb = sh.members();
                 var pick = cb.declareMethod("pick", String_.TOKEN, Object_.TOKEN);
                 var member1 = cb.declareMethod("go", String_.TOKEN);
-                cb.define(pick, (b, self, v) -> b.return_(literal("own")));
-                cb.define(member1, (b, self) -> b.return_(call(self, pick, literal("s"))));
+                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
+                bodies.define(pick, (b, self, v) -> b.return_(literal("own")));
+                bodies.define(member1, (b, self) -> b.return_(call(self, pick, literal("s"))));
             }
         }));
 
@@ -59,9 +60,11 @@ class InheritedStaticsTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticTwin_.extend(h.self()));
-                var cb = began(sh, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
+                var ctor2 = sh.declareConstructor();
+                var cb = sh.members();
                 var member2 = cb.declareMethod("go", String_.TOKEN);
-                cb.define(
+                var bodies = cb.bodies(ctor2, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
+                bodies.define(
                         member2,
                         (b, self) -> b.return_(call(cb.asSuper().apply(self), StaticTwin_.m_Object, literal("s"))));
             }
@@ -81,12 +84,13 @@ class InheritedStaticsTest {
                 var compare = h.overriding(comparator.compare_T_T);
                 var oh = h.extendsObject();
                 oh.implements_(comparator.implement(h.self()).compare_T_T(compare));
-                var cb = oh.body();
+                var cb = oh.members();
                 var member3 = cb.declareConstructor();
-                cb.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
                 var member4 = cb.declareMethod("reverseOrder", String_.TOKEN);
-                cb.define(member3, (b, self) -> b.end());
-                cb.define(member4, (b, self) -> b.return_(literal("mine")));
+                var bodies = cb.bodies();
+                bodies.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
+                bodies.define(member3, (b, self) -> b.end());
+                bodies.define(member4, (b, self) -> b.return_(literal("mine")));
             }
         }));
 
@@ -102,11 +106,12 @@ class InheritedStaticsTest {
                 var oh = h.extendsObject();
                 oh.implements_(Stated_.implement(h.self()));
                 Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
-                var cb = oh.body();
+                var cb = oh.members();
                 var member5 = cb.declareConstructor();
                 var member6 = cb.declareMethod("go", String_.TOKEN);
-                cb.define(member5, (b, self) -> b.end());
-                cb.define(member6, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                var bodies = cb.bodies();
+                bodies.define(member5, (b, self) -> b.end());
+                bodies.define(member6, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
             }
         }));
 
@@ -120,11 +125,12 @@ class InheritedStaticsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var cb = began(
-                                h.extends_(Base_.extend(h.self())),
-                                ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var sh3 = h.extends_(Base_.extend(h.self()));
+                        var ctor3 = sh3.declareConstructor();
+                        var cb = sh3.members();
                         var member7 = cb.declareMethod("util", String_.TOKEN);
-                        cb.define(member7, (b, self) -> b.return_(literal("x")));
+                        var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        bodies.define(member7, (b, self) -> b.return_(literal("x")));
                     }
                 }),
                 "has the signature of the static method util() of me.supcheg.javafile.typed.fixtures.Base, which"

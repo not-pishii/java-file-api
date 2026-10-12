@@ -329,11 +329,9 @@ class MultiroundTest {
                     me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.staticMethod(
-                                                "go",
-                                                PrimitiveToken.INT,
-                                                Late_.TOKEN,
-                                                (b, late) -> b.return_(call(late, Base_.inherited)));
+                                        var go = cb.declareStaticMethod("go", PrimitiveToken.INT, Late_.TOKEN);
+                                        var bodies = cb.bodies();
+                                        bodies.define(go, (b, late) -> b.return_(call(late, Base_.inherited)));
                                     }
                                 })
                                 .render();

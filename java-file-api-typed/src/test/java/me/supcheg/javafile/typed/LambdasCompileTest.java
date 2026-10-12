@@ -102,21 +102,19 @@ class LambdasCompileTest {
 
     @BeforeAll
     static void compile() {
-        compiled = CompiledClasses.of(
-                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+        compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        forms(cb);
-                        places(cb);
-                        captures(cb);
-                        exceptions(cb);
-                        morePlaces(cb);
+                        var defined = List.of(forms(cb), places(cb), captures(cb), exceptions(cb), morePlaces(cb));
+                        var bodies = cb.bodies();
+                        defined.forEach(define -> define.accept(bodies));
                     }
                 }));
     }
 
     /// Expression and block bodies, with and without a result, of every arity.
-    private static <Self> void forms(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> forms(TypedClassBuilder<Self> cb) {
         // static int length(String s) { Function<String, Integer> f = (String v) -> Integer.valueOf(v.length()); ... }
         var member1 = cb.declareStaticMethod("length", PrimitiveToken.INT, String_.TOKEN);
 
@@ -158,83 +156,90 @@ class LambdasCompileTest {
         // static TriConsumer<StringBuilder, String, String> append2() { return (sb, a, b) -> sb.append(a + b); }
         var member15 = cb.declareStaticMethod("append2", APPEND2.token);
         var member16 = cb.declareStaticMethod("blockAppend2", APPEND2.token);
-        cb.define(
-                member1,
-                (b, s) -> b.let(
-                        LENGTH_FN.token,
-                        lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
-                        f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
-        cb.define(
-                member2,
-                (b, s) -> b.let(
-                        LENGTH_FN.token,
-                        lambdaBlock(
-                                LENGTH_FN.sam,
-                                (lb, v) -> lb.let(
-                                        PrimitiveToken.INT,
-                                        call(v, String_.length),
-                                        n -> lb.return_(box(PrimitiveToken.INT, n)))),
-                        f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
-        cb.define(member3, (b, s) -> b.return_(lambda(STRINGS.sam, () -> s)));
-        cb.define(member4, (b, s) -> b.return_(lambdaBlock(STRINGS.sam, lb -> lb.return_(s))));
-        cb.define(
-                member5,
-                (b, sb) -> b.let(
-                        Runnable_.TOKEN,
-                        lambda(Runnable_.sam, () -> call(sb, StringBuilder_.append_String, literal("x"))),
-                        r -> b.exec(voidCall(r, Runnable_.run))
-                                .exec(voidCall(r, Runnable_.run))
-                                .return_(call(sb, StringBuilder_.toString))));
-        cb.define(
-                member6,
-                (b, sb) -> b.let(
-                        Runnable_.TOKEN,
-                        lambdaBlock(
-                                Runnable_.sam,
-                                lb -> lb.exec(call(sb, StringBuilder_.append_String, literal("x")))
-                                        .exec(call(sb, StringBuilder_.append_String, literal("y")))
-                                        .end()),
-                        r -> b.exec(voidCall(r, Runnable_.run))
-                                .exec(voidCall(r, Runnable_.run))
-                                .return_(call(sb, StringBuilder_.toString))));
-        cb.define(
-                member7, (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))));
-        cb.define(
-                member8,
-                (b, sb) -> b.return_(lambdaBlock(
-                        STRING_SINK.sam,
-                        (lb, v) -> lb.if_(
-                                        gtInt(call(v, String_.length), literal(0)),
-                                        t -> t.exec(call(sb, StringBuilder_.append_String, v)))
-                                .end())));
-        cb.define(member9, b -> b.return_(lambda(IntBinaryOperator_.sam, (x, y) -> addInt(x, y))));
-        cb.define(
-                member10, b -> b.return_(lambdaBlock(IntBinaryOperator_.sam, (lb, x, y) -> lb.return_(addInt(x, y)))));
-        cb.define(member11, b -> b.return_(lambda(APPENDER.sam, (sb, v) -> call(sb, StringBuilder_.append_String, v))));
-        cb.define(
-                member12,
-                b -> b.return_(lambdaBlock(
-                        APPENDER.sam,
-                        (lb, sb, v) -> lb.exec(call(sb, StringBuilder_.append_String, v))
-                                .return_())));
-        cb.define(member13, b -> b.return_(lambda(JOIN3.sam, (x, y, z) -> concat(concat(x, y), z))));
-        cb.define(
-                member14, b -> b.return_(lambdaBlock(JOIN3.sam, (lb, x, y, z) -> lb.return_(concat(concat(x, y), z)))));
-        cb.define(
-                member15,
-                b -> b.return_(
-                        lambda(APPEND2.sam, (sb, x, y) -> call(sb, StringBuilder_.append_String, concat(x, y)))));
-        cb.define(
-                member16,
-                b -> b.return_(lambdaBlock(
-                        APPEND2.sam,
-                        (lb, sb, x, y) -> lb.exec(call(sb, StringBuilder_.append_String, x))
-                                .exec(call(sb, StringBuilder_.append_String, y))
-                                .end())));
+        return bodies -> {
+            bodies.define(
+                    member1,
+                    (b, s) -> b.let(
+                            LENGTH_FN.token,
+                            lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
+                            f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
+            bodies.define(
+                    member2,
+                    (b, s) -> b.let(
+                            LENGTH_FN.token,
+                            lambdaBlock(
+                                    LENGTH_FN.sam,
+                                    (lb, v) -> lb.let(
+                                            PrimitiveToken.INT,
+                                            call(v, String_.length),
+                                            n -> lb.return_(box(PrimitiveToken.INT, n)))),
+                            f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
+            bodies.define(member3, (b, s) -> b.return_(lambda(STRINGS.sam, () -> s)));
+            bodies.define(member4, (b, s) -> b.return_(lambdaBlock(STRINGS.sam, lb -> lb.return_(s))));
+            bodies.define(
+                    member5,
+                    (b, sb) -> b.let(
+                            Runnable_.TOKEN,
+                            lambda(Runnable_.sam, () -> call(sb, StringBuilder_.append_String, literal("x"))),
+                            r -> b.exec(voidCall(r, Runnable_.run))
+                                    .exec(voidCall(r, Runnable_.run))
+                                    .return_(call(sb, StringBuilder_.toString))));
+            bodies.define(
+                    member6,
+                    (b, sb) -> b.let(
+                            Runnable_.TOKEN,
+                            lambdaBlock(
+                                    Runnable_.sam,
+                                    lb -> lb.exec(call(sb, StringBuilder_.append_String, literal("x")))
+                                            .exec(call(sb, StringBuilder_.append_String, literal("y")))
+                                            .end()),
+                            r -> b.exec(voidCall(r, Runnable_.run))
+                                    .exec(voidCall(r, Runnable_.run))
+                                    .return_(call(sb, StringBuilder_.toString))));
+            bodies.define(
+                    member7,
+                    (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))));
+            bodies.define(
+                    member8,
+                    (b, sb) -> b.return_(lambdaBlock(
+                            STRING_SINK.sam,
+                            (lb, v) -> lb.if_(
+                                            gtInt(call(v, String_.length), literal(0)),
+                                            t -> t.exec(call(sb, StringBuilder_.append_String, v)))
+                                    .end())));
+            bodies.define(member9, b -> b.return_(lambda(IntBinaryOperator_.sam, (x, y) -> addInt(x, y))));
+            bodies.define(
+                    member10,
+                    b -> b.return_(lambdaBlock(IntBinaryOperator_.sam, (lb, x, y) -> lb.return_(addInt(x, y)))));
+            bodies.define(
+                    member11,
+                    b -> b.return_(lambda(APPENDER.sam, (sb, v) -> call(sb, StringBuilder_.append_String, v))));
+            bodies.define(
+                    member12,
+                    b -> b.return_(lambdaBlock(
+                            APPENDER.sam,
+                            (lb, sb, v) -> lb.exec(call(sb, StringBuilder_.append_String, v))
+                                    .return_())));
+            bodies.define(member13, b -> b.return_(lambda(JOIN3.sam, (x, y, z) -> concat(concat(x, y), z))));
+            bodies.define(
+                    member14,
+                    b -> b.return_(lambdaBlock(JOIN3.sam, (lb, x, y, z) -> lb.return_(concat(concat(x, y), z)))));
+            bodies.define(
+                    member15,
+                    b -> b.return_(
+                            lambda(APPEND2.sam, (sb, x, y) -> call(sb, StringBuilder_.append_String, concat(x, y)))));
+            bodies.define(
+                    member16,
+                    b -> b.return_(lambdaBlock(
+                            APPEND2.sam,
+                            (lb, sb, x, y) -> lb.exec(call(sb, StringBuilder_.append_String, x))
+                                    .exec(call(sb, StringBuilder_.append_String, y))
+                                    .end())));
+        };
     }
 
     /// The places a lambda stands in: an argument, a receiver, an operand, a field.
-    private static <Self> void places(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> places(TypedClassBuilder<Self> cb) {
         // list.forEach((Consumer<String>) (String v) -> sb.append(v)): the parameter is a Consumer<? super String>
         var member17 = cb.declareStaticMethod("all", String_.TOKEN, STRING_LIST.token);
 
@@ -260,79 +265,82 @@ class LambdasCompileTest {
         var member26 = cb.declareStaticMethod("nested", SUPPLIERS.token, String_.TOKEN);
 
         // public final UnaryOperator<String> upper = (String v) -> v.toUpperCase(); — its method is inherited
-        var upper = cb.field("upper", STRING_OP.token, lambda(STRING_OP.sam, v -> call(v, String_.toUpperCase)));
+        var upper = cb.declareField("upper", STRING_OP.token);
         var member27 = cb.declareMethod("shout", String_.TOKEN, String_.TOKEN);
-        cb.define(
-                member17,
-                (b, list) -> b.let(
-                        StringBuilder_.TOKEN,
-                        new_(StringBuilder_.new_),
-                        sb -> b.exec(voidCall(
-                                        list,
-                                        STRING_ITERABLE.forEach_Consumer,
-                                        lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))))
-                                .return_(call(sb, StringBuilder_.toString))));
-        cb.define(
-                member18,
-                (b, list) -> b.exec(voidCall(
-                                list,
-                                STRING_LIST.sort_Comparator,
-                                lambda(STRING_ORDER.sam, (x, y) -> call(y, String_.compareTo_String, x))))
-                        .end());
-        cb.define(
-                member19,
-                (b, s) -> b.return_(call(
-                        lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
-                        LENGTH_FN.apply_T,
-                        s)));
-        cb.define(
-                member20,
-                (b, s) -> b.let(
-                        Object_.TOKEN,
-                        lambda(Runnable_.sam, () -> call(s, String_.trim)),
-                        o -> b.return_(Expressions.and(
-                                staticCall(Tasks_.isRunnable_Object, o),
-                                staticCall(
-                                        Tasks_.isRunnable_Object,
-                                        lambda(Runnable_.sam, () -> call(s, String_.trim)))))));
-        cb.define(
-                member21,
-                (b, s) -> b.return_(staticCall(
-                        Tasks_.which_Runnable, lambda(Runnable_.sam, () -> call(s, String_.trim)))));
-        cb.define(
-                member22,
-                (b, s) ->
-                        b.return_(staticCall(Tasks_.which_Supplier, lambda(STRINGS.sam, () -> call(s, String_.trim)))));
-        cb.define(
-                member23,
-                (b, s) -> b.return_(staticCall(
-                        Tasks_.which_Callable,
-                        lambda(new Callable_<>(String_.TOKEN).sam, () -> call(s, String_.trim)))));
-        cb.define(
-                member24,
-                (b, flag) -> b.let(
-                        Runnable_.TOKEN,
-                        cond(
-                                flag,
-                                lambda(Runnable_.sam, () -> call(literal("a"), String_.trim)),
-                                lambda(Runnable_.sam, () -> call(literal("b"), String_.trim)),
-                                Runnable_.TOKEN),
-                        r -> b.return_(eqRef(r, lambda(Runnable_.sam, () -> call(literal("c"), String_.trim))))));
-        cb.define(member25, b -> b.return_(lambda(CURRIED.sam, v -> lambda(STRINGS.sam, () -> v))));
-        cb.define(
-                member26,
-                (b, s) -> b.return_(lambdaBlock(
-                        SUPPLIERS.sam,
-                        lb -> lb.let(
-                                String_.TOKEN,
-                                concat(s, literal("!")),
-                                t -> lb.return_(lambdaBlock(STRINGS.sam, inner -> inner.return_(concat(t, s))))))));
-        cb.define(member27, (b, self, s) -> b.return_(call(field(self, upper), STRING_FN.apply_T, s)));
+        return bodies -> {
+            bodies.initialize(upper, lambda(STRING_OP.sam, v -> call(v, String_.toUpperCase)));
+            bodies.define(
+                    member17,
+                    (b, list) -> b.let(
+                            StringBuilder_.TOKEN,
+                            new_(StringBuilder_.new_),
+                            sb -> b.exec(voidCall(
+                                            list,
+                                            STRING_ITERABLE.forEach_Consumer,
+                                            lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))))
+                                    .return_(call(sb, StringBuilder_.toString))));
+            bodies.define(
+                    member18,
+                    (b, list) -> b.exec(voidCall(
+                                    list,
+                                    STRING_LIST.sort_Comparator,
+                                    lambda(STRING_ORDER.sam, (x, y) -> call(y, String_.compareTo_String, x))))
+                            .end());
+            bodies.define(
+                    member19,
+                    (b, s) -> b.return_(call(
+                            lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
+                            LENGTH_FN.apply_T,
+                            s)));
+            bodies.define(
+                    member20,
+                    (b, s) -> b.let(
+                            Object_.TOKEN,
+                            lambda(Runnable_.sam, () -> call(s, String_.trim)),
+                            o -> b.return_(Expressions.and(
+                                    staticCall(Tasks_.isRunnable_Object, o),
+                                    staticCall(
+                                            Tasks_.isRunnable_Object,
+                                            lambda(Runnable_.sam, () -> call(s, String_.trim)))))));
+            bodies.define(
+                    member21,
+                    (b, s) -> b.return_(staticCall(
+                            Tasks_.which_Runnable, lambda(Runnable_.sam, () -> call(s, String_.trim)))));
+            bodies.define(
+                    member22,
+                    (b, s) -> b.return_(staticCall(
+                            Tasks_.which_Supplier, lambda(STRINGS.sam, () -> call(s, String_.trim)))));
+            bodies.define(
+                    member23,
+                    (b, s) -> b.return_(staticCall(
+                            Tasks_.which_Callable,
+                            lambda(new Callable_<>(String_.TOKEN).sam, () -> call(s, String_.trim)))));
+            bodies.define(
+                    member24,
+                    (b, flag) -> b.let(
+                            Runnable_.TOKEN,
+                            cond(
+                                    flag,
+                                    lambda(Runnable_.sam, () -> call(literal("a"), String_.trim)),
+                                    lambda(Runnable_.sam, () -> call(literal("b"), String_.trim)),
+                                    Runnable_.TOKEN),
+                            r -> b.return_(eqRef(r, lambda(Runnable_.sam, () -> call(literal("c"), String_.trim))))));
+            bodies.define(member25, b -> b.return_(lambda(CURRIED.sam, v -> lambda(STRINGS.sam, () -> v))));
+            bodies.define(
+                    member26,
+                    (b, s) -> b.return_(lambdaBlock(
+                            SUPPLIERS.sam,
+                            lb -> lb.let(
+                                    String_.TOKEN,
+                                    concat(s, literal("!")),
+                                    t -> lb.return_(lambdaBlock(STRINGS.sam, inner -> inner.return_(concat(t, s))))))));
+            bodies.define(member27, (b, self, s) -> b.return_(call(field(self, upper), STRING_FN.apply_T, s)));
+        };
     }
 
     /// What a lambda captures: an immutable variable, a parameter of an enclosing lambda, `this`.
-    private static <Self> void captures(TypedClassBuilder<Self> cb) {
-        var name = cb.mutableField("name", String_.TOKEN, literal("none"));
+    private static <Self> Consumer<TypedClassBodies<Self>> captures(TypedClassBuilder<Self> cb) {
+        var name = cb.declareMutableField("name", String_.TOKEN);
 
         // Supplier<String> named() { return () -> this.name; }
         var member28 = cb.declareMethod("named", STRINGS.token);
@@ -342,31 +350,34 @@ class LambdasCompileTest {
 
         // a variable of a for-each loop is captured, a lambda's own variable is assigned in its body
         var member30 = cb.declareStaticMethod("suppliers", new List_<>(STRINGS.token).token, STRING_LIST.token);
-        cb.define(member28, (b, self) -> b.return_(lambda(STRINGS.sam, () -> field(self, name))));
-        cb.define(member29, (b, self) -> b.return_(lambda(STRING_SINK.sam, v -> assignField(self, name, v))));
-        cb.define(
-                member30,
-                (b, list) -> b.let(
-                        SUPPLIER_LIST.token,
-                        new_(SUPPLIER_LIST.new_),
-                        out -> b.forEach(
-                                        String_.TOKEN,
-                                        list,
-                                        (loop, v, _) -> loop.exec(call(
-                                                out,
-                                                new List_<>(STRINGS.token).add_E,
-                                                lambdaBlock(
-                                                        STRINGS.sam,
-                                                        lb -> lb.letVar(
-                                                                String_.TOKEN,
-                                                                v,
-                                                                acc -> lb.exec(assign(acc, concat(acc, acc)))
-                                                                        .return_(acc))))))
-                                .return_(out)));
+        return bodies -> {
+            bodies.initialize(name, literal("none"));
+            bodies.define(member28, (b, self) -> b.return_(lambda(STRINGS.sam, () -> field(self, name))));
+            bodies.define(member29, (b, self) -> b.return_(lambda(STRING_SINK.sam, v -> assignField(self, name, v))));
+            bodies.define(
+                    member30,
+                    (b, list) -> b.let(
+                            SUPPLIER_LIST.token,
+                            new_(SUPPLIER_LIST.new_),
+                            out -> b.forEach(
+                                            String_.TOKEN,
+                                            list,
+                                            (loop, v, _) -> loop.exec(call(
+                                                    out,
+                                                    new List_<>(STRINGS.token).add_E,
+                                                    lambdaBlock(
+                                                            STRINGS.sam,
+                                                            lb -> lb.letVar(
+                                                                    String_.TOKEN,
+                                                                    v,
+                                                                    acc -> lb.exec(assign(acc, concat(acc, acc)))
+                                                                            .return_(acc))))))
+                                    .return_(out)));
+        };
     }
 
     /// A checked exception of a lambda body is the business of the method of its functional interface.
-    private static <Self> void exceptions(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> exceptions(TypedClassBuilder<Self> cb) {
         // static int read(String s) {
         //     Callable<Integer> c = () -> Integer.valueOf(new StringReader(s).read());   // call() throws Exception
         //     try { return c.call().intValue(); } catch (Exception e) { return -1; }
@@ -375,34 +386,36 @@ class LambdasCompileTest {
 
         // a Supplier declares nothing: the lambda catches what its body throws
         var member32 = cb.declareStaticMethod("readOrDefault", new Supplier_<>(Integer_.TOKEN).token, String_.TOKEN);
-        cb.define(
-                member31,
-                (b, s) -> b.let(
-                        INT_CALL.token,
-                        lambda(
-                                INT_CALL.sam,
-                                () -> box(
-                                        PrimitiveToken.INT,
-                                        call(new_(StringReader_.new_String, s), StringReader_.read))),
-                        c -> b.tryTerminated(
-                                h -> h.catch_(Exception_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
-                                t -> t.return_(unbox(PrimitiveToken.INT, call(c, INT_CALL.call))))));
-        cb.define(
-                member32,
-                (b, s) -> b.return_(lambdaBlock(
-                        new Supplier_<>(Integer_.TOKEN).sam,
-                        lb -> lb.tryTerminated(
-                                h -> h.catch_(
-                                        IOException_.TOKEN,
-                                        (handler, _) -> handler.return_(box(PrimitiveToken.INT, literal(-1)))),
-                                t -> t.return_(box(
-                                        PrimitiveToken.INT,
-                                        call(new_(StringReader_.new_String, s), StringReader_.read)))))));
+        return bodies -> {
+            bodies.define(
+                    member31,
+                    (b, s) -> b.let(
+                            INT_CALL.token,
+                            lambda(
+                                    INT_CALL.sam,
+                                    () -> box(
+                                            PrimitiveToken.INT,
+                                            call(new_(StringReader_.new_String, s), StringReader_.read))),
+                            c -> b.tryTerminated(
+                                    h -> h.catch_(Exception_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
+                                    t -> t.return_(unbox(PrimitiveToken.INT, call(c, INT_CALL.call))))));
+            bodies.define(
+                    member32,
+                    (b, s) -> b.return_(lambdaBlock(
+                            new Supplier_<>(Integer_.TOKEN).sam,
+                            lb -> lb.tryTerminated(
+                                    h -> h.catch_(
+                                            IOException_.TOKEN,
+                                            (handler, _) -> handler.return_(box(PrimitiveToken.INT, literal(-1)))),
+                                    t -> t.return_(box(
+                                            PrimitiveToken.INT,
+                                            call(new_(StringReader_.new_String, s), StringReader_.read)))))));
+        };
     }
 
     /// More places: an argument of a constructor, an element of an array; and a functional interface
     /// whose method throws its type argument.
-    private static <Self> void morePlaces(TypedClassBuilder<Self> cb) {
+    private static <Self> Consumer<TypedClassBodies<Self>> morePlaces(TypedClassBuilder<Self> cb) {
         // return new Holder((Supplier<String>) (() -> s)).get();
         var member33 = cb.declareStaticMethod("held", String_.TOKEN, String_.TOKEN);
 
@@ -413,33 +426,36 @@ class LambdasCompileTest {
         // Thrower<IOException> t = () -> { throw new IOException(s); };
         // try { t.run(); return "ran"; } catch (IOException e) { return e.getMessage(); }
         var member35 = cb.declareStaticMethod("thrown", String_.TOKEN, String_.TOKEN);
-        cb.define(
-                member33,
-                (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
-        cb.define(
-                member34,
-                (b, sb) -> b.let(
-                        runnables,
-                        newArray(runnables, literal(1)),
-                        a -> b.exec(assignAt(
-                                        runnables,
-                                        a,
-                                        literal(0),
-                                        lambda(
-                                                Runnable_.sam,
-                                                () -> call(sb, StringBuilder_.append_String, literal("x")))))
-                                .exec(voidCall(at(runnables, a, literal(0)), Runnable_.run))
-                                .return_(call(sb, StringBuilder_.toString))));
-        cb.define(
-                member35,
-                (b, s) -> b.let(
-                        IO_THROWER.token,
-                        lambdaBlock(IO_THROWER.sam, lb -> lb.throw_(new_(IOException_.new_String, s))),
-                        t -> b.tryTerminated(
-                                h -> h.catch_(
-                                        IOException_.TOKEN,
-                                        (handler, e) -> handler.return_(call(e, Throwable_.getMessage))),
-                                body -> body.exec(voidCall(t, IO_THROWER.run)).return_(literal("ran")))));
+        return bodies -> {
+            bodies.define(
+                    member33,
+                    (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
+            bodies.define(
+                    member34,
+                    (b, sb) -> b.let(
+                            runnables,
+                            newArray(runnables, literal(1)),
+                            a -> b.exec(assignAt(
+                                            runnables,
+                                            a,
+                                            literal(0),
+                                            lambda(
+                                                    Runnable_.sam,
+                                                    () -> call(sb, StringBuilder_.append_String, literal("x")))))
+                                    .exec(voidCall(at(runnables, a, literal(0)), Runnable_.run))
+                                    .return_(call(sb, StringBuilder_.toString))));
+            bodies.define(
+                    member35,
+                    (b, s) -> b.let(
+                            IO_THROWER.token,
+                            lambdaBlock(IO_THROWER.sam, lb -> lb.throw_(new_(IOException_.new_String, s))),
+                            t -> b.tryTerminated(
+                                    h -> h.catch_(
+                                            IOException_.TOKEN,
+                                            (handler, e) -> handler.return_(call(e, Throwable_.getMessage))),
+                                    body -> body.exec(voidCall(t, IO_THROWER.run))
+                                            .return_(literal("ran")))));
+        };
     }
 
     @Test
