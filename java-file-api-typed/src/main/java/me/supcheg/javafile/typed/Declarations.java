@@ -379,6 +379,11 @@ public abstract sealed class Declarations<Self>
     /// there, a default method: an abstract one is implemented by the proof the supertype is
     /// declared with.
     ///
+    /// The witness is asked for its type alone, here and in every overload: that the compiler of
+    /// the generator takes it is the proof that the class is of a type that has the method, and
+    /// nothing of it is read. What the class inherits under the signature is held against the
+    /// method where it is declared ([SignatureRegistry]).
+    ///
     /// @param up the witness that the class is of a type that has the method
     /// @param method the fact of the overridden method
     /// @param body the body, given its block and `this`

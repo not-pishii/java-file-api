@@ -1,10 +1,12 @@
 package me.supcheg.javafile.typed;
 
+import com.google.testing.compile.CompilationSubject;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.Base;
+import me.supcheg.javafile.typed.fixtures.Carrier;
 import me.supcheg.javafile.typed.fixtures.Joining;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -14,6 +16,7 @@ import me.supcheg.javafile.typed.testfacts.java.util.AbstractCollection_;
 import me.supcheg.javafile.typed.testfacts.java.util.AbstractList_;
 import me.supcheg.javafile.typed.testfacts.java.util.concurrent.Callable_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Carrier_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Joining_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Mid_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Risking_;
@@ -37,6 +40,7 @@ import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -308,6 +312,24 @@ class ExtendsFormsTest {
                 "extends AbstractList<?>",
                 "public Object get(int i) { return null; } public int size() { return 0; }",
                 "unexpected type");
+    }
+
+    @Test
+    void aSuperclassIsNoRawType() {
+        // javac takes the raw type and warns; the heritage of a generic type is told of its type arguments
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> void build(ClassHeader<Self> h) {
+                        h.extends_(UnsafeFacts.steps(
+                                        UnsafeFacts.<Carrier<Object>>openClassToken(Carrier_.Data.SHAPE), h.self())
+                                .complete());
+                    }
+                }))
+                .withMessageContaining("cannot have the raw supertype me.supcheg.javafile.typed.fixtures.Carrier:"
+                        + " the type is generic, name it with its type arguments");
+        CompilationSubject.assertThat(JavacVerdict.compiledClass("extends Carrier", "public Probe() { super(null); }"))
+                .hadWarningContaining("found raw type: me.supcheg.javafile.typed.fixtures.Carrier");
     }
 
     @Test
