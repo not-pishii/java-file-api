@@ -12,13 +12,13 @@ import java.util.List;
 /// The header is a sequence of stages, each giving the next:
 ///
 /// ```
-/// ClassHeader<Self>  --extendsObject()-->  ObjectHeader<Self>  --members()-->  TypedClassBuilder<Self>
-///                                            implements_(proof)                   --bodies()-->
-/// TypedClassBodies<Self>
-///                    --extends_(proof)-->  SubclassHeader<Self, S>  --members()-->  TypedSubclassBuilder<Self, S>
-///                                            implements_(proof), inherited(fact)  --bodies(constructor, (ctor, ...) ->
-/// ...)-->
-///                                            declareConstructor(...)                TypedSubclassBodies<Self, S>
+/// ClassHeader<Self>
+///   --extendsObject()-->   ObjectHeader<Self>          implements_(proof)
+///       --members()-->     TypedClassBuilder<Self>     declare...
+///       --bodies()-->      TypedClassBodies<Self>      define, initialize
+///   --extends_(proof)-->   SubclassHeader<Self, S>     implements_(proof), inherited(fact)
+///       --members()-->     TypedSubclassBuilder<Self, S>
+///       --bodies(constructor, (ctor, ...) -> ...)-->   TypedSubclassBodies<Self, S>
 /// ```
 ///
 /// The header is followed by two stages more: the builder of the members,

@@ -577,12 +577,12 @@ class NegativeCompileTest {
     /// The header, the members and the first constructor of a class that extends `Base`: `sh`, `cb` and `bodies`.
     private static final String SUBCLASS = "var sh = h.extends_(Base_.extend(h.self()));"
             + " var cb = sh.members();"
-            + " var bodies = cb.bodies(sh.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
+            + " var bodies = cb.bodies(cb.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
 
     /// The header, the members and the first constructor of a class that extends `Maker`: `sh`, `cb` and `bodies`.
     private static final String SUBCLASS_OF_MAKER = "var sh = h.extends_(Maker_.extend(h.self()));"
             + " var cb = sh.members();"
-            + " var bodies = cb.bodies(sh.declareConstructor(), ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));";
+            + " var bodies = cb.bodies(cb.declareConstructor(), ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));";
 
     @Test
     void aSubclassDeclaredByItsHeaderCompiles() {
@@ -592,16 +592,14 @@ class NegativeCompileTest {
                                 + " bodies.define(cb.declareMethod(\"m\", String_.TOKEN), (b, self) -> b.return_(bodies.superCall(self, hook,"
                                 + " literal(\"x\"))));")))
                 .succeeded();
-        assertThat(
-                        compile(
-                                "Extending",
-                                inHeader(
-                                        "var list = new AbstractList_<>(String_.TOKEN); var eh = h.extending(list.token);"
-                                                + " var get = eh.overriding(list.get_int);"
-                                                + " var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);"
-                                                + " var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));"
-                                                + " var make = sh.declareConstructor();"
-                                                + " sh.members().bodies(make, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));")))
+        assertThat(compile(
+                        "Extending",
+                        inHeader("var list = new AbstractList_<>(String_.TOKEN); var eh = h.extending(list.token);"
+                                + " var get = eh.overriding(list.get_int);"
+                                + " var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);"
+                                + " var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));"
+                                + " var cb = sh.members(); var make = cb.declareConstructor();"
+                                + " cb.bodies(make, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));")))
                 .succeeded();
     }
 
@@ -613,7 +611,7 @@ class NegativeCompileTest {
                 "no suitable method found for bodies(no arguments)");
         assertRejected(
                 "NoBody",
-                inHeader("var sh = h.extends_(Base_.extend(h.self())); sh.members().bodies(sh.declareConstructor());"),
+                inHeader("var cb = h.extends_(Base_.extend(h.self())).members(); cb.bodies(cb.declareConstructor());"),
                 "no suitable method found for bodies(me.supcheg.javafile.facts.CtorRef0<Self>)");
     }
 
@@ -621,8 +619,8 @@ class NegativeCompileTest {
     void aConstructorOfASubclassEndsBySuperAlone() {
         assertRejected(
                 "NoSuper",
-                inHeader("var sh = h.extends_(Base_.extend(h.self()));"
-                        + " sh.members().bodies(sh.declareConstructor(), (b, self) -> b.end());"),
+                inHeader("var cb = h.extends_(Base_.extend(h.self())).members();"
+                        + " cb.bodies(cb.declareConstructor(), (b, self) -> b.end());"),
                 "incompatible parameter types in lambda expression");
         assertRejected(
                 "DefinedWithoutSuper",
@@ -698,9 +696,8 @@ class NegativeCompileTest {
     void superCallsAConstructorOfTheSuperclass() {
         assertRejected(
                 "SuperOfAnother",
-                inHeader(
-                        "var sh = h.extends_(Base_.extend(h.self()));"
-                                + " sh.members().bodies(sh.declareConstructor(), ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
+                inHeader("var cb = h.extends_(Base_.extend(h.self())).members();"
+                        + " cb.bodies(cb.declareConstructor(), ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
                 "no suitable method found for super_(me.supcheg.javafile.facts.CtorRef0<me.supcheg.javafile.typed.fixtures.Mid>");
     }
 

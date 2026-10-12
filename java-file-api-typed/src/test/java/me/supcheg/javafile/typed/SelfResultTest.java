@@ -70,13 +70,13 @@ class SelfResultTest {
                 // abstract Copied copy(): the intention is what the proof takes, so the witness is a promise
                 var copy = h.overriding(Copied_.copy, h.becoming(Copied_.TOKEN));
                 var sh = h.extends_(Copied_.extend(h.self()).copy(copy));
-                var ctor1 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 // Copied same() and Copied other(String) have bodies: overridden among the members
                 var same = cb.declareOverride(Copied_.same, sh.asSuper());
                 var asSuper = cb.declareOverride(sh.asSuper(), Copied_.other_String, sh.asSuper());
                 var chain = cb.declareMethod("chain", cb.self());
-                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Copied_.super_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Copied_.super_, (b, self) -> b.end()));
                 bodies.define(copy.method(), (b, self) -> b.return_(self));
                 bodies.define(same, (b, self) -> b.return_(self));
                 bodies.define(asSuper, (b, self, label) -> b.return_(self));
@@ -106,8 +106,8 @@ class SelfResultTest {
                         var oh = h.extendsObject();
                         oh.implements_(Chained_.implement(h.self()));
                         oh.implements_(Linked_.implement(h.self()).next(next));
-                        var cb101 = oh.members();
-                        cb101.bodies().define(next.method(), (b, self) -> b.return_(self));
+                        var cb = oh.members();
+                        cb.bodies().define(next.method(), (b, self) -> b.return_(self));
                     }
                 })
                 .render();
@@ -185,8 +185,8 @@ class SelfResultTest {
                 assertThat(next.method().owner()).isSameAs(h.self());
                 var oh = h.extendsObject();
                 oh.implements_(Following_.implement(h.self()).next(next));
-                var cb102 = oh.members();
-                cb102.bodies().define(next.method(), (b, self) -> b.return_(self));
+                var cb = oh.members();
+                cb.bodies().define(next.method(), (b, self) -> b.return_(self));
             }
         });
     }

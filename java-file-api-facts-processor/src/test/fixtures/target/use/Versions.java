@@ -177,8 +177,9 @@ public final class Versions {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Svc_.extend(h.self()));
-                    var make = sh.declareConstructor();
-                    sh.members().bodies(make, ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
+                    var cb = sh.members();
+                    var make = cb.declareConstructor();
+                    cb.bodies(make, ctor -> ctor.super_(Svc_.new_, (b, self) -> b.end()));
                 }
             };
 

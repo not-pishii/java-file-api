@@ -466,29 +466,6 @@ final class ClassDeclaration<Self> {
         return own;
     }
 
-    /// The class declares a constructor in its header, to be defined by the bodies of its members.
-    ///
-    /// @param ctor the fact of the constructor
-    /// @param thrown the exception classes of its `throws` clause
-    /// @return `ctor`
-    /// @throws IllegalStateException if the class has no superclass yet, or its header has ended
-    <F extends Invocable> F intendConstructor(F ctor, List<ClassToken<? extends Throwable>> thrown) {
-        Scopes.requireNoneOpen("a constructor of " + described);
-        if (!(phase instanceof Phase.Heading<Self> heading)) {
-            throw new IllegalStateException(described + " cannot declare " + ctor + " in its header now: a"
-                    + " constructor is declared there after the superclass is named and before the members");
-        }
-        phase = new Phase.Heading<>(
-                heading.inherited(),
-                heading.superclass(),
-                heading.interfaces(),
-                heading.said(),
-                heading.inheritances(),
-                with(heading.constructors(), new Intention(ctor, ctor, thrown, Site.here())),
-                heading.site());
-        return ctor;
-    }
-
     /// The class says it has `method` by inheriting it from its superclass, with its body: what a
     /// step of the proof that the class implements an interface takes for a method the superclass
     /// implements already.
@@ -533,7 +510,6 @@ final class ClassDeclaration<Self> {
                 heading.interfaces(),
                 heading.said(),
                 with(heading.inheritances(), inheritance),
-                heading.constructors(),
                 heading.site());
         return inheritance;
     }
@@ -577,7 +553,6 @@ final class ClassDeclaration<Self> {
                 with(heading.interfaces(), supertype.typeRef()),
                 said,
                 heading.inheritances(),
-                heading.constructors(),
                 heading.site());
         return new Upcast<>(self, supertype);
     }
@@ -708,7 +683,6 @@ final class ClassDeclaration<Self> {
         heading.said()
                 .intentions()
                 .forEach(intention -> builder.declareOverride(intention.own(), intention.thrown(), intention.site()));
-        heading.constructors().forEach(ctor -> builder.declare(ctor.own(), ctor.thrown(), ctor.site()));
         return builder;
     }
 
@@ -864,7 +838,7 @@ final class ClassDeclaration<Self> {
                             + ", and a protected member is reached by a subclass alone (JLS 6.6.2)");
                 });
         requireOverrides(inherited, named.said().intentions().stream(), named.said());
-        phase = new Phase.Heading<>(inherited, superclass, List.of(), named.said(), List.of(), List.of(), Site.here());
+        phase = new Phase.Heading<>(inherited, superclass, List.of(), named.said(), List.of(), Site.here());
     }
 
     /// Rejects the intentions that cannot override what the class inherits under their signature.
@@ -973,7 +947,6 @@ final class ClassDeclaration<Self> {
         /// @param interfaces its superinterfaces so far
         /// @param said what its header said so far
         /// @param inheritances the methods it said it has from its superclass
-        /// @param constructors the constructors it declared in its header
         /// @param site where the superclass was named
         record Heading<Self>(
                 Inheritance inherited,
@@ -981,17 +954,15 @@ final class ClassDeclaration<Self> {
                 List<ClassOrInterfaceTypeRef> interfaces,
                 Said said,
                 List<Implemented.ByInheritance> inheritances,
-                List<Intention> constructors,
                 Site site)
                 implements Phase<Self> {
             public Heading {
                 interfaces = List.copyOf(interfaces);
                 inheritances = List.copyOf(inheritances);
-                constructors = List.copyOf(constructors);
             }
 
             Heading<Self> saying(Said said) {
-                return new Heading<>(inherited, superclass, interfaces, said, inheritances, constructors, site);
+                return new Heading<>(inherited, superclass, interfaces, said, inheritances, site);
             }
         }
 

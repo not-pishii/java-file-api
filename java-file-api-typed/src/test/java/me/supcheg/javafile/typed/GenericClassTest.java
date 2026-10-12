@@ -124,8 +124,8 @@ class GenericClassTest {
                 var sh = h.extends_(carrier.extend(h.self()));
                 Upcast<Self, Comparable<Self>> asComparable =
                         sh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
-                var first = sh.declareConstructor(t);
                 var cb = sh.members();
+                var first = cb.declareConstructor(t);
                 // what the class has from Carrier<T> is in terms of its own T
                 var mine = cb.declareMethod("mine", t);
                 var same = cb.declareMethod("same", PrimitiveToken.INT);

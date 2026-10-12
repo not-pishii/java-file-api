@@ -163,9 +163,9 @@ class InheritanceVerdictTest {
                             var oh = h.extendsObject();
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
-                            var cb101 = oh.members();
-                            var size = cb101.declareOverride(asCounted, Counted_.size);
-                            cb101.bodies().define(size, (b, _) -> b.return_(literal(1)));
+                            var cb = oh.members();
+                            var size = cb.declareOverride(asCounted, Counted_.size);
+                            cb.bodies().define(size, (b, _) -> b.return_(literal(1)));
                         }
                     }),
                     "cannot override size() of me.supcheg.javafile.typed.fixtures.Measured: its result is long, and"
@@ -220,8 +220,8 @@ class InheritanceVerdictTest {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Unnamed_.implement(h.self()).label(label));
-                            var cb103 = oh.members();
-                            cb103.bodies().define(label.method(), (b, _) -> b.return_(literal("mine")));
+                            var cb = oh.members();
+                            cb.bodies().define(label.method(), (b, _) -> b.return_(literal("mine")));
                         }
                     })
                     .render();
@@ -281,9 +281,9 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
-                            var cb104 = oh.members();
-                            var pick = cb104.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
-                            cb104.bodies().define(pick, (b, _, picked) -> b.return_(picked));
+                            var cb = oh.members();
+                            var pick = cb.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
+                            cb.bodies().define(pick, (b, _, picked) -> b.return_(picked));
                         }
                     }),
                     "the method is generic, and the typed layer declares no generic method",
@@ -305,9 +305,9 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Joiner_.implement(h.self()));
-                            var cb106 = oh.members();
-                            var pick = cb106.declareMethod("pick", Object_.TOKEN, Object_.TOKEN);
-                            cb106.bodies().define(pick, (b, _, picked) -> b.return_(picked));
+                            var cb = oh.members();
+                            var pick = cb.declareMethod("pick", Object_.TOKEN, Object_.TOKEN);
+                            cb.bodies().define(pick, (b, _, picked) -> b.return_(picked));
                         }
                     }),
                     "The inherited method is generic, and the typed layer declares no generic method: the class"
@@ -355,8 +355,9 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             sh.implements_(Local_.implement(h.self()));
-                            var ctor1 = sh.declareConstructor();
-                            sh.members().bodies(ctor1, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var cb = sh.members();
+                            var constructor = cb.declareConstructor();
+                            cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "IllegalAccessError",
@@ -368,10 +369,10 @@ class InheritanceVerdictTest {
                     var sh = extendsBase(h);
                     Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
                     var sh109 = sh;
-                    var ctor110 = sh109.declareConstructor();
-                    var cb111 = sh109.members();
-                    var local = cb111.declareOverride(asLocal, Local_.local);
-                    cb111.bodies(ctor110, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                    var cb = sh109.members();
+                    var constructor = cb.declareConstructor();
+                    var local = cb.declareOverride(asLocal, Local_.local);
+                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                             .define(local, (b, _) -> b.return_(literal("mine")));
                 }
             }));
@@ -380,11 +381,11 @@ class InheritanceVerdictTest {
             CompiledClasses declared = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
-                    var sh113 = extendsBase(h);
-                    var ctor114 = sh113.declareConstructor();
-                    var cb115 = sh113.members();
-                    var local = cb115.declareMethod("local", String_.TOKEN);
-                    cb115.bodies(ctor114, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                    var sh = extendsBase(h);
+                    var cb = sh.members();
+                    var constructor = cb.declareConstructor();
+                    var local = cb.declareMethod("local", String_.TOKEN);
+                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                             .define(local, (b, self) -> b.return_(literal("named")));
                 }
             }));
@@ -416,11 +417,11 @@ class InheritanceVerdictTest {
                             UnsafeFacts.unverifiedClasspath(), near, new TypedJavaFile.TypedClassHeaderSpec() {
                                 @Override
                                 public <Self> void build(ClassHeader<Self> h) {
-                                    var sh117 = extendsBase(h);
-                                    var ctor118 = sh117.declareConstructor();
-                                    var cb119 = sh117.members();
-                                    var local = cb119.declareMethod("local", String_.TOKEN);
-                                    cb119.bodies(ctor118, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                                    var sh = extendsBase(h);
+                                    var cb = sh.members();
+                                    var constructor = cb.declareConstructor();
+                                    var local = cb.declareMethod("local", String_.TOKEN);
+                                    cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                                             .define(local, (b, self) -> b.return_(literal("")));
                                 }
                             }))
@@ -445,8 +446,9 @@ class InheritanceVerdictTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = h.extends_(Mid_.extend(h.self()));
                             sh.implements_(Defaulted_.implement(h.self()));
-                            var ctor2 = sh.declareConstructor();
-                            sh.members().bodies(ctor2, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                            var cb = sh.members();
+                            var constructor = cb.declareConstructor();
+                            cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "cannot stand for label() of me.supcheg.javafile.typed.fixtures.Defaulted: its result is not"
@@ -463,10 +465,10 @@ class InheritanceVerdictTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = extendsBase(h);
                     Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
-                    var ctor3 = sh.declareConstructor();
                     var cb = sh.members();
+                    var constructor = cb.declareConstructor();
                     var go = cb.declareMethod("go", String_.TOKEN);
-                    var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     bodies.define(go, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
                 }
             }));
@@ -478,10 +480,10 @@ class InheritanceVerdictTest {
                             var sh = extendsBase(h);
                             Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
                             var sh122 = sh;
-                            var ctor123 = sh122.declareConstructor();
-                            var cb124 = sh122.members();
-                            var own125 = cb124.declareOverride(asSealing, Sealing_.sealed);
-                            cb124.bodies(ctor123, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
+                            var cb = sh122.members();
+                            var constructor = cb.declareConstructor();
+                            var own125 = cb.declareOverride(asSealing, Sealing_.sealed);
+                            cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
                                     .define(own125, (b, _) -> b.return_(literal("")));
                         }
                     }))

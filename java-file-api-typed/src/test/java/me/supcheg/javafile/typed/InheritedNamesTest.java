@@ -39,10 +39,10 @@ class InheritedNamesTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Nesting_.extend(h.self()));
-                var ctor1 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var which = cb.declareMethod("which", Op_.TOKEN);
-                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Nesting_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Nesting_.new_, (b, self) -> b.end()));
                 bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
@@ -61,10 +61,10 @@ class InheritedNamesTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Obscuring_.extend(h.self()));
-                var ctor2 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var which = cb.declareMethod("which", Op_.TOKEN);
-                var bodies = cb.bodies(ctor2, ctor -> ctor.super_(Obscuring_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Obscuring_.new_, (b, self) -> b.end()));
                 bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
@@ -102,11 +102,11 @@ class InheritedNamesTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Rooted_.extend(h.self()));
-                        var ctor4 = sh.declareConstructor();
                         var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var field5 = cb.declareField("Op", PrimitiveToken.INT);
                         var which = cb.declareMethod("which", Op_.TOKEN);
-                        var bodies = cb.bodies(ctor4, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
                         bodies.initialize(field5, literal(1));
                         bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
@@ -152,10 +152,10 @@ class InheritedNamesTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Planted_.extend(h.self()));
-                        var ctor8 = sh.declareConstructor();
                         var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var which = cb.declareMethod("which", Op_.TOKEN);
-                        var bodies = cb.bodies(ctor8, ctor -> ctor.super_(Planted_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Planted_.new_, (b, self) -> b.end()));
                         bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),

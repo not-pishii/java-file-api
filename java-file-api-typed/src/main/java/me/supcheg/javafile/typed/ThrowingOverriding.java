@@ -5,7 +5,8 @@ import me.supcheg.javafile.facts.ClassToken;
 import java.util.List;
 
 /// The intentions of a class to override methods with a method that
-/// declares a `throws` clause, from [Header#throwing]: an override declares
+/// declares a `throws` clause, from [Header#throwing] and
+/// [SubclassHeader#throwing]: an override declares
 /// no exception unless it is said here, whatever the overridden method
 /// declares, and may declare only what every method it overrides allows (JLS
 /// 8.4.8.3).

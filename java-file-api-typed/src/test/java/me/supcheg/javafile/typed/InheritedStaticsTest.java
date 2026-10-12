@@ -39,11 +39,11 @@ class InheritedStaticsTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticPick_.extend(h.self()));
-                var ctor1 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var pick = cb.declareMethod("pick", String_.TOKEN, Object_.TOKEN);
                 var go = cb.declareMethod("go", String_.TOKEN);
-                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
                 bodies.define(pick, (b, self, v) -> b.return_(literal("own")));
                 bodies.define(go, (b, self) -> b.return_(call(self, pick, literal("s"))));
             }
@@ -60,10 +60,10 @@ class InheritedStaticsTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(StaticTwin_.extend(h.self()));
-                var ctor2 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var go = cb.declareMethod("go", String_.TOKEN);
-                var bodies = cb.bodies(ctor2, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
                 bodies.define(
                         go, (b, self) -> b.return_(call(cb.asSuper().apply(self), StaticTwin_.m_Object, literal("s"))));
             }
@@ -124,11 +124,11 @@ class InheritedStaticsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var sh3 = h.extends_(Base_.extend(h.self()));
-                        var ctor3 = sh3.declareConstructor();
-                        var cb = sh3.members();
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var util = cb.declareMethod("util", String_.TOKEN);
-                        var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(util, (b, self) -> b.return_(literal("x")));
                     }
                 }),

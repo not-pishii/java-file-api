@@ -127,8 +127,8 @@ class CovariantReturnTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Maker_.extend(h.self()));
                     var strings = new ArrayList_<>(String_.TOKEN);
-                    var ctor1 = sh.declareConstructor();
                     var cb = sh.members();
+                    var constructor = cb.declareConstructor();
                     // Object make()
                     var make = cb.declareOverride(Maker_.make, String_.TOKEN);
                     // Collection<String> words(): an ArrayList<String> is one, a List<String> too
@@ -137,7 +137,7 @@ class CovariantReturnTest {
                     var asSuper =
                             cb.declareOverride(sh.asSuper(), Maker_.texts, new List_<>(CharSequence_.TOKEN).token);
                     var made = cb.declareMethod("made", PrimitiveToken.INT);
-                    var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                    var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                     bodies.define(make, (b, self) -> b.return_(literal("mine")));
                     bodies.define(words, (b, self) -> b.return_(new_(strings.new_)));
                     bodies.define(asSuper, (b, self) -> b.return_(literalNullList()));
@@ -166,8 +166,9 @@ class CovariantReturnTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Mid_.extend(h.self()));
                     sh.implements_(Labelled_.implement(h.self()).label(sh.inherited(Mid_.label)));
-                    var ctor4 = sh.declareConstructor();
-                    sh.members().bodies(ctor4, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                    var cb = sh.members();
+                    var constructor = cb.declareConstructor();
+                    cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                 }
             }));
 
@@ -331,9 +332,9 @@ class CovariantReturnTest {
                             var oh = h.extendsObject();
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
-                            var cb102 = oh.members();
-                            var size = cb102.declareOverride(asCounted, Counted_.size);
-                            cb102.bodies().define(size, (b, self) -> b.return_(literal(1)));
+                            var cb = oh.members();
+                            var size = cb.declareOverride(asCounted, Counted_.size);
+                            cb.bodies().define(size, (b, self) -> b.return_(literal(1)));
                         }
                     }),
                     "its result is long, and that of the method int: the return types are incompatible"
@@ -349,10 +350,10 @@ class CovariantReturnTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             sh.implements_(Resetting_.implement(h.self()));
-                            var ctor7 = sh.declareConstructor();
                             var cb = sh.members();
+                            var constructor = cb.declareConstructor();
                             var reset = cb.declareOverride(Maker_.reset);
-                            var bodies = cb.bodies(ctor7, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                            var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(reset, (b, self) -> b.end());
                         }
                     }),
@@ -368,10 +369,10 @@ class CovariantReturnTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             Upcast<Self, Resetting> asResetting = sh.implements_(Resetting_.implement(h.self()));
-                            var ctor9 = sh.declareConstructor();
                             var cb = sh.members();
+                            var constructor = cb.declareConstructor();
                             var reset = cb.declareOverride(asResetting, Resetting_.reset);
-                            var bodies = cb.bodies(ctor9, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                            var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(reset, (b, self) -> b.return_(literal("")));
                         }
                     }),
@@ -397,11 +398,11 @@ class CovariantReturnTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
-                            var ctor11 = sh.declareConstructor();
                             var cb = sh.members();
+                            var constructor = cb.declareConstructor();
                             var strings = new List_<>(String_.TOKEN).token;
                             var texts = cb.declareOverride(Maker_.texts, strings);
-                            var bodies = cb.bodies(ctor11, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                            var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(texts, (b, self) -> b.return_(Expressions.literalNull(strings)));
                         }
                     }),

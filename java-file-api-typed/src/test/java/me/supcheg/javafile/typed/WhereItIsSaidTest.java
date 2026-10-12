@@ -110,8 +110,8 @@ class WhereItIsSaidTest {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Base_.extend(h.self()));
-                    var ctor = sh.declareConstructor();
                     var cb = sh.members();
+                    var ctor = cb.declareConstructor();
                     var hook = cb.protected_(Base_.hook_String);
                     var other = cb.declareMethod("other", String_.TOKEN, Base_.TOKEN);
                     var bodies = cb.bodies(ctor, c -> c.super_(Base_.new_, (b, self) -> b.end()));
@@ -137,8 +137,8 @@ class WhereItIsSaidTest {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(sub.extend(h.self()));
-                    var ctor = sh.declareConstructor();
                     var cb = sh.members();
+                    var ctor = cb.declareConstructor();
                     var m = cb.declareOverride(base.m_T);
                     var p = cb.declareOverride(cb.protected_(base.p_T));
                     var f = cb.declareMethod("f", String_.TOKEN);

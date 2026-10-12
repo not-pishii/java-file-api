@@ -106,9 +106,9 @@ class VariableArityTest {
                         var oh = h.extendsObject();
                         Upcast<Self, Scattering<List<String>>> asScattering =
                                 oh.implements_(scattering.implement(h.self()));
-                        var cb101 = oh.members();
-                        var scatter = cb101.declareOverride(asScattering, scattering.scatter_TArray);
-                        cb101.bodies().define(scatter, (b, self, all) -> b.return_(literal(0)));
+                        var cb = oh.members();
+                        var scatter = cb.declareOverride(asScattering, scattering.scatter_TArray);
+                        cb.bodies().define(scatter, (b, self, all) -> b.return_(literal(0)));
                     }
                 }))
                 .withMessageContaining("of variable arity and of the element type")
@@ -178,9 +178,9 @@ class VariableArityTest {
                         Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                         Upcast<Self, Taking> asTaking = oh.implements_(Taking_.implement(h.self()));
                         assertThat(asTaking.supertype()).isEqualTo(Taking_.TOKEN);
-                        var cb103 = oh.members();
-                        var join = cb103.declareOverride(asJoiner, Joiner_.join_StringArray);
-                        cb103.bodies().define(join, (b, self, parts) -> b.return_(literal("")));
+                        var cb = oh.members();
+                        var join = cb.declareOverride(asJoiner, Joiner_.join_StringArray);
+                        cb.bodies().define(join, (b, self, parts) -> b.return_(literal("")));
                     }
                 }))
                 .withMessageContaining("cannot override both")
@@ -199,8 +199,9 @@ class VariableArityTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Gathered_.extend(h.self()));
                         sh.implements_(Joiner_.implement(h.self()));
-                        var ctor3 = sh.declareConstructor();
-                        sh.members().bodies(ctor3, ctor -> ctor.super_(Gathered_.new_, (b, self) -> b.end()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
+                        cb.bodies(constructor, ctor -> ctor.super_(Gathered_.new_, (b, self) -> b.end()));
                     }
                 }))
                 .withMessageContaining("cannot stand for join(java.lang.String[]) of"
