@@ -133,11 +133,11 @@ class NarrowedCallTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Maker_.extend(h.self()));
-                        var ctor2 = sh.declareConstructor();
                         var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var fault = cb.protected_(Maker_.fault);
                         var f = cb.declareMethod("f", String_.TOKEN);
-                        var bodies = cb.bodies(ctor2, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                         bodies.define(f, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
                     }
                 }),
@@ -149,11 +149,11 @@ class NarrowedCallTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Maker_.extend(h.self()));
-                var ctor3 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var fault = cb.protected_(Maker_.fault);
                 var f = cb.declareMethod("f", String_.TOKEN);
-                var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                 bodies.define(
                         f,
                         (b, self) -> b.let(
@@ -177,8 +177,8 @@ class NarrowedCallTest {
                         var oh = h.extendsObject();
                         oh.implements_(Linked_.implement(h.self()).next(next));
                         oh.implements_(Chained_.implement(h.self()));
-                        var cb101 = oh.members();
-                        cb101.bodies().define(next.method(), (b, self) -> b.return_(self));
+                        var cb = oh.members();
+                        cb.bodies().define(next.method(), (b, self) -> b.return_(self));
                     }
                 })
                 .render();

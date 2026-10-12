@@ -25,26 +25,54 @@ import java.util.stream.Stream;
 /// The stage of the header of a class that extends `S`, from
 /// [ClassHeader#extends_]: the class names its superinterfaces, says which
 /// methods of theirs its superclass implements for it ([#inherited]), then
-/// begins its members ([SubclassOverriding#members()]).
+/// begins its members ([#members()]).
 ///
 /// ```java
 /// var sh = h.extends_(Thread_.extend(h.self()));
 /// var asRunnable = sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Thread_.run)));
-/// var make = sh.declareConstructor();
-/// var bodies = sh.members().bodies(make, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
+/// var cb = sh.members();
+/// var make = cb.declareConstructor();
+/// var bodies = cb.bodies(make, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
 /// ```
+///
+/// **A subclass has a constructor.** The stage this one ends in declares the
+/// constructors of the class with its other members, and its bodies begin
+/// with that of one ([TypedSubclassBuilder#bodies(CtorRef0,
+/// TypedSubclassBodies.CtorBody0)]): a class that extends `S` and calls no
+/// constructor of `S` is not written.
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public final class SubclassHeader<Self, S> extends SubclassOverriding<Self, S> {
+public final class SubclassHeader<Self, S> extends Overriding<Self> {
+    private final ClassDeclaration<Self> declaration;
+    private final ExtendableClassToken<S> superclass;
 
     SubclassHeader(ClassDeclaration<Self> declaration, ExtendableClassToken<S> superclass) {
-        super(declaration, superclass);
+        this.declaration = declaration;
+        this.superclass = superclass;
+    }
+
+    @Override
+    ClassDeclaration<Self> declaration() {
+        return declaration;
+    }
+
+    private ExtendableClassToken<S> superclass() {
+        return superclass;
     }
 
     @Override
     List<ClassToken<? extends Throwable>> thrown() {
         return List.of();
+    }
+
+    /// Ends the header: the declarations of the members of the class follow.
+    ///
+    /// @return the builder of the members
+    /// @throws IllegalArgumentException if the class said it overrides a method no supertype of it has
+    /// @throws IllegalStateException if the members have begun already
+    public TypedSubclassBuilder<Self, S> members() {
+        return declaration.members(superclass);
     }
 
     /// The fact of the class being declared, see [Header#self()].
@@ -63,15 +91,14 @@ public final class SubclassHeader<Self, S> extends SubclassOverriding<Self, S> {
         return new Upcast<>(declaration().self(), superclass());
     }
 
-    /// The stage with a `throws` clause: the methods it says the class overrides, and the first
-    /// constructor it ends the header with, declare `exceptions`.
+    /// The stage with a `throws` clause: the methods it says the class overrides declare `exceptions`.
     ///
     /// @param exceptions the exception types of the `throws` clause, in order
     /// @return the stage that declares `exceptions`
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public final ThrowingSubclassHeader<Self, S> throwing(ClassToken<? extends Throwable>... exceptions) {
-        return new ThrowingSubclassHeader<>(declaration(), superclass(), List.of(exceptions));
+    public final ThrowingOverriding<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
+        return new ThrowingOverriding<>(declaration(), List.of(exceptions));
     }
 
     /// The stage with a `throws` clause that names a class known to be an exception by a witness
@@ -86,13 +113,12 @@ public final class SubclassHeader<Self, S> extends SubclassOverriding<Self, S> {
     /// @throws IllegalArgumentException if the witness is of another class than `exception`
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public final <E> ThrowingSubclassHeader<Self, S> throwing(
+    public final <E> ThrowingOverriding<Self> throwing(
             Upcast<E, ? extends Throwable> witness,
             ClassToken<E> exception,
             ClassToken<? extends Throwable>... others) {
-        return new ThrowingSubclassHeader<>(
+        return new ThrowingOverriding<>(
                 declaration(),
-                superclass(),
                 Stream.concat(Stream.of(Upcast.throwable(witness, exception)), Stream.of(others))
                         .toList());
     }

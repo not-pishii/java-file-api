@@ -49,8 +49,8 @@ class GenericInheritanceTest {
                         var sh = h.extends_(carrier.extend(h.self()));
                         Upcast<Self, Carrying<T>> asCarrying =
                                 sh.implements_(carrying.implement(h.self()).carried(sh.inherited(carrier.carried)));
-                        var first = sh.declareConstructor(t);
                         var cb = sh.members();
+                        var first = cb.declareConstructor(t);
                         var go = cb.declareMethod("go", t);
                         var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
                         bodies.define(go, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
@@ -74,8 +74,8 @@ class GenericInheritanceTest {
                     public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var base = new BaseTwin_<>(t);
                         var sh = h.extends_(base.extend(h.self()));
-                        var first = sh.declareConstructor();
                         var cb = sh.members();
+                        var first = cb.declareConstructor();
                         var p = cb.protected_(base.p_T);
                         var go = cb.declareMethod("go", String_.TOKEN, t);
                         var pub = cb.declareMethod("pub", String_.TOKEN, t);

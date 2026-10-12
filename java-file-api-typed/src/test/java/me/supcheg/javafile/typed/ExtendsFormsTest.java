@@ -55,15 +55,14 @@ class ExtendsFormsTest {
     }
 
     @Test
-    void aConstructorDeclaredInTheHeaderIsThereForEveryBody() throws Throwable {
+    void aConstructorIsThereForEveryBody() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Base_.extend(h.self()));
-                var make = sh.declareConstructor(String_.TOKEN);
                 var cb = sh.members();
+                var make = cb.declareConstructor(String_.TOKEN);
                 var of = cb.declareStaticMethod("of", cb.self(), String_.TOKEN);
-                // among the members a constructor is declared and defined as that of any class is
                 var plain = cb.declareConstructor();
                 var limit = cb.protected_(Base_.limit);
                 var raised = cb.declareStaticMethod("raised", PrimitiveToken.INT);
@@ -87,20 +86,21 @@ class ExtendsFormsTest {
     }
 
     @Test
-    void aConstructorTheHeaderDeclaresIsDefined() {
+    void aConstructorTheClassDeclaresIsDefined() {
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
-                        sh.declareConstructor(String_.TOKEN);
-                        var first = sh.declareConstructor();
-                        sh.members().bodies(first, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var cb = sh.members();
+                        cb.declareConstructor(String_.TOKEN);
+                        var first = cb.declareConstructor();
+                        cb.bodies(first, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     }
                 }))
                 .withMessageContaining("these declared members are never defined")
                 .withMessageContaining("Probe(java.lang.String)");
-        // one of another class is not one the header declared
+        // one of another class is not one the class declared
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
@@ -126,8 +126,8 @@ class ExtendsFormsTest {
                 // call() throws Probe: the clause of the override is of the class itself
                 var call = sh.throwing(asException, h.self()).overriding(callable.call);
                 sh.implements_(callable.implement(h.self()).call(call));
-                var make = sh.declareConstructor(String_.TOKEN, Throwable_.TOKEN);
                 var cb = sh.members();
+                var make = cb.declareConstructor(String_.TOKEN, Throwable_.TOKEN);
                 var constructor = cb.declareConstructor();
                 var handled = cb.declareMethod("handled", String_.TOKEN);
                 var bodies = cb.bodies(
@@ -165,11 +165,11 @@ class ExtendsFormsTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Thread_.extend(h.self()));
-                var ctor1 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var ran = cb.declareMutableField("ran", String_.TOKEN);
                 var run = cb.declareOverride(Thread_.run);
-                var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
                 bodies.initialize(ran, literal("no"));
                 bodies.define(
                         run,
@@ -196,11 +196,11 @@ class ExtendsFormsTest {
                         .join_String_String(sh.inherited(Mid_.join_String_String))
                         .put_String(sh.inherited(Mid_.put_String))
                         .put_String_String(sh.inherited(Mid_.put_String_String)));
-                var ctor3 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var joined = cb.declareMethod("joined", String_.TOKEN);
                 var runs = cb.declareMethod("runs", PrimitiveToken.INT);
-                var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                 bodies.define(
                         joined,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String, literal("k")))
@@ -248,16 +248,17 @@ class ExtendsFormsTest {
     }
 
     @Test
-    void twoConstructorsOfOneSignatureDeclaredInTheHeaderAreRejectedWhereTheMembersBegin() {
+    void twoConstructorsOfOneSignatureAreRejectedWhereTheSecondIsDeclared() {
         classAsJavac(
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
-                        var first = sh.declareConstructor(String_.TOKEN);
-                        sh.declareConstructor(String_.TOKEN);
-                        sh.members().bodies(first, (ctor, name) -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var cb = sh.members();
+                        var first = cb.declareConstructor(String_.TOKEN);
+                        cb.declareConstructor(String_.TOKEN);
+                        cb.bodies(first, (ctor, name) -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     }
                 }),
                 "clashes with the constructor",
@@ -273,11 +274,11 @@ class ExtendsFormsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var sh4 = h.extends_(Base_.extend(h.self()));
-                        var ctor4 = sh4.declareConstructor();
-                        var cb = sh4.members();
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var m = cb.declareMethod("m", String_.TOKEN);
-                        var bodies = cb.bodies(ctor4, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(
                                 m,
                                 (b, self) -> b.return_(bodies.superCall(
@@ -296,11 +297,11 @@ class ExtendsFormsTest {
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var sh5 = h.extends_(Base_.extend(h.self()));
-                        var ctor5 = sh5.declareConstructor();
-                        var cb = sh5.members();
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         var m = cb.declareMethod("m", String_.TOKEN);
-                        var bodies = cb.bodies(ctor5, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(
                                 m,
                                 (b, self) -> b.return_(bodies.superCall(
@@ -361,13 +362,13 @@ class ExtendsFormsTest {
                 var get = eh.overriding(list.get_int);
                 var size = eh.overriding(coll.size);
                 var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));
-                var ctor6 = sh.declareConstructor();
                 var cb = sh.members();
+                var constructor = cb.declareConstructor();
                 var index = cb.declareMethod("index", PrimitiveToken.INT);
                 var part = cb.declareMethod("part", list.subList_int_int.result());
                 var array = cb.declareMethod("array", coll.toArray.result());
                 var contained = cb.declareMethod("contained", PrimitiveToken.BOOLEAN);
-                var bodies = cb.bodies(ctor6, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
                 bodies.define(get.method(), (b, self, i) -> b.return_(literal("item")));
                 bodies.define(size.method(), (b, self) -> b.return_(literal(2)));
                 bodies.define(

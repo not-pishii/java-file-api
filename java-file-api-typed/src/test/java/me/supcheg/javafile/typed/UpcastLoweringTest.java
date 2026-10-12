@@ -151,15 +151,15 @@ class UpcastLoweringTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var sh1 = h.extends_(Base_.extend(h.self()));
-                        var ctor1 = sh1.declareConstructor();
-                        var cb = sh1.members();
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // the class has a field `name` of its own: the one of Base is read through the witness
                         var name = cb.declareField("name", String_.TOKEN);
                         var nameOfBase = cb.declareMethod("nameOfBase", String_.TOKEN);
                         var op = cb.declareMethod("op", String_.TOKEN);
-                        var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.initialize(name, literal("own"));
                         bodies.define(nameOfBase, (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
                         bodies.define(
@@ -183,9 +183,9 @@ class UpcastLoweringTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
-                        var sh3 = h.extends_(Base_.extend(h.self()));
-                        var ctor3 = sh3.declareConstructor();
-                        var cb = sh3.members();
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // javac would resolve this.pick("x") to the override of pick(String), or to the
                         // overload the class adds: the fact names pick(Object) of Base
@@ -196,7 +196,7 @@ class UpcastLoweringTest {
                                 me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN);
                         var picked = cb.declareMethod("picked", String_.TOKEN);
                         var pickedBySuper = cb.declareMethod("pickedBySuper", String_.TOKEN);
-                        var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(pick, (b, self, s) -> b.return_(literal("override")));
                         bodies.define(member13, (b, self, s) -> b.return_(literal("overload")));
                         bodies.define(

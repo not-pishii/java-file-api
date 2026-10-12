@@ -64,8 +64,8 @@ class SuperTwinsTest {
 
     private static <Self> Twins<Self> overriding(ClassHeader<Self> h) {
         var sh = h.extends_(SUB.extend(h.self()));
-        var ctor = sh.declareConstructor();
         var cb = sh.members();
+        var ctor = cb.declareConstructor();
         return new Twins<>(cb, ctor, cb.declareOverride(BASE.m_T), cb.declareOverride(cb.protected_(BASE.p_T)));
     }
 
@@ -156,8 +156,9 @@ class SuperTwinsTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(SUB.extend(h.self()));
-                        var ctor4 = sh.declareConstructor();
-                        sh.members().bodies(ctor4, ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
+                        cb.bodies(constructor, ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
                     }
                 }),
                 "are unrelated methods of the classes above, of one signature in the class",
