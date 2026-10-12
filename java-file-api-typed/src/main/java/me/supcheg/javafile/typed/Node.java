@@ -2,7 +2,6 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.Expr;
-import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
@@ -61,9 +60,9 @@ sealed interface Node {
                     NewArray _,
                     Cond _,
                     Binary _,
-                    Unary _,
+                    Not _,
+                    Convert _,
                     Cast _,
-                    InstanceOf _,
                     Assign _,
                     Raw _ -> true;
         };
@@ -133,14 +132,76 @@ sealed interface Node {
     /// A conditional, `c ? a : b`.
     record Cond(Node condition, Node whenTrue, Node whenFalse) implements Node {}
 
-    /// A binary operator.
-    record Binary(BinaryOp op, Node left, Node right, TypeToken<?> type) implements Node {}
+    /// A binary operator, `left op right`.
+    record Binary(Operator op, Node left, Node right) implements Node {}
 
-    /// A unary operator.
-    record Unary(UnaryOp op, Node operand, TypeToken<?> type) implements Node {}
+    /// The binary operators of the typed layer: each is of the type of its operands, so what it
+    /// folds to where they are constant ([Constants]) is told by the operator alone.
+    enum Operator {
+        ADD_INT(BinaryOp.ADD),
+        SUB_INT(BinaryOp.SUB),
+        MUL_INT(BinaryOp.MUL),
+        DIV_INT(BinaryOp.DIV),
+        MOD_INT(BinaryOp.MOD),
+        EQ_INT(BinaryOp.EQ),
+        NEQ_INT(BinaryOp.NEQ),
+        LT_INT(BinaryOp.LT),
+        LE_INT(BinaryOp.LE),
+        GT_INT(BinaryOp.GT),
+        GE_INT(BinaryOp.GE),
+        ADD_LONG(BinaryOp.ADD),
+        MUL_LONG(BinaryOp.MUL),
+        ADD_DOUBLE(BinaryOp.ADD),
+        MUL_DOUBLE(BinaryOp.MUL),
+        /// `&&`.
+        AND(BinaryOp.AND),
+        /// `||`.
+        OR(BinaryOp.OR),
+        /// `==` of two references.
+        EQ_REF(BinaryOp.EQ),
+        /// `!=` of two references.
+        NEQ_REF(BinaryOp.NEQ),
+        /// `+` of two strings.
+        CONCAT(BinaryOp.ADD);
 
-    /// A cast.
-    record Cast(TypeToken<?> type, Node operand) implements Node {}
+        private final BinaryOp rendered;
+
+        Operator(BinaryOp rendered) {
+            this.rendered = rendered;
+        }
+
+        /// The operator as it is rendered.
+        BinaryOp rendered() {
+            return rendered;
+        }
+    }
+
+    /// A logical complement, `!operand`.
+    record Not(Node operand) implements Node {}
+
+    /// A conversion of a number to another primitive type, `(int) operand`.
+    record Convert(Conversion conversion, Node operand) implements Node {}
+
+    /// The numeric conversions of the typed layer, by the type they convert to.
+    enum Conversion {
+        TO_INT(PrimitiveToken.INT),
+        TO_LONG(PrimitiveToken.LONG),
+        TO_DOUBLE(PrimitiveToken.DOUBLE);
+
+        private final PrimitiveToken<?, ?, ?> type;
+
+        Conversion(PrimitiveToken<?, ?, ?> type) {
+            this.type = type;
+        }
+
+        /// The type the number is converted to.
+        PrimitiveToken<?, ?, ?> type() {
+            return type;
+        }
+    }
+
+    /// A cast to a reference type.
+    record Cast(RefToken<?> type, Node operand) implements Node {}
 
     /// An expression seen as of a supertype by an [me.supcheg.javafile.typed.Upcast]: `inner` is
     /// rendered as it is, without a cast, so javac types it by `innerType`
@@ -153,9 +214,6 @@ sealed interface Node {
     /// @param innerType the token of its static type, which javac sees
     /// @param type the supertype the witness is of
     record Upcast(Node inner, TypeToken<?> innerType, TypeToken<?> type) implements Node {}
-
-    /// An `instanceof` test without a binding.
-    record InstanceOf(Node operand, RefToken<?> type) implements Node {}
 
     /// A lambda expression typed by a functional interface fact: `sam` is
     /// the single abstract method of the interface, its owner.

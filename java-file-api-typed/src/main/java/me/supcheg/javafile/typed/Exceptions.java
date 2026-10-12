@@ -472,10 +472,10 @@ final class Exceptions {
                     Node.NewArray _,
                     Node.Cond _,
                     Node.Binary _,
-                    Node.Unary _,
+                    Node.Not _,
+                    Node.Convert _,
                     Node.Cast _,
                     Node.Upcast _,
-                    Node.InstanceOf _,
                     Node.Assign _,
                     Node.Raw _ -> new Act.Computes();
             // A switch throws what its selector, its values and its blocks do, and nothing of its own:
@@ -550,10 +550,10 @@ final class Exceptions {
                     Node.Lambda _ -> Stream.empty();
             case Node.Box(var _, var operand) -> Stream.of(operand);
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
-            case Node.Unary(var _, var operand, var _) -> Stream.of(operand);
+            case Node.Not(var operand) -> Stream.of(operand);
+            case Node.Convert(var _, var operand) -> Stream.of(operand);
             case Node.Cast(var _, var operand) -> Stream.of(operand);
             case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
-            case Node.InstanceOf(var operand, var _) -> Stream.of(operand);
             case Node.ArrayLength(var array) -> Stream.of(array);
             case Node.NewArray(var _, var length) -> Stream.of(length);
             case Node.FieldGet(var target, var _) -> Stream.of(target.node());
@@ -563,7 +563,7 @@ final class Exceptions {
             case Node.StaticCall(var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.New(var _, var args) -> args.stream().map(Node.Operand::node);
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);
-            case Node.Binary(var _, var left, var right, var _) -> Stream.of(left, right);
+            case Node.Binary(var _, var left, var right) -> Stream.of(left, right);
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);
             // The statements of a block of a case are checked as they are appended to it.
             case Node.Switch switch_ ->
