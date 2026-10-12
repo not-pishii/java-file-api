@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.FinalClassToken;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -55,7 +57,7 @@ final class ClassDeclaration<Self> {
     private final TargetClasspath target;
     private final String described;
     private final Inheritance.Heir heir;
-    private final me.supcheg.javafile.facts.DeclarationIdentity identity;
+    private final DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
     private final List<Intention> intentions = new ArrayList<>();
     private final List<Implemented.ByInheritance> inheritances = new ArrayList<>();
@@ -615,7 +617,7 @@ final class ClassDeclaration<Self> {
 
     /// The header ends and the members begin: every method the class said it overrides is one it
     /// inherits, and is declared.
-    private <B extends MemberBuilder<Self>> B members(java.util.function.BiFunction<Inheritance, Superclass, B> make) {
+    private <B extends MemberBuilder<Self>> B members(BiFunction<Inheritance, Superclass, B> make) {
         Scopes.requireNoneOpen("the members of " + described);
         if (!(phase instanceof Phase.Heading<Self>(var inherited, var superclass, var interfaces))) {
             throw new IllegalStateException("the members of " + described + " do not begin here: they follow"
@@ -663,7 +665,8 @@ final class ClassDeclaration<Self> {
             case Phase.Named<Self> _, Phase.Heading<Self> _ ->
                 throw new IllegalStateException("the declaration of " + described + " is complete, but its"
                         + " header never came to the members: end it with extendsObject().body(), or with"
-                        + " body(ctor -> ...) of the header extends_ gave, whatever the class declares");
+                        + " body(sh.declareConstructor(...), (ctor, ...) -> ctor.super_(...)) of the header"
+                        + " extends_ gave, whatever the class declares");
             case Phase.Members<Self>(var builder, var superclass, var interfaces, var named) ->
                 new Declared(described, typeParams(), superclass, interfaces, named, builder.complete());
         };
