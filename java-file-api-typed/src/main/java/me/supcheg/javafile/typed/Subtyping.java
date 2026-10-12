@@ -48,7 +48,9 @@ import java.util.stream.IntStream;
 ///   chain ([me.supcheg.javafile.facts.TypeShape#superclasses()]) and of the
 ///   interfaces its shape records
 ///   ([me.supcheg.javafile.facts.TypeShape#interfaces()]), each as a type
-///   without type arguments — a raw one, if it is generic;
+///   without type arguments — a raw one, if it is generic: in what a
+///   heritage or a fact writes, the class type of a generic type with no
+///   arguments is the raw type, never the type with its own parameters;
 /// - a class or an interface is a subtype of the parameterization of a
 ///   generic supertype that [DeclaredToken#supertypes()] gives for its type
 ///   arguments, `ArrayList<String>` of `Collection<String>`, `String` of

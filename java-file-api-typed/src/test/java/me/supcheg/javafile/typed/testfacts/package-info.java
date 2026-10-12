@@ -89,7 +89,8 @@
     Captioned.class,
     Stated.class,
     Planted.class,
-    Defaulted.class
+    Defaulted.class,
+    Carrying.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -148,6 +149,7 @@ import me.supcheg.javafile.typed.fixtures.Captioned;
 import me.supcheg.javafile.typed.fixtures.Stated;
 import me.supcheg.javafile.typed.fixtures.Planted;
 import me.supcheg.javafile.typed.fixtures.Defaulted;
+import me.supcheg.javafile.typed.fixtures.Carrying;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

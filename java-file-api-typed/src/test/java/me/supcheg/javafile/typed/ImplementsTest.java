@@ -295,9 +295,16 @@ class ImplementsTest {
                         h.extendsObject().body().override(Object_.toString, (b, _) -> b.return_(literal("x")));
                     }))
                     .withMessageContaining("declared before: both erase to toString()");
+            assertThat(JavacVerdict.compiledClass(
+                            "",
+                            "@Override public String toString() { return \"x\"; }"
+                                    + " @Override public String toString() { return \"y\"; }"))
+                    .hadErrorContaining("method toString() is already defined in class");
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> header(h -> h.overriding(Object_.notify)))
                     .withMessageContaining("the method is final");
+            assertThat(JavacVerdict.compiledClass("", "@Override public void notify() {}"))
+                    .hadErrorContaining("overridden method is final");
         }
     }
 
@@ -349,6 +356,24 @@ class ImplementsTest {
             assertThat(JavacVerdict.compiledClass(
                             "implements Comparable<?>", "public int compareTo(Object o) { return 0; }"))
                     .hadErrorContaining("unexpected type");
+            // a raw supertype: javac takes it, and warns
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            h.extendsObject()
+                                    .implements_(UnsafeFacts.steps(
+                                                    UnsafeFacts.<Comparable<Object>>interfaceToken(
+                                                            Comparable_.Data.SHAPE),
+                                                    h.self())
+                                            .complete());
+                        }
+                    }))
+                    .withMessageContaining("cannot have the raw supertype java.lang.Comparable: the type is"
+                            + " generic, name it with its type arguments");
+            assertThat(JavacVerdict.compiledClass(
+                            "implements Comparable", "public int compareTo(Object o) { return 0; }"))
+                    .hadWarningContaining("found raw type: java.lang.Comparable");
         }
 
         @Test
@@ -413,6 +438,9 @@ class ImplementsTest {
                     }))
                     .withMessageContaining("has the signature of label() of me.supcheg.javafile.typed.fixtures.Named,"
                             + " which the class inherits");
+            // stricter than javac, to which a method of that signature overrides whether it says so or not
+            assertThat(JavacVerdict.compiledClass("implements Named", "public String label() { return \"\"; }"))
+                    .succeeded();
             // compareTo(Object) beside the compareTo(Probe) of Comparable<Probe>: the bridge of one is the other
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
