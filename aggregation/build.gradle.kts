@@ -25,10 +25,15 @@ reporting {
 // built with generated metamodels. What the processor generates is tested by its own fixtures.
 val generatedMetamodels = listOf("me/supcheg/javafile/typed/jdk/facts/**")
 
+// `InvocableFactories` is the generated superclass `UnsafeFacts` has its factories from. The factories are static and
+// tested at every arity (`ArityNFamiliesTest`); the constructor is the one line of the class no code can reach — its
+// one subclass is never instantiated — and Java has no class without a constructor.
+val uninstantiable = listOf("me/supcheg/javafile/facts/InvocableFactories.class")
+
 tasks {
     val testCodeCoverageReport = named<JacocoReport>("testCodeCoverageReport") {
         val classes = classDirectories.files
-        classDirectories.setFrom(classes.map { fileTree(it) { exclude(generatedMetamodels) } })
+        classDirectories.setFrom(classes.map { fileTree(it) { exclude(generatedMetamodels + uninstantiable) } })
     }
 
     val jacocoAggregatedCoverageVerification =
