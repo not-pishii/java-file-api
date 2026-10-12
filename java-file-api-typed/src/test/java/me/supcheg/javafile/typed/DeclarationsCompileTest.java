@@ -77,7 +77,8 @@ class DeclarationsCompileTest {
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(false)),
                                         e -> e.return_(call(self, isEven, subInt(n, literal(1))))));
-                        cb.constructor((b, _) -> b.end());
+                        var member1 = cb.declareConstructor();
+                        cb.define(member1, (b, _) -> b.end());
                     }
                 });
 
@@ -110,16 +111,15 @@ class DeclarationsCompileTest {
                         var count = cb.mutableField("count", PrimitiveToken.INT, literal(0));
                         var ctor = cb.declareConstructor(PrimitiveToken.INT);
                         // a static factory uses the constructor before it is defined
-                        cb.staticMethod("create", cb.self(), b -> b.return_(new_(ctor, literal(4))));
+                        var member2 = cb.declareStaticMethod("create", cb.self());
                         cb.define(
                                 ctor,
                                 (b, self, start) ->
                                         b.exec(assignField(self, count, start)).end());
-                        cb.method(
-                                "remaining",
-                                PrimitiveToken.INT,
-                                (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
+                        var member3 = cb.declareMethod("remaining", PrimitiveToken.INT);
                         cb.override(Object_.toString, (b, _) -> b.return_(literal("Counter")));
+                        cb.define(member2, b -> b.return_(new_(ctor, literal(4))));
+                        cb.define(member3, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
                     }
                 });
 

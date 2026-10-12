@@ -225,7 +225,8 @@ class ExceptionChecksTest {
             asJavac(
                     () -> declare(cb -> {
                         var read = cb.throwing(IOException_.TOKEN).declareStaticMethod("read", PrimitiveToken.INT);
-                        cb.staticMethod("m", PrimitiveToken.INT, b -> b.return_(staticCall(read)));
+                        var member2 = cb.declareStaticMethod("m", PrimitiveToken.INT);
+                        cb.define(member2, b -> b.return_(staticCall(read)));
                     }),
                     "static int me.supcheg.example.Probe.read() in the body of static method m can throw the"
                             + " checked exception java.io.IOException",

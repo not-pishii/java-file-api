@@ -63,14 +63,15 @@ class ExtendsFormsTest {
                 var sh = h.extends_(Base_.extend(h.self()));
                 var make = sh.declareConstructor(String_.TOKEN);
                 var cb = sh.body(make, (ctor, name) -> ctor.super_(Base_.super_String, name, (b, self) -> b.end()));
-                cb.staticMethod("of", cb.self(), String_.TOKEN, (b, s) -> b.return_(new_(make, s)));
+                var member1 = cb.declareStaticMethod("of", cb.self(), String_.TOKEN);
                 // among the members a constructor is declared and defined as that of any class is
                 var plain = cb.declareConstructor();
                 cb.define(plain, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                 var limit = cb.protected_(Base_.limit);
-                cb.staticMethod(
-                        "raised",
-                        PrimitiveToken.INT,
+                var member2 = cb.declareStaticMethod("raised", PrimitiveToken.INT);
+                cb.define(member1, (b, s) -> b.return_(new_(make, s)));
+                cb.define(
+                        member2,
                         b -> b.exec(assignStaticField(limit, addInt(staticField(limit), literal(1))))
                                 .return_(staticField(limit)));
             }
@@ -127,11 +128,12 @@ class ExtendsFormsTest {
                         make,
                         (ctor, message, cause) ->
                                 ctor.super_(Exception_.new_String_Throwable, message, cause, (b, self) -> b.end()));
-                cb.constructor(ctor -> ctor.super_(Exception_.new_String, literal("plain"), (b, self) -> b.end()));
+                var member3 = cb.declareConstructor();
                 cb.define(call.method(), (b, self) -> b.throw_(asException, self));
-                cb.method(
-                        "handled",
-                        String_.TOKEN,
+                var member4 = cb.declareMethod("handled", String_.TOKEN);
+                cb.define(member3, ctor -> ctor.super_(Exception_.new_String, literal("plain"), (b, self) -> b.end()));
+                cb.define(
+                        member4,
                         (b, self) -> b.let(
                                 String_.TOKEN,
                                 literal("none"),
@@ -185,9 +187,10 @@ class ExtendsFormsTest {
                         .put_String(sh.inherited(Mid_.put_String))
                         .put_String_String(sh.inherited(Mid_.put_String_String)));
                 var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
-                cb.method(
-                        "joined",
-                        String_.TOKEN,
+                var member5 = cb.declareMethod("joined", String_.TOKEN);
+                var member6 = cb.declareMethod("runs", PrimitiveToken.INT);
+                cb.define(
+                        member5,
                         (b, self) -> b.exec(cb.superCall(self, Mid_.put_String, literal("k")))
                                 .exec(cb.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .exec(voidCall(asJoining.apply(self), Joining_.put_String, literal("k")))
@@ -198,9 +201,8 @@ class ExtendsFormsTest {
                                                 Joining_.join_String_String,
                                                 literal("c"),
                                                 literal("d")))));
-                cb.method(
-                        "runs",
-                        PrimitiveToken.INT,
+                cb.define(
+                        member6,
                         (b, self) -> b.exec(cb.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .return_(field(cb.asSuper().apply(self), Mid_.runs)));
             }
@@ -262,9 +264,9 @@ class ExtendsFormsTest {
                         var cb = began(
                                 h.extends_(Base_.extend(h.self())),
                                 ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                        cb.method(
-                                "m",
-                                String_.TOKEN,
+                        var member7 = cb.declareMethod("m", String_.TOKEN);
+                        cb.define(
+                                member7,
                                 (b, self) -> b.return_(cb.superCall(
                                         self,
                                         UnsafeFacts.method(
@@ -284,9 +286,9 @@ class ExtendsFormsTest {
                         var cb = began(
                                 h.extends_(Base_.extend(h.self())),
                                 ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                        cb.method(
-                                "m",
-                                String_.TOKEN,
+                        var member8 = cb.declareMethod("m", String_.TOKEN);
+                        cb.define(
+                                member8,
                                 (b, self) -> b.return_(cb.superCall(
                                         self,
                                         UnsafeFacts.method(Base_.TOKEN, "util", String_.TOKEN, MemberTraits.FINAL))));
@@ -348,18 +350,17 @@ class ExtendsFormsTest {
                 var cb = began(sh, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
                 cb.define(get.method(), (b, self, i) -> b.return_(literal("item")));
                 cb.define(size.method(), (b, self) -> b.return_(literal(2)));
-                cb.method(
-                        "index",
-                        PrimitiveToken.INT,
-                        (b, self) -> b.return_(cb.superCall(self, list.indexOf_Object, literal("item"))));
-                cb.method(
-                        "part",
-                        list.subList_int_int.result(),
+                var member9 = cb.declareMethod("index", PrimitiveToken.INT);
+                var member10 = cb.declareMethod("part", list.subList_int_int.result());
+                var member11 = cb.declareMethod("array", coll.toArray.result());
+                var member12 = cb.declareMethod("contained", PrimitiveToken.BOOLEAN);
+                cb.define(member9, (b, self) -> b.return_(cb.superCall(self, list.indexOf_Object, literal("item"))));
+                cb.define(
+                        member10,
                         (b, self) -> b.return_(cb.superCall(self, list.subList_int_int, literal(0), literal(1))));
-                cb.method("array", coll.toArray.result(), (b, self) -> b.return_(cb.superCall(self, coll.toArray)));
-                cb.method(
-                        "contained",
-                        PrimitiveToken.BOOLEAN,
+                cb.define(member11, (b, self) -> b.return_(cb.superCall(self, coll.toArray)));
+                cb.define(
+                        member12,
                         (b, self) -> b.return_(cb.superCall(
                                 self,
                                 coll.containsAll_Collection,

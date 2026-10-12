@@ -75,16 +75,15 @@ class CovariantReturnTest {
                     var cb = oh.body();
                     cb.define(get.method(), (b, self) -> b.return_(literal("mine")));
                     // the fact of the class is of the narrower result, those of the interfaces of theirs
-                    cb.method(
-                            "own",
-                            PrimitiveToken.INT,
-                            (b, self) -> b.return_(call(call(self, get.method()), String_.length)));
-                    cb.method(
-                            "worded",
-                            PrimitiveToken.INT,
+                    var member1 = cb.declareMethod("own", PrimitiveToken.INT);
+                    var member2 = cb.declareMethod("worded", PrimitiveToken.INT);
+                    var member3 = cb.declareMethod("origin", Object_.TOKEN);
+                    cb.define(member1, (b, self) -> b.return_(call(call(self, get.method()), String_.length)));
+                    cb.define(
+                            member2,
                             (b, self) ->
                                     b.return_(call(call(asWorded.apply(self), Worded_.get), CharSequence_.length)));
-                    cb.method("origin", Object_.TOKEN, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
+                    cb.define(member3, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
                 }
             }));
 
@@ -107,7 +106,8 @@ class CovariantReturnTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().body();
                     var clone = cb.override(cb.protected_(Object_.clone), cb.self(), (b, self) -> b.return_(self));
-                    cb.method("twice", cb.self(), (b, self) -> b.return_(call(call(self, clone), clone)));
+                    var member4 = cb.declareMethod("twice", cb.self());
+                    cb.define(member4, (b, self) -> b.return_(call(call(self, clone), clone)));
                 }
             }));
 
@@ -136,8 +136,8 @@ class CovariantReturnTest {
                             Maker_.texts,
                             new List_<>(CharSequence_.TOKEN).token,
                             (b, self) -> b.return_(literalNullList()));
-                    cb.method(
-                            "made", PrimitiveToken.INT, (b, self) -> b.return_(call(call(self, make), String_.length)));
+                    var member5 = cb.declareMethod("made", PrimitiveToken.INT);
+                    cb.define(member5, (b, self) -> b.return_(call(call(self, make), String_.length)));
                 }
 
                 private static Expr<java.util.List<CharSequence>> literalNullList() {
@@ -190,34 +190,28 @@ class CovariantReturnTest {
                             oh.implements_(Origin_.implement(h.self()).get(get));
                     var cb = oh.body();
                     cb.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                    var whichObject = cb.method(
-                            "which", String_.TOKEN, Object_.TOKEN, (b, self, v) -> b.return_(literal("object")));
-                    var whichString = cb.method(
-                            "which", String_.TOKEN, String_.TOKEN, (b, self, v) -> b.return_(literal("string")));
-                    cb.method(
-                            "byWitness",
-                            String_.TOKEN,
-                            (b, self) -> b.return_(call(self, whichObject, call(asOrigin.apply(self), Origin_.get))));
-                    cb.method(
-                            "byOwn",
-                            String_.TOKEN,
-                            (b, self) -> b.return_(call(self, whichString, call(self, get.method()))));
+                    var whichObject = cb.declareMethod("which", String_.TOKEN, Object_.TOKEN);
+                    var whichString = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
+                    var member6 = cb.declareMethod("byWitness", String_.TOKEN);
+                    var member7 = cb.declareMethod("byOwn", String_.TOKEN);
                     // == of an Object and an Integer: javac rejects that of a String and an Integer
-                    cb.method(
-                            "same",
-                            PrimitiveToken.BOOLEAN,
-                            Integer_.TOKEN,
-                            (b, self, n) -> b.return_(eqRef(call(asOrigin.apply(self), Origin_.get), n)));
+                    var member8 = cb.declareMethod("same", PrimitiveToken.BOOLEAN, Integer_.TOKEN);
                     // the receiver of a method with parameters: String has overloads Object has not
-                    cb.method(
-                            "equal",
-                            PrimitiveToken.BOOLEAN,
-                            Object_.TOKEN,
+                    var member9 = cb.declareMethod("equal", PrimitiveToken.BOOLEAN, Object_.TOKEN);
+                    var member10 = cb.declareMethod("text", String_.TOKEN);
+                    cb.define(whichObject, (b, self, v) -> b.return_(literal("object")));
+                    cb.define(whichString, (b, self, v) -> b.return_(literal("string")));
+                    cb.define(
+                            member6,
+                            (b, self) -> b.return_(call(self, whichObject, call(asOrigin.apply(self), Origin_.get))));
+                    cb.define(member7, (b, self) -> b.return_(call(self, whichString, call(self, get.method()))));
+                    cb.define(member8, (b, self, n) -> b.return_(eqRef(call(asOrigin.apply(self), Origin_.get), n)));
+                    cb.define(
+                            member9,
                             (b, self, o) ->
                                     b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.equals_Object, o)));
-                    cb.method(
-                            "text",
-                            String_.TOKEN,
+                    cb.define(
+                            member10,
                             (b, self) -> b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.toString)));
                 }
             }));
@@ -256,16 +250,16 @@ class CovariantReturnTest {
                             IllegalStateException_.TOKEN,
                             (b, self) -> b.return_(new_(IllegalStateException_.new_String, literal("mine"))));
                     // an Object stored into what javac would type a String[]
-                    cb.voidMethod(
-                            "store",
-                            Object_.TOKEN,
+                    var member11 = cb.declareVoidMethod("store", Object_.TOKEN);
+                    // an Exception thrown: of an IllegalStateException javac would say no IOException is
+                    var member12 = cb.declareMethod("caught", String_.TOKEN);
+                    cb.define(
+                            member11,
                             (b, self, value) -> b.exec(assignAt(
                                             objects, call(asOrigin.apply(self), Origin_.all), literal(0), value))
                                     .end());
-                    // an Exception thrown: of an IllegalStateException javac would say no IOException is
-                    cb.method(
-                            "caught",
-                            String_.TOKEN,
+                    cb.define(
+                            member12,
                             (b, self) -> b.tryTerminated(
                                     handlers -> handlers.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal("io")))
                                             .catch_(Exception_.TOKEN, (c, _) -> c.return_(literal("caught"))),

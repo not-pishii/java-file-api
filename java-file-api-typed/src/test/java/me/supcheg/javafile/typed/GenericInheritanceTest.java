@@ -52,7 +52,8 @@ class GenericInheritanceTest {
                         var cb = sh.body(
                                 sh.declareConstructor(t),
                                 (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
-                        cb.method("go", t, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
+                        var member1 = cb.declareMethod("go", t);
+                        cb.define(member1, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
                     }
                 }));
 
@@ -75,15 +76,13 @@ class GenericInheritanceTest {
                         var sh = h.extends_(base.extend(h.self()));
                         var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(base.new_, (b, self) -> b.end()));
                         var p = cb.protected_(base.p_T);
-                        cb.method(
-                                "go",
-                                String_.TOKEN,
-                                t,
+                        var member2 = cb.declareMethod("go", String_.TOKEN, t);
+                        var member3 = cb.declareMethod("pub", String_.TOKEN, t);
+                        cb.define(
+                                member2,
                                 (b, self, v) -> b.return_(call(cb.asSuper().apply(self), p, v)));
-                        cb.method(
-                                "pub",
-                                String_.TOKEN,
-                                t,
+                        cb.define(
+                                member3,
                                 (b, self, v) -> b.return_(call(cb.asSuper().apply(self), base.m_T, v)));
                     }
                 }));
@@ -109,11 +108,11 @@ class GenericInheritanceTest {
                     @Override
                     public <Self, E extends Op> void build(ClassHeader<Self> h, TypeVarToken<E> e) {
                         var cb = h.extendsObject().body();
-                        cb.constructor((b, self) -> b.end());
-                        cb.method(
-                                "go",
-                                PrimitiveToken.INT,
-                                e,
+                        var member4 = cb.declareConstructor();
+                        var member5 = cb.declareMethod("go", PrimitiveToken.INT, e);
+                        cb.define(member4, (b, self) -> b.end());
+                        cb.define(
+                                member5,
                                 (b, self, v) -> b.return_(switch_(
                                         Op_.TOKEN,
                                         v,
@@ -145,11 +144,12 @@ class GenericInheritanceTest {
                         oh.implements_(Labelled_.implement(h.self()).label(label));
                         var cb = oh.body();
                         var held = cb.mutableField("held", t, literalNull(t));
-                        cb.constructor(
-                                t,
+                        var member6 = cb.declareConstructor(t);
+                        cb.define(label.method(), (b, self) -> b.return_(field(self, held)));
+                        cb.define(
+                                member6,
                                 (b, self, v) ->
                                         b.exec(assignField(self, held, v)).end());
-                        cb.define(label.method(), (b, self) -> b.return_(field(self, held)));
                     }
                 }));
 
@@ -176,11 +176,12 @@ class GenericInheritanceTest {
                         oh.implements_(consumer.implement(h.self()).accept_T(accept));
                         var cb = oh.body();
                         var seen = cb.mutableField("seen", PrimitiveToken.INT, literal(0));
-                        cb.constructor((b, self) -> b.end());
+                        var member7 = cb.declareConstructor();
                         cb.define(
                                 accept.method(),
                                 (b, self, v) -> b.exec(assignField(self, seen, call(v, Number_.intValue)))
                                         .end());
+                        cb.define(member7, (b, self) -> b.end());
                     }
                 }));
 

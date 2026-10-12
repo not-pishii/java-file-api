@@ -105,38 +105,34 @@ class PrimitivesTest {
                 new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.staticMethod(
-                                "sameAsObjects",
-                                PrimitiveToken.BOOLEAN,
+                        var member1 = cb.declareStaticMethod("sameAsObjects", PrimitiveToken.BOOLEAN);
+                        var member2 = cb.declareStaticMethod("boxed", Integer_.TOKEN);
+                        var member3 = cb.declareStaticMethod("unboxed", PrimitiveToken.INT, Integer_.TOKEN);
+                        var member4 = cb.declareStaticMethod("intArray", PrimitiveToken.INT);
+                        var member5 = cb.declareStaticMethod("stringArray", PrimitiveToken.INT);
+                        var member6 = cb.declareStaticMethod("checked", PrimitiveToken.INT);
+                        var member7 = cb.declareStaticMethod("truncated", PrimitiveToken.INT);
+                        cb.define(
+                                member1,
                                 b -> b.return_(staticCall(Objects_.equals_Object_Object, literal(1), literal(1L))));
-                        cb.staticMethod("boxed", Integer_.TOKEN, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
-                        cb.staticMethod(
-                                "unboxed",
-                                PrimitiveToken.INT,
-                                Integer_.TOKEN,
-                                (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
-                        cb.staticMethod(
-                                "intArray",
-                                PrimitiveToken.INT,
+                        cb.define(member2, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                        cb.define(member3, (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
+                        cb.define(
+                                member4,
                                 b -> b.let(
                                         ints,
                                         newArray(ints, literal(3)),
                                         array -> b.exec(assignAt(ints, array, literal(0), literal(7)))
                                                 .return_(addInt(at(ints, array, literal(0)), length(ints, array)))));
-                        cb.staticMethod(
-                                "stringArray",
-                                PrimitiveToken.INT,
+                        cb.define(
+                                member5,
                                 b -> b.let(
                                         strings,
                                         newArray(strings, literal(2)),
                                         array -> b.exec(assignAt(strings, array, literal(1), literal("abc")))
                                                 .return_(call(at(strings, array, literal(1)), String_.length))));
-                        cb.staticMethod(
-                                "checked", PrimitiveToken.INT, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
-                        cb.staticMethod(
-                                "truncated",
-                                PrimitiveToken.INT,
-                                b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
+                        cb.define(member6, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
+                        cb.define(member7, b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
                     }
                 });
 

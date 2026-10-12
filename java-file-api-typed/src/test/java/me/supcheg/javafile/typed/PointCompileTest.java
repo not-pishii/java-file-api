@@ -31,9 +31,9 @@ class PointCompileTest {
                         var x = cb.field("x", PrimitiveToken.INT, literal(1));
                         var y = cb.field("y", PrimitiveToken.INT, literal(2));
 
-                        cb.method(
-                                "sumOfSquares",
-                                PrimitiveToken.INT,
+                        var member1 = cb.declareMethod("sumOfSquares", PrimitiveToken.INT);
+                        cb.define(
+                                member1,
                                 (body, self) -> body.return_(addInt(
                                         mulInt(field(self, x), field(self, x)),
                                         mulInt(field(self, y), field(self, y)))));

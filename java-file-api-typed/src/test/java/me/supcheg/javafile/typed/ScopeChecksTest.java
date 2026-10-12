@@ -44,7 +44,8 @@ class ScopeChecksTest {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.method("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN, (b, _, flag) -> body.apply(b, flag));
+                var member1 = cb.declareMethod("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+                cb.define(member1, (b, _, flag) -> body.apply(b, flag));
             }
         });
     }
@@ -100,11 +101,13 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
+                                    var member2 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
+                                    var member3 = cb.declareMethod("b", PrimitiveToken.INT);
+                                    cb.define(member2, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
-                                    cb.method("b", PrimitiveToken.INT, (b, _) -> b.return_(host.getFirst()));
+                                    cb.define(member3, (b, _) -> b.return_(host.getFirst()));
                                 }
                             }))
                     .withMessageContaining("parameter of type int declared in the body of method a is used in the"
@@ -120,7 +123,8 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.method("a", PrimitiveToken.INT, PrimitiveToken.INT, (b, _, p) -> {
+                                    var member4 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
+                                    cb.define(member4, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
@@ -438,11 +442,13 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.method("a", PrimitiveToken.INT, (b, _) -> {
+                                    var member5 = cb.declareMethod("a", PrimitiveToken.INT);
+                                    var member6 = cb.declareMethod("b", PrimitiveToken.INT);
+                                    cb.define(member5, (b, _) -> {
                                         other.set(b.return_(literal(1)));
                                         return other.get();
                                     });
-                                    cb.method("b", PrimitiveToken.INT, (_, _) -> other.get());
+                                    cb.define(member6, (_, _) -> other.get());
                                 }
                             }))
                     .withMessageContaining("handed back for the body of method b was issued by the body of method a");
@@ -476,9 +482,9 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.method(
-                                            "outer",
-                                            PrimitiveToken.INT,
+                                    var member7 = cb.declareMethod("outer", PrimitiveToken.INT);
+                                    cb.define(
+                                            member7,
                                             (b, _) -> b.if_(
                                                             literal(true),
                                                             _ -> cb.method(

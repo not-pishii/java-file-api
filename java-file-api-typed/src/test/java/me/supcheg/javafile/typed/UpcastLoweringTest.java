@@ -57,14 +57,13 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // the class has equals(String) beside the equals(Object) it inherits
-                cb.method("equals", PrimitiveToken.BOOLEAN, String_.TOKEN, (b, self, s) -> b.return_(literal(true)));
-                cb.method(
-                        "viaWitness",
-                        PrimitiveToken.BOOLEAN,
-                        (b, self) -> b.return_(call(up.apply(self), Object_.equals_Object, literal("x"))));
-                cb.method(
-                        "inLambda",
-                        String_.TOKEN,
+                var member1 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                var member2 = cb.declareMethod("viaWitness", PrimitiveToken.BOOLEAN);
+                var member3 = cb.declareMethod("inLambda", String_.TOKEN);
+                cb.define(member1, (b, self, s) -> b.return_(literal(true)));
+                cb.define(member2, (b, self) -> b.return_(call(up.apply(self), Object_.equals_Object, literal("x"))));
+                cb.define(
+                        member3,
                         (b, self) -> b.let(
                                 STRINGS.token,
                                 lambda(
@@ -89,10 +88,12 @@ class UpcastLoweringTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
-                cb.staticMethod("which", String_.TOKEN, cb.self(), (b, o) -> b.return_(literal("self")));
-                var whichObject =
-                        cb.staticMethod("which", String_.TOKEN, Object_.TOKEN, (b, o) -> b.return_(literal("object")));
-                cb.method("pick", String_.TOKEN, (b, self) -> b.return_(staticCall(whichObject, up.apply(self))));
+                var member4 = cb.declareStaticMethod("which", String_.TOKEN, cb.self());
+                var whichObject = cb.declareStaticMethod("which", String_.TOKEN, Object_.TOKEN);
+                var member5 = cb.declareMethod("pick", String_.TOKEN);
+                cb.define(member4, (b, o) -> b.return_(literal("self")));
+                cb.define(whichObject, (b, o) -> b.return_(literal("object")));
+                cb.define(member5, (b, self) -> b.return_(staticCall(whichObject, up.apply(self))));
             }
         }));
 
@@ -107,25 +108,28 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // `(String) this` and `this == "x"` are no Java for a final class that is no String
-                cb.method("cast", String_.TOKEN, (b, self) -> b.return_(castChecked(String_.TOKEN, up.apply(self))));
-                cb.method("same", PrimitiveToken.BOOLEAN, (b, self) -> b.return_(eqRef(up.apply(self), literal("x"))));
-                cb.method(
-                        "test",
-                        PrimitiveToken.BOOLEAN,
+                var member6 = cb.declareMethod("cast", String_.TOKEN);
+                var member7 = cb.declareMethod("same", PrimitiveToken.BOOLEAN);
+                var member8 = cb.declareMethod("test", PrimitiveToken.BOOLEAN);
+                // both branches are the class: javac would type the conditional by it
+                var member9 = cb.declareMethod("either", PrimitiveToken.BOOLEAN);
+                var member10 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                cb.define(member6, (b, self) -> b.return_(castChecked(String_.TOKEN, up.apply(self))));
+                cb.define(member7, (b, self) -> b.return_(eqRef(up.apply(self), literal("x"))));
+                cb.define(
+                        member8,
                         (b, self) -> b.ifInstanceOfElse(
                                 up.apply(self),
                                 String_.TOKEN,
                                 (t, s) -> t.return_(literal(true)),
                                 e -> e.return_(literal(false))));
-                // both branches are the class: javac would type the conditional by it
-                cb.method(
-                        "either",
-                        PrimitiveToken.BOOLEAN,
+                cb.define(
+                        member9,
                         (b, self) -> b.return_(call(
                                 cond(literal(true), up.apply(self), up.apply(self), Object_.TOKEN),
                                 Object_.equals_Object,
                                 literal("x"))));
-                cb.method("equals", PrimitiveToken.BOOLEAN, String_.TOKEN, (b, self, s) -> b.return_(literal(true)));
+                cb.define(member10, (b, self, s) -> b.return_(literal(true)));
             }
         }));
 
@@ -150,13 +154,11 @@ class UpcastLoweringTest {
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // the class has a field `name` of its own: the one of Base is read through the witness
                         cb.field("name", String_.TOKEN, literal("own"));
-                        cb.method(
-                                "nameOfBase",
-                                String_.TOKEN,
-                                (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
-                        cb.method(
-                                "op",
-                                String_.TOKEN,
+                        var member11 = cb.declareMethod("nameOfBase", String_.TOKEN);
+                        var member12 = cb.declareMethod("op", String_.TOKEN);
+                        cb.define(member11, (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
+                        cb.define(
+                                member12,
                                 (b, self) -> b.return_(switch_(
                                         Op_.TOKEN,
                                         field(asBase.apply(self), Base_.op),
@@ -183,19 +185,18 @@ class UpcastLoweringTest {
                         // javac would resolve this.pick("x") to the override of pick(String), or to the
                         // overload the class adds: the fact names pick(Object) of Base
                         cb.override(Base_.pick_String, (b, self, s) -> b.return_(literal("override")));
-                        cb.method(
+                        var member13 = cb.declareMethod(
                                 "pick",
                                 String_.TOKEN,
-                                me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN,
-                                (b, self, s) -> b.return_(literal("overload")));
-                        cb.method(
-                                "picked",
-                                String_.TOKEN,
+                                me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN);
+                        var member14 = cb.declareMethod("picked", String_.TOKEN);
+                        var member15 = cb.declareMethod("pickedBySuper", String_.TOKEN);
+                        cb.define(member13, (b, self, s) -> b.return_(literal("overload")));
+                        cb.define(
+                                member14,
                                 (b, self) -> b.return_(call(asBase.apply(self), Base_.pick_Object, literal("x"))));
-                        cb.method(
-                                "pickedBySuper",
-                                String_.TOKEN,
-                                (b, self) -> b.return_(cb.superCall(self, Base_.pick_Object, literal("x"))));
+                        cb.define(
+                                member15, (b, self) -> b.return_(cb.superCall(self, Base_.pick_Object, literal("x"))));
                     }
                 }));
 
@@ -214,9 +215,9 @@ class UpcastLoweringTest {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         Upcast<Self, Signal> asSignal = new Upcast<>(cb.self(), Signal_.TOKEN);
-                        cb.method(
-                                "signal",
-                                String_.TOKEN,
+                        var member16 = cb.declareMethod("signal", String_.TOKEN);
+                        cb.define(
+                                member16,
                                 (b, self) -> b.return_(switch_(
                                         Signal_.TOKEN,
                                         asSignal.apply(self),
@@ -236,8 +237,10 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // no overload of the class is in question: `this` stands as it is, no redundant cast
-                cb.method("me", Object_.TOKEN, (b, self) -> b.return_(up.apply(self)));
-                cb.method("text", String_.TOKEN, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
+                var member17 = cb.declareMethod("me", Object_.TOKEN);
+                var member18 = cb.declareMethod("text", String_.TOKEN);
+                cb.define(member17, (b, self) -> b.return_(up.apply(self)));
+                cb.define(member18, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
             }
         }));
 

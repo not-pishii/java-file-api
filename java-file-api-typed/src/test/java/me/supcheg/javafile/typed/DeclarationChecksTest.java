@@ -75,7 +75,8 @@ class DeclarationChecksTest {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var late = cb.declareVoidMethod("late");
-                                    cb.voidMethod("outer", (b, _) -> {
+                                    var member1 = cb.declareVoidMethod("outer");
+                                    cb.define(member1, (b, _) -> {
                                         cb.define(late, (x, _) -> x.end());
                                         return b.end();
                                     });
@@ -107,8 +108,9 @@ class DeclarationChecksTest {
         void aDuplicateMethodByErasureIsRejected() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        cb.staticMethod("m", PrimitiveToken.INT, PrimitiveToken.INT, Body::return_);
+                        var member2 = cb.declareStaticMethod("m", PrimitiveToken.INT, PrimitiveToken.INT);
                         cb.declareMethod("m", String_.TOKEN, PrimitiveToken.INT);
+                        cb.define(member2, Body::return_);
                     }))
                     .withMessageContaining("the method java.lang.String me.supcheg.example.Probe.m(int) of class"
                             + " me.supcheg.example.Probe clashes with the method static int"
@@ -254,10 +256,8 @@ class DeclarationChecksTest {
                             new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    cb.method(
-                                            "b",
-                                            String_.TOKEN,
-                                            (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                                    var member5 = cb.declareMethod("b", String_.TOKEN);
+                                    cb.define(member5, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
                                 }
                             }))
                     .withMessageContaining("the this of the body of method a is used in the body of method b");
