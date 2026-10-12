@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -126,7 +128,9 @@ final class SignatureRegistry {
                 .group(signature)
                 .orElseThrow(() -> new IllegalArgumentException("the method " + own + " of " + owner
                         + " overrides nothing: no supertype of the class has a method " + signature
-                        + "; a class overrides the methods of the types it extends or implements"));
+                        + "; a class overrides the methods of the types it extends or implements, which its"
+                        + " header names before its members begin — extends_ and implements_ come before"
+                        + " body()"));
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         methods.put(signature, own);
         overrides.add(signature);
@@ -159,9 +163,16 @@ final class SignatureRegistry {
                         + " (JLS 8.4.8.1, 8.4.8.2)";
             case ABSTRACT, DEFAULT, CONCRETE ->
                 "the method " + member + " of " + owner + " has the signature of " + entry
-                        + ", which the class inherits: a method declared by its name overrides nothing."
-                        + " Override it by its fact — override(fact, body), or overriding(fact) in the header"
-                        + " of the class for a method a supertype leaves abstract";
+                        + ", which the class inherits: a method declared by its name overrides nothing. "
+                        + switch (entry.method().declared()) {
+                            case Heritage.Plain _ ->
+                                "Override it by its fact — override(fact, body), or overriding(fact) in the"
+                                        + " header of the class for a method a supertype leaves abstract";
+                            case Heritage.Generic _ ->
+                                "The inherited method is generic, and the typed layer declares no generic"
+                                        + " method: the class neither overrides it nor has another method of"
+                                        + " its erased signature";
+                        };
         };
     }
 
@@ -195,7 +206,7 @@ final class SignatureRegistry {
     static void requireInherited(
             String owner,
             Invocable inherited,
-            me.supcheg.javafile.facts.DeclaredToken<?> through,
+            DeclaredToken<?> through,
             Inheritance.Group group,
             Subtyping.Declaring declaring) {
         group.entries().stream()
@@ -209,12 +220,12 @@ final class SignatureRegistry {
     private static Optional<String> overrideRefusal(
             Invocable own, Inheritance.Entry entry, Subtyping.Declaring declaring) {
         Inheritance.Member method = entry.method();
-        return Stream.<java.util.function.Supplier<Optional<String>>>of(
+        return Stream.<Supplier<Optional<String>>>of(
                         () -> byDispatch(method), () -> byVisibility(method), () -> switch (method.declared()) {
                             case Heritage.Generic _ ->
                                 Optional.of("the method is generic, and the typed layer declares no generic method");
                             case Heritage.Plain plain ->
-                                Stream.<java.util.function.Supplier<Optional<String>>>of(
+                                Stream.<Supplier<Optional<String>>>of(
                                                 () -> byForm(plain),
                                                 () -> byParameters(own, plain),
                                                 () -> byResult(own, plain, declaring),

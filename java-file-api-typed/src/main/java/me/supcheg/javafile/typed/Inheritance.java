@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodSignature;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeNames;
@@ -447,7 +448,7 @@ final class Inheritance {
             return group.overrides();
         }
 
-        me.supcheg.javafile.facts.MethodTableTemplate.Signature signature() {
+        MethodTableTemplate.Signature signature() {
             return group.signature();
         }
 

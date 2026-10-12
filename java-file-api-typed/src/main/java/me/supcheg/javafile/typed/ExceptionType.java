@@ -65,9 +65,12 @@ sealed interface ExceptionType {
 
     /// A type variable in the place of an exception: `<X extends
     /// Throwable> ... throws X`, with a type variable given for `X`. It is
-    /// known by the class that is its bound alone: checked unless the bound
-    /// is `RuntimeException` or `Error` itself, and covering nothing but
-    /// itself.
+    /// known by the class that is its bound alone, and covers nothing but
+    /// itself. A token tells the erasure of the bound and not its
+    /// superclasses, so the variable is unchecked where the bound is
+    /// `RuntimeException` or `Error` itself, and held checked under any other —
+    /// under `IllegalStateException` too, of which a `throw` then asks for a
+    /// `throws` clause javac would not: never the other way round.
     ///
     /// @param token its token
     record OfVariable(TypeVarToken<?> token) implements ExceptionType {

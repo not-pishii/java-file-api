@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 /// ```java
 /// var sh = h.extends_(Thread_.extend(h.self()));
 /// var asRunnable = sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Thread_.run)));
-/// var cb = sh.body(ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
+/// var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
 /// ```
 ///
 /// @param <Self> the brand of the class being declared

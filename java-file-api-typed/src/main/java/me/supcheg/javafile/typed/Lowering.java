@@ -64,7 +64,6 @@ import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
-import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayDeque;
@@ -217,29 +216,27 @@ final class Lowering {
     private int labelCounter;
 
     /// The result type of the body being lowered, the target type of its
-    /// `return` statements; `null` for a `void` body or an expression.
-    private @Nullable TypeToken<?> result;
+    /// `return` statements; empty for a `void` body or an expression.
+    private Optional<TypeToken<?>> result;
 
     /// A lowering of a `void` body or of a standalone expression.
     ///
     /// @param target the classpath the lowered code is compiled against
     Lowering(TargetClasspath target) {
-        this(target, new Place.Standalone(), null);
+        this(target, new Place.Standalone(), Optional.empty());
     }
 
     /// A lowering of a body whose `return` statements return `result`.
     ///
     /// @param target the classpath the lowered code is compiled against
     /// @param place the class whose body the code is in, or that it is in none
-    /// @param result the result type, or `null` for a `void` body
+    /// @param result the result type; empty for a `void` body
     /// @throws TargetClasspathMismatchException if a metamodel of `result` does not hold on `target`
-    Lowering(TargetClasspath target, Place place, @Nullable TypeToken<?> result) {
+    Lowering(TargetClasspath target, Place place, Optional<TypeToken<?>> result) {
         this.target = target;
         this.place = place;
         this.result = result;
-        if (result != null) {
-            mentions(result);
-        }
+        result.ifPresent(this::mentions);
     }
 
     /// A type the lowered code mentions — writes, or reaches a member through: its type variables
@@ -329,7 +326,8 @@ final class Lowering {
             }
             case Instr.Exec(var effect) -> effectStmt(effect);
             // Every argument is of exactly its parameter's type, as those of `new` are.
-            case Instr.SuperInit(var ctor, var args) -> new SuperConstructorCallStmt(arguments(ctor, null, args));
+            case Instr.SuperInit(var ctor, var args) ->
+                new SuperConstructorCallStmt(arguments(ctor, new Searched.Unconsulted(), args));
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
@@ -526,7 +524,10 @@ final class Lowering {
             case Node.StaticCall(var method, var args) -> {
                 subclassReaching(method.access(), method.owner(), method);
                 yield new StaticMethodCallExpr(
-                        raw(method.owner()), method.name(), arguments(method, null, args), typeArgs(method));
+                        raw(method.owner()),
+                        method.name(),
+                        arguments(method, new Searched.Unconsulted(), args),
+                        typeArgs(method));
             }
             case Node.New(var ctor, var args) -> {
                 subclassReaching(ctor.access(), ctor.owner(), ctor).ifPresent(subclass -> {
@@ -534,7 +535,7 @@ final class Lowering {
                             + " super(...) of its constructor alone, a class instance creation is no access a"
                             + " subclass has (JLS 6.6.2.2)");
                 });
-                yield Exprs.new_(written(ctor.owner()).typeRef(), arguments(ctor, null, args));
+                yield Exprs.new_(written(ctor.owner()).typeRef(), arguments(ctor, new Searched.Unconsulted(), args));
             }
             case Node.FieldGet(var receiver, var field) ->
                 fieldReceiver(receiver, field).field(field.name());
@@ -586,7 +587,7 @@ final class Lowering {
 
     /// The value of a `return`, whose target type is the result type.
     private Expr returned(Node value) {
-        return result == null ? expr(value) : initializer(value, result);
+        return result.map(declared -> initializer(value, declared)).orElseGet(() -> expr(value));
     }
 
     /// An expression whose target type is `declared`, in an assignment
@@ -596,7 +597,7 @@ final class Lowering {
         if (node instanceof Node.New(var ctor, var args)
                 && ctor.owner().typeRef() instanceof ParameterizedTypeRef
                 && Tokens.sameType(ctor.owner(), declared)) {
-            return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, null, args));
+            return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, new Searched.Unconsulted(), args));
         }
         return targeted(node, declared);
     }
@@ -648,11 +649,11 @@ final class Lowering {
             return protectedCall(subclass.get(), receiving, method, args, pin);
         }
         Expr receiver;
-        TypeToken<?> searched;
+        Searched searched;
         if (!Tokens.sameType(receiving.type(), owner)
                 && (pin || declaresCheckedException(method) || hasTwin(receiving.type(), method))) {
             receiver = Exprs.cast(written(owner).typeRef(), expr(receiving.node()));
-            searched = owner;
+            searched = new Searched.In(owner);
         } else {
             boolean settled = IntStream.range(0, args.size())
                     .allMatch(i -> settled(args.get(i), method.params().get(i)));
@@ -661,7 +662,7 @@ final class Lowering {
             // variable may (hasTwin), which no method without parameters has.
             boolean narrowed = !args.isEmpty() && !Node.isExact(receiving.node());
             receiver = expr(receiving.node(), pin || !settled || narrowed);
-            searched = receiving.type();
+            searched = new Searched.In(receiving.type());
         }
         return new MethodCallExpr(
                 Optional.of(receiver), method.name(), arguments(method, searched, args), typeArgs(method));
@@ -678,31 +679,38 @@ final class Lowering {
                     + receiving.type() + ": in the body of " + subclass + " a protected method of a superclass is"
                     + " called on this or on another value of the class itself (JLS 6.6.2.1)");
         }
-        String why = pin
-                ? "its result has to be of exactly its type where it stands, which only a receiver of the"
-                        + " type of its owner makes it — bind the result to a variable with let first"
-                : declaresCheckedException(method)
-                        ? "it declares a checked exception, of which the method the class has under its"
-                                + " signature may declare fewer (JLS 8.4.8.3) — call it as super." + method.name()
-                                + "(...) by superCall, or override it and call the override by its own fact"
-                        : hasTwin(subclass, method)
-                                ? "the class has another method that erases as it does, which javac would"
-                                        + " take for it — "
-                                        + (method.traits().typeArgs().isEmpty()
-                                                ? "call it as super." + method.name() + "(...) by superCall"
-                                                : "a generic method of a superclass is not called in a class"
-                                                        + " that has such an overload")
-                                : "";
-        if (!why.isEmpty()) {
+        castWanted(subclass, method, pin).ifPresent(why -> {
             throw new IllegalStateException(method + " is protected, and cannot be called on a value of " + subclass
                     + " here: " + why + ". The receiver cannot be cast to " + method.owner()
                     + ", through which the class has no access to the member (JLS 6.6.2.1)");
-        }
+        });
         return new MethodCallExpr(
                 Optional.of(expr(receiving.node(), true)),
                 method.name(),
-                arguments(method, subclass, args),
+                arguments(method, new Searched.In(subclass), args),
                 typeArgs(method));
+    }
+
+    /// Why a call of `method` on a value of `subclass` would have its receiver cast to the owner of
+    /// the method ([#call]), if it would.
+    private Optional<String> castWanted(ClassToken<?> subclass, Invocable method, boolean pin) {
+        if (pin) {
+            return Optional.of("its result has to be of exactly its type where it stands, which only a receiver"
+                    + " of the type of its owner makes it — bind the result to a variable with let first");
+        }
+        if (declaresCheckedException(method)) {
+            return Optional.of("it declares a checked exception, of which the method the class has under its"
+                    + " signature may declare fewer (JLS 8.4.8.3) — call it as super." + method.name()
+                    + "(...) by superCall, or override it and call the override by its own fact");
+        }
+        return hasTwin(subclass, method)
+                ? Optional.of("the class has another method that erases as it does, which javac would take for"
+                        + " it — "
+                        + (method.traits().typeArgs().isEmpty()
+                                ? "call it as super." + method.name() + "(...) by superCall"
+                                : "a generic method of a superclass is not called in a class that has such an"
+                                        + " overload"))
+                : Optional.empty();
     }
 
     /// `super.method(args)`: javac searches the methods of the superclass, and no cast of the
@@ -716,7 +724,10 @@ final class Lowering {
                     + " and super cannot be cast to " + method.owner());
         }
         return new MethodCallExpr(
-                Optional.of(new SuperExpr()), method.name(), arguments(method, superclass, args), typeArgs(method));
+                Optional.of(new SuperExpr()),
+                method.name(),
+                arguments(method, new Searched.In(superclass), args),
+                typeArgs(method));
     }
 
     /// The class in whose body a member of `access` of `owner` is reached, if the member is
@@ -756,11 +767,10 @@ final class Lowering {
     }
 
     /// The arguments of `member`, each of exactly its parameter's type unless
-    /// `searched` — the type whose methods javac searches, `null` if there is
-    /// no method table to consult — has no other candidate.
+    /// `searched`, the type whose methods javac searches, has no other candidate.
     ///
     /// @throws FactLookupException if no arguments make javac resolve `member`, see [#requireDistinct]
-    private List<Expr> arguments(Invocable member, @Nullable TypeToken<?> searched, List<Node.Operand> args) {
+    private List<Expr> arguments(Invocable member, Searched searched, List<Node.Operand> args) {
         uses(member);
         args.forEach(arg -> mentions(arg.type()));
         requireDistinct(member);
@@ -800,8 +810,8 @@ final class Lowering {
     /// signature the fact declares; in a subtype, whose template lists the
     /// method in terms of its own type parameters, if it erases as the fact
     /// does.
-    private boolean onlyCandidate(@Nullable TypeToken<?> searched, Invocable method) {
-        if (!(searched instanceof DeclaredToken<?> declared)) {
+    private boolean onlyCandidate(Searched searched, Invocable method) {
+        if (!(searched instanceof Searched.In(DeclaredToken<?> declared))) {
             return false;
         }
         List<MethodTableTemplate.Signature> candidates =
@@ -972,6 +982,18 @@ final class Lowering {
                 .toList();
     }
 
+    /// Where javac searches for the member a call names.
+    private sealed interface Searched {
+        /// Among the methods of a type.
+        ///
+        /// @param type the type
+        record In(TypeToken<?> type) implements Searched {}
+
+        /// Where there is no method table to consult — the constructors of a class, the `static`
+        /// methods of a type named outright: every argument is given exactly its parameter's type.
+        record Unconsulted() implements Searched {}
+    }
+
     /// Where the lowered code stands: what decides whether it reaches a `protected` member.
     sealed interface Place {
         /// In the body of no class: a standalone expression.
@@ -998,9 +1020,9 @@ final class Lowering {
         Invocable sam = lambda.sam();
         uses(sam);
         Deque<LoopCtl> enclosingLoops = loopStack;
-        TypeToken<?> enclosingResult = result;
+        Optional<TypeToken<?>> enclosingResult = result;
         loopStack = new ArrayDeque<>();
-        result = sam.resultType().orElse(null);
+        result = sam.resultType();
         names.push();
         try {
             List<Param> coreParams = lambda.params().stream()
