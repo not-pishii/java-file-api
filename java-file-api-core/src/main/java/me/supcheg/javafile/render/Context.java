@@ -1,6 +1,7 @@
 package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.doc.DocStyle;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.render.SourceRenderer.Format;
 
 import java.lang.constant.ClassDesc;
@@ -45,8 +46,23 @@ interface Context extends Format, TypeContext {
             }
 
             @Override
+            public String qualifier(ClassDesc desc) {
+                return type.qualifier(desc);
+            }
+
+            @Override
             public String mention(ClassDesc desc) {
                 return type.mention(desc);
+            }
+
+            @Override
+            public void variable(String name) {
+                type.variable(name);
+            }
+
+            @Override
+            public void localType(TypeDecl decl) {
+                type.localType(decl);
             }
         }
 

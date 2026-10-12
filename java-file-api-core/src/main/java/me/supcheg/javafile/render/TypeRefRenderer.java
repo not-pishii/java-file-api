@@ -47,6 +47,16 @@ final class TypeRefRenderer {
         };
     }
 
+    // A type before `.member` or `::method`: a class without type arguments stands where an expression
+    // could, so its name is one no variable in scope takes (TypeContext#qualifier).
+    static String renderQualifier(TypeRef ref, Context ctx) {
+        return switch (ref) {
+            case ClassTypeRef(var desc, var annotations) when annotations.isEmpty() -> ctx.qualifier(desc);
+            case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _, ArrayTypeRef _, PrimitiveTypeRef _ ->
+                renderType(ref, ctx);
+        };
+    }
+
     // A type-use annotation on a qualified name goes before the simple name:
     // `pkg.@Ann Simple`, not `@Ann pkg.Simple`.
     private static String renderAnnotatedReference(ClassDesc desc, List<AnnotationUse> annotations, Context ctx) {
@@ -93,10 +103,13 @@ final class TypeRefRenderer {
 
     static String renderParams(List<Param> params, Context ctx) {
         return params.stream()
-                .map(p -> AnnotationRenderer.renderInlineAnnotations(p.annotations(), ctx)
-                        + renderType(p.type(), ctx)
-                        + (p.varargs() ? "... " : " ")
-                        + p.name())
+                .map(p -> {
+                    ctx.variable(p.name());
+                    return AnnotationRenderer.renderInlineAnnotations(p.annotations(), ctx)
+                            + renderType(p.type(), ctx)
+                            + (p.varargs() ? "... " : " ")
+                            + p.name();
+                })
                 .collect(Collectors.joining(", "));
     }
 

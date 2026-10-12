@@ -52,7 +52,7 @@ final class AnnotationRenderer {
         return switch (value) {
             case LiteralValue(var literal) -> ExprRenderer.renderExpr(literal, ctx);
             case ClassValue(var type) -> ctx.reference(type) + ".class";
-            case EnumValue(var enumType, var constant) -> ctx.reference(enumType) + "." + constant;
+            case EnumValue(var enumType, var constant) -> ctx.qualifier(enumType) + "." + constant;
             case NestedAnnotationValue(var annotation) -> renderUse(annotation, ctx);
             case ArrayValue(var elements) -> renderArray(elements, ctx);
         };

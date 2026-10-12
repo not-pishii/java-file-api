@@ -1,14 +1,21 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassDescNames;
+import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // A nested type is not visible by its simple name just because its package
 // matches the file's, so nested types are always imported explicitly.
@@ -26,6 +33,20 @@ import java.util.Set;
 // wherever in the file it is declared: where it is in scope the name means the type
 // variable, so a type of that simple name is written qualified throughout the file.
 //
+// A member type the type of the file inherits claims its name in the same way, which the file is
+// told (JavaFile#inheriting): the declaration does not show it.
+//
+// A variable takes its name where an expression may stand (`qualifier`): before `.member` and
+// `::method` a simple name means a variable in scope before a type, and the first name of a
+// qualified one a variable before a package (JLS 6.4.2). So a type named like a variable of the
+// file — a field, declared or inherited, a parameter, a local variable — is written qualified
+// there, and a qualified name whose first name is a variable cannot be written at all: the file
+// is refused. Variables are of the whole file, like type parameters: where exactly each is in
+// scope is not asked. They are learned as the file is rendered (`variable`), a local class with
+// its type parameters too (`localType`); a name written before the variable or type that takes
+// it was met makes the rendering stale, and the file is rendered again knowing what the first
+// rendering learned (`learned`).
+//
 // A documentation comment claims nothing (`mention`): it names a type by its
 // simple name only where the code of the file gives the name that meaning, so
 // a comment adds no import — an import of a type that is not accessible does
@@ -40,8 +61,29 @@ final class ImportManager implements TypeContext {
     private final Map<String, ClassDesc> claims = new LinkedHashMap<>();
 
     private final Set<ClassDesc> unreferencedDeclared = new HashSet<>();
-    private final Set<String> typeVariables;
+    private final Known known;
+    private final Set<String> variables;
+    private final Set<String> lateTypeVariables = new HashSet<>();
+    private final Set<ClassDesc> lateDeclared = new HashSet<>();
+    // the names written where an expression may stand, taken for no variable
+    private final Set<String> takenForNoVariable = new HashSet<>();
+    private boolean stale;
     private boolean mentioned;
+
+    // What a file is known to declare before it is rendered.
+    //
+    // declared: the types the file declares
+    // typeVariables: the type parameters the file declares
+    // memberTypes: the member types the type of the file inherits
+    // variables: the variables of the file: the fields its type inherits, and those a rendering learned
+    record Known(Set<ClassDesc> declared, Set<String> typeVariables, Set<String> memberTypes, Set<String> variables) {
+        Known {
+            declared = Collections.unmodifiableSet(new LinkedHashSet<>(declared));
+            typeVariables = Set.copyOf(typeVariables);
+            memberTypes = Set.copyOf(memberTypes);
+            variables = Set.copyOf(variables);
+        }
+    }
 
     ImportManager(String currentPackage) {
         this(currentPackage, List.of());
@@ -52,13 +94,80 @@ final class ImportManager implements TypeContext {
     }
 
     ImportManager(String currentPackage, Collection<ClassDesc> declared, Collection<String> typeVariables) {
+        this(currentPackage, new Known(new LinkedHashSet<>(declared), Set.copyOf(typeVariables), Set.of(), Set.of()));
+    }
+
+    ImportManager(String currentPackage, Known known) {
         this.currentPackage = currentPackage;
-        this.typeVariables = Set.copyOf(typeVariables);
-        for (ClassDesc desc : declared) {
+        this.known = known;
+        this.variables = new HashSet<>(known.variables());
+        for (ClassDesc desc : known.declared()) {
             if (claims.putIfAbsent(ClassDescNames.leafSimpleName(desc), desc) == null) {
                 unreferencedDeclared.add(desc);
             }
         }
+    }
+
+    // Whether a name was written before what takes it was met: the file is to be rendered again.
+    boolean stale() {
+        return stale;
+    }
+
+    // What the file is known to declare after this rendering.
+    Known learned() {
+        return new Known(
+                Stream.concat(known.declared().stream(), lateDeclared.stream())
+                        .collect(Collectors.toCollection(LinkedHashSet::new)),
+                Stream.concat(known.typeVariables().stream(), lateTypeVariables.stream())
+                        .collect(Collectors.toSet()),
+                known.memberTypes(),
+                variables);
+    }
+
+    @Override
+    public void variable(String name) {
+        if (variables.add(name) && takenForNoVariable.contains(name)) {
+            stale = true;
+        }
+    }
+
+    @Override
+    public void localType(TypeDecl decl) {
+        List<ClassDesc> declared = new ArrayList<>();
+        StandardRenderer.collectDeclared(decl, declared);
+        List<String> typeVariables =
+                StandardRenderer.typeVariables(decl).map(TypeParam::name).toList();
+        boolean news = declared.stream()
+                                .filter(desc -> !known.declared().contains(desc))
+                                .count()
+                        + typeVariables.stream()
+                                .filter(name -> !known.typeVariables().contains(name))
+                                .count()
+                > 0;
+        if (news) {
+            lateDeclared.addAll(declared);
+            lateTypeVariables.addAll(typeVariables);
+            stale = true;
+        }
+    }
+
+    // Whether the simple name means something else than a type the file imports, wherever a type is named.
+    private boolean shadowed(String simpleName) {
+        return known.typeVariables().contains(simpleName) || known.memberTypes().contains(simpleName);
+    }
+
+    @Override
+    public String qualifier(ClassDesc desc) {
+        String written = variables.contains(ClassDescNames.leafSimpleName(desc)) ? qualified(desc) : reference(desc);
+        String first = written.indexOf('.') < 0 ? written : written.substring(0, written.indexOf('.'));
+        if (variables.contains(first)) {
+            // a simple name that could be a variable, a type or a package is the variable (JLS 6.4.2)
+            throw new IllegalStateException("cannot name " + written + " before a member in a file that declares"
+                    + " the variable " + first + ": where an expression may stand the name of the variable"
+                    + " obscures the first name of the qualified one — rename the variable");
+        }
+        takenForNoVariable.add(first);
+        return written;
     }
 
     @Override
@@ -68,7 +177,7 @@ final class ImportManager implements TypeContext {
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
 
         String leafSimpleName = chain.getLast();
-        if (typeVariables.contains(leafSimpleName)) {
+        if (shadowed(leafSimpleName)) {
             return qualified(desc);
         }
         ClassDesc existing = claims.get(leafSimpleName);
@@ -88,7 +197,7 @@ final class ImportManager implements TypeContext {
     @Override
     public String mention(ClassDesc desc) {
         mentioned = true;
-        if (typeVariables.contains(ClassDescNames.leafSimpleName(desc))) {
+        if (shadowed(ClassDescNames.leafSimpleName(desc))) {
             return qualified(desc);
         }
         ClassDesc claimed = claims.get(ClassDescNames.leafSimpleName(desc));
@@ -106,11 +215,16 @@ final class ImportManager implements TypeContext {
         String packageName = desc.packageName();
         String whole = packageName.isEmpty() ? dotted : packageName;
         String first = whole.indexOf('.') < 0 ? whole : whole.substring(0, whole.indexOf('.'));
-        if (typeVariables.contains(first)) {
+        if (known.typeVariables().contains(first)) {
             // a simple name that could be a type or a package is the type (JLS 6.4.2)
             throw new IllegalStateException("cannot name " + (packageName.isEmpty() ? "" : packageName + ".")
                     + dotted + " in a file that declares the type parameter " + first
                     + ": the name of the type parameter obscures the first name of the qualified one");
+        }
+        if (known.memberTypes().contains(first)) {
+            throw new IllegalStateException("cannot name " + (packageName.isEmpty() ? "" : packageName + ".")
+                    + dotted + " in a file whose type inherits the member type " + first
+                    + ": the name of the member type obscures the first name of the qualified one");
         }
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
         return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()

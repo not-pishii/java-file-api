@@ -137,6 +137,7 @@ final class TypeDeclRenderer {
     }
 
     private static String renderField(FieldDecl f, Context ctx) {
+        ctx.variable(f.name());
         StringBuilder sb = new StringBuilder(DocRenderer.render(f.doc(), ctx));
         sb.append(AnnotationRenderer.renderAnnotations(f.annotations(), ctx));
         sb.append(ctx.pad());
@@ -340,8 +341,11 @@ final class TypeDeclRenderer {
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         sb.append('(')
                 .append(decl.components().stream()
-                        .map(c -> AnnotationRenderer.renderInlineAnnotations(c.annotations(), ctx)
-                                + TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name())
+                        .map(c -> {
+                            ctx.variable(c.name());
+                            return AnnotationRenderer.renderInlineAnnotations(c.annotations(), ctx)
+                                    + TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name();
+                        })
                         .collect(Collectors.joining(", ")))
                 .append(')');
         if (!decl.interfaces().isEmpty()) {
@@ -423,6 +427,7 @@ final class TypeDeclRenderer {
     }
 
     private static String renderStaticField(StaticFieldDecl sf, Context ctx) {
+        ctx.variable(sf.name());
         return DocRenderer.render(sf.doc(), ctx)
                 + AnnotationRenderer.renderAnnotations(sf.annotations(), ctx)
                 + ctx.pad()
@@ -476,6 +481,7 @@ final class TypeDeclRenderer {
     }
 
     private static String renderEnumConstant(EnumConstant constant, Context ctx) {
+        ctx.variable(constant.name());
         StringBuilder sb = new StringBuilder(AnnotationRenderer.renderInlineAnnotations(constant.annotations(), ctx));
         sb.append(constant.name());
         if (!constant.args().isEmpty() || !constant.body().isEmpty()) {
