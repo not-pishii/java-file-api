@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import com.google.testing.compile.CompilationSubject;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.Joiner;
 import me.supcheg.javafile.typed.fixtures.Scattering;
@@ -10,6 +11,7 @@ import me.supcheg.javafile.typed.fixtures.Spreading;
 import me.supcheg.javafile.typed.fixtures.Taking;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.List_;
+import me.supcheg.javafile.typed.testfacts.java.util.Objects_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Gathered_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Joiner_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Scattering_;
@@ -23,6 +25,7 @@ import java.util.List;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
+import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.compiledClass;
 import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,6 +137,28 @@ class VariableArityTest {
         Scattering<String> probe =
                 (Scattering<String>) compiled.generated().getConstructor().newInstance();
         assertThat(probe.scatter("a", "b")).isEqualTo(7);
+    }
+
+    @Test
+    void anArrayOfASubtypeGivenForTheParameterOfVariableArityIsCastToItsType() throws Throwable {
+        // Objects.hash(Object...) with a String[]: javac warns of the call it cannot tell the kind of
+        JavacVerdict.javacWarns(
+                "static int m() { return Objects.hash(new String[1]); }",
+                "non-varargs call of varargs method with inexact argument type for last parameter");
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> void build(ClassHeader<Self> h) {
+                var cb = h.extendsObject().body();
+                cb.staticMethod(
+                        "m",
+                        PrimitiveToken.INT,
+                        b -> b.return_(staticCall(
+                                Objects_.hash_ObjectArray, newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
+            }
+        }));
+
+        assertThat(compiled.source()).contains("return Objects.hash((Object[]) new String[1]);");
+        assertThat(compiled.invoke("m")).isEqualTo(java.util.Objects.hash(new Object[1]));
     }
 
     @Test
