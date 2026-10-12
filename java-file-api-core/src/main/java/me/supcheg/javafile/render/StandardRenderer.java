@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
@@ -19,7 +20,9 @@ import me.supcheg.javafile.type.TypeParam;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// The built-in [SourceRenderer]. Adds imports automatically: a type is
@@ -56,12 +59,33 @@ public final class StandardRenderer implements SourceRenderer {
     private String renderClassFile(JavaFile.Meta meta, Format format) {
         List<ClassDesc> declared = new ArrayList<>();
         collectDeclared(meta.typeDecl(), declared);
-        var imports = new ImportManager(
-                meta.packageName(),
-                declared,
-                typeVariables(meta.typeDecl()).map(TypeParam::name).toList());
+        ImportManager.Known known = new ImportManager.Known(
+                new LinkedHashSet<>(declared),
+                typeVariables(meta.typeDecl()).map(TypeParam::name).collect(Collectors.toSet()),
+                meta.inherited().stream()
+                        .flatMap(name -> switch (name) {
+                            case InheritedName.MemberType(String memberType) -> Stream.of(memberType);
+                            case InheritedName.Field _ -> Stream.<String>empty();
+                        })
+                        .collect(Collectors.toSet()),
+                meta.inherited().stream()
+                        .flatMap(name -> switch (name) {
+                            case InheritedName.Field(String field) -> Stream.of(field);
+                            case InheritedName.MemberType _ -> Stream.<String>empty();
+                        })
+                        .collect(Collectors.toSet()));
+        // a name written before the variable or the local class that takes it was met is written anew,
+        // knowing what the rendering learned: see ImportManager. What a file declares is the same in
+        // every rendering, so the second knows all of it.
+        ImportManager learning = new ImportManager(meta.packageName(), known);
+        String learned = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), Context.of(format, learning));
+        ImportManager imports = learning.stale() ? new ImportManager(meta.packageName(), learning.learned()) : learning;
         Context ctx = Context.of(format, imports);
-        String first = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
+        String first = learning.stale() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : learned;
+        if (imports.stale()) {
+            throw new IllegalStateException(
+                    "a file declares the same variables and classes however often it is rendered");
+        }
         // how a comment names a type depends on what the code after it claims: see ImportManager
         String body = imports.mentioned() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : first;
 
@@ -84,7 +108,7 @@ public final class StandardRenderer implements SourceRenderer {
     }
 
     /// The types a file declares: `decl` and the types nested in it, at any depth.
-    private static void collectDeclared(TypeDecl decl, List<ClassDesc> found) {
+    static void collectDeclared(TypeDecl decl, List<ClassDesc> found) {
         List<?> members =
                 switch (decl) {
                     case ClassDecl c -> {
@@ -118,8 +142,9 @@ public final class StandardRenderer implements SourceRenderer {
     }
 
     /// The type parameters a file declares: those of `decl`, of its methods and of the types nested in
-    /// it, at any depth. A method of an anonymous class is not looked into.
-    private static Stream<TypeParam> typeVariables(TypeDecl decl) {
+    /// it, at any depth. A method of an anonymous class is not looked into, nor is a body: a class
+    /// declared in one tells its own as it is rendered ([ImportManager#localType]).
+    static Stream<TypeParam> typeVariables(TypeDecl decl) {
         List<TypeParam> own =
                 switch (decl) {
                     case ClassDecl c -> c.typeParams();

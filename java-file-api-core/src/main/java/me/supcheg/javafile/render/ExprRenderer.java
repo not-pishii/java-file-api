@@ -168,8 +168,10 @@ final class ExprRenderer {
                     case LambdaExpr(var params, var body) -> {
                         String header =
                                 switch (params) {
-                                            case InferredLambdaParams(var names) ->
-                                                "(" + String.join(", ", names) + ")";
+                                            case InferredLambdaParams(var names) -> {
+                                                names.forEach(ctx::variable);
+                                                yield "(" + String.join(", ", names) + ")";
+                                            }
                                             case TypedLambdaParams(var typed) ->
                                                 "(" + TypeRefRenderer.renderParams(typed, ctx) + ")";
                                         }
@@ -184,9 +186,9 @@ final class ExprRenderer {
                     case ThisExpr ignored -> "this";
                     case SuperExpr ignored -> "super";
                     case StaticFieldAccessExpr(var type, var name) ->
-                        TypeRefRenderer.renderType(type, ctx) + "." + name;
+                        TypeRefRenderer.renderQualifier(type, ctx) + "." + name;
                     case StaticMethodCallExpr(var type, var method, var args, var typeArgs) -> {
-                        String prefix = TypeRefRenderer.renderType(type, ctx);
+                        String prefix = TypeRefRenderer.renderQualifier(type, ctx);
                         String argsStr =
                                 args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
                         yield prefix + "." + renderTypeArgs(typeArgs, ctx) + method + "(" + argsStr + ")";
@@ -210,7 +212,8 @@ final class ExprRenderer {
                     case ClassLiteralExpr(var type) -> TypeRefRenderer.renderType(type, ctx) + ".class";
                     case MethodRefExpr(var target, var method) ->
                         switch (target) {
-                            case TypeMethodRefTarget(var type) -> TypeRefRenderer.renderType(type, ctx) + "::" + method;
+                            case TypeMethodRefTarget(var type) ->
+                                TypeRefRenderer.renderQualifier(type, ctx) + "::" + method;
                             case ExprMethodRefTarget(var operand) ->
                                 renderExpr(operand, ctx, Precedence.PRIMARY_LEVEL) + "::" + method;
                         };
@@ -256,15 +259,19 @@ final class ExprRenderer {
                         };
                 yield ctx.pad() + targetStr + " " + op.symbol() + " " + renderExpr(value, ctx) + ";";
             }
-            case LocalVarDeclStmt.Typed(var type, var name, var initializer) ->
-                ctx.pad()
+            case LocalVarDeclStmt.Typed(var type, var name, var initializer) -> {
+                ctx.variable(name);
+                yield ctx.pad()
                         + TypeRefRenderer.renderType(type, ctx)
                         + " "
                         + name
                         + initializer.map(i -> " = " + renderExpr(i, ctx)).orElse("")
                         + ";";
-            case LocalVarDeclStmt.Inferred(var name, var initializer) ->
-                ctx.pad() + "var " + name + " = " + renderExpr(initializer, ctx) + ";";
+            }
+            case LocalVarDeclStmt.Inferred(var name, var initializer) -> {
+                ctx.variable(name);
+                yield ctx.pad() + "var " + name + " = " + renderExpr(initializer, ctx) + ";";
+            }
             case IfStmt(var condition, var thenBody, var elseIfClauses, var elseBody) -> {
                 StringBuilder sb = new StringBuilder(ctx.pad())
                         .append("if (")
@@ -324,8 +331,9 @@ final class ExprRenderer {
                         + ctx.pad()
                         + "}";
             }
-            case EnhancedForStmt(var elementType, var varName, var iterable, var body) ->
-                ctx.pad()
+            case EnhancedForStmt(var elementType, var varName, var iterable, var body) -> {
+                ctx.variable(varName);
+                yield ctx.pad()
                         + "for ("
                         + TypeRefRenderer.renderType(elementType, ctx)
                         + " "
@@ -336,6 +344,7 @@ final class ExprRenderer {
                         + renderBlock(body, ctx.withIncreasedPad())
                         + ctx.pad()
                         + "}";
+            }
             case TryStmt.WithFinally(var resources, var block, var catches, var finallyBody) -> {
                 StringBuilder sb = new StringBuilder(ctx.pad())
                         .append("try ")
@@ -404,8 +413,10 @@ final class ExprRenderer {
                         + message.map(m -> " : " + renderExpr(m, ctx)).orElse("")
                         + ";";
             case EmptyStmt ignored -> ctx.pad() + ";";
-            case LocalTypeDeclStmt(var decl) ->
-                TypeDeclRenderer.renderTypeDecl(decl, ctx).stripTrailing();
+            case LocalTypeDeclStmt(var decl) -> {
+                ctx.localType(decl);
+                yield TypeDeclRenderer.renderTypeDecl(decl, ctx).stripTrailing();
+            }
         };
     }
 
@@ -425,17 +436,20 @@ final class ExprRenderer {
 
     private static String renderResource(Resource resource, Context ctx) {
         return switch (resource) {
-            case Resource.Declared(var type, var name, var initializer) ->
-                type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
+            case Resource.Declared(var type, var name, var initializer) -> {
+                ctx.variable(name);
+                yield type.map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("var")
                         + " "
                         + name
                         + " = "
                         + renderExpr(initializer, ctx);
+            }
             case Resource.Existing(var name) -> name;
         };
     }
 
     private static String renderCatchClause(CatchClause clause, Context ctx) {
+        ctx.variable(clause.paramName());
         String types = clause.exceptionTypes().toList().stream()
                 .map(t -> TypeRefRenderer.renderType(t, ctx))
                 .collect(Collectors.joining(" | "));
@@ -470,9 +484,11 @@ final class ExprRenderer {
 
     private static String renderPattern(Pattern pattern, Context ctx) {
         return switch (pattern) {
-            case TypePattern(var type, var bindingName) ->
-                TypeRefRenderer.renderType(type, ctx)
+            case TypePattern(var type, var bindingName) -> {
+                bindingName.ifPresent(ctx::variable);
+                yield TypeRefRenderer.renderType(type, ctx)
                         + bindingName.map(n -> " " + n).orElse("");
+            }
             case RecordPattern(var recordType, var componentPatterns) -> {
                 String components = componentPatterns.stream()
                         .map(p -> renderPattern(p, ctx))

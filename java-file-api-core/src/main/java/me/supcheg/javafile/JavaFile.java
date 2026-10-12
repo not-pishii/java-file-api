@@ -20,6 +20,8 @@ import me.supcheg.javafile.transform.Transforms;
 
 import java.lang.constant.ClassDesc;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -47,11 +49,27 @@ public final class JavaFile implements RenderableFile {
     private final String packageName;
     private final String simpleName;
     private final TypeDecl typeDecl;
+    private final List<InheritedName> inherited;
 
     private JavaFile(String packageName, String simpleName, TypeDecl typeDecl) {
+        this(packageName, simpleName, typeDecl, List.of());
+    }
+
+    private JavaFile(String packageName, String simpleName, TypeDecl typeDecl, List<InheritedName> inherited) {
         this.packageName = packageName;
         this.simpleName = simpleName;
         this.typeDecl = typeDecl;
+        this.inherited = List.copyOf(inherited);
+    }
+
+    /// The file with the names its type inherits from its supertypes: fields and member types the
+    /// declaration does not show, whose simple names mean them in the body of the type. The
+    /// renderer writes a type one of them hides by its qualified name.
+    ///
+    /// @param names the inherited names; they replace those the file had
+    /// @return the file with the names
+    public JavaFile inheriting(Collection<? extends InheritedName> names) {
+        return new JavaFile(packageName, simpleName, typeDecl, List.copyOf(names));
     }
 
     /// Builds a source file containing a single top-level class declaration.
@@ -135,14 +153,28 @@ public final class JavaFile implements RenderableFile {
 
     @Override
     public Meta renderMeta() {
-        return new Meta(packageName, typeDecl);
+        return new Meta(packageName, typeDecl, inherited);
     }
 
     /// The package and declaration of a [JavaFile]; you rarely need it directly.
     ///
     /// @param packageName the file's package
     /// @param typeDecl the top-level type declaration to render
-    public record Meta(String packageName, TypeDecl typeDecl) implements RenderableFile.Meta {}
+    /// @param inherited the names the type inherits from its supertypes, see [JavaFile#inheriting(Collection)]
+    public record Meta(String packageName, TypeDecl typeDecl, List<InheritedName> inherited)
+            implements RenderableFile.Meta {
+        public Meta {
+            inherited = List.copyOf(inherited);
+        }
+
+        /// The metadata of a file whose type inherits no name the renderer has to know.
+        ///
+        /// @param packageName the package
+        /// @param typeDecl the declaration
+        public Meta(String packageName, TypeDecl typeDecl) {
+            this(packageName, typeDecl, List.of());
+        }
+    }
 
     @Override
     public Path pathSuffix() {
@@ -161,7 +193,7 @@ public final class JavaFile implements RenderableFile {
     /// @throws IllegalStateException if this file does not wrap a class declaration
     public JavaFile transformClass(ClassTransform transform) {
         if (typeDecl instanceof ClassDecl c) {
-            return new JavaFile(packageName, simpleName, Transforms.transform(c, transform));
+            return new JavaFile(packageName, simpleName, Transforms.transform(c, transform), inherited);
         }
         throw new IllegalStateException("this JavaFile does not wrap a class declaration");
     }
@@ -173,7 +205,7 @@ public final class JavaFile implements RenderableFile {
     /// @throws IllegalStateException if this file does not wrap an interface declaration
     public JavaFile transformInterface(InterfaceTransform transform) {
         if (typeDecl instanceof InterfaceDecl i) {
-            return new JavaFile(packageName, simpleName, Transforms.transform(i, transform));
+            return new JavaFile(packageName, simpleName, Transforms.transform(i, transform), inherited);
         }
         throw new IllegalStateException("this JavaFile does not wrap an interface declaration");
     }
@@ -185,7 +217,7 @@ public final class JavaFile implements RenderableFile {
     /// @throws IllegalStateException if this file does not wrap a record declaration
     public JavaFile transformRecord(RecordTransform transform) {
         if (typeDecl instanceof RecordDecl r) {
-            return new JavaFile(packageName, simpleName, Transforms.transform(r, transform));
+            return new JavaFile(packageName, simpleName, Transforms.transform(r, transform), inherited);
         }
         throw new IllegalStateException("this JavaFile does not wrap a record declaration");
     }
@@ -199,7 +231,7 @@ public final class JavaFile implements RenderableFile {
     ///         (e.g. a constructor) while processing a constant's body
     public JavaFile transformEnum(EnumTransform transform) {
         if (typeDecl instanceof EnumDecl e) {
-            return new JavaFile(packageName, simpleName, Transforms.transform(e, transform));
+            return new JavaFile(packageName, simpleName, Transforms.transform(e, transform), inherited);
         }
         throw new IllegalStateException("this JavaFile does not wrap an enum declaration");
     }
@@ -212,7 +244,7 @@ public final class JavaFile implements RenderableFile {
     /// @throws IllegalStateException if this file does not wrap an annotation type declaration
     public JavaFile transformAnnotationType(AnnotationTypeTransform transform) {
         if (typeDecl instanceof AnnotationTypeDecl a) {
-            return new JavaFile(packageName, simpleName, Transforms.transform(a, transform));
+            return new JavaFile(packageName, simpleName, Transforms.transform(a, transform), inherited);
         }
         throw new IllegalStateException("this JavaFile does not wrap an annotation type declaration");
     }
