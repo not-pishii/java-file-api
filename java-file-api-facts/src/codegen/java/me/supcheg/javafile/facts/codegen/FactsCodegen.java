@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -46,7 +47,11 @@ import static me.supcheg.javafile.code.Exprs.this_;
 /// `InvocableFactories`, and through the checked lookups of `FactSource`,
 /// which inherits the generated `InvocableLookup` (§3.1).
 ///
-/// Usage: `FactsCodegen <output dir> write|check`. `check` fails when the
+/// Beside the families it generates their tests, `ArityNFamiliesTest`: a family is the same code at
+/// every arity, and so is what is to be said of it — that a fact gives back the member it was made
+/// of, each parameter in its place.
+///
+/// Usage: `FactsCodegen <output dir> <test output dir> write|check`. `check` fails when the
 /// sources on disk differ from what would be generated.
 public final class FactsCodegen {
     /// The largest generated arity.
@@ -79,17 +84,26 @@ public final class FactsCodegen {
 
     /// Runs the generator.
     ///
-    /// @param args the output directory and the mode, `write` or `check`
+    /// @param args the output directory of the families, that of their tests, and the mode, `write` or `check`
     public static void main(String[] args) {
-        Path out = Path.of(args[0]);
-        Map<Path, String> files = new TreeMap<>();
-        for (JavaFile file : generate()) {
-            files.put(out.resolve(file.pathSuffix()), file.render());
+        Stream.of(new Generated(Path.of(args[0]), generate()), new Generated(Path.of(args[1]), generateTests()))
+                .forEach(args[2].equals("write") ? Generated::write : Generated::check);
+    }
+
+    /// The files generated into a directory, which holds them and nothing else.
+    private record Generated(Path out, List<JavaFile> generated) {
+        Map<Path, String> files() {
+            return generated.stream()
+                    .collect(Collectors.toMap(
+                            file -> out.resolve(file.pathSuffix()), JavaFile::render, (_, last) -> last, TreeMap::new));
         }
-        if (args[1].equals("write")) {
-            write(out, files);
-        } else {
-            check(out, files);
+
+        void write() {
+            FactsCodegen.write(out, files());
+        }
+
+        void check() {
+            FactsCodegen.check(out, files());
         }
     }
 
@@ -596,6 +610,236 @@ public final class FactsCodegen {
             family.typeVars(n).forEach(v -> mb.withTypeParam(v));
             params.forEach(mb::withParam);
             mb.withBody(b -> b.return_(instantiate(family.desc(n), family.typeVars(n), args)));
+        });
+    }
+
+    private static final ClassDesc ARITY_FAMILIES = ClassDesc.of(FACTS, "ArityFamilies");
+    private static final ClassDesc ASKED = ARITY_FAMILIES.nested("Asked");
+    private static final ClassDesc UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
+    private static final ClassDesc TEST = ClassDesc.of("org.junit.jupiter.api", "Test");
+    private static final ClassDesc JUNIT_ASSERTIONS = ClassDesc.of("org.junit.jupiter.api", "Assertions");
+    private static final ClassDesc ASSERTJ_ASSERTIONS = ClassDesc.of("org.assertj.core.api", "Assertions");
+
+    /// The name of the methods the tests make facts of.
+    private static final String RUN = "run";
+
+    /// Generates the tests of the families, a class for an arity.
+    ///
+    /// @return the files
+    public static List<JavaFile> generateTests() {
+        return IntStream.rangeClosed(0, MAX_ARITY)
+                .mapToObj(FactsCodegen::familiesTest)
+                .toList();
+    }
+
+    private static JavaFile familiesTest(int n) {
+        return JavaFile.class_(ClassDesc.of(FACTS, "Arity" + n + "FamiliesTest"), cb -> {
+            generated(cb);
+            cb.withExactModifiers(Set.of());
+            Stream.of(Family.values()).forEach(family -> {
+                if (family.isSam()) {
+                    samTest(cb, family, n);
+                } else {
+                    refTest(cb, family, n);
+                }
+            });
+            Stream.of(true, false)
+                    .forEach(hasResult -> Had.of(hasResult).forEach(had -> implementedTest(cb, had, hasResult, n)));
+        });
+    }
+
+    /// A type variable of a family in the tests: a phantom of `ArityFamilies`.
+    private static TypeRef phantom(String var) {
+        return Types.of(ARITY_FAMILIES.nested(
+                switch (var) {
+                    case "O", "Self" -> "Subject";
+                    case "F" -> "Functional";
+                    case "R" -> "Result";
+                    default -> var;
+                }));
+    }
+
+    private static TypeRef tested(ClassDesc raw, List<String> vars) {
+        return vars.isEmpty()
+                ? Types.of(raw)
+                : Types.parameterized(
+                        raw, vars.stream().map(v -> Types.exact(phantom(v))).toList(), new AnnotationUse[0]);
+    }
+
+    private static Expr fixture(String name) {
+        return staticField(ARITY_FAMILIES, name);
+    }
+
+    private static List<Expr> paramTokens(int n) {
+        return IntStream.rangeClosed(1, n).mapToObj(i -> fixture("PARAM" + i)).toList();
+    }
+
+    /// The parameters of a member of the tests as a fact describes them.
+    private static String describedParams(int n) {
+        return IntStream.rangeClosed(1, n).mapToObj(i -> "arity.A" + i).collect(Collectors.joining(", ", "(", ")"));
+    }
+
+    /// The method `run` of a result and `n` parameters, of `arity.Subject` or `arity.Functional`, as its
+    /// fact describes it.
+    private static String describedMethod(String result, String owner, int n) {
+        return result + " arity." + owner + "." + RUN + describedParams(n);
+    }
+
+    private static String described(Family family, int n) {
+        return switch (family) {
+            case METHOD -> describedMethod("arity.Result", "Subject", n);
+            case VOID_METHOD -> describedMethod("void", "Subject", n);
+            case STATIC_METHOD -> "static " + describedMethod("arity.Result", "Subject", n);
+            case VOID_STATIC_METHOD -> "static " + describedMethod("void", "Subject", n);
+            case CTOR -> "new arity.Subject" + describedParams(n);
+            case SUPER_CTOR -> "super arity.Subject" + describedParams(n);
+            case SAM -> describedMethod("arity.Result", "Functional", n);
+            case VOID_SAM -> describedMethod("void", "Functional", n);
+        };
+    }
+
+    private static String decapitalized(String name) {
+        return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+    }
+
+    private static void test(ClassBuilder cb, String name, Consumer<CodeBuilder> body) {
+        cb.withVoidMethod(decapitalized(name), mb -> mb.withAnnotation(TEST).withBody(body));
+    }
+
+    private static void assertSame(CodeBuilder b, Expr expected, Expr actual) {
+        b.exprStatement(staticCall(JUNIT_ASSERTIONS, "assertSame", expected, actual));
+    }
+
+    private static void assertDescribed(CodeBuilder b, String subject, String described) {
+        b.exprStatement(staticCall(ASSERTJ_ASSERTIONS, "assertThat", field(subject))
+                .call("hasToString", Exprs.literal(described)));
+    }
+
+    /// The name, the result and the parameters a fact of a family is made of, in that order.
+    private static List<Expr> signature(Family family, Expr result, int n) {
+        return Stream.of(
+                        Stream.of((Expr) Exprs.literal(RUN)).filter(_ -> !family.isCtor()),
+                        Stream.of(result).filter(_ -> family.hasResult),
+                        paramTokens(n).stream())
+                .flatMap(parts -> parts)
+                .toList();
+    }
+
+    /// A fact of `run` made by the factory of `UnsafeFacts`.
+    private static Expr made(Family family, Expr owner, Expr result, int n) {
+        return staticCall(
+                UNSAFE_FACTS,
+                family.factory,
+                Stream.of(Stream.of(owner), signature(family, result, n).stream(), Stream.of(fixture("TRAITS")))
+                        .flatMap(parts -> parts)
+                        .toList());
+    }
+
+    /// A fact of a family, made by the factory of `UnsafeFacts` and proved by the lookup of a
+    /// `FactSource`, is of the member it was asked for: its kind, owner, name, result and
+    /// parameters, each in its place.
+    private static void refTest(ClassBuilder cb, Family family, int n) {
+        TypeRef type = tested(family.desc(n), family.typeVars(n));
+        List<Expr> signature = signature(family, fixture("RESULT"), n);
+        test(cb, family.prefix, b -> {
+            b.localVar("asked", Types.of(ASKED), Exprs.new_(ASKED));
+            b.localVar("made", type, made(family, fixture("OWNER"), fixture("RESULT"), n));
+            b.localVar("proved", type, field("asked").call("source").call(family.factory, signature));
+            b.forEach(type, "fact", staticCall(LIST, "of", field("made"), field("proved")), each -> {
+                if (family.hasResult) {
+                    assertSame(each, fixture("RESULT"), field("fact").call("result"));
+                }
+                IntStream.rangeClosed(1, n)
+                        .forEach(i -> assertSame(
+                                each, fixture("PARAM" + i), field("fact").call("param" + i)));
+                each.exprStatement(staticCall(
+                        ARITY_FAMILIES,
+                        "assertFact",
+                        field("fact"),
+                        staticField(INVOCABLE_KIND, family.kind),
+                        fixture("OWNER"),
+                        Exprs.literal(family.isCtor() ? "Subject" : RUN),
+                        family.hasResult
+                                ? staticCall(OPTIONAL, "of", fixture("RESULT"))
+                                : staticCall(OPTIONAL, "empty"),
+                        staticCall(LIST, "of", paramTokens(n)),
+                        Exprs.literal(described(family, n))));
+            });
+            b.exprStatement(staticCall(
+                            ASSERTJ_ASSERTIONS, "assertThat", field("asked").call("queries"))
+                    .call(
+                            "containsExactly",
+                            staticCall(MEMBER_QUERY, family.isCtor() ? "constructor" : family.factory, signature)));
+        });
+    }
+
+    /// A `SamN` is of the single abstract method of its interface, and gives its result and parameters.
+    private static void samTest(ClassBuilder cb, Family family, int n) {
+        Family method = family == Family.SAM ? Family.METHOD : Family.VOID_METHOD;
+        test(cb, family.prefix, b -> {
+            b.localVar(
+                    "owner",
+                    Types.parameterized(INTERFACE_TOKEN, phantom("F")),
+                    staticCall(ARITY_FAMILIES, "functional", paramTokens(n)));
+            b.localVar(
+                    "method",
+                    tested(method.desc(n), family.typeVars(n)),
+                    made(method, field("owner"), fixture("RESULT"), n));
+            b.localVar(
+                    "sam",
+                    tested(family.desc(n), family.typeVars(n)),
+                    staticCall(UNSAFE_FACTS, family.factory, field("method")));
+            assertSame(b, field("owner"), field("sam").call("owner"));
+            assertSame(b, field("method"), field("sam").call("method"));
+            if (family.hasResult) {
+                assertSame(b, fixture("RESULT"), field("sam").call("result"));
+            }
+            IntStream.rangeClosed(1, n)
+                    .forEach(i ->
+                            assertSame(b, fixture("PARAM" + i), field("sam").call("param" + i)));
+            assertDescribed(b, "sam", described(family, n));
+        });
+    }
+
+    /// An implementation tells how the class has the method, and one by a method of the class gives
+    /// the fact of that method.
+    private static void implementedTest(ClassBuilder cb, Had had, boolean hasResult, int n) {
+        Family method = hasResult ? Family.METHOD : Family.VOID_METHOD;
+        List<String> vars = implementationVars(hasResult, n);
+        // the method of a `SelfOverridingN<Self, R, ..>` is of the result `Self`, not `R`
+        List<String> ownVars = had == Had.SELF_OVERRIDING
+                ? vars.stream().map(v -> v.equals("R") ? "Self" : v).toList()
+                : vars;
+        String ofSupertype = describedMethod(hasResult ? "arity.Result" : "void", "Subject", n);
+        String own = had == Had.SELF_OVERRIDING ? describedMethod("arity.Subject", "Subject", n) : ofSupertype;
+        String name = had.name(hasResult, n);
+        test(cb, (hasResult ? "" : "Void") + had.family, b -> {
+            b.localVar(
+                    "ofSupertype", tested(method.desc(n), vars), made(method, fixture("OWNER"), fixture("RESULT"), n));
+            if (had != Had.INHERITED) {
+                b.localVar(
+                        "own",
+                        tested(method.desc(n), ownVars),
+                        made(method, fixture("OWNER"), fixture(had == Had.SELF_OVERRIDING ? "OWNER" : "RESULT"), n));
+            }
+            b.localVar(
+                    "how",
+                    Types.of(had.how),
+                    had == Had.INHERITED
+                            ? Exprs.new_(had.how, field("ofSupertype"))
+                            : Exprs.new_(had.how, field("ofSupertype"), field("own")));
+            b.localVar(
+                    "implementation",
+                    tested(ClassDesc.of(FACTS, name), vars),
+                    staticCall(UNSAFE_FACTS, decapitalized(name), field("how")));
+            assertSame(b, field("how"), field("implementation").call("how"));
+            if (had != Had.INHERITED) {
+                assertSame(b, field("own"), field("implementation").call("method"));
+            }
+            assertDescribed(
+                    b,
+                    "implementation",
+                    had == Had.INHERITED ? "inherited " + ofSupertype : own + " overriding " + ofSupertype);
         });
     }
 
