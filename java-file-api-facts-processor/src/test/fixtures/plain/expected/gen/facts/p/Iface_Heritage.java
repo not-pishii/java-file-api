@@ -10,11 +10,16 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
+import me.supcheg.javafile.facts.Heritage.Named;
+import me.supcheg.javafile.facts.Heritage.Named.Field;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
@@ -23,7 +28,6 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidImplementation0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import p.Iface;
 
@@ -51,21 +55,21 @@ public final class Iface_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Iface] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1(), m2()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of(), n0());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.STATIC, ClassDesc.of("p.Iface"), Signature.of("empty"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("p.Iface"))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("run"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Iface"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.Iface"), Signature.of("run"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("size"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Iface"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m2() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.Iface"), Signature.of("size"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
+        private static List<Named> n0() {
+            return List.of(new Field("LIMIT", ClassDesc.of("p.Iface"), Visibility.PUBLIC), new Field("NAME", ClassDesc.of("p.Iface"), Visibility.PUBLIC));
         }
     }
 
@@ -94,7 +98,7 @@ public final class Iface_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, Iface> run(VoidImplementation0<Self> how) {
-            return this.steps.with(Signature.of("run"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

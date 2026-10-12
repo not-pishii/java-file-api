@@ -37,14 +37,14 @@ import p.Low;
 ///
 /// A member [Low] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// No generated class extends or implements [Low]: its type parameter p is named like a class the proof mentions.
+/// No generated class extends or implements [Low]: the steps of its proof cannot be written with its type parameters: cannot name p.Low in a file that declares the type parameter p: the name of the type parameter obscures the first name of the qualified one.
 ///
 /// @param <gen_> a type argument of [Low]
 /// @param <java_> a type argument of [Low]
 /// @param <me_> a type argument of [Low]
 /// @param <p_> a type argument of [Low]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "8e2413fbb769b669bae63168d9f4749ac55492d92d88eaa0cb36869f751a1c12", complete = true, format = 13)
+@GeneratedMetamodel(of = Low.class, fingerprint = "d3b3c25f07233f346c16e80580a0b5c9acdac75ff1d4c6d97c953610fe922056", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -55,7 +55,7 @@ public final class Low_<gen_, java_, me_, p_> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Low] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Low_"), "8e2413fbb769b669bae63168d9f4749ac55492d92d88eaa0cb36869f751a1c12", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Low"), List.of(new TypeParam("gen", List.of()), new TypeParam("java", List.of()), new TypeParam("me", List.of()), new TypeParam("p", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("gen"), Types.typeVar("java"), Types.typeVar("me"), Types.typeVar("p")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1), Param.var(2), Param.var(3)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Low"))), false, new Low_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Low_"), "d3b3c25f07233f346c16e80580a0b5c9acdac75ff1d4c6d97c953610fe922056", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Low"), List.of(new TypeParam("gen", List.of()), new TypeParam("java", List.of()), new TypeParam("me", List.of()), new TypeParam("p", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("gen"), Types.typeVar("java"), Types.typeVar("me"), Types.typeVar("p")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(1), Param.var(2), Param.var(3)), Signature.of("clone"), Signature.of("each", Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.util.Set"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("Low"))), false, new Low_Heritage());
 
         private Data() {
         }
@@ -66,8 +66,8 @@ public final class Low_<gen_, java_, me_, p_> {
     static final class Canonical {
         /// The canonical form of [Low].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Low open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Low open-class sealed=no nesting=top
         tparams #0; #1; #2; #3
         superclasses java.lang.Object
         interfaces -
@@ -80,22 +80,23 @@ public final class Low_<gen_, java_, me_, p_> {
         member method public overridable <^0> each(java.util.Set<^0>) -> void throws -
         member method public overridable all(#1, #2, #3) -> java.util.Set<#0> throws -
         member method public static <^0, ^1, ^2, ^3> of(^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws -
-        inherit ctor public () throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Low <^0, ^1> pick(^1, java.util.Set<#3>) -> ^0 throws - erased (java.lang.Object, java.util.Set) overrides -
-        inherit method public concrete p.Low <^0> each(java.util.Set<^0>) -> void throws - erased (java.util.Set) overrides -
-        inherit method public concrete p.Low all(#1, #2, #3) -> java.util.Set<#0> throws - erased (java.lang.Object, java.lang.Object, java.lang.Object) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Low <^0, ^1, ^2, ^3> of(^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws - erased (java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) overrides -
+        inherit ctor Low() public () throws -
+        inherit field public p.Low first
+        inherit method all(#1, #2, #3) erased (java.lang.Object, java.lang.Object, java.lang.Object) overrides - by class public concrete p.Low (#1, #2, #3) -> java.util.Set<#0> throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method each(java.util.Set) erased (java.util.Set) overrides - by class public concrete p.Low <^0> (java.util.Set<^0>) -> void throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) erased (java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) overrides - by class public static p.Low <^0, ^1, ^2, ^3> (^0, ^1, ^2, ^3) -> p.Low<^0, ^1, ^2, ^3> throws -
+        inherit method pick(java.lang.Object, java.util.Set) erased (java.lang.Object, java.util.Set) overrides - by class public concrete p.Low <^0, ^1> (^1, java.util.Set<#3>) -> ^0 throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete all(#1, #2, #3); clone(); each(java.util.Set); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); pick(java.lang.Object, java.util.Set); toString(); wait(); wait(long); wait(long, int)
         table static of(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)

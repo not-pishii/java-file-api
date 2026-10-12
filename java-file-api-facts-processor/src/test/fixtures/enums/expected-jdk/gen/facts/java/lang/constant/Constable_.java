@@ -38,7 +38,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Constable] by the proof its metamodel starts, with the stages of `Constable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", complete = true, format = 13)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "ce6f1bf0a36b21ce2fa4258affdcfa4a519a6fc0772bff0e16ea87c1076f2921", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Constable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Constable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "7e4483f2cb354075013dc2c819f12cd8ae19df928ed2a73f8e54655e0b407fea", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Constable_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.Constable_"), "ce6f1bf0a36b21ce2fa4258affdcfa4a519a6fc0772bff0e16ea87c1076f2921", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.Constable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("describeConstable")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Constable_Heritage());
 
         private Data() {
         }
@@ -60,8 +60,8 @@ public final class Constable_ {
     static final class Canonical {
         /// The canonical form of [Constable].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type java.lang.constant.Constable interface sealed=no
+        javafile-facts-canonical 8
+        type java.lang.constant.Constable interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -70,7 +70,7 @@ public final class Constable_ {
         members declared-accessible
         member method public abstract describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -
         sam describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -
-        inherit method public abstract java.lang.constant.Constable describeConstable() -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws - erased () overrides -
+        inherit method describeConstable() erased () overrides - by interface abstract java.lang.constant.Constable () -> java.util.Optional<? extends java.lang.constant.ConstantDesc> throws -
         table abstract describeConstable()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

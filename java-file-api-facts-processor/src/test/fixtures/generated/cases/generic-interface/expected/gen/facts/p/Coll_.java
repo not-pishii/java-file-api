@@ -42,7 +42,7 @@ import p.Coll;
 ///
 /// @param <E> a type argument of [Coll]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Coll.class, fingerprint = "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", complete = true, format = 13)
+@GeneratedMetamodel(of = Coll.class, fingerprint = "7ba16b9ba2d99ef876551edd1512f59b92f0ae4eeceae5faff80fe69898e1615", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class Coll_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Coll] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Coll_"), "b7f8083c552160e5f3b82ec11f0222da48fd89283799c0216dc5b69fc0fd5e27", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Coll"), List.of(new TypeParam("E", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Coll_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Coll_"), "7ba16b9ba2d99ef876551edd1512f59b92f0ae4eeceae5faff80fe69898e1615", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Coll"), List.of(new TypeParam("E", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Coll_Heritage());
 
         private Data() {
         }
@@ -64,8 +64,8 @@ public final class Coll_<E> {
     static final class Canonical {
         /// The canonical form of [Coll].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Coll interface sealed=no
+        javafile-facts-canonical 8
+        type p.Coll interface sealed=no nesting=top
         tparams #0
         superclasses -
         interfaces -
@@ -74,7 +74,7 @@ public final class Coll_<E> {
         members declared-accessible
         member method public abstract add(#0) -> boolean throws -
         sam add(#0) -> boolean throws -
-        inherit method public abstract p.Coll add(#0) -> boolean throws - erased (java.lang.Object) overrides -
+        inherit method add(#0) erased (java.lang.Object) overrides - by interface abstract p.Coll (#0) -> boolean throws -
         table abstract add(#0)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -14,6 +14,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -509,10 +510,12 @@ final class MetamodelDocs {
         return new DocComment(
                 paragraph(Stream.of(
                                 words("Takes how the class has the abstract method "),
-                                code(step.method().signature().toString()),
+                                code(step.told().signature().toString()),
                                 words(", declared in "),
-                                code(ClassDescNames.qualifiedByDots(
-                                        step.method().declaredBy())),
+                                code(step.told().declarations().stream()
+                                        .map(declaration -> ClassDescNames.qualifiedByDots(
+                                                declaration.by().type()))
+                                        .collect(Collectors.joining(" and "))),
                                 words(".")))
                         .toList(),
                 List.of(

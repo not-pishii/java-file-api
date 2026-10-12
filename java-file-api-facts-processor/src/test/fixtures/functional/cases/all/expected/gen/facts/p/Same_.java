@@ -33,7 +33,7 @@ import p.Same;
 ///
 /// A generated class extends or implements [Same] by the proof its metamodel starts, with the stages of `Same_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Same.class, fingerprint = "949ff0e76e762109d052201062039cf046099c81f0ccbb0400916f4cc9cb6274", complete = true, format = 13)
+@GeneratedMetamodel(of = Same.class, fingerprint = "b5306e54fee4f802165ab185526da2b527a00afca2f4b9baeb362f166b57ece2", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Same_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Same] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Same_"), "949ff0e76e762109d052201062039cf046099c81f0ccbb0400916f4cc9cb6274", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Same"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.IoB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Same_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Same_"), "b5306e54fee4f802165ab185526da2b527a00afca2f4b9baeb362f166b57ece2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Same"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.IoB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Same_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,8 @@ public final class Same_ {
     static final class Canonical {
         /// The canonical form of [Same].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Same interface sealed=no
+        javafile-facts-canonical 8
+        type p.Same interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces p.IoA; p.IoB
@@ -64,7 +64,7 @@ public final class Same_ {
         enum -
         members declared-accessible
         sam m() -> void throws java.io.IOException
-        inherit method public abstract p.IoB m() -> void throws java.io.IOException erased () overrides p.IoA
+        inherit method m() erased () overrides - by interface abstract p.IoA () -> void throws java.io.IOException | interface abstract p.IoB () -> void throws java.io.IOException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -294,15 +294,15 @@ class ConformanceTest {
                     T,
                     t("public class T", "public abstract class T"),
                     "changed: type",
-                    "  generated against: p.T open-class sealed=no",
-                    "  target: p.T abstract-class sealed=no"),
+                    "  generated against: p.T open-class sealed=no nesting=top",
+                    "  target: p.T abstract-class sealed=no nesting=top"),
             full(
                     "the class is an interface",
                     "package p; public abstract class T { public abstract void n(); }",
                     "package p; public interface T { void n(); }",
                     "changed: type",
-                    "  generated against: p.T abstract-class sealed=no",
-                    "  target: p.T interface sealed=no",
+                    "  generated against: p.T abstract-class sealed=no nesting=top",
+                    "  target: p.T interface sealed=no nesting=top",
                     "changed: superclasses",
                     "  generated against: java.lang.Object",
                     "  target: -",
@@ -312,8 +312,8 @@ class ConformanceTest {
                     "package p; public class T { public void n() {} }",
                     "package p; public final class T { public void n() {} }",
                     "changed: type",
-                    "  generated against: p.T open-class sealed=no",
-                    "  target: p.T final-class sealed=no",
+                    "  generated against: p.T open-class sealed=no nesting=top",
+                    "  target: p.T final-class sealed=no nesting=top",
                     "changed: method public overridable n() -> void throws -",
                     "  found: method public final n() -> void throws -"),
             full(
@@ -323,8 +323,8 @@ class ConformanceTest {
                             "package p; public abstract sealed class T permits Only {}",
                             "package p; final class Only extends T {}"),
                     "changed: type",
-                    "  generated against: p.T abstract-class sealed=no",
-                    "  target: p.T abstract-class sealed=yes"),
+                    "  generated against: p.T abstract-class sealed=no nesting=top",
+                    "  target: p.T abstract-class sealed=yes nesting=top"),
             full(
                     "the type has a type parameter",
                     "package p; public class T {}",
@@ -535,8 +535,8 @@ class ConformanceTest {
                     T,
                     t("public class T", "public abstract class T"),
                     "changed: type",
-                    "  generated against: p.T open-class sealed=no",
-                    "  target: p.T abstract-class sealed=no"));
+                    "  generated against: p.T open-class sealed=no nesting=top",
+                    "  target: p.T abstract-class sealed=no nesting=top"));
 
     @TestFactory
     Stream<DynamicTest> aChangeOfATypeAndWhatItComesTo() {
@@ -611,9 +611,12 @@ class ConformanceTest {
                                 .isInstanceOfSatisfying(
                                         Heritage.Told.class,
                                         told -> assertThat(told.methods())
-                                                .filteredOn(method ->
-                                                        method.declaredBy().equals(ClassDesc.of("p", "T")))
-                                                .extracting(method -> method.name() + " " + method.dispatch())
+                                                .filteredOn(method -> method.declarations()
+                                                        .getFirst()
+                                                        .by()
+                                                        .type()
+                                                        .equals(ClassDesc.of("p", "T")))
+                                                .extracting(method -> method.name() + " " + method.standing())
                                                 .containsExactly("added CONCRETE", "hook FINAL", "n CONCRETE")));
         assertThat(ofTokenOnly)
                 .isInstanceOfSatisfying(
@@ -645,7 +648,7 @@ class ConformanceTest {
 
     @Test
     void aMetamodelOfAnotherFormatIsNotCompared() {
-        String other = "javafile-facts-canonical 1\ntype p.T open-class sealed=no\n";
+        String other = "javafile-facts-canonical 1\ntype p.T open-class sealed=no nesting=top\n";
 
         TargetType found =
                 Harness.run(env -> Conformance.of("0".repeat(64), () -> other, Harness.ok(env.full("p.T"))), T);
@@ -698,5 +701,54 @@ class ConformanceTest {
                 .containsExactly("method m", "sam");
         assertThat(Conformance.name("member ctor public <^0>(^0) throws -")).isEqualTo("ctor");
         assertThat(Conformance.name("member ctor public () throws -")).isEqualTo("ctor");
+    }
+
+    @Test
+    void theHeritageOfAChangedTypeDoesNotDependOnWhatItsTypeParametersAreCalled() {
+        String generated = "package p; public interface T<E> { E get(); void put(E e); }";
+        // the type parameter is renamed, and there is one method more
+        String target = "package p; public interface T<X> { X get(); void put(X x); default void extra() {} }";
+        Canonical full = Harness.run(env -> Canonical.of(Harness.ok(env.full("p.T"))), generated);
+        Heritage ofGenerated = Harness.run(env -> Harness.ok(env.full("p.T")).heritage(), generated);
+
+        TargetType found =
+                Harness.run(env -> Conformance.of(full.fingerprint(), full::text, Harness.ok(env.full("p.T"))), target);
+
+        assertThat(found)
+                .isInstanceOfSatisfying(
+                        TargetType.Changed.class,
+                        changed -> assertThat(changed.heritage()).isInstanceOfSatisfying(Heritage.Told.class, told -> {
+                            // a type parameter is told by its position: what the two versions share is told the same
+                            assertThat(told.methods())
+                                    .containsAll(((Heritage.Told) ofGenerated).methods())
+                                    .hasSize(3);
+                            assertThat(told.applied(List.of(me.supcheg.javafile.type.Types.STRING))
+                                            .methods())
+                                    .filteredOn(method -> method.name().equals("get"))
+                                    .singleElement()
+                                    .satisfies(get -> assertThat(
+                                                    get.declarations().getFirst())
+                                            .isInstanceOfSatisfying(
+                                                    Heritage.Plain.class,
+                                                    plain -> assertThat(plain.result())
+                                                            .isEqualTo(new Heritage.Result.Of<>(
+                                                                    me.supcheg.javafile.type.Types.STRING))));
+                        }));
+    }
+
+    @Test
+    void aNestedClassThatIsNoLongerStaticIsAnotherType() {
+        String generated = "package p; public class Outer { public static class T { public T() {} } }";
+        String target = "package p; public class Outer { public class T { public T() {} } }";
+        Canonical full = Harness.run(env -> Canonical.of(Harness.ok(env.full("p.Outer.T"))), generated);
+
+        TargetType found = Harness.run(
+                env -> Conformance.of(full.fingerprint(), full::text, Harness.ok(env.full("p.Outer.T"))), target);
+
+        assertThat(told(found))
+                .containsExactly(
+                        "changed: type",
+                        "  generated against: p.Outer$T open-class sealed=no nesting=static",
+                        "  target: p.Outer$T open-class sealed=no nesting=inner");
     }
 }

@@ -10,11 +10,12 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Steps;
@@ -48,21 +49,17 @@ public final class Api_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Api] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1(), m2()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.Api"), Signature.of("abs"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("abs"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Api"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.Api"), Signature.of("dflt"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
-        }
-
-        private static Method m2() {
-            return new Method(Visibility.PUBLIC, Dispatch.STATIC, ClassDesc.of("p.Api"), Signature.of("iface"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("dflt"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Api"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
     }
 
@@ -91,7 +88,7 @@ public final class Api_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, Api> abs(VoidImplementation0<Self> how) {
-            return this.steps.with(Signature.of("abs"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

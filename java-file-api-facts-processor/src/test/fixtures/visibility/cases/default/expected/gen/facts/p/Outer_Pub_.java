@@ -26,7 +26,7 @@ import p.Outer.Pub;
 ///
 /// `@Facts` does not ask for [Pub]: it is only mentioned in the signatures of [p.Vis]. For the facts of its members add `Outer.Pub.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub.class, fingerprint = "ebde8247fc62cd964177438aed674c0561085cf1d3e67113451a77d302a1679b", complete = false, format = 13)
+@GeneratedMetamodel(of = Pub.class, fingerprint = "219fc66893fa6fd58d241706f82a053df71879a4e0aeca2731b1ff248d9622a9", complete = false, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Outer_Pub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Pub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Pub_"), "ebde8247fc62cd964177438aed674c0561085cf1d3e67113451a77d302a1679b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$Pub"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer$Pub"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Pub_"), "219fc66893fa6fd58d241706f82a053df71879a4e0aeca2731b1ff248d9622a9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$Pub"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer$Pub"))), List.of(), false);
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class Outer_Pub_ {
     static final class Canonical {
         /// The canonical form of [Pub].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Outer$Pub open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Outer$Pub open-class sealed=no nesting=static
         tparams -
         superclasses java.lang.Object
         interfaces -

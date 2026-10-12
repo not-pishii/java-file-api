@@ -31,7 +31,7 @@ import p.Marker;
 ///
 /// No generated class extends or implements [Lib]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lib.class, fingerprint = "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", complete = true, format = 13)
+@GeneratedMetamodel(of = Lib.class, fingerprint = "37cb0546b6f0dab1b74da92a6302946889259e50c8529551e85b22550551d9bd", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Lib_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Lib] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lib_"), "dc02911aa4399529dc8684648c2f33a7318b4d05b7af6d2dfb00222e461d151e", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Lib"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("p.Marker")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lib_"), "37cb0546b6f0dab1b74da92a6302946889259e50c8529551e85b22550551d9bd", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Lib"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("p.Marker")))), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -53,8 +53,8 @@ public final class Lib_ {
     static final class Canonical {
         /// The canonical form of [Lib].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Lib final-class sealed=no
+        javafile-facts-canonical 8
+        type p.Lib final-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -

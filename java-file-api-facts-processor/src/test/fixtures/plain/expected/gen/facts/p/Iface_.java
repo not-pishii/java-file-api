@@ -38,7 +38,7 @@ import p.Iface;
 ///
 /// A generated class extends or implements [Iface] by the proof its metamodel starts, with the stages of `Iface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "bfaf9b9cdc8487f69c160b5c1262c896203ae9c9511fb128a2e16d5da22bd9b8", complete = true, format = 13)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "d638e2e19a55e3fe492fb4e187eda512f41a753b93b2d4ebd92c63936ff7053e", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Iface_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Iface] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "bfaf9b9cdc8487f69c160b5c1262c896203ae9c9511fb128a2e16d5da22bd9b8", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of()), false, new Iface_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "d638e2e19a55e3fe492fb4e187eda512f41a753b93b2d4ebd92c63936ff7053e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of()), false, new Iface_Heritage());
 
         private Data() {
         }
@@ -60,8 +60,8 @@ public final class Iface_ {
     static final class Canonical {
         /// The canonical form of [Iface].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Iface interface sealed=no
+        javafile-facts-canonical 8
+        type p.Iface interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -74,9 +74,10 @@ public final class Iface_ {
         member method public overridable size() -> int throws -
         member method public static empty() -> p.Iface throws -
         sam run() -> void throws -
-        inherit method public abstract p.Iface run() -> void throws - erased () overrides -
-        inherit method public default p.Iface size() -> int throws - erased () overrides -
-        inherit method public static p.Iface empty() -> p.Iface throws - erased () overrides -
+        inherit field public p.Iface LIMIT
+        inherit field public p.Iface NAME
+        inherit method run() erased () overrides - by interface abstract p.Iface () -> void throws -
+        inherit method size() erased () overrides - by interface default p.Iface () -> int throws -
         table abstract run()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); size(); toString(); wait(); wait(long); wait(long, int)
         table static empty()

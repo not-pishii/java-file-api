@@ -32,7 +32,7 @@ import p.Disjoint;
 ///
 /// A generated class extends or implements [Disjoint] by the proof its metamodel starts, with the stages of `Disjoint_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Disjoint.class, fingerprint = "64fc0853671b06ceb7d528ec5bd039f4e24b625331480fa149154a3bf00334d1", complete = true, format = 13)
+@GeneratedMetamodel(of = Disjoint.class, fingerprint = "28d6ef5eee7d1fbedb6fac80e2eecc80965d32e250b7457ff497de6a4904cb1b", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Disjoint_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Disjoint] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "64fc0853671b06ceb7d528ec5bd039f4e24b625331480fa149154a3bf00334d1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.SqlB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Disjoint_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "28d6ef5eee7d1fbedb6fac80e2eecc80965d32e250b7457ff497de6a4904cb1b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.SqlB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Disjoint_Heritage());
 
         private Data() {
         }
@@ -54,8 +54,8 @@ public final class Disjoint_ {
     static final class Canonical {
         /// The canonical form of [Disjoint].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Disjoint interface sealed=no
+        javafile-facts-canonical 8
+        type p.Disjoint interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces p.IoA; p.SqlB
@@ -63,7 +63,7 @@ public final class Disjoint_ {
         enum -
         members declared-accessible
         sam m() -> void throws -
-        inherit method public abstract p.SqlB m() -> void throws java.sql.SQLException erased () overrides p.IoA
+        inherit method m() erased () overrides - by interface abstract p.IoA () -> void throws java.io.IOException | interface abstract p.SqlB () -> void throws java.sql.SQLException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

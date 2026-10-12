@@ -53,7 +53,7 @@ import p.Box;
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "d8126ca3995b5fbc5fc59fdfbb4a01b691118d2aa317db08324a20d2ab22b7e7", complete = true, format = 13)
+@GeneratedMetamodel(of = Box.class, fingerprint = "7cd8ff176d753e8c7c6c834a1669b42dc9b37ef58c464bc22156fbaa7e5712a2", complete = true, format = 14)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -65,7 +65,7 @@ public final class Box_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Box] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "d8126ca3995b5fbc5fc59fdfbb4a01b691118d2aa317db08324a20d2ab22b7e7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), false, new Box_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "7cd8ff176d753e8c7c6c834a1669b42dc9b37ef58c464bc22156fbaa7e5712a2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), false, new Box_Heritage());
 
         private Data() {
         }
@@ -76,8 +76,8 @@ public final class Box_<T> {
     static final class Canonical {
         /// The canonical form of [Box].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Box open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Box open-class sealed=no nesting=top
         tparams #0
         superclasses java.lang.Object
         interfaces -
@@ -104,33 +104,37 @@ public final class Box_<T> {
         member method public overridable toArray(#0[]) -> #0[] throws -
         member method public static ofString() -> p.Box<java.lang.String> throws -
         member method public static size(p.Box<?>) -> int throws -
-        inherit ctor public (#0) throws -
-        inherit ctor public () throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Box addAll(java.util.Collection<? extends #0>) -> void throws - erased (java.util.Collection) overrides -
-        inherit method public concrete p.Box asList() -> java.util.List<#0> throws - erased () overrides -
-        inherit method public concrete p.Box drainTo(java.util.Collection<? super #0>) -> void throws - erased (java.util.Collection) overrides -
-        inherit method public concrete p.Box get() -> #0 throws - erased () overrides -
-        inherit method public concrete p.Box ints() -> int[] throws - erased () overrides -
-        inherit method public concrete p.Box nested() -> p.Box<p.Box<#0>> throws - erased () overrides -
-        inherit method public concrete p.Box raw(java.util.Map) -> java.util.List throws - erased (java.util.Map) overrides -
-        inherit method public concrete p.Box rawSelf() -> p.Box throws - erased () overrides -
-        inherit method public concrete p.Box sameAs(p.Box<?>) -> boolean throws - erased (p.Box) overrides -
-        inherit method public concrete p.Box self() -> p.Box<#0> throws - erased () overrides -
-        inherit method public concrete p.Box set(#0) -> void throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Box toArray(#0[]) -> #0[] throws - erased (java.lang.Object[]) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Box ofString() -> p.Box<java.lang.String> throws - erased () overrides -
-        inherit method public static p.Box size(p.Box<?>) -> int throws - erased (p.Box) overrides -
+        inherit ctor Box(#0) public (#0) throws -
+        inherit ctor Box() public () throws -
+        inherit field public p.Box NAME
+        inherit field public p.Box count
+        inherit field public p.Box initial
+        inherit field public p.Box value
+        inherit method addAll(java.util.Collection) erased (java.util.Collection) overrides - by class public concrete p.Box (java.util.Collection<? extends #0>) -> void throws -
+        inherit method asList() erased () overrides - by class public concrete p.Box () -> java.util.List<#0> throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method drainTo(java.util.Collection) erased (java.util.Collection) overrides - by class public concrete p.Box (java.util.Collection<? super #0>) -> void throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method get() erased () overrides - by class public concrete p.Box () -> #0 throws -
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method ints() erased () overrides - by class public concrete p.Box () -> int[] throws -
+        inherit method nested() erased () overrides - by class public concrete p.Box () -> p.Box<p.Box<#0>> throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method ofString() erased () overrides - by class public static p.Box () -> p.Box<java.lang.String> throws -
+        inherit method raw(java.util.Map) erased (java.util.Map) overrides - by class public concrete p.Box (java.util.Map) -> java.util.List throws -
+        inherit method rawSelf() erased () overrides - by class public concrete p.Box () -> p.Box throws -
+        inherit method sameAs(p.Box) erased (p.Box) overrides - by class public concrete p.Box (p.Box<?>) -> boolean throws -
+        inherit method self() erased () overrides - by class public concrete p.Box () -> p.Box<#0> throws -
+        inherit method set(#0) erased (java.lang.Object) overrides - by class public concrete p.Box (#0) -> void throws -
+        inherit method size(p.Box) erased (p.Box) overrides - by class public static p.Box (p.Box<?>) -> int throws -
+        inherit method toArray(#0[]) erased (java.lang.Object[]) overrides - by class public concrete p.Box (#0[]) -> #0[] throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete addAll(java.util.Collection); asList(); clone(); drainTo(java.util.Collection); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); ints(); nested(); notify(); notifyAll(); raw(java.util.Map); rawSelf(); sameAs(p.Box); self(); set(#0); toArray(#0[]); toString(); wait(); wait(long); wait(long, int)
         table static ofString(); size(p.Box)

@@ -48,7 +48,7 @@ import p.Covariant;
 ///
 /// A generated class extends or implements [Covariant] by the proof its metamodel starts, with the stages of `Covariant_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Covariant.class, fingerprint = "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", complete = true, format = 13)
+@GeneratedMetamodel(of = Covariant.class, fingerprint = "25d06f9eeda24b71c5824902dd63298c716faaa74f4a663876a973e6360a794a", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -59,7 +59,7 @@ public final class Covariant_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Covariant] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Covariant_"), "2f9c7ea0c0322fb34a81659540a31206e3fcde67b9ae8e18f6e86d1198429019", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Covariant"), List.of(), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenApi"), ClassDesc.of("p.PubApi")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Covariant"))), false, new Covariant_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Covariant_"), "25d06f9eeda24b71c5824902dd63298c716faaa74f4a663876a973e6360a794a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Covariant"), List.of(), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenApi"), ClassDesc.of("p.PubApi")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Covariant"))), false, new Covariant_Heritage());
 
         private Data() {
         }
@@ -70,8 +70,8 @@ public final class Covariant_ {
     static final class Canonical {
         /// The canonical form of [Covariant].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Covariant open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Covariant open-class sealed=no nesting=top
         tparams -
         superclasses p.Near; p.Far; java.lang.Object
         interfaces p.HiddenApi; p.PubApi
@@ -97,33 +97,39 @@ public final class Covariant_ {
         member method public overridable set(java.lang.String) -> void throws -
         member method public static sfar() -> java.lang.String throws -
         member method public static snear() -> java.lang.String throws -
-        inherit ctor public () throws -
-        inherit method package concrete p.Far pack() -> void throws - erased () overrides -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method protected concrete p.Far prot() -> void throws - erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Covariant api() -> java.lang.String throws - erased () overrides p.HiddenApi
-        inherit method public concrete p.Covariant pub() -> java.lang.String throws - erased () overrides p.PubApi
-        inherit method public concrete p.Covariant self() -> p.Covariant throws - erased () overrides p.Far
-        inherit method public concrete p.Far <^0> pick(^0) -> ^0 throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Far get() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Far redeclared() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Far set(java.lang.String) -> void throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Near near() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Near overridden() -> java.lang.String throws - erased () overrides p.Far
-        inherit method public default p.HiddenApi dflt() -> java.lang.String throws - erased () overrides -
-        inherit method public default p.PubApi beyond() -> java.lang.String throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Far sfar() -> java.lang.String throws - erased () overrides -
-        inherit method public static p.Near snear() -> java.lang.String throws - erased () overrides -
+        inherit ctor Covariant() public () throws -
+        inherit field public p.Far FAR
+        inherit field public p.Far HID
+        inherit field public p.Far counter
+        inherit field public p.Far item
+        inherit field public p.HiddenApi CONST
+        inherit field public p.Near HID
+        inherit method api() erased () overrides p.HiddenApi by class public concrete p.Covariant () -> java.lang.String throws -
+        inherit method beyond() erased () overrides - by interface default p.PubApi () -> java.lang.String throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method dflt() erased () overrides - by interface default p.HiddenApi () -> java.lang.String throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method get() erased () overrides - by class public concrete p.Far () -> java.lang.String throws -
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method near() erased () overrides - by class public concrete p.Near () -> java.lang.String throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method overridden() erased () overrides p.Far by class public concrete p.Near () -> java.lang.String throws -
+        inherit method pack() erased () overrides - by class package concrete p.Far () -> void throws -
+        inherit method pick(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Far <^0> (^0) -> ^0 throws -
+        inherit method prot() erased () overrides - by class protected concrete p.Far () -> void throws -
+        inherit method pub() erased () overrides p.PubApi by class public concrete p.Covariant () -> java.lang.String throws -
+        inherit method redeclared() erased () overrides - by class public concrete p.Far () -> java.lang.String throws -
+        inherit method self() erased () overrides p.Far by class public concrete p.Covariant () -> p.Covariant throws -
+        inherit method set(java.lang.String) erased (java.lang.Object) overrides - by class public concrete p.Far (java.lang.String) -> void throws -
+        inherit method sfar() erased () overrides - by class public static p.Far () -> java.lang.String throws -
+        inherit method snear() erased () overrides - by class public static p.Near () -> java.lang.String throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete api(); beyond(); clone(); dflt(); equals(java.lang.Object); finalize(); get(); getClass(); hashCode(); near(); notify(); notifyAll(); overridden(); pack(); pick(java.lang.Object); prot(); pub(); redeclared(); self(); set(java.lang.String); toString(); wait(); wait(long); wait(long, int)
         table static sfar(); snear()

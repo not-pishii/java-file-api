@@ -32,7 +32,7 @@ public final class Shape_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [p.Shape] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(), List.of());
+        static final Told HERITAGE = new Told(List.of(), List.of(), List.of());
 
         private Held() {
         }

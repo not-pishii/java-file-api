@@ -2,7 +2,6 @@ package gen.facts.p;
 
 import gen.facts.p.Spread_.Canonical;
 import gen.facts.p.Spread_.Data;
-import gen.facts.p.Spread_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -35,11 +34,11 @@ import p.Spread;
 ///
 /// A member [Spread] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// A generated class extends or implements [Spread] by the proof its metamodel starts, with the stages of `Spread_Heritage`.
+/// No generated class extends or implements [Spread]: its abstract method accept(#0&#91;&#93;) is of variable arity, and a generated method is not yet.
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "701da00332ad92ef40fedd84f263e3f03716ce29628699579a75307c9890f4da", complete = true, format = 13)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "9a6276a55891cb65da6e2f568e7e76371d9d43b6ded4bbad02459052eab22320", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +49,7 @@ public final class Spread_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Spread] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "701da00332ad92ef40fedd84f263e3f03716ce29628699579a75307c9890f4da", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Spread_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "9a6276a55891cb65da6e2f568e7e76371d9d43b6ded4bbad02459052eab22320", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Spread_Heritage());
 
         private Data() {
         }
@@ -61,8 +60,8 @@ public final class Spread_<T> {
     static final class Canonical {
         /// The canonical form of [Spread].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Spread interface sealed=no
+        javafile-facts-canonical 8
+        type p.Spread interface sealed=no nesting=top
         tparams #0
         superclasses -
         interfaces -
@@ -71,7 +70,7 @@ public final class Spread_<T> {
         members declared-accessible
         member method public abstract accept(#0[]) -> void throws -
         sam accept(#0[]) -> void throws -
-        inherit method public abstract p.Spread accept(#0...) -> void throws - erased (java.lang.Object[]) overrides -
+        inherit method accept(#0[]) erased (java.lang.Object[]) overrides - by interface abstract p.Spread (#0...) -> void throws -
         table abstract accept(#0[])
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
@@ -101,14 +100,5 @@ public final class Spread_<T> {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
         this.accept_TArray = UnsafeFacts.voidMethod(token, "accept", UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
         this.sam = UnsafeFacts.voidSam(accept_TArray);
-    }
-
-    /// Starts the proof that a class being declared implements [Spread]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
-    ///
-    /// @param self the token of the class being declared
-    /// @param <Self> the class being declared
-    /// @return the proof, or the stage of its first step
-    public <Self> Implement<T, Self> implement(RefToken<Self> self) {
-        return new Spread_Heritage().implement(this.token, self);
     }
 }

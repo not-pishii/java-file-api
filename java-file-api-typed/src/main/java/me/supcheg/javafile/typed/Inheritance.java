@@ -108,8 +108,7 @@ final class Inheritance {
                 throw new IllegalArgumentException(owner + " cannot have the supertype " + token
                         + ": its metamodel tells no heritage — the type cannot be extended, or the"
                         + " metamodel is not a full one");
-            case Heritage.Told told ->
-                new Supertype(token, told.applied(shape.typeParameters(), arguments(owner, token)));
+            case Heritage.Told told -> new Supertype(token, told.applied(arguments(owner, token)));
         };
     }
 
@@ -215,9 +214,11 @@ final class Inheritance {
 
     private static Stream<Entry> entries(Supertype supertype) {
         List<ClassDesc> erasures = supertype.token().argumentErasures();
-        return supertype.told().methods().stream()
-                .map(method ->
-                        new Entry(supertype.token(), method, method.signature().instantiate(erasures)));
+        return supertype.told().methods().stream().flatMap(method -> {
+            MethodSignature signature = method.signature().instantiate(erasures);
+            return method.declarations().stream()
+                    .map(declared -> new Entry(supertype.token(), new Member(method, declared), signature));
+        });
     }
 
     /// The methods of one signature the class inherits: not the one another overrides, and one
@@ -245,7 +246,7 @@ final class Inheritance {
                         + ": one is static and the other an instance method of the same signature, and no"
                         + " method of the class makes them agree (JLS 8.4.8.1, 8.4.8.2)");
             }
-            if (!first.method().params().equals(other.method().params())) {
+            if (!first.method().sameParameters(other.method())) {
                 throw new IllegalArgumentException(owner + " cannot inherit both " + first + " and " + other
                         + ": name clash, both erase to " + group.signature()
                         + " and neither overrides the other (JLS 8.4.8.3)");
@@ -319,7 +320,7 @@ final class Inheritance {
     ///
     /// @param token the supertype
     /// @param told its heritage, in terms of the type arguments of `token`
-    record Supertype(DeclaredToken<?> token, Heritage.Told told) {
+    record Supertype(DeclaredToken<?> token, Heritage.Applied told) {
 
         /// The methods the type has, as a member of its own, under a signature.
         ///
@@ -330,19 +331,79 @@ final class Inheritance {
         }
     }
 
+    /// One declaration of a method of a heritage, with what holds of every declaration the supertype
+    /// has under its signature.
+    ///
+    /// @param group the methods the supertype has under the signature
+    /// @param declared the declaration, one of those of `group`
+    record Member(Heritage.Method<Heritage.Inherited> group, Heritage.Inherited declared) {
+
+        Heritage.Dispatch dispatch() {
+            return declared.by().dispatch();
+        }
+
+        Heritage.Visibility visibility() {
+            return declared.by().visibility();
+        }
+
+        ClassDesc declaredBy() {
+            return declared.by().type();
+        }
+
+        Set<List<ClassDesc>> erasures() {
+            return group.erasures();
+        }
+
+        List<ClassDesc> overrides() {
+            return group.overrides();
+        }
+
+        me.supcheg.javafile.facts.MethodTableTemplate.Signature signature() {
+            return group.signature();
+        }
+
+        /// Whether the two methods, which erase alike, have the same parameter types: two generic
+        /// methods if they are told alike by the positions of their type parameters.
+        boolean sameParameters(Member other) {
+            return switch (declared) {
+                case Heritage.Plain plain ->
+                    other.declared() instanceof Heritage.Plain otherPlain
+                            && plain.params().equals(otherPlain.params());
+                case Heritage.Generic(Heritage.Declaration told) ->
+                    other.declared() instanceof Heritage.Generic(Heritage.Declaration otherTold)
+                            && told.typeParams().equals(otherTold.typeParams())
+                            && told.params().equals(otherTold.params());
+            };
+        }
+
+        /// What tells the result of the method apart from that of another of its signature.
+        Object result() {
+            return switch (declared) {
+                case Heritage.Plain plain -> plain.result();
+                case Heritage.Generic(Heritage.Declaration told) -> told.result();
+            };
+        }
+    }
+
     /// A method a supertype has, as a member the class inherits.
     ///
     /// @param through the supertype of the class that has the method
     /// @param method the method, in terms of the type arguments of `through`
     /// @param signature the erased signature of the method in the class
-    record Entry(DeclaredToken<?> through, Heritage.Method method, MethodSignature signature) {
+    record Entry(DeclaredToken<?> through, Member method, MethodSignature signature) {
 
         boolean isStatic() {
-            return method.dispatch() == Heritage.Dispatch.STATIC;
+            return switch (method.dispatch()) {
+                case STATIC -> true;
+                case ABSTRACT, DEFAULT, CONCRETE, FINAL -> false;
+            };
         }
 
         boolean isAbstract() {
-            return method.dispatch() == Heritage.Dispatch.ABSTRACT;
+            return switch (method.dispatch()) {
+                case ABSTRACT -> true;
+                case STATIC, DEFAULT, CONCRETE, FINAL -> false;
+            };
         }
 
         /// How the method differs from what `fact` tells of a method of this signature: its
@@ -361,19 +422,23 @@ final class Inheritance {
         Optional<String> differsFrom(Invocable fact) {
             List<TypeRef> params =
                     fact.params().stream().<TypeRef>map(TypeToken::typeRef).toList();
-            Heritage.Result result = fact.resultType()
-                    .<Heritage.Result>map(type -> new Heritage.Result.Of(type.typeRef()))
-                    .orElseGet(Heritage.Result.Nothing::new);
+            Heritage.Result<TypeRef> result = fact.resultType()
+                    .<Heritage.Result<TypeRef>>map(type -> new Heritage.Result.Of<>(type.typeRef()))
+                    .orElseGet(Heritage.Result::nothing);
             Set<TypeRef> thrown = fact.traits().throwsTypes().stream()
                     .<TypeRef>map(TypeToken::typeRef)
                     .collect(Collectors.toSet());
-            return !params.equals(method.params())
-                    ? Optional.of("its parameters are not those of the fact")
-                    : !result.equals(method.result())
-                            ? Optional.of("its result is not that of the fact")
-                            : !thrown.equals(Set.<TypeRef>copyOf(method.throwsTypes()))
-                                    ? Optional.of("its throws clause is not that of the fact")
-                                    : Optional.empty();
+            return switch (method.declared()) {
+                case Heritage.Generic _ -> Optional.of("it is generic, and the fact tells it with type arguments");
+                case Heritage.Plain plain ->
+                    !params.equals(plain.params())
+                            ? Optional.of("its parameters are not those of the fact")
+                            : !result.equals(plain.result())
+                                    ? Optional.of("its result is not that of the fact")
+                                    : !thrown.equals(Set.<TypeRef>copyOf(plain.throwsTypes()))
+                                            ? Optional.of("its throws clause is not that of the fact")
+                                            : Optional.empty();
+            };
         }
 
         /// Whether the method comes with a body the class would inherit.

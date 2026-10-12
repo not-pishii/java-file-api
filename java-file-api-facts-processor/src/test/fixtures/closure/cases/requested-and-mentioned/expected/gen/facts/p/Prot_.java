@@ -26,7 +26,7 @@ import p.Prot;
 ///
 /// `@Facts` does not ask for [Prot]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Prot.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Prot.class, fingerprint = "1c65046e3def0d510ae84b7d56a4bd8b703bf77e68affe8e58a242c07feae410", complete = false, format = 13)
+@GeneratedMetamodel(of = Prot.class, fingerprint = "8f3c021e64e5ee2f958780c1a3ad7bf635f3cc7084729a1f1fac95556844429f", complete = false, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Prot_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Prot] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Prot_"), "1c65046e3def0d510ae84b7d56a4bd8b703bf77e68affe8e58a242c07feae410", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Prot"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Prot"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Prot_"), "8f3c021e64e5ee2f958780c1a3ad7bf635f3cc7084729a1f1fac95556844429f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Prot"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Prot"))), List.of(), false);
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class Prot_ {
     static final class Canonical {
         /// The canonical form of [Prot].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Prot open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Prot open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -

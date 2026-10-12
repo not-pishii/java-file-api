@@ -37,7 +37,7 @@ public final class Empty_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Empty] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(), List.of());
+        static final Told HERITAGE = new Told(List.of(), List.of(), List.of());
 
         private Held() {
         }

@@ -52,33 +52,43 @@ class InheritanceTest {
     }
 
     /// An interface made by hand, with the methods it has as a member.
-    private static Supertype iface(ClassDesc desc, Heritage.Method... methods) {
+    @SafeVarargs
+    private static Supertype iface(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
         return new Supertype(
                 UnsafeFacts.interfaceToken(new ClassTypeRef(desc), MethodTable.EMPTY),
-                new Heritage.Told(List.of(methods), List.of()));
+                new Heritage.Applied(List.of(methods), List.of()));
     }
 
-    private static Heritage.Method m(Dispatch dispatch, ClassDesc declaredBy, ClassDesc... overrides) {
+    private static Heritage.Method<Heritage.Inherited> m(
+            Dispatch dispatch, ClassDesc declaredBy, ClassDesc... overrides) {
         return method(dispatch, declaredBy, "m", List.of(), List.of(), overrides);
     }
 
-    private static Heritage.Method method(
+    private static Heritage.Method<Heritage.Inherited> method(
             Dispatch dispatch,
             ClassDesc declaredBy,
             String name,
             List<TypeRef> params,
             List<ClassDesc> erasure,
             ClassDesc... overrides) {
-        return new Heritage.Method(
-                Heritage.Visibility.PUBLIC,
-                dispatch,
-                declaredBy,
+        Heritage.Declarer by =
+                switch (dispatch) {
+                    case ABSTRACT -> new Heritage.Declarer.OfInterface(declaredBy, Heritage.InterfaceMethod.ABSTRACT);
+                    case DEFAULT -> new Heritage.Declarer.OfInterface(declaredBy, Heritage.InterfaceMethod.DEFAULT);
+                    case CONCRETE ->
+                        new Heritage.Declarer.OfClass(
+                                declaredBy, Heritage.Visibility.PUBLIC, Heritage.ClassMethod.CONCRETE);
+                    case FINAL ->
+                        new Heritage.Declarer.OfClass(
+                                declaredBy, Heritage.Visibility.PUBLIC, Heritage.ClassMethod.FINAL);
+                    case STATIC ->
+                        new Heritage.Declarer.OfClass(
+                                declaredBy, Heritage.Visibility.PUBLIC, Heritage.ClassMethod.STATIC);
+                };
+        return new Heritage.Method<>(
                 Signature.of(name, erasure.stream().map(Param::fixed).toArray(Param[]::new)),
-                List.of(),
-                params,
-                Heritage.Arity.FIXED,
-                new Heritage.Result.Of(PrimitiveTypeRef.INT),
-                List.of(),
+                List.of(new Heritage.Plain(
+                        by, Heritage.Arity.FIXED, params, new Heritage.Result.Of<>(PrimitiveTypeRef.INT), List.of())),
                 Set.of(erasure),
                 List.of(overrides));
     }
@@ -94,7 +104,10 @@ class InheritanceTest {
         assertThat(inheritance.group(sig("toString"))).isPresent();
         assertThat(inheritance.group(sig("compareTo", ConstantDescs.CD_String))).hasValueSatisfying(group -> {
             assertThat(group.entries()).singleElement().matches(Inheritance.Entry::isAbstract);
-            assertThat(group.entries().getFirst().method().params()).containsExactly(Types.of(String.class));
+            assertThat(group.entries().getFirst().method().declared())
+                    .isInstanceOfSatisfying(
+                            Heritage.Plain.class,
+                            plain -> assertThat(plain.params()).containsExactly(Types.of(String.class)));
             assertThat(group.bodies()).isEmpty();
         });
         assertThat(inheritance.group(sig("compareTo", ConstantDescs.CD_Object))).isEmpty();

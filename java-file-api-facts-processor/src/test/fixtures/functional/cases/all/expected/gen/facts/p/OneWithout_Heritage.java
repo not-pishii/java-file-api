@@ -10,17 +10,20 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Steps;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.VoidImplementation0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import p.OneWithout;
 
@@ -48,13 +51,13 @@ public final class OneWithout_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [OneWithout] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.NoneB"), Signature.of("m"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of(ClassDesc.of("p.IoA")));
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("m"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.IoA"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of(new Fixed(Types.of(ClassDesc.of("java.io.IOException"))))), new Declaration(new OfInterface(ClassDesc.of("p.NoneB"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
     }
 
@@ -78,12 +81,12 @@ public final class OneWithout_Heritage implements Supplier<Told> {
             this.steps = steps;
         }
 
-        /// Takes how the class has the abstract method `m()`, declared in `NoneB`.
+        /// Takes how the class has the abstract method `m()`, declared in `IoA and NoneB`.
         ///
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, OneWithout> m(VoidImplementation0<Self> how) {
-            return this.steps.with(Signature.of("m"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

@@ -55,8 +55,8 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 7
-/// type java.util.List interface sealed=no
+/// javafile-facts-canonical 8
+/// type java.util.List interface sealed=no nesting=top
 /// tparams #0
 /// superclasses -
 /// interfaces java.lang.Iterable; java.util.Collection; java.util.SequencedCollection
@@ -98,10 +98,15 @@ import java.util.stream.Stream;
 /// sam apply(#0) -> #1 throws -
 /// ```
 ///
+/// The `type` line tells what a class that extends the type has to know of
+/// where it is declared ([Nesting]): `nesting=inner` of a class that is
+/// extended with an instance of the class it is nested in.
+///
 /// A type a class can extend or implement tells its heritage with its
-/// members ([TypeModel#heritage()]): a line per constructor and per method
-/// a class that extends or implements it inherits, see
-/// [#heritage(Heritage.Told, List)]. Like the method table, the lines are
+/// members ([TypeModel#heritage()]): a line per constructor, per signature
+/// of a method a class that extends or implements it inherits, and per
+/// field and member type whose name it would see, see
+/// [#heritage(Heritage.Told)]. Like the method table, the lines are
 /// what the type is, not what a fact says of it: they are in the
 /// fingerprint, and are not compared one by one ([Conformance]).
 public final class Canonical {
@@ -109,7 +114,9 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 7";
+    public static final String HEADER = "javafile-facts-canonical 8";
+
+    private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 
     private final String text;
     private final String fingerprint;
@@ -130,7 +137,12 @@ public final class Canonical {
                         Stream.of(
                                 HEADER,
                                 "type " + binaryName(model.desc()) + " " + kind(model.kind()) + " sealed="
-                                        + (model.sealed() ? "yes" : "no"),
+                                        + (model.sealed() ? "yes" : "no") + " nesting="
+                                        + switch (model.nesting()) {
+                                            case TOP_LEVEL -> "top";
+                                            case STATIC_MEMBER -> "static";
+                                            case INNER -> "inner";
+                                        },
                                 "tparams " + items(typeParams(model.typeParams(), "#", scope)),
                                 "superclasses "
                                         + items(model.superclasses().stream()
@@ -161,7 +173,7 @@ public final class Canonical {
                                         + throwsClause(sam.throwsTypes(), scope))
                                 .stream(),
                         switch (model.heritage()) {
-                            case Heritage.Told told -> heritage(told, model.typeParams()).stream();
+                            case Heritage.Told told -> heritage(told).stream();
                             case Heritage.Untold _ -> Stream.<String>empty();
                         },
                         Stream.of(
@@ -204,64 +216,104 @@ public final class Canonical {
         return text;
     }
 
-    /// The lines that tell a heritage, one per member, sorted: the
-    /// constructors and the methods a class that extends or implements the
-    /// type inherits or could clash with.
+    /// The lines that tell a heritage, sorted: one per constructor, per
+    /// signature of a method a class that extends or implements the type
+    /// inherits, has to implement or could clash with, and per field and
+    /// member type whose name such a class sees.
     ///
     /// ```
-    /// inherit ctor protected (#0, int...) throws java.io.IOException
-    /// inherit method public abstract p.Api size() -> int throws - erased () overrides -
-    /// inherit method public concrete p.Base add(#0) -> boolean throws - erased (java.lang.Object) overrides p.Api
-    /// inherit method public default p.Api <^0> to(^0[]) -> ^0 throws - erased (java.lang.Object[]) overrides -
+    /// inherit ctor Base(#0, int[]) protected (#0, int...) throws java.io.IOException
+    /// inherit field protected p.Base count
+    /// inherit method add(#0) erased (java.lang.Object) overrides p.I by class public final p.B (#0) -> int ...
+    /// inherit method run() erased () overrides - by class public abstract p.A () -> void throws - | ...
+    /// inherit method to(java.lang.Object[]) erased (java.lang.Object[]) overrides - by interface default ...
+    /// inherit type public p.Base Entry
     /// ```
     ///
-    /// A line tells who may name the member (`public`, `protected`,
-    /// `package`), and of a method what it is to a class that inherits it
-    /// (`abstract`, `default`, `concrete`, `final`, `static`), the type that
-    /// declares it, its signature and result as a member of the type, a
-    /// parameter of variable arity as `T...`, what it throws, the erasures
-    /// of its parameters as it and the methods it overrides declare them,
-    /// and the types that declare those.
+    /// A line of a method tells its signature as the method table has it, the
+    /// erasures of its parameters as the declarations and the methods they
+    /// override declare them, the types that declare those, and after `by`
+    /// every declaration the type has under the signature: declared by a
+    /// class, with who may name it (`public`, `protected`, `package`) and
+    /// what it is (`abstract`, `concrete`, `final`, `static`), or by an
+    /// interface, `abstract` or `default`; the type that declares it, its
+    /// parameters and result as a member of the type, a parameter of
+    /// variable arity as `T...`, and what it throws. A type parameter of the
+    /// type is `#0`, one of the member `^0`, by position.
     ///
     /// @param heritage the heritage
-    /// @param typeParams the type parameters of the type the heritage is of
     /// @return the lines, sorted
-    /// @throws IllegalArgumentException if the heritage mentions a type variable that is not declared
-    public static List<String> heritage(Heritage.Told heritage, List<TypeParam> typeParams) {
-        return Stream.concat(
-                        heritage.constructors().stream().map(constructor -> {
-                            Scope scope = new Scope(typeParams, constructor.typeParams());
-                            return "inherit ctor " + visibility(constructor.visibility()) + " "
-                                    + typeParamsPrefix(constructor.typeParams(), scope)
-                                            .strip()
-                                    + params(constructor.params(), constructor.arity(), scope)
-                                    + throwsClause(constructor.throwsTypes(), scope);
-                        }),
-                        heritage.methods().stream().map(method -> {
-                            Scope scope = new Scope(typeParams, method.typeParams());
-                            return "inherit method " + visibility(method.visibility()) + " "
-                                    + method.dispatch().name().toLowerCase(Locale.ROOT) + " "
-                                    + binaryName(method.declaredBy()) + " "
-                                    + typeParamsPrefix(method.typeParams(), scope) + method.name()
-                                    + params(method.params(), method.arity(), scope) + " -> "
-                                    + switch (method.result()) {
-                                        case Heritage.Result.Nothing _ -> "void";
-                                        case Heritage.Result.Of(TypeRef type) -> scope.type(type);
-                                    }
-                                    + throwsClause(method.throwsTypes(), scope) + " erased "
-                                    + items(method.erasures().stream()
-                                            .map(erasure -> erasure.stream()
-                                                    .map(Canonical::erasure)
-                                                    .collect(Collectors.joining(", ", "(", ")")))
-                                            .sorted()
-                                            .toList())
-                                    + " overrides "
-                                    + items(method.overrides().stream()
-                                            .map(Canonical::binaryName)
-                                            .toList());
+    /// @throws IllegalArgumentException if a fixed type of the heritage mentions a type variable
+    public static List<String> heritage(Heritage.Told heritage) {
+        return Stream.of(
+                        heritage.constructors().stream()
+                                .map(constructor -> "inherit ctor " + signature(constructor.signature()) + " "
+                                        + visibility(constructor.visibility()) + " "
+                                        + variables(constructor.typeParams())
+                                        + params(constructor.params(), constructor.arity())
+                                        + thrown(constructor.throwsTypes())),
+                        heritage.methods().stream()
+                                .map(method -> "inherit method " + signature(method.signature()) + " erased "
+                                        + items(method.erasures().stream()
+                                                .map(erasure -> erasure.stream()
+                                                        .map(Canonical::erasure)
+                                                        .collect(Collectors.joining(", ", "(", ")")))
+                                                .sorted()
+                                                .toList())
+                                        + " overrides "
+                                        + items(method.overrides().stream()
+                                                .map(Canonical::binaryName)
+                                                .toList())
+                                        + " by "
+                                        + method.declarations().stream()
+                                                .map(Canonical::declaration)
+                                                .collect(Collectors.joining(" | "))),
+                        heritage.named().stream().map(named -> switch (named) {
+                            case Heritage.Named.Field(
+                                    String name,
+                                    ClassDesc declaredBy,
+                                    Heritage.Visibility visibility) ->
+                                "inherit field " + visibility(visibility) + " " + binaryName(declaredBy) + " " + name;
+                            case Heritage.Named.MemberType(
+                                    String name,
+                                    ClassDesc declaredBy,
+                                    Heritage.Visibility visibility) ->
+                                "inherit type " + visibility(visibility) + " " + binaryName(declaredBy) + " " + name;
                         }))
+                .flatMap(lines -> lines)
                 .sorted()
                 .toList();
+    }
+
+    private static String declaration(Heritage.Declaration declaration) {
+        return switch (declaration.by()) {
+                    case Heritage.Declarer.OfClass(
+                            ClassDesc type,
+                            Heritage.Visibility visibility,
+                            Heritage.ClassMethod method) ->
+                        "class " + visibility(visibility) + " "
+                                + switch (method) {
+                                    case ABSTRACT -> "abstract";
+                                    case CONCRETE -> "concrete";
+                                    case FINAL -> "final";
+                                    case STATIC -> "static";
+                                }
+                                + " " + binaryName(type);
+                    case Heritage.Declarer.OfInterface(ClassDesc type, Heritage.InterfaceMethod method) ->
+                        "interface "
+                                + switch (method) {
+                                    case ABSTRACT -> "abstract";
+                                    case DEFAULT -> "default";
+                                }
+                                + " " + binaryName(type);
+                }
+                + " " + variables(declaration.typeParams())
+                + params(declaration.params(), declaration.arity()) + " -> "
+                + switch (declaration.result()) {
+                    case Heritage.Result.Nothing<Heritage.Type> _ -> "void";
+                    case Heritage.Result.Of<Heritage.Type>(Heritage.Type type) -> type(type);
+                }
+                + thrown(declaration.throwsTypes());
     }
 
     private static String visibility(Heritage.Visibility visibility) {
@@ -272,13 +324,60 @@ public final class Canonical {
         };
     }
 
+    /// The type parameters of a member of a heritage, each by its position, with its bounds.
+    private static String variables(List<Heritage.Variable> variables) {
+        return variables.isEmpty()
+                ? ""
+                : IntStream.range(0, variables.size())
+                        .mapToObj(i -> {
+                            List<Heritage.Type> bounds = variables.get(i).bounds();
+                            return "^" + i
+                                    + (bounds.isEmpty()
+                                            ? ""
+                                            : bounds.stream()
+                                                    .map(Canonical::type)
+                                                    .collect(Collectors.joining(" & ", " extends ", "")));
+                        })
+                        .collect(Collectors.joining(", ", "<", "> "));
+    }
+
     /// The parameters of a member of a heritage: the last of variable arity as `T...`.
-    private static String params(List<TypeRef> params, Heritage.Arity arity, Scope scope) {
-        String fixed = params(params, scope);
+    private static String params(List<Heritage.Type> params, Heritage.Arity arity) {
+        String fixed = params.stream().map(Canonical::type).collect(Collectors.joining(", ", "(", ")"));
         return switch (arity) {
             case FIXED -> fixed;
             case VARIABLE -> fixed.substring(0, fixed.length() - "[])".length()) + "...)";
         };
+    }
+
+    private static String thrown(List<Heritage.Type> throwsTypes) {
+        return " throws "
+                + (throwsTypes.isEmpty()
+                        ? "-"
+                        : throwsTypes.stream().map(Canonical::type).sorted().collect(Collectors.joining(", ")));
+    }
+
+    /// A type of a heritage: its type parameters by position, as [Scope] writes those of a member model.
+    private static String type(Heritage.Type type) {
+        return switch (type) {
+            case Heritage.Type.Fixed(TypeRef fixed) -> NO_VARIABLES.type(fixed);
+            case Heritage.Type.OfType(int index) -> "#" + index;
+            case Heritage.Type.OfMember(int index) -> "^" + index;
+            case Heritage.Type.Array(Heritage.Type component) -> type(component) + "[]";
+            case Heritage.Type.Parameterized(ClassDesc raw, List<Heritage.Argument> arguments) ->
+                arguments.stream()
+                        .map(argument -> switch (argument) {
+                            case Heritage.Argument.Exact(Heritage.Type exact) -> type(exact);
+                            case Heritage.Argument.Extends(Heritage.Type bound) -> "? extends " + type(bound);
+                            case Heritage.Argument.Super(Heritage.Type bound) -> "? super " + type(bound);
+                            case Heritage.Argument.Unbounded _ -> "?";
+                        })
+                        .collect(Collectors.joining(", ", binaryName(raw) + "<", ">"));
+        };
+    }
+
+    private static String signature(MethodTableTemplate.Signature signature) {
+        return table(List.of(signature)).getFirst();
     }
 
     private static String member(MemberModel member, List<TypeParam> typeTypeParams) {

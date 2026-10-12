@@ -135,8 +135,8 @@ public final class Versions {
                 .withMessageContaining(
                         """
                           changed: type
-                            generated against: p.Svc open-class sealed=no
-                            target: p.Svc abstract-class sealed=no
+                            generated against: p.Svc open-class sealed=no nesting=top
+                            target: p.Svc abstract-class sealed=no nesting=top
                         """);
     }
 
@@ -371,8 +371,8 @@ public final class Versions {
                 .isThrownBy(() -> typed.against("final-dep").render(String_.TOKEN, box.token, b -> literal("a")))
                 .withMessageContaining("metamodel gen.facts.p.Dep_ does not match p.Dep on the target classpath:\n"
                         + "  changed: type\n"
-                        + "    generated against: p.Dep open-class sealed=no\n"
-                        + "    target: p.Dep final-class sealed=no\n");
+                        + "    generated against: p.Dep open-class sealed=no nesting=top\n"
+                        + "    target: p.Dep final-class sealed=no nesting=top\n");
     }
 
     public static void anUnverifiedClasspathRendersOfAMetamodelWhateverTheVersion(Typed typed) {

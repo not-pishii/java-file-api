@@ -35,7 +35,7 @@ import p.PObj;
 ///
 /// A generated class extends or implements [PObj] by the proof its metamodel starts, with the stages of `PObj_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PObj.class, fingerprint = "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", complete = true, format = 13)
+@GeneratedMetamodel(of = PObj.class, fingerprint = "79ec630fd01f5c69a7e4cb31924bcd319f669cf0b14dc58a51dbcec01227be57", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class PObj_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PObj] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PObj_"), "d22ffa3e8a8253c14a5fc606ea0d67ed31799f8dc8436b5926218b8af00a8ff2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PObj"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PObj_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PObj_"), "79ec630fd01f5c69a7e4cb31924bcd319f669cf0b14dc58a51dbcec01227be57", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PObj"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PObj_Heritage());
 
         private Data() {
         }
@@ -57,8 +57,8 @@ public final class PObj_ {
     static final class Canonical {
         /// The canonical form of [PObj].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.PObj interface sealed=no
+        javafile-facts-canonical 8
+        type p.PObj interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -67,7 +67,7 @@ public final class PObj_ {
         members declared-accessible
         member method public abstract get() -> java.lang.Object throws -
         sam get() -> java.lang.Object throws -
-        inherit method public abstract p.PObj get() -> java.lang.Object throws - erased () overrides -
+        inherit method get() erased () overrides - by interface abstract p.PObj () -> java.lang.Object throws -
         table abstract get()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

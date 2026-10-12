@@ -333,7 +333,7 @@ public final class FixtureRun {
                             .toList();
                     List<String> held =
                             switch (shape.heritage()) {
-                                case Heritage.Told heritage -> Canonical.heritage(heritage, shape.typeParameters());
+                                case Heritage.Told heritage -> Canonical.heritage(heritage);
                                 case Heritage.Untold _ -> List.of();
                             };
                     org.assertj.core.api.Assertions.assertThat(held)

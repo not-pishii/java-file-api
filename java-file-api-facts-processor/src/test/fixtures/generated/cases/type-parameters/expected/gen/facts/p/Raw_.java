@@ -30,7 +30,7 @@ import p.Raw;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [Raw] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Raw.class, fingerprint = "c678603fdc675a14cd3b0c5df94009214d6f835e24e35e96162112f8a02dd6bb", complete = false, format = 13)
+@GeneratedMetamodel(of = Raw.class, fingerprint = "cfdf30ed0d30110f308f1220ef91f7fef7e074526637fcae0614a80ec024ea00", complete = false, format = 14)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -42,7 +42,7 @@ public final class Raw_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Raw] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Raw_"), "c678603fdc675a14cd3b0c5df94009214d6f835e24e35e96162112f8a02dd6bb", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Raw"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Hidden"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Raw"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Raw_"), "cfdf30ed0d30110f308f1220ef91f7fef7e074526637fcae0614a80ec024ea00", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Raw"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Hidden"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Raw"))), List.of(), false);
 
         private Data() {
         }
@@ -53,8 +53,8 @@ public final class Raw_ {
     static final class Canonical {
         /// The canonical form of [Raw].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Raw open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Raw open-class sealed=no nesting=top
         tparams #0 extends p.Hidden
         superclasses java.lang.Object
         interfaces -

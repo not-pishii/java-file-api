@@ -30,6 +30,7 @@ class ModelTest {
         return new TypeModel(
                 desc,
                 DeclaredKind.INTERFACE,
+                Nesting.TOP_LEVEL,
                 List.of(),
                 List.of(),
                 List.of(),
@@ -56,6 +57,7 @@ class ModelTest {
         return new TypeModel(
                 ClassDesc.of("p.T"),
                 kind,
+                Nesting.TOP_LEVEL,
                 List.of(),
                 List.of(),
                 List.of(),

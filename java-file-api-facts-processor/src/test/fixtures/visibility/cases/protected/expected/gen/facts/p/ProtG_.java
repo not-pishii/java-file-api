@@ -55,7 +55,7 @@ import p.ProtG;
 ///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", complete = true, format = 13)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "ffa20984aa1073e8b0b2b6b0144f1e934b774d742fb602bb3cbd2c1471dc4b5f", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -66,7 +66,7 @@ public final class ProtG_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtG] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "46fd481128cc13123c29565cc7e97df536e21ac0a3a15a51c26efd68ef9cd8ad", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG"))), false, new ProtG_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "ffa20984aa1073e8b0b2b6b0144f1e934b774d742fb602bb3cbd2c1471dc4b5f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG"))), false, new ProtG_Heritage());
 
         private Data() {
         }
@@ -77,8 +77,8 @@ public final class ProtG_<T> {
     static final class Canonical {
         /// The canonical form of [ProtG].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.ProtG open-class sealed=no
+        javafile-facts-canonical 8
+        type p.ProtG open-class sealed=no nesting=top
         tparams #0
         superclasses p.ProtBase; java.lang.Object
         interfaces -
@@ -103,29 +103,36 @@ public final class ProtG_<T> {
         member method protected static adoptedStatic() -> void throws -
         member method protected static reset() -> void throws -
         member method public overridable pub() -> void throws -
-        inherit ctor protected (#0) throws java.io.IOException
-        inherit ctor public () throws -
-        inherit method package concrete p.ProtBase pkg() -> void throws - erased () overrides -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method protected concrete p.ProtBase adopted() -> void throws - erased () overrides -
-        inherit method protected concrete p.ProtG <^0> pick(^0, #0) -> ^0 throws - erased (java.lang.Object, java.lang.Object) overrides -
-        inherit method protected concrete p.ProtG get() -> #0 throws - erased () overrides -
-        inherit method protected concrete p.ProtG set(#0) -> void throws java.io.IOException erased (java.lang.Object) overrides -
-        inherit method protected final p.ProtG fixed() -> void throws - erased () overrides -
-        inherit method protected static p.ProtBase adoptedStatic() -> void throws - erased () overrides -
-        inherit method protected static p.ProtG <^0 extends java.lang.Number> spick(^0) -> ^0 throws - erased (java.lang.Number) overrides -
-        inherit method protected static p.ProtG reset() -> void throws - erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.ProtG pub() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor ProtG(#0) protected (#0) throws java.io.IOException
+        inherit ctor ProtG() public () throws -
+        inherit field protected p.ProtBase adoptedField
+        inherit field protected p.ProtG LIMIT
+        inherit field protected p.ProtG LOCK
+        inherit field protected p.ProtG NAME
+        inherit field protected p.ProtG count
+        inherit field protected p.ProtG fin
+        inherit field protected p.ProtG item
+        inherit method adopted() erased () overrides - by class protected concrete p.ProtBase () -> void throws -
+        inherit method adoptedStatic() erased () overrides - by class protected static p.ProtBase () -> void throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method fixed() erased () overrides - by class protected final p.ProtG () -> void throws -
+        inherit method get() erased () overrides - by class protected concrete p.ProtG () -> #0 throws -
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method pick(java.lang.Object, #0) erased (java.lang.Object, java.lang.Object) overrides - by class protected concrete p.ProtG <^0> (^0, #0) -> ^0 throws -
+        inherit method pkg() erased () overrides - by class package concrete p.ProtBase () -> void throws -
+        inherit method pub() erased () overrides - by class public concrete p.ProtG () -> void throws -
+        inherit method reset() erased () overrides - by class protected static p.ProtG () -> void throws -
+        inherit method set(#0) erased (java.lang.Object) overrides - by class protected concrete p.ProtG (#0) -> void throws java.io.IOException
+        inherit method spick(java.lang.Number) erased (java.lang.Number) overrides - by class protected static p.ProtG <^0 extends java.lang.Number> (^0) -> ^0 throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete adopted(); clone(); equals(java.lang.Object); finalize(); fixed(); get(); getClass(); hashCode(); notify(); notifyAll(); pick(java.lang.Object, #0); pkg(); pub(); set(#0); toString(); wait(); wait(long); wait(long, int)
         table static adoptedStatic(); reset(); spick(java.lang.Number)

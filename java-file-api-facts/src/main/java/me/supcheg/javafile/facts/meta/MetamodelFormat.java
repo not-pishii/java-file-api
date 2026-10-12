@@ -50,12 +50,19 @@ package me.supcheg.javafile.facts.meta;
 /// - 13: the entry of the class `X_Heritage` is of its package, for the
 ///   metamodel alone: a generator starts a proof by the method of the
 ///   metamodel, which gives the token of the type itself.
+/// - 14: a heritage is told by positions — a type parameter of the type and
+///   one of a member are apart, whatever they are called — and tells every
+///   declaration a type has under a signature, a method with package access
+///   the type does not inherit among them, and the names its fields and
+///   member types take in a subclass; not the `static` methods of an
+///   interface, which nothing inherits. A step reads its signature off the
+///   heritage. The canonical form tells whether a class is an inner one.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 13;
+    public static final int VERSION = 14;
 
     private MetamodelFormat() {}
 }

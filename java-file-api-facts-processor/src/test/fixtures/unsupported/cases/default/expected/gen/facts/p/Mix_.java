@@ -48,7 +48,7 @@ import p.Mix;
 ///
 /// A generated class extends or implements [Mix] by the proof its metamodel starts, with the stages of `Mix_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "6b415661b0bea738a1614fc32936a4c173cae87474e7e75050d30fce52aecada", complete = true, format = 13)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "8f4f201ff70550848a5cd7d7af42369b6fdeccab8f4e056adc41c930e0dc4290", complete = true, format = 14)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -60,7 +60,7 @@ public final class Mix_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mix] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "6b415661b0bea738a1614fc32936a4c173cae87474e7e75050d30fce52aecada", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))))), false, new Mix_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "8f4f201ff70550848a5cd7d7af42369b6fdeccab8f4e056adc41c930e0dc4290", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))))), false, new Mix_Heritage());
 
         private Data() {
         }
@@ -71,8 +71,8 @@ public final class Mix_ {
     static final class Canonical {
         /// The canonical form of [Mix].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Mix open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Mix open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -92,29 +92,30 @@ public final class Mix_ {
         member method public overridable plain() -> java.lang.String throws -
         member method public overridable raw() -> java.util.List throws -
         member method public overridable wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws -
-        inherit ctor public (java.util.Set<java.lang.String>) throws -
-        inherit ctor public <^0>(^0, int) throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Mix <^0 extends p.Marker> marked(^0) -> void throws - erased (p.Marker) overrides -
-        inherit method public concrete p.Mix <^0> id(^0) -> ^0 throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Mix array() -> java.util.List<java.lang.String>[] throws - erased () overrides -
-        inherit method public concrete p.Mix dollar() -> p.Dol$lar throws - erased () overrides -
-        inherit method public concrete p.Mix marker() -> p.Marker throws - erased () overrides -
-        inherit method public concrete p.Mix markers() -> java.util.List<p.Marker> throws - erased () overrides -
-        inherit method public concrete p.Mix names() -> java.util.List<java.lang.String> throws - erased () overrides -
-        inherit method public concrete p.Mix plain() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Mix raw() -> java.util.List throws - erased () overrides -
-        inherit method public concrete p.Mix wild(java.util.Map<?, ? extends java.lang.Number>) -> void throws - erased (java.util.Map) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor Mix(java.lang.Object, int) public <^0> (^0, int) throws -
+        inherit ctor Mix(java.util.Set) public (java.util.Set<java.lang.String>) throws -
+        inherit field public p.Mix field
+        inherit method array() erased () overrides - by class public concrete p.Mix () -> java.util.List<java.lang.String>[] throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method dollar() erased () overrides - by class public concrete p.Mix () -> p.Dol$lar throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method id(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Mix <^0> (^0) -> ^0 throws -
+        inherit method marked(p.Marker) erased (p.Marker) overrides - by class public concrete p.Mix <^0 extends p.Marker> (^0) -> void throws -
+        inherit method marker() erased () overrides - by class public concrete p.Mix () -> p.Marker throws -
+        inherit method markers() erased () overrides - by class public concrete p.Mix () -> java.util.List<p.Marker> throws -
+        inherit method names() erased () overrides - by class public concrete p.Mix () -> java.util.List<java.lang.String> throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method plain() erased () overrides - by class public concrete p.Mix () -> java.lang.String throws -
+        inherit method raw() erased () overrides - by class public concrete p.Mix () -> java.util.List throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
+        inherit method wild(java.util.Map) erased (java.util.Map) overrides - by class public concrete p.Mix (java.util.Map<?, ? extends java.lang.Number>) -> void throws -
         table abstract -
         table concrete array(); clone(); dollar(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); marked(p.Marker); marker(); markers(); names(); notify(); notifyAll(); plain(); raw(); toString(); wait(); wait(long); wait(long, int); wild(java.util.Map)
         table static -

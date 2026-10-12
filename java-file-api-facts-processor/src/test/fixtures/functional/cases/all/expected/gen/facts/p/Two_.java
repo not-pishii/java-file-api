@@ -32,7 +32,7 @@ import p.Two;
 ///
 /// A generated class extends or implements [Two] by the proof its metamodel starts, with the stages of `Two_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Two.class, fingerprint = "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", complete = true, format = 13)
+@GeneratedMetamodel(of = Two.class, fingerprint = "4cf32b579b3a27526931b4972b85943d357d66d3a9e51b2c23175c1ba75cc2b9", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Two_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Two] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Two_"), "11772105e5e1818baad85cddbd5fd239efaae42319b37e6f6e02eab022d9ac91", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Two"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("a"), Signature.of("b")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Two_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Two_"), "4cf32b579b3a27526931b4972b85943d357d66d3a9e51b2c23175c1ba75cc2b9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Two"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("a"), Signature.of("b")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Two_Heritage());
 
         private Data() {
         }
@@ -54,8 +54,8 @@ public final class Two_ {
     static final class Canonical {
         /// The canonical form of [Two].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Two interface sealed=no
+        javafile-facts-canonical 8
+        type p.Two interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -64,8 +64,8 @@ public final class Two_ {
         members declared-accessible
         member method public abstract a() -> void throws -
         member method public abstract b() -> void throws -
-        inherit method public abstract p.Two a() -> void throws - erased () overrides -
-        inherit method public abstract p.Two b() -> void throws - erased () overrides -
+        inherit method a() erased () overrides - by interface abstract p.Two () -> void throws -
+        inherit method b() erased () overrides - by interface abstract p.Two () -> void throws -
         table abstract a(); b()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

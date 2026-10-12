@@ -113,10 +113,35 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_HERITAGE_METHOD = ClassDesc.of(FACTS + ".Heritage$Method");
     private static final ClassDesc CD_HERITAGE_CONSTRUCTOR = ClassDesc.of(FACTS + ".Heritage$Constructor");
     private static final ClassDesc CD_HERITAGE_VISIBILITY = ClassDesc.of(FACTS + ".Heritage$Visibility");
-    private static final ClassDesc CD_HERITAGE_DISPATCH = ClassDesc.of(FACTS + ".Heritage$Dispatch");
     private static final ClassDesc CD_HERITAGE_ARITY = ClassDesc.of(FACTS + ".Heritage$Arity");
     private static final ClassDesc CD_HERITAGE_RESULT = ClassDesc.of(FACTS + ".Heritage$Result");
     private static final ClassDesc CD_HERITAGE_RESULT_OF = ClassDesc.of(FACTS + ".Heritage$Result$Of");
+    private static final ClassDesc CD_HERITAGE_DECLARATION = ClassDesc.of(FACTS + ".Heritage$Declaration");
+    private static final ClassDesc CD_HERITAGE_OF_CLASS = ClassDesc.of(FACTS + ".Heritage$Declarer$OfClass");
+    private static final ClassDesc CD_HERITAGE_OF_INTERFACE = ClassDesc.of(FACTS + ".Heritage$Declarer$OfInterface");
+    private static final ClassDesc CD_HERITAGE_CLASS_METHOD = ClassDesc.of(FACTS + ".Heritage$ClassMethod");
+    private static final ClassDesc CD_HERITAGE_INTERFACE_METHOD = ClassDesc.of(FACTS + ".Heritage$InterfaceMethod");
+    private static final ClassDesc CD_HERITAGE_VARIABLE = ClassDesc.of(FACTS + ".Heritage$Variable");
+    private static final ClassDesc CD_HERITAGE_NAMED = ClassDesc.of(FACTS + ".Heritage$Named");
+    private static final ClassDesc CD_HERITAGE_FIELD = ClassDesc.of(FACTS + ".Heritage$Named$Field");
+    private static final ClassDesc CD_HERITAGE_MEMBER_TYPE = ClassDesc.of(FACTS + ".Heritage$Named$MemberType");
+    private static final ClassDesc CD_HERITAGE_FIXED = ClassDesc.of(FACTS + ".Heritage$Type$Fixed");
+    private static final ClassDesc CD_HERITAGE_OF_TYPE = ClassDesc.of(FACTS + ".Heritage$Type$OfType");
+    private static final ClassDesc CD_HERITAGE_OF_MEMBER = ClassDesc.of(FACTS + ".Heritage$Type$OfMember");
+    private static final ClassDesc CD_HERITAGE_ARRAY = ClassDesc.of(FACTS + ".Heritage$Type$Array");
+    private static final ClassDesc CD_HERITAGE_PARAMETERIZED = ClassDesc.of(FACTS + ".Heritage$Type$Parameterized");
+    private static final ClassDesc CD_HERITAGE_EXACT = ClassDesc.of(FACTS + ".Heritage$Argument$Exact");
+    private static final ClassDesc CD_HERITAGE_EXTENDS = ClassDesc.of(FACTS + ".Heritage$Argument$Extends");
+    private static final ClassDesc CD_HERITAGE_SUPER = ClassDesc.of(FACTS + ".Heritage$Argument$Super");
+    private static final ClassDesc CD_HERITAGE_UNBOUNDED = ClassDesc.of(FACTS + ".Heritage$Argument$Unbounded");
+    private static final ClassDesc CD_STREAM = ClassDesc.of("java.util.stream.Stream");
+    private static final ClassDesc CD_COMPLETE = ClassDesc.of(FACTS, "Complete");
+    private static final ClassDesc CD_STEPS = ClassDesc.of(FACTS, "Steps");
+    private static final ClassDesc CD_DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
+
+    /// The greatest number of names the heritage lists in one method, so that none outgrows what a
+    /// method may hold.
+    private static final int NAMED_PART = 200;
     private static final ClassDesc CD_SIGNATURE = ClassDesc.of(FACTS + ".MethodTableTemplate$Signature");
     private static final ClassDesc CD_PARAM = ClassDesc.of(FACTS + ".MethodTableTemplate$Param");
     private static final ClassDesc CD_TOKEN_ARG = ClassDesc.of(FACTS, "TokenArg");
@@ -180,13 +205,7 @@ final class MetamodelEmitter {
             Set<String> taken,
             MetamodelDocs.About.Full about,
             Entry entry) {
-        return emit(
-                        metamodel,
-                        model,
-                        canonical,
-                        targets,
-                        Optional.of(new Full(plan, Optional.of(taken), Optional.of(entry))),
-                        about)
+        return emit(metamodel, model, canonical, targets, Optional.of(new Full.Real(plan, taken, entry)), about)
                 .file();
     }
 
@@ -223,13 +242,7 @@ final class MetamodelEmitter {
             MemberPlan probe,
             Targets targets,
             MetamodelDocs.About.Full about) {
-        Emitted emitted = emit(
-                metamodel,
-                model,
-                canonical,
-                targets,
-                Optional.of(new Full(probe, Optional.empty(), Optional.empty())),
-                about);
+        Emitted emitted = emit(metamodel, model, canonical, targets, Optional.of(new Full.Probe(probe)), about);
         return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render(FORMAT))
                 .filter(name -> !name.startsWith(MemberPlan.PROBE))
                 .filter(name -> !emitted.typeParameters().contains(name))
@@ -260,12 +273,42 @@ final class MetamodelEmitter {
         return ascii.toString();
     }
 
-    /// What a full metamodel has beyond a token-only one.
-    ///
-    /// @param plan the facts
-    /// @param taken the names no parameter may have; empty for the source [#takenNames] reads them off,
-    ///     where what is local has a name no member has
-    private record Full(MemberPlan plan, Optional<Set<String>> taken, Optional<Entry> entry) {}
+    /// What a full metamodel has beyond a token-only one: its facts, and whether it is the metamodel
+    /// itself or the source its names are read off.
+    private sealed interface Full permits Full.Probe, Full.Real {
+
+        /// The facts.
+        ///
+        /// @return the plan
+        MemberPlan plan();
+
+        /// The entry of the type, which the metamodel itself has.
+        ///
+        /// @return the entry; empty for the probe
+        default Optional<Entry> offer() {
+            return switch (this) {
+                case Real(MemberPlan _, Set<String> _, Entry entry) -> Optional.of(entry);
+                case Probe _ -> Optional.empty();
+            };
+        }
+
+        /// The source [#takenNames] reads the names off: what is local has a name no member has, and
+        /// there is no entry, which takes no name from the facts.
+        ///
+        /// @param plan every member that may get a fact
+        record Probe(MemberPlan plan) implements Full {}
+
+        /// The metamodel.
+        ///
+        /// @param plan the facts
+        /// @param taken the names no parameter may have
+        /// @param entry whether a generated class can extend or implement the type
+        record Real(MemberPlan plan, Set<String> taken, Entry entry) implements Full {
+            public Real {
+                taken = Set.copyOf(taken);
+            }
+        }
+    }
 
     /// A metamodel as written.
     ///
@@ -319,21 +362,26 @@ final class MetamodelEmitter {
         List<String> names = MetamodelNames.typeParameters(declared, typeNames);
         Map<String, String> renaming =
                 IntStream.range(0, declared.size()).boxed().collect(Collectors.toMap(declared::get, names::get));
-        List<String> witnesses = full.map(f -> f.taken()
-                        .map(taken -> MetamodelNames.witnesses(
+        List<String> witnesses = full.map(f -> switch (f) {
+                    case Full.Real(MemberPlan plan, Set<String> taken, Entry _) ->
+                        MetamodelNames.witnesses(
                                 names,
-                                Stream.concat(taken.stream(), f.plan().names().stream())
-                                        .collect(Collectors.toSet())))
-                        .orElseGet(() -> IntStream.range(0, names.size())
+                                Stream.concat(taken.stream(), plan.names().stream())
+                                        .collect(Collectors.toSet()));
+                    case Full.Probe _ ->
+                        IntStream.range(0, names.size())
                                 .mapToObj(i -> MemberPlan.PROBE + "c" + i)
-                                .toList()))
+                                .toList();
+                })
                 .orElseGet(() -> MetamodelNames.witnesses(names));
         Optional<MemberFacts.Facts> facts = full.map(f -> MemberFacts.of(
                 MemberFacts.Self.of(model.desc(), model.kind(), declared, names, witnesses),
                 targets,
-                f.taken()
-                        .<MemberFacts.Locals>map(taken -> new MemberFacts.Locals.Named(typeNames, taken))
-                        .orElseGet(MemberFacts.Locals.Probe::new),
+                switch (f) {
+                    case Full.Real(MemberPlan _, Set<String> taken, Entry _) ->
+                        new MemberFacts.Locals.Named(typeNames, taken);
+                    case Full.Probe _ -> new MemberFacts.Locals.Probe();
+                },
                 f.plan()));
         List<MemberFacts.Spec> specs = facts.map(MemberFacts.Facts::specs).orElse(List.of());
         boolean rawSignatures = full.map(f ->
@@ -352,7 +400,7 @@ final class MetamodelEmitter {
                             generics,
                             about,
                             full.map(Full::plan),
-                            full.flatMap(Full::entry)
+                            full.flatMap(Full::offer)
                                     .map(entry ->
                                             new MetamodelDocs.EntryOf(MetamodelNames.heritage(metamodel), entry))))
                     .withModifiers(Modifier.FINAL)
@@ -450,7 +498,7 @@ final class MetamodelEmitter {
                     });
                 }
             }
-            full.flatMap(Full::entry).ifPresent(entry -> {
+            full.flatMap(Full::offer).ifPresent(entry -> {
                 switch (entry) {
                     case Entry.Offered offered -> delegate(cb, metamodel, model, names, offered);
                     case Entry.Refused _ -> {}
@@ -661,6 +709,30 @@ final class MetamodelEmitter {
         };
     }
 
+    /// The entry the class of the heritage of a type can be written with: the one offered, unless the
+    /// renderer cannot name a class the stages mention — a type parameter of the type, which the stages
+    /// declare by its own name, obscures the first name of a qualified one. It is asked of the renderer
+    /// itself, by writing the class, so no list of names stands in for what is written.
+    ///
+    /// @param metamodel the metamodel class
+    /// @param model the type, read with its members
+    /// @param entry the entry of the type as its members tell
+    /// @return `entry`, or why the type has none after all
+    static Entry writable(ClassDesc metamodel, TypeModel model, Entry entry) {
+        return switch (entry) {
+            case Entry.Refused refused -> refused;
+            case Entry.Offered offered -> {
+                try {
+                    heritage(metamodel, model, offered).ifPresent(MetamodelEmitter::source);
+                    yield offered;
+                } catch (IllegalStateException unnameable) {
+                    yield new Entry.Refused("the steps of its proof cannot be written with its type parameters: "
+                            + unnameable.getMessage());
+                }
+            }
+        };
+    }
+
     /// The entry of a type as a method of its metamodel, `extend` or `implement`: it hands the token of the
     /// type to the entry of the class of the heritage, which has the stages.
     ///
@@ -712,10 +784,6 @@ final class MetamodelEmitter {
                                         Exprs.field("self")))));
     }
 
-    private static final ClassDesc CD_COMPLETE = ClassDesc.of(FACTS, "Complete");
-    private static final ClassDesc CD_STEPS = ClassDesc.of(FACTS, "Steps");
-    private static final ClassDesc CD_DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
-
     /// The entry of a type and its stages, in the class of its heritage.
     private static void entry(ClassBuilder cb, ClassDesc holder, TypeModel model, Entry.Offered offered) {
         boolean isInterface = model.kind() instanceof DeclaredKind.Interface;
@@ -737,6 +805,7 @@ final class MetamodelEmitter {
                                 .toList());
         TypeRef complete = Types.parameterized(CD_COMPLETE, self, type);
         TypeRef steps = Types.parameterized(CD_STEPS, self, type);
+        ClassDesc held = holder.nested(MetamodelNames.HELD);
         List<Entry.Step> all = offered.steps();
         // the stage that has taken `taken` steps, and what the step before it, or the entry, returns
         Function<Integer, ClassDesc> stageClass = taken -> holder.nested(taken == 0 ? stage : stage + taken);
@@ -777,15 +846,19 @@ final class MetamodelEmitter {
                                 after.apply(taken + 1),
                                 mb -> mb.withDoc(MetamodelDocs.step(step, taken + 1 == all.size()))
                                         .withModifiers(Modifier.PUBLIC)
-                                        .withParam("how", implementation(step.method(), self))
+                                        .withParam("how", implementation(step, self))
                                         .withBody(b -> b.return_(made.apply(
                                                 taken + 1,
                                                 Exprs.this_()
                                                         .field("steps")
                                                         .call(
                                                                 "with",
-                                                                signature(step.method()
-                                                                        .signature()),
+                                                                // the signature the heritage tells, not one
+                                                                // written again: the two cannot differ
+                                                                Exprs.staticField(held, MetamodelNames.HERITAGE)
+                                                                        .call("methods")
+                                                                        .call("get", Exprs.literal(step.index()))
+                                                                        .call("signature"),
                                                                 Exprs.field("how"))))));
             });
         });
@@ -793,16 +866,16 @@ final class MetamodelEmitter {
 
     /// The implementation a step takes: of exactly the parameters of its method, and of its result or a
     /// subtype. A primitive is typed by its marker, as in a fact.
-    private static TypeRef implementation(Heritage.Method method, TypeRef self) {
+    private static TypeRef implementation(Entry.Step method, TypeRef self) {
         Stream<TypeArg> result =
                 switch (method.result()) {
-                    case Heritage.Result.Nothing _ -> Stream.empty();
-                    case Heritage.Result.Of(TypeRef type) -> Stream.of(Types.extendsBound(phantom(type)));
+                    case Heritage.Result.Nothing<TypeRef> _ -> Stream.empty();
+                    case Heritage.Result.Of<TypeRef>(TypeRef type) -> Stream.of(Types.extendsBound(phantom(type)));
                 };
         String family =
                 switch (method.result()) {
-                            case Heritage.Result.Nothing _ -> "VoidImplementation";
-                            case Heritage.Result.Of _ -> "Implementation";
+                            case Heritage.Result.Nothing<TypeRef> _ -> "VoidImplementation";
+                            case Heritage.Result.Of<TypeRef> _ -> "Implementation";
                         }
                         + method.params().size();
         return new ParameterizedTypeRef(
@@ -829,6 +902,14 @@ final class MetamodelEmitter {
         List<String> constructors = IntStream.range(0, heritage.constructors().size())
                 .mapToObj(i -> "c" + i)
                 .toList();
+        List<List<Heritage.Named>> named = IntStream.iterate(
+                        0, from -> from < heritage.named().size(), from -> from + NAMED_PART)
+                .mapToObj(from -> heritage.named()
+                        .subList(
+                                from,
+                                Math.min(from + NAMED_PART, heritage.named().size())))
+                .toList();
+        TypeRef listOfNamed = Types.parameterized(CD_LIST, Types.of(CD_HERITAGE_NAMED));
         hc.withExactModifiers(Set.of(Modifier.STATIC, Modifier.FINAL))
                 .withField(
                         MetamodelNames.HERITAGE,
@@ -842,12 +923,25 @@ final class MetamodelEmitter {
                                                 .toList()),
                                         list(constructors.stream()
                                                 .<Expr>map(Exprs::call)
-                                                .toList()))))
+                                                .toList()),
+                                        switch (named.size()) {
+                                            case 0 -> list(List.of());
+                                            case 1 -> Exprs.call("n0");
+                                            default ->
+                                                Exprs.staticCall(
+                                                                CD_STREAM,
+                                                                "of",
+                                                                IntStream.range(0, named.size())
+                                                                        .<Expr>mapToObj(i -> Exprs.call("n" + i))
+                                                                        .toList())
+                                                        .call("flatMap", Exprs.methodRef(CD_LIST, "stream"))
+                                                        .call("toList");
+                                        })))
                 .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
         IntStream.range(0, methods.size())
                 .forEach(i -> hc.withMethod(
                         methods.get(i),
-                        Types.of(CD_HERITAGE_METHOD),
+                        Types.parameterized(CD_HERITAGE_METHOD, Types.of(CD_HERITAGE_DECLARATION)),
                         mb -> mb.withModifiers(Modifier.PRIVATE, Modifier.STATIC)
                                 .withBody(b ->
                                         b.return_(inherited(heritage.methods().get(i))))));
@@ -858,26 +952,22 @@ final class MetamodelEmitter {
                         mb -> mb.withModifiers(Modifier.PRIVATE, Modifier.STATIC)
                                 .withBody(b -> b.return_(
                                         inherited(heritage.constructors().get(i))))));
+        IntStream.range(0, named.size())
+                .forEach(i -> hc.withMethod(
+                        "n" + i,
+                        listOfNamed,
+                        mb -> mb.withModifiers(Modifier.PRIVATE, Modifier.STATIC)
+                                .withBody(b -> b.return_(list(named.get(i).stream()
+                                        .map(MetamodelEmitter::named)
+                                        .toList())))));
     }
 
-    private static Expr inherited(Heritage.Method method) {
-        return Exprs.new_(
+    private static Expr inherited(Heritage.Method<Heritage.Declaration> method) {
+        return Exprs.newDiamond(
                 CD_HERITAGE_METHOD,
-                Exprs.staticField(CD_HERITAGE_VISIBILITY, method.visibility().name()),
-                Exprs.staticField(CD_HERITAGE_DISPATCH, method.dispatch().name()),
-                classDesc(method.declaredBy()),
                 signature(method.signature()),
-                list(method.typeParams().stream()
-                        .map(MetamodelEmitter::typeParam)
-                        .toList()),
-                list(method.params().stream().map(MetamodelEmitter::typeRef).toList()),
-                Exprs.staticField(CD_HERITAGE_ARITY, method.arity().name()),
-                switch (method.result()) {
-                    case Heritage.Result.Nothing _ -> Exprs.staticField(CD_HERITAGE_RESULT, "NOTHING");
-                    case Heritage.Result.Of(TypeRef type) -> Exprs.new_(CD_HERITAGE_RESULT_OF, typeRef(type));
-                },
-                list(method.throwsTypes().stream()
-                        .map(MetamodelEmitter::typeRef)
+                list(method.declarations().stream()
+                        .map(MetamodelEmitter::declaration)
                         .toList()),
                 Exprs.staticCall(
                         CD_SET,
@@ -893,22 +983,98 @@ final class MetamodelEmitter {
                         .toList()));
     }
 
+    private static Expr declaration(Heritage.Declaration declaration) {
+        return Exprs.new_(
+                CD_HERITAGE_DECLARATION,
+                switch (declaration.by()) {
+                    case Heritage.Declarer.OfClass(
+                            ClassDesc type,
+                            Heritage.Visibility visibility,
+                            Heritage.ClassMethod method) ->
+                        Exprs.new_(
+                                CD_HERITAGE_OF_CLASS,
+                                classDesc(type),
+                                Exprs.staticField(CD_HERITAGE_VISIBILITY, visibility.name()),
+                                Exprs.staticField(CD_HERITAGE_CLASS_METHOD, method.name()));
+                    case Heritage.Declarer.OfInterface(ClassDesc type, Heritage.InterfaceMethod method) ->
+                        Exprs.new_(
+                                CD_HERITAGE_OF_INTERFACE,
+                                classDesc(type),
+                                Exprs.staticField(CD_HERITAGE_INTERFACE_METHOD, method.name()));
+                },
+                Exprs.staticField(CD_HERITAGE_ARITY, declaration.arity().name()),
+                variables(declaration.typeParams()),
+                told(declaration.params()),
+                switch (declaration.result()) {
+                    case Heritage.Result.Nothing<Heritage.Type> _ -> Exprs.staticCall(CD_HERITAGE_RESULT, "nothing");
+                    case Heritage.Result.Of<Heritage.Type>(Heritage.Type type) ->
+                        Exprs.newDiamond(CD_HERITAGE_RESULT_OF, told(type));
+                },
+                told(declaration.throwsTypes()));
+    }
+
     private static Expr inherited(Heritage.Constructor constructor) {
         return Exprs.new_(
                 CD_HERITAGE_CONSTRUCTOR,
                 Exprs.staticField(
                         CD_HERITAGE_VISIBILITY, constructor.visibility().name()),
                 signature(constructor.signature()),
-                list(constructor.typeParams().stream()
-                        .map(MetamodelEmitter::typeParam)
-                        .toList()),
-                list(constructor.params().stream()
-                        .map(MetamodelEmitter::typeRef)
-                        .toList()),
                 Exprs.staticField(CD_HERITAGE_ARITY, constructor.arity().name()),
-                list(constructor.throwsTypes().stream()
-                        .map(MetamodelEmitter::typeRef)
-                        .toList()));
+                variables(constructor.typeParams()),
+                told(constructor.params()),
+                told(constructor.throwsTypes()));
+    }
+
+    private static Expr named(Heritage.Named named) {
+        return switch (named) {
+            case Heritage.Named.Field(String name, ClassDesc declaredBy, Heritage.Visibility visibility) ->
+                Exprs.new_(
+                        CD_HERITAGE_FIELD,
+                        Exprs.literal(name),
+                        classDesc(declaredBy),
+                        Exprs.staticField(CD_HERITAGE_VISIBILITY, visibility.name()));
+            case Heritage.Named.MemberType(String name, ClassDesc declaredBy, Heritage.Visibility visibility) ->
+                Exprs.new_(
+                        CD_HERITAGE_MEMBER_TYPE,
+                        Exprs.literal(name),
+                        classDesc(declaredBy),
+                        Exprs.staticField(CD_HERITAGE_VISIBILITY, visibility.name()));
+        };
+    }
+
+    private static Expr variables(List<Heritage.Variable> variables) {
+        return list(variables.stream()
+                .map(variable -> Exprs.new_(CD_HERITAGE_VARIABLE, told(variable.bounds())))
+                .toList());
+    }
+
+    private static Expr told(List<Heritage.Type> types) {
+        return list(types.stream().map(MetamodelEmitter::told).toList());
+    }
+
+    /// A type of a heritage as an expression that makes it, in the normal form it is in.
+    private static Expr told(Heritage.Type type) {
+        return switch (type) {
+            case Heritage.Type.Fixed(TypeRef fixed) -> Exprs.new_(CD_HERITAGE_FIXED, typeRef(fixed));
+            case Heritage.Type.OfType(int index) -> Exprs.new_(CD_HERITAGE_OF_TYPE, Exprs.literal(index));
+            case Heritage.Type.OfMember(int index) -> Exprs.new_(CD_HERITAGE_OF_MEMBER, Exprs.literal(index));
+            case Heritage.Type.Array(Heritage.Type component) -> Exprs.new_(CD_HERITAGE_ARRAY, told(component));
+            case Heritage.Type.Parameterized(ClassDesc raw, List<Heritage.Argument> arguments) ->
+                Exprs.new_(
+                        CD_HERITAGE_PARAMETERIZED,
+                        classDesc(raw),
+                        list(arguments.stream()
+                                .map(argument -> switch (argument) {
+                                    case Heritage.Argument.Exact(Heritage.Type exact) ->
+                                        Exprs.new_(CD_HERITAGE_EXACT, told(exact));
+                                    case Heritage.Argument.Extends(Heritage.Type bound) ->
+                                        Exprs.new_(CD_HERITAGE_EXTENDS, told(bound));
+                                    case Heritage.Argument.Super(Heritage.Type bound) ->
+                                        Exprs.new_(CD_HERITAGE_SUPER, told(bound));
+                                    case Heritage.Argument.Unbounded _ -> Exprs.new_(CD_HERITAGE_UNBOUNDED);
+                                })
+                                .toList()));
+        };
     }
 
     private static Expr typeParam(TypeParam param) {

@@ -25,10 +25,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import javax.lang.model.element.TypeElement;
 import java.lang.constant.ClassDesc;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +44,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EntryTest {
 
     /// What the entry of a type comes to, and the type as a class that takes its steps is written by.
-    private record Read(Entry entry, boolean isInterface, List<String> typeParams) {}
+    ///
+    /// @param heritage what a class that names the type with its own type parameters inherits
+    private record Read(Entry entry, boolean isInterface, List<String> typeParams, Heritage.Applied heritage) {}
 
     private static Read read(String type, Path... classpath) {
         return Javac.plain().alone().classpath(classpath).inFirstRound(env -> {
@@ -53,8 +60,18 @@ class EntryTest {
                         case Translation.Unrepresentable<TypeModel> none ->
                             throw new IllegalStateException(none.toString());
                     };
+            Models models = new Models(env.getElementUtils(), env.getTypeUtils());
+            // every type a signature mentions is taken to have a metamodel, as in a closure that has them all
+            Targets targets = new Targets(
+                    models,
+                    model.members().stream()
+                            .flatMap(Mentions::of)
+                            .map(Models::binaryName)
+                            .distinct()
+                            .collect(Collectors.toMap(name -> name, name -> ClassDesc.of("gen", "Assumed_"))),
+                    Map.of());
             return new Read(
-                    Entry.of(element, model, env.getElementUtils()),
+                    Entry.of(model, MemberPlan.of(element, models, targets, Set.of()), env.getElementUtils()),
                     element.getKind().isInterface(),
                     model.typeParams().stream()
                             .map(param -> param.name()
@@ -64,12 +81,29 @@ class EntryTest {
                                                     + param.bounds().stream()
                                                             .map(EntryTest::java)
                                                             .collect(Collectors.joining(" & "))))
-                            .toList());
+                            .toList(),
+                    switch (model.heritage()) {
+                        case Heritage.Told told ->
+                            told.applied(model.typeParams().stream()
+                                    .<TypeRef>map(param -> new TypeVarRef(param.name()))
+                                    .toList());
+                        case Heritage.Untold _ -> new Heritage.Applied(List.of(), List.of());
+                    });
         });
     }
 
     /// A class that extends or implements a type with a method for each of `steps`.
     private static String probe(String type, Read read, List<Entry.Step> steps) {
+        return probe(
+                type,
+                read,
+                steps.stream()
+                        .map(step -> method(step.told().name(), step.params(), step.result(), ""))
+                        .toList());
+    }
+
+    /// A class that extends or implements a type, with `methods`.
+    private static String probe(String type, Read read, Collection<String> methods) {
         String declared = read.typeParams().isEmpty() ? "" : "<" + String.join(", ", read.typeParams()) + ">";
         String applied = read.typeParams().isEmpty()
                 ? ""
@@ -77,20 +111,23 @@ class EntryTest {
                         .map(param -> param.split(" ")[0])
                         .collect(Collectors.joining(", ", "<", ">"));
         return "class Probe" + declared + (read.isInterface() ? " implements " : " extends ") + type + applied + " {\n"
-                + steps.stream()
-                        .map(step -> "    public "
-                                + switch (step.method().result()) {
-                                    case Heritage.Result.Nothing _ -> "void";
-                                    case Heritage.Result.Of(TypeRef result) -> java(result);
-                                }
-                                + " " + step.method().name()
-                                + IntStream.range(0, step.method().params().size())
-                                        .mapToObj(
-                                                i -> java(step.method().params().get(i)) + " p" + i)
-                                        .collect(Collectors.joining(", ", "(", ")"))
-                                + " { throw new IllegalStateException(); }\n")
-                        .collect(Collectors.joining())
+                + String.join("", methods)
                 + "}\n";
+    }
+
+    /// A public method that throws, declared to throw `thrown`.
+    private static String method(String name, List<TypeRef> params, Heritage.Result<TypeRef> result, String thrown) {
+        return "    public "
+                + switch (result) {
+                    case Heritage.Result.Nothing<TypeRef> _ -> "void";
+                    case Heritage.Result.Of<TypeRef>(TypeRef type) -> java(type);
+                }
+                + " " + name
+                + IntStream.range(0, params.size())
+                        .mapToObj(i -> java(params.get(i)) + " p" + i)
+                        .collect(Collectors.joining(", ", "(", ")"))
+                + (thrown.isEmpty() ? "" : " throws " + thrown)
+                + " { throw new IllegalStateException(); }\n";
     }
 
     private static String java(TypeRef type) {
@@ -147,19 +184,214 @@ class EntryTest {
         assertThat(read.entry()).isInstanceOf(Entry.Offered.class);
         List<Entry.Step> steps = ((Entry.Offered) read.entry()).steps();
         // with every step the class compiles: there is no abstract method the steps do not tell
-        Compiled complete = Javac.plain().compile(probe(type, read, steps));
+        requireTheStepsAreWhatJavacAsksFor(type, read, Javac.plain());
+    }
+
+    /// With every step a class compiles: there is no abstract method the steps do not tell. Without any
+    /// one of them it does not: every step is of a method javac asks for.
+    private static void requireTheStepsAreWhatJavacAsksFor(String type, Read read, Javac javac) {
+        List<Entry.Step> steps = ((Entry.Offered) read.entry()).steps();
+        Compiled complete = javac.compile(probe(type, read, steps));
         assertThat(complete.errors()).as(probe(type, read, steps)).isEmpty();
-        // and without any one of them it does not: every step is of a method javac asks for
         assertThat(IntStream.range(0, steps.size()).boxed()).allSatisfy(left -> {
             List<Entry.Step> others = IntStream.range(0, steps.size())
                     .filter(i -> i != left)
                     .mapToObj(steps::get)
                     .toList();
-            assertThat(Javac.plain().compile(probe(type, read, others)).errors())
+            assertThat(javac.compile(probe(type, read, others)).errors())
                     .as("without %s", steps.get(left).name())
                     .anyMatch(error -> error.contains("is not abstract and does not override abstract method "
-                            + steps.get(left).method().name() + "("));
+                            + steps.get(left).told().name() + "("));
         });
+    }
+
+    // ------------------------------------------------------------------
+    // The forms of a library the types of the JDK above do not have
+    // ------------------------------------------------------------------
+
+    private static final List<String> LIBRARY = List.of(
+            "package p1; public abstract class A { abstract void pkg(); public A() {} }",
+            "package p2; public abstract class B extends p1.A { public B() {} }",
+            "package p2; public abstract class AbsBase { public abstract void m(); }",
+            "package p2; public class FinBase { public final void m() {} }",
+            "package p2; public interface I { default void m() {} }",
+            "package p2; public interface J { void m(); }",
+            "package p2; public abstract class X extends AbsBase implements I {}",
+            "package p2; public class Y extends FinBase implements I {}",
+            "package p2; public abstract class U extends AbsBase implements I, J {}",
+            "package p2; public interface TA { void t() throws java.io.IOException; }",
+            "package p2; public interface TB { void t() throws java.sql.SQLException; }",
+            "package p2; public interface TC extends TA, TB {}",
+            "package p2; public interface TD { void t() throws java.io.FileNotFoundException, InterruptedException; }",
+            "package p2; public interface TE extends TA, TD {}",
+            "package p2; public abstract class PA { protected abstract void q(); }",
+            "package p2; public interface PI { void q() throws java.io.IOException; }",
+            "package p2; public abstract class PX extends PA implements PI {}",
+            "package p2; public class SA { public static Object s() throws Exception { return null; } }",
+            "package p2; public class SB extends SA { public static String s() { return null; } }",
+            "package p2; public class SC extends SB {}",
+            "package p2; public class Given { public String get() throws java.io.IOException { return null; } }",
+            "package p2; public abstract class Again extends Given { public abstract String get(); }",
+            "package p2; public interface Objects { Object get() throws Exception; }",
+            "package p2; public interface Texts { CharSequence get() throws Exception; }",
+            "package p2; public interface Both extends Objects, Texts {}",
+            "package p2; public abstract class Half extends Given implements Objects {}",
+            "package p2; public interface Sink<T> { void put(T value); }",
+            "package p2; public interface Left extends Sink<String> {}",
+            "package p2; public interface Right extends Sink<String> {}",
+            "package p2; public interface Twice extends Left, Right {}",
+            "package p2; public abstract class Deep<T> implements Sink<T>, Comparable<Deep<T>> {}");
+
+    private Path library() {
+        return Javac.plain().compile(LIBRARY.toArray(String[]::new)).orFail().writeTo(lib);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+            strings = {
+                "p2.X",
+                "p2.Y",
+                "p2.U",
+                "p2.TC",
+                "p2.TE",
+                "p2.PX",
+                "p2.SC",
+                "p2.Again",
+                "p2.Both",
+                "p2.Half",
+                "p2.Twice",
+                "p2.Deep"
+            })
+    void theStepsOfATypeOfALibraryAreTheMethodsJavacAsksAClassFor(String type) {
+        Path classpath = library();
+
+        requireTheStepsAreWhatJavacAsksFor(
+                type, read(type, classpath), Javac.plain().classpath(classpath));
+    }
+
+    @Test
+    void theStepsOfTheFormsOfALibraryAreThoseOfTheMethodsThatStandAbstract() {
+        Path classpath = library();
+
+        // the abstract method of the superclass stands beside the default one of the interface
+        assertThat(steps(read("p2.X", classpath))).containsExactly("m");
+        assertThat(steps(read("p2.U", classpath))).containsExactly("m");
+        // the final one of the superclass overrides it
+        assertThat(steps(read("p2.Y", classpath))).isEmpty();
+        assertThat(steps(read("p2.TC", classpath))).containsExactly("t");
+        assertThat(steps(read("p2.PX", classpath))).containsExactly("q");
+        assertThat(steps(read("p2.SC", classpath))).isEmpty();
+        // declared abstract again
+        assertThat(steps(read("p2.Again", classpath))).containsExactly("get");
+        assertThat(steps(read("p2.Both", classpath))).containsExactly("get");
+        // the class wins: its method implements that of the interface
+        assertThat(steps(read("p2.Half", classpath))).isEmpty();
+        assertThat(steps(read("p2.Twice", classpath))).containsExactly("put_String");
+        assertThat(steps(read("p2.Deep", classpath))).containsExactly("compareTo_Deep", "put_T");
+    }
+
+    @Test
+    void aTypeWithAnAbstractMethodOfPackageAccessItDoesNotEvenInheritHasNoEntry() {
+        Path classpath = library();
+        Read read = read("p2.B", classpath);
+
+        assertThat(read.entry())
+                .isEqualTo(new Entry.Refused("its abstract method pkg() has package access in p1.A, so a class of"
+                        + " another package cannot implement it"));
+        // and javac asks a class of another package for the method it cannot give
+        assertThat(Javac.plain()
+                        .classpath(classpath)
+                        .compile(probe("p2.B", read, List.<String>of()))
+                        .errors())
+                .anyMatch(error -> error.contains("does not override abstract method pkg() in p1.A"));
+    }
+
+    /// The exceptions an override is tried with: checked ones, a subclass and a superclass among them.
+    private static final List<Class<? extends Throwable>> THROWN = List.of(
+            java.io.IOException.class,
+            java.io.FileNotFoundException.class,
+            java.sql.SQLException.class,
+            InterruptedException.class,
+            CloneNotSupportedException.class,
+            Exception.class,
+            Throwable.class);
+
+    /// An override is held against every declaration its method has in the heritage: javac accepts one
+    /// with the result of the first declaration and a `throws` clause every declaration covers, and
+    /// rejects one of a method that stands `final`, and one that throws what a declaration does not cover.
+    @ParameterizedTest
+    @ValueSource(
+            strings = {
+                "p2.X",
+                "p2.Y",
+                "p2.U",
+                "p2.TC",
+                "p2.TE",
+                "p2.PX",
+                "p2.SC",
+                "p2.Again",
+                "p2.Both",
+                "p2.Half",
+                "p2.Twice"
+            })
+    void anOverrideByTheHeritageOfATypeIsWhatJavacAccepts(String type) {
+        Path classpath = library();
+        Read read = read(type, classpath);
+        Javac javac = Javac.plain().classpath(classpath);
+        List<Entry.Step> steps = ((Entry.Offered) read.entry()).steps();
+        // the methods an instance method of a class of another package overrides, each by its declarations
+        Map<Heritage.Method<Heritage.Inherited>, List<Heritage.Plain>> overridable = read.heritage().methods().stream()
+                .filter(method -> switch (method.standing()) {
+                    case STATIC -> false;
+                    case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
+                })
+                .collect(Collectors.toMap(
+                        method -> method,
+                        method -> method.declarations().stream()
+                                .map(declared -> (Heritage.Plain) declared)
+                                .toList(),
+                        (first, second) -> first,
+                        LinkedHashMap::new));
+
+        assertThat(overridable).isNotEmpty().allSatisfy((method, declarations) -> {
+            Heritage.Plain first = declarations.getFirst();
+            // the other abstract methods, so that the class is complete
+            Map<String, String> others = steps.stream()
+                    .filter(step -> !step.told().signature().equals(method.signature()))
+                    .collect(Collectors.toMap(
+                            Entry.Step::name,
+                            step -> method(step.told().name(), step.params(), step.result(), ""),
+                            (one, other) -> one,
+                            LinkedHashMap::new));
+            Stream.concat(Stream.of(""), THROWN.stream().map(Class::getName)).forEach(thrown -> {
+                List<String> methods = Stream.concat(
+                                others.values().stream(),
+                                Stream.of(method(method.name(), first.params(), first.result(), thrown)))
+                        .toList();
+                boolean covered = thrown.isEmpty()
+                        || declarations.stream()
+                                .allMatch(declaration ->
+                                        declaration.throwsTypes().stream().anyMatch(clause -> covers(clause, thrown)));
+                boolean allowed =
+                        switch (method.standing()) {
+                            case FINAL -> false;
+                            case ABSTRACT, DEFAULT, CONCRETE, STATIC -> covered;
+                        };
+                assertThat(javac.compile(probe(type, read, methods)).errors().isEmpty())
+                        .as("%s of %s overridden throwing %s:%n%s", method.signature(), type, thrown, method)
+                        .isEqualTo(allowed);
+            });
+        });
+    }
+
+    /// Whether a `throws` clause of `clause` lets an override throw the exception class `thrown`.
+    private static boolean covers(TypeRef clause, String thrown) {
+        try {
+            return clause instanceof ClassTypeRef cls
+                    && Class.forName(Models.binaryName(cls.desc())).isAssignableFrom(Class.forName(thrown));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Test
@@ -216,9 +448,11 @@ class EntryTest {
         // the one of the most specific result: a class that implements Both returns a CharSequence
         assertThat(((Entry.Offered) both.entry()).steps()).singleElement().satisfies(step -> {
             assertThat(step.name()).isEqualTo("get");
-            assertThat(step.method().declaredBy()).isEqualTo(ClassDesc.of("p", "Texts"));
-            assertThat(step.method().result())
-                    .isEqualTo(new Heritage.Result.Of(new ClassTypeRef(ClassDesc.of("java.lang.CharSequence"))));
+            assertThat(step.told().declarations())
+                    .extracting(declaration -> declaration.by().type())
+                    .containsExactly(ClassDesc.of("p", "Texts"), ClassDesc.of("p", "Objects"));
+            assertThat(step.result())
+                    .isEqualTo(new Heritage.Result.Of<>(new ClassTypeRef(ClassDesc.of("java.lang.CharSequence"))));
         });
     }
 
@@ -238,10 +472,10 @@ class EntryTest {
                 "p.Overloads",
                 "package a; public class X {}",
                 "package b; public class X {}",
-                "package p; public interface Overloads { void m(); void m(int i); void m(String... s); void n(a.X x);"
+                "package p; public interface Overloads { void m(); void m(int i); void m(String s); void n(a.X x);"
                         + " void n(b.X x); }");
 
-        assertThat(steps(overloads)).containsExactly("m", "m_StringArray", "m_int", "n_a_X", "n_b_X");
+        assertThat(steps(overloads)).containsExactly("m", "m_String", "m_int", "n_a_X", "n_b_X");
     }
 
     @Test
@@ -251,8 +485,8 @@ class EntryTest {
         assertThat(((Entry.Refused) ofLibrary("p.Pack", "package p; public abstract class Pack { abstract void m(); }")
                                 .entry())
                         .reason())
-                .isEqualTo("its abstract method m() has package access, so a class of another package cannot"
-                        + " implement it");
+                .isEqualTo("its abstract method m() has package access in p.Pack, so a class of another package"
+                        + " cannot implement it");
         assertThat(((Entry.Refused) ofLibrary("p.Hides", hidden, "package p; public interface Hides { Hidden m(); }")
                                 .entry())
                         .reason())
@@ -266,11 +500,40 @@ class EntryTest {
                                 .entry())
                         .reason())
                 .isEqualTo("it has no constructor a class of another package calls");
+        assertThat(((Entry.Refused) ofLibrary("p.Many", "package p; public interface Many { void m(String... more); }")
+                                .entry())
+                        .reason())
+                .isEqualTo("its abstract method m(java.lang.String[]) is of variable arity, and a generated method is"
+                        + " not yet");
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Raw",
+                                        "package p; public interface Raw extends Typed, Erased {}",
+                                        "package p; public interface Typed { void m(java.util.List<String> list); }",
+                                        "package p; public interface Erased { void m(java.util.List list); }")
+                                .entry())
+                        .reason())
+                .isEqualTo("its abstract method m(java.util.List) is declared with other parameter types by p.Typed"
+                        + " and p.Erased, so no one method of a generated class implements each");
+    }
+
+    @Test
+    void anEntryIsOfferedOnlyWhereTheFactsItIsUsedWithAreThere() {
+        String thirteen = IntStream.range(0, 13).mapToObj(i -> "int p" + i).collect(Collectors.joining(", "));
+
+        // no constructor has a fact: none can be called by a generated one
         assertThat(((Entry.Refused)
-                                ofLibrary("p.Named", "package p; public interface Named<Complete> { Complete get(); }")
+                                ofLibrary("p.Wide", "package p; public class Wide { public Wide(" + thirteen + ") {} }")
                                         .entry())
                         .reason())
-                .isEqualTo("its type parameter Complete is named like a class the proof mentions");
+                .isEqualTo("none of its constructors has a fact, so no generated constructor calls one");
+    }
+
+    @Test
+    void aTypeParameterNamedLikeAClassOfTheProofIsNoObstacle() {
+        Read named = ofLibrary(
+                "p.Named", "package p; public interface Named<Complete, Told, List> { Complete get(Told t, List l); }");
+
+        assertThat(steps(named)).containsExactly("get_Told_List");
     }
 
     @Test

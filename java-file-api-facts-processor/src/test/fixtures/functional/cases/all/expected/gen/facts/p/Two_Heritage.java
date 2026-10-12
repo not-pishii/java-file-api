@@ -11,11 +11,12 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Steps;
@@ -49,17 +50,17 @@ public final class Two_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Two] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.Two"), Signature.of("a"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("a"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Two"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.Two"), Signature.of("b"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("b"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Two"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
     }
 
@@ -88,7 +89,7 @@ public final class Two_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the stage of the next step
         public Implement1<Self> a(VoidImplementation0<Self> how) {
-            return new Implement1<>(this.steps.with(Signature.of("a"), how));
+            return new Implement1<>(this.steps.with(Held.HERITAGE.methods().get(0).signature(), how));
         }
     }
 
@@ -107,7 +108,7 @@ public final class Two_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, Two> b(VoidImplementation0<Self> how) {
-            return this.steps.with(Signature.of("b"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(1).signature(), how).complete();
         }
     }
 }
