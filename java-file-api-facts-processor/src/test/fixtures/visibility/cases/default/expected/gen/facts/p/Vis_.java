@@ -52,7 +52,7 @@ import p.Vis;
 ///
 /// A generated class extends or implements [Vis] by the proof its metamodel starts, with the stages of `Vis_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Vis.class, fingerprint = "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", complete = true, format = 13)
+@GeneratedMetamodel(of = Vis.class, fingerprint = "71300467a7141ced24b7302a6369c2f6ab60fa1d6cd490135a3a876f7eedfb9b", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -63,7 +63,7 @@ public final class Vis_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Vis] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Vis_"), "2809b509e207f062382ddfaeefab2dbb155acb737941a8841d20353223c2b218", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Vis"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("nested", Param.fixed(ClassDesc.of("p.Outer$PkgNested"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ok"), Signature.of("pkgM"), Signature.of("protM"), Signature.of("pubM"), Signature.of("takes", Param.fixed(ClassDesc.of("p.Hidden"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sPub")), Set.of(Signature.of("Vis"), Signature.of("Vis", Param.fixed(ConstantDescs.CD_int)), Signature.of("Vis", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Vis", Param.fixed(ClassDesc.of("p.Hidden"))))), false, new Vis_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Vis_"), "71300467a7141ced24b7302a6369c2f6ab60fa1d6cd490135a3a876f7eedfb9b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Vis"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("nested", Param.fixed(ClassDesc.of("p.Outer$PkgNested"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ok"), Signature.of("pkgM"), Signature.of("protM"), Signature.of("pubM"), Signature.of("takes", Param.fixed(ClassDesc.of("p.Hidden"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sPub")), Set.of(Signature.of("Vis"), Signature.of("Vis", Param.fixed(ConstantDescs.CD_int)), Signature.of("Vis", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Vis", Param.fixed(ClassDesc.of("p.Hidden"))))), false, new Vis_Heritage());
 
         private Data() {
         }
@@ -74,8 +74,8 @@ public final class Vis_ {
     static final class Canonical {
         /// The canonical form of [Vis].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Vis open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Vis open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -90,30 +90,35 @@ public final class Vis_ {
         member method public overridable ok() -> p.Outer$Pub throws -
         member method public overridable pubM() -> void throws -
         member method public static sPub() -> void throws -
-        inherit ctor package (java.lang.String) throws -
-        inherit ctor protected (int) throws -
-        inherit ctor public () throws -
-        inherit ctor public (p.Hidden) throws -
-        inherit method package concrete p.Vis pkgM() -> void throws - erased () overrides -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method protected concrete p.Vis protM() -> void throws - erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Vis arr() -> p.Hidden[] throws - erased () overrides -
-        inherit method public concrete p.Vis hidden() -> p.Hidden throws - erased () overrides -
-        inherit method public concrete p.Vis nested(p.Outer$PkgNested) -> void throws - erased (p.Outer$PkgNested) overrides -
-        inherit method public concrete p.Vis ok() -> p.Outer$Pub throws - erased () overrides -
-        inherit method public concrete p.Vis pubM() -> void throws - erased () overrides -
-        inherit method public concrete p.Vis takes(p.Hidden) -> void throws - erased (p.Hidden) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Vis sPub() -> void throws - erased () overrides -
+        inherit ctor Vis() public () throws -
+        inherit ctor Vis(int) protected (int) throws -
+        inherit ctor Vis(java.lang.String) package (java.lang.String) throws -
+        inherit ctor Vis(p.Hidden) public (p.Hidden) throws -
+        inherit field package p.Vis pkg
+        inherit field protected p.Vis prot
+        inherit field public p.Vis hf
+        inherit field public p.Vis hl
+        inherit field public p.Vis pub
+        inherit method arr() erased () overrides - by class public concrete p.Vis () -> p.Hidden[] throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method hidden() erased () overrides - by class public concrete p.Vis () -> p.Hidden throws -
+        inherit method nested(p.Outer$PkgNested) erased (p.Outer$PkgNested) overrides - by class public concrete p.Vis (p.Outer$PkgNested) -> void throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method ok() erased () overrides - by class public concrete p.Vis () -> p.Outer$Pub throws -
+        inherit method pkgM() erased () overrides - by class package concrete p.Vis () -> void throws -
+        inherit method protM() erased () overrides - by class protected concrete p.Vis () -> void throws -
+        inherit method pubM() erased () overrides - by class public concrete p.Vis () -> void throws -
+        inherit method sPub() erased () overrides - by class public static p.Vis () -> void throws -
+        inherit method takes(p.Hidden) erased (p.Hidden) overrides - by class public concrete p.Vis (p.Hidden) -> void throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete arr(); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); hidden(); nested(p.Outer$PkgNested); notify(); notifyAll(); ok(); pkgM(); protM(); pubM(); takes(p.Hidden); toString(); wait(); wait(long); wait(long, int)
         table static sPub()

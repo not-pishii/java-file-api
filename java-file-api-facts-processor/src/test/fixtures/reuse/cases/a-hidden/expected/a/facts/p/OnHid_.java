@@ -37,7 +37,7 @@ import p.OnHid;
 ///
 /// A generated class extends or implements [OnHid] by the proof its metamodel starts, with the stages of `OnHid_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OnHid.class, fingerprint = "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", complete = true, format = 13)
+@GeneratedMetamodel(of = OnHid.class, fingerprint = "bfbfc4e386230cdc542adc65d6c879efced1b6654ae007f8035d91bbf80f001e", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class OnHid_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [OnHid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("a.facts.p.OnHid_"), "0045ca24b07913998f3eefa6a007237d515ac05b7ba7b32a71b6dee543709437", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OnHid"), List.of(), List.of(ClassDesc.of("p.HidBase"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("old"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OnHid"))), false, new OnHid_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("a.facts.p.OnHid_"), "bfbfc4e386230cdc542adc65d6c879efced1b6654ae007f8035d91bbf80f001e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OnHid"), List.of(), List.of(ClassDesc.of("p.HidBase"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("old"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OnHid"))), false, new OnHid_Heritage());
 
         private Data() {
         }
@@ -59,8 +59,8 @@ public final class OnHid_ {
     static final class Canonical {
         /// The canonical form of [OnHid].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.OnHid open-class sealed=no
+        javafile-facts-canonical 8
+        type p.OnHid open-class sealed=no nesting=top
         tparams -
         superclasses p.HidBase; java.lang.Object
         interfaces -
@@ -69,19 +69,19 @@ public final class OnHid_ {
         members declared-accessible
         member ctor public () throws -
         member method public overridable old() -> int throws -
-        inherit ctor public () throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.HidBase old() -> int throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor OnHid() public () throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method old() erased () overrides - by class public concrete p.HidBase () -> int throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); old(); toString(); wait(); wait(long); wait(long, int)
         table static -

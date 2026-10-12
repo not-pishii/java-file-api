@@ -33,7 +33,7 @@ import p.Wide;
 ///
 /// A generated class extends or implements [Wide] by the proof its metamodel starts, with the stages of `Wide_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Wide.class, fingerprint = "f1072036619581db90ab9f5cbd2497ec1c1a4602011cebaf68b533f9d82c0dc5", complete = true, format = 13)
+@GeneratedMetamodel(of = Wide.class, fingerprint = "bb800f3ea85e809e45cf1020177317d77ea00d99899d7a0082cee8d7c206490d", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Wide_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Wide] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Wide_"), "f1072036619581db90ab9f5cbd2497ec1c1a4602011cebaf68b533f9d82c0dc5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Wide"), List.of(), List.of(), List.of(ClassDesc.of("p.Two")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("b")), Set.of(Signature.of("a"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Wide_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Wide_"), "bb800f3ea85e809e45cf1020177317d77ea00d99899d7a0082cee8d7c206490d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Wide"), List.of(), List.of(), List.of(ClassDesc.of("p.Two")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("b")), Set.of(Signature.of("a"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Wide_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,8 @@ public final class Wide_ {
     static final class Canonical {
         /// The canonical form of [Wide].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Wide interface sealed=no
+        javafile-facts-canonical 8
+        type p.Wide interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces p.Two
@@ -65,8 +65,8 @@ public final class Wide_ {
         members declared-accessible
         member method public overridable a() -> void throws -
         sam b() -> void throws -
-        inherit method public abstract p.Two b() -> void throws - erased () overrides -
-        inherit method public default p.Wide a() -> void throws - erased () overrides p.Two
+        inherit method a() erased () overrides p.Two by interface default p.Wide () -> void throws -
+        inherit method b() erased () overrides - by interface abstract p.Two () -> void throws -
         table abstract b()
         table concrete a(); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -34,7 +34,7 @@ import p.StrFn;
 ///
 /// A generated class extends or implements [StrFn] by the proof its metamodel starts, with the stages of `StrFn_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrFn.class, fingerprint = "2671fe7b5dc70b9f83d5eb74ca8fe83f6d327871c75c0691a7a7c346d4bba206", complete = true, format = 13)
+@GeneratedMetamodel(of = StrFn.class, fingerprint = "a0a569bc8e38c060113e87fdcf4bac7129fdace93606b4a7b21cc97c03557740", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class StrFn_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [StrFn] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrFn_"), "2671fe7b5dc70b9f83d5eb74ca8fe83f6d327871c75c0691a7a7c346d4bba206", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrFn"), List.of(), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new StrFn_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrFn_"), "a0a569bc8e38c060113e87fdcf4bac7129fdace93606b4a7b21cc97c03557740", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrFn"), List.of(), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new StrFn_Heritage());
 
         private Data() {
         }
@@ -56,8 +56,8 @@ public final class StrFn_ {
     static final class Canonical {
         /// The canonical form of [StrFn].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.StrFn interface sealed=no
+        javafile-facts-canonical 8
+        type p.StrFn interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces java.util.function.Function
@@ -65,9 +65,9 @@ public final class StrFn_ {
         enum -
         members declared-accessible
         sam apply(java.lang.String) -> java.lang.String throws -
-        inherit method public abstract java.util.function.Function apply(java.lang.String) -> java.lang.String throws - erased (java.lang.Object) overrides -
-        inherit method public default java.util.function.Function <^0> andThen(java.util.function.Function<? super java.lang.String, ? extends ^0>) -> java.util.function.Function<java.lang.String, ^0> throws - erased (java.util.function.Function) overrides -
-        inherit method public default java.util.function.Function <^0> compose(java.util.function.Function<? super ^0, ? extends java.lang.String>) -> java.util.function.Function<^0, java.lang.String> throws - erased (java.util.function.Function) overrides -
+        inherit method andThen(java.util.function.Function) erased (java.util.function.Function) overrides - by interface default java.util.function.Function <^0> (java.util.function.Function<? super java.lang.String, ? extends ^0>) -> java.util.function.Function<java.lang.String, ^0> throws -
+        inherit method apply(java.lang.String) erased (java.lang.Object) overrides - by interface abstract java.util.function.Function (java.lang.String) -> java.lang.String throws -
+        inherit method compose(java.util.function.Function) erased (java.util.function.Function) overrides - by interface default java.util.function.Function <^0> (java.util.function.Function<? super ^0, ? extends java.lang.String>) -> java.util.function.Function<^0, java.lang.String> throws -
         table abstract apply(java.lang.String)
         table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

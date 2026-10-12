@@ -55,7 +55,7 @@ import p.Greeter;
 ///
 /// A generated class extends or implements [Greeter] by the proof its metamodel starts, with the stages of `Greeter_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Greeter.class, fingerprint = "76dca1b1dbaa7ae26c70a7d42159ed8099ff74cd8bc119800bb758f3e703ed5d", complete = true, format = 13)
+@GeneratedMetamodel(of = Greeter.class, fingerprint = "d8f212d588aebca25d91d86cd33621338b6cfd978ab0a47d538bd32889cd48ed", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -66,7 +66,7 @@ public final class Greeter_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Greeter] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Greeter_"), "76dca1b1dbaa7ae26c70a7d42159ed8099ff74cd8bc119800bb758f3e703ed5d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Greeter"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr", Param.fixed(ClassDesc.ofDescriptor("[[I")), Param.fixed(ClassDesc.ofDescriptor("[Lp/Greeter;"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("greet"), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.util.Locale"))), Signature.of("hashCode"), Signature.of("log", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("main", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("parse", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Greeter"), Signature.of("Greeter", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.ofDescriptor("[Z"))), Signature.of("Greeter", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Greeter_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Greeter_"), "d8f212d588aebca25d91d86cd33621338b6cfd978ab0a47d538bd32889cd48ed", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Greeter"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr", Param.fixed(ClassDesc.ofDescriptor("[[I")), Param.fixed(ClassDesc.ofDescriptor("[Lp/Greeter;"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("greet"), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.util.Locale"))), Signature.of("hashCode"), Signature.of("log", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("main", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("parse", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Greeter"), Signature.of("Greeter", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.ofDescriptor("[Z"))), Signature.of("Greeter", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Greeter_Heritage());
 
         private Data() {
         }
@@ -77,8 +77,8 @@ public final class Greeter_ {
     static final class Canonical {
         /// The canonical form of [Greeter].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Greeter open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Greeter open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -120,27 +120,52 @@ public final class Greeter_ {
         member method public overridable log(java.lang.String) -> void throws -
         member method public static main(java.lang.String[]) -> void throws -
         member method public static parse(java.lang.String) -> int throws -
-        inherit ctor public () throws -
-        inherit ctor public (int, long, boolean[]) throws -
-        inherit ctor public (java.lang.String) throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Greeter arr(int[][], p.Greeter[]) -> int[] throws - erased (int[][], p.Greeter[]) overrides -
-        inherit method public concrete p.Greeter greet() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Greeter greet(java.lang.String) -> java.lang.String throws - erased (java.lang.String) overrides -
-        inherit method public concrete p.Greeter greet(java.lang.String, java.util.Locale) -> java.lang.String throws - erased (java.lang.String, java.util.Locale) overrides -
-        inherit method public concrete p.Greeter log(java.lang.String) -> void throws - erased (java.lang.String) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Greeter main(java.lang.String[]) -> void throws - erased (java.lang.String[]) overrides -
-        inherit method public static p.Greeter parse(java.lang.String) -> int throws - erased (java.lang.String) overrides -
+        inherit ctor Greeter() public () throws -
+        inherit ctor Greeter(int, long, boolean[]) public (int, long, boolean[]) throws -
+        inherit ctor Greeter(java.lang.String) public (java.lang.String) throws -
+        inherit field public p.Greeter BOOL
+        inherit field public p.Greeter BYTE
+        inherit field public p.Greeter CHAR
+        inherit field public p.Greeter DEFAULT
+        inherit field public p.Greeter DOUBLE
+        inherit field public p.Greeter FLOAT
+        inherit field public p.Greeter FLOAT_INFINITY
+        inherit field public p.Greeter FLOAT_NAN
+        inherit field public p.Greeter INFINITY
+        inherit field public p.Greeter INT
+        inherit field public p.Greeter LONG
+        inherit field public p.Greeter NAN
+        inherit field public p.Greeter NEGATIVE_INFINITY
+        inherit field public p.Greeter NEGATIVE_ZERO
+        inherit field public p.Greeter NOT_CONSTANT
+        inherit field public p.Greeter OBJECT
+        inherit field public p.Greeter SHORT
+        inherit field public p.Greeter count
+        inherit field public p.Greeter counter
+        inherit field public p.Greeter grid
+        inherit field public p.Greeter label
+        inherit field public p.Greeter mutable
+        inherit field public p.Greeter name
+        inherit field public p.Greeter numbers
+        inherit field public p.Greeter text
+        inherit method arr(int[][], p.Greeter[]) erased (int[][], p.Greeter[]) overrides - by class public concrete p.Greeter (int[][], p.Greeter[]) -> int[] throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method greet() erased () overrides - by class public concrete p.Greeter () -> java.lang.String throws -
+        inherit method greet(java.lang.String) erased (java.lang.String) overrides - by class public concrete p.Greeter (java.lang.String) -> java.lang.String throws -
+        inherit method greet(java.lang.String, java.util.Locale) erased (java.lang.String, java.util.Locale) overrides - by class public concrete p.Greeter (java.lang.String, java.util.Locale) -> java.lang.String throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method log(java.lang.String) erased (java.lang.String) overrides - by class public concrete p.Greeter (java.lang.String) -> void throws -
+        inherit method main(java.lang.String[]) erased (java.lang.String[]) overrides - by class public static p.Greeter (java.lang.String[]) -> void throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method parse(java.lang.String) erased (java.lang.String) overrides - by class public static p.Greeter (java.lang.String) -> int throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete arr(int[][], p.Greeter[]); clone(); equals(java.lang.Object); finalize(); getClass(); greet(); greet(java.lang.String); greet(java.lang.String, java.util.Locale); hashCode(); log(java.lang.String); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static main(java.lang.String[]); parse(java.lang.String)

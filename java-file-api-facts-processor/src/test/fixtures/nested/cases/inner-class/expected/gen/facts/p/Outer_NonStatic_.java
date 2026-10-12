@@ -37,7 +37,7 @@ import p.Outer.NonStatic;
 ///
 /// No generated class extends or implements [NonStatic]: it is an inner class, which is extended with an instance of the class it is nested in.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NonStatic.class, fingerprint = "e0b75abc0dc33e16f40b3ca4966fe96e9168146a089e7c551322094e155eea6d", complete = true, format = 13)
+@GeneratedMetamodel(of = NonStatic.class, fingerprint = "3725d68a8849764eea14f187096d334dc8d5aefc9a1a572db30aa3af8e01373d", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Outer_NonStatic_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [NonStatic] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_NonStatic_"), "e0b75abc0dc33e16f40b3ca4966fe96e9168146a089e7c551322094e155eea6d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$NonStatic"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Outer$NonStatic"), Signature.of("Outer$NonStatic", Param.fixed(ConstantDescs.CD_int)))), false, new Outer_NonStatic_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_NonStatic_"), "3725d68a8849764eea14f187096d334dc8d5aefc9a1a572db30aa3af8e01373d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$NonStatic"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Outer$NonStatic"), Signature.of("Outer$NonStatic", Param.fixed(ConstantDescs.CD_int)))), false, new Outer_NonStatic_Heritage());
 
         private Data() {
         }
@@ -59,8 +59,8 @@ public final class Outer_NonStatic_ {
     static final class Canonical {
         /// The canonical form of [NonStatic].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Outer$NonStatic open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Outer$NonStatic open-class sealed=no nesting=inner
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -70,20 +70,20 @@ public final class Outer_NonStatic_ {
         member ctor public () throws -
         member ctor public (int) throws -
         member method public overridable x() -> int throws -
-        inherit ctor public () throws -
-        inherit ctor public (int) throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Outer$NonStatic x() -> int throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor Outer$NonStatic() public () throws -
+        inherit ctor Outer$NonStatic(int) public (int) throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
+        inherit method x() erased () overrides - by class public concrete p.Outer$NonStatic () -> int throws -
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int); x()
         table static -

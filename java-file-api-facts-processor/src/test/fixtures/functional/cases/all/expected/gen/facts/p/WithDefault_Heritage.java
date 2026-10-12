@@ -11,11 +11,13 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.Implementation1;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
@@ -25,7 +27,6 @@ import me.supcheg.javafile.facts.Steps;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import p.WithDefault;
 
@@ -53,21 +54,17 @@ public final class WithDefault_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [WithDefault] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1(), m2()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.WithDefault"), Signature.of("f", Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.INT), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of(ConstantDescs.CD_int)), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("f", Param.fixed(ConstantDescs.CD_int)), List.of(new Declaration(new OfInterface(ClassDesc.of("p.WithDefault"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(new Fixed(PrimitiveTypeRef.INT)), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of(ConstantDescs.CD_int)), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.WithDefault"), Signature.of("g", Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.INT), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of(ConstantDescs.CD_int)), List.of());
-        }
-
-        private static Method m2() {
-            return new Method(Visibility.PUBLIC, Dispatch.STATIC, ClassDesc.of("p.WithDefault"), Signature.of("id"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("p.WithDefault"))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("g", Param.fixed(ConstantDescs.CD_int)), List.of(new Declaration(new OfInterface(ClassDesc.of("p.WithDefault"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(new Fixed(PrimitiveTypeRef.INT)), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of(ConstantDescs.CD_int)), List.of());
         }
     }
 
@@ -96,7 +93,7 @@ public final class WithDefault_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, WithDefault> f_int(Implementation1<Self, ? extends Int, Int> how) {
-            return this.steps.with(Signature.of("f", Param.fixed(ConstantDescs.CD_int)), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

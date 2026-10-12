@@ -36,7 +36,7 @@ import p.GoneApi;
 ///
 /// A generated class extends or implements [GoneApi] by the proof its metamodel starts, with the stages of `GoneApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = GoneApi.class, fingerprint = "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", complete = true, format = 13)
+@GeneratedMetamodel(of = GoneApi.class, fingerprint = "4bffb4ebc70931c026b005dbcf42e1d2e1e849e6263935c18c0a07c04e484aa5", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class GoneApi_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [GoneApi] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.GoneApi_"), "bf09ca5bb75eb5e7bf994a4f72df5a80e2b2dd30812c6e2eb5e8e058d3313acf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.GoneApi"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("gone", Param.fixed(ClassDesc.of("p.Secret"))), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new GoneApi_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.GoneApi_"), "4bffb4ebc70931c026b005dbcf42e1d2e1e849e6263935c18c0a07c04e484aa5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.GoneApi"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("gone", Param.fixed(ClassDesc.of("p.Secret"))), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new GoneApi_Heritage());
 
         private Data() {
         }
@@ -58,15 +58,15 @@ public final class GoneApi_ {
     static final class Canonical {
         /// The canonical form of [GoneApi].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.GoneApi interface sealed=no
+        javafile-facts-canonical 8
+        type p.GoneApi interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
         supertypes -
         enum -
         members declared-accessible
-        inherit method public default p.GoneApi gone(p.Secret) -> void throws - erased (p.Secret) overrides -
+        inherit method gone(p.Secret) erased (p.Secret) overrides - by interface default p.GoneApi (p.Secret) -> void throws -
         table abstract -
         table concrete equals(java.lang.Object); getClass(); gone(p.Secret); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

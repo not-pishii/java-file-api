@@ -41,7 +41,7 @@ import p.Supertypes;
 ///
 /// A generated class extends or implements [Supertypes] by the proof its metamodel starts, with the stages of `Supertypes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Supertypes.class, fingerprint = "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", complete = true, format = 13)
+@GeneratedMetamodel(of = Supertypes.class, fingerprint = "196d36d8fe5c2ee2e03a27fa2399c49d08d19d202100f1cd90ca8347173e1ba3", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Supertypes_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Supertypes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "fb4fcbb4fe72ff8567627ee1916b94aa70edbeda34f694e6627c2520d92242c0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes"))), false, new Supertypes_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "196d36d8fe5c2ee2e03a27fa2399c49d08d19d202100f1cd90ca8347173e1ba3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes"))), false, new Supertypes_Heritage());
 
         private Data() {
         }
@@ -63,8 +63,8 @@ public final class Supertypes_ {
     static final class Canonical {
         /// The canonical form of [Supertypes].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Supertypes open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Supertypes open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -107,19 +107,53 @@ public final class Supertypes_ {
         member field public static constant float Float = NaNf
         member field public static constant java.lang.String NAME = "n"
         member method public overridable other(java.awt.List, int[], java.lang.String[]) -> p.Other throws java.io.IOException
-        inherit ctor public () throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Supertypes other(java.awt.List, int[], java.lang.String[]) -> p.Other throws java.io.IOException erased (java.awt.List, int[], java.lang.String[]) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor Supertypes() public () throws -
+        inherit field public p.Supertypes ArrayToken
+        inherit field public p.Supertypes Canonical
+        inherit field public p.Supertypes ClassDesc
+        inherit field public p.Supertypes ConstantDescs
+        inherit field public p.Supertypes Data
+        inherit field public p.Supertypes DeclaredKind
+        inherit field public p.Supertypes Double
+        inherit field public p.Supertypes Float
+        inherit field public p.Supertypes Int
+        inherit field public p.Supertypes List
+        inherit field public p.Supertypes MemberTraits
+        inherit field public p.Supertypes Metamodel
+        inherit field public p.Supertypes MethodTableTemplate
+        inherit field public p.Supertypes MutableFieldRef
+        inherit field public p.Supertypes NAME
+        inherit field public p.Supertypes OpenClassToken
+        inherit field public p.Supertypes Other_
+        inherit field public p.Supertypes Param
+        inherit field public p.Supertypes Prim
+        inherit field public p.Supertypes PrimitiveToken
+        inherit field public p.Supertypes SHAPE
+        inherit field public p.Supertypes Set
+        inherit field public p.Supertypes Signature
+        inherit field public p.Supertypes String
+        inherit field public p.Supertypes TEXT
+        inherit field public p.Supertypes TOKEN
+        inherit field public p.Supertypes TypeParam
+        inherit field public p.Supertypes TypeShape
+        inherit field public p.Supertypes Types
+        inherit field public p.Supertypes UnsafeFacts
+        inherit field public p.Supertypes gen
+        inherit field public p.Supertypes java
+        inherit field public p.Supertypes me
+        inherit field public p.Supertypes p
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method other(java.awt.List, int[], java.lang.String[]) erased (java.awt.List, int[], java.lang.String[]) overrides - by class public concrete p.Supertypes (java.awt.List, int[], java.lang.String[]) -> p.Other throws java.io.IOException
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); other(java.awt.List, int[], java.lang.String[]); toString(); wait(); wait(long); wait(long, int)
         table static -

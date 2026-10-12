@@ -10,11 +10,13 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.Implementation0;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
@@ -49,17 +51,17 @@ public final class PubApi_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [PubApi] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0(), m1()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.PubApi"), Signature.of("beyond"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("beyond"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.PubApi"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.of(ClassDesc.of("java.lang.String")))), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.PubApi"), Signature.of("pub"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("pub"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.PubApi"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.of(ClassDesc.of("java.lang.String")))), List.of())), Set.of(List.of()), List.of());
         }
     }
 
@@ -88,7 +90,7 @@ public final class PubApi_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, PubApi> pub(Implementation0<Self, ? extends String> how) {
-            return this.steps.with(Signature.of("pub"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(1).signature(), how).complete();
         }
     }
 }

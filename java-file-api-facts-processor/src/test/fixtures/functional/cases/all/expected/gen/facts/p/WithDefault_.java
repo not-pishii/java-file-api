@@ -36,7 +36,7 @@ import p.WithDefault;
 ///
 /// A generated class extends or implements [WithDefault] by the proof its metamodel starts, with the stages of `WithDefault_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithDefault.class, fingerprint = "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", complete = true, format = 13)
+@GeneratedMetamodel(of = WithDefault.class, fingerprint = "4a9915ad2dfde8d455ccf40a5af9596b00178fa2f9e96054b73cb57728fb156a", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class WithDefault_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [WithDefault] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithDefault_"), "f47a6982f9071913aacb72308858114d15074157e0168927e38a1ec853faced4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.WithDefault"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("f", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("g", Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("id")), Set.of()), false, new WithDefault_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithDefault_"), "4a9915ad2dfde8d455ccf40a5af9596b00178fa2f9e96054b73cb57728fb156a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.WithDefault"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("f", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("g", Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("id")), Set.of()), false, new WithDefault_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,8 @@ public final class WithDefault_ {
     static final class Canonical {
         /// The canonical form of [WithDefault].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.WithDefault interface sealed=no
+        javafile-facts-canonical 8
+        type p.WithDefault interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -70,9 +70,8 @@ public final class WithDefault_ {
         member method public overridable g(int) -> int throws -
         member method public static id() -> p.WithDefault throws -
         sam f(int) -> int throws -
-        inherit method public abstract p.WithDefault f(int) -> int throws - erased (int) overrides -
-        inherit method public default p.WithDefault g(int) -> int throws - erased (int) overrides -
-        inherit method public static p.WithDefault id() -> p.WithDefault throws - erased () overrides -
+        inherit method f(int) erased (int) overrides - by interface abstract p.WithDefault (int) -> int throws -
+        inherit method g(int) erased (int) overrides - by interface default p.WithDefault (int) -> int throws -
         table abstract f(int)
         table concrete equals(java.lang.Object); g(int); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static id()

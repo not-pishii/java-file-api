@@ -32,7 +32,7 @@ import p.Bounded;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [Bounded] mentions a type the metamodel cannot name.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Bounded.class, fingerprint = "67e866f7585159baa8e1329a9b987a6a61e5d61c6c45cb63c7c85de7c443eb3b", complete = false, format = 13)
+@GeneratedMetamodel(of = Bounded.class, fingerprint = "1a7bf79108dc8a0b6aefd7911e05c97cb310453e60755812921a160414ffd277", complete = false, format = 14)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -44,7 +44,7 @@ public final class Bounded_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Bounded] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bounded_"), "67e866f7585159baa8e1329a9b987a6a61e5d61c6c45cb63c7c85de7c443eb3b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Bounded"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Secret"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Bounded"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bounded_"), "1a7bf79108dc8a0b6aefd7911e05c97cb310453e60755812921a160414ffd277", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Bounded"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Secret"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Bounded"))), List.of(), false);
 
         private Data() {
         }
@@ -55,8 +55,8 @@ public final class Bounded_ {
     static final class Canonical {
         /// The canonical form of [Bounded].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Bounded open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Bounded open-class sealed=no nesting=top
         tparams #0 extends p.Secret
         superclasses java.lang.Object
         interfaces -

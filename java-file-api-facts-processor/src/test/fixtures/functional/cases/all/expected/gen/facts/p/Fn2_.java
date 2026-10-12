@@ -36,7 +36,7 @@ import p.Fn2;
 ///
 /// A generated class extends or implements [Fn2] by the proof its metamodel starts, with the stages of `Fn2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn2.class, fingerprint = "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", complete = true, format = 13)
+@GeneratedMetamodel(of = Fn2.class, fingerprint = "88bf8734012a98cca868a573340f80faf01c05250d9bc7b99309caaf95500cd6", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Fn2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fn2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn2_"), "65a52da47d551d4f5cb7b45d8c51244ce1f765d387e8f64d0fb18c81ba922a85", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn2"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("call", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Fn2_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn2_"), "88bf8734012a98cca868a573340f80faf01c05250d9bc7b99309caaf95500cd6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn2"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("call", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Fn2_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,8 @@ public final class Fn2_ {
     static final class Canonical {
         /// The canonical form of [Fn2].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Fn2 interface sealed=no
+        javafile-facts-canonical 8
+        type p.Fn2 interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -68,7 +68,7 @@ public final class Fn2_ {
         members declared-accessible
         member method public abstract call(java.lang.String, int, long) -> void throws -
         sam call(java.lang.String, int, long) -> void throws -
-        inherit method public abstract p.Fn2 call(java.lang.String, int, long) -> void throws - erased (java.lang.String, int, long) overrides -
+        inherit method call(java.lang.String, int, long) erased (java.lang.String, int, long) overrides - by interface abstract p.Fn2 (java.lang.String, int, long) -> void throws -
         table abstract call(java.lang.String, int, long)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

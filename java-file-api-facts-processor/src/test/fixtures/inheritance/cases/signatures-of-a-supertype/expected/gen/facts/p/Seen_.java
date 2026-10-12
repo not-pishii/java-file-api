@@ -26,7 +26,7 @@ import p.Seen;
 ///
 /// `@Facts` does not ask for [Seen]: it is only mentioned in the signatures of [p.High]. For the facts of its members add `Seen.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seen.class, fingerprint = "fc70bc022dd08816c5761d1c8a2124ab37a9483349af52b8529c1a480b802359", complete = false, format = 13)
+@GeneratedMetamodel(of = Seen.class, fingerprint = "e61761dd9f6a0bde97bc8b1f855b4e0ac51a9802d0b3d21e4b7fa640edf3f460", complete = false, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Seen_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Seen] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seen_"), "fc70bc022dd08816c5761d1c8a2124ab37a9483349af52b8529c1a480b802359", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Seen"), List.of(), List.of(ClassDesc.of("p.Unseen"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("beyond"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("unseen"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Seen"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seen_"), "e61761dd9f6a0bde97bc8b1f855b4e0ac51a9802d0b3d21e4b7fa640edf3f460", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Seen"), List.of(), List.of(ClassDesc.of("p.Unseen"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("beyond"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("unseen"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Seen"))), List.of(), false);
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class Seen_ {
     static final class Canonical {
         /// The canonical form of [Seen].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Seen open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Seen open-class sealed=no nesting=top
         tparams -
         superclasses p.Unseen; java.lang.Object
         interfaces -

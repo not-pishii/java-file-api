@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [ConstantDesc]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", complete = true, format = 13)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "68b8ca01a84a4e0cddb31634994cb32492ab4879977efdcf6e82f7815ca33fc8", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class ConstantDesc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "6fc566d6271f2154d4f7d6729257a53a165d715f91cdd6e659a2fd92ba776a96", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new ConstantDesc_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "68b8ca01a84a4e0cddb31634994cb32492ab4879977efdcf6e82f7815ca33fc8", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new ConstantDesc_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,8 @@ public final class ConstantDesc_ {
     static final class Canonical {
         /// The canonical form of [ConstantDesc].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type java.lang.constant.ConstantDesc interface sealed=yes
+        javafile-facts-canonical 8
+        type java.lang.constant.ConstantDesc interface sealed=yes nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -64,7 +64,7 @@ public final class ConstantDesc_ {
         enum -
         members declared-accessible
         member method public abstract resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup) -> java.lang.Object throws java.lang.ReflectiveOperationException
-        inherit method public abstract java.lang.constant.ConstantDesc resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup) -> java.lang.Object throws java.lang.ReflectiveOperationException erased (java.lang.invoke.MethodHandles$Lookup) overrides -
+        inherit method resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup) erased (java.lang.invoke.MethodHandles$Lookup) overrides - by interface abstract java.lang.constant.ConstantDesc (java.lang.invoke.MethodHandles$Lookup) -> java.lang.Object throws java.lang.ReflectiveOperationException
         table abstract resolveConstantDesc(java.lang.invoke.MethodHandles$Lookup)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

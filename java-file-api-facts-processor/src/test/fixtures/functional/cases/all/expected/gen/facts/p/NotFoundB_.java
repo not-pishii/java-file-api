@@ -36,7 +36,7 @@ import p.NotFoundB;
 ///
 /// A generated class extends or implements [NotFoundB] by the proof its metamodel starts, with the stages of `NotFoundB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", complete = true, format = 13)
+@GeneratedMetamodel(of = NotFoundB.class, fingerprint = "6e24d8a537a2c47290ccefb3c62eebaa63b08e3045a98964418cfa2a1c5444e4", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class NotFoundB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [NotFoundB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.NotFoundB_"), "2451a08dc5ecdaa6d68358f227c61b2d6bf241f9d896181a581043272808e12a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.NotFoundB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new NotFoundB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.NotFoundB_"), "6e24d8a537a2c47290ccefb3c62eebaa63b08e3045a98964418cfa2a1c5444e4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.NotFoundB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new NotFoundB_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,8 @@ public final class NotFoundB_ {
     static final class Canonical {
         /// The canonical form of [NotFoundB].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.NotFoundB interface sealed=no
+        javafile-facts-canonical 8
+        type p.NotFoundB interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -68,7 +68,7 @@ public final class NotFoundB_ {
         members declared-accessible
         member method public abstract m() -> void throws java.io.FileNotFoundException
         sam m() -> void throws java.io.FileNotFoundException
-        inherit method public abstract p.NotFoundB m() -> void throws java.io.FileNotFoundException erased () overrides -
+        inherit method m() erased () overrides - by interface abstract p.NotFoundB () -> void throws java.io.FileNotFoundException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

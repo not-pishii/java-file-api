@@ -33,7 +33,7 @@ import p.PubB;
 ///
 /// A generated class extends or implements [PubB] by the proof its metamodel starts, with the stages of `PubB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubB.class, fingerprint = "f16eeb5e23ce2df41a3249c257ec76485974d73fd74a74dd2fe62f82d02055af", complete = true, format = 13)
+@GeneratedMetamodel(of = PubB.class, fingerprint = "d96047c12fcce07bc929310355a2b05d640f903db4ad2d308c8005a47ff0de80", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class PubB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubB_"), "f16eeb5e23ce2df41a3249c257ec76485974d73fd74a74dd2fe62f82d02055af", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubB_"), "d96047c12fcce07bc929310355a2b05d640f903db4ad2d308c8005a47ff0de80", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubB_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,8 @@ public final class PubB_ {
     static final class Canonical {
         /// The canonical form of [PubB].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.PubB interface sealed=no
+        javafile-facts-canonical 8
+        type p.PubB interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -65,6 +65,8 @@ public final class PubB_ {
         members declared-accessible
         member field public static constant java.lang.String k = "PubB.k"
         member field public static constant java.lang.String s = "PubB.s"
+        inherit field public p.PubB k
+        inherit field public p.PubB s
         table abstract -
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

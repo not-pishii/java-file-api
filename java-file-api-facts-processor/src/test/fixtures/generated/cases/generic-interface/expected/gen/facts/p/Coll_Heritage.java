@@ -10,11 +10,14 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
+import me.supcheg.javafile.facts.Heritage.Type.OfType;
 import me.supcheg.javafile.facts.Implementation1;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
@@ -24,7 +27,6 @@ import me.supcheg.javafile.facts.Steps;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
-import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.NullMarked;
 import p.Coll;
 
@@ -52,13 +54,13 @@ public final class Coll_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Coll] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("p.Coll"), Signature.of("add", Param.var(0)), List.of(), List.of(Types.typeVar("E")), Arity.FIXED, new Of(PrimitiveTypeRef.BOOLEAN), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("add", Param.var(0)), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Coll"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(new OfType(0)), new Of<>(new Fixed(PrimitiveTypeRef.BOOLEAN)), List.of())), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
         }
     }
 
@@ -89,7 +91,7 @@ public final class Coll_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, Coll<E>> add_E(Implementation1<Self, ? extends Bool, E> how) {
-            return this.steps.with(Signature.of("add", Param.var(0)), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

@@ -21,6 +21,7 @@ import java.util.Optional;
 ///
 /// @param desc the class or interface, by binary name (`java.util.Map$Entry`)
 /// @param kind the kind of the type
+/// @param nesting where the type is declared: whether it is an inner class
 /// @param typeParams the type parameters, with their bounds; a lone `Object` bound is left out
 /// @param nonPublicBoundTypes the types that are not `public` mentioned by the bounds of
 ///                            `typeParams`, by binary name, sorted: a metamodel cannot
@@ -49,6 +50,7 @@ import java.util.Optional;
 public record TypeModel(
         ClassDesc desc,
         DeclaredKind kind,
+        Nesting nesting,
         List<TypeParam> typeParams,
         List<String> nonPublicBoundTypes,
         List<ClassDesc> superclasses,
@@ -116,6 +118,7 @@ public record TypeModel(
         return new TypeModel(
                 desc,
                 kind,
+                nesting,
                 typeParams,
                 nonPublicBoundTypes,
                 superclasses,

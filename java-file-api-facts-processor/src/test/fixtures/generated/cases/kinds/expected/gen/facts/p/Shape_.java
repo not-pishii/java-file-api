@@ -28,7 +28,7 @@ import p.Shape;
 ///
 /// No generated class extends or implements [Shape]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shape.class, fingerprint = "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", complete = true, format = 13)
+@GeneratedMetamodel(of = Shape.class, fingerprint = "d25811acc2eb487680f58971f22b694985f7dd78fd1ac28982869687c50b5a50", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Shape_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Shape] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shape_"), "e09ce82f2985ca0180f9ab8d4e9779595c70b6f1df14120e1375f06e4dc495c4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Shape"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Shape_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shape_"), "d25811acc2eb487680f58971f22b694985f7dd78fd1ac28982869687c50b5a50", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Shape"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Shape_Heritage());
 
         private Data() {
         }
@@ -50,8 +50,8 @@ public final class Shape_ {
     static final class Canonical {
         /// The canonical form of [Shape].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Shape interface sealed=yes
+        javafile-facts-canonical 8
+        type p.Shape interface sealed=yes nesting=top
         tparams -
         superclasses -
         interfaces -

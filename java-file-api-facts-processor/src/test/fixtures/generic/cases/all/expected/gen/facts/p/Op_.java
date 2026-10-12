@@ -38,7 +38,7 @@ import p.Op;
 ///
 /// @param <T> a type argument of [Op]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Op.class, fingerprint = "0cd31f4ae198556219a41d8f0f29752cf495611fb9e7fdcac34650d8c0809aef", complete = true, format = 13)
+@GeneratedMetamodel(of = Op.class, fingerprint = "7f787108ce4aa6fb5cd1787783aba725b0638c21b9da02dbfad07d18bbda1b47", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Op_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Op] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Op_"), "0cd31f4ae198556219a41d8f0f29752cf495611fb9e7fdcac34650d8c0809aef", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Op"), List.of(new TypeParam("T", List.of())), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(Types.typeVar("T")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.typeVar("T")), Types.exact(Types.typeVar("T")))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.var(0))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Op_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Op_"), "7f787108ce4aa6fb5cd1787783aba725b0638c21b9da02dbfad07d18bbda1b47", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Op"), List.of(new TypeParam("T", List.of())), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(Types.typeVar("T")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.typeVar("T")), Types.exact(Types.typeVar("T")))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.var(0))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Op_Heritage());
 
         private Data() {
         }
@@ -60,8 +60,8 @@ public final class Op_<T> {
     static final class Canonical {
         /// The canonical form of [Op].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Op interface sealed=no
+        javafile-facts-canonical 8
+        type p.Op interface sealed=no nesting=top
         tparams #0
         superclasses -
         interfaces java.util.function.Function
@@ -69,9 +69,9 @@ public final class Op_<T> {
         enum -
         members declared-accessible
         sam apply(#0) -> #0 throws -
-        inherit method public abstract java.util.function.Function apply(#0) -> #0 throws - erased (java.lang.Object) overrides -
-        inherit method public default java.util.function.Function <^0> andThen(java.util.function.Function<? super #0, ? extends ^0>) -> java.util.function.Function<#0, ^0> throws - erased (java.util.function.Function) overrides -
-        inherit method public default java.util.function.Function <^0> compose(java.util.function.Function<? super ^0, ? extends #0>) -> java.util.function.Function<^0, #0> throws - erased (java.util.function.Function) overrides -
+        inherit method andThen(java.util.function.Function) erased (java.util.function.Function) overrides - by interface default java.util.function.Function <^0> (java.util.function.Function<? super #0, ? extends ^0>) -> java.util.function.Function<#0, ^0> throws -
+        inherit method apply(#0) erased (java.lang.Object) overrides - by interface abstract java.util.function.Function (#0) -> #0 throws -
+        inherit method compose(java.util.function.Function) erased (java.util.function.Function) overrides - by interface default java.util.function.Function <^0> (java.util.function.Function<? super ^0, ? extends #0>) -> java.util.function.Function<^0, #0> throws -
         table abstract apply(#0)
         table concrete andThen(java.util.function.Function); compose(java.util.function.Function); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

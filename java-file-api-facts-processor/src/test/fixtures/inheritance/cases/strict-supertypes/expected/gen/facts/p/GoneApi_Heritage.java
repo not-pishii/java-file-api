@@ -9,11 +9,13 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
@@ -47,13 +49,13 @@ public final class GoneApi_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [GoneApi] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.GoneApi"), Signature.of("gone", Param.fixed(ClassDesc.of("p.Secret"))), List.of(), List.of(Types.of(ClassDesc.of("p.Secret"))), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of(ClassDesc.of("p.Secret"))), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("gone", Param.fixed(ClassDesc.of("p.Secret"))), List.of(new Declaration(new OfInterface(ClassDesc.of("p.GoneApi"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(new Fixed(Types.of(ClassDesc.of("p.Secret")))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("p.Secret"))), List.of());
         }
     }
 

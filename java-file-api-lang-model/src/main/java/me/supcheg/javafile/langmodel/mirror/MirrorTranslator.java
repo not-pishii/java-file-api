@@ -677,6 +677,7 @@ public final class MirrorTranslator {
         return new Translation.Ok<>(new TypeModel(
                 desc(element),
                 kind(element),
+                nesting(element),
                 typeParams,
                 List.copyOf(bounds.nonPublic),
                 superclasses,
@@ -687,7 +688,7 @@ public final class MirrorTranslator {
                 element.getModifiers().contains(Modifier.SEALED),
                 sam,
                 switch (filter) {
-                    case DECLARED_ACCESSIBLE -> heritage(element);
+                    case DECLARED_ACCESSIBLE -> inheritance(element);
                     case NONE -> Heritage.UNTOLD;
                 },
                 filter,
@@ -704,6 +705,17 @@ public final class MirrorTranslator {
                 .map(type -> (TypeElement) type.getEnclosingElement())
                 .filter(outer -> !outer.getTypeParameters().isEmpty())
                 .findFirst();
+    }
+
+    /// Where a type is declared, as a class that extends it has to know: an inner class is one that is a
+    /// member of a class and not `static` — an interface, an enum and a record never are.
+    private static Nesting nesting(TypeElement element) {
+        if (element.getNestingKind() != NestingKind.MEMBER) {
+            return Nesting.TOP_LEVEL;
+        }
+        return element.getKind() == ElementKind.CLASS && !element.getModifiers().contains(Modifier.STATIC)
+                ? Nesting.INNER
+                : Nesting.STATIC_MEMBER;
     }
 
     private static DeclaredKind kind(TypeElement element) {
@@ -784,21 +796,21 @@ public final class MirrorTranslator {
     }
 
     private MethodTableTemplate methods(TypeElement element, DeclaredType self) {
-        Map<MethodTableTemplate.Signature, Category> table =
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> table =
                 ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
                         .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
-                        .collect(Collectors.toMap(
-                                method -> signature(method, element, self),
-                                method -> category(method.getModifiers()),
-                                Category::stronger));
+                        .collect(Collectors.groupingBy(method -> signature(method, element, self)));
         boolean isInterface = element.getKind() == ElementKind.INTERFACE;
         Map<Category, Set<MethodTableTemplate.Signature>> parts = table.entrySet().stream()
                 .collect(Collectors.groupingBy(
                         // an interface that redeclares a public method of Object abstract does not ask its
                         // implementations for it: every class has it from Object
-                        e -> isInterface && e.getValue() == Category.ABSTRACT && OBJECT_METHODS.contains(e.getKey())
-                                ? Category.CONCRETE
-                                : e.getValue(),
+                        e -> {
+                            Category category = Category.of(e.getValue());
+                            return isInterface && category == Category.ABSTRACT && OBJECT_METHODS.contains(e.getKey())
+                                    ? Category.CONCRETE
+                                    : category;
+                        },
                         Collectors.mapping(Map.Entry::getKey, Collectors.toUnmodifiableSet())));
         return new MethodTableTemplate(
                 parts.getOrDefault(Category.ABSTRACT, Set.of()),
@@ -812,21 +824,31 @@ public final class MirrorTranslator {
     }
 
     /// What a class that extends or implements a type inherits of it
-    /// ([Heritage]): every method the type has that is not `private`,
-    /// declared or inherited, and every constructor it declares that is not,
-    /// as members of the type — whoever declares them, a supertype that is
-    /// not `public` included, and whatever their access and the types of
-    /// their signatures.
+    /// ([Heritage]), told by the positions of the type parameters:
     ///
-    /// - Of the methods the type has under one signature — the abstract ones
-    ///   it inherits from several supertypes — one stands for all: the one
-    ///   with a body if there is one, else the one of the most specific
-    ///   result, as for a `sam`. The others are among those it overrides.
-    /// - An interface tells neither the methods of `Object` nor a method it
-    ///   declares again with the signature of a `public` one of `Object`:
-    ///   a class that implements it has them from its superclass.
-    /// - A method overrides every method of a supertype of the type that
-    ///   `Elements.overrides` tells it overrides as a member of the type.
+    /// - every method that is not `private`, of the type and of every
+    ///   supertype of it, that no other of them overrides or hides for the
+    ///   type — whoever declares it, a supertype that is not `public`
+    ///   included, and whatever its access and the types of its signature.
+    ///   They are not read off `Elements.getAllMembers`, which leaves out
+    ///   what the type does not inherit: a method with package access of a
+    ///   superclass of another package is no member of the type, and javac
+    ///   asks a subclass for it all the same if it is abstract;
+    /// - the methods of one signature as one [Heritage.Method] with a
+    ///   declaration each, see there for their order;
+    /// - of an interface neither the methods of `Object`, nor a method it
+    ///   declares again with the signature of a `public` one of `Object` — a
+    ///   class that implements it has them from its superclass —, nor its
+    ///   `static` methods, which nothing inherits (JLS 8.4.8);
+    /// - every constructor the type declares that is not `private`;
+    /// - every field and member type that is not `private`, of the type and
+    ///   of every supertype of it.
+    ///
+    /// A method overrides another for the type if `Elements.overrides` tells
+    /// so for the type or for the class that declares it, or — which
+    /// `Elements` does not tell of a method the type does not inherit — it
+    /// is a method of a subclass in the package of a method with package
+    /// access, of a subsignature of it (JLS 8.4.8.1).
     ///
     /// @param element the class, interface, enum or record
     /// @return the heritage; [Heritage#UNTOLD] of a type that cannot be extended or implemented, and of
@@ -834,109 +856,302 @@ public final class MirrorTranslator {
     /// @throws IllegalStateException if a member mentions a type not generated yet: ask [#type] first, which
     ///                               defers
     public Heritage heritage(TypeElement element) {
+        try {
+            return inheritance(element);
+        } catch (Unresolved unresolved) {
+            throw new IllegalStateException(
+                    "a member of " + element.getQualifiedName() + " mentions " + unresolved.type
+                            + ", which is not generated yet",
+                    unresolved);
+        }
+    }
+
+    private Heritage inheritance(TypeElement element) {
         if (!(kind(element) instanceof DeclaredKind.Inheritable)) {
             return Heritage.UNTOLD;
         }
         DeclaredType self = (DeclaredType) element.asType();
         boolean isInterface = element.getKind() == ElementKind.INTERFACE;
         TypeElement object = elements.getTypeElement("java.lang.Object");
-        Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature =
-                ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
-                        .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
-                        .filter(method -> !isInterface
-                                || !(method.getEnclosingElement().equals(object)
-                                        || OBJECT_METHODS.contains(signature(method, element, self))))
-                        .collect(Collectors.groupingBy(
-                                method -> signature(method, element, self), LinkedHashMap::new, Collectors.toList()));
-        List<ExecutableElement> inSupertypes = supertypes(self)
-                .flatMap(supertype ->
-                        ElementFilter.methodsIn(((TypeElement) supertype.asElement()).getEnclosedElements()).stream())
+        // the type, then its supertypes, the nearer first
+        List<TypeElement> lineage = Stream.concat(
+                        Stream.of(element), supertypes(self).map(supertype -> (TypeElement) supertype.asElement()))
+                .toList();
+        Map<String, List<ExecutableElement>> byName = lineage.stream()
+                .flatMap(type -> ElementFilter.methodsIn(type.getEnclosedElements()).stream())
                 .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
-                .toList();
-        List<Inherited> methods = bySignature.entrySet().stream()
+                .filter(method -> !(method.getEnclosingElement().getKind().isInterface()
+                        && method.getModifiers().contains(Modifier.STATIC)))
+                .filter(method -> !isInterface
+                        || !(method.getEnclosingElement().equals(object)
+                                || OBJECT_METHODS.contains(signature(method, element, self))))
+                .collect(Collectors.groupingBy(
+                        method -> method.getSimpleName().toString(), LinkedHashMap::new, Collectors.toList()));
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature = byName.values().stream()
+                .flatMap(namesakes -> namesakes.stream()
+                        .filter(method -> namesakes.stream()
+                                .noneMatch(
+                                        other -> elements.hides(other, method) || overrides(other, method, element))))
+                .collect(Collectors.groupingBy(
+                        method -> signature(method, element, self), LinkedHashMap::new, Collectors.toList()));
+        List<Inherited<Heritage.Method<Heritage.Declaration>>> methods = bySignature.entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
-                .map(entry -> inherited(element, self, entry.getKey(), entry.getValue(), inSupertypes))
+                .map(entry -> inherited(
+                        element,
+                        self,
+                        entry.getKey(),
+                        entry.getValue(),
+                        byName.get(entry.getKey().name()),
+                        lineage))
                 .toList();
-        List<Inherited> constructors = ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
-                .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
-                .map(constructor -> constructorOf(element, self, constructor))
-                .sorted(Comparator.comparing(
-                        constructor -> constructor.member().signature().toString()))
-                .toList();
+        List<Inherited<Heritage.Constructor>> constructors =
+                ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
+                        .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
+                        .map(constructor -> constructorOf(element, self, constructor))
+                        .sorted(Comparator.comparing(
+                                constructor -> constructor.member().signature().toString()))
+                        .toList();
         boolean expressible = Stream.concat(methods.stream(), constructors.stream())
                 .allMatch(inherited -> inherited.problems().isEmpty());
         return expressible
                 ? new Heritage.Told(
-                        methods.stream()
-                                .map(inherited -> (Heritage.Method) inherited.member())
-                                .toList(),
-                        constructors.stream()
-                                .map(inherited -> (Heritage.Constructor) inherited.member())
-                                .toList())
+                        methods.stream().map(Inherited::member).toList(),
+                        constructors.stream().map(Inherited::member).toList(),
+                        named(lineage))
                 : Heritage.UNTOLD;
     }
 
-    /// A member of a heritage as it is read, and what of its signature cannot be expressed.
-    private record Inherited(Heritage.Member member, List<String> problems) {}
+    /// The fields and member types of a type and its supertypes that are not `private`: each once, by
+    /// name and then by the type that declares it.
+    private List<Heritage.Named> named(List<TypeElement> lineage) {
+        return lineage.stream()
+                .flatMap(type -> type.getEnclosedElements().stream()
+                        .filter(member -> !member.getModifiers().contains(Modifier.PRIVATE))
+                        .<Heritage.Named>flatMap(member -> {
+                            String name = member.getSimpleName().toString();
+                            return switch (member.getKind()) {
+                                case FIELD, ENUM_CONSTANT ->
+                                    Stream.of(new Heritage.Named.Field(name, desc(type), visibility(member)));
+                                case CLASS, INTERFACE, ENUM, RECORD, ANNOTATION_TYPE ->
+                                    Stream.of(new Heritage.Named.MemberType(name, desc(type), visibility(member)));
+                                default -> Stream.empty();
+                            };
+                        }))
+                .sorted(Comparator.comparing(Heritage.Named::name)
+                        .thenComparing(named -> named.declaredBy().descriptorString())
+                        .thenComparing(named -> named.getClass().getSimpleName()))
+                .toList();
+    }
 
-    /// The method that stands for the methods a type has under one signature.
-    private Inherited inherited(
+    /// Whether `other` overrides `method`, or implements it, for a type that has both among the methods
+    /// of its supertypes (JLS 8.4.8.1): as the class that declares `other` has the two, or — the method
+    /// of a superclass that implements one of an interface its class does not implement — as the type
+    /// does. The latter `Elements.overrides` tells of any method with a body and any abstract one of
+    /// its signature, so not of a method that `method` itself overrides: an abstract method a class
+    /// declares again is not implemented by the one it overrides.
+    private boolean overrides(ExecutableElement other, ExecutableElement method, TypeElement type) {
+        return !other.equals(method)
+                && (overridesDeclared(other, method)
+                        || !overridesDeclared(method, other) && elements.overrides(other, method, type));
+    }
+
+    /// Whether `other` overrides `method` as the class or interface that declares `other` has the two.
+    private boolean overridesDeclared(ExecutableElement other, ExecutableElement method) {
+        TypeElement declarer = (TypeElement) other.getEnclosingElement();
+        return elements.overrides(other, method, declarer) || overridesInPackage(other, declarer, method);
+    }
+
+    /// Whether `other`, a method of the class `declarer`, overrides `method`, one with package access of
+    /// a superclass in its package — whatever classes of other packages are between the two, through
+    /// which `declarer` does not inherit `method`, so that `Elements.overrides` denies it.
+    private boolean overridesInPackage(ExecutableElement other, TypeElement declarer, ExecutableElement method) {
+        TypeElement overridden = (TypeElement) method.getEnclosingElement();
+        Set<Modifier> modifiers = method.getModifiers();
+        if (visibility(method) != Heritage.Visibility.PACKAGE
+                || overridden.getKind().isInterface()
+                || declarer.getKind().isInterface()
+                || modifiers.contains(Modifier.STATIC)
+                || other.getModifiers().contains(Modifier.STATIC)
+                || declarer.equals(overridden)
+                || !elements.getPackageOf(declarer).equals(elements.getPackageOf(overridden))
+                || !types.isSubtype(types.erasure(declarer.asType()), types.erasure(overridden.asType()))) {
+            return false;
+        }
+        DeclaredType in = (DeclaredType) declarer.asType();
+        return types.isSubsignature(
+                (ExecutableType) types.asMemberOf(in, other), (ExecutableType) types.asMemberOf(in, method));
+    }
+
+    /// A member of a heritage as it is read, and what of its signature cannot be expressed.
+    private record Inherited<M>(M member, List<String> problems) {}
+
+    /// The methods a type has under one signature.
+    ///
+    /// @param standing the methods of the signature that none overrides or hides
+    /// @param namesakes every method of the name among the supertypes of the type
+    /// @param lineage the type and its supertypes, the nearer first
+    private Inherited<Heritage.Method<Heritage.Declaration>> inherited(
             TypeElement element,
             DeclaredType self,
             MethodTableTemplate.Signature signature,
-            List<ExecutableElement> twins,
-            List<ExecutableElement> inSupertypes) {
-        ExecutableElement method = twins.stream()
-                .filter(twin -> !twin.getModifiers().contains(Modifier.ABSTRACT))
-                .findFirst()
-                .orElseGet(() -> pick(twins, self));
-        List<ExecutableElement> overridden = Stream.concat(
-                        twins.stream(),
-                        inSupertypes.stream()
-                                .filter(other -> other.getSimpleName().contentEquals(method.getSimpleName())
-                                        && elements.overrides(method, other, element)))
-                .filter(other -> !other.equals(method))
-                .distinct()
+            List<ExecutableElement> standing,
+            List<ExecutableElement> namesakes,
+            List<TypeElement> lineage) {
+        // the one whose result suits the others, among those a class of any package inherits
+        List<ExecutableElement> reached = standing.stream()
+                .filter(method -> method.getEnclosingElement().getKind().isInterface()
+                        || visibility(method) != Heritage.Visibility.PACKAGE)
                 .toList();
-        Reading reading = new Reading(VarScope.of(element, method));
-        ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
-        TypeMirror returnType = type.getReturnType();
-        Heritage.Method told = new Heritage.Method(
-                visibility(method),
-                dispatch(method),
-                desc((TypeElement) method.getEnclosingElement()),
-                signature,
-                typeParams(type, reading),
-                params(type, reading),
-                method.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED,
-                returnType.getKind() == TypeKind.VOID
-                        ? Heritage.Result.NOTHING
-                        : new Heritage.Result.Of(type(returnType, reading)),
-                throwsTypes(type, reading),
-                Stream.concat(Stream.of(method), overridden.stream())
-                        .map(this::erasedParameters)
-                        .collect(Collectors.toUnmodifiableSet()),
-                overridden.stream()
-                        .map(other -> elements.getBinaryName((TypeElement) other.getEnclosingElement())
-                                .toString())
-                        .distinct()
-                        .sorted()
-                        .map(ClassDesc::of)
-                        .toList());
-        return new Inherited(told, List.copyOf(reading.problems));
+        Optional<ExecutableElement> suiting = reached.isEmpty() ? Optional.empty() : Optional.of(pick(reached, self));
+        List<ExecutableElement> ordered = standing.stream()
+                .sorted(Comparator.<ExecutableElement, Boolean>comparing(method -> !reached.contains(method))
+                        .thenComparing(method -> !suiting.equals(Optional.of(method)))
+                        .thenComparing(
+                                method -> method.getEnclosingElement().getKind().isInterface())
+                        .thenComparing(method -> lineage.indexOf((TypeElement) method.getEnclosingElement())))
+                .toList();
+        List<ExecutableElement> overridden = namesakes.stream()
+                .filter(other -> !standing.contains(other)
+                        && standing.stream().anyMatch(method -> overrides(method, other, element)))
+                .toList();
+        Reading reading = new Reading(VarScope.of(element));
+        List<Heritage.Declaration> declarations = ordered.stream()
+                .map(method -> {
+                    ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
+                    Positions positions = new Positions(element, type);
+                    TypeMirror returnType = type.getReturnType();
+                    return new Heritage.Declaration(
+                            declarer(method),
+                            arity(method),
+                            variables(positions, reading),
+                            told(type.getParameterTypes(), positions, reading),
+                            returnType.getKind() == TypeKind.VOID
+                                    ? Heritage.Result.nothing()
+                                    : new Heritage.Result.Of<>(told(returnType, positions, reading)),
+                            told(type.getThrownTypes(), positions, reading));
+                })
+                .toList();
+        return new Inherited<>(
+                new Heritage.Method<>(
+                        signature,
+                        declarations,
+                        Stream.concat(standing.stream(), overridden.stream())
+                                .map(this::erasedParameters)
+                                .collect(Collectors.toUnmodifiableSet()),
+                        overridden.stream()
+                                .map(other -> elements.getBinaryName((TypeElement) other.getEnclosingElement())
+                                        .toString())
+                                .distinct()
+                                .sorted()
+                                .map(ClassDesc::of)
+                                .toList()),
+                List.copyOf(reading.problems));
     }
 
-    private Inherited constructorOf(TypeElement element, DeclaredType self, ExecutableElement constructor) {
-        Reading reading = new Reading(VarScope.of(constructor));
+    private Inherited<Heritage.Constructor> constructorOf(
+            TypeElement element, DeclaredType self, ExecutableElement constructor) {
+        Reading reading = new Reading(VarScope.of(element));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, constructor);
-        Heritage.Constructor told = new Heritage.Constructor(
-                visibility(constructor),
-                new MethodTableTemplate.Signature(desc(element).displayName(), declared(constructor, element, self)),
-                typeParams(type, reading),
-                params(type, reading),
-                constructor.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED,
-                throwsTypes(type, reading));
-        return new Inherited(told, List.copyOf(reading.problems));
+        Positions positions = new Positions(element, type);
+        return new Inherited<>(
+                new Heritage.Constructor(
+                        visibility(constructor),
+                        new MethodTableTemplate.Signature(
+                                desc(element).displayName(), declared(constructor, element, self)),
+                        arity(constructor),
+                        variables(positions, reading),
+                        told(type.getParameterTypes(), positions, reading),
+                        told(type.getThrownTypes(), positions, reading)),
+                List.copyOf(reading.problems));
+    }
+
+    /// The type parameters a signature of a heritage may mention, each known by its position: those of
+    /// the type the heritage is of, and those of the member as the type has it.
+    ///
+    /// @param type the type the heritage is of
+    /// @param member the method or constructor as a member of `type`
+    private record Positions(TypeElement type, ExecutableType member) {
+
+        Optional<Heritage.Type> of(TypeVariable variable) {
+            int own = IntStream.range(0, member.getTypeVariables().size())
+                    .filter(i -> member.getTypeVariables().get(i).equals(variable)
+                            || member.getTypeVariables().get(i).asElement().equals(variable.asElement()))
+                    .findFirst()
+                    .orElse(-1);
+            if (own >= 0) {
+                return Optional.of(new Heritage.Type.OfMember(own));
+            }
+            int ofType = type.getTypeParameters().indexOf(variable.asElement());
+            return ofType >= 0 ? Optional.of(new Heritage.Type.OfType(ofType)) : Optional.empty();
+        }
+    }
+
+    private List<Heritage.Variable> variables(Positions positions, Reading reading) {
+        return positions.member().getTypeVariables().stream()
+                .map(variable -> {
+                    TypeMirror upper = variable.getUpperBound();
+                    List<? extends TypeMirror> parts = upper.getKind() == TypeKind.INTERSECTION
+                            ? ((IntersectionType) upper).getBounds()
+                            : List.of(upper);
+                    List<Heritage.Type> bounds = told(parts, positions, reading);
+                    return new Heritage.Variable(
+                            bounds.equals(List.of(new Heritage.Type.Fixed(Types.OBJECT))) ? List.of() : bounds);
+                })
+                .toList();
+    }
+
+    private List<Heritage.Type> told(List<? extends TypeMirror> mirrors, Positions positions, Reading reading) {
+        return mirrors.stream().map(mirror -> told(mirror, positions, reading)).toList();
+    }
+
+    /// A type of a signature of a heritage: a type variable by its position, the rest as [#type] reads it.
+    private Heritage.Type told(TypeMirror mirror, Positions positions, Reading reading) {
+        return switch (mirror.getKind()) {
+            case ARRAY -> Heritage.Type.array(told(((ArrayType) mirror).getComponentType(), positions, reading));
+            case TYPEVAR ->
+                positions
+                        .of((TypeVariable) mirror)
+                        .orElseGet(() -> new Heritage.Type.Fixed(
+                                reading.unrepresentable("type variable " + mirror + " is out of scope")));
+            case DECLARED -> {
+                DeclaredType declared = (DeclaredType) mirror;
+                // the class itself, with what reading it finds, apart from its type arguments
+                ClassOrInterfaceTypeRef raw = declared((DeclaredType) types.erasure(declared), reading);
+                List<? extends TypeMirror> arguments = declared.getTypeArguments();
+                boolean outerArguments = Stream.iterate(
+                                declared.getEnclosingType(),
+                                outer -> outer.getKind() == TypeKind.DECLARED,
+                                outer -> ((DeclaredType) outer).getEnclosingType())
+                        .anyMatch(outer ->
+                                !((DeclaredType) outer).getTypeArguments().isEmpty());
+                yield arguments.isEmpty() || outerArguments || !(raw instanceof ClassTypeRef(ClassDesc desc, var _))
+                        ? new Heritage.Type.Fixed(declared(declared, reading))
+                        : Heritage.Type.parameterized(
+                                desc,
+                                arguments.stream()
+                                        .map(argument -> toldArgument(argument, positions, reading))
+                                        .toList());
+            }
+            default -> new Heritage.Type.Fixed(type(mirror, reading));
+        };
+    }
+
+    private Heritage.Argument toldArgument(TypeMirror argument, Positions positions, Reading reading) {
+        if (argument.getKind() != TypeKind.WILDCARD) {
+            return new Heritage.Argument.Exact(told(argument, positions, reading));
+        }
+        WildcardType wildcard = (WildcardType) argument;
+        TypeMirror upper = wildcard.getExtendsBound();
+        if (upper != null) {
+            Heritage.Type bound = told(upper, positions, reading);
+            return bound.equals(new Heritage.Type.Fixed(Types.OBJECT))
+                    ? new Heritage.Argument.Unbounded()
+                    : new Heritage.Argument.Extends(bound);
+        }
+        TypeMirror lower = wildcard.getSuperBound();
+        return lower != null
+                ? new Heritage.Argument.Super(told(lower, positions, reading))
+                : new Heritage.Argument.Unbounded();
     }
 
     /// The erasures of the parameters of a method as it is declared, whatever type it is a member of.
@@ -954,18 +1169,28 @@ public final class MirrorTranslator {
         return modifiers.contains(Modifier.PROTECTED) ? Heritage.Visibility.PROTECTED : Heritage.Visibility.PACKAGE;
     }
 
-    private static Heritage.Dispatch dispatch(ExecutableElement method) {
+    private static Heritage.Arity arity(ExecutableElement member) {
+        return member.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED;
+    }
+
+    private Heritage.Declarer declarer(ExecutableElement method) {
+        TypeElement type = (TypeElement) method.getEnclosingElement();
         Set<Modifier> modifiers = method.getModifiers();
-        if (modifiers.contains(Modifier.STATIC)) {
-            return Heritage.Dispatch.STATIC;
+        if (type.getKind().isInterface()) {
+            return new Heritage.Declarer.OfInterface(
+                    desc(type),
+                    modifiers.contains(Modifier.DEFAULT)
+                            ? Heritage.InterfaceMethod.DEFAULT
+                            : Heritage.InterfaceMethod.ABSTRACT);
         }
-        if (modifiers.contains(Modifier.ABSTRACT)) {
-            return Heritage.Dispatch.ABSTRACT;
-        }
-        if (modifiers.contains(Modifier.FINAL)) {
-            return Heritage.Dispatch.FINAL;
-        }
-        return modifiers.contains(Modifier.DEFAULT) ? Heritage.Dispatch.DEFAULT : Heritage.Dispatch.CONCRETE;
+        Heritage.ClassMethod what = modifiers.contains(Modifier.STATIC)
+                ? Heritage.ClassMethod.STATIC
+                : modifiers.contains(Modifier.ABSTRACT)
+                        ? Heritage.ClassMethod.ABSTRACT
+                        : modifiers.contains(Modifier.FINAL)
+                                ? Heritage.ClassMethod.FINAL
+                                : Heritage.ClassMethod.CONCRETE;
+        return new Heritage.Declarer.OfClass(desc(type), visibility(method), what);
     }
 
     /// The signature of a method as a member of a type, in the template of
@@ -979,12 +1204,6 @@ public final class MirrorTranslator {
     private List<MethodTableTemplate.Param> declared(ExecutableElement member, TypeElement owner, DeclaredType self) {
         ExecutableType type = (ExecutableType) types.asMemberOf(self, member);
         return type.getParameterTypes().stream().map(p -> param(p, owner)).toList();
-    }
-
-    private static Category category(Set<Modifier> modifiers) {
-        return modifiers.contains(Modifier.STATIC)
-                ? Category.STATIC
-                : modifiers.contains(Modifier.ABSTRACT) ? Category.ABSTRACT : Category.CONCRETE;
     }
 
     /// The erasure of a parameter in the template of the method table: a
@@ -1288,16 +1507,29 @@ public final class MirrorTranslator {
         }
     }
 
-    /// The part of a method table a method is in. Where getAllMembers lists
-    /// one signature in two parts, the stronger wins: a static method, or a
-    /// concrete one that implements an inherited abstract one.
+    /// The part of a method table a method is in.
     private enum Category {
         STATIC,
         CONCRETE,
         ABSTRACT;
 
-        Category stronger(Category other) {
-            return compareTo(other) <= 0 ? this : other;
+        /// The part of the methods `Elements.getAllMembers` lists under one signature (JLS 8.4.8,
+        /// 8.4.8.4): the method of a class stands, whatever it is — an abstract one beside a default
+        /// method of an interface leaves the method abstract, one with a body implements an abstract
+        /// method of an interface the class that declares it does not implement. Among the methods of
+        /// interfaces alone an abstract one stands.
+        static Category of(List<ExecutableElement> twins) {
+            List<Set<Modifier>> ofClasses = twins.stream()
+                    .filter(twin -> !twin.getEnclosingElement().getKind().isInterface())
+                    .map(Element::getModifiers)
+                    .toList();
+            List<Set<Modifier>> telling = ofClasses.isEmpty()
+                    ? twins.stream().map(Element::getModifiers).toList()
+                    : ofClasses;
+            if (telling.stream().anyMatch(modifiers -> modifiers.contains(Modifier.STATIC))) {
+                return STATIC;
+            }
+            return telling.stream().anyMatch(modifiers -> modifiers.contains(Modifier.ABSTRACT)) ? ABSTRACT : CONCRETE;
         }
     }
 

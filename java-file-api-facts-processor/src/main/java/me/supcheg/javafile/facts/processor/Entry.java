@@ -2,6 +2,8 @@ package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
+import me.supcheg.javafile.langmodel.mirror.CtorModel;
+import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -15,10 +17,10 @@ import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.type.UnboundedTypeArg;
+import me.supcheg.routine.Either;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import java.lang.constant.ClassDesc;
@@ -27,9 +29,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Whether a generated class can extend or implement a type, as the class
@@ -37,29 +39,14 @@ import java.util.stream.Stream;
 /// abstract method of the type ([Offered]), or not at all, and why
 /// ([Refused]). A type without the entry is neither extended nor
 /// implemented: the typed layer takes the proof alone.
+///
+/// An entry is offered only where a generator can go all the way: every
+/// abstract method has a step a generated method can take, and the fact
+/// that names it; a class has a constructor with a fact to call. Whatever
+/// the entry is refused for is read off the model of the type
+/// ([TypeModel]), which its canonical form tells, and off the facts of its
+/// metamodel.
 sealed interface Entry permits Entry.Offered, Entry.Refused {
-
-    /// The names the class of a heritage uses itself, which a type parameter of the type is not named like.
-    Set<String> RESERVED = Set.of(
-            "Complete",
-            "Steps",
-            "RefToken",
-            "DeclaredToken",
-            "UnsafeFacts",
-            "Prim",
-            "Signature",
-            "Param",
-            "Told",
-            "Method",
-            "Constructor",
-            "Supplier",
-            "ClassDesc",
-            "List",
-            "Set",
-            "Types",
-            "String",
-            "Object",
-            "Override");
 
     /// The greatest number of parameters of a method an `ImplementationN` is of.
     int MAX_ARITY = 12;
@@ -84,41 +71,61 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
     ///
     /// @param name the name of the step, made as that of the fact of a method is: the name of the method,
     ///     and after `_` the types of its parameters
-    /// @param method the method, as a member of the type
-    record Step(String name, Heritage.Method method) {}
+    /// @param index the position of the method among the methods of the heritage of the type: where the
+    ///     step reads the signature it takes an implementation of
+    /// @param told the method as the heritage tells it, with every declaration
+    /// @param params the parameter types, in terms of the type parameters of the type as it names them
+    /// @param result the result an implementation has, or a subtype of it: that of the declaration whose
+    ///     result suits the others
+    record Step(
+            String name,
+            int index,
+            Heritage.Method<Heritage.Declaration> told,
+            List<TypeRef> params,
+            Heritage.Result<TypeRef> result) {
+        public Step {
+            params = List.copyOf(params);
+        }
+    }
 
     /// The entry of a type.
     ///
-    /// @param type the type
     /// @param model the type as it is read, with its members
+    /// @param plan the facts of its metamodel
     /// @param elements the element utilities of the compilation
     /// @return the entry, or why there is none
-    static Entry of(TypeElement type, TypeModel model, Elements elements) {
-        return refusal(type, model, elements).<Entry>map(Refused::new).orElseGet(() -> steps(model));
+    static Entry of(TypeModel model, MemberPlan plan, Elements elements) {
+        return refusal(model, plan, elements).<Entry>map(Refused::new).orElseGet(() -> steps(model, plan, elements));
     }
 
-    private static Optional<String> refusal(TypeElement type, TypeModel model, Elements elements) {
+    private static Optional<String> refusal(TypeModel model, MemberPlan plan, Elements elements) {
         if (!(model.kind() instanceof DeclaredKind.Inheritable)) {
             return Optional.of("it is " + article(model.kind().toString()) + ", which no class extends");
         }
         if (model.sealed()) {
             return Optional.of("it is sealed: only the classes it permits extend or implement it");
         }
-        String name = type.getQualifiedName().toString();
+        String name = Models.binaryName(model.desc());
         if (name.equals("java.lang.Enum") || name.equals("java.lang.Record")) {
             return Optional.of("no class extends " + name + " but an enum or a record does");
         }
-        if (type.getNestingKind() == NestingKind.MEMBER && !type.getModifiers().contains(Modifier.STATIC)) {
+        boolean inner =
+                switch (model.nesting()) {
+                    case INNER -> true;
+                    case TOP_LEVEL, STATIC_MEMBER -> false;
+                };
+        if (inner) {
             return Optional.of("it is an inner class, which is extended with an instance of the class it is nested in");
         }
         return switch (model.heritage()) {
             case Heritage.Untold _ ->
                 Optional.of("a member a class would inherit of it has a signature that cannot be told");
-            case Heritage.Told told -> refusal(model, told, elements);
+            case Heritage.Told told -> refusal(model, told, plan, elements);
         };
     }
 
-    private static Optional<String> refusal(TypeModel model, Heritage.Told heritage, Elements elements) {
+    private static Optional<String> refusal(
+            TypeModel model, Heritage.Told heritage, MemberPlan plan, Elements elements) {
         boolean isClass = !(model.kind() instanceof DeclaredKind.Interface);
         if (isClass
                 && heritage.constructors().stream().noneMatch(constructor -> switch (constructor.visibility()) {
@@ -127,91 +134,143 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
                 })) {
             return Optional.of("it has no constructor a class of another package calls");
         }
+        if (isClass && plan.models().noneMatch(CtorModel.class::isInstance)) {
+            return Optional.of("none of its constructors has a fact, so no generated constructor calls one");
+        }
         if (!model.nonPublicBoundTypes().isEmpty()) {
             return Optional.of("a bound of its type parameters mentions a type that is not public: "
                     + String.join(", ", model.nonPublicBoundTypes()));
         }
-        Optional<String> hidden = model.typeParams().stream()
+        return model.typeParams().stream()
                 .flatMap(param -> param.bounds().stream())
                 .flatMap(Entry::mentions)
                 .filter(mentioned -> !nameable(mentioned, elements))
                 .map(Models::binaryName)
-                .findFirst();
-        if (hidden.isPresent()) {
-            return Optional.of("a bound of its type parameters mentions " + hidden.get() + ", which a class of another"
-                    + " package cannot name");
-        }
-        return abstractMethods(heritage)
-                .flatMap(method ->
-                        unimplementable(method, elements)
-                                .map(why -> "its abstract method " + method.signature() + " " + why)
-                                .stream())
                 .findFirst()
-                .or(() -> model.typeParams().stream()
-                        .map(TypeParam::name)
-                        .filter(classNames(model, heritage)::contains)
-                        .findFirst()
-                        .map(param -> "its type parameter " + param + " is named like a class the proof mentions"));
+                .map(hidden -> "a bound of its type parameters mentions " + hidden + ", which a class of another"
+                        + " package cannot name");
     }
 
-    /// The names the class of a heritage starts the name of a class with: of what it is written with, of
-    /// the type, and of the classes the bounds of its type parameters and its abstract methods mention.
-    private static Set<String> classNames(TypeModel model, Heritage.Told heritage) {
-        return Stream.of(
-                        RESERVED.stream(),
-                        simpleNames(model.desc()),
-                        model.typeParams().stream()
-                                .flatMap(param -> param.bounds().stream())
-                                .flatMap(Entry::mentions)
-                                .flatMap(Entry::simpleNames),
-                        abstractMethods(heritage).flatMap(Entry::mentions).flatMap(Entry::simpleNames))
-                .flatMap(Function.identity())
-                .collect(Collectors.toSet());
+    /// The methods of a heritage a class has to implement, each with its position among the methods.
+    private static Stream<Map.Entry<Integer, Heritage.Method<Heritage.Declaration>>> abstractMethods(
+            Heritage.Told heritage) {
+        return IntStream.range(0, heritage.methods().size())
+                .mapToObj(i -> Map.entry(i, heritage.methods().get(i)))
+                .filter(method -> switch (method.getValue().standing()) {
+                    case ABSTRACT -> true;
+                    case DEFAULT, CONCRETE, FINAL, STATIC -> false;
+                });
     }
 
-    private static Stream<Heritage.Method> abstractMethods(Heritage.Told heritage) {
-        return heritage.methods().stream().filter(method -> switch (method.dispatch()) {
-            case ABSTRACT -> true;
-            case DEFAULT, CONCRETE, FINAL, STATIC -> false;
-        });
-    }
-
-    /// Why no generated class of another package implements an abstract method, if none does.
-    private static Optional<String> unimplementable(Heritage.Method method, Elements elements) {
-        boolean packageAccess =
-                switch (method.visibility()) {
+    /// The step of an abstract method, named as its fact is, or why no generated class of another
+    /// package implements the method.
+    ///
+    /// @param qualified whether the classes of the name are with their packages
+    private static Either<String, Step> step(
+            int index,
+            Heritage.Method<Heritage.Declaration> method,
+            TypeModel model,
+            MemberPlan plan,
+            Elements elements,
+            boolean qualified) {
+        List<Heritage.Declaration> declarations = method.declarations();
+        Optional<Heritage.Declarer> hidden = declarations.stream()
+                .map(Heritage.Declaration::by)
+                .filter(by -> switch (by.visibility()) {
                     case PUBLIC, PROTECTED -> false;
                     case PACKAGE -> true;
-                };
-        if (packageAccess) {
-            return Optional.of("has package access, so a class of another package cannot implement it");
+                })
+                .findFirst();
+        if (hidden.isPresent()) {
+            return Either.left("has package access in "
+                    + Models.binaryName(hidden.get().type())
+                    + ", so a class of another package cannot implement it");
         }
-        if (!method.typeParams().isEmpty()) {
-            return Optional.of("is generic, and a generated method has no type parameters yet");
+        if (declarations.stream()
+                .anyMatch(declaration -> !declaration.typeParams().isEmpty())) {
+            return Either.left("is generic, and a generated method has no type parameters yet");
         }
-        if (method.params().size() > MAX_ARITY) {
-            return Optional.of("has " + method.params().size() + " parameters, more than " + MAX_ARITY);
+        boolean variable = declarations.stream().anyMatch(declaration -> switch (declaration.arity()) {
+            case VARIABLE -> true;
+            case FIXED -> false;
+        });
+        if (variable) {
+            return Either.left("is of variable arity, and a generated method is not yet");
         }
-        return mentions(method)
+        List<Heritage.Plain> plain = declarations.stream()
+                .map(declaration -> declaration.applied(model.typeParams().stream()
+                        .<TypeRef>map(param -> Types.typeVar(param.name()))
+                        .toList()))
+                .map(inherited -> switch (inherited) {
+                    case Heritage.Plain told -> told;
+                    case Heritage.Generic _ -> throw new IllegalStateException("a generic method was refused");
+                })
+                .toList();
+        Heritage.Plain first = plain.getFirst();
+        if (plain.stream().anyMatch(other -> !other.params().equals(first.params()))) {
+            return Either.left("is declared with other parameter types by "
+                    + declarations.stream()
+                            .map(declaration ->
+                                    Models.binaryName(declaration.by().type()))
+                            .collect(Collectors.joining(" and "))
+                    + ", so no one method of a generated class implements each");
+        }
+        if (first.params().size() > MAX_ARITY) {
+            return Either.left("has " + first.params().size() + " parameters, more than " + MAX_ARITY);
+        }
+        Optional<String> unnameable = mentions(first)
                 .filter(mentioned -> !nameable(mentioned, elements))
                 .map(Models::binaryName)
-                .findFirst()
-                .map(hidden -> "mentions " + hidden + ", which a class of another package cannot name");
+                .findFirst();
+        if (unnameable.isPresent()) {
+            return Either.left("mentions " + unnameable.get() + ", which a class of another package cannot name");
+        }
+        // the fact of a method is in the metamodel of a public type that declares it: here, if only the type
+        // itself and supertypes that have no metamodel do
+        boolean factHere = declarations.stream()
+                .map(declaration -> declaration.by().type())
+                .allMatch(declarer -> declarer.equals(model.desc()) || !nameable(declarer, elements));
+        if (factHere
+                && plan.models()
+                        .noneMatch(member -> member instanceof MethodModel fact
+                                && !fact.isStatic()
+                                && fact.name().equals(method.name())
+                                && fact.declared().equals(method.signature().params()))) {
+            return Either.left("has no fact in the metamodel of the type, so no class says it overrides it");
+        }
+        return Either.right(
+                new Step(stepName(method.name(), first, qualified), index, method, first.params(), first.result()));
     }
 
-    private static Entry steps(TypeModel model) {
+    private static Entry steps(TypeModel model, MemberPlan plan, Elements elements) {
         Heritage.Told heritage =
                 switch (model.heritage()) {
                     case Heritage.Told told -> told;
                     case Heritage.Untold _ -> throw new IllegalStateException(model.desc() + " tells no heritage");
                 };
-        List<Heritage.Method> methods = abstractMethods(heritage).toList();
-        Map<String, Long> plain = methods.stream()
-                .collect(Collectors.groupingBy(method -> stepName(method, false), Collectors.counting()));
-        List<Step> steps = methods.stream()
-                .map(method -> new Step(stepName(method, plain.get(stepName(method, false)) > 1), method))
+        List<Either<String, Step>> plain = abstractMethods(heritage)
+                .map(method -> step(method.getKey(), method.getValue(), model, plan, elements, false)
+                        .mapLeft(why ->
+                                "its abstract method " + method.getValue().signature() + " " + why))
+                .toList();
+        Optional<String> refused =
+                plain.stream().flatMap(step -> step.left().stream()).findFirst();
+        if (refused.isPresent()) {
+            return new Refused(refused.get());
+        }
+        Map<String, Long> named = plain.stream()
+                .flatMap(step -> step.right().stream())
+                .collect(Collectors.groupingBy(Step::name, Collectors.counting()));
+        // two methods told apart by their packages alone have the classes with their packages
+        List<Step> steps = plain.stream()
+                .flatMap(step -> step.right().stream())
+                .map(step -> named.get(step.name()) > 1
+                        ? step(step.index(), step.told(), model, plan, elements, true)
+                                .right()
+                                .orElseThrow()
+                        : step)
                 .sorted(Comparator.comparing(Step::name)
-                        .thenComparing(step -> step.method().signature().toString()))
+                        .thenComparing(step -> step.told().signature().toString()))
                 .toList();
         Optional<String> clash =
                 steps.stream().collect(Collectors.groupingBy(Step::name, Collectors.counting())).entrySet().stream()
@@ -222,9 +281,11 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         if (clash.isPresent()) {
             return new Refused("two of its abstract methods would have one step, " + clash.get());
         }
-        Set<String> taken = Stream.concat(
-                        model.typeParams().stream().map(TypeParam::name), classNames(model, heritage).stream())
-                .collect(Collectors.toSet());
+        // neither a type parameter of the type nor the type: the stages name both beside the class
+        List<String> taken = Stream.concat(
+                        model.typeParams().stream().map(TypeParam::name),
+                        Stream.of(model.desc().displayName().split("\\$")))
+                .toList();
         String self = Stream.iterate("Self", name -> name + "_")
                 .filter(name -> !taken.contains(name))
                 .findFirst()
@@ -237,8 +298,8 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
     /// simple name of a class, with the names of the classes it is nested in, the name of a type
     /// variable, `Array` appended for an array. Two methods told apart by their packages alone have the
     /// classes with their packages.
-    private static String stepName(Heritage.Method method, boolean qualified) {
-        return Stream.concat(Stream.of(method.name()), method.params().stream().map(param -> suffix(param, qualified)))
+    private static String stepName(String name, Heritage.Plain method, boolean qualified) {
+        return Stream.concat(Stream.of(name), method.params().stream().map(param -> suffix(param, qualified)))
                 .collect(Collectors.joining("_"));
     }
 
@@ -264,19 +325,13 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         return element != null && !desc.packageName().isEmpty() && MirrorTranslator.isPublic(element);
     }
 
-    private static Stream<String> simpleNames(ClassDesc desc) {
-        return Stream.concat(
-                Stream.of(desc.displayName().split("\\$")),
-                Stream.of(desc.packageName().split("\\.")).limit(1).filter(first -> !first.isEmpty()));
-    }
-
     /// The classes and interfaces the signature of a method mentions.
-    static Stream<ClassDesc> mentions(Heritage.Method method) {
+    static Stream<ClassDesc> mentions(Heritage.Plain method) {
         return Stream.of(
                         method.params().stream(),
                         switch (method.result()) {
-                            case Heritage.Result.Nothing _ -> Stream.<TypeRef>empty();
-                            case Heritage.Result.Of(TypeRef type) -> Stream.of(type);
+                            case Heritage.Result.Nothing<TypeRef> _ -> Stream.<TypeRef>empty();
+                            case Heritage.Result.Of<TypeRef>(TypeRef type) -> Stream.of(type);
                         },
                         method.throwsTypes().stream().<TypeRef>map(Function.identity()))
                 .flatMap(Function.identity())

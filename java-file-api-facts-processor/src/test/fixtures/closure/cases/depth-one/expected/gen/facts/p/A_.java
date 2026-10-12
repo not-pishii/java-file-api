@@ -62,7 +62,7 @@ import p.Result;
 ///
 /// @param <T> a type argument of [A]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = A.class, fingerprint = "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", complete = true, format = 13)
+@GeneratedMetamodel(of = A.class, fingerprint = "1ee8445f32e278a24877255538adb2e8ce8ee1fe98cd944c9e808c41f68d61b9", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -73,7 +73,7 @@ public final class A_<T extends Bound> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [A] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.A_"), "9310d0f4a4b06872709128cf0d9df120f0c073aa4cbd89482fbd30596fbba129", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.A"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Bound"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("b"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("g", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("m", Param.fixed(ClassDesc.of("p.Arg"))), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("A", Param.fixed(ClassDesc.of("p.Param1"))))), false, new A_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.A_"), "1ee8445f32e278a24877255538adb2e8ce8ee1fe98cd944c9e808c41f68d61b9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.A"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Bound"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("b"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("g", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("m", Param.fixed(ClassDesc.of("p.Arg"))), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("A", Param.fixed(ClassDesc.of("p.Param1"))))), false, new A_Heritage());
 
         private Data() {
         }
@@ -84,8 +84,8 @@ public final class A_<T extends Bound> {
     static final class Canonical {
         /// The canonical form of [A].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.A open-class sealed=no
+        javafile-facts-canonical 8
+        type p.A open-class sealed=no nesting=top
         tparams #0 extends p.Bound
         superclasses java.lang.Object
         interfaces -
@@ -101,27 +101,28 @@ public final class A_<T extends Bound> {
         member method public overridable dollar() -> p.Dol$lar throws -
         member method public overridable m(p.Arg) -> p.Result throws p.Ex
         member method public overridable marker() -> p.Marker throws -
-        inherit ctor public (p.Param1) throws p.CtorEx
-        inherit method package concrete p.A pkg() -> p.Pkg throws - erased () overrides -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method protected concrete p.A prot() -> p.Prot throws - erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.A <^0 extends p.MBound> g(java.util.List<? super p.Lower>) -> p.Holder<p.Elem> throws - erased (java.util.List) overrides -
-        inherit method public concrete p.A arr() -> p.Arg[] throws - erased () overrides -
-        inherit method public concrete p.A b() -> p.B throws - erased () overrides -
-        inherit method public concrete p.A dollar() -> p.Dol$lar throws - erased () overrides -
-        inherit method public concrete p.A hidden() -> p.Hidden throws - erased () overrides -
-        inherit method public concrete p.A m(p.Arg) -> p.Result throws p.Ex erased (p.Arg) overrides -
-        inherit method public concrete p.A marker() -> p.Marker throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
+        inherit ctor A(p.Param1) public (p.Param1) throws p.CtorEx
+        inherit field public p.A F
+        inherit method arr() erased () overrides - by class public concrete p.A () -> p.Arg[] throws -
+        inherit method b() erased () overrides - by class public concrete p.A () -> p.B throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method dollar() erased () overrides - by class public concrete p.A () -> p.Dol$lar throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method g(java.util.List) erased (java.util.List) overrides - by class public concrete p.A <^0 extends p.MBound> (java.util.List<? super p.Lower>) -> p.Holder<p.Elem> throws -
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method hidden() erased () overrides - by class public concrete p.A () -> p.Hidden throws -
+        inherit method m(p.Arg) erased (p.Arg) overrides - by class public concrete p.A (p.Arg) -> p.Result throws p.Ex
+        inherit method marker() erased () overrides - by class public concrete p.A () -> p.Marker throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method pkg() erased () overrides - by class package concrete p.A () -> p.Pkg throws -
+        inherit method prot() erased () overrides - by class protected concrete p.A () -> p.Prot throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete arr(); b(); clone(); dollar(); equals(java.lang.Object); finalize(); g(java.util.List); getClass(); hashCode(); hidden(); m(p.Arg); marker(); notify(); notifyAll(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -40,7 +40,7 @@ import p.Grid;
 /// @param <A> a type argument of [Grid]
 /// @param <B> a type argument of [Grid]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Grid.class, fingerprint = "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", complete = true, format = 13)
+@GeneratedMetamodel(of = Grid.class, fingerprint = "3435b12da1ec7b2b75d86bd0adda20416d9a9747d6e951c89fb3c23367791fe0", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Grid_<A, B> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Grid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Grid_"), "8a9c6178490fca61fbc7f68dde4ea7550efc3fcf91d4950deb6f6b50cf1528a4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Grid"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(Signature.of("row", Param.var(1, 2))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Grid_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Grid_"), "3435b12da1ec7b2b75d86bd0adda20416d9a9747d6e951c89fb3c23367791fe0", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Grid"), List.of(new TypeParam("A", List.of()), new TypeParam("B", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("A"), Types.typeVar("B")), List.of()), new MethodTableTemplate(Set.of(Signature.of("row", Param.var(1, 2))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Grid_Heritage());
 
         private Data() {
         }
@@ -62,8 +62,8 @@ public final class Grid_<A, B> {
     static final class Canonical {
         /// The canonical form of [Grid].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Grid interface sealed=no
+        javafile-facts-canonical 8
+        type p.Grid interface sealed=no nesting=top
         tparams #0; #1
         superclasses -
         interfaces -
@@ -72,7 +72,7 @@ public final class Grid_<A, B> {
         members declared-accessible
         member method public abstract row(#1[][]) -> #0[] throws -
         sam row(#1[][]) -> #0[] throws -
-        inherit method public abstract p.Grid row(#1[][]) -> #0[] throws - erased (java.lang.Object[][]) overrides -
+        inherit method row(#1[][]) erased (java.lang.Object[][]) overrides - by interface abstract p.Grid (#1[][]) -> #0[] throws -
         table abstract row(#1[][])
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

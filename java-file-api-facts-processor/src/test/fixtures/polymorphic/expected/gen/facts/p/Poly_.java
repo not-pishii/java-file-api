@@ -49,7 +49,7 @@ import p.Poly;
 ///
 /// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", complete = true, format = 13)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "c8831d5c15a2e741b0daf5261bb79ec392033c5e2f519d1c144bb5e621972f45", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -60,7 +60,7 @@ public final class Poly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Poly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "0833f539cb6fd5107a1ece85b397b989c6eac413cfa94d026b04166e2e773328", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), false, new Poly_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "c8831d5c15a2e741b0daf5261bb79ec392033c5e2f519d1c144bb5e621972f45", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), false, new Poly_Heritage());
 
         private Data() {
         }
@@ -71,8 +71,8 @@ public final class Poly_ {
     static final class Canonical {
         /// The canonical form of [Poly].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Poly open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Poly open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -91,27 +91,29 @@ public final class Poly_ {
         member method public overridable <^0> none() -> void throws -
         member method public static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -
         member method public static <^0> listOf(^0[]) -> java.util.List<^0> throws -
-        inherit ctor public () throws -
-        inherit ctor public <^0>(^0) throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Poly <^0 extends java.lang.Exception> run(java.lang.Class<^0>) -> void throws ^0, java.io.IOException erased (java.lang.Class) overrides -
-        inherit method public concrete p.Poly <^0 extends java.lang.Number & java.lang.Comparable<^0>> clamp(^0) -> ^0 throws - erased (java.lang.Number) overrides -
-        inherit method public concrete p.Poly <^0, ^1 extends ^0> widen(^1) -> ^0 throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Poly <^0, ^1> odd(^0, ^1) -> void throws - erased (java.lang.Object, java.lang.Object) overrides -
-        inherit method public concrete p.Poly <^0> id(^0) -> ^0 throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Poly <^0> none() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Poly <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws - erased (java.util.Collection) overrides -
-        inherit method public static p.Poly <^0> listOf(^0...) -> java.util.List<^0> throws - erased (java.lang.Object[]) overrides -
+        inherit ctor Poly() public () throws -
+        inherit ctor Poly(java.lang.Object) public <^0> (^0) throws -
+        inherit field public p.Poly T
+        inherit field public p.Poly t
+        inherit method clamp(java.lang.Number) erased (java.lang.Number) overrides - by class public concrete p.Poly <^0 extends java.lang.Number & java.lang.Comparable<^0>> (^0) -> ^0 throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method id(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Poly <^0> (^0) -> ^0 throws -
+        inherit method listOf(java.lang.Object[]) erased (java.lang.Object[]) overrides - by class public static p.Poly <^0> (^0...) -> java.util.List<^0> throws -
+        inherit method max(java.util.Collection) erased (java.util.Collection) overrides - by class public static p.Poly <^0 extends java.lang.Comparable<? super ^0>> (java.util.Collection<? extends ^0>) -> ^0 throws -
+        inherit method none() erased () overrides - by class public concrete p.Poly <^0> () -> void throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method odd(java.lang.Object, java.lang.Object) erased (java.lang.Object, java.lang.Object) overrides - by class public concrete p.Poly <^0, ^1> (^0, ^1) -> void throws -
+        inherit method run(java.lang.Class) erased (java.lang.Class) overrides - by class public concrete p.Poly <^0 extends java.lang.Exception> (java.lang.Class<^0>) -> void throws ^0, java.io.IOException
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
+        inherit method widen(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Poly <^0, ^1 extends ^0> (^1) -> ^0 throws -
         table abstract -
         table concrete clamp(java.lang.Number); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); none(); notify(); notifyAll(); odd(java.lang.Object, java.lang.Object); run(java.lang.Class); toString(); wait(); wait(long); wait(long, int); widen(java.lang.Object)
         table static listOf(java.lang.Object[]); max(java.util.Collection)

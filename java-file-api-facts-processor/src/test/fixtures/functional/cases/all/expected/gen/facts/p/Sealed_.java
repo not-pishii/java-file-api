@@ -30,7 +30,7 @@ import p.Sealed;
 ///
 /// No generated class extends or implements [Sealed]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sealed.class, fingerprint = "62078dbbf79a8c80553953d51f15540e04a825664b8de4cd9f7fa2ad7c153862", complete = true, format = 13)
+@GeneratedMetamodel(of = Sealed.class, fingerprint = "7c5b9a43ac095cd652f65897f278ee2c1104aa4ccdf10ef9941742665b943549", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class Sealed_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sealed] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sealed_"), "62078dbbf79a8c80553953d51f15540e04a825664b8de4cd9f7fa2ad7c153862", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sealed"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Sealed_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sealed_"), "7c5b9a43ac095cd652f65897f278ee2c1104aa4ccdf10ef9941742665b943549", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sealed"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Sealed_Heritage());
 
         private Data() {
         }
@@ -52,8 +52,8 @@ public final class Sealed_ {
     static final class Canonical {
         /// The canonical form of [Sealed].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Sealed interface sealed=yes
+        javafile-facts-canonical 8
+        type p.Sealed interface sealed=yes nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -61,7 +61,7 @@ public final class Sealed_ {
         enum -
         members declared-accessible
         member method public abstract run() -> void throws -
-        inherit method public abstract p.Sealed run() -> void throws - erased () overrides -
+        inherit method run() erased () overrides - by interface abstract p.Sealed () -> void throws -
         table abstract run()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

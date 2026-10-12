@@ -26,7 +26,7 @@ import p.CtorEx;
 ///
 /// `@Facts` does not ask for [CtorEx]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `CtorEx.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CtorEx.class, fingerprint = "d49e13af1fb89fa4328c888ff635980807f2cf3fbdebf636056c628147e36552", complete = false, format = 13)
+@GeneratedMetamodel(of = CtorEx.class, fingerprint = "c0d19942e1d90fb6e161293bc97b4de001eebf828aaf36c473947cc6ca43493b", complete = false, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class CtorEx_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [CtorEx] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.CtorEx_"), "d49e13af1fb89fa4328c888ff635980807f2cf3fbdebf636056c628147e36552", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.CtorEx"), List.of(), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("addSuppressed", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("fillInStackTrace"), Signature.of("finalize"), Signature.of("getCause"), Signature.of("getClass"), Signature.of("getLocalizedMessage"), Signature.of("getMessage"), Signature.of("getStackTrace"), Signature.of("getSuppressed"), Signature.of("hashCode"), Signature.of("initCause", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("printStackTrace"), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintStream"))), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintWriter"))), Signature.of("setStackTrace", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/StackTraceElement;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("CtorEx"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.CtorEx_"), "c0d19942e1d90fb6e161293bc97b4de001eebf828aaf36c473947cc6ca43493b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.CtorEx"), List.of(), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("addSuppressed", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("fillInStackTrace"), Signature.of("finalize"), Signature.of("getCause"), Signature.of("getClass"), Signature.of("getLocalizedMessage"), Signature.of("getMessage"), Signature.of("getStackTrace"), Signature.of("getSuppressed"), Signature.of("hashCode"), Signature.of("initCause", Param.fixed(ClassDesc.of("java.lang.Throwable"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("printStackTrace"), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintStream"))), Signature.of("printStackTrace", Param.fixed(ClassDesc.of("java.io.PrintWriter"))), Signature.of("setStackTrace", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/StackTraceElement;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("CtorEx"))), List.of(), false);
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class CtorEx_ {
     static final class Canonical {
         /// The canonical form of [CtorEx].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.CtorEx open-class sealed=no
+        javafile-facts-canonical 8
+        type p.CtorEx open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Exception; java.lang.Throwable; java.lang.Object
         interfaces java.io.Serializable

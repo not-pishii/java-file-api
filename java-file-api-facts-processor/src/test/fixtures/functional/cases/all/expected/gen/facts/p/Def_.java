@@ -32,7 +32,7 @@ import p.Def;
 ///
 /// A generated class extends or implements [Def] by the proof its metamodel starts, with the stages of `Def_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Def.class, fingerprint = "20105e50991cb403a1f248e92b1e91d6e057ffc54b9c6b51732f8f1c306e2b87", complete = true, format = 13)
+@GeneratedMetamodel(of = Def.class, fingerprint = "8e4bef5593b256e911273561754c2dd666c9674e71f6cb271520fd5b709f61d3", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Def_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Def] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Def_"), "20105e50991cb403a1f248e92b1e91d6e057ffc54b9c6b51732f8f1c306e2b87", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Def"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Def_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Def_"), "8e4bef5593b256e911273561754c2dd666c9674e71f6cb271520fd5b709f61d3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Def"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Def_Heritage());
 
         private Data() {
         }
@@ -54,8 +54,8 @@ public final class Def_ {
     static final class Canonical {
         /// The canonical form of [Def].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Def interface sealed=no
+        javafile-facts-canonical 8
+        type p.Def interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces p.Fn
@@ -63,7 +63,7 @@ public final class Def_ {
         enum -
         members declared-accessible
         member method public overridable apply(java.lang.String) -> java.lang.String throws -
-        inherit method public default p.Def apply(java.lang.String) -> java.lang.String throws - erased (java.lang.String) overrides p.Fn
+        inherit method apply(java.lang.String) erased (java.lang.String) overrides p.Fn by interface default p.Def (java.lang.String) -> java.lang.String throws -
         table abstract -
         table concrete apply(java.lang.String); equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

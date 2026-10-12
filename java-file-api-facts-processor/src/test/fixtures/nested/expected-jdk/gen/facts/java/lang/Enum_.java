@@ -49,7 +49,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Enum]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Enum.class, fingerprint = "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", complete = true, format = 13)
+@GeneratedMetamodel(of = Enum.class, fingerprint = "891182eda956ccd572536b4f196542e83bd91ed95e88cf461d0436ab0f0a9565", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -60,7 +60,7 @@ public final class Enum_<E extends Enum<E>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Enum] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "f56d1b8e2dbf27931df716fac09928cc3901884081dd6241f2c28023ae21b013", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), false, new Enum_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "891182eda956ccd572536b4f196542e83bd91ed95e88cf461d0436ab0f0a9565", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), false, new Enum_Heritage());
 
         private Data() {
         }
@@ -71,8 +71,8 @@ public final class Enum_<E extends Enum<E>> {
     static final class Canonical {
         /// The canonical form of [Enum].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type java.lang.Enum abstract-class sealed=no
+        javafile-facts-canonical 8
+        type java.lang.Enum abstract-class sealed=no nesting=top
         tparams #0 extends java.lang.Enum<#0>
         superclasses java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable
@@ -91,24 +91,25 @@ public final class Enum_<E extends Enum<E>> {
         member method public final ordinal() -> int throws -
         member method public overridable toString() -> java.lang.String throws -
         member method public static <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws -
-        inherit ctor protected (java.lang.String, int) throws -
-        inherit method protected final java.lang.Enum clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides java.lang.Object
-        inherit method protected final java.lang.Enum finalize() -> void throws - erased () overrides java.lang.Object
-        inherit method public concrete java.lang.Enum toString() -> java.lang.String throws - erased () overrides java.lang.Object
-        inherit method public final java.lang.Enum compareTo(#0) -> int throws - erased (java.lang.Enum); (java.lang.Object) overrides java.lang.Comparable
-        inherit method public final java.lang.Enum describeConstable() -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws - erased () overrides java.lang.constant.Constable
-        inherit method public final java.lang.Enum equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides java.lang.Object
-        inherit method public final java.lang.Enum getDeclaringClass() -> java.lang.Class<#0> throws - erased () overrides -
-        inherit method public final java.lang.Enum hashCode() -> int throws - erased () overrides java.lang.Object
-        inherit method public final java.lang.Enum name() -> java.lang.String throws - erased () overrides -
-        inherit method public final java.lang.Enum ordinal() -> int throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static java.lang.Enum <^0 extends java.lang.Enum<^0>> valueOf(java.lang.Class<^0>, java.lang.String) -> ^0 throws - erased (java.lang.Class, java.lang.String) overrides -
+        inherit ctor Enum(java.lang.String, int) protected (java.lang.String, int) throws -
+        inherit method clone() erased () overrides java.lang.Object by class protected final java.lang.Enum () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method compareTo(#0) erased (java.lang.Enum); (java.lang.Object) overrides java.lang.Comparable by class public final java.lang.Enum (#0) -> int throws -
+        inherit method describeConstable() erased () overrides java.lang.constant.Constable by class public final java.lang.Enum () -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides java.lang.Object by class public final java.lang.Enum (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides java.lang.Object by class protected final java.lang.Enum () -> void throws -
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method getDeclaringClass() erased () overrides - by class public final java.lang.Enum () -> java.lang.Class<#0> throws -
+        inherit method hashCode() erased () overrides java.lang.Object by class public final java.lang.Enum () -> int throws -
+        inherit method name() erased () overrides - by class public final java.lang.Enum () -> java.lang.String throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method ordinal() erased () overrides - by class public final java.lang.Enum () -> int throws -
+        inherit method toString() erased () overrides java.lang.Object by class public concrete java.lang.Enum () -> java.lang.String throws -
+        inherit method valueOf(java.lang.Class, java.lang.String) erased (java.lang.Class, java.lang.String) overrides - by class public static java.lang.Enum <^0 extends java.lang.Enum<^0>> (java.lang.Class<^0>, java.lang.String) -> ^0 throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
+        inherit type public java.lang.Enum EnumDesc
         table abstract -
         table concrete clone(); compareTo(#0); describeConstable(); equals(java.lang.Object); finalize(); getClass(); getDeclaringClass(); hashCode(); name(); notify(); notifyAll(); ordinal(); toString(); wait(); wait(long); wait(long, int)
         table static valueOf(java.lang.Class, java.lang.String)

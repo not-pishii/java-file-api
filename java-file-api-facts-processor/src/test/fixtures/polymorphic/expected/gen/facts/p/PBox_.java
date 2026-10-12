@@ -42,7 +42,7 @@ import p.PBox;
 ///
 /// @param <T> a type argument of [PBox]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PBox.class, fingerprint = "5a7b9b2d5818f3553b4e9ab535ee3898d005294c21a9e22270011a0060b815bf", complete = true, format = 13)
+@GeneratedMetamodel(of = PBox.class, fingerprint = "46f376b820b3b831020eecfcbec5a93199dbd52d7bf44134d3152f4779bf49dc", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class PBox_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PBox] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PBox_"), "5a7b9b2d5818f3553b4e9ab535ee3898d005294c21a9e22270011a0060b815bf", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PBox"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("map", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("shadow", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("ofEnum", Param.fixed(ClassDesc.of("java.lang.Class")))), Set.of(Signature.of("PBox"))), false, new PBox_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PBox_"), "46f376b820b3b831020eecfcbec5a93199dbd52d7bf44134d3152f4779bf49dc", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PBox"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("map", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("shadow", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("ofEnum", Param.fixed(ClassDesc.of("java.lang.Class")))), Set.of(Signature.of("PBox"))), false, new PBox_Heritage());
 
         private Data() {
         }
@@ -64,8 +64,8 @@ public final class PBox_<T> {
     static final class Canonical {
         /// The canonical form of [PBox].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.PBox open-class sealed=no
+        javafile-facts-canonical 8
+        type p.PBox open-class sealed=no nesting=top
         tparams #0
         superclasses java.lang.Object
         interfaces -
@@ -79,23 +79,24 @@ public final class PBox_<T> {
         member method public overridable <^0> shadow(^0) -> ^0 throws -
         member method public static <^0 extends java.lang.Enum<^0>> ofEnum(java.lang.Class<^0>) -> p.PBox<^0> throws -
         member method public static <^0> of(^0) -> p.PBox<^0> throws -
-        inherit ctor public () throws -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.PBox <^0 extends #0> put(^0) -> void throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.PBox <^0> map(java.util.function.Function<? super #0, ? extends ^0>) -> p.PBox<^0> throws - erased (java.util.function.Function) overrides -
-        inherit method public concrete p.PBox <^0> shadow(^0) -> ^0 throws - erased (java.lang.Object) overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.PBox <^0 extends java.lang.Enum<^0>> ofEnum(java.lang.Class<^0>) -> p.PBox<^0> throws - erased (java.lang.Class) overrides -
-        inherit method public static p.PBox <^0> of(^0) -> p.PBox<^0> throws - erased (java.lang.Object) overrides -
+        inherit ctor PBox() public () throws -
+        inherit field public p.PBox t
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method map(java.util.function.Function) erased (java.util.function.Function) overrides - by class public concrete p.PBox <^0> (java.util.function.Function<? super #0, ? extends ^0>) -> p.PBox<^0> throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method of(java.lang.Object) erased (java.lang.Object) overrides - by class public static p.PBox <^0> (^0) -> p.PBox<^0> throws -
+        inherit method ofEnum(java.lang.Class) erased (java.lang.Class) overrides - by class public static p.PBox <^0 extends java.lang.Enum<^0>> (java.lang.Class<^0>) -> p.PBox<^0> throws -
+        inherit method put(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.PBox <^0 extends #0> (^0) -> void throws -
+        inherit method shadow(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.PBox <^0> (^0) -> ^0 throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); map(java.util.function.Function); notify(); notifyAll(); put(java.lang.Object); shadow(java.lang.Object); toString(); wait(); wait(long); wait(long, int)
         table static of(java.lang.Object); ofEnum(java.lang.Class)

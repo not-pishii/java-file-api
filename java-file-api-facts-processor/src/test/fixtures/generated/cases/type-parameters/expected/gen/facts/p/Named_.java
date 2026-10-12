@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -30,13 +31,13 @@ import p.Named;
 ///
 /// A member [Named] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// No generated class extends or implements [Named]: its type parameter String is named like a class the proof mentions.
+/// A generated class extends or implements [Named] by the proof its metamodel starts, with the stages of `Named_Heritage`.
 ///
 /// @param <Data_> a type argument of [Named]
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", complete = true, format = 13)
+@GeneratedMetamodel(of = Named.class, fingerprint = "c1dd7441a6a17165fb27e6cb57b32aaaa727d2f524c54aa2cc5d6befa6fa9763", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +48,7 @@ public final class Named_<Data_, String_, Int> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Named] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "6b3242912c72214ee6c1fd33bd40111c9a97d26d4890112767e32bcc7edc3ccf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Named_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "c1dd7441a6a17165fb27e6cb57b32aaaa727d2f524c54aa2cc5d6befa6fa9763", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Named_Heritage());
 
         private Data() {
         }
@@ -58,8 +59,8 @@ public final class Named_<Data_, String_, Int> {
     static final class Canonical {
         /// The canonical form of [Named].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Named interface sealed=no
+        javafile-facts-canonical 8
+        type p.Named interface sealed=no nesting=top
         tparams #0; #1; #2
         superclasses -
         interfaces -
@@ -89,5 +90,14 @@ public final class Named_<Data_, String_, Int> {
     /// @param int_ the token of the type argument `Int`
     public Named_(RefToken<Data_> data_, RefToken<String_> string_, RefToken<Int> int_) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(data_), TokenArg.exact(string_), TokenArg.exact(int_));
+    }
+
+    /// Starts the proof that a class being declared implements [Named]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public <Self> Complete<Self, Named<Data_, String_, Int>> implement(RefToken<Self> self) {
+        return new Named_Heritage().implement(this.token, self);
     }
 }

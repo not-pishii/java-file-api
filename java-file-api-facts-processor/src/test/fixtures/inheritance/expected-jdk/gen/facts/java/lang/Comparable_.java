@@ -41,7 +41,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <T> a type argument of [Comparable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comparable.class, fingerprint = "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", complete = true, format = 13)
+@GeneratedMetamodel(of = Comparable.class, fingerprint = "927e7b78070f57ea905a32bc2439d67e22f1e4f6530715d17b5e13c69a24f3a9", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Comparable_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Comparable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Comparable_"), "82fd1d67ea4c047f1229c4d3b86d5bb2510fc6e8621fab45f99cf50337af2699", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Comparable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Comparable_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Comparable_"), "927e7b78070f57ea905a32bc2439d67e22f1e4f6530715d17b5e13c69a24f3a9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Comparable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Comparable_Heritage());
 
         private Data() {
         }
@@ -63,8 +63,8 @@ public final class Comparable_<T> {
     static final class Canonical {
         /// The canonical form of [Comparable].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type java.lang.Comparable interface sealed=no
+        javafile-facts-canonical 8
+        type java.lang.Comparable interface sealed=no nesting=top
         tparams #0
         superclasses -
         interfaces -
@@ -73,7 +73,7 @@ public final class Comparable_<T> {
         members declared-accessible
         member method public abstract compareTo(#0) -> int throws -
         sam compareTo(#0) -> int throws -
-        inherit method public abstract java.lang.Comparable compareTo(#0) -> int throws - erased (java.lang.Object) overrides -
+        inherit method compareTo(#0) erased (java.lang.Object) overrides - by interface abstract java.lang.Comparable (#0) -> int throws -
         table abstract compareTo(#0)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -69,17 +69,17 @@ class CanonicalTest {
 
         // the heritage of a type that can be extended is told after its members, before the method table
         assertThat(canonical.text().lines().dropWhile(line -> !line.startsWith("inherit ")))
-                .startsWith(
-                        "inherit ctor public (#0) throws java.io.IOException, java.lang.InterruptedException",
-                        "inherit method package concrete p.T pack() -> void throws - erased () overrides -")
+                .startsWith("inherit ctor T(#0) public (#0) throws java.io.IOException, java.lang.InterruptedException")
                 .contains(
-                        "inherit method public concrete p.T hidden(int) -> p.Hidden throws - erased (int) overrides -",
-                        "inherit method public concrete p.T run() -> void throws - erased () overrides"
-                                + " java.lang.Runnable",
+                        "inherit method hidden(int) erased (int) overrides - by class public concrete p.T (int) ->"
+                                + " p.Hidden throws -",
+                        "inherit method pack() erased () overrides - by class package concrete p.T () -> void throws -",
+                        "inherit method run() erased () overrides java.lang.Runnable by class public concrete p.T ()"
+                                + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 7
-                        type p.T open-class sealed=no
+                        javafile-facts-canonical 8
+                        type p.T open-class sealed=no nesting=top
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
                         interfaces java.lang.Comparable; java.lang.Runnable
@@ -142,8 +142,8 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 7
-                        type p.Day enum sealed=no
+                        javafile-facts-canonical 8
+                        type p.Day enum sealed=no nesting=top
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
                         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; \
@@ -302,7 +302,7 @@ class CanonicalTest {
                 .isEqualTo(together.text()
                         .replace("m(); ", "")
                         .replace(
-                                "inherit method public concrete gen.Made m() -> void throws - erased () overrides -\n",
+                                "inherit method m() erased () overrides - by class public concrete gen.Made () -> void throws -\n",
                                 ""));
     }
 
@@ -389,8 +389,8 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 7
-                        type p.T interface sealed=no
+                        javafile-facts-canonical 8
+                        type p.T interface sealed=no nesting=top
                         tparams -
                         superclasses -
                         interfaces p.A; p.B
@@ -487,6 +487,7 @@ class CanonicalTest {
         TypeModel model = new TypeModel(
                 ClassDesc.of("p.T"),
                 DeclaredKind.INTERFACE,
+                Nesting.TOP_LEVEL,
                 List.of(new TypeParam("E", List.of())),
                 List.of(),
                 List.of(),
@@ -520,6 +521,7 @@ class CanonicalTest {
         TypeModel model = new TypeModel(
                 ClassDesc.of("p.T"),
                 DeclaredKind.OPEN_CLASS,
+                Nesting.TOP_LEVEL,
                 List.of(new TypeParam("E", List.of())),
                 List.of(),
                 List.of(ClassDesc.of("java.lang.Object")),

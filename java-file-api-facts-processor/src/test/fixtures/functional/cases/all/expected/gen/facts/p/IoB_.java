@@ -36,7 +36,7 @@ import p.IoB;
 ///
 /// A generated class extends or implements [IoB] by the proof its metamodel starts, with the stages of `IoB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoB.class, fingerprint = "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", complete = true, format = 13)
+@GeneratedMetamodel(of = IoB.class, fingerprint = "42e16d32b006c6060d8a6bde5efe78acb526ad956528c23d21acd737a6ae100c", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class IoB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [IoB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoB_"), "751eff6c83438b711e582efe98812bdd00acaa6e31728a52e57d254338449a40", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IoB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoB_"), "42e16d32b006c6060d8a6bde5efe78acb526ad956528c23d21acd737a6ae100c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IoB_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,8 @@ public final class IoB_ {
     static final class Canonical {
         /// The canonical form of [IoB].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.IoB interface sealed=no
+        javafile-facts-canonical 8
+        type p.IoB interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -68,7 +68,7 @@ public final class IoB_ {
         members declared-accessible
         member method public abstract m() -> void throws java.io.IOException
         sam m() -> void throws java.io.IOException
-        inherit method public abstract p.IoB m() -> void throws java.io.IOException erased () overrides -
+        inherit method m() erased () overrides - by interface abstract p.IoB () -> void throws java.io.IOException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

@@ -15,12 +15,17 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
+import me.supcheg.javafile.facts.Heritage.ClassMethod;
 import me.supcheg.javafile.facts.Heritage.Constructor;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfClass;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.Implementation0;
 import me.supcheg.javafile.facts.Implementation1;
@@ -64,85 +69,85 @@ public final class Num_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Num] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12(), m13(), m14(), m15(), m16(), m17()), List.of(c0()));
+        static final Told HERITAGE = new Told(List.of(m0(), m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8(), m9(), m10(), m11(), m12(), m13(), m14(), m15(), m16(), m17()), List.of(c0()), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Number"), Signature.of("byteValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.BYTE), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("byteValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.BYTE)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m1() {
-            return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("clone"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.Object"))), List.of(Types.of(ClassDesc.of("java.lang.CloneNotSupportedException"))), Set.of(List.of()), List.of());
+        private static Method<Declaration> m1() {
+            return new Method<>(Signature.of("clone"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PROTECTED, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.of(ClassDesc.of("java.lang.Object")))), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.CloneNotSupportedException")))))), Set.of(List.of()), List.of());
         }
 
-        private static Method m2() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.Comparable"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Num"))), List.of(), List.of(Types.of(ClassDesc.of("p.Num"))), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
+        private static Method<Declaration> m2() {
+            return new Method<>(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Num"))), List.of(new Declaration(new OfInterface(ClassDesc.of("java.lang.Comparable"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(new Fixed(Types.of(ClassDesc.of("p.Num")))), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
         }
 
-        private static Method m3() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.Number"), Signature.of("doubleValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.DOUBLE), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m3() {
+            return new Method<>(Signature.of("doubleValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.DOUBLE)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m4() {
-            return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(), List.of(Types.of(ClassDesc.of("java.lang.Object"))), Arity.FIXED, new Of(PrimitiveTypeRef.BOOLEAN), List.of(), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
+        private static Method<Declaration> m4() {
+            return new Method<>(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.Object")))), new Of<>(new Fixed(PrimitiveTypeRef.BOOLEAN)), List.of())), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
         }
 
-        private static Method m5() {
-            return new Method(Visibility.PROTECTED, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("finalize"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.Throwable"))), Set.of(List.of()), List.of());
+        private static Method<Declaration> m5() {
+            return new Method<>(Signature.of("finalize"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PROTECTED, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.Throwable")))))), Set.of(List.of()), List.of());
         }
 
-        private static Method m6() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.Number"), Signature.of("floatValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.FLOAT), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m6() {
+            return new Method<>(Signature.of("floatValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.FLOAT)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m7() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("getClass"), List.of(), List.of(), Arity.FIXED, new Of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m7() {
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m8() {
-            return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("hashCode"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m8() {
+            return new Method<>(Signature.of("hashCode"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m9() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.Number"), Signature.of("intValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.INT), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m9() {
+            return new Method<>(Signature.of("intValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m10() {
-            return new Method(Visibility.PUBLIC, Dispatch.ABSTRACT, ClassDesc.of("java.lang.Number"), Signature.of("longValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.LONG), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m10() {
+            return new Method<>(Signature.of("longValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.LONG)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m11() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notify"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m11() {
+            return new Method<>(Signature.of("notify"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m12() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("notifyAll"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m12() {
+            return new Method<>(Signature.of("notifyAll"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m13() {
-            return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Number"), Signature.of("shortValue"), List.of(), List.of(), Arity.FIXED, new Of(PrimitiveTypeRef.SHORT), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m13() {
+            return new Method<>(Signature.of("shortValue"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Number"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(PrimitiveTypeRef.SHORT)), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m14() {
-            return new Method(Visibility.PUBLIC, Dispatch.CONCRETE, ClassDesc.of("java.lang.Object"), Signature.of("toString"), List.of(), List.of(), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of()), List.of());
+        private static Method<Declaration> m14() {
+            return new Method<>(Signature.of("toString"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.of(ClassDesc.of("java.lang.String")))), List.of())), Set.of(List.of()), List.of());
         }
 
-        private static Method m15() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait"), List.of(), List.of(), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of()), List.of());
+        private static Method<Declaration> m15() {
+            return new Method<>(Signature.of("wait"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.InterruptedException")))))), Set.of(List.of()), List.of());
         }
 
-        private static Method m16() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(), List.of(PrimitiveTypeRef.LONG), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long)), List.of());
+        private static Method<Declaration> m16() {
+            return new Method<>(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(new Fixed(PrimitiveTypeRef.LONG)), Result.nothing(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.InterruptedException")))))), Set.of(List.of(ConstantDescs.CD_long)), List.of());
         }
 
-        private static Method m17() {
-            return new Method(Visibility.PUBLIC, Dispatch.FINAL, ClassDesc.of("java.lang.Object"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(), List.of(PrimitiveTypeRef.LONG, PrimitiveTypeRef.INT), Arity.FIXED, Result.NOTHING, List.of(Types.of(ClassDesc.of("java.lang.InterruptedException"))), Set.of(List.of(ConstantDescs.CD_long, ConstantDescs.CD_int)), List.of());
+        private static Method<Declaration> m17() {
+            return new Method<>(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(new Fixed(PrimitiveTypeRef.LONG), new Fixed(PrimitiveTypeRef.INT)), Result.nothing(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.InterruptedException")))))), Set.of(List.of(ConstantDescs.CD_long, ConstantDescs.CD_int)), List.of());
         }
 
         private static Constructor c0() {
-            return new Constructor(Visibility.PUBLIC, Signature.of("Num"), List.of(), List.of(), Arity.FIXED, List.of());
+            return new Constructor(Visibility.PUBLIC, Signature.of("Num"), Arity.FIXED, List.of(), List.of(), List.of());
         }
     }
 
@@ -171,7 +176,7 @@ public final class Num_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the stage of the next step
         public Extend1<Self> compareTo_Num(Implementation1<Self, ? extends Int, Num> how) {
-            return new Extend1<>(this.steps.with(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Num"))), how));
+            return new Extend1<>(this.steps.with(Held.HERITAGE.methods().get(2).signature(), how));
         }
     }
 
@@ -190,7 +195,7 @@ public final class Num_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the stage of the next step
         public Extend2<Self> doubleValue(Implementation0<Self, ? extends Double> how) {
-            return new Extend2<>(this.steps.with(Signature.of("doubleValue"), how));
+            return new Extend2<>(this.steps.with(Held.HERITAGE.methods().get(3).signature(), how));
         }
     }
 
@@ -209,7 +214,7 @@ public final class Num_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the stage of the next step
         public Extend3<Self> floatValue(Implementation0<Self, ? extends Float> how) {
-            return new Extend3<>(this.steps.with(Signature.of("floatValue"), how));
+            return new Extend3<>(this.steps.with(Held.HERITAGE.methods().get(6).signature(), how));
         }
     }
 
@@ -228,7 +233,7 @@ public final class Num_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the stage of the next step
         public Extend4<Self> intValue(Implementation0<Self, ? extends Int> how) {
-            return new Extend4<>(this.steps.with(Signature.of("intValue"), how));
+            return new Extend4<>(this.steps.with(Held.HERITAGE.methods().get(9).signature(), how));
         }
     }
 
@@ -247,7 +252,7 @@ public final class Num_Heritage implements Supplier<Told> {
         /// @param how the implementation of the method
         /// @return the proof, complete
         public Complete<Self, Num> longValue(Implementation0<Self, ? extends Long> how) {
-            return this.steps.with(Signature.of("longValue"), how).complete();
+            return this.steps.with(Held.HERITAGE.methods().get(10).signature(), how).complete();
         }
     }
 }

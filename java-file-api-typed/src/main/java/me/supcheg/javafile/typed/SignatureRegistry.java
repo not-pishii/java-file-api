@@ -205,19 +205,25 @@ final class SignatureRegistry {
 
     private static Optional<String> overrideRefusal(
             Invocable own, Inheritance.Entry entry, Subtyping.Declaring declaring) {
-        Heritage.Method method = entry.method();
+        Inheritance.Member method = entry.method();
         return Stream.<java.util.function.Supplier<Optional<String>>>of(
-                        () -> byDispatch(method),
-                        () -> byVisibility(method),
-                        () -> byForm(method),
-                        () -> byParameters(own, method),
-                        () -> byResult(own, method, declaring),
-                        () -> byThrows(own, method))
+                        () -> byDispatch(method), () -> byVisibility(method), () -> switch (method.declared()) {
+                            case Heritage.Generic _ ->
+                                Optional.of("the method is generic, and the typed layer declares no generic method");
+                            case Heritage.Plain plain ->
+                                Stream.<java.util.function.Supplier<Optional<String>>>of(
+                                                () -> byForm(plain),
+                                                () -> byParameters(own, plain),
+                                                () -> byResult(own, plain, declaring),
+                                                () -> byThrows(own, plain))
+                                        .flatMap(refusal -> refusal.get().stream())
+                                        .findFirst();
+                        })
                 .flatMap(refusal -> refusal.get().stream())
                 .findFirst();
     }
 
-    private static Optional<String> byDispatch(Heritage.Method method) {
+    private static Optional<String> byDispatch(Inheritance.Member method) {
         return switch (method.dispatch()) {
             case FINAL -> Optional.of("the method is final (JLS 8.4.3.3)");
             case STATIC -> Optional.of("an instance method cannot override a static one (JLS 8.4.8.1)");
@@ -225,7 +231,7 @@ final class SignatureRegistry {
         };
     }
 
-    private static Optional<String> byVisibility(Heritage.Method method) {
+    private static Optional<String> byVisibility(Inheritance.Member method) {
         return switch (method.visibility()) {
             case PACKAGE ->
                 Optional.of("the method has package access, and the typed layer does not tell whether the"
@@ -234,10 +240,7 @@ final class SignatureRegistry {
         };
     }
 
-    private static Optional<String> byForm(Heritage.Method method) {
-        if (!method.typeParams().isEmpty()) {
-            return Optional.of("the method is generic, and the typed layer declares no generic method");
-        }
+    private static Optional<String> byForm(Heritage.Plain method) {
         return switch (method.arity()) {
             case VARIABLE ->
                 Optional.of("the method is of variable arity, and the typed layer declares none: javac would"
@@ -246,7 +249,7 @@ final class SignatureRegistry {
         };
     }
 
-    private static Optional<String> byParameters(Invocable own, Heritage.Method method) {
+    private static Optional<String> byParameters(Invocable own, Heritage.Plain method) {
         List<TypeRef> params =
                 own.params().stream().<TypeRef>map(TypeToken::typeRef).toList();
         return params.equals(method.params())
@@ -259,20 +262,20 @@ final class SignatureRegistry {
 
     /// The result of a method is that of the one it overrides, or — a reference type — a subtype of
     /// it the typed layer can prove one ([Subtyping]); `void` answers `void` alone (JLS 8.4.5).
-    private static Optional<String> byResult(Invocable own, Heritage.Method method, Subtyping.Declaring declaring) {
+    private static Optional<String> byResult(Invocable own, Heritage.Plain method, Subtyping.Declaring declaring) {
         Optional<TypeToken<?>> result = own.resultType();
         String incompatible = "its result is "
                 + switch (method.result()) {
-                    case Heritage.Result.Nothing _ -> "void";
-                    case Heritage.Result.Of(TypeRef type) -> TypeNames.describe(type);
+                    case Heritage.Result.Nothing<TypeRef> _ -> "void";
+                    case Heritage.Result.Of<TypeRef>(TypeRef type) -> TypeNames.describe(type);
                 }
                 + ", and that of the method "
                 + result.map(type -> TypeNames.describe(type.typeRef())).orElse("void")
                 + ": the return types are incompatible (JLS 8.4.8.3)";
         return switch (method.result()) {
-            case Heritage.Result.Nothing _ ->
+            case Heritage.Result.Nothing<TypeRef> _ ->
                 result.map(_ -> incompatible + " — a method that overrides a void one is void");
-            case Heritage.Result.Of(TypeRef overridden) ->
+            case Heritage.Result.Of<TypeRef>(TypeRef overridden) ->
                 result.map(type -> switch (Subtyping.prove(declaring, type, overridden)) {
                             case Subtyping.Verdict.Proven _ -> Optional.<String>empty();
                             case Subtyping.Verdict.Unproven(var why) ->
@@ -283,7 +286,7 @@ final class SignatureRegistry {
         };
     }
 
-    private static Optional<String> byThrows(Invocable own, Heritage.Method method) {
+    private static Optional<String> byThrows(Invocable own, Heritage.Plain method) {
         List<ExceptionType> undeclared = ExceptionType.ofAll(own.traits().throwsTypes()).stream()
                 .filter(ExceptionType::isChecked)
                 .filter(thrown -> !declares(method, thrown))
@@ -303,7 +306,7 @@ final class SignatureRegistry {
 
     /// Whether the `throws` clause of `method` covers `thrown`: it is a class of the clause or a
     /// subclass of one. A type variable is known to be neither, and covers nothing.
-    private static boolean declares(Heritage.Method method, ExceptionType thrown) {
+    private static boolean declares(Heritage.Plain method, ExceptionType thrown) {
         return switch (thrown) {
             case ExceptionType.OfClass(var cls) ->
                 method.throwsTypes().stream()

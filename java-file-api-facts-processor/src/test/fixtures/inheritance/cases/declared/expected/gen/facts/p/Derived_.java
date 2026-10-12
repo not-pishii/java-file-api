@@ -35,7 +35,7 @@ import p.Derived;
 ///
 /// A generated class extends or implements [Derived] by the proof its metamodel starts, with the stages of `Derived_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Derived.class, fingerprint = "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", complete = true, format = 13)
+@GeneratedMetamodel(of = Derived.class, fingerprint = "4c87ac5dd09c50fef8163a494bd5dd719b653a1b592afe485845720e25125cbd", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Derived_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Derived] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Derived_"), "122568e3f40d40d8103d1920018e5e7e991d61b88f86a6fc49f5c2841d0cdb19", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Derived"), List.of(), List.of(ClassDesc.of("p.Base"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Api")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("abs"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("f"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("inherited"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("over"), Signature.of("own"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("dstatic"), Signature.of("hidden", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("sbase")), Set.of(Signature.of("Derived"))), false, new Derived_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Derived_"), "4c87ac5dd09c50fef8163a494bd5dd719b653a1b592afe485845720e25125cbd", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Derived"), List.of(), List.of(ClassDesc.of("p.Base"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Api")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("abs"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("f"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("inherited"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("over"), Signature.of("own"), Signature.of("pkg"), Signature.of("prot"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("dstatic"), Signature.of("hidden", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("sbase")), Set.of(Signature.of("Derived"))), false, new Derived_Heritage());
 
         private Data() {
         }
@@ -57,8 +57,8 @@ public final class Derived_ {
     static final class Canonical {
         /// The canonical form of [Derived].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Derived open-class sealed=no
+        javafile-facts-canonical 8
+        type p.Derived open-class sealed=no nesting=top
         tparams -
         superclasses p.Base; java.lang.Object
         interfaces p.Api
@@ -71,30 +71,30 @@ public final class Derived_ {
         member method public overridable over() -> void throws -
         member method public overridable own() -> void throws -
         member method public static dstatic() -> void throws -
-        inherit ctor public () throws -
-        inherit method package concrete p.Base pkg() -> void throws - erased () overrides -
-        inherit method protected concrete java.lang.Object clone() -> java.lang.Object throws java.lang.CloneNotSupportedException erased () overrides -
-        inherit method protected concrete java.lang.Object finalize() -> void throws java.lang.Throwable erased () overrides -
-        inherit method protected concrete p.Base prot() -> void throws - erased () overrides -
-        inherit method public concrete java.lang.Object equals(java.lang.Object) -> boolean throws - erased (java.lang.Object) overrides -
-        inherit method public concrete java.lang.Object hashCode() -> int throws - erased () overrides -
-        inherit method public concrete java.lang.Object toString() -> java.lang.String throws - erased () overrides -
-        inherit method public concrete p.Base f() -> int throws - erased () overrides -
-        inherit method public concrete p.Base inherited() -> void throws - erased () overrides -
-        inherit method public concrete p.Derived abs() -> void throws - erased () overrides p.Api
-        inherit method public concrete p.Derived hidden(java.lang.Object) -> void throws - erased (java.lang.Object) overrides -
-        inherit method public concrete p.Derived over() -> void throws - erased () overrides p.Base
-        inherit method public concrete p.Derived own() -> void throws - erased () overrides -
-        inherit method public default p.Api dflt() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object getClass() -> java.lang.Class<?> throws - erased () overrides -
-        inherit method public final java.lang.Object notify() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object notifyAll() -> void throws - erased () overrides -
-        inherit method public final java.lang.Object wait() -> void throws java.lang.InterruptedException erased () overrides -
-        inherit method public final java.lang.Object wait(long) -> void throws java.lang.InterruptedException erased (long) overrides -
-        inherit method public final java.lang.Object wait(long, int) -> void throws java.lang.InterruptedException erased (long, int) overrides -
-        inherit method public static p.Base hidden(java.lang.String) -> void throws - erased (java.lang.String) overrides -
-        inherit method public static p.Base sbase() -> int throws - erased () overrides -
-        inherit method public static p.Derived dstatic() -> void throws - erased () overrides -
+        inherit ctor Derived() public () throws -
+        inherit method abs() erased () overrides p.Api by class public concrete p.Derived () -> void throws -
+        inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
+        inherit method dflt() erased () overrides - by interface default p.Api () -> void throws -
+        inherit method dstatic() erased () overrides - by class public static p.Derived () -> void throws -
+        inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
+        inherit method f() erased () overrides - by class public concrete p.Base () -> int throws -
+        inherit method finalize() erased () overrides - by class protected concrete java.lang.Object () -> void throws java.lang.Throwable
+        inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
+        inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
+        inherit method hidden(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Derived (java.lang.Object) -> void throws -
+        inherit method hidden(java.lang.String) erased (java.lang.String) overrides - by class public static p.Base (java.lang.String) -> void throws -
+        inherit method inherited() erased () overrides - by class public concrete p.Base () -> void throws -
+        inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method notifyAll() erased () overrides - by class public final java.lang.Object () -> void throws -
+        inherit method over() erased () overrides p.Base by class public concrete p.Derived () -> void throws -
+        inherit method own() erased () overrides - by class public concrete p.Derived () -> void throws -
+        inherit method pkg() erased () overrides - by class package concrete p.Base () -> void throws -
+        inherit method prot() erased () overrides - by class protected concrete p.Base () -> void throws -
+        inherit method sbase() erased () overrides - by class public static p.Base () -> int throws -
+        inherit method toString() erased () overrides - by class public concrete java.lang.Object () -> java.lang.String throws -
+        inherit method wait() erased () overrides - by class public final java.lang.Object () -> void throws java.lang.InterruptedException
+        inherit method wait(long) erased (long) overrides - by class public final java.lang.Object (long) -> void throws java.lang.InterruptedException
+        inherit method wait(long, int) erased (long, int) overrides - by class public final java.lang.Object (long, int) -> void throws java.lang.InterruptedException
         table abstract -
         table concrete abs(); clone(); dflt(); equals(java.lang.Object); f(); finalize(); getClass(); hashCode(); hidden(java.lang.Object); inherited(); notify(); notifyAll(); over(); own(); pkg(); prot(); toString(); wait(); wait(long); wait(long, int)
         table static dstatic(); hidden(java.lang.String); sbase()

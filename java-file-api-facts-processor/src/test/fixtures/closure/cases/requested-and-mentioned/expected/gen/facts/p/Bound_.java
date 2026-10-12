@@ -26,7 +26,7 @@ import p.Bound;
 ///
 /// `@Facts` does not ask for [Bound]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Bound.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Bound.class, fingerprint = "6717990bbc9603f1207221848194b38c17970abba5576a8c6c2189044e2c8ce2", complete = false, format = 13)
+@GeneratedMetamodel(of = Bound.class, fingerprint = "cdb430e3ceea8d745587b60bc182bbdcba7d779865aac042da622fccf58773e7", complete = false, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Bound_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Bound] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bound_"), "6717990bbc9603f1207221848194b38c17970abba5576a8c6c2189044e2c8ce2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Bound"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bound_"), "cdb430e3ceea8d745587b60bc182bbdcba7d779865aac042da622fccf58773e7", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Bound"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class Bound_ {
     static final class Canonical {
         /// The canonical form of [Bound].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.Bound interface sealed=no
+        javafile-facts-canonical 8
+        type p.Bound interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -

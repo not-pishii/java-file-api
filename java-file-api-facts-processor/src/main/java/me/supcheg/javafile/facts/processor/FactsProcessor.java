@@ -639,7 +639,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 .flatMap(Optional::stream)
                 .toArray(Element[]::new);
         Canonical canonical = Canonical.of(model);
-        JavaFile file =
+        Written written =
                 switch (planned.about()) {
                     case About.Full about -> {
                         Set<String> taken = MetamodelEmitter.takenNames(
@@ -656,21 +656,21 @@ public final class FactsProcessor extends AbstractProcessor {
                                         planned.subject() + ": no fact of " + skip.told(),
                                         about.reasons(),
                                         skip.origin()));
-                        yield MetamodelEmitter.full(
-                                metamodel,
-                                model,
-                                canonical,
-                                plan,
-                                targets,
-                                taken,
-                                about,
-                                Entry.of(planned.type(), model, elements));
+                        Entry entry = MetamodelEmitter.writable(metamodel, model, Entry.of(model, plan, elements));
+                        yield new Written(
+                                MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken, about, entry),
+                                MetamodelEmitter.heritage(metamodel, model, entry));
                     }
                     case About.Mentioned about ->
-                        MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about);
+                        new Written(
+                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about),
+                                Optional.empty());
                     case About.Declined about ->
-                        MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about);
+                        new Written(
+                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about),
+                                Optional.empty());
                 };
+        JavaFile file = written.metamodel();
         try {
             try (Writer writer = processingEnv
                     .getFiler()
@@ -678,12 +678,7 @@ public final class FactsProcessor extends AbstractProcessor {
                     .openWriter()) {
                 writer.write(MetamodelEmitter.source(file));
             }
-            Optional<JavaFile> heritage =
-                    switch (planned.about()) {
-                        case About.Full _ ->
-                            MetamodelEmitter.heritage(metamodel, model, Entry.of(planned.type(), model, elements));
-                        case About.Mentioned _, About.Declined _ -> Optional.empty();
-                    };
+            Optional<JavaFile> heritage = written.heritage();
             if (heritage.isPresent()) {
                 try (Writer writer = processingEnv
                         .getFiler()
@@ -797,4 +792,10 @@ public final class FactsProcessor extends AbstractProcessor {
         /// `processingOver`: what is not there will not come.
         LAST
     }
+
+    /// The source files of one metamodel.
+    ///
+    /// @param metamodel the metamodel
+    /// @param heritage the class of the heritage beside it, of a full metamodel of a type that tells one
+    private record Written(JavaFile metamodel, Optional<JavaFile> heritage) {}
 }

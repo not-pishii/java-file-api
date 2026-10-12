@@ -36,7 +36,7 @@ import p.IoA;
 ///
 /// A generated class extends or implements [IoA] by the proof its metamodel starts, with the stages of `IoA_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoA.class, fingerprint = "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", complete = true, format = 13)
+@GeneratedMetamodel(of = IoA.class, fingerprint = "d17d058e9d8ce9041d59bf4b0ece3659bdebbb93de465b739ccf4075316a6032", complete = true, format = 14)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class IoA_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [IoA] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoA_"), "b281256d8dfc0f724d4f5630844d8d7f24c053d1a30767a891fa2de47f5e0529", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoA"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IoA_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IoA_"), "d17d058e9d8ce9041d59bf4b0ece3659bdebbb93de465b739ccf4075316a6032", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IoA"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IoA_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,8 @@ public final class IoA_ {
     static final class Canonical {
         /// The canonical form of [IoA].
         static final String TEXT = """
-        javafile-facts-canonical 7
-        type p.IoA interface sealed=no
+        javafile-facts-canonical 8
+        type p.IoA interface sealed=no nesting=top
         tparams -
         superclasses -
         interfaces -
@@ -68,7 +68,7 @@ public final class IoA_ {
         members declared-accessible
         member method public abstract m() -> void throws java.io.IOException
         sam m() -> void throws java.io.IOException
-        inherit method public abstract p.IoA m() -> void throws java.io.IOException erased () overrides -
+        inherit method m() erased () overrides - by interface abstract p.IoA () -> void throws java.io.IOException
         table abstract m()
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -

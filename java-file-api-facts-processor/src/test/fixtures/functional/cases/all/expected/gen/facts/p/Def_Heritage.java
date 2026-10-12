@@ -9,11 +9,13 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Arity;
-import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.Heritage.Declaration;
+import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
+import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Method;
 import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
-import me.supcheg.javafile.facts.Heritage.Visibility;
+import me.supcheg.javafile.facts.Heritage.Type.Fixed;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
@@ -47,13 +49,13 @@ public final class Def_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [Def] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(m0()), List.of());
+        static final Told HERITAGE = new Told(List.of(m0()), List.of(), List.of());
 
         private Held() {
         }
 
-        private static Method m0() {
-            return new Method(Visibility.PUBLIC, Dispatch.DEFAULT, ClassDesc.of("p.Def"), Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String"))), List.of(), List.of(Types.of(ClassDesc.of("java.lang.String"))), Arity.FIXED, new Of(Types.of(ClassDesc.of("java.lang.String"))), List.of(), Set.of(List.of(ClassDesc.of("java.lang.String"))), List.of(ClassDesc.of("p.Fn")));
+        private static Method<Declaration> m0() {
+            return new Method<>(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String"))), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Def"), InterfaceMethod.DEFAULT), Arity.FIXED, List.of(), List.of(new Fixed(Types.of(ClassDesc.of("java.lang.String")))), new Of<>(new Fixed(Types.of(ClassDesc.of("java.lang.String")))), List.of())), Set.of(List.of(ClassDesc.of("java.lang.String"))), List.of(ClassDesc.of("p.Fn")));
         }
     }
 

@@ -1,12 +1,16 @@
 package gen.facts.p;
 
 import gen.facts.p.PubB_Heritage.Held;
+import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.Heritage.Named;
+import me.supcheg.javafile.facts.Heritage.Named.Field;
 import me.supcheg.javafile.facts.Heritage.Told;
+import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -37,9 +41,13 @@ public final class PubB_Heritage implements Supplier<Told> {
 
     static final class Held {
         /// Every constructor and method of [PubB] that is not private, as a member of it, whoever declares it.
-        static final Told HERITAGE = new Told(List.of(), List.of());
+        static final Told HERITAGE = new Told(List.of(), List.of(), n0());
 
         private Held() {
+        }
+
+        private static List<Named> n0() {
+            return List.of(new Field("k", ClassDesc.of("p.PubB"), Visibility.PUBLIC), new Field("s", ClassDesc.of("p.PubB"), Visibility.PUBLIC));
         }
     }
 
