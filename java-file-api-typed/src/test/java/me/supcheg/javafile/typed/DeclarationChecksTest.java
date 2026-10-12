@@ -26,8 +26,8 @@ class DeclarationChecksTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
 
     /// Declares the class `Probe` with the given members.
-    private static void declare(Consumer<TypedClassBuilder<?>> members) {
-        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static void declare(Consumer<TypedClassBuilder<Object>> members) {
+        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     @Nested
@@ -39,10 +39,12 @@ class DeclarationChecksTest {
                     .isThrownBy(() -> declare(cb -> {
                         cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                         cb.declareConstructor();
+                        cb.bodies();
                     }))
                     .withMessageContaining("the declaration of class me.supcheg.example.Probe is complete, but these"
-                            + " declared members are never defined: boolean me.supcheg.example.Probe.isEven(int),"
-                            + " new me.supcheg.example.Probe()");
+                            + " declared members are never defined: boolean me.supcheg.example.Probe.isEven(int)"
+                            + " (declared at ")
+                    .withMessageContaining("new me.supcheg.example.Probe() (declared at ");
         }
 
         @Test
@@ -50,8 +52,9 @@ class DeclarationChecksTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
                         var m = cb.declareVoidStaticMethod("m");
-                        cb.define(m, VoidBody::end);
-                        cb.define(m, VoidBody::end);
+                        var bodies = cb.bodies();
+                        bodies.define(m, VoidBody::end);
+                        bodies.define(m, VoidBody::end);
                     }))
                     .withMessageContaining("static void me.supcheg.example.Probe.m() of class"
                             + " me.supcheg.example.Probe is already defined; each declared member is defined exactly"
@@ -62,7 +65,10 @@ class DeclarationChecksTest {
         void aStaticFactOfAnotherClassIsRejectedWhenDefined() {
             // A static fact carries no owner brand, so this compiles.
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(cb -> cb.define(Math_.toIntExact_long, (b, _) -> b.return_(literal(0)))))
+                    .isThrownBy(() -> declare(cb -> {
+                        var bodies = cb.bodies();
+                        bodies.define(Math_.toIntExact_long, (b, _) -> b.return_(literal(0)));
+                    }))
                     .withMessageContaining("cannot define static int java.lang.Math.toIntExact(long): it was not"
                             + " declared by the builder of class me.supcheg.example.Probe");
         }
@@ -76,8 +82,9 @@ class DeclarationChecksTest {
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var late = cb.declareVoidMethod("late");
                                     var member1 = cb.declareVoidMethod("outer");
-                                    cb.define(member1, (b, _) -> {
-                                        cb.define(late, (x, _) -> x.end());
+                                    var bodies = cb.bodies();
+                                    bodies.define(member1, (b, _) -> {
+                                        bodies.define(late, (x, _) -> x.end());
                                         return b.end();
                                     });
                                 }
@@ -91,8 +98,9 @@ class DeclarationChecksTest {
             AtomicReference<Runnable> late = new AtomicReference<>();
             declare(cb -> {
                 var m = cb.declareVoidStaticMethod("m");
-                cb.define(m, VoidBody::end);
-                late.set(() -> cb.define(m, VoidBody::end));
+                var bodies = cb.bodies();
+                bodies.define(m, VoidBody::end);
+                late.set(() -> bodies.define(m, VoidBody::end));
             });
 
             assertThatIllegalStateException()
@@ -110,7 +118,8 @@ class DeclarationChecksTest {
                     .isThrownBy(() -> declare(cb -> {
                         var member2 = cb.declareStaticMethod("m", PrimitiveToken.INT, PrimitiveToken.INT);
                         cb.declareMethod("m", String_.TOKEN, PrimitiveToken.INT);
-                        cb.define(member2, Body::return_);
+                        var bodies = cb.bodies();
+                        bodies.define(member2, Body::return_);
                     }))
                     .withMessageContaining("the method java.lang.String me.supcheg.example.Probe.m(int) of class"
                             + " me.supcheg.example.Probe clashes with the method static int"
@@ -123,6 +132,7 @@ class DeclarationChecksTest {
                     .isThrownBy(() -> declare(cb -> {
                         cb.declareConstructor(String_.TOKEN);
                         cb.declareConstructor(String_.TOKEN);
+                        cb.bodies();
                     }))
                     .withMessageContaining("clashes with the constructor new me.supcheg.example.Probe(java.lang.String)"
                             + " declared before");
@@ -132,8 +142,11 @@ class DeclarationChecksTest {
         void aDuplicateFieldIsRejected() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        cb.field("x", PrimitiveToken.INT, literal(1));
-                        cb.mutableField("x", String_.TOKEN, literal("x"));
+                        var field1 = cb.declareField("x", PrimitiveToken.INT);
+                        var field2 = cb.declareMutableField("x", String_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.initialize(field1, literal(1));
+                        bodies.initialize(field2, literal("x"));
                     }))
                     .withMessageContaining("field x of class me.supcheg.example.Probe is already declared");
         }
@@ -155,7 +168,7 @@ class DeclarationChecksTest {
                     .withMessageContaining("the method java.lang.String me.supcheg.example.Probe.toString() of class"
                             + " me.supcheg.example.Probe has the signature of toString() of java.lang.Object, which"
                             + " the class inherits: a method declared by its name overrides nothing")
-                    .withMessageContaining("override(fact, body)");
+                    .withMessageContaining("declareOverride(fact)");
             // whatever its result, which javac would call incompatible
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> cb.declareMethod("toString", PrimitiveToken.INT)))
@@ -174,16 +187,22 @@ class DeclarationChecksTest {
 
         @Test
         void anOverloadOfAnInheritedMethodIsDeclaredByName() {
-            declare(cb ->
-                    cb.method("equals", PrimitiveToken.BOOLEAN, String_.TOKEN, (b, _, _) -> b.return_(literal(true))));
+            declare(cb -> {
+                var own3 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(own3, (b, _, _) -> b.return_(literal(true)));
+            });
         }
 
         @Test
         void aMethodIsOverriddenOnce() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
-                        cb.override(Object_.toString, (b, _) -> b.return_(literal("a")));
-                        cb.override(Object_.toString, (b, _) -> b.return_(literal("b")));
+                        var own4 = cb.declareOverride(Object_.toString);
+                        var own5 = cb.declareOverride(Object_.toString);
+                        var bodies = cb.bodies();
+                        bodies.define(own4, (b, _) -> b.return_(literal("a")));
+                        bodies.define(own5, (b, _) -> b.return_(literal("b")));
                     }))
                     .withMessageContaining(
                             "clashes with the method java.lang.String me.supcheg.example.Probe.toString()"
@@ -193,7 +212,11 @@ class DeclarationChecksTest {
         @Test
         void aFinalMethodIsNotOverriddenByItsFact() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> declare(cb -> cb.override(Object_.notify, (b, _) -> b.end())))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own6 = cb.declareOverride(Object_.notify);
+                        var bodies = cb.bodies();
+                        bodies.define(own6, (b, _) -> b.end());
+                    }))
                     .withMessageContaining(
                             "cannot override notify() of java.lang.Object: the method is final" + " (JLS 8.4.3.3)");
         }
@@ -201,15 +224,25 @@ class DeclarationChecksTest {
         @Test
         void equalsIsNotOverriddenWithoutHashCode() {
             assertThatIllegalStateException()
-                    .isThrownBy(() ->
-                            declare(cb -> cb.override(Object_.equals_Object, (b, _, _) -> b.return_(literal(true)))))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own7 = cb.declareOverride(Object_.equals_Object);
+                        var bodies = cb.bodies();
+                        bodies.define(own7, (b, _, _) -> b.return_(literal(true)));
+                    }))
                     .withMessageContaining("overrides equals(java.lang.Object) but not hashCode()");
             declare(cb -> {
-                cb.override(Object_.equals_Object, (b, _, _) -> b.return_(literal(true)));
-                cb.override(Object_.hashCode, (b, _) -> b.return_(literal(1)));
+                var own8 = cb.declareOverride(Object_.equals_Object);
+                var own9 = cb.declareOverride(Object_.hashCode);
+                var bodies = cb.bodies();
+                bodies.define(own8, (b, _, _) -> b.return_(literal(true)));
+                bodies.define(own9, (b, _) -> b.return_(literal(1)));
             });
             // hashCode alone is nothing javac warns of
-            declare(cb -> cb.override(Object_.hashCode, (b, _) -> b.return_(literal(1))));
+            declare(cb -> {
+                var own10 = cb.declareOverride(Object_.hashCode);
+                var bodies = cb.bodies();
+                bodies.define(own10, (b, _) -> b.return_(literal(1)));
+            });
         }
 
         @Test
@@ -229,11 +262,14 @@ class DeclarationChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        cb.voidMethod("a", (b, self) -> {
+                        var own11 = cb.declareVoidMethod("a");
+                        var own12 = cb.declareMethod("b", String_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(own11, (b, self) -> {
                             stash.set(self);
                             return b.end();
                         });
-                        cb.method("b", String_.TOKEN, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                        bodies.define(own12, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
                     }))
                     .withMessageContaining("the this of the body of method a is used in the body of method b, which is"
                             + " not inside that body");
@@ -244,10 +280,14 @@ class DeclarationChecksTest {
             // A this typed as Expr<Object> by a wildcard escapes the brand;
             // the scope check still catches it.
             AtomicReference<Expr<?>> stash = new AtomicReference<>();
-            declare(cb -> cb.voidMethod("a", (b, self) -> {
-                stash.set(self);
-                return b.end();
-            }));
+            declare(cb -> {
+                var own13 = cb.declareVoidMethod("a");
+                var bodies = cb.bodies();
+                bodies.define(own13, (b, self) -> {
+                    stash.set(self);
+                    return b.end();
+                });
+            });
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> TypedJavaFile.class_(
@@ -257,7 +297,8 @@ class DeclarationChecksTest {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var member5 = cb.declareMethod("b", String_.TOKEN);
-                                    cb.define(member5, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                                    var bodies = cb.bodies();
+                                    bodies.define(member5, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
                                 }
                             }))
                     .withMessageContaining("the this of the body of method a is used in the body of method b");
@@ -269,11 +310,14 @@ class DeclarationChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
-                        cb.constructor((b, self) -> {
+                        var own14 = cb.declareConstructor();
+                        var field15 = cb.declareField("f", String_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(own14, (b, self) -> {
                             stash.set(self);
                             return b.end();
                         });
-                        cb.field("f", String_.TOKEN, call(stash.get(), Object_.toString));
+                        bodies.initialize(field15, call(stash.get(), Object_.toString));
                     }))
                     .withMessageContaining("the this of the body of constructor is used in the initializer of field f");
         }
@@ -284,6 +328,6 @@ class DeclarationChecksTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> declare(cb -> cb.self().methods()))
                 .withMessageContaining("the methods of class me.supcheg.example.Probe are known only once its"
-                        + " declaration is complete");
+                        + " members are declared");
     }
 }

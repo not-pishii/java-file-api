@@ -45,7 +45,8 @@ class ScopeChecksTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 var member1 = cb.declareMethod("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
-                cb.define(member1, (b, _, flag) -> body.apply(b, flag));
+                var bodies = cb.bodies();
+                bodies.define(member1, (b, _, flag) -> body.apply(b, flag));
             }
         });
     }
@@ -103,11 +104,12 @@ class ScopeChecksTest {
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var member2 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
                                     var member3 = cb.declareMethod("b", PrimitiveToken.INT);
-                                    cb.define(member2, (b, _, p) -> {
+                                    var bodies = cb.bodies();
+                                    bodies.define(member2, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
-                                    cb.define(member3, (b, _) -> b.return_(host.getFirst()));
+                                    bodies.define(member3, (b, _) -> b.return_(host.getFirst()));
                                 }
                             }))
                     .withMessageContaining("parameter of type int declared in the body of method a is used in the"
@@ -124,11 +126,13 @@ class ScopeChecksTest {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var member4 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
-                                    cb.define(member4, (b, _, p) -> {
+                                    var field1 = cb.declareField("f", PrimitiveToken.INT);
+                                    var bodies = cb.bodies();
+                                    bodies.define(member4, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
-                                    cb.field("f", PrimitiveToken.INT, host.getFirst());
+                                    bodies.initialize(field1, host.getFirst());
                                 }
                             }))
                     .withMessageContaining("is used in the initializer of field f");
@@ -444,11 +448,12 @@ class ScopeChecksTest {
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var member5 = cb.declareMethod("a", PrimitiveToken.INT);
                                     var member6 = cb.declareMethod("b", PrimitiveToken.INT);
-                                    cb.define(member5, (b, _) -> {
+                                    var bodies = cb.bodies();
+                                    bodies.define(member5, (b, _) -> {
                                         other.set(b.return_(literal(1)));
                                         return other.get();
                                     });
-                                    cb.define(member6, (_, _) -> other.get());
+                                    bodies.define(member6, (_, _) -> other.get());
                                 }
                             }))
                     .withMessageContaining("handed back for the body of method b was issued by the body of method a");
@@ -483,28 +488,29 @@ class ScopeChecksTest {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
                                     var member7 = cb.declareMethod("outer", PrimitiveToken.INT);
-                                    cb.define(
+                                    var bodies = cb.bodies();
+                                    bodies.define(
                                             member7,
                                             (b, _) -> b.if_(
                                                             literal(true),
-                                                            _ -> cb.method(
-                                                                    "inner",
-                                                                    PrimitiveToken.INT,
-                                                                    (x, _) -> x.return_(literal(1))))
+                                                            _ -> cb.declareMethod("inner", PrimitiveToken.INT))
                                                     .return_(literal(0)));
                                 }
                             }))
                     .withMessageContaining("cannot declare int me.supcheg.example.Probe.inner()")
-                    .withMessageContaining("while the then-branch of if_ in body of method outer is being built");
+                    .withMessageContaining("the declarations of class me.supcheg.example.Probe have ended");
         }
 
         @Test
         void aMemberDeclaredAfterTheClassWasBuiltIsRejected() {
             List<TypedClassBuilder<?>> leaked = new ArrayList<>();
-            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, leaked::add);
+            TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(cb -> {
+                leaked.add(cb);
+                cb.bodies();
+            }));
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> leaked.getFirst().field("late", PrimitiveToken.INT, literal(1)))
+                    .isThrownBy(() -> leaked.getFirst().declareField("late", PrimitiveToken.INT))
                     .withMessageContaining("the declaration of class me.supcheg.example.Probe is already complete");
         }
     }

@@ -52,11 +52,13 @@ import java.util.stream.Stream;
 ///   8.4.8.3). Each is held against every method the class inherits under
 ///   the signature, not the one the override names alone.
 ///
-/// When the declaration is complete ([#requireComplete()]): methods the
-/// class cannot have together without one of its own — the bodies of two
-/// unrelated interfaces, a method of the superclass that cannot stand for the
-/// default one of an interface — are overridden (JLS 8.4.8.4, 9.4.1.3), and
-/// a class that overrides `equals` overrides `hashCode`.
+/// When the declarations end and the bodies begin ([#requireComplete()]) —
+/// every method the class is to have is declared then, and nothing of what
+/// is asked needs a body: methods the class cannot have together without one
+/// of its own — the bodies of two unrelated interfaces, a method of the
+/// superclass that cannot stand for the default one of an interface — are
+/// overridden (JLS 8.4.8.4, 9.4.1.3), and a class that overrides `equals`
+/// overrides `hashCode`.
 final class SignatureRegistry {
     private static final MethodSignature EQUALS = new MethodSignature("equals", List.of(ConstantDescs.CD_Object));
     private static final MethodSignature HASH_CODE = new MethodSignature("hashCode", List.of());
@@ -186,7 +188,7 @@ final class SignatureRegistry {
                         + " overrides nothing: no supertype of the class has a method " + signature
                         + "; a class overrides the methods of the types it extends or implements, which its"
                         + " header names before its members begin — extends_ and implements_ come before"
-                        + " body()"));
+                        + " members()"));
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         members = members.withOverride(own);
         return group.arity();
@@ -221,7 +223,7 @@ final class SignatureRegistry {
                         + ", which the class inherits: a method declared by its name overrides nothing. "
                         + switch (entry.method().declared()) {
                             case Heritage.Plain _ ->
-                                "Override it by its fact — override(fact, body), or overriding(fact) in the"
+                                "Override it by its fact — declareOverride(fact), or overriding(fact) in the"
                                         + " header of the class for a method a supertype leaves abstract";
                             case Heritage.Generic _ ->
                                 "The inherited method is generic, and the typed layer declares no generic"
@@ -428,7 +430,7 @@ final class SignatureRegistry {
         };
     }
 
-    /// Rejects a complete declaration that leaves undone what only a method of the class can do.
+    /// Rejects declarations that end leaving undone what only a method of the class can do.
     ///
     /// @throws IllegalStateException if the methods the class inherits under a signature cannot be had
     ///     together ([Inheritance.Group#unsettled()]) and the class does not override them, or `equals` is
@@ -440,15 +442,15 @@ final class SignatureRegistry {
                 .flatMap(group -> group.unsettled().stream())
                 .findFirst()
                 .ifPresent(why -> {
-                    throw new IllegalStateException("the declaration of " + owner + " is complete, but it inherits"
+                    throw new IllegalStateException("the declarations of " + owner + " cannot end here: it inherits"
                             + " methods it cannot have together and overrides none of them: " + why
                             + " — a class that has a method from several supertypes that do not agree on it"
-                            + " overrides it");
+                            + " overrides it, and an override is declared before bodies()");
                 });
         if (members.overrides().contains(EQUALS) && !members.overrides().contains(HASH_CODE)) {
-            throw new IllegalStateException("the declaration of " + owner + " is complete, and it overrides"
+            throw new IllegalStateException("the declarations of " + owner + " cannot end here: it overrides"
                     + " equals(java.lang.Object) but not hashCode(): equal objects must have equal hash codes,"
-                    + " override both (javac -Xlint:overrides)");
+                    + " override both (javac -Xlint:overrides) — an override is declared before bodies()");
         }
     }
 

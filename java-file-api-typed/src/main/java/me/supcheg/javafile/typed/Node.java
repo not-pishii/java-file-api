@@ -42,7 +42,7 @@ sealed interface Node {
             case Lambda _ -> true;
             // javac types the expression by what it is of, not by the supertype its token tells.
             case Upcast _ -> false;
-            // The method is the one the superclass has, with the result of the fact (SuperAccess).
+            // The method is the one the superclass has, with the result of the fact (MemberBodies.superCall).
             case SuperCall _ -> true;
             // Every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
             case Switch _ -> true;

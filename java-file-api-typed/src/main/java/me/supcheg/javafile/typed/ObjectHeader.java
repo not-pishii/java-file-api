@@ -55,7 +55,7 @@ public final class ObjectHeader<Self> extends Header<Self> {
     /// @return the builder of the members
     /// @throws IllegalArgumentException if the class said it overrides a method no supertype of it has
     /// @throws IllegalStateException if the members have begun already
-    public TypedClassBuilder<Self> body() {
-        return declaration().body();
+    public TypedClassBuilder<Self> members() {
+        return declaration().members();
     }
 }

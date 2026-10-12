@@ -58,9 +58,10 @@ class GenericClassChecksTest {
         return probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                var cb = h.extendsObject().body();
+                var cb = h.extendsObject().members();
                 var member1 = cb.declareVoidStaticMethod("m");
-                cb.define(member1, b -> body.build(b, t, cb));
+                var bodies = cb.bodies();
+                bodies.define(member1, b -> body.build(b, t, cb));
             }
         });
     }
@@ -78,7 +79,7 @@ class GenericClassChecksTest {
                     () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                            h.extendsObject().body().declareStaticMethod("make", t);
+                            h.extendsObject().members().declareStaticMethod("make", t);
                         }
                     }),
                     "the type parameter T is not in scope in the signature of static T"
@@ -98,7 +99,7 @@ class GenericClassChecksTest {
                         @Override
                         public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.extendsObject()
-                                    .body()
+                                    .members()
                                     .declareVoidStaticMethod("take", new ArrayList_<>(ArrayToken.of(t)).token);
                         }
                     }),
@@ -115,8 +116,9 @@ class GenericClassChecksTest {
                     () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                            var cb = h.extendsObject().body();
+                            var cb = h.extendsObject().members();
                             cb.declareStaticMethod("create", cb.self());
+                            cb.bodies();
                         }
                     }),
                     "the type parameter T, which me.supcheg.example.Probe<T> mentions, is not in scope in the"
@@ -175,11 +177,12 @@ class GenericClassChecksTest {
                     () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                            var cb = h.extendsObject().body();
+                            var cb = h.extendsObject().members();
                             var ctor = cb.declareConstructor();
                             var member2 = cb.declareVoidStaticMethod("m");
-                            cb.define(ctor, (b, self) -> b.end());
-                            cb.define(member2, b -> b.let(Object_.TOKEN, new_(ctor), o -> b.end()));
+                            var bodies = cb.bodies();
+                            bodies.define(ctor, (b, self) -> b.end());
+                            bodies.define(member2, b -> b.let(Object_.TOKEN, new_(ctor), o -> b.end()));
                         }
                     }),
                     "the type parameter T, which me.supcheg.example.Probe<T> mentions, is not in scope in the body of",
@@ -236,11 +239,13 @@ class GenericClassChecksTest {
             assertThat(probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                                    var cb = h.extendsObject().body();
+                                    var cb = h.extendsObject().members();
                                     var list = new ArrayList_<>(t);
-                                    cb.field("items", list.token, new_(list.new_));
+                                    var field1 = cb.declareField("items", list.token);
                                     var member3 = cb.declareVoidStaticMethod("m");
-                                    cb.define(member3, b -> b.let(Object_.TOKEN, literal("x"), o -> b.end()));
+                                    var bodies = cb.bodies();
+                                    bodies.initialize(field1, new_(list.new_));
+                                    bodies.define(member3, b -> b.let(Object_.TOKEN, literal("x"), o -> b.end()));
                                 }
                             })
                             .render())
@@ -255,7 +260,8 @@ class GenericClassChecksTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 var member4 = cb.declareVoidMethod("m");
-                cb.define(member4, (b, self) -> b.let(kept, literalNull(kept), v -> b.end()));
+                var bodies = cb.bodies();
+                bodies.define(member4, (b, self) -> b.let(kept, literalNull(kept), v -> b.end()));
             }
         });
     }
@@ -278,7 +284,7 @@ class GenericClassChecksTest {
                                         @Override
                                         public <Self2, T2 extends Comparable<String>> void build(
                                                 ClassHeader<Self2> h2, TypeVarToken<T2> inner) {
-                                            h2.extendsObject().body().declareMethod("m", outer);
+                                            h2.extendsObject().members().declareMethod("m", outer);
                                         }
                                     });
                         }
@@ -296,7 +302,7 @@ class GenericClassChecksTest {
                 @Override
                 public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                     kept[0] = t;
-                    h.extendsObject().body();
+                    h.extendsObject().members().bodies();
                 }
             });
 

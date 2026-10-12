@@ -12,12 +12,18 @@ import java.util.List;
 /// The header is a sequence of stages, each giving the next:
 ///
 /// ```
-/// ClassHeader<Self>  --extendsObject()-->  ObjectHeader<Self>  --body()-->  TypedClassBuilder<Self>
-///                                            implements_(proof)
-///                    --extends_(proof)-->  SubclassHeader<Self, S>  --body(constructor, (ctor, ...) -> ...)-->
-///                                            implements_(proof), inherited(fact)      TypedSubclassBuilder<Self, S>
-///                                            declareConstructor(...)
+/// ClassHeader<Self>  --extendsObject()-->  ObjectHeader<Self>  --members()-->  TypedClassBuilder<Self>
+///                                            implements_(proof)                   --bodies()-->
+/// TypedClassBodies<Self>
+///                    --extends_(proof)-->  SubclassHeader<Self, S>  --members()-->  TypedSubclassBuilder<Self, S>
+///                                            implements_(proof), inherited(fact)  --bodies(constructor, (ctor, ...) ->
+/// ...)-->
+///                                            declareConstructor(...)                TypedSubclassBodies<Self, S>
 /// ```
+///
+/// The header is followed by two stages more: the builder of the members,
+/// where every member is declared ([MemberBuilder]), and their bodies, where
+/// each is defined ([MemberBodies]).
 ///
 /// A class has a superclass before it names a superinterface, and all its
 /// supertypes before a member: the stage that offers a step is the one the

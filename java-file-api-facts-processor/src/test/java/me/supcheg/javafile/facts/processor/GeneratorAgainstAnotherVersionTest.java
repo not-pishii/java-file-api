@@ -88,11 +88,9 @@ class GeneratorAgainstAnotherVersionTest {
                                 target, ClassDesc.of("app", "Generated"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
                                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                                        cb.staticMethod(
-                                                "only",
-                                                String_.TOKEN,
-                                                String_.TOKEN,
-                                                (b, s) -> b.return_(call(new_(Svc_.new_), Svc_.only_Object, s)));
+                                        var only = cb.declareStaticMethod("only", String_.TOKEN, String_.TOKEN);
+                                        var bodies = cb.bodies();
+                                        bodies.define(only, (b, s) -> b.return_(call(new_(Svc_.new_), Svc_.only_Object, s)));
                                     }
                                 });
                         JavaFileWriter.writeTo(file, processingEnv.getFiler());

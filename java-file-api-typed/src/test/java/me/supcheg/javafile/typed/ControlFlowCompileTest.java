@@ -73,25 +73,26 @@ class ControlFlowCompileTest {
 
                         // do { if (flag) continue; println(1); } while (flag); return 0;
                         var member7 = cb.declareStaticMethod("doLoop", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(
                                 member1,
                                 (b, flag) -> b.loopForever(loop -> loop.if_(flag, t -> t.return_(literal(1)))));
-                        cb.define(
+                        bodies.define(
                                 member2,
                                 (b, s) -> b.tryTerminated(
                                         h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
                                                 .finally_(f -> f.exec(
                                                         voidCall(staticField(System_.out), PrintStream_.println))),
                                         t -> t.return_(staticCall(Integer_.parseInt_String, s))));
-                        cb.define(member3, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
-                        cb.define(
+                        bodies.define(member3, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
+                        bodies.define(
                                 member4,
                                 b -> b.try_(
                                                 h -> h.catch_(
                                                         RuntimeException_.TOKEN, (c, _) -> c.exec(print(literal(0)))),
                                                 t -> t.return_(literal(1)))
                                         .return_(literal(2)));
-                        cb.define(
+                        bodies.define(
                                 member5,
                                 (b, n) -> b.letVar(
                                         PrimitiveToken.INT,
@@ -101,13 +102,13 @@ class ControlFlowCompileTest {
                                                         (loop, ctl) -> loop.if_(geInt(i, n), t -> t.break_(ctl))
                                                                 .exec(assign(i, addInt(i, literal(1)))))
                                                 .return_(i)));
-                        cb.define(
+                        bodies.define(
                                 member6,
                                 (b, flag) -> b.while_(
                                                 flag,
                                                 (outer, outerCtl) -> outer.loopForever(inner -> inner.break_(outerCtl)))
                                         .return_(literal(0)));
-                        cb.define(
+                        bodies.define(
                                 member7,
                                 (b, flag) -> b.doWhile(
                                                 (loop, ctl) -> loop.if_(flag, t -> t.continue_(ctl))
@@ -130,7 +131,8 @@ class ControlFlowCompileTest {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         var member8 = cb.declareStaticMethod("nested", PrimitiveToken.INT, PrimitiveToken.INT);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(
                                 member8,
                                 (b, n) -> b.let(
                                         PrimitiveToken.INT,

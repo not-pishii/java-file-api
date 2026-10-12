@@ -60,7 +60,9 @@ public final class Checked {
     private static final TypedJavaFile.TypedClassSpec DECLARES_FAILURE = new TypedJavaFile.TypedClassSpec() {
         @Override
         public <Self> void build(TypedClassBuilder<Self> cb) {
-            cb.throwing(Failure_.TOKEN).voidStaticMethod("declares", VoidBody::end);
+            var own1 = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("declares");
+var bodies = cb.bodies();
+bodies.define(own1, VoidBody::end);
         }
     };
 
@@ -79,11 +81,12 @@ public final class Checked {
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                cb.throwing(Failure_.TOKEN)
-                        .voidStaticMethod("custom", Io_.TOKEN, (b, io) -> b.exec(voidCall(io, Io_.custom))
+                var own2 = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("custom", Io_.TOKEN);
+                var own3 = cb.throwing(IOException_.TOKEN).declareStaticMethod("made", Io_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own2, (b, io) -> b.exec(voidCall(io, Io_.custom))
                                 .end());
-                cb.throwing(IOException_.TOKEN)
-                        .staticMethod("made", Io_.TOKEN, b -> b.return_(new_(Io_.new_)));
+bodies.define(own3, b -> b.return_(new_(Io_.new_)));
             }
         });
 
@@ -97,7 +100,9 @@ public final class Checked {
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                cb.voidStaticMethod("multi", Io_.TOKEN, (b, io) -> b.try_(
+                var own4 = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own4, (b, io) -> b.try_(
                                 h -> h.catch_(IOException_.TOKEN, (_, _) -> {})
                                         .catch_(InterruptedException_.TOKEN, (_, _) -> {}),
                                 t -> t.exec(voidCall(io, Io_.multi)))
@@ -110,7 +115,9 @@ public final class Checked {
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        cb.voidStaticMethod("multi", Io_.TOKEN, (b, io) -> b.try_(
+                        var own5 = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own5, (b, io) -> b.try_(
                                         h -> h.catch_(IOException_.TOKEN, (_, _) -> {}),
                                         t -> t.exec(voidCall(io, Io_.multi)))
                                 .end());
@@ -126,8 +133,9 @@ public final class Checked {
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        cb.throwing(IOException_.TOKEN)
-                                .voidStaticMethod("util", b -> b.exec(voidStaticCall(Io_.util))
+                        var own6 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("util");
+var bodies = cb.bodies();
+bodies.define(own6, b -> b.exec(voidStaticCall(Io_.util))
                                         .end());
                     }
                 }))
@@ -142,8 +150,10 @@ public final class Checked {
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        cb.voidStaticMethod(
-                                "generic", Io_.TOKEN, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
+                        var own7 = cb.declareVoidStaticMethod(
+                                "generic", Io_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own7, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
                                         .end());
                     }
                 }))
@@ -152,10 +162,11 @@ public final class Checked {
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                cb.voidStaticMethod(
+                var own8 = cb.declareVoidStaticMethod(
                         "generic",
-                        Io_.TOKEN,
-                        (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
+                        Io_.TOKEN);
+var bodies = cb.bodies();
+bodies.define(own8, (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
                                 .end());
             }
         });

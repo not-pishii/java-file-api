@@ -25,12 +25,13 @@ import java.util.stream.Stream;
 /// The stage of the header of a class that extends `S`, from
 /// [ClassHeader#extends_]: the class names its superinterfaces, says which
 /// methods of theirs its superclass implements for it ([#inherited]), then
-/// begins its members with its first constructor ([SubclassOverriding#body]).
+/// begins its members ([SubclassOverriding#members()]).
 ///
 /// ```java
 /// var sh = h.extends_(Thread_.extend(h.self()));
 /// var asRunnable = sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Thread_.run)));
-/// var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
+/// var make = sh.declareConstructor();
+/// var bodies = sh.members().bodies(make, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
 /// ```
 ///
 /// @param <Self> the brand of the class being declared

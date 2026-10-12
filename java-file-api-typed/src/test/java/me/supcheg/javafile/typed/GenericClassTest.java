@@ -45,20 +45,22 @@ class GenericClassTest {
         CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                var cb = h.extendsObject().body();
-                var item = cb.mutableField("item", t, literalNull(t));
+                var cb = h.extendsObject().members();
+                var item = cb.declareMutableField("item", t);
                 var ctor = cb.declareConstructor();
                 var put = cb.declareVoidMethod("put", t);
                 var get = cb.declareMethod("get", t);
                 // the class is made in its own body with its type parameter for the type argument
                 var member1 = cb.declareMethod("copy", cb.self());
-                cb.define(ctor, (b, self) -> b.end());
-                cb.define(
+                var bodies = cb.bodies();
+                bodies.initialize(item, literalNull(t));
+                bodies.define(ctor, (b, self) -> b.end());
+                bodies.define(
                         put,
                         (b, self, value) ->
                                 b.exec(assignField(self, item, value)).end());
-                cb.define(get, (b, self) -> b.return_(field(self, item)));
-                cb.define(
+                bodies.define(get, (b, self) -> b.return_(field(self, item)));
+                bodies.define(
                         member1,
                         (b, self) -> b.let(
                                 cb.self(),
@@ -91,12 +93,13 @@ class GenericClassTest {
                 new TypedJavaFile.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, N extends Number> void build(ClassHeader<Self> h, TypeVarToken<N> n) {
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var item = cb.declareMethod("item", n, n);
-                        cb.define(item, (b, self, value) -> b.return_(value));
                         // an expression of N is one of Number to the compiler of the generator
                         var member2 = cb.declareMethod("asInt", PrimitiveToken.INT, n);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(item, (b, self, value) -> b.return_(value));
+                        bodies.define(
                                 member2,
                                 (b, self, value) -> b.return_(call(call(self, item, value), Number_.intValue)));
                     }
@@ -122,17 +125,17 @@ class GenericClassTest {
                 var sh = h.extends_(carrier.extend(h.self()));
                 Upcast<Self, Comparable<Self>> asComparable =
                         sh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
-                var cb = sh.body(
-                        sh.declareConstructor(t), (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
-                cb.define(compareTo.method(), (b, self, other) -> b.return_(literal(7)));
+                var first = sh.declareConstructor(t);
+                var cb = sh.members();
                 // what the class has from Carrier<T> is in terms of its own T
                 var member3 = cb.declareMethod("mine", t);
                 var member4 = cb.declareMethod("same", PrimitiveToken.INT);
-                cb.override(
-                        carrier.described_T,
-                        (b, self, other) -> b.return_(cb.superCall(self, carrier.described_T, other)));
-                cb.define(member3, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
-                cb.define(member4, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
+                var own1 = cb.declareOverride(carrier.described_T);
+                var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
+                bodies.define(compareTo.method(), (b, self, other) -> b.return_(literal(7)));
+                bodies.define(own1, (b, self, other) -> b.return_(bodies.superCall(self, carrier.described_T, other)));
+                bodies.define(member3, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
+                bodies.define(member4, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
             }
         }));
 
@@ -162,15 +165,16 @@ class GenericClassTest {
                     public <Self, T extends Number> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var comparable = new Comparable_<>(t);
                         Upcast<T, Comparable<T>> asComparable = h.bound(t, comparable.token);
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var member5 = cb.declareMethod("less", PrimitiveToken.BOOLEAN, t, t);
                         // the leftmost bound is the type of the generator, the further one a witness
                         var member6 = cb.declareMethod("asInt", PrimitiveToken.INT, t);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(
                                 member5,
                                 (b, self, one, other) -> b.return_(ltInt(
                                         call(asComparable.apply(one), comparable.compareTo_T, other), literal(0))));
-                        cb.define(member6, (b, self, one) -> b.return_(call(one, Number_.intValue)));
+                        bodies.define(member6, (b, self, one) -> b.return_(call(one, Number_.intValue)));
                     }
                 }));
 
@@ -195,17 +199,18 @@ class GenericClassTest {
             public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var comparable = new Comparable_<>(t);
                 var asComparable = h.bound(t, comparable.token);
-                var cb = h.extendsObject().body();
+                var cb = h.extendsObject().members();
                 var member7 = cb.declareMethod("compare", PrimitiveToken.INT, t, t);
                 // the erasure of T is that of its leftmost bound, Object: the two methods are two to javac too
                 var member8 = cb.declareMethod("show", String_.TOKEN, t);
                 var member9 = cb.declareMethod("show", String_.TOKEN, new Comparable_<>(String_.TOKEN).token);
-                cb.define(
+                var bodies = cb.bodies();
+                bodies.define(
                         member7,
                         (b, self, one, other) ->
                                 b.return_(call(asComparable.apply(one), comparable.compareTo_T, other)));
-                cb.define(member8, (b, self, one) -> b.return_(literal("T")));
-                cb.define(member9, (b, self, one) -> b.return_(literal("Comparable")));
+                bodies.define(member8, (b, self, one) -> b.return_(literal("T")));
+                bodies.define(member9, (b, self, one) -> b.return_(literal("Comparable")));
             }
         }));
 
@@ -233,8 +238,9 @@ class GenericClassTest {
                         var get = h.overriding(numbers.get, n);
                         var oh = h.extendsObject();
                         oh.implements_(numbers.implement(h.self()).get(get));
-                        var cb = oh.body();
-                        cb.define(get.method(), (b, self) -> b.return_(literalNull(n)));
+                        var cb = oh.members();
+                        var bodies = cb.bodies();
+                        bodies.define(get.method(), (b, self) -> b.return_(literalNull(n)));
                     }
                 }));
 
@@ -257,13 +263,14 @@ class GenericClassTest {
                     @Override
                     public <Self, A, B extends Number, C extends Comparable<String>> void build(
                             ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var member10 = cb.declareMethod("first", a, a, b);
                         var member11 = cb.declareMethod("second", PrimitiveToken.INT, b, c);
                         var member12 = cb.declareMethod("third", PrimitiveToken.INT, c);
-                        cb.define(member10, (body, self, one, two) -> body.return_(one));
-                        cb.define(member11, (body, self, two, three) -> body.return_(call(two, Number_.intValue)));
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.define(member10, (body, self, one, two) -> body.return_(one));
+                        bodies.define(member11, (body, self, two, three) -> body.return_(call(two, Number_.intValue)));
+                        bodies.define(
                                 member12,
                                 (body, self, three) -> body.return_(
                                         call(three, new Comparable_<>(String_.TOKEN).compareTo_T, literal("b"))));
@@ -287,13 +294,14 @@ class GenericClassTest {
                 new TypedJavaFile.TypedGenericClassSpec2<>() {
                     @Override
                     public <Self, T1, T2> void build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
-                        var cb = h.extendsObject().body();
+                        var cb = h.extendsObject().members();
                         var member13 = cb.declareMethod("text", String_.TOKEN, t1);
                         var member14 = cb.declareMethod("shape", Shape_.TOKEN, t2);
                         var member15 = cb.declareMethod("own", Object_.TOKEN, t1);
-                        cb.define(member13, (b, self, one) -> b.return_(literal("text")));
-                        cb.define(member14, (b, self, two) -> b.return_(literalNull(Shape_.TOKEN)));
-                        cb.define(member15, (b, self, one) -> b.return_(one));
+                        var bodies = cb.bodies();
+                        bodies.define(member13, (b, self, one) -> b.return_(literal("text")));
+                        bodies.define(member14, (b, self, two) -> b.return_(literalNull(Shape_.TOKEN)));
+                        bodies.define(member15, (b, self, one) -> b.return_(one));
                     }
                 }));
 

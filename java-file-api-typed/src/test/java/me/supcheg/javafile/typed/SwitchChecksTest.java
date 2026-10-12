@@ -51,13 +51,17 @@ class SwitchChecksTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
 
     /// Declares the class `Probe` with the given members.
-    private static JavaFile declare(Consumer<TypedClassBuilder<?>> members) {
-        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static JavaFile declare(Consumer<TypedClassBuilder<Object>> members) {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     /// Declares `static int m(Signal s)` with the given body.
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
-        return declare(cb -> cb.staticMethod("m", PrimitiveToken.INT, Signal_.TOKEN, body));
+        return declare(cb -> {
+            var own1 = cb.declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
+            var bodies = cb.bodies();
+            bodies.define(own1, body);
+        });
     }
 
     /// `switch (s) { cases }` of type `int`.
@@ -308,23 +312,27 @@ class SwitchChecksTest {
         void primitiveAndReferenceResultsDoNotMixThoughJavaBoxesThem() {
             unlikeJavac(
                     IllegalArgumentException.class,
-                    () -> declare(cb -> cb.staticMethod(
-                            "m",
-                            Object_.TOKEN,
-                            Signal_.TOKEN,
-                            (b, s) ->
-                                    b.return_(switch_(Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(literal(1)))))),
+                    () -> declare(cb -> {
+                        var own2 = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own2,
+                                (b, s) -> b.return_(
+                                        switch_(Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(literal(1)))));
+                    }),
                     "switch_ of type java.lang.Object has a result of type int: switch_ does not mix primitive and"
                             + " reference results",
                     "static Object m(Signal s) { return switch (s) { default -> 1; }; }");
             unlikeJavac(
                     IllegalArgumentException.class,
-                    () -> declare(cb -> cb.staticMethod(
-                            "m",
-                            Object_.TOKEN,
-                            Signal_.TOKEN,
-                            (b, s) -> b.return_(switch_(
-                                    Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))))),
+                    () -> declare(cb -> {
+                        var own3 = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own3,
+                                (b, s) -> b.return_(switch_(
+                                        Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))));
+                    }),
                     "switch_ of type java.lang.Object has a result of type int",
                     "static Object m(Signal s) { return switch (s) { default -> { yield 1; } }; }");
         }
@@ -455,10 +463,12 @@ class SwitchChecksTest {
         void aSwitchOfAFieldInitializerThrowsNoCheckedException() {
             unlikeJavac(
                     () -> declare(cb -> {
-                        cb.throwing(IOException_.TOKEN).constructor((b, _) -> b.end());
-                        cb.field(
-                                "f",
-                                PrimitiveToken.INT,
+                        var own4 = cb.throwing(IOException_.TOKEN).declareConstructor();
+                        var field5 = cb.declareField("f", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(own4, (b, _) -> b.end());
+                        bodies.initialize(
+                                field5,
                                 switch_(
                                         Signal_.TOKEN,
                                         Expressions.enumConstant(Signal_.RED),

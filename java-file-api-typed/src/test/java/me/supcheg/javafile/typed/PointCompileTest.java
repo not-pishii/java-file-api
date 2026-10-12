@@ -28,11 +28,14 @@ class PointCompileTest {
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), POINT, new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        var x = cb.field("x", PrimitiveToken.INT, literal(1));
-                        var y = cb.field("y", PrimitiveToken.INT, literal(2));
+                        var x = cb.declareField("x", PrimitiveToken.INT);
+                        var y = cb.declareField("y", PrimitiveToken.INT);
 
                         var member1 = cb.declareMethod("sumOfSquares", PrimitiveToken.INT);
-                        cb.define(
+                        var bodies = cb.bodies();
+                        bodies.initialize(x, literal(1));
+                        bodies.initialize(y, literal(2));
+                        bodies.define(
                                 member1,
                                 (body, self) -> body.return_(addInt(
                                         mulInt(field(self, x), field(self, x)),

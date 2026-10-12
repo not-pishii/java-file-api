@@ -80,20 +80,20 @@ class NegativeCompileTest {
     @Test
     void controlFixtureCompiles() {
         String body = inClass("""
-                cb.method("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed(), (b, self, boxed) -> b.let(
+                cb.bodies().define(cb.declareMethod("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed()), (b, self, boxed) -> b.let(
                         PrimitiveToken.INT, unbox(PrimitiveToken.INT, boxed), i -> b.if_(
                                 ltInt(i, call(literal("abc"), String_.length)),
                                 t -> t.exec(call(literal("abc"), String_.charAt_int, i)))
                         .return_(addInt(i, literal(1)))));
-                cb.method("boxed", Integer_.TOKEN, (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));
-                cb.method("empty", String_.TOKEN, (b, self) -> b.return_(literalNull(String_.TOKEN)));
-                cb.method("same", PrimitiveToken.BOOLEAN, (b, self) -> b.return_(eqRef(literal("a"), literal("b"))));
+                cb.bodies().define(cb.declareMethod("boxed", Integer_.TOKEN), (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                cb.bodies().define(cb.declareMethod("empty", String_.TOKEN), (b, self) -> b.return_(literalNull(String_.TOKEN)));
+                cb.bodies().define(cb.declareMethod("same", PrimitiveToken.BOOLEAN), (b, self) -> b.return_(eqRef(literal("a"), literal("b"))));
                 new_(Object_.new_);
-                cb.method("lazy", new Supplier_<>(String_.TOKEN).token, String_.TOKEN, (b, self, s) -> b.return_(
+                cb.bodies().define(cb.declareMethod("lazy", new Supplier_<>(String_.TOKEN).token, String_.TOKEN), (b, self, s) -> b.return_(
                         lambda(new Supplier_<>(String_.TOKEN).sam, () -> call(s, String_.trim))));
-                cb.method("later", Runnable_.TOKEN, String_.TOKEN, (b, self, s) -> b.return_(
+                cb.bodies().define(cb.declareMethod("later", Runnable_.TOKEN, String_.TOKEN), (b, self, s) -> b.return_(
                         lambdaBlock(Runnable_.sam, lb -> lb.exec(call(s, String_.trim)).end())));
-                cb.method("advice", String_.TOKEN, Signal_.TOKEN, (b, self, s) -> b.return_(
+                cb.bodies().define(cb.declareMethod("advice", String_.TOKEN, Signal_.TOKEN), (b, self, s) -> b.return_(
                         switch_(Signal_.TOKEN, s, String_.TOKEN, c -> c
                                 .case_(Signal_.RED, literal("stop"))
                                 .case_(List.of(Signal_.AMBER, Signal_.GREEN), y -> y.yield_(literal("go"))))));
@@ -114,7 +114,7 @@ class NegativeCompileTest {
     void methodBodyWithoutReturnDoesNotCompile() {
         assertRejected(
                 "MissingReturn",
-                inClass("cb.method(\"compute\", PrimitiveToken.INT, (body, self) -> { });"),
+                inClass("cb.bodies().define(cb.declareMethod(\"compute\", PrimitiveToken.INT), (body, self) -> { });"),
                 "bad return type in lambda expression",
                 "missing return value");
     }
@@ -123,7 +123,8 @@ class NegativeCompileTest {
     void implicitBoxingInReturnDoesNotCompile() {
         assertRejected(
                 "ImplicitBoxing",
-                inClass("cb.method(\"boxed\", Integer_.TOKEN, (b, self) -> b.return_(literal(1)));"),
+                inClass(
+                        "cb.bodies().define(cb.declareMethod(\"boxed\", Integer_.TOKEN), (b, self) -> b.return_(literal(1)));"),
                 "cannot be converted to me.supcheg.javafile.typed.Expr<? extends java.lang.Integer>");
     }
 
@@ -131,7 +132,7 @@ class NegativeCompileTest {
     void implicitUnboxingInReturnDoesNotCompile() {
         assertRejected(
                 "ImplicitUnboxing",
-                inClass("cb.method(\"unboxed\", PrimitiveToken.INT,"
+                inClass("cb.bodies().define(cb.declareMethod(\"unboxed\", PrimitiveToken.INT),"
                         + " (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
                 "inference variable B has incompatible bounds",
                 "upper bounds: me.supcheg.javafile.facts.Prim.Int");
@@ -150,7 +151,7 @@ class NegativeCompileTest {
         assertRejected(
                 "BoxedCondition",
                 inClass(
-                        "cb.voidMethod(\"m\", (b, self) -> b.if_(box(PrimitiveToken.BOOLEAN, literal(true)), t -> {}).end());"),
+                        "cb.bodies().define(cb.declareVoidMethod(\"m\"), (b, self) -> b.if_(box(PrimitiveToken.BOOLEAN, literal(true)), t -> {}).end());"),
                 "incompatible equality constraints me.supcheg.javafile.facts.Prim.Bool,java.lang.Boolean");
     }
 
@@ -191,7 +192,7 @@ class NegativeCompileTest {
                         + "me.supcheg.javafile.facts.Protected<");
         assertRejected(
                 "ProtectedDefine",
-                inClass("cb.define(Object_.clone, (b, self) -> b.return_(self));"),
+                inClass("cb.bodies().define(Object_.clone, (b, self) -> b.return_(self));"),
                 "no suitable method found for define(");
         assertRejected(
                 "ProtectedOpen",
@@ -318,7 +319,7 @@ class NegativeCompileTest {
         assertRejected(
                 "BreakOutOfForever",
                 inClass(
-                        "cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.loopForever((loop, ctl) -> loop.break_(ctl)));"),
+                        "cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.loopForever((loop, ctl) -> loop.break_(ctl)));"),
                 "incompatible parameter types in lambda expression");
     }
 
@@ -326,7 +327,7 @@ class NegativeCompileTest {
     void nothingFollowsLoopForever() {
         assertRejected(
                 "AfterForever",
-                inClass("cb.method(\"m\", PrimitiveToken.INT,"
+                inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT),"
                         + " (b, self) -> b.loopForever(loop -> {}).return_(literal(1)));"),
                 "cannot find symbol",
                 "symbol:   method return_(me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int>)");
@@ -336,7 +337,7 @@ class NegativeCompileTest {
     void tryTerminatedRequiresAnEndingTryBlock() {
         assertRejected(
                 "TryBlockNotEnding",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
+                inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
                         + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1))),"
                         + " t -> t.exec(call(literal(\"x\"), String_.length))));"),
                 "bad return type in lambda expression");
@@ -346,7 +347,7 @@ class NegativeCompileTest {
     void tryTerminatedRequiresEndingCatchBlocks() {
         assertRejected(
                 "CatchNotEnding",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
+                inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
                         + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
                         + " String_.length))),"
                         + " t -> t.return_(literal(1))));"),
@@ -359,7 +360,7 @@ class NegativeCompileTest {
         // made from a token, of another class or in a static context.
         assertRejected(
                 "ThisFromToken",
-                inClass("cb.staticMethod(\"m\", String_.TOKEN,"
+                inClass("cb.bodies().define(cb.declareStaticMethod(\"m\", String_.TOKEN),"
                         + " b -> b.return_(call(this_(String_.TOKEN), Object_.toString)));"),
                 "cannot find symbol",
                 "method this_(me.supcheg.javafile.facts.FinalClassToken<java.lang.String>)");
@@ -369,7 +370,8 @@ class NegativeCompileTest {
     void aStaticMethodBodyGetsNoThis() {
         assertRejected(
                 "StaticThis",
-                inClass("cb.staticMethod(\"m\", PrimitiveToken.INT, (b, self) -> b.return_(literal(1)));"),
+                inClass(
+                        "cb.bodies().define(cb.declareStaticMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.return_(literal(1)));"),
                 "incompatible parameter types in lambda expression");
     }
 
@@ -381,10 +383,10 @@ class NegativeCompileTest {
                 void use() {
                     TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "A"), new TypedJavaFile.TypedClassSpec() {
                         public <A> void build(TypedClassBuilder<A> a) {
-                            var x = a.field("x", PrimitiveToken.INT, literal(1));
+                            var x = a.declareField("x", PrimitiveToken.INT);
                             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
                                 public <B> void build(TypedClassBuilder<B> b) {
-                                    b.method("m", PrimitiveToken.INT, (body, self) -> body.return_(field(self, x)));
+                                    b.bodies().define(b.declareMethod("m", PrimitiveToken.INT), (body, self) -> body.return_(field(self, x)));
                                 }
                             });
                         }
@@ -408,7 +410,7 @@ class NegativeCompileTest {
                             var m = a.declareMethod("m", PrimitiveToken.INT);
                             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
                                 public <B> void build(TypedClassBuilder<B> b) {
-                                    b.define(m, (body, self) -> body.return_(literal(1)));
+                                    b.bodies().define(m, (body, self) -> body.return_(literal(1)));
                                 }
                             });
                         }
@@ -425,7 +427,7 @@ class NegativeCompileTest {
     void aFactOfAnExistingClassCannotBeDefined() {
         assertRejected(
                 "JdkDefine",
-                inClass("cb.define(Object_.toString, (b, self) -> b.return_(literal(\"x\")));"),
+                inClass("cb.bodies().define(Object_.toString, (b, self) -> b.return_(literal(\"x\")));"),
                 "no suitable method found for define(me.supcheg.javafile.facts.MethodRef0<java.lang.Object,"
                         + "java.lang.String>");
     }
@@ -435,8 +437,8 @@ class NegativeCompileTest {
         assertRejected(
                 "AssignFinalField",
                 inClass("""
-                        var x = cb.field("x", PrimitiveToken.INT, literal(1));
-                        cb.constructor((b, self) -> b.exec(assignField(self, x, literal(2))).end());
+                        var x = cb.declareField("x", PrimitiveToken.INT);
+                        cb.bodies().define(cb.declareConstructor(), (b, self) -> b.exec(assignField(self, x, literal(2))).end());
                         """),
                 "method assignField in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
                 "me.supcheg.javafile.facts.FieldRef<Self,me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
@@ -474,7 +476,7 @@ class NegativeCompileTest {
         // §9.1, the static half: what is thrown, caught and declared is a Throwable
         assertRejected(
                 "ThrowOfAString",
-                inClass("cb.voidMethod(\"m\", (b, self) -> b.throw_(literal(\"x\")));"),
+                inClass("cb.bodies().define(cb.declareVoidMethod(\"m\"), (b, self) -> b.throw_(literal(\"x\")));"),
                 "me.supcheg.javafile.typed.Expr<java.lang.String> cannot be converted to"
                         + " me.supcheg.javafile.typed.Expr<? extends java.lang.Throwable>");
     }
@@ -529,8 +531,8 @@ class NegativeCompileTest {
         assertRejected(
                 "MethodOfAnUnrelatedType",
                 inGenericHeader(
-                        "var cb = h.extendsObject().body();"
-                                + " cb.method(\"m\", PrimitiveToken.INT, n, (b, self, v) -> b.return_(call(v, String_.length)));"),
+                        "var cb = h.extendsObject().members();"
+                                + " cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(call(v, String_.length)));"),
                 "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
                         + "me.supcheg.javafile.facts.MethodRef0<java.lang.String,me.supcheg.javafile.facts.Prim.Int>)");
     }
@@ -540,7 +542,7 @@ class NegativeCompileTest {
         // JLS 8.1.2 leaves a type variable no place in a catch; the typed layer gives it none in a throws clause
         assertRejected(
                 "ThrowsOfATypeParameter",
-                inGenericHeader("h.extendsObject().body().throwing(n);"),
+                inGenericHeader("h.extendsObject().members().throwing(n);"),
                 "me.supcheg.javafile.facts.TypeVarToken<N> cannot be converted to"
                         + " me.supcheg.javafile.facts.ClassToken<? extends java.lang.Throwable>");
     }
@@ -550,9 +552,10 @@ class NegativeCompileTest {
         // Self is Generated<N>: a method of the class is not called on a value of another type
         assertRejected(
                 "SelfIsNoOtherType",
-                inGenericHeader("var cb = h.extendsObject().body();"
-                        + " var m = cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.return_(literal(1)));"
-                        + " cb.method(\"k\", PrimitiveToken.INT, n, (b, self, v) -> b.return_(call(v, m)));"),
+                inGenericHeader(
+                        "var cb = h.extendsObject().members();"
+                                + " var m = cb.declareMethod(\"m\", PrimitiveToken.INT);"
+                                + " cb.bodies().define(cb.declareMethod(\"k\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(call(v, m)));"),
                 "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
                         + "me.supcheg.javafile.facts.MethodRef0<Self,me.supcheg.javafile.facts.Prim.Int>)");
     }
@@ -571,30 +574,34 @@ class NegativeCompileTest {
                 """.formatted(statements);
     }
 
-    /// The header and the first constructor of a class that extends `Base`: `sh` and `cb`.
+    /// The header, the members and the first constructor of a class that extends `Base`: `sh`, `cb` and `bodies`.
     private static final String SUBCLASS = "var sh = h.extends_(Base_.extend(h.self()));"
-            + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
+            + " var cb = sh.members();"
+            + " var bodies = cb.bodies(sh.declareConstructor(), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));";
 
-    /// The header and the first constructor of a class that extends `Maker`: `sh` and `cb`.
+    /// The header, the members and the first constructor of a class that extends `Maker`: `sh`, `cb` and `bodies`.
     private static final String SUBCLASS_OF_MAKER = "var sh = h.extends_(Maker_.extend(h.self()));"
-            + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));";
+            + " var cb = sh.members();"
+            + " var bodies = cb.bodies(sh.declareConstructor(), ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));";
 
     @Test
     void aSubclassDeclaredByItsHeaderCompiles() {
         assertThat(compile(
                         "Subclass",
                         inHeader(SUBCLASS + " var hook = cb.protected_(Base_.hook_String);"
-                                + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, hook,"
+                                + " bodies.define(cb.declareMethod(\"m\", String_.TOKEN), (b, self) -> b.return_(bodies.superCall(self, hook,"
                                 + " literal(\"x\"))));")))
                 .succeeded();
-        assertThat(compile(
-                        "Extending",
-                        inHeader("var list = new AbstractList_<>(String_.TOKEN); var eh = h.extending(list.token);"
-                                + " var get = eh.overriding(list.get_int);"
-                                + " var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);"
-                                + " var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));"
-                                + " var make = sh.declareConstructor();"
-                                + " sh.body(make, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));")))
+        assertThat(
+                        compile(
+                                "Extending",
+                                inHeader(
+                                        "var list = new AbstractList_<>(String_.TOKEN); var eh = h.extending(list.token);"
+                                                + " var get = eh.overriding(list.get_int);"
+                                                + " var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);"
+                                                + " var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));"
+                                                + " var make = sh.declareConstructor();"
+                                                + " sh.members().bodies(make, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));")))
                 .succeeded();
     }
 
@@ -602,12 +609,12 @@ class NegativeCompileTest {
     void theMembersOfASubclassDoNotBeginWithoutAConstructor() {
         assertRejected(
                 "NoConstructor",
-                inHeader("h.extends_(Base_.extend(h.self())).body();"),
-                "no suitable method found for body(no arguments)");
+                inHeader("h.extends_(Base_.extend(h.self())).members().bodies();"),
+                "no suitable method found for bodies(no arguments)");
         assertRejected(
                 "NoBody",
-                inHeader("var sh = h.extends_(Base_.extend(h.self())); sh.body(sh.declareConstructor());"),
-                "no suitable method found for body(me.supcheg.javafile.facts.CtorRef0<Self>)");
+                inHeader("var sh = h.extends_(Base_.extend(h.self())); sh.members().bodies(sh.declareConstructor());"),
+                "no suitable method found for bodies(me.supcheg.javafile.facts.CtorRef0<Self>)");
     }
 
     @Test
@@ -615,27 +622,28 @@ class NegativeCompileTest {
         assertRejected(
                 "NoSuper",
                 inHeader("var sh = h.extends_(Base_.extend(h.self()));"
-                        + " sh.body(sh.declareConstructor(), (b, self) -> b.end());"),
+                        + " sh.members().bodies(sh.declareConstructor(), (b, self) -> b.end());"),
                 "incompatible parameter types in lambda expression");
         assertRejected(
                 "DefinedWithoutSuper",
-                inHeader(SUBCLASS + " cb.define(cb.declareConstructor(String_.TOKEN), (b, self, s) -> b.end());"),
+                inHeader(SUBCLASS + " bodies.define(cb.declareConstructor(String_.TOKEN), (b, self, s) -> b.end());"),
                 "no suitable method found for define(me.supcheg.javafile.facts.CtorRef1<Self,java.lang.String>");
     }
 
     @Test
     void anOverrideOfANarrowerResultCompiles() {
-        assertThat(
-                        compile(
-                                "Narrower",
-                                inHeader(
-                                        "var get = h.overriding(Origin_.get, String_.TOKEN); var oh = h.extendsObject();"
-                                                + " Upcast<Self, Origin> up = oh.implements_(Origin_.implement(h.self()).get(get));"
-                                                + " oh.implements_(Worded_.implement(h.self()).get(get)); var cb = oh.body();"
-                                                + " cb.define(get.method(), (b, self) -> b.return_(literal(\"\")));"
-                                                + " cb.override(up, Origin_.all, ArrayToken.of(String_.TOKEN),"
-                                                + " (b, self) -> b.return_(newArray(ArrayToken.of(String_.TOKEN), literal(1))));"
-                                                + " cb.override(cb.protected_(Object_.clone), cb.self(), (b, self) -> b.return_(self));")))
+        assertThat(compile(
+                        "Narrower",
+                        inHeader("var get = h.overriding(Origin_.get, String_.TOKEN); var oh = h.extendsObject();"
+                                + " Upcast<Self, Origin> up = oh.implements_(Origin_.implement(h.self()).get(get));"
+                                + " oh.implements_(Worded_.implement(h.self()).get(get)); var cb = oh.members();"
+                                + " var all = cb.declareOverride(up, Origin_.all, ArrayToken.of(String_.TOKEN));"
+                                + " var clone = cb.declareOverride(cb.protected_(Object_.clone), cb.self());"
+                                + " var bodies = cb.bodies();"
+                                + " bodies.define(get.method(), (b, self) -> b.return_(literal(\"\")));"
+                                + " bodies.define(all,"
+                                + " (b, self) -> b.return_(newArray(ArrayToken.of(String_.TOKEN), literal(1))));"
+                                + " bodies.define(clone, (b, self) -> b.return_(self));")))
                 .succeeded();
     }
 
@@ -655,7 +663,7 @@ class NegativeCompileTest {
         // the body returns what the token says
         assertRejected(
                 "BodyOfTheOverriddenResult",
-                inHeader(SUBCLASS_OF_MAKER + " cb.override(Maker_.make, String_.TOKEN,"
+                inHeader(SUBCLASS_OF_MAKER + " bodies.define(cb.declareOverride(Maker_.make, String_.TOKEN),"
                         + " (b, self) -> b.return_(new_(Object_.new_)));"),
                 "incompatible types");
         // a method of the superclass stands for one of an interface by a result that is of its type
@@ -682,17 +690,17 @@ class NegativeCompileTest {
                 "no suitable method found for overriding");
         assertRejected(
                 "PrimitiveAmongTheMembers",
-                inHeader(SUBCLASS_OF_MAKER + " cb.override(Maker_.count, Integer_.TOKEN,"
-                        + " (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));"),
-                "no suitable method found for override");
+                inHeader(SUBCLASS_OF_MAKER + " cb.declareOverride(Maker_.count, Integer_.TOKEN);"),
+                "no suitable method found for declareOverride");
     }
 
     @Test
     void superCallsAConstructorOfTheSuperclass() {
         assertRejected(
                 "SuperOfAnother",
-                inHeader("var sh = h.extends_(Base_.extend(h.self()));"
-                        + " sh.body(sh.declareConstructor(), ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
+                inHeader(
+                        "var sh = h.extends_(Base_.extend(h.self()));"
+                                + " sh.members().bodies(sh.declareConstructor(), ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));"),
                 "no suitable method found for super_(me.supcheg.javafile.facts.CtorRef0<me.supcheg.javafile.typed.fixtures.Mid>");
     }
 
@@ -701,7 +709,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ProtectedOfAnother",
                 inHeader(SUBCLASS + " cb.protected_(Mid_.quiet);"),
-                "method protected_ in interface me.supcheg.javafile.typed.SuperAccess<Self,S> cannot be applied to given types");
+                "method protected_ in class me.supcheg.javafile.typed.MemberBuilder<Self,S> cannot be applied to given types");
         assertRejected(
                 "ProtectedOfAnotherInTheHeader",
                 inHeader("h.extending(Base_.TOKEN).protected_(Shape_.describe_String);"),
@@ -730,13 +738,15 @@ class NegativeCompileTest {
     void superIsCalledOnThisAndOfAMethodOfTheSuperclass() {
         assertRejected(
                 "SuperOnAValue",
-                inHeader(SUBCLASS + " cb.method(\"m\", String_.TOKEN, cb.self(), (b, self, other) ->"
-                        + " b.return_(cb.superCall(other, Base_.greet)));"),
+                inHeader(SUBCLASS
+                        + " bodies.define(cb.declareMethod(\"m\", String_.TOKEN, cb.self()), (b, self, other) ->"
+                        + " b.return_(bodies.superCall(other, Base_.greet)));"),
                 "no suitable method found for superCall");
         assertRejected(
                 "SuperOfAnotherClass",
-                inHeader(SUBCLASS
-                        + " cb.method(\"m\", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, Mid_.label)));"),
+                inHeader(
+                        SUBCLASS
+                                + " bodies.define(cb.declareMethod(\"m\", String_.TOKEN), (b, self) -> b.return_(bodies.superCall(self, Mid_.label)));"),
                 "no suitable method found for superCall");
     }
 
@@ -754,8 +764,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ThrowingSelf",
                 inHeader("var sh = h.extends_(Exception_.extend(h.self()));"
-                        + " var cb = sh.body(sh.declareConstructor(), ctor -> ctor.super_(Exception_.new_, (b, self) ->"
-                        + " b.end())); cb.throwing(cb.self());"),
+                        + " var cb = sh.members(); cb.throwing(cb.self());"),
                 "no suitable method found for throwing");
     }
 
@@ -763,8 +772,9 @@ class NegativeCompileTest {
     void aCatchOfWhatIsNotThrowableDoesNotCompile() {
         assertRejected(
                 "CatchOfAString",
-                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(h -> h.catch_(String_.TOKEN, (c, e) -> {}), t -> {})"
-                        + ".end());"),
+                inClass(
+                        "cb.bodies().define(cb.declareVoidMethod(\"m\"), (b, self) -> b.try_(h -> h.catch_(String_.TOKEN, (c, e) -> {}), t -> {})"
+                                + ".end());"),
                 "no suitable method found for catch_(",
                 "upper bounds: java.lang.Throwable");
     }
@@ -774,7 +784,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ThrowsAString",
                 inClass("cb.throwing(String_.TOKEN);"),
-                "method throwing in class me.supcheg.javafile.typed.TypedClassBuilder<Self> cannot be applied to given types",
+                "method throwing in class me.supcheg.javafile.typed.MemberBuilder<Self,S> cannot be applied to given types",
                 "cannot be converted to me.supcheg.javafile.facts.ClassToken<? extends java.lang.Throwable>");
     }
 
@@ -783,7 +793,7 @@ class NegativeCompileTest {
         // the binding of catch_(RuntimeException) is no NumberFormatException
         assertRejected(
                 "CaughtType",
-                inClass("cb.method(\"m\", PrimitiveToken.INT, (b, self) -> b.tryTerminated("
+                inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
                         + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_("
                         + "call(e, Integer_.intValue))),"
                         + " t -> t.return_(literal(1))));"),
@@ -795,29 +805,30 @@ class NegativeCompileTest {
         // the order of the parameters is the order of building
         assertRejected(
                 "TryBlockFirst",
-                inClass("cb.voidMethod(\"m\", (b, self) -> b.try_(t -> {}, h -> h.finally_(f -> {})).end());"),
+                inClass(
+                        "cb.bodies().define(cb.declareVoidMethod(\"m\"), (b, self) -> b.try_(t -> {}, h -> h.finally_(f -> {})).end());"),
                 "cannot find symbol",
                 "location: variable h of type me.supcheg.javafile.typed.VoidBody");
     }
 
     @Test
-    void aThrowsClauseDeclaresMembersAndDefinesNone() {
-        // throwing(...) gives the declarations of methods and constructors alone
+    void aThrowsClauseDeclaresMembersAndBeginsNoBodies() {
+        // throwing(...) gives the declarations of methods and constructors alone: the bodies begin by the builder
         assertRejected(
                 "ThrowingDefines",
                 inClass("var m = cb.declareVoidStaticMethod(\"m\");"
-                        + " cb.throwing(RuntimeException_.TOKEN).define(m, VoidBody::end);"),
+                        + " cb.throwing(RuntimeException_.TOKEN).bodies();"),
                 "cannot find symbol",
-                "symbol:   method define(");
+                "symbol:   method bodies()");
     }
 
     @Test
     void aThrowsClauseDeclaresNoField() {
         assertRejected(
                 "ThrowingField",
-                inClass("cb.throwing(RuntimeException_.TOKEN).field(\"f\", PrimitiveToken.INT, literal(1));"),
+                inClass("cb.throwing(RuntimeException_.TOKEN).declareField(\"f\", PrimitiveToken.INT);"),
                 "cannot find symbol",
-                "symbol:   method field(");
+                "symbol:   method declareField(");
     }
 
     @Test
@@ -918,7 +929,7 @@ class NegativeCompileTest {
     void aLambdaIsOfItsFunctionalInterfaceAndNoOther() {
         assertRejected(
                 "LambdaOtherInterface",
-                inClass("cb.method(\"m\", Runnable_.TOKEN, (b, self) -> b.return_("
+                inClass("cb.bodies().define(cb.declareMethod(\"m\", Runnable_.TOKEN), (b, self) -> b.return_("
                         + "lambda(new Supplier_<>(String_.TOKEN).sam, () -> literal(\"a\"))));"),
                 "inference variable F has incompatible bounds",
                 "upper bounds: java.lang.Runnable");
@@ -1001,8 +1012,9 @@ class NegativeCompileTest {
     void aSwitchExpressionIsNoStatement() {
         assertRejected(
                 "SwitchStatement",
-                inClass("cb.voidMethod(\"m\", Signal_.TOKEN, (b, self, s) -> b.exec(switch_(Signal_.TOKEN, s,"
-                        + " String_.TOKEN, c -> c.default_(literal(\"a\")))).end());"),
+                inClass(
+                        "cb.bodies().define(cb.declareVoidMethod(\"m\", Signal_.TOKEN), (b, self, s) -> b.exec(switch_(Signal_.TOKEN, s,"
+                                + " String_.TOKEN, c -> c.default_(literal(\"a\")))).end());"),
                 "conforms to me.supcheg.javafile.typed.Effect");
     }
 
@@ -1020,8 +1032,10 @@ class NegativeCompileTest {
     // ------------------------------------------------------------------
 
     private static String inFinally(String statement) {
-        return inClass("cb.staticMethod(\"m\", PrimitiveToken.INT, b -> b.while_(literal(true), (loop, ctl) ->"
-                + " loop.try_(h -> h.finally_(f -> " + statement + "), t -> t.break_(ctl))).return_(literal(0)));");
+        return inClass(
+                "cb.bodies().define(cb.declareStaticMethod(\"m\", PrimitiveToken.INT), b -> b.while_(literal(true), (loop, ctl) ->"
+                        + " loop.try_(h -> h.finally_(f -> " + statement
+                        + "), t -> t.break_(ctl))).return_(literal(0)));");
     }
 
     @Test

@@ -28,7 +28,6 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
-import static me.supcheg.javafile.typed.Subclasses.began;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -55,10 +54,9 @@ class NarrowedCallTest {
                 var oh = h.extendsObject();
                 Upcast<Self, Origin> asOrigin =
                         oh.implements_(Origin_.implement(h.self()).get(get));
-                var cb = oh.body();
+                var cb = oh.members();
                 var objects = new List_<>(Object_.TOKEN).token;
-                cb.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                cb.override(asOrigin, Origin_.each, objects, (b, self) -> b.return_(literalNull(objects)));
+                var own1 = cb.declareOverride(asOrigin, Origin_.each, objects);
                 var whichObject = cb.declareMethod("which", String_.TOKEN, Object_.TOKEN);
                 var member1 = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
                 // (Integer) of a String does not compile, of an Object fails when run
@@ -71,19 +69,22 @@ class NarrowedCallTest {
                 var member5 = cb.declareMethod("made", String_.TOKEN);
                 // the iterated expression is of whatever Iterable the class has it for
                 var member6 = cb.declareMethod("counted", PrimitiveToken.INT);
-                cb.define(whichObject, (b, self, v) -> b.return_(literal("object")));
-                cb.define(member1, (b, self, v) -> b.return_(literal("string")));
-                cb.define(
+                var bodies = cb.bodies();
+                bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
+                bodies.define(own1, (b, self) -> b.return_(literalNull(objects)));
+                bodies.define(whichObject, (b, self, v) -> b.return_(literal("object")));
+                bodies.define(member1, (b, self, v) -> b.return_(literal("string")));
+                bodies.define(
                         member2,
                         (b, self) -> b.return_(castChecked(Integer_.TOKEN, call(asOrigin.apply(self), Origin_.get))));
-                cb.define(
+                bodies.define(
                         member3,
                         (b, self) -> b.ifInstanceOfElse(
                                 call(asOrigin.apply(self), Origin_.get),
                                 Integer_.TOKEN,
                                 (t, _) -> t.return_(literal("integer")),
                                 e -> e.return_(literal("other"))));
-                cb.define(
+                bodies.define(
                         member4,
                         (b, self, flag) -> b.return_(call(
                                 self,
@@ -93,11 +94,11 @@ class NarrowedCallTest {
                                         call(asOrigin.apply(self), Origin_.get),
                                         call(asOrigin.apply(self), Origin_.get),
                                         Object_.TOKEN))));
-                cb.define(
+                bodies.define(
                         member5,
                         (b, self) -> b.return_(field(
                                 new_(Picked_.new_Object, call(asOrigin.apply(self), Origin_.get)), Picked_.which)));
-                cb.define(
+                bodies.define(
                         member6,
                         (b, self) -> b.letVar(
                                 PrimitiveToken.INT,
@@ -132,10 +133,12 @@ class NarrowedCallTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Maker_.extend(h.self()));
-                        var cb = began(sh, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                        var ctor2 = sh.declareConstructor();
+                        var cb = sh.members();
                         var fault = cb.protected_(Maker_.fault);
                         var member7 = cb.declareMethod("f", String_.TOKEN);
-                        cb.define(
+                        var bodies = cb.bodies(ctor2, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                        bodies.define(
                                 member7, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
                     }
                 }),
@@ -147,10 +150,12 @@ class NarrowedCallTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Maker_.extend(h.self()));
-                var cb = began(sh, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                var ctor3 = sh.declareConstructor();
+                var cb = sh.members();
                 var fault = cb.protected_(Maker_.fault);
                 var member8 = cb.declareMethod("f", String_.TOKEN);
-                cb.define(
+                var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
+                bodies.define(
                         member8,
                         (b, self) -> b.let(
                                 RuntimeException_.TOKEN, call(cb.asSuper().apply(self), fault), e -> b.throw_(e)));
@@ -173,7 +178,8 @@ class NarrowedCallTest {
                         var oh = h.extendsObject();
                         oh.implements_(Linked_.implement(h.self()).next(next));
                         oh.implements_(Chained_.implement(h.self()));
-                        oh.body().define(next.method(), (b, self) -> b.return_(self));
+                        var cb101 = oh.members();
+                        cb101.bodies().define(next.method(), (b, self) -> b.return_(self));
                     }
                 })
                 .render();

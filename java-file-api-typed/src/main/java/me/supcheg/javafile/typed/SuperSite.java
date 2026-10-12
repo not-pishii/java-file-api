@@ -7,7 +7,7 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.SuperCtorRef1;
 import me.supcheg.javafile.facts.SuperCtorRef2;
-import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody0;
+import me.supcheg.javafile.typed.MemberBodies.InstanceBody0;
 
 import java.util.List;
 

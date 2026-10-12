@@ -42,7 +42,7 @@ public final class ExtendingHeader<Self, S> extends Overriding<Self> {
     }
 
     /// Takes the fact of a `protected` member of `S`, or of a class above it, out of its
-    /// wrapper, as the builder of the members does ([SuperAccess#protected_]): for
+    /// wrapper, as the builder of the members does ([MemberBuilder#protected_]): for
     /// `eh.overriding(eh.protected_(fact))`, the intention the proof has a step for.
     ///
     /// @param held the fact, held back

@@ -65,20 +65,21 @@ class DeclarationsCompileTest {
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         var isEven = cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                         var isOdd = cb.declareMethod("isOdd", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
-                        cb.define(
+                        var member1 = cb.declareConstructor();
+                        var bodies = cb.bodies();
+                        bodies.define(
                                 isEven,
                                 (b, self, n) -> b.ifElse(
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(true)),
                                         e -> e.return_(call(self, isOdd, subInt(n, literal(1))))));
-                        cb.define(
+                        bodies.define(
                                 isOdd,
                                 (b, self, n) -> b.ifElse(
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(false)),
                                         e -> e.return_(call(self, isEven, subInt(n, literal(1))))));
-                        var member1 = cb.declareConstructor();
-                        cb.define(member1, (b, _) -> b.end());
+                        bodies.define(member1, (b, _) -> b.end());
                     }
                 });
 
@@ -107,19 +108,23 @@ class DeclarationsCompileTest {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         selfToken.set(cb.self());
-                        var limit = cb.field("limit", PrimitiveToken.INT, literal(10));
-                        var count = cb.mutableField("count", PrimitiveToken.INT, literal(0));
+                        var limit = cb.declareField("limit", PrimitiveToken.INT);
+                        var count = cb.declareMutableField("count", PrimitiveToken.INT);
                         var ctor = cb.declareConstructor(PrimitiveToken.INT);
                         // a static factory uses the constructor before it is defined
                         var member2 = cb.declareStaticMethod("create", cb.self());
-                        cb.define(
+                        var member3 = cb.declareMethod("remaining", PrimitiveToken.INT);
+                        var own1 = cb.declareOverride(Object_.toString);
+                        var bodies = cb.bodies();
+                        bodies.initialize(limit, literal(10));
+                        bodies.initialize(count, literal(0));
+                        bodies.define(
                                 ctor,
                                 (b, self, start) ->
                                         b.exec(assignField(self, count, start)).end());
-                        var member3 = cb.declareMethod("remaining", PrimitiveToken.INT);
-                        cb.override(Object_.toString, (b, _) -> b.return_(literal("Counter")));
-                        cb.define(member2, b -> b.return_(new_(ctor, literal(4))));
-                        cb.define(member3, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
+                        bodies.define(own1, (b, _) -> b.return_(literal("Counter")));
+                        bodies.define(member2, b -> b.return_(new_(ctor, literal(4))));
+                        bodies.define(member3, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
                     }
                 });
 

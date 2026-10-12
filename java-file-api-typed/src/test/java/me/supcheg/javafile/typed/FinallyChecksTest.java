@@ -51,9 +51,11 @@ class FinallyChecksTest {
 
     /// Declares `static int m(Signal s)` of a class `Probe` with the given body.
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
-        Consumer<TypedClassBuilder<?>> members =
-                cb -> cb.throwing(IOException_.TOKEN).staticMethod("m", PrimitiveToken.INT, Signal_.TOKEN, body);
-        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+        Consumer<TypedClassBuilder<Object>> members = cb -> {
+            var m = cb.throwing(IOException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
+            cb.bodies().define(m, body);
+        };
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     private static Expr<Prim.Bool> isRed(Expr<Signal> s) {

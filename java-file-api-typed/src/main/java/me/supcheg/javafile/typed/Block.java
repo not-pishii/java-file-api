@@ -49,7 +49,7 @@ import java.util.function.Function;
 /// exception — a call of a method or constructor whose fact declares one,
 /// a `throw_` of one — is accepted only where the exception is caught by a
 /// `catch_` of an enclosing `try_`/`tryTerminated`, or declared by the
-/// member the body belongs to ([TypedClassBuilder#throwing]); anywhere else
+/// member the body belongs to ([MemberBuilder#throwing]); anywhere else
 /// appending it fails, at that statement. A `catch_` covers the subclasses
 /// of its type, unchecked exceptions are not tracked, and a `catch_` of a
 /// checked exception its `try` block cannot throw is rejected as javac
@@ -535,7 +535,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// Appends `throw exception;` and ends this block. A checked exception —
     /// by the static type of `exception` — must be caught by a `catch_` of
     /// an enclosing `try_` or declared by the member
-    /// ([TypedClassBuilder#throwing]). A caught exception that is rethrown
+    /// ([MemberBuilder#throwing]). A caught exception that is rethrown
     /// is thrown at the type of its `catch_`: there is no precise rethrow
     /// (JLS 11.2.2).
     ///

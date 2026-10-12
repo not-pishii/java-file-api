@@ -32,7 +32,7 @@ import java.util.List;
 /// The intention declares the method: `public`, of the name, the parameters
 /// and the result of the overridden one as that is a member of the type of
 /// its fact, rendered with `@Override`. Its fact is `method()` of the
-/// implementation, by which the builder of the members defines it — a
+/// implementation, by which the bodies of the members define it — a
 /// method the class says it overrides and never defines is rejected when the
 /// declaration completes — and any body calls it.
 ///

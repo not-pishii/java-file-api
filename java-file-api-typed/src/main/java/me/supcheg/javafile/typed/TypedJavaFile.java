@@ -6,13 +6,21 @@ import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeVarToken;
-import me.supcheg.javafile.model.Modifier;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
 /// Entry point of the typed eDSL (§6.5): declares a generated `final` class
 /// through a self-branded [TypedClassBuilder].
+///
+/// A class is declared in stages, each a type that offers what can be said
+/// at its point and gives the next: the header ([ClassHeader]) names the
+/// supertypes, the builder of the members ([MemberBuilder]) declares every
+/// member, their bodies ([MemberBodies]) define each. What is wrong is
+/// rejected by the call that says it, in the generator; the entry itself
+/// rejects only what no call could tell — a stage that was the last one
+/// said, a member declared and never defined — and tells the line that said
+/// the thing it is about.
 ///
 /// The entry takes the [TargetClasspath] the generated code is compiled
 /// against (§5): the facts a generator uses come from metamodels generated
@@ -25,17 +33,19 @@ public final class TypedJavaFile {
     private TypedJavaFile() {}
 
     /// Declares a `public final` class that extends `Object` and implements nothing; short for
-    /// a [TypedClassHeaderSpec] that goes `h.extendsObject().body()`. `spec` is implemented as an anonymous class
-    /// (a generic method is not expressible as a lambda) to receive a
+    /// a [TypedClassHeaderSpec] that goes `h.extendsObject().members()`. `spec` is implemented as an
+    /// anonymous class (a generic method is not expressible as a lambda) to receive a
     /// [TypedClassBuilder] branded with a `Self` unique to this call — the
     /// same CPS-brand technique as `Facts.withToken` (§3.1):
     ///
     /// ```java
     /// JavaFile file = TypedJavaFile.class_(target, desc, new TypedJavaFile.TypedClassSpec() {
     ///     public <Self> void build(TypedClassBuilder<Self> cb) {
-    ///         var x = cb.field("x", PrimitiveToken.INT, literal(1));
-    ///         cb.method("x2", PrimitiveToken.INT, (b, self) -> b.return_(addInt(field(self, x), field(self, x))));
-    ///         ...
+    ///         var x = cb.declareField("x", PrimitiveToken.INT);
+    ///         var x2 = cb.declareMethod("x2", PrimitiveToken.INT);
+    ///         var bodies = cb.bodies();
+    ///         bodies.initialize(x, literal(1));
+    ///         bodies.define(x2, (b, self) -> b.return_(addInt(field(self, x), field(self, x))));
     ///     }
     /// });
     /// ```
@@ -45,17 +55,18 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec populates the class, given its self-branded builder
     /// @return the rendered class, ready for [JavaFile#render()]/[JavaFile#writeTo(java.nio.file.Path)]
-    /// @throws IllegalStateException if called while a method body is being built, or if a
-    ///     member `spec` declared is not defined
+    /// @throws IllegalStateException if called while a method body is being built, if the members
+    ///     never came to their bodies, or if a member `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`:
-    ///     the generator was compiled against another version of the type
+    ///     the generator was compiled against another version of the type — thrown by the call of
+    ///     `spec` that uses it
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from; as the mismatch is, a [me.supcheg.javafile.facts.FactException]
     public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassSpec spec) {
         return declareClass(target, desc, new TypedClassHeaderSpec() {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
-                spec.build(h.extendsObject().body());
+                spec.build(h.extendsObject().members());
             }
         });
     }
@@ -71,8 +82,8 @@ public final class TypedJavaFile {
     ///         var compareTo = h.overriding(cmp.compareTo_T);
     ///         var oh = h.extendsObject();
     ///         var asComparable = oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
-    ///         var cb = oh.body();
-    ///         cb.define(compareTo.method(), (b, self, other) -> b.return_(literal(0)));
+    ///         var bodies = oh.members().bodies();
+    ///         bodies.define(compareTo.method(), (b, self, other) -> b.return_(literal(0)));
     ///     }
     /// });
     /// ```
@@ -82,7 +93,8 @@ public final class TypedJavaFile {
     /// @param spec declares the class, given the first stage of its header
     /// @return the rendered class
     /// @throws IllegalStateException if called while a method body is being built, if the header
-    ///     never came to the members, or if a member `spec` declared is not defined
+    ///     never came to the members or the members to their bodies, or if a member `spec` declared
+    ///     is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from
@@ -126,9 +138,12 @@ public final class TypedJavaFile {
     /// JavaFile file = TypedJavaFile.declareClass(
     ///         target, desc, typeParam("T", Number_.TOKEN), new TypedJavaFile.TypedGenericClassSpec1<Number>() {
     ///     public <Self, T extends Number> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
-    ///         var cb = h.extendsObject().body();
-    ///         var item = cb.field("item", t, literalNull(t));
-    ///         cb.method("asInt", INT, (b, self) -> b.return_(call(field(self, item), Number_.intValue)));
+    ///         var cb = h.extendsObject().members();
+    ///         var item = cb.declareField("item", t);
+    ///         var asInt = cb.declareMethod("asInt", INT);
+    ///         var bodies = cb.bodies();
+    ///         bodies.initialize(item, literalNull(t));
+    ///         bodies.define(asInt, (b, self) -> b.return_(call(field(self, item), Number_.intValue)));
     ///     }
     /// });
     /// // public final class Box<T extends Number> { ... }
@@ -242,44 +257,10 @@ public final class TypedJavaFile {
             TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-        ClassDeclaration.Declared declared = declare(target, desc, parameters, spec);
-        JavaFile file = JavaFile.class_(desc, cb -> {
-                    cb.withModifiers(Modifier.FINAL);
-                    declared.typeParams().forEach(cb::withTypeParam);
-                    switch (declared.superclass()) {
-                        case Superclass.OfObject _ -> {}
-                        case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
-                    }
-                    declared.interfaces().forEach(cb::withInterface);
-                    declared.members().forEach(cb);
-                })
-                .inheriting(declared.named());
-        requireWritable(declared.described(), file);
-        return file;
+        return declare(target, desc, parameters, spec);
     }
 
-    /// Holds a declared class to what a file can write: the renderer writes a type a field, a
-    /// variable, a member type or a type parameter of the file hides by its qualified name, and
-    /// refuses the file where that name begins with such a name too (JLS 6.4.2) — when it renders.
-    /// The class is rendered here, where it is declared, so a file the entry gives is one that
-    /// renders.
-    ///
-    /// @throws IllegalStateException if a type the class names cannot be written in its file
-    private static void requireWritable(String described, JavaFile file) {
-        try {
-            file.render();
-        } catch (IllegalStateException unwritable) {
-            throw new IllegalStateException(
-                    described + " cannot be written: " + unwritable.getMessage()
-                            + ". The names are those of the fields the class declares and inherits, of the"
-                            + " member types it inherits and of its type parameters: a field of the class can"
-                            + " be given another name, a name a supertype takes cannot — a type it hides is"
-                            + " then none the class can mention",
-                    unwritable);
-        }
-    }
-
-    private static <Self> ClassDeclaration.Declared declare(
+    private static <Self> JavaFile declare(
             TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
         ClassDeclaration<Self> declaration = new ClassDeclaration<>(target, desc, parameters);
         spec.build(declaration);

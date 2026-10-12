@@ -66,26 +66,29 @@ class ImplementsTest {
                             oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
                     Upcast<Self, Runnable> asRunnable =
                             oh.implements_(Runnable_.implement(h.self()).run(run));
-                    var cb = oh.body();
+                    var cb = oh.members();
 
-                    var rank = cb.mutableField("rank", PrimitiveToken.INT, literal(1));
-                    cb.define(
-                            compareTo.method(),
-                            (b, self, other) -> b.return_(subInt(field(self, rank), field(other, rank))));
-                    cb.define(
-                            run.method(),
-                            (b, self) ->
-                                    b.exec(assignField(self, rank, literal(7))).end());
-                    cb.override(Object_.toString, (b, self) -> b.return_(literal("ranked")));
+                    var rank = cb.declareMutableField("rank", PrimitiveToken.INT);
+                    var own1 = cb.declareOverride(Object_.toString);
                     // by the fact of the class, and by that of the interface through the witness
                     var member1 = cb.declareMethod("own", PrimitiveToken.INT, cb.self());
                     var member2 = cb.declareMethod("witnessed", PrimitiveToken.INT, cb.self());
                     var member3 = cb.declareVoidMethod("ranked");
-                    cb.define(member1, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
-                    cb.define(
+                    var bodies = cb.bodies();
+                    bodies.initialize(rank, literal(1));
+                    bodies.define(
+                            compareTo.method(),
+                            (b, self, other) -> b.return_(subInt(field(self, rank), field(other, rank))));
+                    bodies.define(
+                            run.method(),
+                            (b, self) ->
+                                    b.exec(assignField(self, rank, literal(7))).end());
+                    bodies.define(own1, (b, self) -> b.return_(literal("ranked")));
+                    bodies.define(member1, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
+                    bodies.define(
                             member2,
                             (b, self, other) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, other)));
-                    cb.define(
+                    bodies.define(
                             member3,
                             (b, self) -> b.exec(Expressions.voidCall(asRunnable.apply(self), Runnable_.run))
                                     .end());
@@ -118,12 +121,13 @@ class ImplementsTest {
                     var oh = h.extendsObject();
                     Upcast<Self, Callable<String>> asCallable =
                             oh.implements_(CALLABLE.implement(h.self()).call(call));
-                    var cb = oh.body();
-                    cb.define(call.method(), (b, self) -> b.return_(literal("called")));
+                    var cb = oh.members();
                     var member4 = cb.throwing(IOException_.TOKEN).declareMethod("narrow", String_.TOKEN);
                     var member5 = cb.throwing(Exception_.TOKEN).declareMethod("wide", String_.TOKEN);
-                    cb.define(member4, (b, self) -> b.return_(call(self, call.method())));
-                    cb.define(member5, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
+                    var bodies = cb.bodies();
+                    bodies.define(call.method(), (b, self) -> b.return_(literal("called")));
+                    bodies.define(member4, (b, self) -> b.return_(call(self, call.method())));
+                    bodies.define(member5, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
                 }
             }));
 
@@ -145,9 +149,11 @@ class ImplementsTest {
                     var oh = h.extendsObject();
                     Upcast<Self, Comparator<String>> asComparator =
                             oh.implements_(COMPARATOR.implement(h.self()).compare_T_T(compare));
-                    var cb = oh.body();
-                    cb.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
-                    cb.override(asComparator, COMPARATOR.reversed, (b, self) -> b.return_(asComparator.apply(self)));
+                    var cb = oh.members();
+                    var own2 = cb.declareOverride(asComparator, COMPARATOR.reversed);
+                    var bodies = cb.bodies();
+                    bodies.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
+                    bodies.define(own2, (b, self) -> b.return_(asComparator.apply(self)));
                 }
             }));
 
@@ -166,8 +172,10 @@ class ImplementsTest {
                     var oh = h.extendsObject();
                     Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
                     oh.implements_(Titled_.implement(h.self()));
-                    var cb = oh.body();
-                    cb.override(asNamed, Named_.label, (b, self) -> b.return_(concat(literal("both"), literal("!"))));
+                    var cb = oh.members();
+                    var own3 = cb.declareOverride(asNamed, Named_.label);
+                    var bodies = cb.bodies();
+                    bodies.define(own3, (b, self) -> b.return_(concat(literal("both"), literal("!"))));
                 }
             }));
 
@@ -181,7 +189,9 @@ class ImplementsTest {
             assertThat(TypedJavaFile.class_(
                                     UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                         @Override
-                                        public <Self> void build(TypedClassBuilder<Self> cb) {}
+                                        public <Self> void build(TypedClassBuilder<Self> cb) {
+                                            cb.bodies();
+                                        }
                                     })
                             .render())
                     .contains("public final class Probe {");
@@ -199,10 +209,12 @@ class ImplementsTest {
         void aHeaderThatNeverComesToTheMembersIsRejected() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> header(h -> {}))
-                    .withMessageContaining("its header never came to the members: end it with extendsObject().body()");
+                    .withMessageContaining(
+                            "its header never came to the members: end the header with extendsObject().members()");
             assertThatIllegalStateException()
                     .isThrownBy(() -> header(ClassHeader::extendsObject))
-                    .withMessageContaining("its header never came to the members");
+                    .withMessageContaining("its header, which named the superclass at ")
+                    .withMessageContaining("never came to the members");
         }
 
         @Test
@@ -216,8 +228,8 @@ class ImplementsTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> header(h -> {
                         var oh = h.extendsObject();
-                        oh.body();
-                        oh.body();
+                        oh.members().bodies();
+                        oh.members().bodies();
                     }))
                     .withMessageContaining("the members of class me.supcheg.example.Probe do not begin here");
             assertThatIllegalStateException()
@@ -225,14 +237,14 @@ class ImplementsTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
-                            oh.body();
+                            oh.members().bodies();
                             oh.implements_(Named_.implement(h.self()));
                         }
                     }))
                     .withMessageContaining("a superinterface is named after the superclass and before the members");
             assertThatIllegalStateException()
                     .isThrownBy(() -> header(h -> {
-                        h.extendsObject().body();
+                        h.extendsObject().members().bodies();
                         h.overriding(Object_.toString);
                     }))
                     .withMessageContaining("the header of the class has ended");
@@ -243,7 +255,7 @@ class ImplementsTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> header(h -> {
                         h.overriding(Object_.toString);
-                        h.extendsObject().body();
+                        h.extendsObject().members().bodies();
                     }))
                     .withMessageContaining("these declared members are never defined:"
                             + " java.lang.String me.supcheg.example.Probe.toString()");
@@ -255,7 +267,7 @@ class ImplementsTest {
                             var run = h.overriding(Runnable_.run);
                             var oh = h.extendsObject();
                             oh.implements_(Runnable_.implement(h.self()).run(run));
-                            oh.body();
+                            oh.members().bodies();
                         }
                     }))
                     .withMessageContaining("never defined: void me.supcheg.example.Probe.run()");
@@ -268,7 +280,7 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> header(h -> {
                         h.overriding(Runnable_.run);
-                        h.extendsObject().body();
+                        h.extendsObject().members().bodies();
                     }))
                     .withMessageContaining("overrides nothing: no supertype of the class has a method run()");
             assertThat(JavacVerdict.compiledClass("", "@Override public void run() {}"))
@@ -286,7 +298,7 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> header(h -> {
                         h.overriding(Object_.toString);
-                        h.extendsObject().body().override(Object_.toString, (b, _) -> b.return_(literal("x")));
+                        h.extendsObject().members().declareOverride(Object_.toString);
                     }))
                     .withMessageContaining("declared before: both erase to toString()");
             assertThat(JavacVerdict.compiledClass(
@@ -427,7 +439,7 @@ class ImplementsTest {
                         public <Self> void build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
-                            oh.body().declareMethod("label", String_.TOKEN);
+                            oh.members().declareMethod("label", String_.TOKEN);
                         }
                     }))
                     .withMessageContaining("has the signature of label() of me.supcheg.javafile.typed.fixtures.Named,"
@@ -444,7 +456,7 @@ class ImplementsTest {
                             var compareTo = h.overriding(cmp.compareTo_T);
                             var oh = h.extendsObject();
                             oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
-                            oh.body().declareMethod("compareTo", PrimitiveToken.INT, Object_.TOKEN);
+                            oh.members().declareMethod("compareTo", PrimitiveToken.INT, Object_.TOKEN);
                         }
                     }))
                     .withMessageContaining("name clash");
@@ -463,7 +475,7 @@ class ImplementsTest {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Titled_.implement(h.self()));
-                            oh.body();
+                            oh.members().bodies();
                         }
                     }))
                     .withMessageContaining("overrides none of them")

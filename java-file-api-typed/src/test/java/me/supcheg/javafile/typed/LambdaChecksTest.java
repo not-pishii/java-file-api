@@ -58,13 +58,17 @@ class LambdaChecksTest {
             "local variables referenced from a lambda expression must be final or effectively final";
 
     /// Declares the class `Probe` with the given members.
-    private static JavaFile declare(Consumer<TypedClassBuilder<?>> members) {
-        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, members::accept);
+    private static JavaFile declare(Consumer<TypedClassBuilder<Object>> members) {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     /// Declares `static void m()` with the given body.
     private static JavaFile voidMethod(Function<VoidBody, Terminated<Void>> body) {
-        return declare(cb -> cb.voidStaticMethod("m", body));
+        return declare(cb -> {
+            var own1 = cb.declareVoidStaticMethod("m");
+            var bodies = cb.bodies();
+            bodies.define(own1, body);
+        });
     }
 
     /// `Integer.valueOf(new StringReader("a").read())`, which throws `IOException`.
@@ -139,25 +143,28 @@ class LambdaChecksTest {
         @Test
         void anImmutableVariableAParameterAndAVariableOfAForEachLoopAreCaptured() {
             asJavacAccepts(
-                    () -> declare(cb -> cb.voidStaticMethod(
-                            "m",
-                            new List_<>(Integer_.TOKEN).token,
-                            (b, list) -> b.let(
-                                    Integer_.TOKEN,
-                                    box(PrimitiveToken.INT, literal(0)),
-                                    v -> b.let(
-                                            INTS.token,
-                                            lambda(INTS.sam, () -> v),
-                                            _ -> b.forEach(
-                                                            Integer_.TOKEN,
-                                                            list,
-                                                            (loop, each, _) -> loop.let(
-                                                                    INT_SUPPLIERS.token,
-                                                                    lambda(
-                                                                            INT_SUPPLIERS.sam,
-                                                                            () -> lambda(INTS.sam, () -> each)),
-                                                                    _ -> loop))
-                                                    .end())))),
+                    () -> declare(cb -> {
+                        var own2 = cb.declareVoidStaticMethod("m", new List_<>(Integer_.TOKEN).token);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own2,
+                                (b, list) -> b.let(
+                                        Integer_.TOKEN,
+                                        box(PrimitiveToken.INT, literal(0)),
+                                        v -> b.let(
+                                                INTS.token,
+                                                lambda(INTS.sam, () -> v),
+                                                _ -> b.forEach(
+                                                                Integer_.TOKEN,
+                                                                list,
+                                                                (loop, each, _) -> loop.let(
+                                                                        INT_SUPPLIERS.token,
+                                                                        lambda(
+                                                                                INT_SUPPLIERS.sam,
+                                                                                () -> lambda(INTS.sam, () -> each)),
+                                                                        _ -> loop))
+                                                        .end())));
+                    }),
                     """
                     static void m(List<Integer> list) {
                         Integer v = 0;
@@ -221,13 +228,17 @@ class LambdaChecksTest {
             AtomicReference<Var<Integer>> escaped = new AtomicReference<>();
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(cb -> cb.staticMethod("m", Integer_.TOKEN, b -> {
-                        lambda(INT_FN.sam, v -> {
-                            escaped.set(v);
-                            return v;
+                    .isThrownBy(() -> declare(cb -> {
+                        var own3 = cb.declareStaticMethod("m", Integer_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(own3, b -> {
+                            lambda(INT_FN.sam, v -> {
+                                escaped.set(v);
+                                return v;
+                            });
+                            return b.return_(escaped.get());
                         });
-                        return b.return_(escaped.get());
-                    })))
+                    }))
                     .withMessageContaining("the lambda parameter of type java.lang.Integer declared in the lambda"
                             + " body in body of static method m is used in the body of static method m, which is"
                             + " not inside that block");
@@ -250,17 +261,19 @@ class LambdaChecksTest {
             AtomicReference<Expr<Supplier<Integer>>> escaped = new AtomicReference<>();
 
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(cb -> cb.staticMethod(
-                            "m",
-                            INTS.token,
-                            Integer_.TOKEN,
-                            (b, p) -> b.if_(
-                                            literal(true),
-                                            t -> t.let(Integer_.TOKEN, p, v -> {
-                                                escaped.set(lambda(INTS.sam, () -> v));
-                                                return t;
-                                            }))
-                                    .return_(escaped.get()))))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own4 = cb.declareStaticMethod("m", INTS.token, Integer_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own4,
+                                (b, p) -> b.if_(
+                                                literal(true),
+                                                t -> t.let(Integer_.TOKEN, p, v -> {
+                                                    escaped.set(lambda(INTS.sam, () -> v));
+                                                    return t;
+                                                }))
+                                        .return_(escaped.get()));
+                    }))
                     .withMessageContaining("a lambda built in the then-branch of if_ in body of static method m is"
                             + " used in the body of static method m, which is not inside that block: the variables"
                             + " it captures are out of scope there (§6.2)");
@@ -291,12 +304,16 @@ class LambdaChecksTest {
         @Test
         void aBlockLambdaEndsWithItsOwnToken() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> declare(cb -> cb.staticMethod("m", INTS.token, b -> {
-                        Body<Integer> elsewhere = Body.root("body of another method");
-                        Terminated<Integer> other =
-                                Scopes.within(elsewhere, () -> elsewhere.return_(box(PrimitiveToken.INT, literal(1))));
-                        return b.return_(lambdaBlock(INTS.sam, _ -> other));
-                    })))
+                    .isThrownBy(() -> declare(cb -> {
+                        var own5 = cb.declareStaticMethod("m", INTS.token);
+                        var bodies = cb.bodies();
+                        bodies.define(own5, b -> {
+                            Body<Integer> elsewhere = Body.root("body of another method");
+                            Terminated<Integer> other = Scopes.within(
+                                    elsewhere, () -> elsewhere.return_(box(PrimitiveToken.INT, literal(1))));
+                            return b.return_(lambdaBlock(INTS.sam, _ -> other));
+                        });
+                    }))
                     .withMessageContaining("the Terminated token handed back for the lambda body in body of static"
                             + " method m was issued by the body of another method");
         }
@@ -334,10 +351,12 @@ class LambdaChecksTest {
         @Test
         void theThrowsClauseOfTheMemberAroundTheLambdaCoversNothingOfIt() {
             asJavac(
-                    () -> declare(cb -> cb.throwing(IOException_.TOKEN)
-                            .voidStaticMethod(
-                                    "m",
-                                    b -> b.let(INTS.token, lambda(INTS.sam, LambdaChecksTest::read), _ -> b.end()))),
+                    () -> declare(cb -> {
+                        var own6 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                own6, b -> b.let(INTS.token, lambda(INTS.sam, LambdaChecksTest::read), _ -> b.end()));
+                    }),
                     "the method of the functional interface of the lambda does not declare",
                     "static void m() throws IOException { Supplier<Integer> s = () -> new StringReader(\"a\").read(); }",
                     "unreported exception java.io.IOException");
@@ -417,12 +436,20 @@ class LambdaChecksTest {
         @Test
         void aLambdaOfAFieldInitializerIsCheckedAsAnyOther() {
             asJavac(
-                    () -> declare(cb -> cb.field("f", INTS.token, lambda(INTS.sam, LambdaChecksTest::read))),
+                    () -> declare(cb -> {
+                        var field7 = cb.declareField("f", INTS.token);
+                        var bodies = cb.bodies();
+                        bodies.initialize(field7, lambda(INTS.sam, LambdaChecksTest::read));
+                    }),
                     "in the lambda body can throw the checked exception java.io.IOException",
                     "Supplier<Integer> f = () -> new StringReader(\"a\").read();",
                     "unreported exception java.io.IOException");
             asJavacAccepts(
-                    () -> declare(cb -> cb.field("f", INT_CALL.token, lambda(INT_CALL.sam, LambdaChecksTest::read))),
+                    () -> declare(cb -> {
+                        var field8 = cb.declareField("f", INT_CALL.token);
+                        var bodies = cb.bodies();
+                        bodies.initialize(field8, lambda(INT_CALL.sam, LambdaChecksTest::read));
+                    }),
                     "Callable<Integer> f = () -> new StringReader(\"a\").read();");
         }
     }
