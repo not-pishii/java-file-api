@@ -297,6 +297,21 @@ class InheritanceVerdictTest {
                         }
                     }))
                     .withMessageContaining("the method is generic");
+            // nor is a method of its erased signature declared by its name: to javac that one overrides it
+            classUnlikeJavac(
+                    AT_THE_PLACE,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> void build(ClassHeader<Self> h) {
+                            var oh = h.extendsObject();
+                            oh.implements_(Joiner_.implement(h.self()));
+                            oh.body().method("pick", Object_.TOKEN, Object_.TOKEN, (b, _, picked) -> b.return_(picked));
+                        }
+                    }),
+                    "The inherited method is generic, and the typed layer declares no generic method: the class"
+                            + " neither overrides it nor has another method of its erased signature",
+                    "implements Joiner",
+                    "public Object pick(Object picked) { return picked; }");
         }
     }
 
