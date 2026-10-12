@@ -41,7 +41,7 @@ public abstract sealed class Header<Self> extends Overriding<Self> permits Class
 
     /// The fact of the class being declared: a [FinalClassToken], usable as a type — of a type
     /// argument of a supertype, `new Comparable_<>(h.self())`, among others. Its
-    /// [FinalClassToken#methods()] is known once the declaration completes.
+    /// [FinalClassToken#methods()] is known once the declarations of the members end.
     ///
     /// @return the self token
     public final FinalClassToken<Self> self() {

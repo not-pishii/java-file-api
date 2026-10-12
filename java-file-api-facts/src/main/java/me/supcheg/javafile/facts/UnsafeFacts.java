@@ -287,7 +287,7 @@ public final class UnsafeFacts extends InvocableFactories {
 
     /// Vouches that a final class exists whose instance methods are known
     /// only later: the class being declared by a typed declaration (§6.5),
-    /// whose method table is complete once its declaration is. `methods` is
+    /// whose method table is complete once its members are all declared. `methods` is
     /// asked until it answers once, and may throw while the table is not
     /// known yet.
     ///
