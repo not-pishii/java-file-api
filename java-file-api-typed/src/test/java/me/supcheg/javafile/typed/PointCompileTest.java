@@ -27,7 +27,7 @@ class PointCompileTest {
         JavaFile file =
                 TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), POINT, new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var x = cb.declareField("x", PrimitiveToken.INT);
                         var y = cb.declareField("y", PrimitiveToken.INT);
 
@@ -40,6 +40,7 @@ class PointCompileTest {
                                 (body, self) -> body.return_(addInt(
                                         mulInt(field(self, x), field(self, x)),
                                         mulInt(field(self, y), field(self, y)))));
+                        return bodies;
                     }
                 });
 

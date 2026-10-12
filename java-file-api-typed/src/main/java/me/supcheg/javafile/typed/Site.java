@@ -7,11 +7,10 @@ import java.util.Objects;
 /// that called the typed layer.
 ///
 /// What is wrong is rejected where it is said, and the stack of the
-/// rejection is that place. What cannot be judged until a later call — a
-/// member declared and never defined, a header that never came to the
-/// members — is rejected there, and tells where the thing it is about was
-/// said: by its message, and by its cause, an exception whose stack is this
-/// place.
+/// rejection is that place. What cannot be judged until the declaration
+/// ends — a member declared and never defined — is rejected there, and tells
+/// where the member was declared: by its message, and by its cause, an
+/// exception whose stack is this place.
 ///
 /// @param at the frame of the generator
 record Site(StackTraceElement at) {

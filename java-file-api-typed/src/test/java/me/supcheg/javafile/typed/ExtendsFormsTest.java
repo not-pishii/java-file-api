@@ -58,7 +58,7 @@ class ExtendsFormsTest {
     void aConstructorIsThereForEveryBody() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Base_.extend(h.self()));
                 var cb = sh.members();
                 var make = cb.declareConstructor(String_.TOKEN);
@@ -74,6 +74,7 @@ class ExtendsFormsTest {
                         raised,
                         b -> b.exec(assignStaticField(limit, addInt(staticField(limit), literal(1))))
                                 .return_(staticField(limit)));
+                return bodies;
             }
         }));
 
@@ -90,12 +91,12 @@ class ExtendsFormsTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         cb.declareConstructor(String_.TOKEN);
                         var first = cb.declareConstructor();
-                        cb.bodies(first, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        return cb.bodies(first, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     }
                 }))
                 .withMessageContaining("these declared members are never defined")
@@ -104,9 +105,9 @@ class ExtendsFormsTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
-                        sh.members()
+                        return sh.members()
                                 .bodies(
                                         UnsafeFacts.ctor(h.self(), MemberTraits.FINAL),
                                         ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
@@ -120,7 +121,7 @@ class ExtendsFormsTest {
         Callable_<String> callable = new Callable_<>(String_.TOKEN);
         CompiledClasses compiled = CompiledClasses.ofSerializable(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Exception_.extend(h.self()));
                 Upcast<Self, Exception> asException = sh.asSuper();
                 // call() throws Probe: the clause of the override is of the class itself
@@ -147,6 +148,7 @@ class ExtendsFormsTest {
                                                 handlers -> handlers.catch_(asException, cb.self(), (c, e) -> {}),
                                                 t -> t.exec(call(self, call.method())))
                                         .return_(call(asException.apply(self), Throwable_.getMessage))));
+                return bodies;
             }
         }));
 
@@ -163,7 +165,7 @@ class ExtendsFormsTest {
     void aThreadRunsTheMethodTheClassOverrides() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Thread_.extend(h.self()));
                 var cb = sh.members();
                 var constructor = cb.declareConstructor();
@@ -176,6 +178,7 @@ class ExtendsFormsTest {
                         (b, self) -> b.exec(
                                         assignField(self, ran, call(cb.asSuper().apply(self), Thread_.getName)))
                                 .end());
+                return bodies;
             }
         }));
 
@@ -190,7 +193,7 @@ class ExtendsFormsTest {
     void methodsWithParametersAreHadFromTheSuperclassAndCalledAsSuper() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Mid_.extend(h.self()));
                 Upcast<Self, Joining> asJoining = sh.implements_(Joining_.implement(h.self())
                         .join_String_String(sh.inherited(Mid_.join_String_String))
@@ -217,6 +220,7 @@ class ExtendsFormsTest {
                         runs,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .return_(field(cb.asSuper().apply(self), Mid_.runs)));
+                return bodies;
             }
         }));
 
@@ -236,9 +240,10 @@ class ExtendsFormsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Mid_.extend(h.self()));
                         sh.implements_(Risking_.implement(h.self()).risk(sh.inherited(Mid_.risk)));
+                        return Unreached.here();
                     }
                 }),
                 "an override cannot declare the checked exception java.io.IOException",
@@ -253,12 +258,12 @@ class ExtendsFormsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var first = cb.declareConstructor(String_.TOKEN);
                         cb.declareConstructor(String_.TOKEN);
-                        cb.bodies(first, (ctor, name) -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        return cb.bodies(first, (ctor, name) -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     }
                 }),
                 "clashes with the constructor",
@@ -273,7 +278,7 @@ class ExtendsFormsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
@@ -285,6 +290,7 @@ class ExtendsFormsTest {
                                         self,
                                         UnsafeFacts.method(
                                                 Base_.TOKEN, "local", String_.TOKEN, MemberTraits.OVERRIDABLE))));
+                        return bodies;
                     }
                 }),
                 "has no method local() that is a member to class me.supcheg.example.Probe",
@@ -296,7 +302,7 @@ class ExtendsFormsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(Base_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
@@ -307,6 +313,7 @@ class ExtendsFormsTest {
                                 (b, self) -> b.return_(bodies.superCall(
                                         self,
                                         UnsafeFacts.method(Base_.TOKEN, "util", String_.TOKEN, MemberTraits.FINAL))));
+                        return bodies;
                     }
                 }),
                 "calls an instance method, and util() of me.supcheg.javafile.typed.fixtures.Base is static",
@@ -320,9 +327,10 @@ class ExtendsFormsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         h.extends_(
                                 UnsafeFacts.steps(AbstractList_.ANY, h.self()).complete());
+                        return Unreached.here();
                     }
                 }),
                 "a supertype has no wildcard type argument (JLS 8.1.4, 8.1.5)",
@@ -337,10 +345,11 @@ class ExtendsFormsTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         h.extends_(UnsafeFacts.steps(
                                         UnsafeFacts.<Carrier<Object>>openClassToken(Carrier_.Data.SHAPE), h.self())
                                 .complete());
+                        return Unreached.here();
                     }
                 }))
                 .withMessageContaining("cannot have the raw supertype me.supcheg.javafile.typed.fixtures.Carrier:"
@@ -355,7 +364,7 @@ class ExtendsFormsTest {
         // written: a primitive, an array, a type argument of the class, a wildcard of it
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var list = new AbstractList_<>(String_.TOKEN);
                 var coll = new AbstractCollection_<>(String_.TOKEN);
                 var eh = h.extending(list.token);
@@ -383,6 +392,7 @@ class ExtendsFormsTest {
                                 self,
                                 coll.containsAll_Collection,
                                 bodies.superCall(self, list.subList_int_int, literal(0), literal(1)))));
+                return bodies;
             }
         }));
 

@@ -76,12 +76,13 @@ class SuperTwinsTest {
                 IllegalStateException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
                         bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, BASE.m_T, literal("x"))));
+                        return bodies;
                     }
                 }),
                 "super.m(...) cannot name",
@@ -93,12 +94,13 @@ class SuperTwinsTest {
                 FactLookupException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
                         bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, SUB.m_String, literal("x"))));
+                        return bodies;
                     }
                 }),
                 "as the overload declared m(#0) is",
@@ -110,13 +112,14 @@ class SuperTwinsTest {
                 IllegalStateException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var p = cb.protected_(BASE.p_T);
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
                         bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, p, literal("x"))));
+                        return bodies;
                     }
                 }),
                 "super.p(...) cannot name",
@@ -130,7 +133,7 @@ class SuperTwinsTest {
         // the class overrides the pair by one method, and this.m("x") is that method to javac
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var twins = overriding(h);
                 var cb = twins.cb();
                 var p = cb.protected_(BASE.p_T);
@@ -139,6 +142,7 @@ class SuperTwinsTest {
                 var bodies = twins.bodies();
                 bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
                 bodies.define(g, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
+                return bodies;
             }
         }));
 
@@ -154,11 +158,11 @@ class SuperTwinsTest {
                 IllegalStateException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var sh = h.extends_(SUB.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
-                        cb.bodies(constructor, ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
+                        return cb.bodies(constructor, ctor -> ctor.super_(SUB.new_, (b, self) -> b.end()));
                     }
                 }),
                 "are unrelated methods of the classes above, of one signature in the class",
@@ -175,7 +179,7 @@ class SuperTwinsTest {
                 IllegalStateException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var member6 = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
@@ -185,6 +189,7 @@ class SuperTwinsTest {
                         bodies.define(member6, (b, self, v) -> b.return_(literal("own")));
                         bodies.define(
                                 f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                        return bodies;
                     }
                 }),
                 "the class has another method that erases as it does, which javac would take for it — a"
@@ -196,13 +201,14 @@ class SuperTwinsTest {
         // without the overload it is the method of the superclass
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var twins = overriding(h);
                 var cb = twins.cb();
                 var g = cb.protected_(BASE.g_U(String_.TOKEN));
                 var f = cb.declareMethod("f", String_.TOKEN);
                 var bodies = twins.bodies();
                 bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                return bodies;
             }
         }));
 
@@ -218,13 +224,14 @@ class SuperTwinsTest {
                 IllegalArgumentException.class,
                 () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                     @Override
-                    public <Self> void build(ClassHeader<Self> h) {
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
                         bodies.define(f, (b, self) -> b.return_(bodies.superCall(self, g, literal("x"))));
+                        return bodies;
                     }
                 }),
                 "the method is generic, and a generic method of a superclass is neither called as super.g(...)",

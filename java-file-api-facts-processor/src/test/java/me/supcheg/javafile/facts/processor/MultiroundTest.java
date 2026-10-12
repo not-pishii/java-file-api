@@ -318,6 +318,7 @@ class MultiroundTest {
                 import gen.facts.p.Base_;
                 import java.lang.constant.ClassDesc;
                 import me.supcheg.javafile.facts.PrimitiveToken;
+                import me.supcheg.javafile.typed.TypedClassBodies;
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
 
@@ -328,10 +329,11 @@ class MultiroundTest {
                         return TypedJavaFile.class_(
                     me.supcheg.javafile.facts.UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                                     @Override
-                                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                         var go = cb.declareStaticMethod("go", PrimitiveToken.INT, Late_.TOKEN);
                                         var bodies = cb.bodies();
                                         bodies.define(go, (b, late) -> b.return_(call(late, Base_.inherited)));
+                                        return bodies;
                                     }
                                 })
                                 .render();

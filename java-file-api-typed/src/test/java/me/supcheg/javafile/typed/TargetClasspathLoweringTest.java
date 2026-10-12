@@ -118,12 +118,13 @@ class TargetClasspathLoweringTest {
             TargetClasspath target, RefToken<P> parameter, Function<Expr<P>, Expr<String>> body) {
         return TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var go = cb.declareStaticMethod("go", String_.TOKEN, parameter);
                         var again = cb.declareStaticMethod("again", String_.TOKEN, parameter);
                         var bodies = cb.bodies();
                         bodies.define(go, (b, p) -> b.return_(body.apply(p)));
                         bodies.define(again, (b, p) -> b.return_(body.apply(p)));
+                        return bodies;
                     }
                 })
                 .render();
@@ -142,7 +143,9 @@ class TargetClasspathLoweringTest {
         String spec = """
                 new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {}
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        return cb.bodies();
+                    }
                 }""";
         String source = """
                 package fixtures;
@@ -150,6 +153,7 @@ class TargetClasspathLoweringTest {
                 import java.lang.constant.ClassDesc;
                 import me.supcheg.javafile.JavaFile;
                 import me.supcheg.javafile.facts.UnsafeFacts;
+                import me.supcheg.javafile.typed.TypedClassBodies;
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
 
@@ -205,6 +209,36 @@ class TargetClasspathLoweringTest {
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, unused, _ -> literal("a")))
                 .withMessageContaining("type fixtures.Unused gone");
+    }
+
+    @Test
+    void aMetamodelThatDoesNotHoldIsRejectedByTheDefinitionThatUsesIt() {
+        TargetClasspath target = UnsafeFacts.targetClasspath(new Asked(Map.of(
+                SVC,
+                new TargetType.Mismatched(List.of(new Difference.MissingFact(
+                        "method overridable m(java.lang.String) -> java.lang.String throws -", List.of()))))));
+
+        String source = TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        // the declaration names the type and none of its members: the metamodel is not asked of
+                        var go = cb.declareStaticMethod("go", String_.TOKEN, String_.TOKEN);
+                        var bodies = cb.bodies();
+
+                        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                                .isThrownBy(() -> bodies.define(
+                                        go,
+                                        (b, s) -> b.return_(call(Expressions.literalNull(SVC_TOKEN), M, literal("a")))))
+                                .withMessageStartingWith("metamodel gen.facts.fixtures.Svc_ does not match fixtures.Svc"
+                                        + " on the target classpath:");
+                        // the member has no body yet, and gets one that uses nothing of the type
+                        bodies.define(go, (b, s) -> b.return_(s));
+                        return bodies;
+                    }
+                })
+                .render();
+
+        assertThat(source).contains("return v0;");
     }
 
     @Test

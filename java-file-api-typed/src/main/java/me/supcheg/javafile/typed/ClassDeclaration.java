@@ -271,7 +271,7 @@ final class ClassDeclaration<Self> {
                 throw new IllegalStateException("the superclass of " + described + " is known only once its"
                         + " header names it: say extendsObject() or extends_(proof) first");
             case Phase.Heading<Self> heading -> heading.superclass().chain();
-            case Phase.Members<Self>(var _, var extended, var _) ->
+            case Phase.Members<Self>(var _, var extended) ->
                 extended.superclass().chain();
             case Phase.Bodies<Self>(var _, var _, var extended) ->
                 extended.superclass().chain();
@@ -509,8 +509,7 @@ final class ClassDeclaration<Self> {
                 superclass,
                 heading.interfaces(),
                 heading.said(),
-                with(heading.inheritances(), inheritance),
-                heading.site());
+                with(heading.inheritances(), inheritance));
         return inheritance;
     }
 
@@ -552,8 +551,7 @@ final class ClassDeclaration<Self> {
                 heading.superclass(),
                 with(heading.interfaces(), supertype.typeRef()),
                 said,
-                heading.inheritances(),
-                heading.site());
+                heading.inheritances());
         return new Upcast<>(self, supertype);
     }
 
@@ -659,7 +657,6 @@ final class ClassDeclaration<Self> {
     /// The header ends and the members begin: every method the class said it overrides is one it
     /// inherits, and is declared.
     private <B extends MemberBuilder<Self, ?>> B members(BiFunction<Inheritance, Superclass, B> make) {
-        Site site = Site.here();
         Scopes.requireNoneOpen("the members of " + described);
         if (!(phase instanceof Phase.Heading<Self> heading)) {
             throw new IllegalStateException("the members of " + described + " do not begin here: they follow"
@@ -679,7 +676,7 @@ final class ClassDeclaration<Self> {
                             + " of a type the class names, with these very type arguments");
                 });
         B builder = make.apply(inherited, superclass);
-        phase = new Phase.Members<>(builder, new Extended(superclass, interfaces, named(inherited)), site);
+        phase = new Phase.Members<>(builder, new Extended(superclass, interfaces, named(inherited)));
         heading.said()
                 .intentions()
                 .forEach(intention -> builder.declareOverride(intention.own(), intention.thrown(), intention.site()));
@@ -750,7 +747,7 @@ final class ClassDeclaration<Self> {
     /// @return the stage of the bodies
     /// @throws IllegalStateException if the class is not declaring its members
     <B extends MemberBodies<Self, ?>> B bodies(MethodTable methods, Supplier<B> make) {
-        if (!(phase instanceof Phase.Members<Self>(var _, var extended, var _))) {
+        if (!(phase instanceof Phase.Members<Self>(var _, var extended))) {
             throw new IllegalStateException("the bodies of the members of " + described + " do not begin here:"
                     + " they follow the declarations of the members, once");
         }
@@ -766,7 +763,7 @@ final class ClassDeclaration<Self> {
     /// @throws IllegalStateException if the header of the class has not ended
     JavaFile file(List<ClassMember> members) {
         return switch (phase) {
-            case Phase.Members<Self>(var _, var extended, var _) -> file(extended, members);
+            case Phase.Members<Self>(var _, var extended) -> file(extended, members);
             case Phase.Bodies<Self>(var _, var _, var extended) -> file(extended, members);
             case Phase.Named<Self> _, Phase.Heading<Self> _, Phase.Complete<Self> _ ->
                 throw new IllegalStateException(described + " has a file while its members are declared and"
@@ -788,44 +785,27 @@ final class ClassDeclaration<Self> {
                 .inheriting(extended.named());
     }
 
-    /// Completes the declaration.
+    /// Completes the declaration, by the bodies its specification ended in.
     ///
-    /// What is rejected here is what no call before could tell: that a stage was the last one
-    /// said, that a declared member got no definition. Each such rejection tells where the thing
-    /// it is about was said ([Site]).
+    /// That the specification came to the bodies of the members is what it returning them says:
+    /// there is no stage of a declaration left to hold it to here. What is rejected is what no
+    /// call before could tell — that a declared member got no definition — and the rejection tells
+    /// where each such member was declared ([Site]).
     ///
+    /// @param ended the bodies the specification returned
     /// @return the file of the class
-    /// @throws IllegalStateException if the header never came to the members or the members to
-    ///     their bodies, or a declared member is not defined
-    JavaFile complete() {
-        return switch (phase) {
-            case Phase.Named<Self> _ ->
-                throw new IllegalStateException("the declaration of " + described + " is complete, but its"
-                        + " header never came to the members: " + ENDS);
-            case Phase.Heading<Self> heading ->
-                throw new IllegalStateException(
-                        "the declaration of " + described + " is complete, but its header, which named the"
-                                + " superclass at " + heading.site() + ", never came to the members: " + ENDS,
-                        heading.site().asCause("the superclass of " + described + " was named"));
-            case Phase.Members<Self>(var _, var _, var site) ->
-                throw new IllegalStateException(
-                        "the declaration of " + described + " is complete, but its members, which began at "
-                                + site + ", never came to their bodies: end the declarations with bodies() of"
-                                + " the builder of the members, whatever the class declares",
-                        site.asCause("the members of " + described + " began"));
-            case Phase.Bodies<Self>(var bodies, var methods, var extended) -> {
-                JavaFile file = file(extended, bodies.complete());
-                phase = new Phase.Complete<>(methods, extended.superclass());
-                yield file;
-            }
-            case Phase.Complete<Self> _ ->
-                throw new IllegalStateException("the declaration of " + described + " is complete already");
-        };
+    /// @throws IllegalStateException if a declared member is not defined, or the bodies are not
+    ///     those of this declaration — which the brand rules out, short of an unchecked cast
+    JavaFile complete(MemberBodies<Self, ?> ended) {
+        if (!(phase instanceof Phase.Bodies<Self>(var bodies, var methods, var extended)) || bodies != ended) {
+            throw new IllegalStateException("the specification of " + described + " returned bodies that are"
+                    + " not those of its members: a specification returns the stage its own declarations"
+                    + " ended in, once");
+        }
+        JavaFile file = file(extended, bodies.complete());
+        phase = new Phase.Complete<>(methods, extended.superclass());
+        return file;
     }
-
-    private static final String ENDS = "end the header with extendsObject().members(), or with members() of the"
-            + " header extends_ gave, and the declarations of the members with bodies(), whatever the class"
-            + " declares";
 
     /// The class has its superclass: what it said before holds of it.
     private void heading(Phase.Named<Self> named, Inheritance inherited, Superclass superclass) {
@@ -838,7 +818,7 @@ final class ClassDeclaration<Self> {
                             + ", and a protected member is reached by a subclass alone (JLS 6.6.2)");
                 });
         requireOverrides(inherited, named.said().intentions().stream(), named.said());
-        phase = new Phase.Heading<>(inherited, superclass, List.of(), named.said(), List.of(), Site.here());
+        phase = new Phase.Heading<>(inherited, superclass, List.of(), named.said(), List.of());
     }
 
     /// Rejects the intentions that cannot override what the class inherits under their signature.
@@ -947,14 +927,12 @@ final class ClassDeclaration<Self> {
         /// @param interfaces its superinterfaces so far
         /// @param said what its header said so far
         /// @param inheritances the methods it said it has from its superclass
-        /// @param site where the superclass was named
         record Heading<Self>(
                 Inheritance inherited,
                 Superclass superclass,
                 List<ClassOrInterfaceTypeRef> interfaces,
                 Said said,
-                List<Implemented.ByInheritance> inheritances,
-                Site site)
+                List<Implemented.ByInheritance> inheritances)
                 implements Phase<Self> {
             public Heading {
                 interfaces = List.copyOf(interfaces);
@@ -962,7 +940,7 @@ final class ClassDeclaration<Self> {
             }
 
             Heading<Self> saying(Said said) {
-                return new Heading<>(inherited, superclass, interfaces, said, inheritances, site);
+                return new Heading<>(inherited, superclass, interfaces, said, inheritances);
             }
         }
 
@@ -970,8 +948,7 @@ final class ClassDeclaration<Self> {
         ///
         /// @param builder the builder of the members
         /// @param extended what its header said of its supertypes
-        /// @param site where the members began
-        record Members<Self>(MemberBuilder<Self, ?> builder, Extended extended, Site site) implements Phase<Self> {}
+        record Members<Self>(MemberBuilder<Self, ?> builder, Extended extended) implements Phase<Self> {}
 
         /// The class defines its members: all of them are declared.
         ///

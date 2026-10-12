@@ -104,7 +104,7 @@ class PrimitivesTest {
                 ClassDesc.of("me.supcheg.example", "Primitives"),
                 new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var sameAsObjects = cb.declareStaticMethod("sameAsObjects", PrimitiveToken.BOOLEAN);
                         var member2 = cb.declareStaticMethod("boxed", Integer_.TOKEN);
                         var unboxed = cb.declareStaticMethod("unboxed", PrimitiveToken.INT, Integer_.TOKEN);
@@ -134,6 +134,7 @@ class PrimitivesTest {
                                                 .return_(call(at(strings, array, literal(1)), String_.length))));
                         bodies.define(checked, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
                         bodies.define(truncated, b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
+                        return bodies;
                     }
                 });
 

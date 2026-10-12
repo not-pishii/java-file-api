@@ -48,9 +48,9 @@ class BoundsAsAClassTest {
                 typeParam("T", first),
                 new TypedJavaFile.TypedGenericClassSpec1<B>() {
                     @Override
-                    public <Self, T extends B> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T extends B> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         h.bound(t, further);
-                        h.extendsObject().members().bodies();
+                        return h.extendsObject().members().bodies();
                     }
                 });
     }
@@ -137,7 +137,7 @@ class BoundsAsAClassTest {
                 typeParam("T", Base_.TOKEN),
                 new TypedJavaFile.TypedGenericClassSpec1<Base>() {
                     @Override
-                    public <Self, T extends Base> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    public <Self, T extends Base> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         Upcast<T, Sealing> asSealing = h.bound(t, Sealing_.TOKEN);
                         var cb = h.extendsObject().members();
                         var constructor = cb.declareConstructor();
@@ -145,6 +145,7 @@ class BoundsAsAClassTest {
                         var bodies = cb.bodies();
                         bodies.define(constructor, (b, self) -> b.end());
                         bodies.define(go, (b, self, v) -> b.return_(call(asSealing.apply(v), Sealing_.sealed)));
+                        return bodies;
                     }
                 }));
 

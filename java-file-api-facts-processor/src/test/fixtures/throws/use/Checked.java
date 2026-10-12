@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.processor.harness.Typed;
+import me.supcheg.javafile.typed.TypedClassBodies;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
 import me.supcheg.javafile.typed.VoidBody;
@@ -33,15 +34,15 @@ public final class Checked {
                         ClassDesc.of("out", "Out"),
                         new TypedJavaFile.TypedClassSpec() {
                             @Override
-                            public <Self> void build(TypedClassBuilder<Self> cb) {
-                                members.declare(cb);
+                            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                                return members.declare(cb);
                             }
                         })
                 .render();
     }
 
     private interface Members {
-        <Self> void declare(TypedClassBuilder<Self> cb);
+        <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb);
     }
 
     public static void aCheckedExceptionOfAConstructorIsNeitherCaughtNorDeclaredInAMethodWithoutAClause(Typed typed) {
@@ -59,10 +60,11 @@ public final class Checked {
     /// `static void declares() throws Failure {}`: nothing but the `throws` clause names `Failure`.
     private static final TypedJavaFile.TypedClassSpec DECLARES_FAILURE = new TypedJavaFile.TypedClassSpec() {
         @Override
-        public <Self> void build(TypedClassBuilder<Self> cb) {
+        public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
             var declares = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("declares");
             var bodies = cb.bodies();
             bodies.define(declares, VoidBody::end);
+            return bodies;
         }
     };
 
@@ -80,13 +82,14 @@ public final class Checked {
     public static void aCheckedExceptionOfAMethodIsDeclared() {
         String source = rendered(new Members() {
             @Override
-            public <Self> void declare(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                 var custom = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("custom", Io_.TOKEN);
                 var made = cb.throwing(IOException_.TOKEN).declareStaticMethod("made", Io_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(custom, (b, io) -> b.exec(voidCall(io, Io_.custom))
                                 .end());
                 bodies.define(made, b -> b.return_(new_(Io_.new_)));
+                return bodies;
             }
         });
 
@@ -99,7 +102,7 @@ public final class Checked {
         // multi() throws IOException, InterruptedException, IllegalStateException
         String source = rendered(new Members() {
             @Override
-            public <Self> void declare(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                 var multi = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(multi, (b, io) -> b.try_(
@@ -107,6 +110,7 @@ public final class Checked {
                                         .catch_(InterruptedException_.TOKEN, (_, _) -> {}),
                                 t -> t.exec(voidCall(io, Io_.multi)))
                         .end());
+                return bodies;
             }
         });
 
@@ -114,13 +118,14 @@ public final class Checked {
         assertThatIllegalStateException()
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
-                    public <Self> void declare(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                         var multi = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(multi, (b, io) -> b.try_(
                                         h -> h.catch_(IOException_.TOKEN, (_, _) -> {}),
                                         t -> t.exec(voidCall(io, Io_.multi)))
                                 .end());
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("void p.Io.multi() in the try block of try_ in body of static method multi"
@@ -132,11 +137,12 @@ public final class Checked {
         assertThatIllegalStateException()
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
-                    public <Self> void declare(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                         var util = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("util");
                         var bodies = cb.bodies();
                         bodies.define(util, b -> b.exec(voidStaticCall(Io_.util))
                                         .end());
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("static void p.Io.util() in the body of static method util can throw the"
@@ -149,22 +155,24 @@ public final class Checked {
         assertThatIllegalStateException()
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
-                    public <Self> void declare(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                         var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
                                         .end());
+                        return bodies;
                     }
                 }))
                 .withMessageContaining("can throw the checked exception p.Failure");
 
         String source = rendered(new Members() {
             @Override
-            public <Self> void declare(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                 var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
                                 .end());
+                return bodies;
             }
         });
 

@@ -63,7 +63,7 @@ class CovariantReturnTest {
         void oneMethodAnswersTwoInterfacesWithAResultNarrowerThanBoth() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     // Object get() of Origin, CharSequence get() of Worded
                     var get = h.overriding(Origin_.get, String_.TOKEN);
                     var oh = h.extendsObject();
@@ -84,6 +84,7 @@ class CovariantReturnTest {
                             (b, self) ->
                                     b.return_(call(call(asWorded.apply(self), Worded_.get), CharSequence_.length)));
                     bodies.define(origin, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
+                    return bodies;
                 }
             }));
 
@@ -103,13 +104,14 @@ class CovariantReturnTest {
         void cloneOfAClassReturnsTheClass() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var clone = cb.declareOverride(cb.protected_(Object_.clone), cb.self());
                     var twice = cb.declareMethod("twice", cb.self());
                     var bodies = cb.bodies();
                     bodies.define(clone, (b, self) -> b.return_(self));
                     bodies.define(twice, (b, self) -> b.return_(call(call(self, clone), clone)));
+                    return bodies;
                 }
             }));
 
@@ -124,7 +126,7 @@ class CovariantReturnTest {
         void aMethodOfTheSuperclassIsOverriddenWithANarrowerResult() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Maker_.extend(h.self()));
                     var strings = new ArrayList_<>(String_.TOKEN);
                     var cb = sh.members();
@@ -142,6 +144,7 @@ class CovariantReturnTest {
                     bodies.define(words, (b, self) -> b.return_(new_(strings.new_)));
                     bodies.define(asSuper, (b, self) -> b.return_(literalNullList()));
                     bodies.define(made, (b, self) -> b.return_(call(call(self, make), String_.length)));
+                    return bodies;
                 }
 
                 private static Expr<java.util.List<CharSequence>> literalNullList() {
@@ -163,12 +166,12 @@ class CovariantReturnTest {
             // String label() of Mid, CharSequence label() of Labelled
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Mid_.extend(h.self()));
                     sh.implements_(Labelled_.implement(h.self()).label(sh.inherited(Mid_.label)));
                     var cb = sh.members();
                     var constructor = cb.declareConstructor();
-                    cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                    return cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                 }
             }));
 
@@ -189,7 +192,7 @@ class CovariantReturnTest {
         void aCallByTheFactOfTheInterfaceKeepsTheOverloadItsTokenChose() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var get = h.overriding(Origin_.get, String_.TOKEN);
                     var oh = h.extendsObject();
                     Upcast<Self, Origin> asOrigin =
@@ -220,6 +223,7 @@ class CovariantReturnTest {
                     bodies.define(
                             text,
                             (b, self) -> b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.toString)));
+                    return bodies;
                 }
             }));
 
@@ -240,7 +244,7 @@ class CovariantReturnTest {
         void anArrayAndAnExceptionOfANarrowerTypeAreUsedAsOfTheTypeOfTheFact() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var get = h.overriding(Origin_.get);
                     var oh = h.extendsObject();
                     Upcast<Self, Origin> asOrigin =
@@ -271,6 +275,7 @@ class CovariantReturnTest {
                                     handlers -> handlers.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal("io")))
                                             .catch_(Exception_.TOKEN, (c, _) -> c.return_(literal("caught"))),
                                     t -> t.throw_(call(asOrigin.apply(self), Origin_.failure))));
+                    return bodies;
                 }
             }));
 
@@ -294,9 +299,10 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.overriding(Origin_.get, Integer_.TOKEN);
                             h.extends_(Maker_.extend(h.self()));
+                            return Unreached.here();
                         }
                     }),
                     "cannot override get() of me.supcheg.javafile.typed.fixtures.Maker: its result is"
@@ -310,9 +316,10 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             sh.overriding(Numbered_.get);
+                            return Unreached.here();
                         }
                     }),
                     "its result is java.lang.String, and that of the method java.lang.Integer",
@@ -328,13 +335,15 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
                             var cb = oh.members();
                             var size = cb.declareOverride(asCounted, Counted_.size);
-                            cb.bodies().define(size, (b, self) -> b.return_(literal(1)));
+                            var bodies = cb.bodies();
+                            bodies.define(size, (b, self) -> b.return_(literal(1)));
+                            return bodies;
                         }
                     }),
                     "its result is long, and that of the method int: the return types are incompatible"
@@ -347,7 +356,7 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             sh.implements_(Resetting_.implement(h.self()));
                             var cb = sh.members();
@@ -355,6 +364,7 @@ class CovariantReturnTest {
                             var reset = cb.declareOverride(Maker_.reset);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(reset, (b, self) -> b.end());
+                            return bodies;
                         }
                     }),
                     "its result is java.lang.Object, and that of the method void: the return types are"
@@ -366,7 +376,7 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             Upcast<Self, Resetting> asResetting = sh.implements_(Resetting_.implement(h.self()));
                             var cb = sh.members();
@@ -374,6 +384,7 @@ class CovariantReturnTest {
                             var reset = cb.declareOverride(asResetting, Resetting_.reset);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(reset, (b, self) -> b.return_(literal("")));
+                            return bodies;
                         }
                     }),
                     "its result is void, and that of the method java.lang.Object: the return types are"
@@ -396,7 +407,7 @@ class CovariantReturnTest {
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Maker_.extend(h.self()));
                             var cb = sh.members();
                             var constructor = cb.declareConstructor();
@@ -404,6 +415,7 @@ class CovariantReturnTest {
                             var texts = cb.declareOverride(Maker_.texts, strings);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                             bodies.define(texts, (b, self) -> b.return_(Expressions.literalNull(strings)));
+                            return bodies;
                         }
                     }),
                     "whose type arguments are not known to be contained by those of"

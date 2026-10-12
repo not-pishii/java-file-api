@@ -57,7 +57,7 @@ class ImplementsTest {
         void aClassImplementsInterfacesByProofAndIsOfThemByWitness() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cmp = new Comparable_<>(h.self());
                     var compareTo = h.overriding(cmp.compareTo_T);
                     var run = h.overriding(Runnable_.run);
@@ -92,6 +92,7 @@ class ImplementsTest {
                             ranked,
                             (b, self) -> b.exec(Expressions.voidCall(asRunnable.apply(self), Runnable_.run))
                                     .end());
+                    return bodies;
                 }
             }));
 
@@ -115,7 +116,7 @@ class ImplementsTest {
         void aCallThroughAWitnessGoesByTheThrowsClauseOfTheInterface() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     // call() of the class declares IOException alone; that of Callable declares Exception
                     var call = h.throwing(IOException_.TOKEN).overriding(CALLABLE.call);
                     var oh = h.extendsObject();
@@ -128,6 +129,7 @@ class ImplementsTest {
                     bodies.define(call.method(), (b, self) -> b.return_(literal("called")));
                     bodies.define(narrow, (b, self) -> b.return_(call(self, call.method())));
                     bodies.define(wide, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
+                    return bodies;
                 }
             }));
 
@@ -144,7 +146,7 @@ class ImplementsTest {
         void aDefaultMethodIsOverriddenThroughTheWitness() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var compare = h.overriding(COMPARATOR.compare_T_T);
                     var oh = h.extendsObject();
                     Upcast<Self, Comparator<String>> asComparator =
@@ -154,6 +156,7 @@ class ImplementsTest {
                     var bodies = cb.bodies();
                     bodies.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
                     bodies.define(reversed, (b, self) -> b.return_(asComparator.apply(self)));
+                    return bodies;
                 }
             }));
 
@@ -168,7 +171,7 @@ class ImplementsTest {
         void aMethodTwoUnrelatedInterfacesGiveABodyIsOverridden() throws Throwable {
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var oh = h.extendsObject();
                     Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
                     oh.implements_(Titled_.implement(h.self()));
@@ -176,6 +179,7 @@ class ImplementsTest {
                     var label = cb.declareOverride(asNamed, Named_.label);
                     var bodies = cb.bodies();
                     bodies.define(label, (b, self) -> b.return_(concat(literal("both"), literal("!"))));
+                    return bodies;
                 }
             }));
 
@@ -189,8 +193,8 @@ class ImplementsTest {
             assertThat(TypedJavaFile.class_(
                                     UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                         @Override
-                                        public <Self> void build(TypedClassBuilder<Self> cb) {
-                                            cb.bodies();
+                                        public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                                            return cb.bodies();
                                         }
                                     })
                             .render())
@@ -201,20 +205,15 @@ class ImplementsTest {
     @Nested
     class Stages {
 
+        /// A header that is to be rejected on its way to the members.
         private void header(Consumer<ClassHeader<?>> spec) {
-            file(spec::accept);
-        }
-
-        @Test
-        void aHeaderThatNeverComesToTheMembersIsRejected() {
-            assertThatIllegalStateException()
-                    .isThrownBy(() -> header(h -> {}))
-                    .withMessageContaining(
-                            "its header never came to the members: end the header with extendsObject().members()");
-            assertThatIllegalStateException()
-                    .isThrownBy(() -> header(ClassHeader::extendsObject))
-                    .withMessageContaining("its header, which named the superclass at ")
-                    .withMessageContaining("never came to the members");
+            file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                    spec.accept(h);
+                    return Unreached.here();
+                }
+            });
         }
 
         @Test
@@ -235,10 +234,11 @@ class ImplementsTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
-                            oh.members().bodies();
+                            var bodies = oh.members().bodies();
                             oh.implements_(Named_.implement(h.self()));
+                            return bodies;
                         }
                     }))
                     .withMessageContaining("a superinterface is named after the superclass and before the members");
@@ -253,9 +253,12 @@ class ImplementsTest {
         @Test
         void aMethodTheClassSaysItOverridesIsDefined() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> header(h -> {
-                        h.overriding(Object_.toString);
-                        h.extendsObject().members().bodies();
+                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                            h.overriding(Object_.toString);
+                            return h.extendsObject().members().bodies();
+                        }
                     }))
                     .withMessageContaining("these declared members are never defined:"
                             + " java.lang.String me.supcheg.example.Probe.toString()");
@@ -263,11 +266,11 @@ class ImplementsTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var run = h.overriding(Runnable_.run);
                             var oh = h.extendsObject();
                             oh.implements_(Runnable_.implement(h.self()).run(run));
-                            oh.members().bodies();
+                            return oh.members().bodies();
                         }
                     }))
                     .withMessageContaining("never defined: void me.supcheg.example.Probe.run()");
@@ -322,8 +325,9 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject().implements_(Exception_.extend(h.self()));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("cannot implement java.lang.Exception: it is a class");
@@ -336,10 +340,11 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Named_.implement(h.self()));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("has the supertype me.supcheg.javafile.typed.fixtures.Named already");
@@ -352,10 +357,11 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(UnsafeFacts.steps(Comparable_.ANY, h.self())
                                             .complete());
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("a supertype has no wildcard type argument");
@@ -366,13 +372,14 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(UnsafeFacts.steps(
                                                     UnsafeFacts.<Comparable<Object>>interfaceToken(
                                                             Comparable_.Data.SHAPE),
                                                     h.self())
                                             .complete());
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("cannot have the raw supertype java.lang.Comparable: the type is"
@@ -388,10 +395,11 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(UnsafeFacts.steps(Runnable_.TOKEN, h.self())
                                             .complete());
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("on the target classpath the type has the abstract method run() of"
@@ -403,11 +411,12 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(Runnable_.implement(h.self())
                                             .run(UnsafeFacts.voidInherited0(
                                                     new Implemented.ByInheritance(Runnable_.run))));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("by inheritance: it extends Object, which has no such method");
@@ -418,10 +427,11 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var run = h.throwing(IOException_.TOKEN).overriding(Runnable_.run);
                             h.extendsObject()
                                     .implements_(Runnable_.implement(h.self()).run(run));
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("cannot override run() of java.lang.Runnable: the method declares no"
@@ -436,10 +446,11 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.members().declareMethod("label", String_.TOKEN);
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("has the signature of label() of me.supcheg.javafile.typed.fixtures.Named,"
@@ -451,12 +462,13 @@ class ImplementsTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var cmp = new Comparable_<>(h.self());
                             var compareTo = h.overriding(cmp.compareTo_T);
                             var oh = h.extendsObject();
                             oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
                             oh.members().declareMethod("compareTo", PrimitiveToken.INT, Object_.TOKEN);
+                            return Unreached.here();
                         }
                     }))
                     .withMessageContaining("name clash");
@@ -471,11 +483,11 @@ class ImplementsTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                         @Override
-                        public <Self> void build(ClassHeader<Self> h) {
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var oh = h.extendsObject();
                             oh.implements_(Named_.implement(h.self()));
                             oh.implements_(Titled_.implement(h.self()));
-                            oh.members().bodies();
+                            return oh.members().bodies();
                         }
                     }))
                     .withMessageContaining("overrides none of them")

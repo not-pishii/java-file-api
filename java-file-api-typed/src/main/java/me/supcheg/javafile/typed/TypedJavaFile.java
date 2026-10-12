@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.TypeVarToken;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
+import java.util.Objects;
 
 /// Entry point of the typed eDSL (§6.5): declares a generated `final` class
 /// through a self-branded [TypedClassBuilder].
@@ -16,11 +17,12 @@ import java.util.List;
 /// A class is declared in stages, each a type that offers what can be said
 /// at its point and gives the next: the header ([ClassHeader]) names the
 /// supertypes, the builder of the members ([MemberBuilder]) declares every
-/// member, their bodies ([MemberBodies]) define each. What is wrong is
+/// member, their bodies ([MemberBodies]) define each. A specification
+/// returns the last of them: one that does not come to the bodies of the
+/// members has nothing to return, and does not compile. What is wrong is
 /// rejected by the call that says it, in the generator; the entry itself
-/// rejects only what no call could tell — a stage that was the last one
-/// said, a member declared and never defined — and tells the line that said
-/// the thing it is about.
+/// rejects only what no call could tell — a member declared and never
+/// defined — and tells the line that declared it.
 ///
 /// The entry takes the [TargetClasspath] the generated code is compiled
 /// against (§5): the facts a generator uses come from metamodels generated
@@ -40,12 +42,13 @@ public final class TypedJavaFile {
     ///
     /// ```java
     /// JavaFile file = TypedJavaFile.class_(target, desc, new TypedJavaFile.TypedClassSpec() {
-    ///     public <Self> void build(TypedClassBuilder<Self> cb) {
+    ///     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
     ///         var x = cb.declareField("x", PrimitiveToken.INT);
     ///         var x2 = cb.declareMethod("x2", PrimitiveToken.INT);
     ///         var bodies = cb.bodies();
     ///         bodies.initialize(x, literal(1));
     ///         bodies.define(x2, (b, self) -> b.return_(addInt(field(self, x), field(self, x))));
+    ///         return bodies;
     ///     }
     /// });
     /// ```
@@ -55,8 +58,8 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec populates the class, given its self-branded builder
     /// @return the rendered class, ready for [JavaFile#render()]/[JavaFile#writeTo(java.nio.file.Path)]
-    /// @throws IllegalStateException if called while a method body is being built, if the members
-    ///     never came to their bodies, or if a member `spec` declared is not defined
+    /// @throws IllegalStateException if called while a method body is being built, or if a member
+    ///     `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`:
     ///     the generator was compiled against another version of the type — thrown by the call of
     ///     `spec` that uses it
@@ -65,8 +68,8 @@ public final class TypedJavaFile {
     public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassSpec spec) {
         return declareClass(target, desc, new TypedClassHeaderSpec() {
             @Override
-            public <Self> void build(ClassHeader<Self> h) {
-                spec.build(h.extendsObject().members());
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                return spec.build(h.extendsObject().members());
             }
         });
     }
@@ -77,13 +80,14 @@ public final class TypedJavaFile {
     ///
     /// ```java
     /// JavaFile file = TypedJavaFile.declareClass(target, desc, new TypedJavaFile.TypedClassHeaderSpec() {
-    ///     public <Self> void build(ClassHeader<Self> h) {
+    ///     public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
     ///         var cmp = new Comparable_<>(h.self());
     ///         var compareTo = h.overriding(cmp.compareTo_T);
     ///         var oh = h.extendsObject();
     ///         var asComparable = oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
     ///         var bodies = oh.members().bodies();
     ///         bodies.define(compareTo.method(), (b, self, other) -> b.return_(literal(0)));
+    ///         return bodies;
     ///     }
     /// });
     /// ```
@@ -92,17 +96,16 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec declares the class, given the first stage of its header
     /// @return the rendered class
-    /// @throws IllegalStateException if called while a method body is being built, if the header
-    ///     never came to the members or the members to their bodies, or if a member `spec` declared
-    ///     is not defined
+    /// @throws IllegalStateException if called while a method body is being built, or if a member
+    ///     `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from
     public static JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypedClassHeaderSpec spec) {
         return declared(target, desc, List.of(), new Generic() {
             @Override
-            public <Self> void build(ClassDeclaration<Self> declaration) {
-                spec.build(new ClassHeader<>(declaration));
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration));
             }
         });
     }
@@ -137,13 +140,14 @@ public final class TypedJavaFile {
     /// ```java
     /// JavaFile file = TypedJavaFile.declareClass(
     ///         target, desc, typeParam("T", Number_.TOKEN), new TypedJavaFile.TypedGenericClassSpec1<Number>() {
-    ///     public <Self, T extends Number> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+    ///     public <Self, T extends Number> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
     ///         var cb = h.extendsObject().members();
     ///         var item = cb.declareField("item", t);
     ///         var asInt = cb.declareMethod("asInt", INT);
     ///         var bodies = cb.bodies();
     ///         bodies.initialize(item, literalNull(t));
     ///         bodies.define(asInt, (b, self) -> b.return_(call(field(self, item), Number_.intValue)));
+    ///         return bodies;
     ///     }
     /// });
     /// // public final class Box<T extends Number> { ... }
@@ -171,8 +175,8 @@ public final class TypedJavaFile {
             TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypedGenericClassSpec1<B1> spec) {
         return declared(target, desc, List.of(p1), new Generic() {
             @Override
-            public <Self> void build(ClassDeclaration<Self> declaration) {
-                spec.build(new ClassHeader<>(declaration), TypedJavaFile.<B1>variable(declaration, 0));
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration), TypedJavaFile.<B1>variable(declaration, 0));
             }
         });
     }
@@ -198,8 +202,8 @@ public final class TypedJavaFile {
             TypedGenericClassSpec2<B1, B2> spec) {
         return declared(target, desc, List.of(p1, p2), new Generic() {
             @Override
-            public <Self> void build(ClassDeclaration<Self> declaration) {
-                spec.build(
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(
                         new ClassHeader<>(declaration),
                         TypedJavaFile.<B1>variable(declaration, 0),
                         TypedJavaFile.<B2>variable(declaration, 1));
@@ -231,8 +235,8 @@ public final class TypedJavaFile {
             TypedGenericClassSpec3<B1, B2, B3> spec) {
         return declared(target, desc, List.of(p1, p2, p3), new Generic() {
             @Override
-            public <Self> void build(ClassDeclaration<Self> declaration) {
-                spec.build(
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(
                         new ClassHeader<>(declaration),
                         TypedJavaFile.<B1>variable(declaration, 0),
                         TypedJavaFile.<B2>variable(declaration, 1),
@@ -250,7 +254,7 @@ public final class TypedJavaFile {
 
     /// What declares a class, given its declaration branded with a `Self` of its own.
     private interface Generic {
-        <Self> void build(ClassDeclaration<Self> declaration);
+        <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration);
     }
 
     private static JavaFile declared(
@@ -263,8 +267,9 @@ public final class TypedJavaFile {
     private static <Self> JavaFile declare(
             TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
         ClassDeclaration<Self> declaration = new ClassDeclaration<>(target, desc, parameters);
-        spec.build(declaration);
-        return declaration.complete();
+        return declaration.complete(Objects.requireNonNull(
+                spec.build(declaration),
+                "a specification returns the bodies of the members of the class, the stage its declarations end in"));
     }
 
     /// The specification of a generic class with one type parameter, whose leftmost bound is `B1`.
@@ -278,7 +283,8 @@ public final class TypedJavaFile {
         /// @param t1 the token of the type parameter
         /// @param <Self> the brand of the class being declared: the class with `T1` for its type argument
         /// @param <T1> the brand of the type parameter
-        <Self, T1 extends B1> void build(ClassHeader<Self> h, TypeVarToken<T1> t1);
+        /// @return the bodies of the members: the stage the declaration of the class ends in
+        <Self, T1 extends B1> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1);
     }
 
     /// The specification of a generic class with two type parameters, see [TypedGenericClassSpec1].
@@ -294,7 +300,9 @@ public final class TypedJavaFile {
         /// @param <Self> the brand of the class being declared
         /// @param <T1> the brand of the first type parameter
         /// @param <T2> the brand of the second type parameter
-        <Self, T1 extends B1, T2 extends B2> void build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2);
+        /// @return the bodies of the members: the stage the declaration of the class ends in
+        <Self, T1 extends B1, T2 extends B2> MemberBodies<Self, ?> build(
+                ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2);
     }
 
     /// The specification of a generic class with three type parameters, see [TypedGenericClassSpec1].
@@ -313,17 +321,23 @@ public final class TypedJavaFile {
         /// @param <T1> the brand of the first type parameter
         /// @param <T2> the brand of the second type parameter
         /// @param <T3> the brand of the third type parameter
-        <Self, T1 extends B1, T2 extends B2, T3 extends B3> void build(
+        /// @return the bodies of the members: the stage the declaration of the class ends in
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3> MemberBodies<Self, ?> build(
                 ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3);
     }
 
     /// A self-branded class specification that begins with the header of the class.
+    ///
+    /// It returns the bodies of the members, which only the stages of the declaration give, each
+    /// from the one before: that a header came to its members and the members to their bodies is
+    /// held by the compiler of the generator, and the brand makes the bodies those of this class.
     public interface TypedClassHeaderSpec {
         /// Declares the class through `h`, branded with a fresh `Self` unique to this declaration.
         ///
         /// @param h the first stage of the header of the class
         /// @param <Self> the brand of the class being declared
-        <Self> void build(ClassHeader<Self> h);
+        /// @return the bodies of the members: the stage the declaration of the class ends in
+        <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h);
     }
 
     /// A self-branded class specification (§3.1, §6.5) of a class that extends `Object` and
@@ -334,6 +348,7 @@ public final class TypedJavaFile {
         ///
         /// @param cb the self-branded class builder
         /// @param <Self> the brand of the class being declared
-        <Self> void build(TypedClassBuilder<Self> cb);
+        /// @return the bodies of the members: the stage the declaration of the class ends in
+        <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb);
     }
 }

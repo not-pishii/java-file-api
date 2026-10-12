@@ -62,7 +62,7 @@ class DeclarationsCompileTest {
                 ClassDesc.of("me.supcheg.example", "Parity"),
                 new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var isEven = cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                         var isOdd = cb.declareMethod("isOdd", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                         var constructor = cb.declareConstructor();
@@ -80,6 +80,7 @@ class DeclarationsCompileTest {
                                         t -> t.return_(literal(false)),
                                         e -> e.return_(call(self, isEven, subInt(n, literal(1))))));
                         bodies.define(constructor, (b, _) -> b.end());
+                        return bodies;
                     }
                 });
 
@@ -106,7 +107,7 @@ class DeclarationsCompileTest {
                 ClassDesc.of("me.supcheg.example", "Counter"),
                 new TypedJavaFile.TypedClassSpec() {
                     @Override
-                    public <Self> void build(TypedClassBuilder<Self> cb) {
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         selfToken.set(cb.self());
                         var limit = cb.declareField("limit", PrimitiveToken.INT);
                         var count = cb.declareMutableField("count", PrimitiveToken.INT);
@@ -126,6 +127,7 @@ class DeclarationsCompileTest {
                         bodies.define(create, b -> b.return_(new_(ctor, literal(4))));
                         bodies.define(
                                 remaining, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
+                        return bodies;
                     }
                 });
 

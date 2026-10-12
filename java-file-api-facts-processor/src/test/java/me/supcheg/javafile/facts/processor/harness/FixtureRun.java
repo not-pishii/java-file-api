@@ -12,6 +12,8 @@ import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TargetClasspaths;
 import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.Expr;
+import me.supcheg.javafile.typed.MemberBodies;
+import me.supcheg.javafile.typed.TypedClassBodies;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 import me.supcheg.javafile.typed.TypedJavaFile;
 import org.junit.jupiter.api.DynamicContainer;
@@ -401,8 +403,8 @@ public final class FixtureRun {
         private Rendering rendering(TypedJavaFile.TypedClassSpec spec) {
             return declaring(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
-                    spec.build(h.extendsObject().members());
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                    return spec.build(h.extendsObject().members());
                 }
             });
         }
@@ -416,10 +418,11 @@ public final class FixtureRun {
                 TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body) {
             return new TypedJavaFile.TypedClassSpec() {
                 @Override
-                public <Self> void build(TypedClassBuilder<Self> cb) {
+                public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                     var go = cb.declareStaticMethod("go", result, parameter);
                     var bodies = cb.bodies();
                     bodies.define(go, (b, p) -> b.return_(body.apply(p)));
+                    return bodies;
                 }
             };
         }

@@ -83,7 +83,7 @@ class WhereItIsSaidTest {
         void aProtectedMemberReachedOutOfASubclassIsRejectedByTheDefinition() {
             JavaFile file = file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var motto = cb.declareMethod("motto", String_.TOKEN);
                     var bodies = cb.bodies();
@@ -98,6 +98,7 @@ class WhereItIsSaidTest {
                     assertThat(atCompletion(rejection)).isFalse();
                     // the member has no body yet, and gets one
                     bodies.define(motto, (b, self) -> b.return_(literal("mine")));
+                    return bodies;
                 }
             });
 
@@ -108,7 +109,7 @@ class WhereItIsSaidTest {
         void aProtectedMethodCalledOnAnotherValueIsRejectedByTheDefinition() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Base_.extend(h.self()));
                     var cb = sh.members();
                     var ctor = cb.declareConstructor();
@@ -124,6 +125,7 @@ class WhereItIsSaidTest {
                     bodies.define(
                             other,
                             (b, self, base) -> b.return_(call(bodies.asSuper().apply(self), hook, literal("x"))));
+                    return bodies;
                 }
             });
         }
@@ -135,7 +137,7 @@ class WhereItIsSaidTest {
 
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(sub.extend(h.self()));
                     var cb = sh.members();
                     var ctor = cb.declareConstructor();
@@ -156,6 +158,7 @@ class WhereItIsSaidTest {
                             .isInstanceOf(IllegalStateException.class)
                             .hasMessageContaining("super.m(...) cannot name");
                     bodies.define(f, (b, self) -> b.return_(call(self, m, literal("x"))));
+                    return bodies;
                 }
             });
         }
@@ -168,7 +171,7 @@ class WhereItIsSaidTest {
                     typeParam("T"),
                     new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
-                        public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                        public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             var cb = h.extendsObject().members();
                             var m = cb.declareVoidStaticMethod("m");
                             var bodies = cb.bodies();
@@ -180,6 +183,7 @@ class WhereItIsSaidTest {
                                     .hasMessageContaining("the type parameter T, which T[] mentions, is not in scope"
                                             + " in the body of static void me.supcheg.example.Probe<T>.m()");
                             bodies.define(m, VoidBody::end);
+                            return bodies;
                         }
                     });
         }
@@ -188,7 +192,7 @@ class WhereItIsSaidTest {
         void aNameTheFileCannotWriteIsRejectedByTheDefinitionThatBringsIt() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     // the field Op makes the enum Op be written by its qualified name, which begins with me
                     var op = cb.declareField("Op", PrimitiveToken.INT);
@@ -208,6 +212,7 @@ class WhereItIsSaidTest {
                                     + " written: cannot name " + OP + " before a member in a file that declares the"
                                     + " variable me");
                     bodies.define(which, (b, self) -> b.return_(literalNull(Op_.TOKEN)));
+                    return bodies;
                 }
             });
         }
@@ -216,7 +221,7 @@ class WhereItIsSaidTest {
         void aNameTheFileCannotWriteIsRejectedByTheInitializerThatBringsIt() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var op = cb.declareField("Op", PrimitiveToken.INT);
                     var me = cb.declareField("me", Op_.TOKEN);
@@ -228,6 +233,7 @@ class WhereItIsSaidTest {
                             .hasMessageContaining("the initializer of field me of class me.supcheg.example.Probe"
                                     + " cannot be written");
                     bodies.initialize(me, literalNull(Op_.TOKEN));
+                    return bodies;
                 }
             });
         }
@@ -238,7 +244,7 @@ class WhereItIsSaidTest {
             // lowered where it is defined, and by then the class has both
             JavaFile file = file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var picked = cb.declareMethod("picked", String_.TOKEN);
                     var ofObject = cb.declareMethod("pick", String_.TOKEN, Object_.TOKEN);
@@ -247,6 +253,7 @@ class WhereItIsSaidTest {
                     bodies.define(picked, (b, self) -> b.return_(call(self, ofObject, literal("x"))));
                     bodies.define(ofObject, (b, self, o) -> b.return_(literal("Object")));
                     bodies.define(ofString, (b, self, s) -> b.return_(literal("String")));
+                    return bodies;
                 }
             });
 
@@ -261,7 +268,7 @@ class WhereItIsSaidTest {
         void equalsWithoutHashCodeIsRejectedWhereTheDeclarationsEnd() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var equal = cb.declareOverride(Object_.equals_Object);
 
@@ -279,6 +286,7 @@ class WhereItIsSaidTest {
                     var bodies = cb.bodies();
                     bodies.define(equal, (b, self, other) -> b.return_(literal(true)));
                     bodies.define(hash, (b, self) -> b.return_(literal(1)));
+                    return bodies;
                 }
             });
         }
@@ -287,7 +295,7 @@ class WhereItIsSaidTest {
         void methodsTheClassCannotHaveTogetherAreRejectedWhereTheDeclarationsEnd() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var oh = h.extendsObject();
                     Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
                     oh.implements_(Titled_.implement(h.self()));
@@ -298,44 +306,45 @@ class WhereItIsSaidTest {
                             .hasMessageContaining("overrides none of them")
                             .hasMessageContaining("are unrelated methods with a body each");
                     var label = cb.declareOverride(asNamed, Named_.label);
-                    cb.bodies().define(label, (b, self) -> b.return_(literal("mine")));
+                    var bodies = cb.bodies();
+                    bodies.define(label, (b, self) -> b.return_(literal("mine")));
+                    return bodies;
                 }
             });
         }
 
         @Test
         void aSupertypeTheClassSaidItIsAboutToNameIsHeldWhereTheHeaderEnds() {
-            Throwable atTheEnd = catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+            Throwable[] rejection = new Throwable[1];
+
+            catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     h.becoming(Following_.TOKEN);
                     var run = h.overriding(Runnable_.run);
                     var oh = h.extendsObject();
                     oh.implements_(Runnable_.implement(h.self()).run(run));
 
-                    Throwable rejection = catchThrowable(oh::members);
-
-                    assertThat(rejection)
-                            .isInstanceOf(IllegalArgumentException.class)
-                            .hasMessageContaining("said it was about to be me.supcheg.javafile.typed.fixtures.Following"
-                                    + " (becoming), and its header ends without it");
-                    assertThat(atCompletion(rejection)).isFalse();
+                    rejection[0] = catchThrowable(oh::members);
+                    // the header did not end: there are no members, and no bodies of them to return
+                    return Unreached.here();
                 }
             }));
 
-            // the header did not end, which is all the end of the declaration has to say
-            assertThat(atTheEnd)
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("never came to the members");
+            assertThat(rejection[0])
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("said it was about to be me.supcheg.javafile.typed.fixtures.Following"
+                            + " (becoming), and its header ends without it");
+            assertThat(atCompletion(rejection[0])).isFalse();
         }
 
         @Test
         void aMemberIsNotDeclaredOnceTheBodiesBegan() {
             file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
-                    cb.bodies();
+                    var bodies = cb.bodies();
 
                     assertThat(catchThrowable(() -> cb.declareMethod("late", PrimitiveToken.INT)))
                             .isInstanceOf(IllegalStateException.class)
@@ -347,6 +356,7 @@ class WhereItIsSaidTest {
                     assertThat(catchThrowable(cb::bodies))
                             .isInstanceOf(IllegalStateException.class)
                             .hasMessageContaining("the declarations of class me.supcheg.example.Probe have ended");
+                    return bodies;
                 }
             });
         }
@@ -363,14 +373,16 @@ class WhereItIsSaidTest {
 
             Throwable rejection = catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     declared[0] = line();
                     cb.declareMethod("isEven", PrimitiveToken.BOOLEAN, PrimitiveToken.INT);
                     declared[1] = line();
                     cb.declareField("count", PrimitiveToken.INT);
                     var defined = cb.declareVoidMethod("defined");
-                    cb.bodies().define(defined, (b, self) -> b.end());
+                    var bodies = cb.bodies();
+                    bodies.define(defined, (b, self) -> b.end());
+                    return bodies;
                 }
             }));
 
@@ -400,12 +412,12 @@ class WhereItIsSaidTest {
 
             Throwable rejection = catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
-                public <Self> void build(ClassHeader<Self> h) {
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     said[0] = line();
                     var run = h.overriding(Runnable_.run);
                     var oh = h.extendsObject();
                     oh.implements_(Runnable_.implement(h.self()).run(run));
-                    oh.members().bodies();
+                    return oh.members().bodies();
                 }
             }));
 
@@ -415,46 +427,6 @@ class WhereItIsSaidTest {
                             "these declared members are never defined: void me.supcheg.example.Probe.run()"
                                     + " (declared at ")
                     .hasMessageContaining("WhereItIsSaidTest.java:" + (said[0] + 1) + ")");
-        }
-
-        @Test
-        void membersThatNeverComeToTheirBodiesAreRejectedWithTheLineTheyBeganAt() {
-            int[] began = new int[1];
-
-            Throwable rejection = catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                @Override
-                public <Self> void build(ClassHeader<Self> h) {
-                    var oh = h.extendsObject();
-                    began[0] = line();
-                    oh.members();
-                }
-            }));
-
-            assertThat(rejection)
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("its members, which began at ")
-                    .hasMessageContaining("WhereItIsSaidTest.java:" + (began[0] + 1) + ")")
-                    .hasMessageContaining("never came to their bodies: end the declarations with bodies()");
-            assertThat(rejection.getCause().getStackTrace()[0].getLineNumber()).isEqualTo(began[0] + 1);
-        }
-
-        @Test
-        void aHeaderThatNeverComesToTheMembersIsRejectedWithTheLineThatNamedTheSuperclass() {
-            int[] named = new int[1];
-
-            Throwable rejection = catchThrowable(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                @Override
-                public <Self> void build(ClassHeader<Self> h) {
-                    named[0] = line();
-                    h.extendsObject();
-                }
-            }));
-
-            assertThat(rejection)
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("its header, which named the superclass at ")
-                    .hasMessageContaining("WhereItIsSaidTest.java:" + (named[0] + 1) + ")")
-                    .hasMessageContaining("never came to the members");
         }
     }
 

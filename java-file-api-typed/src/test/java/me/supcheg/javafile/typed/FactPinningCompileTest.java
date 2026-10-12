@@ -88,7 +88,7 @@ class FactPinningCompileTest {
     void anArgumentIsCastToTheParameterOfTheChosenOverload() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var pickObject = cb.declareStaticMethod("pickObject", String_.TOKEN, SUB);
                 var pickString = cb.declareStaticMethod("pickString", String_.TOKEN, SUB);
                 // the method table of Sub proves `only` has no other overload: no cast
@@ -102,6 +102,7 @@ class FactPinningCompileTest {
                 bodies.define(only, (b, s) -> b.return_(call(s, ONLY, literal("x"))));
                 bodies.define(whichObject, b -> b.return_(staticCall(WHICH_OBJECT, literal("x"))));
                 bodies.define(whichString, b -> b.return_(staticCall(WHICH_STRING, literal("x"))));
+                return bodies;
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -123,12 +124,13 @@ class FactPinningCompileTest {
     void anInstanceCallKeepsItsCastWhenAStaticOverloadOfTheSameArityExists() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 // Base declares the instance dual(Object) and the static dual(String): javac
                 // considers both for `sub.dual("x")` and picks the static one, unless cast
                 var dual = cb.declareStaticMethod("dual", String_.TOKEN, SUB);
                 var bodies = cb.bodies();
                 bodies.define(dual, (b, s) -> b.return_(call(s, DUAL, literal("x"))));
+                return bodies;
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -147,7 +149,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var removeValue = cb.declareStaticMethod("removeValue", PrimitiveToken.INT, integers.token);
                 var removeBoxed = cb.declareStaticMethod("removeBoxed", PrimitiveToken.INT, integers.token);
                 var removeIndex = cb.declareStaticMethod("removeIndex", PrimitiveToken.INT, integers.token);
@@ -164,6 +166,7 @@ class FactPinningCompileTest {
                         removeIndex,
                         (b, l) -> b.exec(call(l, removeAt, literal(1)))
                                 .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
+                return bodies;
             }
         });
 
@@ -186,7 +189,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var printObject = cb.declareVoidStaticMethod("printObject", PrintStream_.TOKEN);
                 var printString = cb.declareVoidStaticMethod("printString", PrintStream_.TOKEN);
                 var bodies = cb.bodies();
@@ -198,6 +201,7 @@ class FactPinningCompileTest {
                         printString,
                         (b, out) -> b.exec(voidCall(out, PrintStream_.println_String, literal("x")))
                                 .end());
+                return bodies;
             }
         });
         Sink sink = new Sink();
@@ -212,7 +216,7 @@ class FactPinningCompileTest {
     void overloadsOfTheClassBeingDeclaredArePinnedOnceItsTableIsComplete() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var mObject = cb.declareMethod("m", String_.TOKEN, Object_.TOKEN);
                 var single = cb.declareMethod("single", String_.TOKEN, Object_.TOKEN);
                 var callObject = cb.declareMethod("callObject", String_.TOKEN);
@@ -225,6 +229,7 @@ class FactPinningCompileTest {
                 bodies.define(single, (b, _, _) -> b.return_(literal("single(Object)")));
                 bodies.define(callObject, (b, self) -> b.return_(call(self, mObject, literal("x"))));
                 bodies.define(callSingle, (b, self) -> b.return_(call(self, single, literal("x"))));
+                return bodies;
             }
         });
 
@@ -241,7 +246,7 @@ class FactPinningCompileTest {
     void aFieldIsReachedThroughItsOwnerNotAFieldHidingIt() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var readBase = cb.declareStaticMethod("readBase", String_.TOKEN, SUB);
                 var readSub = cb.declareStaticMethod("readSub", String_.TOKEN, SUB);
                 var writeBase = cb.declareStaticMethod("writeBase", String_.TOKEN, SUB);
@@ -254,6 +259,7 @@ class FactPinningCompileTest {
                         (b, s) -> b.exec(assignField(s, NAME_OF_BASE, literal("written")))
                                 .return_(field(s, NAME_OF_BASE)));
                 bodies.define(readNew, b -> b.return_(field(new_(NEW_SUB), NAME_OF_BASE)));
+                return bodies;
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -273,7 +279,7 @@ class FactPinningCompileTest {
     void aCovariantResultIsPinnedWhereItsTypeDecidesTheOverload() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 // Sub overrides `Base self()` with `Sub self()`: unpinned, javac would pick which2(Sub)
                 var which2 = cb.declareStaticMethod("which2", String_.TOKEN, SUB);
                 // where the type does not matter, nothing is cast
@@ -281,6 +287,7 @@ class FactPinningCompileTest {
                 var bodies = cb.bodies();
                 bodies.define(which2, (b, s) -> b.return_(staticCall(WHICH2_BASE, call(s, SELF))));
                 bodies.define(member19, (b, s) -> b.return_(call(s, SELF)));
+                return bodies;
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -300,7 +307,7 @@ class FactPinningCompileTest {
     void nullIsAlwaysTyped() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var nullLength = cb.declareStaticMethod("nullLength", PrimitiveToken.INT);
                 var nulls = cb.declareStaticMethod("nulls", String_.TOKEN);
                 var nullField = cb.declareStaticMethod("nullField", String_.TOKEN);
@@ -316,6 +323,7 @@ class FactPinningCompileTest {
                 bodies.define(whichNullObject, b -> b.return_(staticCall(WHICH_OBJECT, literalNull(Object_.TOKEN))));
                 bodies.define(pickNull, (b, s) -> b.return_(call(s, PICK_OBJECT, literalNull(String_.TOKEN))));
                 bodies.define(returnNull, b -> b.return_(literalNull(String_.TOKEN)));
+                return bodies;
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -350,7 +358,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var empty = cb.declareStaticMethod("empty", strings.token);
                 // the review's probe E: rendered `List<String>.of().size()`
                 var size = cb.declareStaticMethod("size", PrimitiveToken.INT);
@@ -371,6 +379,7 @@ class FactPinningCompileTest {
                         b -> b.exec(assignStaticField(LABEL, literal("relabeled")))
                                 .end());
                 bodies.define(lengths, (b, _, s, f) -> b.return_(call(call(s, map, f), integers.toList)));
+                return bodies;
             }
         });
 
@@ -406,7 +415,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var items = cb.declareField("items", arrayList.token);
                 var local = cb.declareStaticMethod("local", PrimitiveToken.INT);
                 var returned = cb.declareStaticMethod("returned", arrayList.token);
@@ -427,6 +436,7 @@ class FactPinningCompileTest {
                         wider, b -> b.let(strings.token, new_(arrayList.new_), v -> b.return_(call(v, strings.size))));
                 bodies.define(object, b -> b.return_(new_(Object_.new_)));
                 bodies.define(member40, (b, self) -> b.return_(field(self, items)));
+                return bodies;
             }
         });
 
@@ -456,7 +466,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var cast = cb.declareStaticMethod("cast", anyList, Object_.TOKEN);
                 var lists = cb.declareStaticMethod("lists", PrimitiveToken.INT);
                 // castChecked to the operand's own type casts nothing
@@ -468,6 +478,7 @@ class FactPinningCompileTest {
                                 b.ifInstanceOfElse(o, anyList, Body::return_, e -> e.return_(castChecked(anyList, o))));
                 bodies.define(lists, b -> b.return_(length(anyLists, newArray(anyLists, literal(2)))));
                 bodies.define(same, (b, s) -> b.return_(castChecked(String_.TOKEN, s)));
+                return bodies;
             }
         });
 
@@ -491,7 +502,7 @@ class FactPinningCompileTest {
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var narrow = cb.declareStaticMethod("narrow", arrayOfStrings.token, strings.token);
                 var size = cb.declareStaticMethod("size", PrimitiveToken.INT, strings.token);
                 var list = cb.declareStaticMethod("list", strings.token, collectionOfStrings);
@@ -505,6 +516,7 @@ class FactPinningCompileTest {
                                 (t, a) -> t.return_(call(a, strings.size)),
                                 e -> e.return_(literal(-1))));
                 bodies.define(list, (b, c) -> b.return_(castChecked(strings.token, c)));
+                return bodies;
             }
         });
 
@@ -529,7 +541,7 @@ class FactPinningCompileTest {
     void condIsOfExactlyItsTypeWithoutBoxingOrPromotion() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 // Integer on both sides: no unboxing of the null branch
                 var maybe = cb.declareStaticMethod("maybe", Integer_.TOKEN, PrimitiveToken.BOOLEAN);
                 // different reference types: each cast to the type of the conditional
@@ -552,6 +564,7 @@ class FactPinningCompileTest {
                         which,
                         (b, flag) -> b.return_(
                                 staticCall(WHICH_STRING, cond(flag, literal("a"), literal("b"), String_.TOKEN))));
+                return bodies;
             }
         });
 
@@ -574,7 +587,7 @@ class FactPinningCompileTest {
     void castsOfPinningLeaveConstantFoldingAsJavacHasIt() throws Throwable {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
-            public <Self> void build(TypedClassBuilder<Self> cb) {
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 // "a".equals((Object) true): the cast lowering adds is in a call, never a constant
                 var member50 = cb.declareStaticMethod("call", PrimitiveToken.INT);
                 // a conditional cast to CharSequence is not a constant expression (JLS 15.29)
@@ -598,6 +611,7 @@ class FactPinningCompileTest {
                         nulls,
                         b -> b.while_(eqRef(literalNull(String_.TOKEN), literalNull(String_.TOKEN)), Body::break_)
                                 .return_(literal(3)));
+                return bodies;
             }
         });
 
