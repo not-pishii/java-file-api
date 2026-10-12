@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -142,6 +143,7 @@ public final class FixtureRun {
         private final Supplier<Compiled> processed;
         private final Supplier<Path> metamodels;
         private final Supplier<ClassLoader> used;
+        private final Map<String, Typed> versions = new ConcurrentHashMap<>();
 
         CaseRun(Fixture.Case fixtureCase, Path work) {
             this.fixtureCase = fixtureCase;
@@ -272,8 +274,15 @@ public final class FixtureRun {
         }
 
         /// [Typed] against `targets/<version>/` of the case: the library
-        /// with the files of the version instead of its own.
+        /// with the files of the version instead of its own. One per version:
+        /// the checks of a case run at once, and two that ask for a version
+        /// would else compile it into the one directory of it, each rewriting
+        /// the classes the compilation of the other is reading.
         private Typed against(String version) {
+            return versions.computeIfAbsent(version, this::versioned);
+        }
+
+        private Typed versioned(String version) {
             Path target = fixtureCase.target(version);
             if (!Files.isDirectory(target)) {
                 throw new IllegalStateException("case " + fixtureCase.name() + " of fixture " + fixture.name()
