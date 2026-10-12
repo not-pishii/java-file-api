@@ -1,10 +1,12 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
@@ -28,6 +30,7 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,6 +54,7 @@ import java.util.stream.Stream;
 final class ClassDeclaration<Self> {
     private final TargetClasspath target;
     private final String described;
+    private final Inheritance.Heir heir;
     private final me.supcheg.javafile.facts.DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
     private final List<Intention> intentions = new ArrayList<>();
@@ -70,6 +74,7 @@ final class ClassDeclaration<Self> {
     ClassDeclaration(TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters) {
         this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
+        this.heir = new Inheritance.Heir.OfClass(described, desc.packageName());
         this.identity = UnsafeFacts.declarationIdentity(described);
         IntStream.range(0, parameters.size()).forEach(i -> {
             TypeParameter<?> parameter = parameters.get(i);
@@ -199,7 +204,9 @@ final class ClassDeclaration<Self> {
         target.verify(bound);
         String owner = "the type parameter " + name + " of " + described;
         // What a type variable of several bounds has is what a class of those supertypes inherits (JLS 4.9):
-        // a bound twice, two parameterizations of one interface and methods that clash are rejected so.
+        // javac makes that class and rejects the type parameter where it would reject the class. A bound
+        // twice, two parameterizations of one interface and methods that clash are rejected by the merge;
+        // methods the class could not have together without one of its own, which it has none of, here.
         Inheritance.Supertype first;
         try {
             first = Inheritance.supertype(owner, target, bounded.first());
@@ -210,21 +217,25 @@ final class ClassDeclaration<Self> {
                             + untold.getMessage(),
                     untold);
         }
-        Stream.concat(bounded.more().stream(), Stream.of(bound))
+        Inheritance merged = Stream.concat(bounded.more().stream(), Stream.of(bound))
                 .reduce(
-                        Inheritance.of(owner, first),
-                        (merged, next) -> merged.with(Inheritance.supertype(owner, target, next)),
-                        (a, b) -> a)
-                .groups()
+                        Inheritance.of(new Inheritance.Heir.OfVariable(owner), first),
+                        (had, next) -> had.with(Inheritance.supertype(owner, target, next)),
+                        (a, b) -> a);
+        merged.groups().flatMap(group -> group.conflict().stream()).findFirst().ifPresent(why -> {
+            throw new IllegalArgumentException(owner + " cannot have the bound " + bound
+                    + ": a type variable is of the class its bounds make (JLS 4.9), and " + why);
+        });
+        merged.groups()
                 .filter(group -> group.entries().stream()
-                                .map(entry -> entry.method().result())
-                                .distinct()
-                                .count()
-                        > 1)
+                        .anyMatch(entry -> !entry.method()
+                                .sameResult(group.entries().getFirst().method())))
                 .findFirst()
                 .ifPresent(group -> {
                     throw new IllegalArgumentException(owner + " cannot have the bound " + bound + ": with it the"
-                            + " bounds have the methods " + group.entries() + " of one signature and of"
+                            + " bounds have the methods "
+                            + group.entries().stream().map(Object::toString).collect(Collectors.joining(" and "))
+                            + " of one signature and of"
                             + " different results — one has to be return-type-substitutable for the others"
                             + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
                 });
@@ -252,7 +263,7 @@ final class ClassDeclaration<Self> {
                 throw new IllegalStateException("the superclass of " + described + " is known only once its"
                         + " header names it: say extendsObject() or extends_(proof) first");
             case Phase.Heading<Self>(var _, var superclass, var _) -> superclass.chain();
-            case Phase.Members<Self>(var _, var superclass, var _) -> superclass.chain();
+            case Phase.Members<Self>(var _, var superclass, var _, var _) -> superclass.chain();
         };
     }
 
@@ -261,7 +272,7 @@ final class ClassDeclaration<Self> {
             case Phase.Named<Self> _, Phase.Heading<Self> _ ->
                 throw new IllegalStateException("the methods of " + described + " are known only once its"
                         + " declaration is complete: the class is still being declared");
-            case Phase.Members<Self>(var builder, var _, var _) -> builder.methodTable();
+            case Phase.Members<Self>(var builder, var _, var _, var _) -> builder.methodTable();
         };
     }
 
@@ -275,8 +286,8 @@ final class ClassDeclaration<Self> {
     void extendsObject() {
         Scopes.requireNoneOpen("the superclass of " + described);
         requireNamed();
-        Inheritance.Supertype object = Inheritance.supertype(described, target, Object_.TOKEN);
-        heading(Inheritance.of(described, object), new Superclass.OfObject(Object_.TOKEN, object), List.of());
+        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, Object_.TOKEN));
+        heading(inherited, new Superclass.OfObject(Object_.TOKEN, inherited), List.of());
     }
 
     /// The class extends the class of `proof`.
@@ -301,8 +312,7 @@ final class ClassDeclaration<Self> {
         }
         headerScope().require(superclass);
         target.verify(superclass);
-        Inheritance.Supertype heritage = Inheritance.supertype(described, target, superclass);
-        Inheritance inherited = Inheritance.of(described, heritage);
+        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, superclass));
         requireHolds(proof, inherited, "extend").forEach(stepped -> {
             switch (stepped) {
                 case Stepped.Own _ -> {}
@@ -313,7 +323,7 @@ final class ClassDeclaration<Self> {
                             + " (JLS 8.1.1.1)");
             }
         });
-        heading(inherited, new Superclass.Named(superclass, heritage), List.of());
+        heading(inherited, new Superclass.Named(superclass, inherited), List.of());
         return superclass;
     }
 
@@ -454,24 +464,25 @@ final class ClassDeclaration<Self> {
                     + " now: what a class has from its superclass is said after the superclass is named"
                     + " and before the members");
         }
-        superclass.member(described, method).forEach(member -> {
-            switch (member.method().dispatch()) {
-                case CONCRETE, FINAL -> {}
-                case ABSTRACT, DEFAULT, STATIC ->
-                    throw new IllegalArgumentException(described + " does not have " + member + " with a body"
-                            + " of its superclass " + superclass.token() + ": the method is "
-                            + member.method().dispatch().name().toLowerCase(java.util.Locale.ROOT)
-                            + " there, and only a method a class declares with a body implements the"
-                            + " abstract method of an interface for a subclass (JLS 8.4.8.4)");
-            }
-            switch (member.method().visibility()) {
-                case PUBLIC -> {}
-                case PROTECTED, PACKAGE ->
-                    throw new IllegalArgumentException(described + " cannot have " + member + " of its superclass "
-                            + superclass.token() + " for the method of an interface: it is not public there,"
-                            + " and the method of an interface is (JLS 8.4.8.3) — override it");
-            }
-        });
+        Inheritance.Group group = superclass.member(described, method);
+        Inheritance.Entry member = group.stands();
+        Heritage.Dispatch standing = group.standing();
+        switch (standing) {
+            case CONCRETE, FINAL -> {}
+            case ABSTRACT, DEFAULT, STATIC ->
+                throw new IllegalArgumentException(described + " does not have " + member + " with a body"
+                        + " of its superclass " + superclass.token() + ": the method is "
+                        + standing.name().toLowerCase(Locale.ROOT)
+                        + " there, and only a method a class declares with a body implements the"
+                        + " abstract method of an interface for a subclass (JLS 8.4.8.4)");
+        }
+        switch (member.method().visibility()) {
+            case PUBLIC -> {}
+            case PROTECTED, PACKAGE ->
+                throw new IllegalArgumentException(described + " cannot have " + member + " of its superclass "
+                        + superclass.token() + " for the method of an interface: it is not public there,"
+                        + " and the method of an interface is (JLS 8.4.8.3) — override it");
+        }
         Implemented.ByInheritance inheritance = new Implemented.ByInheritance(method);
         inheritances.add(inheritance);
         return inheritance;
@@ -533,7 +544,7 @@ final class ClassDeclaration<Self> {
         merged.groups()
                 .flatMap(group -> group.entries().stream())
                 .filter(entry -> entry.through() == supertype
-                        && entry.isAbstract()
+                        && entry.leftAbstract()
                         && !proven.contains(entry.method().signature()))
                 .findFirst()
                 .ifPresent(entry -> {
@@ -621,10 +632,25 @@ final class ClassDeclaration<Self> {
                             + " of a type the class names, with these very type arguments");
                 });
         B builder = make.apply(inherited, superclass);
-        phase = new Phase.Members<>(builder, superclass, interfaces);
+        phase = new Phase.Members<>(builder, superclass, interfaces, named(inherited));
         intentions.forEach(intention -> builder.declareOverride(intention.own(), intention.thrown()));
         constructors.forEach(ctor -> builder.declare(ctor.own(), ctor.thrown()));
         return builder;
+    }
+
+    /// The simple names the fields and member types of the supertypes take in the body of the class
+    /// (JLS 6.4.1, 6.4.2), which its declaration does not show. One with package access is held to
+    /// take its name whatever the package of the class: a type it would hide is written by its
+    /// qualified name, which is never wrong.
+    private static List<InheritedName> named(Inheritance inherited) {
+        return inherited.supertypes().stream()
+                .flatMap(supertype -> supertype.told().named().stream())
+                .<InheritedName>map(named -> switch (named) {
+                    case Heritage.Named.Field(var name, var _, var _) -> new InheritedName.Field(name);
+                    case Heritage.Named.MemberType(var name, var _, var _) -> new InheritedName.MemberType(name);
+                })
+                .distinct()
+                .toList();
     }
 
     /// Completes the declaration.
@@ -638,8 +664,8 @@ final class ClassDeclaration<Self> {
                 throw new IllegalStateException("the declaration of " + described + " is complete, but its"
                         + " header never came to the members: end it with extendsObject().body(), or with"
                         + " body(ctor -> ...) of the header extends_ gave, whatever the class declares");
-            case Phase.Members<Self>(var builder, var superclass, var interfaces) ->
-                new Declared(typeParams(), superclass, interfaces, builder.complete());
+            case Phase.Members<Self>(var builder, var superclass, var interfaces, var named) ->
+                new Declared(described, typeParams(), superclass, interfaces, named, builder.complete());
         };
     }
 
@@ -708,14 +734,18 @@ final class ClassDeclaration<Self> {
 
     /// The class as it is rendered.
     ///
+    /// @param described the class, for messages
     /// @param typeParams its type parameters
     /// @param superclass its superclass
     /// @param interfaces its superinterfaces, in the order they were named
+    /// @param named the names the fields and member types of its supertypes take in its body
     /// @param members its members, in declaration order
     record Declared(
+            String described,
             List<TypeParam> typeParams,
             Superclass superclass,
             List<ClassOrInterfaceTypeRef> interfaces,
+            List<InheritedName> named,
             List<ClassMember> members) {}
 
     /// A type parameter of the class.
@@ -743,8 +773,12 @@ final class ClassDeclaration<Self> {
         /// @param builder the builder of the members
         /// @param superclass its superclass
         /// @param interfaces its superinterfaces
+        /// @param named the names the fields and member types of its supertypes take in its body
         record Members<Self>(
-                MemberBuilder<Self> builder, Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces)
+                MemberBuilder<Self> builder,
+                Superclass superclass,
+                List<ClassOrInterfaceTypeRef> interfaces,
+                List<InheritedName> named)
                 implements Phase<Self> {}
     }
 }

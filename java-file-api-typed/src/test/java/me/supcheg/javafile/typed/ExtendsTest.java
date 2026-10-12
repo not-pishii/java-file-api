@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Mid;
+import me.supcheg.javafile.typed.fixtures.Named;
 import me.supcheg.javafile.typed.fixtures.Shape;
 import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Comparable_;
@@ -476,39 +477,22 @@ class ExtendsTest {
                     "extends Base",
                     "public String util() { return \"x\"; }",
                     "overridden method is static");
-            // javac lets a class of another package declare a method by the name of one of package access
-            classUnlikeJavac(
-                    IllegalArgumentException.class,
-                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> void build(ClassHeader<Self> h) {
-                            var cb = began(
-                                    h.extends_(Base_.extend(h.self())),
-                                    ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            cb.method("local", String_.TOKEN, (b, self) -> b.return_(literal("x")));
-                        }
-                    }),
-                    "a method declared by its name overrides nothing",
-                    "extends Base",
-                    "public String local() { return \"x\"; }");
         }
 
         @Test
-        void aMethodTheSuperclassAndAnInterfaceGiveABodyEachIsOverridden() throws Throwable {
-            // javac takes the method of the class; the typed layer has the class say which it is
-            classUnlikeJavac(
-                    IllegalStateException.class,
-                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> void build(ClassHeader<Self> h) {
-                            var sh = h.extends_(Mid_.extend(h.self()));
-                            sh.implements_(Named_.implement(h.self()));
-                            began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
-                        }
-                    }),
-                    "unrelated methods with a body each, and overrides neither",
-                    "extends Mid implements Named",
-                    "");
+        void theMethodOfTheSuperclassStandsForTheDefaultOneOfAnInterface() throws Throwable {
+            // String label() of Mid, default String label() of Named: the method of the class stands
+            CompiledClasses inherited = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> void build(ClassHeader<Self> h) {
+                    var sh = h.extends_(Mid_.extend(h.self()));
+                    Upcast<Self, Named> asNamed = sh.implements_(Named_.implement(h.self()));
+                    var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                    cb.method("go", String_.TOKEN, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                }
+            }));
+            assertThat(inherited.invoke("go")).isEqualTo("mid");
+
             CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> void build(ClassHeader<Self> h) {

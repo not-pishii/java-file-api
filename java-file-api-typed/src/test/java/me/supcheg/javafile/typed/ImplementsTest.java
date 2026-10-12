@@ -444,7 +444,8 @@ class ImplementsTest {
                             oh.body();
                         }
                     }))
-                    .withMessageContaining("unrelated methods with a body each, and overrides neither");
+                    .withMessageContaining("overrides none of them")
+                    .withMessageContaining("are unrelated methods with a body each");
             assertThat(JavacVerdict.compiledClass("implements Named, Titled", ""))
                     .hadErrorContaining("inherits unrelated defaults for label()");
         }

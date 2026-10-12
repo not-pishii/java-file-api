@@ -79,7 +79,17 @@
     Chained.class,
     Following.class,
     Copied.class,
-    Carrier.class
+    Carrier.class,
+    StaticPick.class,
+    StaticTwin.class,
+    Nesting.class,
+    Obscuring.class,
+    Rooted.class,
+    Faulty.class,
+    Captioned.class,
+    Stated.class,
+    Planted.class,
+    Defaulted.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -128,6 +138,16 @@ import me.supcheg.javafile.typed.fixtures.Chained;
 import me.supcheg.javafile.typed.fixtures.Following;
 import me.supcheg.javafile.typed.fixtures.Copied;
 import me.supcheg.javafile.typed.fixtures.Carrier;
+import me.supcheg.javafile.typed.fixtures.StaticPick;
+import me.supcheg.javafile.typed.fixtures.StaticTwin;
+import me.supcheg.javafile.typed.fixtures.Nesting;
+import me.supcheg.javafile.typed.fixtures.Obscuring;
+import me.supcheg.javafile.typed.fixtures.Rooted;
+import me.supcheg.javafile.typed.fixtures.Faulty;
+import me.supcheg.javafile.typed.fixtures.Captioned;
+import me.supcheg.javafile.typed.fixtures.Stated;
+import me.supcheg.javafile.typed.fixtures.Planted;
+import me.supcheg.javafile.typed.fixtures.Defaulted;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
