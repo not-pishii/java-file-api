@@ -6,7 +6,7 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
-public final class CtorRef2<O, A1, A2> implements Invocable {
+public final class CtorRef2<O, A1, A2> implements InvocableFamily {
     private final ConcreteClassToken<O> owner;
 
     private final TypeToken<A1> param1;

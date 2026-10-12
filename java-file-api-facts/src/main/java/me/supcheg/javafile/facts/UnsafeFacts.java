@@ -466,15 +466,24 @@ public final class UnsafeFacts extends InvocableFactories {
         return new TypeVarToken<>(typeRef, erasure, new TypeVarToken.Origin.Vouched());
     }
 
+    /// What a declaration of the typed layer is known by, for the tokens of its type parameters.
+    ///
+    /// @param described the declaration, for messages
+    /// @return an identity no other declaration has
+    public static DeclarationIdentity declarationIdentity(String described) {
+        return new DeclarationIdentity(described);
+    }
+
     /// The token of a type parameter of a declaration of the typed layer: in scope in that
     /// declaration alone, which the typed layer holds every type it writes to.
     ///
     /// @param typeRef the type variable
     /// @param erasure the erasure of its leftmost bound, `java.lang.Object` for none
-    /// @param declaration the declaration, known by its identity
+    /// @param declaration the declaration, see [#declarationIdentity(String)]
     /// @param <T> the type variable the token stands for
     /// @return the token
-    public static <T> TypeVarToken<T> declaredTypeVarToken(TypeVarRef typeRef, ClassDesc erasure, Object declaration) {
+    public static <T> TypeVarToken<T> declaredTypeVarToken(
+            TypeVarRef typeRef, ClassDesc erasure, DeclarationIdentity declaration) {
         return new TypeVarToken<>(typeRef, erasure, new TypeVarToken.Origin.Declared(declaration));
     }
 

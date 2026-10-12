@@ -43,18 +43,8 @@ public final class TypeVarToken<T> implements RefToken<T> {
         /// The variable is a type parameter of a declaration of the typed layer, in scope in that
         /// declaration alone.
         ///
-        /// @param declaration the declaration, known by its identity
-        record Declared(Object declaration) implements Origin {
-            @Override
-            public boolean equals(Object o) {
-                return o instanceof Declared(Object other) && other == declaration;
-            }
-
-            @Override
-            public int hashCode() {
-                return System.identityHashCode(declaration);
-            }
-        }
+        /// @param declaration the declaration
+        record Declared(DeclarationIdentity declaration) implements Origin {}
     }
 
     @Override

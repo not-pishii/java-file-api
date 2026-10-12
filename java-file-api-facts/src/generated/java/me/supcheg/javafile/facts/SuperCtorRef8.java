@@ -6,7 +6,7 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
-public final class SuperCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> implements Invocable {
+public final class SuperCtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> implements InvocableFamily {
     private final ExtendableClassToken<O> owner;
 
     private final TypeToken<A1> param1;

@@ -6,7 +6,7 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
-public final class VoidStaticMethodRef2<A1, A2> implements Invocable {
+public final class VoidStaticMethodRef2<A1, A2> implements InvocableFamily {
     private final DeclaredToken<?> owner;
 
     private final String name;

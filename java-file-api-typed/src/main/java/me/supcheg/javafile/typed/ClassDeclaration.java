@@ -51,6 +51,7 @@ import java.util.stream.Stream;
 final class ClassDeclaration<Self> {
     private final TargetClasspath target;
     private final String described;
+    private final me.supcheg.javafile.facts.DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
     private final List<Intention> intentions = new ArrayList<>();
     private final List<Implemented.ByInheritance> inheritances = new ArrayList<>();
@@ -69,6 +70,7 @@ final class ClassDeclaration<Self> {
     ClassDeclaration(TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters) {
         this.target = target;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
+        this.identity = UnsafeFacts.declarationIdentity(described);
         IntStream.range(0, parameters.size()).forEach(i -> {
             TypeParameter<?> parameter = parameters.get(i);
             if (parameters.subList(0, i).stream()
@@ -90,7 +92,7 @@ final class ClassDeclaration<Self> {
                         UnsafeFacts.declaredTypeVarToken(
                                 new TypeVarRef(parameter.name()),
                                 parameter.bound().erasure(),
-                                this),
+                                identity),
                         parameter.bound(),
                         new ArrayList<>()))
                 .toList();
@@ -159,7 +161,7 @@ final class ClassDeclaration<Self> {
     /// @param where the place, for messages
     /// @return the scope
     TypeScope scope(String where) {
-        return new TypeScope.Instance(this, where + " of " + described);
+        return new TypeScope.Instance(identity, where + " of " + described);
     }
 
     /// The scope of a `static` member: no type parameter of the class is in scope (JLS 8.1.2).
@@ -167,7 +169,7 @@ final class ClassDeclaration<Self> {
     /// @param where the place, for messages
     /// @return the scope
     TypeScope staticScope(String where) {
-        return new TypeScope.Static(this, where + " of " + described);
+        return new TypeScope.Static(identity, where + " of " + described);
     }
 
     private TypeScope headerScope() {

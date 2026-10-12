@@ -65,6 +65,7 @@ public final class FactsCodegen {
     private static final ClassDesc EXTENDABLE_CLASS_TOKEN = ClassDesc.of(FACTS, "ExtendableClassToken");
     private static final ClassDesc INTERFACE_TOKEN = ClassDesc.of(FACTS, "InterfaceToken");
     private static final ClassDesc INVOCABLE = ClassDesc.of(FACTS, "Invocable");
+    private static final ClassDesc INVOCABLE_FAMILY = ClassDesc.of(FACTS, "InvocableFamily");
     private static final ClassDesc INVOCABLES = ClassDesc.of(FACTS, "Invocables");
     private static final ClassDesc INVOCABLE_KIND = ClassDesc.of(FACTS, "InvocableKind");
     private static final ClassDesc MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
@@ -110,6 +111,7 @@ public final class FactsCodegen {
                 }
             }
         }
+        files.add(families());
         files.add(factories());
         files.add(lookup());
         return files;
@@ -321,13 +323,30 @@ public final class FactsCodegen {
         cb.accept(new ConstructorDecl(List.of(), Set.of(), params, code.build(), List.of(), Optional.empty()));
     }
 
+    /// The one interface the facts of methods and constructors implement: it permits the generated
+    /// families and nothing else, so that a fact is made by this library alone.
+    private static JavaFile families() {
+        return JavaFile.interface_(INVOCABLE_FAMILY, ib -> {
+            ib.withAnnotation(
+                    GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(FactsCodegen.class.getName())));
+            ib.withExactModifiers(Set.of());
+            ib.withExtends(INVOCABLE);
+            ib.withPermits(IntStream.rangeClosed(0, MAX_ARITY)
+                    .boxed()
+                    .flatMap(n -> Stream.of(Family.values())
+                            .filter(family -> !family.isSam())
+                            .map(family -> family.desc(n)))
+                    .toArray(ClassDesc[]::new));
+        });
+    }
+
     private static JavaFile ref(Family family, int n) {
         List<Slot> slots = slots(family, n);
         return JavaFile.class_(family.desc(n), cb -> {
             generated(cb);
             cb.withModifiers(Modifier.FINAL);
             family.typeVars(n).forEach(v -> cb.withTypeParam(v));
-            cb.withInterface(INVOCABLE);
+            cb.withInterface(INVOCABLE_FAMILY);
             for (Slot slot : slots) {
                 cb.withField(slot.name(), slot.type(), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
             }
