@@ -69,11 +69,11 @@ class ImplementsTest {
                     var cb = oh.members();
 
                     var rank = cb.declareMutableField("rank", PrimitiveToken.INT);
-                    var own1 = cb.declareOverride(Object_.toString);
+                    var toString = cb.declareOverride(Object_.toString);
                     // by the fact of the class, and by that of the interface through the witness
-                    var member1 = cb.declareMethod("own", PrimitiveToken.INT, cb.self());
-                    var member2 = cb.declareMethod("witnessed", PrimitiveToken.INT, cb.self());
-                    var member3 = cb.declareVoidMethod("ranked");
+                    var own = cb.declareMethod("own", PrimitiveToken.INT, cb.self());
+                    var witnessed = cb.declareMethod("witnessed", PrimitiveToken.INT, cb.self());
+                    var ranked = cb.declareVoidMethod("ranked");
                     var bodies = cb.bodies();
                     bodies.initialize(rank, literal(1));
                     bodies.define(
@@ -83,13 +83,13 @@ class ImplementsTest {
                             run.method(),
                             (b, self) ->
                                     b.exec(assignField(self, rank, literal(7))).end());
-                    bodies.define(own1, (b, self) -> b.return_(literal("ranked")));
-                    bodies.define(member1, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
+                    bodies.define(toString, (b, self) -> b.return_(literal("ranked")));
+                    bodies.define(own, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
                     bodies.define(
-                            member2,
+                            witnessed,
                             (b, self, other) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, other)));
                     bodies.define(
-                            member3,
+                            ranked,
                             (b, self) -> b.exec(Expressions.voidCall(asRunnable.apply(self), Runnable_.run))
                                     .end());
                 }
@@ -122,12 +122,12 @@ class ImplementsTest {
                     Upcast<Self, Callable<String>> asCallable =
                             oh.implements_(CALLABLE.implement(h.self()).call(call));
                     var cb = oh.members();
-                    var member4 = cb.throwing(IOException_.TOKEN).declareMethod("narrow", String_.TOKEN);
-                    var member5 = cb.throwing(Exception_.TOKEN).declareMethod("wide", String_.TOKEN);
+                    var narrow = cb.throwing(IOException_.TOKEN).declareMethod("narrow", String_.TOKEN);
+                    var wide = cb.throwing(Exception_.TOKEN).declareMethod("wide", String_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(call.method(), (b, self) -> b.return_(literal("called")));
-                    bodies.define(member4, (b, self) -> b.return_(call(self, call.method())));
-                    bodies.define(member5, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
+                    bodies.define(narrow, (b, self) -> b.return_(call(self, call.method())));
+                    bodies.define(wide, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
                 }
             }));
 
@@ -150,10 +150,10 @@ class ImplementsTest {
                     Upcast<Self, Comparator<String>> asComparator =
                             oh.implements_(COMPARATOR.implement(h.self()).compare_T_T(compare));
                     var cb = oh.members();
-                    var own2 = cb.declareOverride(asComparator, COMPARATOR.reversed);
+                    var reversed = cb.declareOverride(asComparator, COMPARATOR.reversed);
                     var bodies = cb.bodies();
                     bodies.define(compare.method(), (b, self, l, r) -> b.return_(literal(0)));
-                    bodies.define(own2, (b, self) -> b.return_(asComparator.apply(self)));
+                    bodies.define(reversed, (b, self) -> b.return_(asComparator.apply(self)));
                 }
             }));
 
@@ -173,9 +173,9 @@ class ImplementsTest {
                     Upcast<Self, Named> asNamed = oh.implements_(Named_.implement(h.self()));
                     oh.implements_(Titled_.implement(h.self()));
                     var cb = oh.members();
-                    var own3 = cb.declareOverride(asNamed, Named_.label);
+                    var label = cb.declareOverride(asNamed, Named_.label);
                     var bodies = cb.bodies();
-                    bodies.define(own3, (b, self) -> b.return_(concat(literal("both"), literal("!"))));
+                    bodies.define(label, (b, self) -> b.return_(concat(literal("both"), literal("!"))));
                 }
             }));
 

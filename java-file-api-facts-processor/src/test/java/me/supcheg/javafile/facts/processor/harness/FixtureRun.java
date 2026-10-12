@@ -417,9 +417,9 @@ public final class FixtureRun {
             return new TypedJavaFile.TypedClassSpec() {
                 @Override
                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                    var own1 = cb.declareStaticMethod("go", result, parameter);
+                    var go = cb.declareStaticMethod("go", result, parameter);
                     var bodies = cb.bodies();
-                    bodies.define(own1, (b, p) -> b.return_(body.apply(p)));
+                    bodies.define(go, (b, p) -> b.return_(body.apply(p)));
                 }
             };
         }

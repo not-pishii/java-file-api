@@ -382,9 +382,9 @@ public final class Versions {
                         UnsafeFacts.unverifiedClasspath(), ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                             @Override
                             public <Self> void build(TypedClassBuilder<Self> cb) {
-                                var own1 = cb.declareStaticMethod("go", String_.TOKEN, String_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own1, (b, s) -> b.return_(m(s)));
+                                var go = cb.declareStaticMethod("go", String_.TOKEN, String_.TOKEN);
+                                var bodies = cb.bodies();
+                                bodies.define(go, (b, s) -> b.return_(m(s)));
                             }
                         })
                 .render();

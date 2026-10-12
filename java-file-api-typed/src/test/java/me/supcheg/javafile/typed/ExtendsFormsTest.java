@@ -62,17 +62,17 @@ class ExtendsFormsTest {
                 var sh = h.extends_(Base_.extend(h.self()));
                 var make = sh.declareConstructor(String_.TOKEN);
                 var cb = sh.members();
-                var member1 = cb.declareStaticMethod("of", cb.self(), String_.TOKEN);
+                var of = cb.declareStaticMethod("of", cb.self(), String_.TOKEN);
                 // among the members a constructor is declared and defined as that of any class is
                 var plain = cb.declareConstructor();
                 var limit = cb.protected_(Base_.limit);
-                var member2 = cb.declareStaticMethod("raised", PrimitiveToken.INT);
+                var raised = cb.declareStaticMethod("raised", PrimitiveToken.INT);
                 var bodies =
                         cb.bodies(make, (ctor, name) -> ctor.super_(Base_.super_String, name, (b, self) -> b.end()));
                 bodies.define(plain, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                bodies.define(member1, (b, s) -> b.return_(new_(make, s)));
+                bodies.define(of, (b, s) -> b.return_(new_(make, s)));
                 bodies.define(
-                        member2,
+                        raised,
                         b -> b.exec(assignStaticField(limit, addInt(staticField(limit), literal(1))))
                                 .return_(staticField(limit)));
             }
@@ -128,17 +128,18 @@ class ExtendsFormsTest {
                 sh.implements_(callable.implement(h.self()).call(call));
                 var make = sh.declareConstructor(String_.TOKEN, Throwable_.TOKEN);
                 var cb = sh.members();
-                var member3 = cb.declareConstructor();
-                var member4 = cb.declareMethod("handled", String_.TOKEN);
+                var constructor = cb.declareConstructor();
+                var handled = cb.declareMethod("handled", String_.TOKEN);
                 var bodies = cb.bodies(
                         make,
                         (ctor, message, cause) ->
                                 ctor.super_(Exception_.new_String_Throwable, message, cause, (b, self) -> b.end()));
                 bodies.define(call.method(), (b, self) -> b.throw_(asException, self));
                 bodies.define(
-                        member3, ctor -> ctor.super_(Exception_.new_String, literal("plain"), (b, self) -> b.end()));
+                        constructor,
+                        ctor -> ctor.super_(Exception_.new_String, literal("plain"), (b, self) -> b.end()));
                 bodies.define(
-                        member4,
+                        handled,
                         (b, self) -> b.let(
                                 String_.TOKEN,
                                 literal("none"),
@@ -167,11 +168,11 @@ class ExtendsFormsTest {
                 var ctor1 = sh.declareConstructor();
                 var cb = sh.members();
                 var ran = cb.declareMutableField("ran", String_.TOKEN);
-                var own2 = cb.declareOverride(Thread_.run);
+                var run = cb.declareOverride(Thread_.run);
                 var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
                 bodies.initialize(ran, literal("no"));
                 bodies.define(
-                        own2,
+                        run,
                         (b, self) -> b.exec(
                                         assignField(self, ran, call(cb.asSuper().apply(self), Thread_.getName)))
                                 .end());
@@ -197,11 +198,11 @@ class ExtendsFormsTest {
                         .put_String_String(sh.inherited(Mid_.put_String_String)));
                 var ctor3 = sh.declareConstructor();
                 var cb = sh.members();
-                var member5 = cb.declareMethod("joined", String_.TOKEN);
-                var member6 = cb.declareMethod("runs", PrimitiveToken.INT);
+                var joined = cb.declareMethod("joined", String_.TOKEN);
+                var runs = cb.declareMethod("runs", PrimitiveToken.INT);
                 var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                 bodies.define(
-                        member5,
+                        joined,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String, literal("k")))
                                 .exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .exec(voidCall(asJoining.apply(self), Joining_.put_String, literal("k")))
@@ -213,7 +214,7 @@ class ExtendsFormsTest {
                                                 literal("c"),
                                                 literal("d")))));
                 bodies.define(
-                        member6,
+                        runs,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .return_(field(cb.asSuper().apply(self), Mid_.runs)));
             }
@@ -275,10 +276,10 @@ class ExtendsFormsTest {
                         var sh4 = h.extends_(Base_.extend(h.self()));
                         var ctor4 = sh4.declareConstructor();
                         var cb = sh4.members();
-                        var member7 = cb.declareMethod("m", String_.TOKEN);
+                        var m = cb.declareMethod("m", String_.TOKEN);
                         var bodies = cb.bodies(ctor4, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(
-                                member7,
+                                m,
                                 (b, self) -> b.return_(bodies.superCall(
                                         self,
                                         UnsafeFacts.method(
@@ -298,10 +299,10 @@ class ExtendsFormsTest {
                         var sh5 = h.extends_(Base_.extend(h.self()));
                         var ctor5 = sh5.declareConstructor();
                         var cb = sh5.members();
-                        var member8 = cb.declareMethod("m", String_.TOKEN);
+                        var m = cb.declareMethod("m", String_.TOKEN);
                         var bodies = cb.bodies(ctor5, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(
-                                member8,
+                                m,
                                 (b, self) -> b.return_(bodies.superCall(
                                         self,
                                         UnsafeFacts.method(Base_.TOKEN, "util", String_.TOKEN, MemberTraits.FINAL))));
@@ -362,21 +363,21 @@ class ExtendsFormsTest {
                 var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));
                 var ctor6 = sh.declareConstructor();
                 var cb = sh.members();
-                var member9 = cb.declareMethod("index", PrimitiveToken.INT);
-                var member10 = cb.declareMethod("part", list.subList_int_int.result());
-                var member11 = cb.declareMethod("array", coll.toArray.result());
-                var member12 = cb.declareMethod("contained", PrimitiveToken.BOOLEAN);
+                var index = cb.declareMethod("index", PrimitiveToken.INT);
+                var part = cb.declareMethod("part", list.subList_int_int.result());
+                var array = cb.declareMethod("array", coll.toArray.result());
+                var contained = cb.declareMethod("contained", PrimitiveToken.BOOLEAN);
                 var bodies = cb.bodies(ctor6, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
                 bodies.define(get.method(), (b, self, i) -> b.return_(literal("item")));
                 bodies.define(size.method(), (b, self) -> b.return_(literal(2)));
                 bodies.define(
-                        member9, (b, self) -> b.return_(bodies.superCall(self, list.indexOf_Object, literal("item"))));
+                        index, (b, self) -> b.return_(bodies.superCall(self, list.indexOf_Object, literal("item"))));
                 bodies.define(
-                        member10,
+                        part,
                         (b, self) -> b.return_(bodies.superCall(self, list.subList_int_int, literal(0), literal(1))));
-                bodies.define(member11, (b, self) -> b.return_(bodies.superCall(self, coll.toArray)));
+                bodies.define(array, (b, self) -> b.return_(bodies.superCall(self, coll.toArray)));
                 bodies.define(
-                        member12,
+                        contained,
                         (b, self) -> b.return_(bodies.superCall(
                                 self,
                                 coll.containsAll_Collection,

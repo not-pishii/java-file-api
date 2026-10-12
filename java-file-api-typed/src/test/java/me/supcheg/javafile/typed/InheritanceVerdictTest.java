@@ -164,8 +164,8 @@ class InheritanceVerdictTest {
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
                             var cb101 = oh.members();
-                            var own102 = cb101.declareOverride(asCounted, Counted_.size);
-                            cb101.bodies().define(own102, (b, _) -> b.return_(literal(1)));
+                            var size = cb101.declareOverride(asCounted, Counted_.size);
+                            cb101.bodies().define(size, (b, _) -> b.return_(literal(1)));
                         }
                     }),
                     "cannot override size() of me.supcheg.javafile.typed.fixtures.Measured: its result is long, and"
@@ -282,8 +282,8 @@ class InheritanceVerdictTest {
                             var oh = h.extendsObject();
                             Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                             var cb104 = oh.members();
-                            var own105 = cb104.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
-                            cb104.bodies().define(own105, (b, _, picked) -> b.return_(picked));
+                            var pick = cb104.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
+                            cb104.bodies().define(pick, (b, _, picked) -> b.return_(picked));
                         }
                     }),
                     "the method is generic, and the typed layer declares no generic method",
@@ -306,8 +306,8 @@ class InheritanceVerdictTest {
                             var oh = h.extendsObject();
                             oh.implements_(Joiner_.implement(h.self()));
                             var cb106 = oh.members();
-                            var own107 = cb106.declareMethod("pick", Object_.TOKEN, Object_.TOKEN);
-                            cb106.bodies().define(own107, (b, _, picked) -> b.return_(picked));
+                            var pick = cb106.declareMethod("pick", Object_.TOKEN, Object_.TOKEN);
+                            cb106.bodies().define(pick, (b, _, picked) -> b.return_(picked));
                         }
                     }),
                     "The inherited method is generic, and the typed layer declares no generic method: the class"
@@ -370,9 +370,9 @@ class InheritanceVerdictTest {
                     var sh109 = sh;
                     var ctor110 = sh109.declareConstructor();
                     var cb111 = sh109.members();
-                    var own112 = cb111.declareOverride(asLocal, Local_.local);
+                    var local = cb111.declareOverride(asLocal, Local_.local);
                     cb111.bodies(ctor110, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                            .define(own112, (b, _) -> b.return_(literal("mine")));
+                            .define(local, (b, _) -> b.return_(literal("mine")));
                 }
             }));
             assertThat(overridden.invoke("local")).isEqualTo("mine");
@@ -383,9 +383,9 @@ class InheritanceVerdictTest {
                     var sh113 = extendsBase(h);
                     var ctor114 = sh113.declareConstructor();
                     var cb115 = sh113.members();
-                    var own116 = cb115.declareMethod("local", String_.TOKEN);
+                    var local = cb115.declareMethod("local", String_.TOKEN);
                     cb115.bodies(ctor114, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                            .define(own116, (b, self) -> b.return_(literal("named")));
+                            .define(local, (b, self) -> b.return_(literal("named")));
                 }
             }));
             assertThat(declared.invoke("local")).isEqualTo("named");
@@ -419,9 +419,9 @@ class InheritanceVerdictTest {
                                     var sh117 = extendsBase(h);
                                     var ctor118 = sh117.declareConstructor();
                                     var cb119 = sh117.members();
-                                    var own120 = cb119.declareMethod("local", String_.TOKEN);
+                                    var local = cb119.declareMethod("local", String_.TOKEN);
                                     cb119.bodies(ctor118, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()))
-                                            .define(own120, (b, self) -> b.return_(literal("")));
+                                            .define(local, (b, self) -> b.return_(literal("")));
                                 }
                             }))
                     .withMessageContaining("a method declared by its name overrides nothing");
@@ -465,9 +465,9 @@ class InheritanceVerdictTest {
                     Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
                     var ctor3 = sh.declareConstructor();
                     var cb = sh.members();
-                    var member1 = cb.declareMethod("go", String_.TOKEN);
+                    var go = cb.declareMethod("go", String_.TOKEN);
                     var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                    bodies.define(member1, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
+                    bodies.define(go, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
                 }
             }));
             assertThat(compiled.invoke("go")).isEqualTo("base");

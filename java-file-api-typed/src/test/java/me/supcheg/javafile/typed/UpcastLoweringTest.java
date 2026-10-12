@@ -56,15 +56,15 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // the class has equals(String) beside the equals(Object) it inherits
-                var member1 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
-                var member2 = cb.declareMethod("viaWitness", PrimitiveToken.BOOLEAN);
-                var member3 = cb.declareMethod("inLambda", String_.TOKEN);
+                var equals = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                var viaWitness = cb.declareMethod("viaWitness", PrimitiveToken.BOOLEAN);
+                var inLambda = cb.declareMethod("inLambda", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member1, (b, self, s) -> b.return_(literal(true)));
+                bodies.define(equals, (b, self, s) -> b.return_(literal(true)));
                 bodies.define(
-                        member2, (b, self) -> b.return_(call(up.apply(self), Object_.equals_Object, literal("x"))));
+                        viaWitness, (b, self) -> b.return_(call(up.apply(self), Object_.equals_Object, literal("x"))));
                 bodies.define(
-                        member3,
+                        inLambda,
                         (b, self) -> b.let(
                                 STRINGS.token,
                                 lambda(
@@ -89,13 +89,13 @@ class UpcastLoweringTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
-                var member4 = cb.declareStaticMethod("which", String_.TOKEN, cb.self());
+                var which = cb.declareStaticMethod("which", String_.TOKEN, cb.self());
                 var whichObject = cb.declareStaticMethod("which", String_.TOKEN, Object_.TOKEN);
-                var member5 = cb.declareMethod("pick", String_.TOKEN);
+                var pick = cb.declareMethod("pick", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member4, (b, o) -> b.return_(literal("self")));
+                bodies.define(which, (b, o) -> b.return_(literal("self")));
                 bodies.define(whichObject, (b, o) -> b.return_(literal("object")));
-                bodies.define(member5, (b, self) -> b.return_(staticCall(whichObject, up.apply(self))));
+                bodies.define(pick, (b, self) -> b.return_(staticCall(whichObject, up.apply(self))));
             }
         }));
 
@@ -110,29 +110,29 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // `(String) this` and `this == "x"` are no Java for a final class that is no String
-                var member6 = cb.declareMethod("cast", String_.TOKEN);
-                var member7 = cb.declareMethod("same", PrimitiveToken.BOOLEAN);
-                var member8 = cb.declareMethod("test", PrimitiveToken.BOOLEAN);
+                var cast = cb.declareMethod("cast", String_.TOKEN);
+                var same = cb.declareMethod("same", PrimitiveToken.BOOLEAN);
+                var test = cb.declareMethod("test", PrimitiveToken.BOOLEAN);
                 // both branches are the class: javac would type the conditional by it
-                var member9 = cb.declareMethod("either", PrimitiveToken.BOOLEAN);
-                var member10 = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
+                var either = cb.declareMethod("either", PrimitiveToken.BOOLEAN);
+                var equals = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member6, (b, self) -> b.return_(castChecked(String_.TOKEN, up.apply(self))));
-                bodies.define(member7, (b, self) -> b.return_(eqRef(up.apply(self), literal("x"))));
+                bodies.define(cast, (b, self) -> b.return_(castChecked(String_.TOKEN, up.apply(self))));
+                bodies.define(same, (b, self) -> b.return_(eqRef(up.apply(self), literal("x"))));
                 bodies.define(
-                        member8,
+                        test,
                         (b, self) -> b.ifInstanceOfElse(
                                 up.apply(self),
                                 String_.TOKEN,
                                 (t, s) -> t.return_(literal(true)),
                                 e -> e.return_(literal(false))));
                 bodies.define(
-                        member9,
+                        either,
                         (b, self) -> b.return_(call(
                                 cond(literal(true), up.apply(self), up.apply(self), Object_.TOKEN),
                                 Object_.equals_Object,
                                 literal("x"))));
-                bodies.define(member10, (b, self, s) -> b.return_(literal(true)));
+                bodies.define(equals, (b, self, s) -> b.return_(literal(true)));
             }
         }));
 
@@ -156,14 +156,14 @@ class UpcastLoweringTest {
                         var cb = sh1.members();
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // the class has a field `name` of its own: the one of Base is read through the witness
-                        var field2 = cb.declareField("name", String_.TOKEN);
-                        var member11 = cb.declareMethod("nameOfBase", String_.TOKEN);
-                        var member12 = cb.declareMethod("op", String_.TOKEN);
+                        var name = cb.declareField("name", String_.TOKEN);
+                        var nameOfBase = cb.declareMethod("nameOfBase", String_.TOKEN);
+                        var op = cb.declareMethod("op", String_.TOKEN);
                         var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                        bodies.initialize(field2, literal("own"));
-                        bodies.define(member11, (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
+                        bodies.initialize(name, literal("own"));
+                        bodies.define(nameOfBase, (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
                         bodies.define(
-                                member12,
+                                op,
                                 (b, self) -> b.return_(switch_(
                                         Op_.TOKEN,
                                         field(asBase.apply(self), Base_.op),
@@ -189,21 +189,21 @@ class UpcastLoweringTest {
                         Upcast<Self, Base> asBase = cb.asSuper();
                         // javac would resolve this.pick("x") to the override of pick(String), or to the
                         // overload the class adds: the fact names pick(Object) of Base
-                        var own4 = cb.declareOverride(Base_.pick_String);
+                        var pick = cb.declareOverride(Base_.pick_String);
                         var member13 = cb.declareMethod(
                                 "pick",
                                 String_.TOKEN,
                                 me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN);
-                        var member14 = cb.declareMethod("picked", String_.TOKEN);
-                        var member15 = cb.declareMethod("pickedBySuper", String_.TOKEN);
+                        var picked = cb.declareMethod("picked", String_.TOKEN);
+                        var pickedBySuper = cb.declareMethod("pickedBySuper", String_.TOKEN);
                         var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                        bodies.define(own4, (b, self, s) -> b.return_(literal("override")));
+                        bodies.define(pick, (b, self, s) -> b.return_(literal("override")));
                         bodies.define(member13, (b, self, s) -> b.return_(literal("overload")));
                         bodies.define(
-                                member14,
+                                picked,
                                 (b, self) -> b.return_(call(asBase.apply(self), Base_.pick_Object, literal("x"))));
                         bodies.define(
-                                member15,
+                                pickedBySuper,
                                 (b, self) -> b.return_(bodies.superCall(self, Base_.pick_Object, literal("x"))));
                     }
                 }));
@@ -223,10 +223,10 @@ class UpcastLoweringTest {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
                         Upcast<Self, Signal> asSignal = new Upcast<>(cb.self(), Signal_.TOKEN);
-                        var member16 = cb.declareMethod("signal", String_.TOKEN);
+                        var signal = cb.declareMethod("signal", String_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                member16,
+                                signal,
                                 (b, self) -> b.return_(switch_(
                                         Signal_.TOKEN,
                                         asSignal.apply(self),
@@ -246,11 +246,11 @@ class UpcastLoweringTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 Upcast<Self, Object> up = asObject(cb);
                 // no overload of the class is in question: `this` stands as it is, no redundant cast
-                var member17 = cb.declareMethod("me", Object_.TOKEN);
-                var member18 = cb.declareMethod("text", String_.TOKEN);
+                var me = cb.declareMethod("me", Object_.TOKEN);
+                var text = cb.declareMethod("text", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member17, (b, self) -> b.return_(up.apply(self)));
-                bodies.define(member18, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
+                bodies.define(me, (b, self) -> b.return_(up.apply(self)));
+                bodies.define(text, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
             }
         }));
 

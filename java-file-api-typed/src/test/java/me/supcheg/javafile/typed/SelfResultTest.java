@@ -46,10 +46,10 @@ class SelfResultTest {
                 oh.implements_(Following_.implement(h.self()).next(next));
                 var cb = oh.members();
                 // the fact of the class is of the class: its result has the methods of the class
-                var member1 = cb.declareMethod("twice", cb.self());
+                var twice = cb.declareMethod("twice", cb.self());
                 var bodies = cb.bodies();
                 bodies.define(next.method(), (b, self) -> b.return_(self));
-                bodies.define(member1, (b, self) -> b.return_(call(call(self, next.method()), next.method())));
+                bodies.define(twice, (b, self) -> b.return_(call(call(self, next.method()), next.method())));
             }
         }));
 
@@ -74,13 +74,13 @@ class SelfResultTest {
                 var cb = sh.members();
                 // Copied same() and Copied other(String) have bodies: overridden among the members
                 var same = cb.declareOverride(Copied_.same, sh.asSuper());
-                var own2 = cb.declareOverride(sh.asSuper(), Copied_.other_String, sh.asSuper());
-                var member2 = cb.declareMethod("chain", cb.self());
+                var asSuper = cb.declareOverride(sh.asSuper(), Copied_.other_String, sh.asSuper());
+                var chain = cb.declareMethod("chain", cb.self());
                 var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Copied_.super_, (b, self) -> b.end()));
                 bodies.define(copy.method(), (b, self) -> b.return_(self));
                 bodies.define(same, (b, self) -> b.return_(self));
-                bodies.define(own2, (b, self, label) -> b.return_(self));
-                bodies.define(member2, (b, self) -> b.return_(call(call(self, copy.method()), same)));
+                bodies.define(asSuper, (b, self, label) -> b.return_(self));
+                bodies.define(chain, (b, self) -> b.return_(call(call(self, copy.method()), same)));
             }
         }));
 

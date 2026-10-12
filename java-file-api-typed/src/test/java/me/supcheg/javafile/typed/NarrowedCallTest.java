@@ -56,36 +56,36 @@ class NarrowedCallTest {
                         oh.implements_(Origin_.implement(h.self()).get(get));
                 var cb = oh.members();
                 var objects = new List_<>(Object_.TOKEN).token;
-                var own1 = cb.declareOverride(asOrigin, Origin_.each, objects);
+                var each = cb.declareOverride(asOrigin, Origin_.each, objects);
                 var whichObject = cb.declareMethod("which", String_.TOKEN, Object_.TOKEN);
-                var member1 = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
+                var which = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
                 // (Integer) of a String does not compile, of an Object fails when run
-                var member2 = cb.declareMethod("cast", Integer_.TOKEN);
+                var cast = cb.declareMethod("cast", Integer_.TOKEN);
                 // instanceof Integer of a String does not compile
-                var member3 = cb.declareMethod("tested", String_.TOKEN);
+                var tested = cb.declareMethod("tested", String_.TOKEN);
                 // a conditional of two Strings is a String, and which(String) its overload
-                var member4 = cb.declareMethod("chosen", String_.TOKEN, PrimitiveToken.BOOLEAN);
+                var chosen = cb.declareMethod("chosen", String_.TOKEN, PrimitiveToken.BOOLEAN);
                 // new Picked(String) beside new Picked(Object)
-                var member5 = cb.declareMethod("made", String_.TOKEN);
+                var made = cb.declareMethod("made", String_.TOKEN);
                 // the iterated expression is of whatever Iterable the class has it for
-                var member6 = cb.declareMethod("counted", PrimitiveToken.INT);
+                var counted = cb.declareMethod("counted", PrimitiveToken.INT);
                 var bodies = cb.bodies();
                 bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                bodies.define(own1, (b, self) -> b.return_(literalNull(objects)));
+                bodies.define(each, (b, self) -> b.return_(literalNull(objects)));
                 bodies.define(whichObject, (b, self, v) -> b.return_(literal("object")));
-                bodies.define(member1, (b, self, v) -> b.return_(literal("string")));
+                bodies.define(which, (b, self, v) -> b.return_(literal("string")));
                 bodies.define(
-                        member2,
+                        cast,
                         (b, self) -> b.return_(castChecked(Integer_.TOKEN, call(asOrigin.apply(self), Origin_.get))));
                 bodies.define(
-                        member3,
+                        tested,
                         (b, self) -> b.ifInstanceOfElse(
                                 call(asOrigin.apply(self), Origin_.get),
                                 Integer_.TOKEN,
                                 (t, _) -> t.return_(literal("integer")),
                                 e -> e.return_(literal("other"))));
                 bodies.define(
-                        member4,
+                        chosen,
                         (b, self, flag) -> b.return_(call(
                                 self,
                                 whichObject,
@@ -95,11 +95,11 @@ class NarrowedCallTest {
                                         call(asOrigin.apply(self), Origin_.get),
                                         Object_.TOKEN))));
                 bodies.define(
-                        member5,
+                        made,
                         (b, self) -> b.return_(field(
                                 new_(Picked_.new_Object, call(asOrigin.apply(self), Origin_.get)), Picked_.which)));
                 bodies.define(
-                        member6,
+                        counted,
                         (b, self) -> b.letVar(
                                 PrimitiveToken.INT,
                                 literal(0),
@@ -136,10 +136,9 @@ class NarrowedCallTest {
                         var ctor2 = sh.declareConstructor();
                         var cb = sh.members();
                         var fault = cb.protected_(Maker_.fault);
-                        var member7 = cb.declareMethod("f", String_.TOKEN);
+                        var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = cb.bodies(ctor2, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
-                        bodies.define(
-                                member7, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
+                        bodies.define(f, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
                     }
                 }),
                 "bind the result to a variable with let first",
@@ -153,10 +152,10 @@ class NarrowedCallTest {
                 var ctor3 = sh.declareConstructor();
                 var cb = sh.members();
                 var fault = cb.protected_(Maker_.fault);
-                var member8 = cb.declareMethod("f", String_.TOKEN);
+                var f = cb.declareMethod("f", String_.TOKEN);
                 var bodies = cb.bodies(ctor3, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                 bodies.define(
-                        member8,
+                        f,
                         (b, self) -> b.let(
                                 RuntimeException_.TOKEN, call(cb.asSuper().apply(self), fault), e -> b.throw_(e)));
             }

@@ -60,9 +60,9 @@ public final class Checked {
     private static final TypedJavaFile.TypedClassSpec DECLARES_FAILURE = new TypedJavaFile.TypedClassSpec() {
         @Override
         public <Self> void build(TypedClassBuilder<Self> cb) {
-            var own1 = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("declares");
-var bodies = cb.bodies();
-bodies.define(own1, VoidBody::end);
+            var declares = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("declares");
+            var bodies = cb.bodies();
+            bodies.define(declares, VoidBody::end);
         }
     };
 
@@ -81,12 +81,12 @@ bodies.define(own1, VoidBody::end);
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                var own2 = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("custom", Io_.TOKEN);
-                var own3 = cb.throwing(IOException_.TOKEN).declareStaticMethod("made", Io_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own2, (b, io) -> b.exec(voidCall(io, Io_.custom))
+                var custom = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("custom", Io_.TOKEN);
+                var made = cb.throwing(IOException_.TOKEN).declareStaticMethod("made", Io_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(custom, (b, io) -> b.exec(voidCall(io, Io_.custom))
                                 .end());
-bodies.define(own3, b -> b.return_(new_(Io_.new_)));
+                bodies.define(made, b -> b.return_(new_(Io_.new_)));
             }
         });
 
@@ -100,9 +100,9 @@ bodies.define(own3, b -> b.return_(new_(Io_.new_)));
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                var own4 = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own4, (b, io) -> b.try_(
+                var multi = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(multi, (b, io) -> b.try_(
                                 h -> h.catch_(IOException_.TOKEN, (_, _) -> {})
                                         .catch_(InterruptedException_.TOKEN, (_, _) -> {}),
                                 t -> t.exec(voidCall(io, Io_.multi)))
@@ -115,9 +115,9 @@ bodies.define(own4, (b, io) -> b.try_(
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        var own5 = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own5, (b, io) -> b.try_(
+                        var multi = cb.declareVoidStaticMethod("multi", Io_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(multi, (b, io) -> b.try_(
                                         h -> h.catch_(IOException_.TOKEN, (_, _) -> {}),
                                         t -> t.exec(voidCall(io, Io_.multi)))
                                 .end());
@@ -133,9 +133,9 @@ bodies.define(own5, (b, io) -> b.try_(
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        var own6 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("util");
-var bodies = cb.bodies();
-bodies.define(own6, b -> b.exec(voidStaticCall(Io_.util))
+                        var util = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("util");
+                        var bodies = cb.bodies();
+                        bodies.define(util, b -> b.exec(voidStaticCall(Io_.util))
                                         .end());
                     }
                 }))
@@ -150,10 +150,9 @@ bodies.define(own6, b -> b.exec(voidStaticCall(Io_.util))
                 .isThrownBy(() -> rendered(new Members() {
                     @Override
                     public <Self> void declare(TypedClassBuilder<Self> cb) {
-                        var own7 = cb.declareVoidStaticMethod(
-                                "generic", Io_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own7, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
+                        var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
+                        var bodies = cb.bodies();
+                        bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
                                         .end());
                     }
                 }))
@@ -162,11 +161,9 @@ bodies.define(own7, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
         String source = rendered(new Members() {
             @Override
             public <Self> void declare(TypedClassBuilder<Self> cb) {
-                var own8 = cb.declareVoidStaticMethod(
-                        "generic",
-                        Io_.TOKEN);
-var bodies = cb.bodies();
-bodies.define(own8, (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
+                var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
                                 .end());
             }
         });

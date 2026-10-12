@@ -44,9 +44,9 @@ class ScopeChecksTest {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member1 = cb.declareMethod("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+                var m = cb.declareMethod("m", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
                 var bodies = cb.bodies();
-                bodies.define(member1, (b, _, flag) -> body.apply(b, flag));
+                bodies.define(m, (b, _, flag) -> body.apply(b, flag));
             }
         });
     }
@@ -102,10 +102,10 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    var member2 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
+                                    var a = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
                                     var member3 = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
-                                    bodies.define(member2, (b, _, p) -> {
+                                    bodies.define(a, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
@@ -125,14 +125,14 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    var member4 = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
-                                    var field1 = cb.declareField("f", PrimitiveToken.INT);
+                                    var a = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
+                                    var f = cb.declareField("f", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
-                                    bodies.define(member4, (b, _, p) -> {
+                                    bodies.define(a, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
-                                    bodies.initialize(field1, host.getFirst());
+                                    bodies.initialize(f, host.getFirst());
                                 }
                             }))
                     .withMessageContaining("is used in the initializer of field f");
@@ -446,10 +446,10 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    var member5 = cb.declareMethod("a", PrimitiveToken.INT);
+                                    var a = cb.declareMethod("a", PrimitiveToken.INT);
                                     var member6 = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
-                                    bodies.define(member5, (b, _) -> {
+                                    bodies.define(a, (b, _) -> {
                                         other.set(b.return_(literal(1)));
                                         return other.get();
                                     });
@@ -487,10 +487,10 @@ class ScopeChecksTest {
                             UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> void build(TypedClassBuilder<Self> cb) {
-                                    var member7 = cb.declareMethod("outer", PrimitiveToken.INT);
+                                    var outer = cb.declareMethod("outer", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
                                     bodies.define(
-                                            member7,
+                                            outer,
                                             (b, _) -> b.if_(
                                                             literal(true),
                                                             _ -> cb.declareMethod("inner", PrimitiveToken.INT))

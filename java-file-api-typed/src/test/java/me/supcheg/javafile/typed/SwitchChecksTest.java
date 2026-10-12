@@ -58,9 +58,9 @@ class SwitchChecksTest {
     /// Declares `static int m(Signal s)` with the given body.
     private static JavaFile intMethod(BiFunction<Body<Prim.Int>, Var<Signal>, Terminated<Prim.Int>> body) {
         return declare(cb -> {
-            var own1 = cb.declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
+            var m = cb.declareStaticMethod("m", PrimitiveToken.INT, Signal_.TOKEN);
             var bodies = cb.bodies();
-            bodies.define(own1, body);
+            bodies.define(m, body);
         });
     }
 
@@ -313,10 +313,10 @@ class SwitchChecksTest {
             unlikeJavac(
                     IllegalArgumentException.class,
                     () -> declare(cb -> {
-                        var own2 = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
+                        var m = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                own2,
+                                m,
                                 (b, s) -> b.return_(
                                         switch_(Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(literal(1)))));
                     }),
@@ -326,10 +326,10 @@ class SwitchChecksTest {
             unlikeJavac(
                     IllegalArgumentException.class,
                     () -> declare(cb -> {
-                        var own3 = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
+                        var m = cb.declareStaticMethod("m", Object_.TOKEN, Signal_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                own3,
+                                m,
                                 (b, s) -> b.return_(switch_(
                                         Signal_.TOKEN, s, Object_.TOKEN, c -> c.default_(y -> y.yield_(literal(1))))));
                     }),
@@ -463,12 +463,12 @@ class SwitchChecksTest {
         void aSwitchOfAFieldInitializerThrowsNoCheckedException() {
             unlikeJavac(
                     () -> declare(cb -> {
-                        var own4 = cb.throwing(IOException_.TOKEN).declareConstructor();
-                        var field5 = cb.declareField("f", PrimitiveToken.INT);
+                        var constructor = cb.throwing(IOException_.TOKEN).declareConstructor();
+                        var f = cb.declareField("f", PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(own4, (b, _) -> b.end());
+                        bodies.define(constructor, (b, _) -> b.end());
                         bodies.initialize(
-                                field5,
+                                f,
                                 switch_(
                                         Signal_.TOKEN,
                                         Expressions.enumConstant(Signal_.RED),

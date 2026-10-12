@@ -89,19 +89,19 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member1 = cb.declareStaticMethod("pickObject", String_.TOKEN, SUB);
-                var member2 = cb.declareStaticMethod("pickString", String_.TOKEN, SUB);
+                var pickObject = cb.declareStaticMethod("pickObject", String_.TOKEN, SUB);
+                var pickString = cb.declareStaticMethod("pickString", String_.TOKEN, SUB);
                 // the method table of Sub proves `only` has no other overload: no cast
-                var member3 = cb.declareStaticMethod("only", String_.TOKEN, SUB);
+                var only = cb.declareStaticMethod("only", String_.TOKEN, SUB);
                 // a static method has no table to prove it by
-                var member4 = cb.declareStaticMethod("whichObject", String_.TOKEN);
-                var member5 = cb.declareStaticMethod("whichString", String_.TOKEN);
+                var whichObject = cb.declareStaticMethod("whichObject", String_.TOKEN);
+                var whichString = cb.declareStaticMethod("whichString", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member1, (b, s) -> b.return_(call(s, PICK_OBJECT, literal("x"))));
-                bodies.define(member2, (b, s) -> b.return_(call(s, PICK_STRING, literal("x"))));
-                bodies.define(member3, (b, s) -> b.return_(call(s, ONLY, literal("x"))));
-                bodies.define(member4, b -> b.return_(staticCall(WHICH_OBJECT, literal("x"))));
-                bodies.define(member5, b -> b.return_(staticCall(WHICH_STRING, literal("x"))));
+                bodies.define(pickObject, (b, s) -> b.return_(call(s, PICK_OBJECT, literal("x"))));
+                bodies.define(pickString, (b, s) -> b.return_(call(s, PICK_STRING, literal("x"))));
+                bodies.define(only, (b, s) -> b.return_(call(s, ONLY, literal("x"))));
+                bodies.define(whichObject, b -> b.return_(staticCall(WHICH_OBJECT, literal("x"))));
+                bodies.define(whichString, b -> b.return_(staticCall(WHICH_STRING, literal("x"))));
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -126,9 +126,9 @@ class FactPinningCompileTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 // Base declares the instance dual(Object) and the static dual(String): javac
                 // considers both for `sub.dual("x")` and picks the static one, unless cast
-                var member6 = cb.declareStaticMethod("dual", String_.TOKEN, SUB);
+                var dual = cb.declareStaticMethod("dual", String_.TOKEN, SUB);
                 var bodies = cb.bodies();
-                bodies.define(member6, (b, s) -> b.return_(call(s, DUAL, literal("x"))));
+                bodies.define(dual, (b, s) -> b.return_(call(s, DUAL, literal("x"))));
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -148,20 +148,20 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member7 = cb.declareStaticMethod("removeValue", PrimitiveToken.INT, integers.token);
-                var member8 = cb.declareStaticMethod("removeBoxed", PrimitiveToken.INT, integers.token);
-                var member9 = cb.declareStaticMethod("removeIndex", PrimitiveToken.INT, integers.token);
+                var removeValue = cb.declareStaticMethod("removeValue", PrimitiveToken.INT, integers.token);
+                var removeBoxed = cb.declareStaticMethod("removeBoxed", PrimitiveToken.INT, integers.token);
+                var removeIndex = cb.declareStaticMethod("removeIndex", PrimitiveToken.INT, integers.token);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member7,
+                        removeValue,
                         (b, l) -> b.exec(call(l, removeObject, literal(1)))
                                 .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
                 bodies.define(
-                        member8,
+                        removeBoxed,
                         (b, l) -> b.exec(call(l, removeObject, box(PrimitiveToken.INT, literal(1))))
                                 .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
                 bodies.define(
-                        member9,
+                        removeIndex,
                         (b, l) -> b.exec(call(l, removeAt, literal(1)))
                                 .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
             }
@@ -187,15 +187,15 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member10 = cb.declareVoidStaticMethod("printObject", PrintStream_.TOKEN);
-                var member11 = cb.declareVoidStaticMethod("printString", PrintStream_.TOKEN);
+                var printObject = cb.declareVoidStaticMethod("printObject", PrintStream_.TOKEN);
+                var printString = cb.declareVoidStaticMethod("printString", PrintStream_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member10,
+                        printObject,
                         (b, out) -> b.exec(voidCall(out, printlnObject, literal("x")))
                                 .end());
                 bodies.define(
-                        member11,
+                        printString,
                         (b, out) -> b.exec(voidCall(out, PrintStream_.println_String, literal("x")))
                                 .end());
             }
@@ -215,16 +215,16 @@ class FactPinningCompileTest {
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 var mObject = cb.declareMethod("m", String_.TOKEN, Object_.TOKEN);
                 var single = cb.declareMethod("single", String_.TOKEN, Object_.TOKEN);
-                var member12 = cb.declareMethod("callObject", String_.TOKEN);
-                var member13 = cb.declareMethod("callSingle", String_.TOKEN);
+                var callObject = cb.declareMethod("callObject", String_.TOKEN);
+                var callSingle = cb.declareMethod("callSingle", String_.TOKEN);
                 // declared after the body calling m(Object) was built
                 var mString = cb.declareMethod("m", String_.TOKEN, String_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(mObject, (b, _, _) -> b.return_(literal("m(Object)")));
                 bodies.define(mString, (b, _, _) -> b.return_(literal("m(String)")));
                 bodies.define(single, (b, _, _) -> b.return_(literal("single(Object)")));
-                bodies.define(member12, (b, self) -> b.return_(call(self, mObject, literal("x"))));
-                bodies.define(member13, (b, self) -> b.return_(call(self, single, literal("x"))));
+                bodies.define(callObject, (b, self) -> b.return_(call(self, mObject, literal("x"))));
+                bodies.define(callSingle, (b, self) -> b.return_(call(self, single, literal("x"))));
             }
         });
 
@@ -242,18 +242,18 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member14 = cb.declareStaticMethod("readBase", String_.TOKEN, SUB);
-                var member15 = cb.declareStaticMethod("readSub", String_.TOKEN, SUB);
-                var member16 = cb.declareStaticMethod("writeBase", String_.TOKEN, SUB);
-                var member17 = cb.declareStaticMethod("readNew", String_.TOKEN);
+                var readBase = cb.declareStaticMethod("readBase", String_.TOKEN, SUB);
+                var readSub = cb.declareStaticMethod("readSub", String_.TOKEN, SUB);
+                var writeBase = cb.declareStaticMethod("writeBase", String_.TOKEN, SUB);
+                var readNew = cb.declareStaticMethod("readNew", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member14, (b, s) -> b.return_(field(s, NAME_OF_BASE)));
-                bodies.define(member15, (b, s) -> b.return_(field(s, NAME_OF_SUB)));
+                bodies.define(readBase, (b, s) -> b.return_(field(s, NAME_OF_BASE)));
+                bodies.define(readSub, (b, s) -> b.return_(field(s, NAME_OF_SUB)));
                 bodies.define(
-                        member16,
+                        writeBase,
                         (b, s) -> b.exec(assignField(s, NAME_OF_BASE, literal("written")))
                                 .return_(field(s, NAME_OF_BASE)));
-                bodies.define(member17, b -> b.return_(field(new_(NEW_SUB), NAME_OF_BASE)));
+                bodies.define(readNew, b -> b.return_(field(new_(NEW_SUB), NAME_OF_BASE)));
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -275,11 +275,11 @@ class FactPinningCompileTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 // Sub overrides `Base self()` with `Sub self()`: unpinned, javac would pick which2(Sub)
-                var member18 = cb.declareStaticMethod("which2", String_.TOKEN, SUB);
+                var which2 = cb.declareStaticMethod("which2", String_.TOKEN, SUB);
                 // where the type does not matter, nothing is cast
                 var member19 = cb.declareStaticMethod("self", BASE, SUB);
                 var bodies = cb.bodies();
-                bodies.define(member18, (b, s) -> b.return_(staticCall(WHICH2_BASE, call(s, SELF))));
+                bodies.define(which2, (b, s) -> b.return_(staticCall(WHICH2_BASE, call(s, SELF))));
                 bodies.define(member19, (b, s) -> b.return_(call(s, SELF)));
             }
         });
@@ -301,21 +301,21 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member20 = cb.declareStaticMethod("nullLength", PrimitiveToken.INT);
-                var member21 = cb.declareStaticMethod("nulls", String_.TOKEN);
-                var member22 = cb.declareStaticMethod("nullField", String_.TOKEN);
-                var member23 = cb.declareStaticMethod("whichNull", String_.TOKEN);
-                var member24 = cb.declareStaticMethod("whichNullObject", String_.TOKEN);
-                var member25 = cb.declareStaticMethod("pickNull", String_.TOKEN, SUB);
-                var member26 = cb.declareStaticMethod("returnNull", String_.TOKEN);
+                var nullLength = cb.declareStaticMethod("nullLength", PrimitiveToken.INT);
+                var nulls = cb.declareStaticMethod("nulls", String_.TOKEN);
+                var nullField = cb.declareStaticMethod("nullField", String_.TOKEN);
+                var whichNull = cb.declareStaticMethod("whichNull", String_.TOKEN);
+                var whichNullObject = cb.declareStaticMethod("whichNullObject", String_.TOKEN);
+                var pickNull = cb.declareStaticMethod("pickNull", String_.TOKEN, SUB);
+                var returnNull = cb.declareStaticMethod("returnNull", String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(member20, b -> b.return_(call(literalNull(String_.TOKEN), String_.length)));
-                bodies.define(member21, b -> b.return_(concat(literalNull(String_.TOKEN), literalNull(String_.TOKEN))));
-                bodies.define(member22, b -> b.return_(field(literalNull(BASE), NAME_OF_BASE)));
-                bodies.define(member23, b -> b.return_(staticCall(WHICH_STRING, literalNull(String_.TOKEN))));
-                bodies.define(member24, b -> b.return_(staticCall(WHICH_OBJECT, literalNull(Object_.TOKEN))));
-                bodies.define(member25, (b, s) -> b.return_(call(s, PICK_OBJECT, literalNull(String_.TOKEN))));
-                bodies.define(member26, b -> b.return_(literalNull(String_.TOKEN)));
+                bodies.define(nullLength, b -> b.return_(call(literalNull(String_.TOKEN), String_.length)));
+                bodies.define(nulls, b -> b.return_(concat(literalNull(String_.TOKEN), literalNull(String_.TOKEN))));
+                bodies.define(nullField, b -> b.return_(field(literalNull(BASE), NAME_OF_BASE)));
+                bodies.define(whichNull, b -> b.return_(staticCall(WHICH_STRING, literalNull(String_.TOKEN))));
+                bodies.define(whichNullObject, b -> b.return_(staticCall(WHICH_OBJECT, literalNull(Object_.TOKEN))));
+                bodies.define(pickNull, (b, s) -> b.return_(call(s, PICK_OBJECT, literalNull(String_.TOKEN))));
+                bodies.define(returnNull, b -> b.return_(literalNull(String_.TOKEN)));
             }
         });
         Object sub = compiled.instantiate(Fixtures.SUB_NAME);
@@ -351,26 +351,26 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member27 = cb.declareStaticMethod("empty", strings.token);
+                var empty = cb.declareStaticMethod("empty", strings.token);
                 // the review's probe E: rendered `List<String>.of().size()`
-                var member28 = cb.declareStaticMethod("size", PrimitiveToken.INT);
-                var member29 = cb.declareStaticMethod("one", strings.token);
-                var member30 = cb.declareStaticMethod("none", strings.token);
-                var member31 = cb.declareStaticMethod("label", String_.TOKEN);
-                var member32 = cb.declareVoidStaticMethod("relabel");
-                var member33 = cb.declareMethod(
+                var size = cb.declareStaticMethod("size", PrimitiveToken.INT);
+                var one = cb.declareStaticMethod("one", strings.token);
+                var none = cb.declareStaticMethod("none", strings.token);
+                var label = cb.declareStaticMethod("label", String_.TOKEN);
+                var relabel = cb.declareVoidStaticMethod("relabel");
+                var lengths = cb.declareMethod(
                         "lengths", integerList.token, new Stream_<>(String_.TOKEN).token, map.param1());
                 var bodies = cb.bodies();
-                bodies.define(member27, b -> b.return_(staticCall(List_.of(String_.TOKEN))));
-                bodies.define(member28, b -> b.return_(call(staticCall(List_.of(String_.TOKEN)), strings.size)));
-                bodies.define(member29, b -> b.return_(staticCall(List_.of_E(String_.TOKEN), literal("a"))));
-                bodies.define(member30, b -> b.return_(staticCall(Fixtures.NONE)));
-                bodies.define(member31, b -> b.return_(staticField(LABEL)));
+                bodies.define(empty, b -> b.return_(staticCall(List_.of(String_.TOKEN))));
+                bodies.define(size, b -> b.return_(call(staticCall(List_.of(String_.TOKEN)), strings.size)));
+                bodies.define(one, b -> b.return_(staticCall(List_.of_E(String_.TOKEN), literal("a"))));
+                bodies.define(none, b -> b.return_(staticCall(Fixtures.NONE)));
+                bodies.define(label, b -> b.return_(staticField(LABEL)));
                 bodies.define(
-                        member32,
+                        relabel,
                         b -> b.exec(assignStaticField(LABEL, literal("relabeled")))
                                 .end());
-                bodies.define(member33, (b, _, s, f) -> b.return_(call(call(s, map, f), integers.toList)));
+                bodies.define(lengths, (b, _, s, f) -> b.return_(call(call(s, map, f), integers.toList)));
             }
         });
 
@@ -408,25 +408,24 @@ class FactPinningCompileTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 var items = cb.declareField("items", arrayList.token);
-                var member34 = cb.declareStaticMethod("local", PrimitiveToken.INT);
-                var member35 = cb.declareStaticMethod("returned", arrayList.token);
-                var member36 = cb.declareStaticMethod("upcast", strings.token);
-                var member37 = cb.declareStaticMethod("receiver", PrimitiveToken.INT);
-                var member38 = cb.declareStaticMethod("wider", PrimitiveToken.INT);
-                var member39 = cb.declareStaticMethod("object", Object_.TOKEN);
+                var local = cb.declareStaticMethod("local", PrimitiveToken.INT);
+                var returned = cb.declareStaticMethod("returned", arrayList.token);
+                var upcast = cb.declareStaticMethod("upcast", strings.token);
+                var receiver = cb.declareStaticMethod("receiver", PrimitiveToken.INT);
+                var wider = cb.declareStaticMethod("wider", PrimitiveToken.INT);
+                var object = cb.declareStaticMethod("object", Object_.TOKEN);
                 var member40 = cb.declareMethod("items", arrayList.token);
                 var bodies = cb.bodies();
                 bodies.initialize(items, new_(arrayList.new_));
                 bodies.define(
-                        member34,
+                        local,
                         b -> b.let(arrayList.token, new_(arrayList.new_), v -> b.return_(call(v, strings.size))));
-                bodies.define(member35, b -> b.return_(new_(arrayList.new_)));
-                bodies.define(member36, b -> b.return_(new_(arrayList.new_)));
-                bodies.define(member37, b -> b.return_(call(new_(arrayList.new_), strings.size)));
+                bodies.define(returned, b -> b.return_(new_(arrayList.new_)));
+                bodies.define(upcast, b -> b.return_(new_(arrayList.new_)));
+                bodies.define(receiver, b -> b.return_(call(new_(arrayList.new_), strings.size)));
                 bodies.define(
-                        member38,
-                        b -> b.let(strings.token, new_(arrayList.new_), v -> b.return_(call(v, strings.size))));
-                bodies.define(member39, b -> b.return_(new_(Object_.new_)));
+                        wider, b -> b.let(strings.token, new_(arrayList.new_), v -> b.return_(call(v, strings.size))));
+                bodies.define(object, b -> b.return_(new_(Object_.new_)));
                 bodies.define(member40, (b, self) -> b.return_(field(self, items)));
             }
         });
@@ -458,17 +457,17 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member41 = cb.declareStaticMethod("cast", anyList, Object_.TOKEN);
-                var member42 = cb.declareStaticMethod("lists", PrimitiveToken.INT);
+                var cast = cb.declareStaticMethod("cast", anyList, Object_.TOKEN);
+                var lists = cb.declareStaticMethod("lists", PrimitiveToken.INT);
                 // castChecked to the operand's own type casts nothing
-                var member43 = cb.declareStaticMethod("same", String_.TOKEN, String_.TOKEN);
+                var same = cb.declareStaticMethod("same", String_.TOKEN, String_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member41,
+                        cast,
                         (b, o) ->
                                 b.ifInstanceOfElse(o, anyList, Body::return_, e -> e.return_(castChecked(anyList, o))));
-                bodies.define(member42, b -> b.return_(length(anyLists, newArray(anyLists, literal(2)))));
-                bodies.define(member43, (b, s) -> b.return_(castChecked(String_.TOKEN, s)));
+                bodies.define(lists, b -> b.return_(length(anyLists, newArray(anyLists, literal(2)))));
+                bodies.define(same, (b, s) -> b.return_(castChecked(String_.TOKEN, s)));
             }
         });
 
@@ -493,19 +492,19 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                var member44 = cb.declareStaticMethod("narrow", arrayOfStrings.token, strings.token);
-                var member45 = cb.declareStaticMethod("size", PrimitiveToken.INT, strings.token);
-                var member46 = cb.declareStaticMethod("list", strings.token, collectionOfStrings);
+                var narrow = cb.declareStaticMethod("narrow", arrayOfStrings.token, strings.token);
+                var size = cb.declareStaticMethod("size", PrimitiveToken.INT, strings.token);
+                var list = cb.declareStaticMethod("list", strings.token, collectionOfStrings);
                 var bodies = cb.bodies();
-                bodies.define(member44, (b, l) -> b.return_(castChecked(arrayOfStrings.token, l)));
+                bodies.define(narrow, (b, l) -> b.return_(castChecked(arrayOfStrings.token, l)));
                 bodies.define(
-                        member45,
+                        size,
                         (b, l) -> b.ifInstanceOfElse(
                                 l,
                                 arrayOfStrings.token,
                                 (t, a) -> t.return_(call(a, strings.size)),
                                 e -> e.return_(literal(-1))));
-                bodies.define(member46, (b, c) -> b.return_(castChecked(strings.token, c)));
+                bodies.define(list, (b, c) -> b.return_(castChecked(strings.token, c)));
             }
         });
 
@@ -532,25 +531,25 @@ class FactPinningCompileTest {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
                 // Integer on both sides: no unboxing of the null branch
-                var member47 = cb.declareStaticMethod("maybe", Integer_.TOKEN, PrimitiveToken.BOOLEAN);
+                var maybe = cb.declareStaticMethod("maybe", Integer_.TOKEN, PrimitiveToken.BOOLEAN);
                 // different reference types: each cast to the type of the conditional
-                var member48 = cb.declareStaticMethod("either", Object_.TOKEN, PrimitiveToken.BOOLEAN);
+                var either = cb.declareStaticMethod("either", Object_.TOKEN, PrimitiveToken.BOOLEAN);
                 // a conditional argument selects the overload of its type
-                var member49 = cb.declareStaticMethod("which", String_.TOKEN, PrimitiveToken.BOOLEAN);
+                var which = cb.declareStaticMethod("which", String_.TOKEN, PrimitiveToken.BOOLEAN);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member47,
+                        maybe,
                         (b, flag) -> b.return_(cond(
                                 flag,
                                 box(PrimitiveToken.INT, literal(1)),
                                 literalNull(Integer_.TOKEN),
                                 Integer_.TOKEN)));
                 bodies.define(
-                        member48,
+                        either,
                         (b, flag) -> b.return_(
                                 cond(flag, literal("a"), box(PrimitiveToken.INT, literal(1)), Object_.TOKEN)));
                 bodies.define(
-                        member49,
+                        which,
                         (b, flag) -> b.return_(
                                 staticCall(WHICH_STRING, cond(flag, literal("a"), literal("b"), String_.TOKEN))));
             }
@@ -579,16 +578,16 @@ class FactPinningCompileTest {
                 // "a".equals((Object) true): the cast lowering adds is in a call, never a constant
                 var member50 = cb.declareStaticMethod("call", PrimitiveToken.INT);
                 // a conditional cast to CharSequence is not a constant expression (JLS 15.29)
-                var member51 = cb.declareStaticMethod("charSequence", PrimitiveToken.INT);
+                var charSequence = cb.declareStaticMethod("charSequence", PrimitiveToken.INT);
                 // (String) null is not a constant either
-                var member52 = cb.declareStaticMethod("nulls", PrimitiveToken.INT);
+                var nulls = cb.declareStaticMethod("nulls", PrimitiveToken.INT);
                 var bodies = cb.bodies();
                 bodies.define(
                         member50,
                         b -> b.while_(call(literal("a"), Object_.equals_Object, literal(true)), (_, _) -> {})
                                 .return_(literal(1)));
                 bodies.define(
-                        member51,
+                        charSequence,
                         b -> b.while_(
                                         eqRef(
                                                 cond(literal(true), literal("a"), literal("b"), CharSequence_.TOKEN),
@@ -596,7 +595,7 @@ class FactPinningCompileTest {
                                         Body::break_)
                                 .return_(literal(2)));
                 bodies.define(
-                        member52,
+                        nulls,
                         b -> b.while_(eqRef(literalNull(String_.TOKEN), literalNull(String_.TOKEN)), Body::break_)
                                 .return_(literal(3)));
             }

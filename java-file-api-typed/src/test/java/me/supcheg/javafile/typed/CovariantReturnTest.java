@@ -73,17 +73,17 @@ class CovariantReturnTest {
                             oh.implements_(Worded_.implement(h.self()).get(get));
                     var cb = oh.members();
                     // the fact of the class is of the narrower result, those of the interfaces of theirs
-                    var member1 = cb.declareMethod("own", PrimitiveToken.INT);
-                    var member2 = cb.declareMethod("worded", PrimitiveToken.INT);
-                    var member3 = cb.declareMethod("origin", Object_.TOKEN);
+                    var own = cb.declareMethod("own", PrimitiveToken.INT);
+                    var worded = cb.declareMethod("worded", PrimitiveToken.INT);
+                    var origin = cb.declareMethod("origin", Object_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                    bodies.define(member1, (b, self) -> b.return_(call(call(self, get.method()), String_.length)));
+                    bodies.define(own, (b, self) -> b.return_(call(call(self, get.method()), String_.length)));
                     bodies.define(
-                            member2,
+                            worded,
                             (b, self) ->
                                     b.return_(call(call(asWorded.apply(self), Worded_.get), CharSequence_.length)));
-                    bodies.define(member3, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
+                    bodies.define(origin, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
                 }
             }));
 
@@ -106,10 +106,10 @@ class CovariantReturnTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var clone = cb.declareOverride(cb.protected_(Object_.clone), cb.self());
-                    var member4 = cb.declareMethod("twice", cb.self());
+                    var twice = cb.declareMethod("twice", cb.self());
                     var bodies = cb.bodies();
                     bodies.define(clone, (b, self) -> b.return_(self));
-                    bodies.define(member4, (b, self) -> b.return_(call(call(self, clone), clone)));
+                    bodies.define(twice, (b, self) -> b.return_(call(call(self, clone), clone)));
                 }
             }));
 
@@ -132,15 +132,16 @@ class CovariantReturnTest {
                     // Object make()
                     var make = cb.declareOverride(Maker_.make, String_.TOKEN);
                     // Collection<String> words(): an ArrayList<String> is one, a List<String> too
-                    var own2 = cb.declareOverride(Maker_.words, strings.token);
+                    var words = cb.declareOverride(Maker_.words, strings.token);
                     // Collection<? extends CharSequence> texts(): of the very type argument alone
-                    var own3 = cb.declareOverride(sh.asSuper(), Maker_.texts, new List_<>(CharSequence_.TOKEN).token);
-                    var member5 = cb.declareMethod("made", PrimitiveToken.INT);
+                    var asSuper =
+                            cb.declareOverride(sh.asSuper(), Maker_.texts, new List_<>(CharSequence_.TOKEN).token);
+                    var made = cb.declareMethod("made", PrimitiveToken.INT);
                     var bodies = cb.bodies(ctor1, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                     bodies.define(make, (b, self) -> b.return_(literal("mine")));
-                    bodies.define(own2, (b, self) -> b.return_(new_(strings.new_)));
-                    bodies.define(own3, (b, self) -> b.return_(literalNullList()));
-                    bodies.define(member5, (b, self) -> b.return_(call(call(self, make), String_.length)));
+                    bodies.define(words, (b, self) -> b.return_(new_(strings.new_)));
+                    bodies.define(asSuper, (b, self) -> b.return_(literalNullList()));
+                    bodies.define(made, (b, self) -> b.return_(call(call(self, make), String_.length)));
                 }
 
                 private static Expr<java.util.List<CharSequence>> literalNullList() {
@@ -195,29 +196,28 @@ class CovariantReturnTest {
                     var cb = oh.members();
                     var whichObject = cb.declareMethod("which", String_.TOKEN, Object_.TOKEN);
                     var whichString = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
-                    var member6 = cb.declareMethod("byWitness", String_.TOKEN);
-                    var member7 = cb.declareMethod("byOwn", String_.TOKEN);
+                    var byWitness = cb.declareMethod("byWitness", String_.TOKEN);
+                    var byOwn = cb.declareMethod("byOwn", String_.TOKEN);
                     // == of an Object and an Integer: javac rejects that of a String and an Integer
-                    var member8 = cb.declareMethod("same", PrimitiveToken.BOOLEAN, Integer_.TOKEN);
+                    var same = cb.declareMethod("same", PrimitiveToken.BOOLEAN, Integer_.TOKEN);
                     // the receiver of a method with parameters: String has overloads Object has not
-                    var member9 = cb.declareMethod("equal", PrimitiveToken.BOOLEAN, Object_.TOKEN);
-                    var member10 = cb.declareMethod("text", String_.TOKEN);
+                    var equal = cb.declareMethod("equal", PrimitiveToken.BOOLEAN, Object_.TOKEN);
+                    var text = cb.declareMethod("text", String_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
                     bodies.define(whichObject, (b, self, v) -> b.return_(literal("object")));
                     bodies.define(whichString, (b, self, v) -> b.return_(literal("string")));
                     bodies.define(
-                            member6,
+                            byWitness,
                             (b, self) -> b.return_(call(self, whichObject, call(asOrigin.apply(self), Origin_.get))));
-                    bodies.define(member7, (b, self) -> b.return_(call(self, whichString, call(self, get.method()))));
+                    bodies.define(byOwn, (b, self) -> b.return_(call(self, whichString, call(self, get.method()))));
+                    bodies.define(same, (b, self, n) -> b.return_(eqRef(call(asOrigin.apply(self), Origin_.get), n)));
                     bodies.define(
-                            member8, (b, self, n) -> b.return_(eqRef(call(asOrigin.apply(self), Origin_.get), n)));
-                    bodies.define(
-                            member9,
+                            equal,
                             (b, self, o) ->
                                     b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.equals_Object, o)));
                     bodies.define(
-                            member10,
+                            text,
                             (b, self) -> b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.toString)));
                 }
             }));
@@ -248,24 +248,24 @@ class CovariantReturnTest {
                     var objects = ArrayToken.of(Object_.TOKEN);
                     var strings = ArrayToken.of(String_.TOKEN);
                     // Object[] all() of Origin as String[] all(), Exception failure() as IllegalStateException
-                    var own5 = cb.declareOverride(asOrigin, Origin_.all, strings);
-                    var own6 = cb.declareOverride(asOrigin, Origin_.failure, IllegalStateException_.TOKEN);
+                    var all = cb.declareOverride(asOrigin, Origin_.all, strings);
+                    var failure = cb.declareOverride(asOrigin, Origin_.failure, IllegalStateException_.TOKEN);
                     // an Object stored into what javac would type a String[]
-                    var member11 = cb.declareVoidMethod("store", Object_.TOKEN);
+                    var store = cb.declareVoidMethod("store", Object_.TOKEN);
                     // an Exception thrown: of an IllegalStateException javac would say no IOException is
-                    var member12 = cb.declareMethod("caught", String_.TOKEN);
+                    var caught = cb.declareMethod("caught", String_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                    bodies.define(own5, (b, self) -> b.return_(newArray(strings, literal(1))));
+                    bodies.define(all, (b, self) -> b.return_(newArray(strings, literal(1))));
                     bodies.define(
-                            own6, (b, self) -> b.return_(new_(IllegalStateException_.new_String, literal("mine"))));
+                            failure, (b, self) -> b.return_(new_(IllegalStateException_.new_String, literal("mine"))));
                     bodies.define(
-                            member11,
+                            store,
                             (b, self, value) -> b.exec(assignAt(
                                             objects, call(asOrigin.apply(self), Origin_.all), literal(0), value))
                                     .end());
                     bodies.define(
-                            member12,
+                            caught,
                             (b, self) -> b.tryTerminated(
                                     handlers -> handlers.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal("io")))
                                             .catch_(Exception_.TOKEN, (c, _) -> c.return_(literal("caught"))),
@@ -332,8 +332,8 @@ class CovariantReturnTest {
                             Upcast<Self, Counted> asCounted = oh.implements_(Counted_.implement(h.self()));
                             oh.implements_(Measured_.implement(h.self()));
                             var cb102 = oh.members();
-                            var own103 = cb102.declareOverride(asCounted, Counted_.size);
-                            cb102.bodies().define(own103, (b, self) -> b.return_(literal(1)));
+                            var size = cb102.declareOverride(asCounted, Counted_.size);
+                            cb102.bodies().define(size, (b, self) -> b.return_(literal(1)));
                         }
                     }),
                     "its result is long, and that of the method int: the return types are incompatible"
@@ -351,9 +351,9 @@ class CovariantReturnTest {
                             sh.implements_(Resetting_.implement(h.self()));
                             var ctor7 = sh.declareConstructor();
                             var cb = sh.members();
-                            var own8 = cb.declareOverride(Maker_.reset);
+                            var reset = cb.declareOverride(Maker_.reset);
                             var bodies = cb.bodies(ctor7, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
-                            bodies.define(own8, (b, self) -> b.end());
+                            bodies.define(reset, (b, self) -> b.end());
                         }
                     }),
                     "its result is java.lang.Object, and that of the method void: the return types are"
@@ -370,9 +370,9 @@ class CovariantReturnTest {
                             Upcast<Self, Resetting> asResetting = sh.implements_(Resetting_.implement(h.self()));
                             var ctor9 = sh.declareConstructor();
                             var cb = sh.members();
-                            var own10 = cb.declareOverride(asResetting, Resetting_.reset);
+                            var reset = cb.declareOverride(asResetting, Resetting_.reset);
                             var bodies = cb.bodies(ctor9, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
-                            bodies.define(own10, (b, self) -> b.return_(literal("")));
+                            bodies.define(reset, (b, self) -> b.return_(literal("")));
                         }
                     }),
                     "its result is void, and that of the method java.lang.Object: the return types are"
@@ -400,9 +400,9 @@ class CovariantReturnTest {
                             var ctor11 = sh.declareConstructor();
                             var cb = sh.members();
                             var strings = new List_<>(String_.TOKEN).token;
-                            var own12 = cb.declareOverride(Maker_.texts, strings);
+                            var texts = cb.declareOverride(Maker_.texts, strings);
                             var bodies = cb.bodies(ctor11, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
-                            bodies.define(own12, (b, self) -> b.return_(Expressions.literalNull(strings)));
+                            bodies.define(texts, (b, self) -> b.return_(Expressions.literalNull(strings)));
                         }
                     }),
                     "whose type arguments are not known to be contained by those of"
