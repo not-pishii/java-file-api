@@ -90,7 +90,11 @@
     Stated.class,
     Planted.class,
     Defaulted.class,
-    Carrying.class
+    Carrying.class,
+    Spreading.class,
+    Scattering.class,
+    Taking.class,
+    Gathered.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -150,6 +154,10 @@ import me.supcheg.javafile.typed.fixtures.Stated;
 import me.supcheg.javafile.typed.fixtures.Planted;
 import me.supcheg.javafile.typed.fixtures.Defaulted;
 import me.supcheg.javafile.typed.fixtures.Carrying;
+import me.supcheg.javafile.typed.fixtures.Spreading;
+import me.supcheg.javafile.typed.fixtures.Scattering;
+import me.supcheg.javafile.typed.fixtures.Taking;
+import me.supcheg.javafile.typed.fixtures.Gathered;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

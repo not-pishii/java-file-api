@@ -8,6 +8,7 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
@@ -33,7 +34,9 @@ import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody0;
 import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody1;
 import me.supcheg.javafile.typed.TypedClassBuilder.InstanceBody2;
@@ -507,7 +510,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
         requireOpen(what);
         requireInScope(member);
         registry.member(member);
-        declared(new Slot.Declared(member, thrown, Slot.Kind.DECLARES));
+        declared(new Slot.Declared(member, thrown, Slot.Kind.DECLARES, Heritage.Arity.FIXED));
         return member;
     }
 
@@ -524,8 +527,7 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
         requireInScope(own);
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
         own.resultType().ifPresent(target::verify);
-        registry.override(own);
-        declared(new Slot.Declared(own, thrown, Slot.Kind.OVERRIDES));
+        declared(new Slot.Declared(own, thrown, Slot.Kind.OVERRIDES, registry.override(own)));
         return own;
     }
 
@@ -583,10 +585,19 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
         Invocable fact = slot.fact();
         Lowering lowering = new Lowering(
                 target, new Lowering.Place.InClass(self, scope(fact.kind(), "the body of " + fact)), fact.resultType());
-        List<Param> coreParams = params.stream()
+        List<Param> declared = params.stream()
                 .map(param ->
                         new Param(lowering.declareUpfront(param), param.type().typeRef()))
                 .toList();
+        List<Param> coreParams =
+                switch (slot.arity()) {
+                    case FIXED -> declared;
+                    case VARIABLE ->
+                        Stream.concat(
+                                        declared.stream().limit(declared.size() - 1L),
+                                        Stream.of(variable(declared.getLast())))
+                                .toList();
+                };
         CodeBody code = lowering.lowerBlock(root.instrs());
         List<ClassOrInterfaceTypeRef> throwsClause = slot.thrown().stream()
                 .map(type -> lowering.named(type).typeRef())
@@ -622,6 +633,17 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
                         code,
                         throwsClause,
                         Optional.empty());
+        };
+    }
+
+    /// The last parameter of a method of variable arity, `T... v`: its type is the array `T[]` to
+    /// the body, and is written by its component.
+    private static Param variable(Param last) {
+        return switch (last.type()) {
+            case ArrayTypeRef array -> new Param(last.name(), array.component(), last.annotations(), true);
+            case PrimitiveTypeRef _, ClassOrInterfaceTypeRef _ ->
+                throw new IllegalStateException(
+                        "the last parameter of a method of variable arity is an array, got " + last.type());
         };
     }
 
@@ -662,7 +684,10 @@ public abstract sealed class MemberBuilder<Self> extends Declarations<Self>
         /// @param fact its fact
         /// @param thrown the exception classes of its `throws` clause
         /// @param kind whether it overrides
-        record Declared(Invocable fact, List<ClassToken<? extends Throwable>> thrown, Kind kind) implements Slot {
+        /// @param arity whether its last parameter is of variable arity: as that of the methods it
+        ///     overrides is, and never of a method declared by its name
+        record Declared(Invocable fact, List<ClassToken<? extends Throwable>> thrown, Kind kind, Heritage.Arity arity)
+                implements Slot {
             public Declared {
                 thrown = List.copyOf(thrown);
             }

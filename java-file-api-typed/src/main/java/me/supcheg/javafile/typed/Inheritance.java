@@ -511,16 +511,19 @@ final class Inheritance {
                 case PROTECTED, PACKAGE ->
                     Optional.of("it is not public, and the method of an interface is: weaker access (JLS 8.4.8.3)");
                 case PUBLIC ->
-                    !sameResult(other)
-                            ? Optional.of("its result is not the one the other has — a result that is a subtype"
-                                    + " would do (JLS 8.4.5), which the typed layer proves by the fact of a"
-                                    + " method alone, and there is none here")
-                            : undeclaredBy(other).isEmpty()
-                                    ? Optional.empty()
-                                    : Optional.of("it declares the exception "
-                                            + String.join(", ", undeclaredBy(other))
-                                            + ", which the other does not (JLS 8.4.8.3) — an unchecked one"
-                                            + " would do, which the typed layer does not tell here");
+                    declared.arity() != other.declared().arity()
+                            ? Optional.of("the last parameter of one is of variable arity and that of the other"
+                                    + " an array, of which javac warns")
+                            : !sameResult(other)
+                                    ? Optional.of("its result is not the one the other has — a result that is a subtype"
+                                            + " would do (JLS 8.4.5), which the typed layer proves by the fact of a"
+                                            + " method alone, and there is none here")
+                                    : undeclaredBy(other).isEmpty()
+                                            ? Optional.empty()
+                                            : Optional.of("it declares the exception "
+                                                    + String.join(", ", undeclaredBy(other))
+                                                    + ", which the other does not (JLS 8.4.8.3) — an unchecked one"
+                                                    + " would do, which the typed layer does not tell here");
             };
         }
     }
@@ -637,6 +640,14 @@ final class Inheritance {
                                     .distinct()
                                     .toList())
                     .standing();
+        }
+
+        /// Whether the last parameter of the method is of variable arity: as the first declaration
+        /// has it, which an override is held to be of every one ([SignatureRegistry]).
+        ///
+        /// @return the arity
+        Heritage.Arity arity() {
+            return entries.getFirst().method().declared().arity();
         }
 
         /// The declaration that tells the standing: that of a class the heir reaches, which stands

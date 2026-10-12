@@ -500,11 +500,25 @@ class EntryTest {
                                 .entry())
                         .reason())
                 .isEqualTo("it has no constructor a class of another package calls");
-        assertThat(((Entry.Refused) ofLibrary("p.Many", "package p; public interface Many { void m(String... more); }")
+        // a method of variable arity is overridden by one — unless javac would warn of the override
+        assertThat(ofLibrary("p.Many", "package p; public interface Many { void m(String... more); }")
+                        .entry())
+                .isInstanceOf(Entry.Offered.class);
+        assertThat(((Entry.Refused)
+                                ofLibrary("p.Spread", "package p; public interface Spread<T> { void m(T... more); }")
+                                        .entry())
+                        .reason())
+                .isEqualTo("its abstract method m(#0[]) is of variable arity with an element type that is not"
+                        + " reifiable, so javac warns of heap pollution where a generated method overrides it");
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Either",
+                                        "package p; public interface Either extends Spreading, Taking {}",
+                                        "package p; public interface Spreading { void m(String... more); }",
+                                        "package p; public interface Taking { void m(String[] all); }")
                                 .entry())
                         .reason())
-                .isEqualTo("its abstract method m(java.lang.String[]) is of variable arity, and a generated method is"
-                        + " not yet");
+                .isEqualTo("its abstract method m(java.lang.String[]) is of variable arity in one of p.Spreading and"
+                        + " p.Taking and not in another, so javac warns of whichever a generated method is");
         assertThat(((Entry.Refused) ofLibrary(
                                         "p.Raw",
                                         "package p; public interface Raw extends Typed, Erased {}",

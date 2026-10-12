@@ -34,7 +34,7 @@ import p.Spread;
 ///
 /// A member [Spread] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// No generated class extends or implements [Spread]: its abstract method accept(#0&#91;&#93;) is of variable arity, and a generated method is not yet.
+/// No generated class extends or implements [Spread]: its abstract method accept(#0&#91;&#93;) is of variable arity with an element type that is not reifiable, so javac warns of heap pollution where a generated method overrides it.
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
