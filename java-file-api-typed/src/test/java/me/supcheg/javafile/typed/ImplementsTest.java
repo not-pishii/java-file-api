@@ -78,18 +78,15 @@ class ImplementsTest {
                                     b.exec(assignField(self, rank, literal(7))).end());
                     cb.override(Object_.toString, (b, self) -> b.return_(literal("ranked")));
                     // by the fact of the class, and by that of the interface through the witness
-                    cb.method(
-                            "own",
-                            PrimitiveToken.INT,
-                            cb.self(),
-                            (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
-                    cb.method(
-                            "witnessed",
-                            PrimitiveToken.INT,
-                            cb.self(),
+                    var member1 = cb.declareMethod("own", PrimitiveToken.INT, cb.self());
+                    var member2 = cb.declareMethod("witnessed", PrimitiveToken.INT, cb.self());
+                    var member3 = cb.declareVoidMethod("ranked");
+                    cb.define(member1, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
+                    cb.define(
+                            member2,
                             (b, self, other) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, other)));
-                    cb.voidMethod(
-                            "ranked",
+                    cb.define(
+                            member3,
                             (b, self) -> b.exec(Expressions.voidCall(asRunnable.apply(self), Runnable_.run))
                                     .end());
                 }
@@ -123,13 +120,10 @@ class ImplementsTest {
                             oh.implements_(CALLABLE.implement(h.self()).call(call));
                     var cb = oh.body();
                     cb.define(call.method(), (b, self) -> b.return_(literal("called")));
-                    cb.throwing(IOException_.TOKEN)
-                            .method("narrow", String_.TOKEN, (b, self) -> b.return_(call(self, call.method())));
-                    cb.throwing(Exception_.TOKEN)
-                            .method(
-                                    "wide",
-                                    String_.TOKEN,
-                                    (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
+                    var member4 = cb.throwing(IOException_.TOKEN).declareMethod("narrow", String_.TOKEN);
+                    var member5 = cb.throwing(Exception_.TOKEN).declareMethod("wide", String_.TOKEN);
+                    cb.define(member4, (b, self) -> b.return_(call(self, call.method())));
+                    cb.define(member5, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
                 }
             }));
 

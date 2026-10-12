@@ -59,28 +59,32 @@ class NarrowedCallTest {
                 var objects = new List_<>(Object_.TOKEN).token;
                 cb.define(get.method(), (b, self) -> b.return_(literal("mine")));
                 cb.override(asOrigin, Origin_.each, objects, (b, self) -> b.return_(literalNull(objects)));
-                var whichObject =
-                        cb.method("which", String_.TOKEN, Object_.TOKEN, (b, self, v) -> b.return_(literal("object")));
-                cb.method("which", String_.TOKEN, String_.TOKEN, (b, self, v) -> b.return_(literal("string")));
+                var whichObject = cb.declareMethod("which", String_.TOKEN, Object_.TOKEN);
+                var member1 = cb.declareMethod("which", String_.TOKEN, String_.TOKEN);
                 // (Integer) of a String does not compile, of an Object fails when run
-                cb.method(
-                        "cast",
-                        Integer_.TOKEN,
-                        (b, self) -> b.return_(castChecked(Integer_.TOKEN, call(asOrigin.apply(self), Origin_.get))));
+                var member2 = cb.declareMethod("cast", Integer_.TOKEN);
                 // instanceof Integer of a String does not compile
-                cb.method(
-                        "tested",
-                        String_.TOKEN,
+                var member3 = cb.declareMethod("tested", String_.TOKEN);
+                // a conditional of two Strings is a String, and which(String) its overload
+                var member4 = cb.declareMethod("chosen", String_.TOKEN, PrimitiveToken.BOOLEAN);
+                // new Picked(String) beside new Picked(Object)
+                var member5 = cb.declareMethod("made", String_.TOKEN);
+                // the iterated expression is of whatever Iterable the class has it for
+                var member6 = cb.declareMethod("counted", PrimitiveToken.INT);
+                cb.define(whichObject, (b, self, v) -> b.return_(literal("object")));
+                cb.define(member1, (b, self, v) -> b.return_(literal("string")));
+                cb.define(
+                        member2,
+                        (b, self) -> b.return_(castChecked(Integer_.TOKEN, call(asOrigin.apply(self), Origin_.get))));
+                cb.define(
+                        member3,
                         (b, self) -> b.ifInstanceOfElse(
                                 call(asOrigin.apply(self), Origin_.get),
                                 Integer_.TOKEN,
                                 (t, _) -> t.return_(literal("integer")),
                                 e -> e.return_(literal("other"))));
-                // a conditional of two Strings is a String, and which(String) its overload
-                cb.method(
-                        "chosen",
-                        String_.TOKEN,
-                        PrimitiveToken.BOOLEAN,
+                cb.define(
+                        member4,
                         (b, self, flag) -> b.return_(call(
                                 self,
                                 whichObject,
@@ -89,16 +93,12 @@ class NarrowedCallTest {
                                         call(asOrigin.apply(self), Origin_.get),
                                         call(asOrigin.apply(self), Origin_.get),
                                         Object_.TOKEN))));
-                // new Picked(String) beside new Picked(Object)
-                cb.method(
-                        "made",
-                        String_.TOKEN,
+                cb.define(
+                        member5,
                         (b, self) -> b.return_(field(
                                 new_(Picked_.new_Object, call(asOrigin.apply(self), Origin_.get)), Picked_.which)));
-                // the iterated expression is of whatever Iterable the class has it for
-                cb.method(
-                        "counted",
-                        PrimitiveToken.INT,
+                cb.define(
+                        member6,
                         (b, self) -> b.letVar(
                                 PrimitiveToken.INT,
                                 literal(0),
@@ -134,10 +134,9 @@ class NarrowedCallTest {
                         var sh = h.extends_(Maker_.extend(h.self()));
                         var cb = began(sh, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                         var fault = cb.protected_(Maker_.fault);
-                        cb.method(
-                                "f",
-                                String_.TOKEN,
-                                (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
+                        var member7 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(
+                                member7, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
                     }
                 }),
                 "bind the result to a variable with let first",
@@ -150,9 +149,9 @@ class NarrowedCallTest {
                 var sh = h.extends_(Maker_.extend(h.self()));
                 var cb = began(sh, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
                 var fault = cb.protected_(Maker_.fault);
-                cb.method(
-                        "f",
-                        String_.TOKEN,
+                var member8 = cb.declareMethod("f", String_.TOKEN);
+                cb.define(
+                        member8,
                         (b, self) -> b.let(
                                 RuntimeException_.TOKEN, call(cb.asSuper().apply(self), fault), e -> b.throw_(e)));
             }

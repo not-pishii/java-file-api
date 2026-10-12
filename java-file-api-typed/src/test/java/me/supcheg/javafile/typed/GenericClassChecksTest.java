@@ -59,7 +59,8 @@ class GenericClassChecksTest {
             @Override
             public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var cb = h.extendsObject().body();
-                cb.voidStaticMethod("m", b -> body.build(b, t, cb));
+                var member1 = cb.declareVoidStaticMethod("m");
+                cb.define(member1, b -> body.build(b, t, cb));
             }
         });
     }
@@ -175,8 +176,10 @@ class GenericClassChecksTest {
                         @Override
                         public <Self, T> void build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             var cb = h.extendsObject().body();
-                            var ctor = cb.constructor((b, self) -> b.end());
-                            cb.voidStaticMethod("m", b -> b.let(Object_.TOKEN, new_(ctor), o -> b.end()));
+                            var ctor = cb.declareConstructor();
+                            var member2 = cb.declareVoidStaticMethod("m");
+                            cb.define(ctor, (b, self) -> b.end());
+                            cb.define(member2, b -> b.let(Object_.TOKEN, new_(ctor), o -> b.end()));
                         }
                     }),
                     "the type parameter T, which me.supcheg.example.Probe<T> mentions, is not in scope in the body of",
@@ -236,7 +239,8 @@ class GenericClassChecksTest {
                                     var cb = h.extendsObject().body();
                                     var list = new ArrayList_<>(t);
                                     cb.field("items", list.token, new_(list.new_));
-                                    cb.voidStaticMethod("m", b -> b.let(Object_.TOKEN, literal("x"), o -> b.end()));
+                                    var member3 = cb.declareVoidStaticMethod("m");
+                                    cb.define(member3, b -> b.let(Object_.TOKEN, literal("x"), o -> b.end()));
                                 }
                             })
                             .render())
@@ -250,7 +254,8 @@ class GenericClassChecksTest {
         return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> void build(TypedClassBuilder<Self> cb) {
-                cb.voidMethod("m", (b, self) -> b.let(kept, literalNull(kept), v -> b.end()));
+                var member4 = cb.declareVoidMethod("m");
+                cb.define(member4, (b, self) -> b.let(kept, literalNull(kept), v -> b.end()));
             }
         });
     }

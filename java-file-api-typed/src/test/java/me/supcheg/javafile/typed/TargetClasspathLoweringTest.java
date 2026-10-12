@@ -119,8 +119,10 @@ class TargetClasspathLoweringTest {
         return TypedJavaFile.class_(target, ClassDesc.of("out", "Out"), new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> void build(TypedClassBuilder<Self> cb) {
-                        cb.staticMethod("go", String_.TOKEN, parameter, (b, p) -> b.return_(body.apply(p)));
-                        cb.staticMethod("again", String_.TOKEN, parameter, (b, p) -> b.return_(body.apply(p)));
+                        var member1 = cb.declareStaticMethod("go", String_.TOKEN, parameter);
+                        var member2 = cb.declareStaticMethod("again", String_.TOKEN, parameter);
+                        cb.define(member1, (b, p) -> b.return_(body.apply(p)));
+                        cb.define(member2, (b, p) -> b.return_(body.apply(p)));
                     }
                 })
                 .render();

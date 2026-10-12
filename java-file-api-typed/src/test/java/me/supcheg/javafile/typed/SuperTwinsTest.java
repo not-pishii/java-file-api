@@ -57,8 +57,8 @@ class SuperTwinsTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var cb = overriding(h);
-                        cb.method(
-                                "f", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, BASE.m_T, literal("x"))));
+                        var member1 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(member1, (b, self) -> b.return_(cb.superCall(self, BASE.m_T, literal("x"))));
                     }
                 }),
                 "super.m(...) cannot name",
@@ -72,10 +72,8 @@ class SuperTwinsTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var cb = overriding(h);
-                        cb.method(
-                                "f",
-                                String_.TOKEN,
-                                (b, self) -> b.return_(cb.superCall(self, SUB.m_String, literal("x"))));
+                        var member2 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(member2, (b, self) -> b.return_(cb.superCall(self, SUB.m_String, literal("x"))));
                     }
                 }),
                 "as the overload declared m(#0) is",
@@ -90,7 +88,8 @@ class SuperTwinsTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var cb = overriding(h);
                         var p = cb.protected_(BASE.p_T);
-                        cb.method("f", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, p, literal("x"))));
+                        var member3 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(member3, (b, self) -> b.return_(cb.superCall(self, p, literal("x"))));
                     }
                 }),
                 "super.p(...) cannot name",
@@ -107,14 +106,10 @@ class SuperTwinsTest {
             public <Self> void build(ClassHeader<Self> h) {
                 var cb = overriding(h);
                 var p = cb.protected_(BASE.p_T);
-                cb.method(
-                        "f",
-                        String_.TOKEN,
-                        (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
-                cb.method(
-                        "g",
-                        String_.TOKEN,
-                        (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
+                var member4 = cb.declareMethod("f", String_.TOKEN);
+                var member5 = cb.declareMethod("g", String_.TOKEN);
+                cb.define(member4, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
+                cb.define(member5, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
             }
         }));
 
@@ -150,11 +145,12 @@ class SuperTwinsTest {
                     @Override
                     public <Self> void build(ClassHeader<Self> h) {
                         var cb = overriding(h);
-                        cb.method("g", String_.TOKEN, String_.TOKEN, (b, self, v) -> b.return_(literal("own")));
+                        var member6 = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                        cb.method(
-                                "f",
-                                String_.TOKEN,
+                        var member7 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(member6, (b, self, v) -> b.return_(literal("own")));
+                        cb.define(
+                                member7,
                                 (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
                     }
                 }),
@@ -170,10 +166,8 @@ class SuperTwinsTest {
             public <Self> void build(ClassHeader<Self> h) {
                 var cb = overriding(h);
                 var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                cb.method(
-                        "f",
-                        String_.TOKEN,
-                        (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                var member8 = cb.declareMethod("f", String_.TOKEN);
+                cb.define(member8, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
             }
         }));
 
@@ -192,7 +186,8 @@ class SuperTwinsTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var cb = overriding(h);
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
-                        cb.method("f", String_.TOKEN, (b, self) -> b.return_(cb.superCall(self, g, literal("x"))));
+                        var member9 = cb.declareMethod("f", String_.TOKEN);
+                        cb.define(member9, (b, self) -> b.return_(cb.superCall(self, g, literal("x"))));
                     }
                 }),
                 "the method is generic, and a generic method of a superclass is neither called as super.g(...)",

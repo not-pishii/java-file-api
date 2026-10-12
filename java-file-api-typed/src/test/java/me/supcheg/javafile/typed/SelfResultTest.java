@@ -48,7 +48,8 @@ class SelfResultTest {
                 var cb = oh.body();
                 cb.define(next.method(), (b, self) -> b.return_(self));
                 // the fact of the class is of the class: its result has the methods of the class
-                cb.method("twice", cb.self(), (b, self) -> b.return_(call(call(self, next.method()), next.method())));
+                var member1 = cb.declareMethod("twice", cb.self());
+                cb.define(member1, (b, self) -> b.return_(call(call(self, next.method()), next.method())));
             }
         }));
 
@@ -74,7 +75,8 @@ class SelfResultTest {
                 // Copied same() and Copied other(String) have bodies: overridden among the members
                 var same = cb.override(Copied_.same, sh.asSuper(), (b, self) -> b.return_(self));
                 cb.override(sh.asSuper(), Copied_.other_String, sh.asSuper(), (b, self, label) -> b.return_(self));
-                cb.method("chain", cb.self(), (b, self) -> b.return_(call(call(self, copy.method()), same)));
+                var member2 = cb.declareMethod("chain", cb.self());
+                cb.define(member2, (b, self) -> b.return_(call(call(self, copy.method()), same)));
             }
         }));
 

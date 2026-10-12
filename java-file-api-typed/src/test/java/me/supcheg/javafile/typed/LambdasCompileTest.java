@@ -118,20 +118,54 @@ class LambdasCompileTest {
     /// Expression and block bodies, with and without a result, of every arity.
     private static <Self> void forms(TypedClassBuilder<Self> cb) {
         // static int length(String s) { Function<String, Integer> f = (String v) -> Integer.valueOf(v.length()); ... }
-        cb.staticMethod(
-                "length",
-                PrimitiveToken.INT,
-                String_.TOKEN,
+        var member1 = cb.declareStaticMethod("length", PrimitiveToken.INT, String_.TOKEN);
+
+        // the same with a block body: (String v) -> { int n = v.length(); return Integer.valueOf(n); }
+        var member2 = cb.declareStaticMethod("blockLength", PrimitiveToken.INT, String_.TOKEN);
+
+        // static Supplier<String> constant(String s) { return () -> s; }
+        var member3 = cb.declareStaticMethod("constant", STRINGS.token, String_.TOKEN);
+
+        // static Supplier<String> blockConstant(String s) { return () -> { return s; }; }
+        var member4 = cb.declareStaticMethod("blockConstant", STRINGS.token, String_.TOKEN);
+
+        // static String twice(StringBuilder sb) { Runnable r = () -> sb.append("x"); r.run(); r.run(); ... }
+        var member5 = cb.declareStaticMethod("twice", String_.TOKEN, StringBuilder_.TOKEN);
+
+        // static String blockTwice(StringBuilder sb) { Runnable r = () -> { sb.append("x"); sb.append("y"); }; ... }
+        var member6 = cb.declareStaticMethod("blockTwice", String_.TOKEN, StringBuilder_.TOKEN);
+
+        // static Consumer<String> sink(StringBuilder sb) { return (String v) -> sb.append(v); }
+        var member7 = cb.declareStaticMethod("sink", STRING_SINK.token, StringBuilder_.TOKEN);
+
+        // static Consumer<String> nonEmptySink(StringBuilder sb) { return (String v) -> { if (...) { ... } }; }
+        var member8 = cb.declareStaticMethod("nonEmptySink", STRING_SINK.token, StringBuilder_.TOKEN);
+
+        // static IntBinaryOperator sum() { return (int a, int b) -> a + b; }
+        var member9 = cb.declareStaticMethod("sum", IntBinaryOperator_.TOKEN);
+
+        // static IntBinaryOperator blockSum() { return (int a, int b) -> { return a + b; }; }
+        var member10 = cb.declareStaticMethod("blockSum", IntBinaryOperator_.TOKEN);
+
+        // static BiConsumer<StringBuilder, String> appender() { return (StringBuilder sb, String v) -> sb.append(v); }
+        var member11 = cb.declareStaticMethod("appender", APPENDER.token);
+        var member12 = cb.declareStaticMethod("blockAppender", APPENDER.token);
+
+        // static TriFunction<String, String, String, String> join() { return (a, b, c) -> a + b + c; }
+        var member13 = cb.declareStaticMethod("join", JOIN3.token);
+        var member14 = cb.declareStaticMethod("blockJoin", JOIN3.token);
+
+        // static TriConsumer<StringBuilder, String, String> append2() { return (sb, a, b) -> sb.append(a + b); }
+        var member15 = cb.declareStaticMethod("append2", APPEND2.token);
+        var member16 = cb.declareStaticMethod("blockAppend2", APPEND2.token);
+        cb.define(
+                member1,
                 (b, s) -> b.let(
                         LENGTH_FN.token,
                         lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
                         f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
-
-        // the same with a block body: (String v) -> { int n = v.length(); return Integer.valueOf(n); }
-        cb.staticMethod(
-                "blockLength",
-                PrimitiveToken.INT,
-                String_.TOKEN,
+        cb.define(
+                member2,
                 (b, s) -> b.let(
                         LENGTH_FN.token,
                         lambdaBlock(
@@ -141,34 +175,18 @@ class LambdasCompileTest {
                                         call(v, String_.length),
                                         n -> lb.return_(box(PrimitiveToken.INT, n)))),
                         f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
-
-        // static Supplier<String> constant(String s) { return () -> s; }
-        cb.staticMethod("constant", STRINGS.token, String_.TOKEN, (b, s) -> b.return_(lambda(STRINGS.sam, () -> s)));
-
-        // static Supplier<String> blockConstant(String s) { return () -> { return s; }; }
-        cb.staticMethod(
-                "blockConstant",
-                STRINGS.token,
-                String_.TOKEN,
-                (b, s) -> b.return_(lambdaBlock(STRINGS.sam, lb -> lb.return_(s))));
-
-        // static String twice(StringBuilder sb) { Runnable r = () -> sb.append("x"); r.run(); r.run(); ... }
-        cb.staticMethod(
-                "twice",
-                String_.TOKEN,
-                StringBuilder_.TOKEN,
+        cb.define(member3, (b, s) -> b.return_(lambda(STRINGS.sam, () -> s)));
+        cb.define(member4, (b, s) -> b.return_(lambdaBlock(STRINGS.sam, lb -> lb.return_(s))));
+        cb.define(
+                member5,
                 (b, sb) -> b.let(
                         Runnable_.TOKEN,
                         lambda(Runnable_.sam, () -> call(sb, StringBuilder_.append_String, literal("x"))),
                         r -> b.exec(voidCall(r, Runnable_.run))
                                 .exec(voidCall(r, Runnable_.run))
                                 .return_(call(sb, StringBuilder_.toString))));
-
-        // static String blockTwice(StringBuilder sb) { Runnable r = () -> { sb.append("x"); sb.append("y"); }; ... }
-        cb.staticMethod(
-                "blockTwice",
-                String_.TOKEN,
-                StringBuilder_.TOKEN,
+        cb.define(
+                member6,
                 (b, sb) -> b.let(
                         Runnable_.TOKEN,
                         lambdaBlock(
@@ -179,67 +197,35 @@ class LambdasCompileTest {
                         r -> b.exec(voidCall(r, Runnable_.run))
                                 .exec(voidCall(r, Runnable_.run))
                                 .return_(call(sb, StringBuilder_.toString))));
-
-        // static Consumer<String> sink(StringBuilder sb) { return (String v) -> sb.append(v); }
-        cb.staticMethod(
-                "sink",
-                STRING_SINK.token,
-                StringBuilder_.TOKEN,
-                (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))));
-
-        // static Consumer<String> nonEmptySink(StringBuilder sb) { return (String v) -> { if (...) { ... } }; }
-        cb.staticMethod(
-                "nonEmptySink",
-                STRING_SINK.token,
-                StringBuilder_.TOKEN,
+        cb.define(
+                member7, (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))));
+        cb.define(
+                member8,
                 (b, sb) -> b.return_(lambdaBlock(
                         STRING_SINK.sam,
                         (lb, v) -> lb.if_(
                                         gtInt(call(v, String_.length), literal(0)),
                                         t -> t.exec(call(sb, StringBuilder_.append_String, v)))
                                 .end())));
-
-        // static IntBinaryOperator sum() { return (int a, int b) -> a + b; }
-        cb.staticMethod(
-                "sum",
-                IntBinaryOperator_.TOKEN,
-                b -> b.return_(lambda(IntBinaryOperator_.sam, (x, y) -> addInt(x, y))));
-
-        // static IntBinaryOperator blockSum() { return (int a, int b) -> { return a + b; }; }
-        cb.staticMethod(
-                "blockSum",
-                IntBinaryOperator_.TOKEN,
-                b -> b.return_(lambdaBlock(IntBinaryOperator_.sam, (lb, x, y) -> lb.return_(addInt(x, y)))));
-
-        // static BiConsumer<StringBuilder, String> appender() { return (StringBuilder sb, String v) -> sb.append(v); }
-        cb.staticMethod(
-                "appender",
-                APPENDER.token,
-                b -> b.return_(lambda(APPENDER.sam, (sb, v) -> call(sb, StringBuilder_.append_String, v))));
-        cb.staticMethod(
-                "blockAppender",
-                APPENDER.token,
+        cb.define(member9, b -> b.return_(lambda(IntBinaryOperator_.sam, (x, y) -> addInt(x, y))));
+        cb.define(
+                member10, b -> b.return_(lambdaBlock(IntBinaryOperator_.sam, (lb, x, y) -> lb.return_(addInt(x, y)))));
+        cb.define(member11, b -> b.return_(lambda(APPENDER.sam, (sb, v) -> call(sb, StringBuilder_.append_String, v))));
+        cb.define(
+                member12,
                 b -> b.return_(lambdaBlock(
                         APPENDER.sam,
                         (lb, sb, v) -> lb.exec(call(sb, StringBuilder_.append_String, v))
                                 .return_())));
-
-        // static TriFunction<String, String, String, String> join() { return (a, b, c) -> a + b + c; }
-        cb.staticMethod("join", JOIN3.token, b -> b.return_(lambda(JOIN3.sam, (x, y, z) -> concat(concat(x, y), z))));
-        cb.staticMethod(
-                "blockJoin",
-                JOIN3.token,
-                b -> b.return_(lambdaBlock(JOIN3.sam, (lb, x, y, z) -> lb.return_(concat(concat(x, y), z)))));
-
-        // static TriConsumer<StringBuilder, String, String> append2() { return (sb, a, b) -> sb.append(a + b); }
-        cb.staticMethod(
-                "append2",
-                APPEND2.token,
+        cb.define(member13, b -> b.return_(lambda(JOIN3.sam, (x, y, z) -> concat(concat(x, y), z))));
+        cb.define(
+                member14, b -> b.return_(lambdaBlock(JOIN3.sam, (lb, x, y, z) -> lb.return_(concat(concat(x, y), z)))));
+        cb.define(
+                member15,
                 b -> b.return_(
                         lambda(APPEND2.sam, (sb, x, y) -> call(sb, StringBuilder_.append_String, concat(x, y)))));
-        cb.staticMethod(
-                "blockAppend2",
-                APPEND2.token,
+        cb.define(
+                member16,
                 b -> b.return_(lambdaBlock(
                         APPEND2.sam,
                         (lb, sb, x, y) -> lb.exec(call(sb, StringBuilder_.append_String, x))
@@ -250,10 +236,34 @@ class LambdasCompileTest {
     /// The places a lambda stands in: an argument, a receiver, an operand, a field.
     private static <Self> void places(TypedClassBuilder<Self> cb) {
         // list.forEach((Consumer<String>) (String v) -> sb.append(v)): the parameter is a Consumer<? super String>
-        cb.staticMethod(
-                "all",
-                String_.TOKEN,
-                STRING_LIST.token,
+        var member17 = cb.declareStaticMethod("all", String_.TOKEN, STRING_LIST.token);
+
+        // list.sort((Comparator<String>) ((String a, String b) -> b.compareTo(a))): a Comparator<? super String>
+        var member18 = cb.declareVoidStaticMethod("descending", STRING_LIST.token);
+
+        // ((Function<String, Integer>) (String v) -> Integer.valueOf(v.length())).apply(s): a receiver
+        var member19 = cb.declareStaticMethod("received", Integer_.TOKEN, String_.TOKEN);
+
+        // Object o = (Runnable) () -> s.trim(); return Tasks.isRunnable(o) && Tasks.isRunnable((Runnable) () -> ...);
+        var member20 = cb.declareStaticMethod("asObject", PrimitiveToken.BOOLEAN, String_.TOKEN);
+
+        // the overloads of Tasks.which take a Runnable, a Supplier<String> and a Callable<String>
+        var member21 = cb.declareStaticMethod("whichRunnable", String_.TOKEN, String_.TOKEN);
+        var member22 = cb.declareStaticMethod("whichSupplier", String_.TOKEN, String_.TOKEN);
+        var member23 = cb.declareStaticMethod("whichCallable", String_.TOKEN, String_.TOKEN);
+
+        // an operand of == and a branch of a conditional
+        var member24 = cb.declareStaticMethod("sameTwice", PrimitiveToken.BOOLEAN, PrimitiveToken.BOOLEAN);
+
+        // a lambda that is the value of a lambda: (String v) -> () -> v
+        var member25 = cb.declareStaticMethod("curried", CURRIED.token);
+        var member26 = cb.declareStaticMethod("nested", SUPPLIERS.token, String_.TOKEN);
+
+        // public final UnaryOperator<String> upper = (String v) -> v.toUpperCase(); — its method is inherited
+        var upper = cb.field("upper", STRING_OP.token, lambda(STRING_OP.sam, v -> call(v, String_.toUpperCase)));
+        var member27 = cb.declareMethod("shout", String_.TOKEN, String_.TOKEN);
+        cb.define(
+                member17,
                 (b, list) -> b.let(
                         StringBuilder_.TOKEN,
                         new_(StringBuilder_.new_),
@@ -262,32 +272,21 @@ class LambdasCompileTest {
                                         STRING_ITERABLE.forEach_Consumer,
                                         lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))))
                                 .return_(call(sb, StringBuilder_.toString))));
-
-        // list.sort((Comparator<String>) ((String a, String b) -> b.compareTo(a))): a Comparator<? super String>
-        cb.voidStaticMethod(
-                "descending",
-                STRING_LIST.token,
+        cb.define(
+                member18,
                 (b, list) -> b.exec(voidCall(
                                 list,
                                 STRING_LIST.sort_Comparator,
                                 lambda(STRING_ORDER.sam, (x, y) -> call(y, String_.compareTo_String, x))))
                         .end());
-
-        // ((Function<String, Integer>) (String v) -> Integer.valueOf(v.length())).apply(s): a receiver
-        cb.staticMethod(
-                "received",
-                Integer_.TOKEN,
-                String_.TOKEN,
+        cb.define(
+                member19,
                 (b, s) -> b.return_(call(
                         lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
                         LENGTH_FN.apply_T,
                         s)));
-
-        // Object o = (Runnable) () -> s.trim(); return Tasks.isRunnable(o) && Tasks.isRunnable((Runnable) () -> ...);
-        cb.staticMethod(
-                "asObject",
-                PrimitiveToken.BOOLEAN,
-                String_.TOKEN,
+        cb.define(
+                member20,
                 (b, s) -> b.let(
                         Object_.TOKEN,
                         lambda(Runnable_.sam, () -> call(s, String_.trim)),
@@ -296,33 +295,21 @@ class LambdasCompileTest {
                                 staticCall(
                                         Tasks_.isRunnable_Object,
                                         lambda(Runnable_.sam, () -> call(s, String_.trim)))))));
-
-        // the overloads of Tasks.which take a Runnable, a Supplier<String> and a Callable<String>
-        cb.staticMethod(
-                "whichRunnable",
-                String_.TOKEN,
-                String_.TOKEN,
+        cb.define(
+                member21,
                 (b, s) -> b.return_(staticCall(
                         Tasks_.which_Runnable, lambda(Runnable_.sam, () -> call(s, String_.trim)))));
-        cb.staticMethod(
-                "whichSupplier",
-                String_.TOKEN,
-                String_.TOKEN,
+        cb.define(
+                member22,
                 (b, s) ->
                         b.return_(staticCall(Tasks_.which_Supplier, lambda(STRINGS.sam, () -> call(s, String_.trim)))));
-        cb.staticMethod(
-                "whichCallable",
-                String_.TOKEN,
-                String_.TOKEN,
+        cb.define(
+                member23,
                 (b, s) -> b.return_(staticCall(
                         Tasks_.which_Callable,
                         lambda(new Callable_<>(String_.TOKEN).sam, () -> call(s, String_.trim)))));
-
-        // an operand of == and a branch of a conditional
-        cb.staticMethod(
-                "sameTwice",
-                PrimitiveToken.BOOLEAN,
-                PrimitiveToken.BOOLEAN,
+        cb.define(
+                member24,
                 (b, flag) -> b.let(
                         Runnable_.TOKEN,
                         cond(
@@ -331,28 +318,16 @@ class LambdasCompileTest {
                                 lambda(Runnable_.sam, () -> call(literal("b"), String_.trim)),
                                 Runnable_.TOKEN),
                         r -> b.return_(eqRef(r, lambda(Runnable_.sam, () -> call(literal("c"), String_.trim))))));
-
-        // a lambda that is the value of a lambda: (String v) -> () -> v
-        cb.staticMethod(
-                "curried", CURRIED.token, b -> b.return_(lambda(CURRIED.sam, v -> lambda(STRINGS.sam, () -> v))));
-        cb.staticMethod(
-                "nested",
-                SUPPLIERS.token,
-                String_.TOKEN,
+        cb.define(member25, b -> b.return_(lambda(CURRIED.sam, v -> lambda(STRINGS.sam, () -> v))));
+        cb.define(
+                member26,
                 (b, s) -> b.return_(lambdaBlock(
                         SUPPLIERS.sam,
                         lb -> lb.let(
                                 String_.TOKEN,
                                 concat(s, literal("!")),
                                 t -> lb.return_(lambdaBlock(STRINGS.sam, inner -> inner.return_(concat(t, s))))))));
-
-        // public final UnaryOperator<String> upper = (String v) -> v.toUpperCase(); — its method is inherited
-        var upper = cb.field("upper", STRING_OP.token, lambda(STRING_OP.sam, v -> call(v, String_.toUpperCase)));
-        cb.method(
-                "shout",
-                String_.TOKEN,
-                String_.TOKEN,
-                (b, self, s) -> b.return_(call(field(self, upper), STRING_FN.apply_T, s)));
+        cb.define(member27, (b, self, s) -> b.return_(call(field(self, upper), STRING_FN.apply_T, s)));
     }
 
     /// What a lambda captures: an immutable variable, a parameter of an enclosing lambda, `this`.
@@ -360,19 +335,17 @@ class LambdasCompileTest {
         var name = cb.mutableField("name", String_.TOKEN, literal("none"));
 
         // Supplier<String> named() { return () -> this.name; }
-        cb.method("named", STRINGS.token, (b, self) -> b.return_(lambda(STRINGS.sam, () -> field(self, name))));
+        var member28 = cb.declareMethod("named", STRINGS.token);
 
         // Consumer<String> renamer() { return (String v) -> { this.name = v; }; }
-        cb.method(
-                "renamer",
-                STRING_SINK.token,
-                (b, self) -> b.return_(lambda(STRING_SINK.sam, v -> assignField(self, name, v))));
+        var member29 = cb.declareMethod("renamer", STRING_SINK.token);
 
         // a variable of a for-each loop is captured, a lambda's own variable is assigned in its body
-        cb.staticMethod(
-                "suppliers",
-                new List_<>(STRINGS.token).token,
-                STRING_LIST.token,
+        var member30 = cb.declareStaticMethod("suppliers", new List_<>(STRINGS.token).token, STRING_LIST.token);
+        cb.define(member28, (b, self) -> b.return_(lambda(STRINGS.sam, () -> field(self, name))));
+        cb.define(member29, (b, self) -> b.return_(lambda(STRING_SINK.sam, v -> assignField(self, name, v))));
+        cb.define(
+                member30,
                 (b, list) -> b.let(
                         SUPPLIER_LIST.token,
                         new_(SUPPLIER_LIST.new_),
@@ -398,10 +371,12 @@ class LambdasCompileTest {
         //     Callable<Integer> c = () -> Integer.valueOf(new StringReader(s).read());   // call() throws Exception
         //     try { return c.call().intValue(); } catch (Exception e) { return -1; }
         // }
-        cb.staticMethod(
-                "read",
-                PrimitiveToken.INT,
-                String_.TOKEN,
+        var member31 = cb.declareStaticMethod("read", PrimitiveToken.INT, String_.TOKEN);
+
+        // a Supplier declares nothing: the lambda catches what its body throws
+        var member32 = cb.declareStaticMethod("readOrDefault", new Supplier_<>(Integer_.TOKEN).token, String_.TOKEN);
+        cb.define(
+                member31,
                 (b, s) -> b.let(
                         INT_CALL.token,
                         lambda(
@@ -412,12 +387,8 @@ class LambdasCompileTest {
                         c -> b.tryTerminated(
                                 h -> h.catch_(Exception_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
                                 t -> t.return_(unbox(PrimitiveToken.INT, call(c, INT_CALL.call))))));
-
-        // a Supplier declares nothing: the lambda catches what its body throws
-        cb.staticMethod(
-                "readOrDefault",
-                new Supplier_<>(Integer_.TOKEN).token,
-                String_.TOKEN,
+        cb.define(
+                member32,
                 (b, s) -> b.return_(lambdaBlock(
                         new Supplier_<>(Integer_.TOKEN).sam,
                         lb -> lb.tryTerminated(
@@ -433,18 +404,20 @@ class LambdasCompileTest {
     /// whose method throws its type argument.
     private static <Self> void morePlaces(TypedClassBuilder<Self> cb) {
         // return new Holder((Supplier<String>) (() -> s)).get();
-        cb.staticMethod(
-                "held",
-                String_.TOKEN,
-                String_.TOKEN,
-                (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
+        var member33 = cb.declareStaticMethod("held", String_.TOKEN, String_.TOKEN);
 
         // Runnable[] a = new Runnable[1]; a[0] = (Runnable) (() -> sb.append("x")); a[0].run(); ...
         ArrayToken<Runnable[], Runnable> runnables = ArrayToken.of(Runnable_.TOKEN);
-        cb.staticMethod(
-                "element",
-                String_.TOKEN,
-                StringBuilder_.TOKEN,
+        var member34 = cb.declareStaticMethod("element", String_.TOKEN, StringBuilder_.TOKEN);
+
+        // Thrower<IOException> t = () -> { throw new IOException(s); };
+        // try { t.run(); return "ran"; } catch (IOException e) { return e.getMessage(); }
+        var member35 = cb.declareStaticMethod("thrown", String_.TOKEN, String_.TOKEN);
+        cb.define(
+                member33,
+                (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
+        cb.define(
+                member34,
                 (b, sb) -> b.let(
                         runnables,
                         newArray(runnables, literal(1)),
@@ -457,13 +430,8 @@ class LambdasCompileTest {
                                                 () -> call(sb, StringBuilder_.append_String, literal("x")))))
                                 .exec(voidCall(at(runnables, a, literal(0)), Runnable_.run))
                                 .return_(call(sb, StringBuilder_.toString))));
-
-        // Thrower<IOException> t = () -> { throw new IOException(s); };
-        // try { t.run(); return "ran"; } catch (IOException e) { return e.getMessage(); }
-        cb.staticMethod(
-                "thrown",
-                String_.TOKEN,
-                String_.TOKEN,
+        cb.define(
+                member35,
                 (b, s) -> b.let(
                         IO_THROWER.token,
                         lambdaBlock(IO_THROWER.sam, lb -> lb.throw_(new_(IOException_.new_String, s))),

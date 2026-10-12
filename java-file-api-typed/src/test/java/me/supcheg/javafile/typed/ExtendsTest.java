@@ -92,13 +92,11 @@ class ExtendsTest {
                     cb.override(
                             coll.toString,
                             (b, self) -> b.return_(concat(literal("names"), cb.superCall(self, coll.toString))));
-                    cb.method(
-                            "empty",
-                            PrimitiveToken.BOOLEAN,
-                            (b, self) -> b.return_(call(asList.apply(self), coll.isEmpty)));
-                    cb.method(
-                            "joined",
-                            String_.TOKEN,
+                    var member1 = cb.declareMethod("empty", PrimitiveToken.BOOLEAN);
+                    var member2 = cb.declareMethod("joined", String_.TOKEN);
+                    cb.define(member1, (b, self) -> b.return_(call(asList.apply(self), coll.isEmpty)));
+                    cb.define(
+                            member2,
                             (b, self) -> b.forEach(String_.TOKEN, asList.apply(self), (body, item, loop) -> {})
                                     .return_(call(asComparable.apply(self), Object_.toString)));
                 }
@@ -129,29 +127,27 @@ class ExtendsTest {
                     var cb = began(
                             sh, ctor -> ctor.super_(Exception_.new_String, literal("failed"), (b, self) -> b.end()));
                     Upcast<Self, Exception> asException = cb.asSuper();
-                    var ofMessage = cb.constructor(
-                            String_.TOKEN,
-                            (ctor, message) -> ctor.super_(Exception_.new_String, message, (b, self) -> b.end()));
+                    var ofMessage = cb.declareConstructor(String_.TOKEN);
 
                     // throws Probe: the clause, the throw and the catch are of the class itself
                     var raise = cb.throwing(asException, cb.self())
-                            .staticMethod(
-                                    "raise",
-                                    String_.TOKEN,
-                                    String_.TOKEN,
-                                    (b, message) -> b.throw_(asException, new_(ofMessage, message)));
-                    cb.staticMethod(
-                            "caught",
-                            String_.TOKEN,
+                            .declareStaticMethod("raise", String_.TOKEN, String_.TOKEN);
+                    var member3 = cb.declareStaticMethod("caught", String_.TOKEN);
+                    // seen as an Exception the thrown value is still the class to javac, and to the checks
+                    var member4 = cb.throwing(asException, cb.self()).declareVoidMethod("rethrow");
+                    cb.define(
+                            ofMessage,
+                            (ctor, message) -> ctor.super_(Exception_.new_String, message, (b, self) -> b.end()));
+                    cb.define(raise, (b, message) -> b.throw_(asException, new_(ofMessage, message)));
+                    cb.define(
+                            member3,
                             b -> b.tryTerminated(
                                     handlers -> handlers.catch_(
                                             asException,
                                             cb.self(),
                                             (c, e) -> c.return_(call(asException.apply(e), Throwable_.getMessage))),
                                     t -> t.return_(staticCall(raise, literal("mine")))));
-                    // seen as an Exception the thrown value is still the class to javac, and to the checks
-                    cb.throwing(asException, cb.self())
-                            .voidMethod("rethrow", (b, self) -> b.throw_(asException.apply(self)));
+                    cb.define(member4, (b, self) -> b.throw_(asException.apply(self)));
                 }
             }));
 
@@ -177,8 +173,9 @@ class ExtendsTest {
                     Upcast<Self, Runnable> asRunnable =
                             sh.implements_(Runnable_.implement(h.self()).run(sh.inherited(Thread_.run)));
                     var cb = began(sh, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
-                    cb.voidMethod(
-                            "ranAsRunnable",
+                    var member5 = cb.declareVoidMethod("ranAsRunnable");
+                    cb.define(
+                            member5,
                             (b, self) -> b.exec(voidCall(asRunnable.apply(self), Runnable_.run))
                                     .end());
                 }
@@ -199,10 +196,7 @@ class ExtendsTest {
                 public <Self> void build(ClassHeader<Self> h) {
                     var sh = h.extends_(Base_.extend(h.self()));
                     var cb = began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                    cb.constructor(
-                            String_.TOKEN,
-                            (ctor, name) ->
-                                    ctor.super_(Base_.super_String, concat(name, literal("!")), (b, self) -> b.end()));
+                    var member6 = cb.declareConstructor(String_.TOKEN);
                     Upcast<Self, Base> asBase = cb.asSuper();
                     var hook = cb.protected_(Base_.hook_String);
                     var hits = cb.protected_(Base_.hits);
@@ -211,20 +205,24 @@ class ExtendsTest {
                     var own = cb.override(
                             hook, (b, self, s) -> b.return_(concat(cb.superCall(self, hook, s), literal("+"))));
                     // this.hook(...) by the fact of the superclass, on the class itself
-                    cb.method(
-                            "viaBase",
-                            String_.TOKEN,
-                            (b, self) -> b.return_(call(asBase.apply(self), hook, literal("x"))));
-                    cb.method("viaOwn", String_.TOKEN, (b, self) -> b.return_(call(self, own, literal("y"))));
-                    cb.method(
-                            "counted",
-                            PrimitiveToken.INT,
+                    var member7 = cb.declareMethod("viaBase", String_.TOKEN);
+                    var member8 = cb.declareMethod("viaOwn", String_.TOKEN);
+                    var member9 = cb.declareMethod("counted", PrimitiveToken.INT);
+                    var member10 = cb.declareMethod("saying", String_.TOKEN);
+                    cb.define(
+                            member6,
+                            (ctor, name) ->
+                                    ctor.super_(Base_.super_String, concat(name, literal("!")), (b, self) -> b.end()));
+                    cb.define(member7, (b, self) -> b.return_(call(asBase.apply(self), hook, literal("x"))));
+                    cb.define(member8, (b, self) -> b.return_(call(self, own, literal("y"))));
+                    cb.define(
+                            member9,
                             (b, self) -> b.exec(assignField(
                                             asBase.apply(self),
                                             hits,
                                             addInt(field(asBase.apply(self), hits), literal(5))))
                                     .return_(field(asBase.apply(self), hits)));
-                    cb.method("saying", String_.TOKEN, (b, self) -> b.return_(staticCall(motto)));
+                    cb.define(member10, (b, self) -> b.return_(staticCall(motto)));
                 }
             }));
 
@@ -259,11 +257,10 @@ class ExtendsTest {
                     cb.define(area.method(), (b, self) -> b.return_(literal(4)));
                     cb.define(describe.method(), (b, self, prefix) -> b.return_(concat(prefix, literal("="))));
                     var check = cb.protected_(Shape_.check);
-                    cb.throwing(IOException_.TOKEN)
-                            .voidMethod(
-                                    "checked",
-                                    (b, self) ->
-                                            b.exec(cb.superCall(self, check)).end());
+                    var member11 = cb.throwing(IOException_.TOKEN).declareVoidMethod("checked");
+                    cb.define(
+                            member11,
+                            (b, self) -> b.exec(cb.superCall(self, check)).end());
                 }
             }));
 
@@ -308,13 +305,13 @@ class ExtendsTest {
                     var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                     Upcast<Self, Mid> asMid = cb.asSuper();
                     var hook = cb.protected_(Mid_.hook_String);
-                    cb.method(
-                            "hooked",
-                            String_.TOKEN,
+                    var member12 = cb.declareMethod("hooked", String_.TOKEN);
+                    var member13 = cb.declareMethod("ran", PrimitiveToken.INT);
+                    cb.define(
+                            member12,
                             (b, self) -> b.return_(cb.superCall(self, hook, call(asMid.apply(self), Base_.greet))));
-                    cb.method(
-                            "ran",
-                            PrimitiveToken.INT,
+                    cb.define(
+                            member13,
                             (b, self) -> b.exec(voidCall(asRunnable.apply(self), Runnable_.run))
                                     .return_(field(asMid.apply(self), Mid_.runs)));
                 }
@@ -456,7 +453,8 @@ class ExtendsTest {
                             var cb = began(
                                     h.extends_(Base_.extend(h.self())),
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            cb.method("greet", String_.TOKEN, (b, self) -> b.return_(literal("x")));
+                            var member14 = cb.declareMethod("greet", String_.TOKEN);
+                            cb.define(member14, (b, self) -> b.return_(literal("x")));
                         }
                     }),
                     "a method declared by its name overrides nothing",
@@ -470,7 +468,8 @@ class ExtendsTest {
                             var cb = began(
                                     h.extends_(Base_.extend(h.self())),
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            cb.method("util", String_.TOKEN, (b, self) -> b.return_(literal("x")));
+                            var member15 = cb.declareMethod("util", String_.TOKEN);
+                            cb.define(member15, (b, self) -> b.return_(literal("x")));
                         }
                     }),
                     "has the signature of the static method",
@@ -488,7 +487,8 @@ class ExtendsTest {
                     var sh = h.extends_(Mid_.extend(h.self()));
                     Upcast<Self, Named> asNamed = sh.implements_(Named_.implement(h.self()));
                     var cb = began(sh, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
-                    cb.method("go", String_.TOKEN, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                    var member16 = cb.declareMethod("go", String_.TOKEN);
+                    cb.define(member16, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
                 }
             }));
             assertThat(inherited.invoke("go")).isEqualTo("mid");
@@ -578,7 +578,8 @@ class ExtendsTest {
                             var cb = began(
                                     h.extends_(Base_.extend(h.self())),
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            cb.constructor(ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var member17 = cb.declareConstructor();
+                            cb.define(member17, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         }
                     }),
                     "clashes with the constructor",
@@ -630,11 +631,11 @@ class ExtendsTest {
                                     h.extends_(Mid_.extend(h.self())),
                                     ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                             var risky = cb.protected_(Base_.risky);
-                            cb.throwing(IOException_.TOKEN)
-                                    .voidMethod(
-                                            "venture",
-                                            (b, self) -> b.exec(cb.superCall(self, risky))
-                                                    .end());
+                            var member18 = cb.throwing(IOException_.TOKEN).declareVoidMethod("venture");
+                            cb.define(
+                                    member18,
+                                    (b, self) ->
+                                            b.exec(cb.superCall(self, risky)).end());
                         }
                     }))
                     .withMessageContaining("its throws clause is not that of the fact")
@@ -652,11 +653,8 @@ class ExtendsTest {
                                     h.extends_(Base_.extend(h.self())),
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             var hook = cb.protected_(Base_.hook_String);
-                            cb.method(
-                                    "other",
-                                    String_.TOKEN,
-                                    Base_.TOKEN,
-                                    (b, self, base) -> b.return_(call(base, hook, literal("x"))));
+                            var member19 = cb.declareMethod("other", String_.TOKEN, Base_.TOKEN);
+                            cb.define(member19, (b, self, base) -> b.return_(call(base, hook, literal("x"))));
                         }
                     }),
                     "is protected, and is called on an expression of me.supcheg.javafile.typed.fixtures.Base",
@@ -678,9 +676,9 @@ class ExtendsTest {
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             Upcast<Self, Base> asBase = cb.asSuper();
                             var hook = cb.protected_(Base_.hook_String);
-                            cb.method(
-                                    "picked",
-                                    String_.TOKEN,
+                            var member20 = cb.declareMethod("picked", String_.TOKEN);
+                            cb.define(
+                                    member20,
                                     (b, self) -> b.return_(call(
                                             asBase.apply(self),
                                             Base_.pick_String,
@@ -695,9 +693,9 @@ class ExtendsTest {
                             h.extends_(Base_.extend(h.self())), ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     Upcast<Self, Base> asBase = cb.asSuper();
                     var hook = cb.protected_(Base_.hook_String);
-                    cb.method(
-                            "picked",
-                            String_.TOKEN,
+                    var member21 = cb.declareMethod("picked", String_.TOKEN);
+                    cb.define(
+                            member21,
                             (b, self) -> b.let(
                                     String_.TOKEN,
                                     call(asBase.apply(self), hook, literal("x")),
@@ -720,10 +718,9 @@ class ExtendsTest {
                                     h.extends_(Base_.extend(h.self())),
                                     ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             var hits = cb.protected_(Base_.hits);
-                            cb.method(
-                                    "peek",
-                                    PrimitiveToken.INT,
-                                    cb.self(),
+                            var member22 = cb.declareMethod("peek", PrimitiveToken.INT, cb.self());
+                            cb.define(
+                                    member22,
                                     (b, self, other) ->
                                             b.return_(field(cb.asSuper().apply(other), hits)));
                         }
@@ -743,8 +740,9 @@ class ExtendsTest {
                             var cb = began(
                                     h.extends_(Exception_.extend(h.self())),
                                     ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
-                            cb.voidMethod(
-                                    "raise", (b, self) -> b.throw_(cb.asSuper().apply(self)));
+                            var member23 = cb.declareVoidMethod("raise");
+                            cb.define(
+                                    member23, (b, self) -> b.throw_(cb.asSuper().apply(self)));
                         }
                     }),
                     "can throw the checked exception me.supcheg.example.Probe",
@@ -760,10 +758,8 @@ class ExtendsTest {
                         @Override
                         public <Self> void build(ClassHeader<Self> h) {
                             var cb = h.extendsObject().body();
-                            cb.method(
-                                    "motto",
-                                    String_.TOKEN,
-                                    (b, self) -> b.return_(staticCall(UnsafeFacts.open(Base_.motto))));
+                            var member24 = cb.declareMethod("motto", String_.TOKEN);
+                            cb.define(member24, (b, self) -> b.return_(staticCall(UnsafeFacts.open(Base_.motto))));
                         }
                     }))
                     .withMessageContaining("is protected: it is reached in the body of a subclass of")
@@ -789,12 +785,11 @@ class ExtendsTest {
                             cb.define(area.method(), (b, self) -> b.return_(literal(0)));
                             cb.define(describe.method(), (b, self, p) -> b.return_(p));
                             var check = cb.protected_(Shape_.check);
-                            cb.throwing(IOException_.TOKEN)
-                                    .voidMethod(
-                                            "checked",
-                                            (b, self) -> b.exec(voidCall(
-                                                            cb.asSuper().apply(self), check))
-                                                    .end());
+                            var member25 = cb.throwing(IOException_.TOKEN).declareVoidMethod("checked");
+                            cb.define(
+                                    member25,
+                                    (b, self) -> b.exec(voidCall(cb.asSuper().apply(self), check))
+                                            .end());
                         }
                     }))
                     .withMessageContaining("it declares a checked exception")

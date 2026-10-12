@@ -54,71 +54,35 @@ class ExceptionsCompileTest {
 
     private static <Self> void members(TypedClassBuilder<Self> cb) {
         // public Throwing() throws IOException { new StringReader("a").read(); }
-        var ctor = cb.throwing(IOException_.TOKEN)
-                .constructor((b, _) -> b.exec(call(new_(StringReader_.new_String, literal("a")), StringReader_.read))
-                        .end());
+        var ctor = cb.throwing(IOException_.TOKEN).declareConstructor();
 
         // static int made() { try { new Throwing(); return 1; } catch (IOException e) { return 0; } }
-        cb.staticMethod(
-                "made",
-                PrimitiveToken.INT,
-                b -> b.tryTerminated(
-                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
-                        t -> t.exec(new_(ctor)).return_(literal(1))));
+        var member1 = cb.declareStaticMethod("made", PrimitiveToken.INT);
 
         // static int declared(String s) throws IOException { return new StringReader(s).read(); }
         var declared =
                 cb.throwing(IOException_.TOKEN).declareStaticMethod("declared", PrimitiveToken.INT, String_.TOKEN);
 
         // static int twice(String s) throws IOException { return declared(s) + declared(s); }
-        cb.throwing(IOException_.TOKEN)
-                .staticMethod(
-                        "twice",
-                        PrimitiveToken.INT,
-                        String_.TOKEN,
-                        (b, s) -> b.return_(addInt(staticCall(declared, s), staticCall(declared, s))));
+        var member2 = cb.throwing(IOException_.TOKEN).declareStaticMethod("twice", PrimitiveToken.INT, String_.TOKEN);
         cb.define(declared, (b, s) -> b.return_(call(new_(StringReader_.new_String, s), StringReader_.read)));
 
         // static int caught(String s) {
         //     StringReader r = new StringReader(s); r.close();
         //     try { return r.read(); } catch (IOException e) { return -1; }
         // }
-        cb.staticMethod(
-                "caught",
-                PrimitiveToken.INT,
-                String_.TOKEN,
-                (b, s) -> b.let(
-                        StringReader_.TOKEN,
-                        new_(StringReader_.new_String, s),
-                        r -> b.exec(voidCall(r, StringReader_.close))
-                                .tryTerminated(
-                                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))),
-                                        t -> t.return_(call(r, StringReader_.read)))));
+        var member3 = cb.declareStaticMethod("caught", PrimitiveToken.INT, String_.TOKEN);
 
         // static String bySuperclass(String s) {
         //     try { throw new FileNotFoundException(s); } catch (IOException e) { return e.getMessage(); }
         // }
-        cb.staticMethod(
-                "bySuperclass",
-                String_.TOKEN,
-                String_.TOKEN,
-                (b, s) -> b.tryTerminated(
-                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
-                        t -> t.throw_(new_(FileNotFoundException_.new_String, s))));
+        var member4 = cb.declareStaticMethod("bySuperclass", String_.TOKEN, String_.TOKEN);
 
         // static int ordered(boolean missing) {
         //     try { if (missing) { throw new FileNotFoundException(); } throw new IOException(); }
         //     catch (FileNotFoundException e) { return 1; } catch (IOException e) { return 2; }
         // }
-        cb.staticMethod(
-                "ordered",
-                PrimitiveToken.INT,
-                PrimitiveToken.BOOLEAN,
-                (b, missing) -> b.tryTerminated(
-                        h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1)))
-                                .catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
-                        t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
-                                .throw_(new_(IOException_.new_))));
+        var member5 = cb.declareStaticMethod("ordered", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
 
         // static int nested(boolean missing) {
         //     try {
@@ -126,52 +90,106 @@ class ExceptionsCompileTest {
         //         catch (FileNotFoundException e) { return 1; }
         //     } catch (IOException e) { return 2; }
         // }
-        cb.staticMethod(
-                "nested",
-                PrimitiveToken.INT,
-                PrimitiveToken.BOOLEAN,
-                (b, missing) -> b.tryTerminated(
-                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
-                        outer -> outer.tryTerminated(
-                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
-                                t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
-                                        .throw_(new_(IOException_.new_)))));
+        var member6 = cb.declareStaticMethod("nested", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
 
         // static int rethrown(String s) throws IOException {
         //     try { return new StringReader(s).read(); } catch (IOException e) { throw e; } finally { s.length(); }
         // }
-        cb.throwing(IOException_.TOKEN)
-                .staticMethod(
-                        "rethrown",
-                        PrimitiveToken.INT,
-                        String_.TOKEN,
-                        (b, s) -> b.tryTerminated(
-                                h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
-                                        .finally_(f -> f.exec(call(s, String_.length))),
-                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+        var member7 =
+                cb.throwing(IOException_.TOKEN).declareStaticMethod("rethrown", PrimitiveToken.INT, String_.TOKEN);
 
         // static int wrapped(String s) throws Exception {
         //     try { return new StringReader(s).read(); } catch (IOException e) { throw new Exception(e); }
         // }
-        cb.throwing(Exception_.TOKEN)
-                .staticMethod(
-                        "wrapped",
-                        PrimitiveToken.INT,
-                        String_.TOKEN,
-                        (b, s) -> b.tryTerminated(
-                                h -> h.catch_(
-                                        IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e))),
-                                t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+        var member8 = cb.throwing(Exception_.TOKEN).declareStaticMethod("wrapped", PrimitiveToken.INT, String_.TOKEN);
 
         // static int recovered(String s) {
         //     int result = 0;
         //     try { result = new StringReader(s).read(); } catch (IOException e) { result = -1; }
         //     return result;
         // }
-        cb.staticMethod(
-                "recovered",
-                PrimitiveToken.INT,
-                String_.TOKEN,
+        var member9 = cb.declareStaticMethod("recovered", PrimitiveToken.INT, String_.TOKEN);
+
+        // static int anything(String s) { try { return Integer.parseInt(s); } catch (Exception e) { return -1; } }
+        var member10 = cb.declareStaticMethod("anything", PrimitiveToken.INT, String_.TOKEN);
+
+        // static void either(boolean io) throws IOException, InterruptedException {
+        //     if (io) { throw new IOException(); } else { throw new InterruptedException(); }
+        // }
+        var member11 = cb.throwing(IOException_.TOKEN, InterruptedException_.TOKEN)
+                .declareVoidStaticMethod("either", PrimitiveToken.BOOLEAN);
+
+        // static void closed(StringReader r) throws IOException { ((Reader) r).close(); }
+        var member12 = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("closed", StringReader_.TOKEN);
+
+        // static int closedAndCaught(StringReader r) {
+        //     try { ((Reader) r).close(); return 1; } catch (IOException e) { return 0; }
+        // }
+        var member13 = cb.declareStaticMethod("closedAndCaught", PrimitiveToken.INT, StringReader_.TOKEN);
+
+        // static int precise() throws IOException {
+        //     try { try { throw new FileNotFoundException(); } catch (IOException e) { throw e; } }
+        //     catch (FileNotFoundException e) { return 1; }
+        // }
+        var member14 = cb.throwing(IOException_.TOKEN).declareStaticMethod("precise", PrimitiveToken.INT);
+
+        // static void unchecked() { throw new RuntimeException("unchecked"); }
+        var member15 = cb.declareVoidStaticMethod("unchecked");
+
+        // static void declaresUnchecked() throws RuntimeException { unchecked(); }
+        var member16 = cb.throwing(RuntimeException_.TOKEN).declareVoidStaticMethod("declaresUnchecked");
+        cb.define(
+                ctor,
+                (b, _) -> b.exec(call(new_(StringReader_.new_String, literal("a")), StringReader_.read))
+                        .end());
+        cb.define(
+                member1,
+                b -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
+                        t -> t.exec(new_(ctor)).return_(literal(1))));
+        cb.define(member2, (b, s) -> b.return_(addInt(staticCall(declared, s), staticCall(declared, s))));
+        cb.define(
+                member3,
+                (b, s) -> b.let(
+                        StringReader_.TOKEN,
+                        new_(StringReader_.new_String, s),
+                        r -> b.exec(voidCall(r, StringReader_.close))
+                                .tryTerminated(
+                                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))),
+                                        t -> t.return_(call(r, StringReader_.read)))));
+        cb.define(
+                member4,
+                (b, s) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+                        t -> t.throw_(new_(FileNotFoundException_.new_String, s))));
+        cb.define(
+                member5,
+                (b, missing) -> b.tryTerminated(
+                        h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1)))
+                                .catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                        t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
+                                .throw_(new_(IOException_.new_))));
+        cb.define(
+                member6,
+                (b, missing) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                        outer -> outer.tryTerminated(
+                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
+                                t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
+                                        .throw_(new_(IOException_.new_)))));
+        cb.define(
+                member7,
+                (b, s) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
+                                .finally_(f -> f.exec(call(s, String_.length))),
+                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+        cb.define(
+                member8,
+                (b, s) -> b.tryTerminated(
+                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e))),
+                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+        cb.define(
+                member9,
                 (b, s) -> b.letVar(
                         PrimitiveToken.INT,
                         literal(0),
@@ -181,67 +199,30 @@ class ExceptionsCompileTest {
                                         t -> t.exec(assign(
                                                 result, call(new_(StringReader_.new_String, s), StringReader_.read))))
                                 .return_(result)));
-
-        // static int anything(String s) { try { return Integer.parseInt(s); } catch (Exception e) { return -1; } }
-        cb.staticMethod(
-                "anything",
-                PrimitiveToken.INT,
-                String_.TOKEN,
+        cb.define(
+                member10,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(Exception_.TOKEN, (c, _) -> c.return_(literal(-1))),
                         t -> t.return_(staticCall(Integer_.parseInt_String, s))));
-
-        // static void either(boolean io) throws IOException, InterruptedException {
-        //     if (io) { throw new IOException(); } else { throw new InterruptedException(); }
-        // }
-        cb.throwing(IOException_.TOKEN, InterruptedException_.TOKEN)
-                .voidStaticMethod(
-                        "either",
-                        PrimitiveToken.BOOLEAN,
-                        (b, io) -> b.ifElse(
-                                io,
-                                t -> t.throw_(new_(IOException_.new_)),
-                                e -> e.throw_(new_(InterruptedException_.new_))));
-
-        // static void closed(StringReader r) throws IOException { ((Reader) r).close(); }
-        cb.throwing(IOException_.TOKEN)
-                .voidStaticMethod(
-                        "closed",
-                        StringReader_.TOKEN,
-                        (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
-
-        // static int closedAndCaught(StringReader r) {
-        //     try { ((Reader) r).close(); return 1; } catch (IOException e) { return 0; }
-        // }
-        cb.staticMethod(
-                "closedAndCaught",
-                PrimitiveToken.INT,
-                StringReader_.TOKEN,
+        cb.define(
+                member11,
+                (b, io) -> b.ifElse(
+                        io, t -> t.throw_(new_(IOException_.new_)), e -> e.throw_(new_(InterruptedException_.new_))));
+        cb.define(member12, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+        cb.define(
+                member13,
                 (b, r) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
                         t -> t.exec(voidCall(r, Reader_.close)).return_(literal(1))));
-
-        // static int precise() throws IOException {
-        //     try { try { throw new FileNotFoundException(); } catch (IOException e) { throw e; } }
-        //     catch (FileNotFoundException e) { return 1; }
-        // }
-        cb.throwing(IOException_.TOKEN)
-                .staticMethod(
-                        "precise",
-                        PrimitiveToken.INT,
-                        b -> b.tryTerminated(
-                                h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
-                                o -> o.tryTerminated(
-                                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
-                                        t -> t.throw_(new_(FileNotFoundException_.new_)))));
-
-        // static void unchecked() { throw new RuntimeException("unchecked"); }
-        cb.voidStaticMethod("unchecked", b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
-
-        // static void declaresUnchecked() throws RuntimeException { unchecked(); }
-        cb.throwing(RuntimeException_.TOKEN)
-                .voidStaticMethod(
-                        "declaresUnchecked", b -> b.throw_(new_(RuntimeException_.new_String, literal("declared"))));
+        cb.define(
+                member14,
+                b -> b.tryTerminated(
+                        h -> h.catch_(FileNotFoundException_.TOKEN, (c, _) -> c.return_(literal(1))),
+                        o -> o.tryTerminated(
+                                h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
+                                t -> t.throw_(new_(FileNotFoundException_.new_)))));
+        cb.define(member15, b -> b.throw_(new_(RuntimeException_.new_String, literal("unchecked"))));
+        cb.define(member16, b -> b.throw_(new_(RuntimeException_.new_String, literal("declared"))));
     }
 
     @Test

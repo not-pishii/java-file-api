@@ -53,8 +53,9 @@ class VariableArityTest {
                 var oh = h.extendsObject();
                 Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
                 var cb = oh.body();
-                cb.constructor((b, self) -> b.end());
+                var member1 = cb.declareConstructor();
                 cb.override(asJoiner, Joiner_.join_StringArray, (b, self, parts) -> b.return_(literal("mine")));
+                cb.define(member1, (b, self) -> b.end());
             }
         }));
 
@@ -72,11 +73,12 @@ class VariableArityTest {
                 var oh = h.extendsObject();
                 oh.implements_(Spreading_.implement(h.self()).spread_StringArray(spread));
                 var cb = oh.body();
-                cb.constructor((b, self) -> b.end());
+                var member2 = cb.declareConstructor();
                 cb.define(spread.method(), (b, self, parts) -> b.return_(literal("spread")));
-                cb.method(
-                        "go",
-                        String_.TOKEN,
+                var member3 = cb.declareMethod("go", String_.TOKEN);
+                cb.define(member2, (b, self) -> b.end());
+                cb.define(
+                        member3,
                         (b, self) -> b.return_(
                                 call(self, spread.method(), newArray(ArrayToken.of(String_.TOKEN), literal(2)))));
             }
@@ -127,8 +129,9 @@ class VariableArityTest {
                 var oh = h.extendsObject();
                 Upcast<Self, Scattering<String>> asScattering = oh.implements_(scattering.implement(h.self()));
                 var cb = oh.body();
-                cb.constructor((b, self) -> b.end());
+                var member4 = cb.declareConstructor();
                 cb.override(asScattering, scattering.scatter_TArray, (b, self, all) -> b.return_(literal(7)));
+                cb.define(member4, (b, self) -> b.end());
             }
         }));
 
@@ -149,9 +152,9 @@ class VariableArityTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var cb = h.extendsObject().body();
-                cb.staticMethod(
-                        "m",
-                        PrimitiveToken.INT,
+                var member5 = cb.declareStaticMethod("m", PrimitiveToken.INT);
+                cb.define(
+                        member5,
                         b -> b.return_(staticCall(
                                 Objects_.hash_ObjectArray, newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
             }

@@ -82,10 +82,25 @@ class SwitchCompileTest {
     /// The shapes of the cases: values and blocks, one constant and several, with and without a default.
     private static <Self> void cases(TypedClassBuilder<Self> cb) {
         // return switch (s) { case RED -> "stop"; case AMBER -> "wait"; case GREEN -> "go"; };
-        cb.staticMethod(
-                "advice",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        var member1 = cb.declareStaticMethod("advice", String_.TOKEN, Signal_.TOKEN);
+
+        // return switch (s) { case RED, AMBER -> false; default -> true; };
+        var member2 = cb.declareStaticMethod("mayGo", PrimitiveToken.BOOLEAN, Signal_.TOKEN);
+
+        // return switch (s) { case GREEN -> { String v = "g"; yield v + "o"; } default -> { yield "no"; } };
+        var member3 = cb.declareStaticMethod("yielded", String_.TOKEN, Signal_.TOKEN);
+
+        // a block that throws has no result; the other cases have
+        var member4 = cb.declareStaticMethod("noAmber", String_.TOKEN, Signal_.TOKEN);
+
+        // every result is of the type of the switch: `(Object) "red"`, `(Object) Integer.valueOf(1)`
+        var member5 = cb.declareStaticMethod("mixed", Object_.TOKEN, Signal_.TOKEN);
+
+        // static Signal next(Signal s): enum constants as values
+        var member6 = cb.declareStaticMethod("next", Signal_.TOKEN, Signal_.TOKEN);
+        var member7 = cb.declareStaticMethod("isRed", PrimitiveToken.BOOLEAN, Signal_.TOKEN);
+        cb.define(
+                member1,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -93,24 +108,16 @@ class SwitchCompileTest {
                         c -> c.case_(Signal_.RED, literal("stop"))
                                 .case_(Signal_.AMBER, literal("wait"))
                                 .case_(Signal_.GREEN, literal("go")))));
-
-        // return switch (s) { case RED, AMBER -> false; default -> true; };
-        cb.staticMethod(
-                "mayGo",
-                PrimitiveToken.BOOLEAN,
-                Signal_.TOKEN,
+        cb.define(
+                member2,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
                         PrimitiveToken.BOOLEAN,
                         c -> c.case_(List.of(Signal_.RED, Signal_.AMBER), literal(false))
                                 .default_(literal(true)))));
-
-        // return switch (s) { case GREEN -> { String v = "g"; yield v + "o"; } default -> { yield "no"; } };
-        cb.staticMethod(
-                "yielded",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member3,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -119,12 +126,8 @@ class SwitchCompileTest {
                                         Signal_.GREEN,
                                         y -> y.let(String_.TOKEN, literal("g"), v -> y.yield_(concat(v, literal("o")))))
                                 .default_(y -> y.yield_(literal("no"))))));
-
-        // a block that throws has no result; the other cases have
-        cb.staticMethod(
-                "noAmber",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member4,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -133,12 +136,8 @@ class SwitchCompileTest {
                                         Signal_.AMBER,
                                         y -> y.throw_(new_(IllegalStateException_.new_String, literal("amber"))))
                                 .case_(List.of(Signal_.RED, Signal_.GREEN), y -> y.yield_(literal("fine"))))));
-
-        // every result is of the type of the switch: `(Object) "red"`, `(Object) Integer.valueOf(1)`
-        cb.staticMethod(
-                "mixed",
-                Object_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member5,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -146,12 +145,8 @@ class SwitchCompileTest {
                         c -> c.case_(Signal_.RED, literal("red"))
                                 .case_(Signal_.AMBER, y -> y.yield_(box(PrimitiveToken.INT, literal(1))))
                                 .default_(s))));
-
-        // static Signal next(Signal s): enum constants as values
-        cb.staticMethod(
-                "next",
-                Signal_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member6,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -159,20 +154,35 @@ class SwitchCompileTest {
                         c -> c.case_(Signal_.RED, enumConstant(Signal_.GREEN))
                                 .case_(Signal_.GREEN, enumConstant(Signal_.AMBER))
                                 .case_(Signal_.AMBER, enumConstant(Signal_.RED)))));
-        cb.staticMethod(
-                "isRed",
-                PrimitiveToken.BOOLEAN,
-                Signal_.TOKEN,
-                (b, s) -> b.return_(eqRef(s, enumConstant(Signal_.RED))));
+        cb.define(member7, (b, s) -> b.return_(eqRef(s, enumConstant(Signal_.RED))));
     }
 
     /// The places a `switch` stands in: an operand, a receiver, a selector, a lambda, a field.
     private static <Self> void places(TypedClassBuilder<Self> cb) {
         // return (switch (s) { ... }).length() + switch (s) { ... };
-        cb.staticMethod(
-                "lengthPlusRank",
-                PrimitiveToken.INT,
-                Signal_.TOKEN,
+        var member8 = cb.declareStaticMethod("lengthPlusRank", PrimitiveToken.INT, Signal_.TOKEN);
+
+        // a switch whose selector is a switch, and whose case is one
+        var member9 = cb.declareStaticMethod("afterNext", String_.TOKEN, Signal_.TOKEN);
+
+        // static Supplier<String> lazy(Signal s) { return () -> switch (s) { ... }; }
+        var member10 = cb.declareStaticMethod("lazy", STRINGS.token, Signal_.TOKEN);
+
+        // a case that is a lambda: `case RED -> (Supplier<String>) () -> "stop"`
+        var member11 = cb.declareStaticMethod("supplier", STRINGS.token, Signal_.TOKEN);
+
+        // public final String initial = switch (Signal.valueOf("RED")) { case RED -> { yield "r"; } default -> "?"; };
+        var initial = cb.field(
+                "initial",
+                String_.TOKEN,
+                switch_(
+                        Signal_.TOKEN,
+                        staticCall(Signal_.valueOf_String, literal("RED")),
+                        String_.TOKEN,
+                        c -> c.case_(Signal_.RED, y -> y.yield_(literal("r"))).default_(literal("?"))));
+        var member12 = cb.declareMethod("initial", String_.TOKEN);
+        cb.define(
+                member8,
                 (b, s) -> b.return_(addInt(
                         call(
                                 switch_(
@@ -189,12 +199,8 @@ class SwitchCompileTest {
                                 c -> c.case_(Signal_.RED, literal(10))
                                         .case_(Signal_.AMBER, literal(20))
                                         .case_(Signal_.GREEN, literal(30))))));
-
-        // a switch whose selector is a switch, and whose case is one
-        cb.staticMethod(
-                "afterNext",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member9,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         switch_(
@@ -211,12 +217,8 @@ class SwitchCompileTest {
                                         String_.TOKEN,
                                         inner -> inner.case_(Signal_.GREEN, literal("was green"))
                                                 .default_(literal("was amber")))))));
-
-        // static Supplier<String> lazy(Signal s) { return () -> switch (s) { ... }; }
-        cb.staticMethod(
-                "lazy",
-                STRINGS.token,
-                Signal_.TOKEN,
+        cb.define(
+                member10,
                 (b, s) -> b.return_(lambda(
                         STRINGS.sam,
                         () -> switch_(
@@ -225,38 +227,33 @@ class SwitchCompileTest {
                                 String_.TOKEN,
                                 c -> c.case_(Signal_.RED, y -> y.yield_(literal("stop")))
                                         .default_(literal("go"))))));
-
-        // a case that is a lambda: `case RED -> (Supplier<String>) () -> "stop"`
-        cb.staticMethod(
-                "supplier",
-                STRINGS.token,
-                Signal_.TOKEN,
+        cb.define(
+                member11,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
                         STRINGS.token,
                         c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
                                 .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
-
-        // public final String initial = switch (Signal.valueOf("RED")) { case RED -> { yield "r"; } default -> "?"; };
-        var initial = cb.field(
-                "initial",
-                String_.TOKEN,
-                switch_(
-                        Signal_.TOKEN,
-                        staticCall(Signal_.valueOf_String, literal("RED")),
-                        String_.TOKEN,
-                        c -> c.case_(Signal_.RED, y -> y.yield_(literal("r"))).default_(literal("?"))));
-        cb.method("initial", String_.TOKEN, (b, self) -> b.return_(Expressions.field(self, initial)));
+        cb.define(member12, (b, self) -> b.return_(Expressions.field(self, initial)));
     }
 
     /// What the block of a case may do: assign a variable of the code around it, loop, catch, throw.
     private static <Self> void blocks(TypedClassBuilder<Self> cb) {
         // int n = 0; String r = switch (s) { case RED -> { n = 1; yield "r"; } default -> { n = 2; yield "x"; } };
-        cb.staticMethod(
-                "counted",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        var member13 = cb.declareStaticMethod("counted", String_.TOKEN, Signal_.TOKEN);
+
+        // a loop of the block is broken and continued; both branches of an if yield
+        var member14 = cb.declareStaticMethod("looped", PrimitiveToken.INT, Signal_.TOKEN);
+
+        // a checked exception of a block is one of the method the switch is in
+        var member15 =
+                cb.throwing(IOException_.TOKEN).declareStaticMethod("reading", PrimitiveToken.INT, Signal_.TOKEN);
+
+        // ... or of a try in the block, or around the switch
+        var member16 = cb.declareStaticMethod("caught", PrimitiveToken.INT, Signal_.TOKEN);
+        cb.define(
+                member13,
                 (b, s) -> b.letVar(
                         PrimitiveToken.INT,
                         literal(0),
@@ -273,12 +270,8 @@ class SwitchCompileTest {
                                                 .default_(y -> y.exec(assign(n, literal(2)))
                                                         .yield_(literal("x")))),
                                 r -> b.return_(concat(r, call(box(PrimitiveToken.INT, n), Integer_.toString))))));
-
-        // a loop of the block is broken and continued; both branches of an if yield
-        cb.staticMethod(
-                "looped",
-                PrimitiveToken.INT,
-                Signal_.TOKEN,
+        cb.define(
+                member14,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -299,33 +292,20 @@ class SwitchCompileTest {
                                         eqRef(s, enumConstant(Signal_.AMBER)),
                                         t -> t.yield_(literal(-1)),
                                         e -> e.yield_(literal(-2)))))));
-
-        // a checked exception of a block is one of the method the switch is in
-        cb.throwing(IOException_.TOKEN)
-                .staticMethod(
-                        "reading",
-                        PrimitiveToken.INT,
+        cb.define(
+                member15,
+                (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
-                        (b, s) -> b.return_(switch_(
-                                Signal_.TOKEN,
-                                s,
-                                PrimitiveToken.INT,
-                                c -> c.case_(
-                                                Signal_.RED,
-                                                y -> y.yield_(call(
-                                                        new_(StringReader_.new_String, literal("")),
-                                                        StringReader_.read)))
-                                        .case_(
-                                                Signal_.AMBER,
-                                                y -> y.throw_(new_(IOException_.new_String, literal("amber"))))
-                                        .default_(call(
-                                                new_(StringReader_.new_String, literal("g")), StringReader_.read)))));
-
-        // ... or of a try in the block, or around the switch
-        cb.staticMethod(
-                "caught",
-                PrimitiveToken.INT,
-                Signal_.TOKEN,
+                        s,
+                        PrimitiveToken.INT,
+                        c -> c.case_(
+                                        Signal_.RED,
+                                        y -> y.yield_(
+                                                call(new_(StringReader_.new_String, literal("")), StringReader_.read)))
+                                .case_(Signal_.AMBER, y -> y.throw_(new_(IOException_.new_String, literal("amber"))))
+                                .default_(call(new_(StringReader_.new_String, literal("g")), StringReader_.read)))));
+        cb.define(
+                member16,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
                         t -> t.return_(switch_(
@@ -346,28 +326,26 @@ class SwitchCompileTest {
     /// The enums a `switch` is over: constants with bodies, a nested enum, constants that are contextual
     /// keywords, an enum without a constant.
     private static <Self> void enums(TypedClassBuilder<Self> cb) {
-        cb.staticMethod(
-                "named",
-                String_.TOKEN,
-                Op_.TOKEN,
+        var member17 = cb.declareStaticMethod("named", String_.TOKEN, Op_.TOKEN);
+        var member18 = cb.declareStaticMethod("rank", PrimitiveToken.INT, Outer_Level_.TOKEN);
+        var member19 = cb.declareStaticMethod("word", String_.TOKEN, Words_.TOKEN);
+        var member20 = cb.declareStaticMethod("ofNothing", String_.TOKEN, Nothing_.TOKEN);
+        cb.define(
+                member17,
                 (b, op) -> b.return_(switch_(
                         Op_.TOKEN,
                         op,
                         String_.TOKEN,
                         c -> c.case_(Op_.ADD, literal("add")).case_(Op_.SUB, literal("sub")))));
-        cb.staticMethod(
-                "rank",
-                PrimitiveToken.INT,
-                Outer_Level_.TOKEN,
+        cb.define(
+                member18,
                 (b, level) -> b.return_(switch_(
                         Outer_Level_.TOKEN,
                         level,
                         PrimitiveToken.INT,
                         c -> c.case_(Outer_Level_.LOW, literal(0)).case_(Outer_Level_.HIGH, literal(1)))));
-        cb.staticMethod(
-                "word",
-                String_.TOKEN,
-                Words_.TOKEN,
+        cb.define(
+                member19,
                 (b, w) -> b.return_(switch_(
                         Words_.TOKEN,
                         w,
@@ -377,10 +355,8 @@ class SwitchCompileTest {
                                 .case_(List.of(Words_.record, Words_.var), literal("record or var"))
                                 .case_(Words_.sealed, literal("sealed"))
                                 .case_(Words_.permits, literal("permits")))));
-        cb.staticMethod(
-                "ofNothing",
-                String_.TOKEN,
-                Nothing_.TOKEN,
+        cb.define(
+                member20,
                 (b, n) -> b.return_(switch_(Nothing_.TOKEN, n, String_.TOKEN, c -> c.default_(literal("none")))));
     }
 
@@ -390,27 +366,32 @@ class SwitchCompileTest {
         ArrayToken<int[], Prim.Int> ints = PrimitiveToken.INT.array();
 
         // yield (String) null;
-        cb.staticMethod(
-                "yieldsNull",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        var member21 = cb.declareStaticMethod("yieldsNull", String_.TOKEN, Signal_.TOKEN);
+        // yield ("a" + "b").length();
+        var member22 = cb.declareStaticMethod("yieldsLength", PrimitiveToken.INT, Signal_.TOKEN);
+        // yield (switch (s) { ... }).trim();
+        var member23 = cb.declareStaticMethod("yieldsOfSwitch", String_.TOKEN, Signal_.TOKEN);
+        // yield ((Supplier<String>) (() -> "l")).get();
+        var member24 = cb.declareStaticMethod("yieldsOfLambda", String_.TOKEN, Signal_.TOKEN);
+
+        // int[] a = new int[3]; a[switch ...] = 7; (switch (s) { default -> a; })[0] = 5;
+        // return a[switch ...] + (switch (s) { default -> a; })[0];
+        var member25 = cb.declareStaticMethod("indexed", PrimitiveToken.INT, Signal_.TOKEN);
+        // return !switch (s) { case RED -> true; default -> false; };
+        var member26 = cb.declareStaticMethod("notRed", PrimitiveToken.BOOLEAN, Signal_.TOKEN);
+        cb.define(
+                member21,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN, s, String_.TOKEN, c -> c.default_(y -> y.yield_(literalNull(String_.TOKEN))))));
-        // yield ("a" + "b").length();
-        cb.staticMethod(
-                "yieldsLength",
-                PrimitiveToken.INT,
-                Signal_.TOKEN,
+        cb.define(
+                member22,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
                         PrimitiveToken.INT,
                         c -> c.default_(y -> y.yield_(call(concat(literal("a"), literal("b")), String_.length))))));
-        // yield (switch (s) { ... }).trim();
-        cb.staticMethod(
-                "yieldsOfSwitch",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member23,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
@@ -418,23 +399,15 @@ class SwitchCompileTest {
                         c -> c.default_(y -> y.yield_(call(
                                 switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in "))),
                                 String_.trim))))));
-        // yield ((Supplier<String>) (() -> "l")).get();
-        cb.staticMethod(
-                "yieldsOfLambda",
-                String_.TOKEN,
-                Signal_.TOKEN,
+        cb.define(
+                member24,
                 (b, s) -> b.return_(switch_(
                         Signal_.TOKEN,
                         s,
                         String_.TOKEN,
                         c -> c.default_(y -> y.yield_(call(lambda(STRINGS.sam, () -> literal("l")), STRINGS.get))))));
-
-        // int[] a = new int[3]; a[switch ...] = 7; (switch (s) { default -> a; })[0] = 5;
-        // return a[switch ...] + (switch (s) { default -> a; })[0];
-        cb.staticMethod(
-                "indexed",
-                PrimitiveToken.INT,
-                Signal_.TOKEN,
+        cb.define(
+                member25,
                 (b, s) -> b.let(
                         ints,
                         newArray(ints, literal(3)),
@@ -447,11 +420,8 @@ class SwitchCompileTest {
                                 .return_(addInt(
                                         at(ints, a, rank(s)),
                                         at(ints, switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)), literal(0))))));
-        // return !switch (s) { case RED -> true; default -> false; };
-        cb.staticMethod(
-                "notRed",
-                PrimitiveToken.BOOLEAN,
-                Signal_.TOKEN,
+        cb.define(
+                member26,
                 (b, s) -> b.return_(not(switch_(
                         Signal_.TOKEN,
                         s,

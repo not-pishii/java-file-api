@@ -41,7 +41,8 @@ class InheritedNamesTest {
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Nesting_.extend(h.self()));
                 var cb = began(sh, ctor -> ctor.super_(Nesting_.new_, (b, self) -> b.end()));
-                cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var member1 = cb.declareMethod("which", Op_.TOKEN);
+                cb.define(member1, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -60,7 +61,8 @@ class InheritedNamesTest {
             public <Self> void build(ClassHeader<Self> h) {
                 var sh = h.extends_(Obscuring_.extend(h.self()));
                 var cb = began(sh, ctor -> ctor.super_(Obscuring_.new_, (b, self) -> b.end()));
-                cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var member2 = cb.declareMethod("which", Op_.TOKEN);
+                cb.define(member2, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -74,9 +76,11 @@ class InheritedNamesTest {
             @Override
             public <Self> void build(ClassHeader<Self> h) {
                 var cb = h.extendsObject().body();
-                cb.constructor((b, self) -> b.end());
+                var member3 = cb.declareConstructor();
                 cb.field("Op", PrimitiveToken.INT, literal(1));
-                cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                var member4 = cb.declareMethod("which", Op_.TOKEN);
+                cb.define(member3, (b, self) -> b.end());
+                cb.define(member4, (b, self) -> b.return_(enumConstant(Op_.SUB)));
             }
         }));
 
@@ -95,7 +99,8 @@ class InheritedNamesTest {
                         var sh = h.extends_(Rooted_.extend(h.self()));
                         var cb = began(sh, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
                         cb.field("Op", PrimitiveToken.INT, literal(1));
-                        cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var member5 = cb.declareMethod("which", Op_.TOKEN);
+                        cb.define(member5, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " before a member in a file"
@@ -115,7 +120,8 @@ class InheritedNamesTest {
                         var cb = h.extendsObject().body();
                         cb.field("Op", PrimitiveToken.INT, literal(1));
                         cb.field("me", PrimitiveToken.INT, literal(2));
-                        cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var member6 = cb.declareMethod("which", Op_.TOKEN);
+                        cb.define(member6, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " before a member in a file"
@@ -136,7 +142,8 @@ class InheritedNamesTest {
                     public <Self> void build(ClassHeader<Self> h) {
                         var sh = h.extends_(Planted_.extend(h.self()));
                         var cb = began(sh, ctor -> ctor.super_(Planted_.new_, (b, self) -> b.end()));
-                        cb.method("which", Op_.TOKEN, (b, self) -> b.return_(enumConstant(Op_.SUB)));
+                        var member7 = cb.declareMethod("which", Op_.TOKEN);
+                        cb.define(member7, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                     }
                 }),
                 "class me.supcheg.example.Probe cannot be written: cannot name " + OP + " in a file whose type"

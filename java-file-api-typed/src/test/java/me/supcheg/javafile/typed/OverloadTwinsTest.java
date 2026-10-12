@@ -138,7 +138,8 @@ class OverloadTwinsTest {
                         new TypedJavaFile.TypedClassSpec() {
                             @Override
                             public <Self> void build(TypedClassBuilder<Self> cb) {
-                                cb.staticMethod("call", String_.TOKEN, receiver, (b, r) -> b.return_(body.apply(r)));
+                                var member1 = cb.declareStaticMethod("call", String_.TOKEN, receiver);
+                                cb.define(member1, (b, r) -> b.return_(body.apply(r)));
                             }
                         })
                 .render();

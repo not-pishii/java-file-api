@@ -448,8 +448,8 @@ class InheritanceVerdictTest {
                     var sh = extendsBase(h);
                     Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
                     var cb = began(sh, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                    cb.method(
-                            "go", String_.TOKEN, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
+                    var member1 = cb.declareMethod("go", String_.TOKEN);
+                    cb.define(member1, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
                 }
             }));
             assertThat(compiled.invoke("go")).isEqualTo("base");
