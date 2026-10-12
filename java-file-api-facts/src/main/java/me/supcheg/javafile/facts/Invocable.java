@@ -7,7 +7,11 @@ import java.util.Optional;
 /// arity families (`MethodRefN`, `VoidMethodRefN`, `StaticMethodRefN`,
 /// `VoidStaticMethodRefN`, `CtorRefN`, `SuperCtorRefN`). Lowering reads it; generator code
 /// uses the typed families.
-public non-sealed interface Invocable extends MemberFact {
+///
+/// The families are all there is: the interface permits `InvocableFamily`,
+/// which the generator of the families writes with them and which permits
+/// each of their final classes. No code but this library makes a fact.
+public sealed interface Invocable extends MemberFact permits InvocableFamily {
 
     /// What kind of member the fact is.
     ///

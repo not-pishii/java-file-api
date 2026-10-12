@@ -1,0 +1,7 @@
+package me.supcheg.javafile.facts;
+
+import javax.annotation.processing.Generated;
+
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
+sealed interface InvocableFamily extends Invocable permits MethodRef0, VoidMethodRef0, StaticMethodRef0, VoidStaticMethodRef0, CtorRef0, SuperCtorRef0, MethodRef1, VoidMethodRef1, StaticMethodRef1, VoidStaticMethodRef1, CtorRef1, SuperCtorRef1, MethodRef2, VoidMethodRef2, StaticMethodRef2, VoidStaticMethodRef2, CtorRef2, SuperCtorRef2, MethodRef3, VoidMethodRef3, StaticMethodRef3, VoidStaticMethodRef3, CtorRef3, SuperCtorRef3, MethodRef4, VoidMethodRef4, StaticMethodRef4, VoidStaticMethodRef4, CtorRef4, SuperCtorRef4, MethodRef5, VoidMethodRef5, StaticMethodRef5, VoidStaticMethodRef5, CtorRef5, SuperCtorRef5, MethodRef6, VoidMethodRef6, StaticMethodRef6, VoidStaticMethodRef6, CtorRef6, SuperCtorRef6, MethodRef7, VoidMethodRef7, StaticMethodRef7, VoidStaticMethodRef7, CtorRef7, SuperCtorRef7, MethodRef8, VoidMethodRef8, StaticMethodRef8, VoidStaticMethodRef8, CtorRef8, SuperCtorRef8, MethodRef9, VoidMethodRef9, StaticMethodRef9, VoidStaticMethodRef9, CtorRef9, SuperCtorRef9, MethodRef10, VoidMethodRef10, StaticMethodRef10, VoidStaticMethodRef10, CtorRef10, SuperCtorRef10, MethodRef11, VoidMethodRef11, StaticMethodRef11, VoidStaticMethodRef11, CtorRef11, SuperCtorRef11, MethodRef12, VoidMethodRef12, StaticMethodRef12, VoidStaticMethodRef12, CtorRef12, SuperCtorRef12 {
+}

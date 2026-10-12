@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TokenArg;
@@ -32,25 +33,26 @@ sealed interface TypeScope {
         variables(type).forEach(variable -> {
             switch (variable.origin()) {
                 case TypeVarToken.Origin.Vouched _ -> {}
-                case TypeVarToken.Origin.Declared(Object declaration) -> require(type, variable, declaration);
+                case TypeVarToken.Origin.Declared(DeclarationIdentity declaration) ->
+                    require(type, variable, declaration);
             }
         });
     }
 
-    private void require(TypeToken<?> type, TypeVarToken<?> variable, Object declaration) {
+    private void require(TypeToken<?> type, TypeVarToken<?> variable, DeclarationIdentity declaration) {
         String mentioned = type == variable ? "" : ", which " + type + " mentions,";
         switch (this) {
             case Standalone _ ->
                 throw new IllegalStateException("the type parameter " + variable + mentioned + " is in scope in"
                         + " the class that declares it alone (JLS 6.3), and this code is in the body of no class");
-            case Instance(Object mine, String where) -> {
+            case Instance(DeclarationIdentity mine, String where) -> {
                 if (mine != declaration) {
                     throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in"
                             + " scope in " + where + ": it is a type parameter of another class, in scope in"
                             + " the declaration of that class alone (JLS 6.3)");
                 }
             }
-            case Static(Object mine, String where) -> {
+            case Static(DeclarationIdentity mine, String where) -> {
                 if (mine != declaration) {
                     throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in"
                             + " scope in " + where + ": it is a type parameter of another class, in scope in"
@@ -86,11 +88,11 @@ sealed interface TypeScope {
     ///
     /// @param declaration the declaration of the class, known by its identity
     /// @param where the place, for messages
-    record Instance(Object declaration, String where) implements TypeScope {}
+    record Instance(DeclarationIdentity declaration, String where) implements TypeScope {}
 
     /// In a `static` member of a class: no type parameter is in scope.
     ///
     /// @param declaration the declaration of the class, known by its identity
     /// @param where the place, for messages
-    record Static(Object declaration, String where) implements TypeScope {}
+    record Static(DeclarationIdentity declaration, String where) implements TypeScope {}
 }

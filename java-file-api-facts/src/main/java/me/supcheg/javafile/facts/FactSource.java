@@ -17,6 +17,9 @@ import java.util.List;
 /// [FactLookupException] says what was looked for, what similar members
 /// exist, and where the type came from.
 ///
+/// A source gives the facts of `public` fields and methods alone: each is
+/// `public` by what the resolver proved, not by assumption.
+///
 /// The class is final and has no public constructor: a source is created by
 /// [UnsafeFacts#factSource(DeclaredToken, MemberResolver)], so a source that
 /// proves everything is visible to the audit of the guarantee (§1). The only
@@ -41,9 +44,30 @@ public final class FactSource<O> extends InvocableLookup<O> {
         return token;
     }
 
+    /// What the resolver proves of a member. A field or a method has to be `public`: a source gives a
+    /// fact as it is, and the fact of a `protected` field or method is held back in a [Protected], which
+    /// a subclass alone opens — a resolver that proves one is refused, so no such fact gets out bare. A
+    /// `protected` constructor has its fact unwrapped, with its access in its traits.
+    ///
+    /// @throws IllegalStateException if the resolver proves a field or method that is not `public`
     @Override
     Resolution resolve(MemberQuery query) {
-        return resolver.resolve(query);
+        Resolution resolution = resolver.resolve(query);
+        boolean reached =
+                switch (resolution.traits().access()) {
+                    case PUBLIC -> true;
+                    case PROTECTED ->
+                        switch (query.kind()) {
+                            case CONSTRUCTOR -> true;
+                            case METHOD, STATIC_METHOD, FIELD, MUTABLE_FIELD, STATIC_FIELD, MUTABLE_STATIC_FIELD ->
+                                false;
+                        };
+                };
+        if (!reached) {
+            throw new IllegalStateException("the resolver of " + token + " proved " + query
+                    + ", a protected member: a fact source gives the facts of public fields and methods alone");
+        }
+        return resolution;
     }
 
     /// Proves a readable instance field.

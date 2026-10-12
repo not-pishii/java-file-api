@@ -106,4 +106,20 @@ class FactSourceTest {
         assertThat(field.constantValue()).contains("");
         assertThat(ClassDesc.of("java.lang.String")).isEqualTo(field.type().erasure());
     }
+
+    @Test
+    void aSourceGivesNoBareFactOfAProtectedFieldOrMethod() {
+        MemberTraits ofProtected = new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PROTECTED);
+        FactSource<Number> source =
+                UnsafeFacts.factSource(NUMBER, query -> new Resolution(ofProtected, Optional.empty()));
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> source.method("intValue", PrimitiveToken.INT))
+                .withMessageContaining("a protected member");
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> source.field("count", PrimitiveToken.INT))
+                .withMessageContaining("a protected member");
+        // the fact of a protected constructor is not held back: a subclass alone calls super(...)
+        assertThat(source.superCtor().traits().access()).isEqualTo(Access.PROTECTED);
+    }
 }
