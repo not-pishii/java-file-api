@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.facts.CtorRef0;
@@ -89,6 +90,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     private final String described;
     private final FinalClassToken<Self> self;
     private final Superclass superclass;
+    private final Function<List<ClassMember>, JavaFile> written;
     private List<Slot> slots;
 
     /// What a class declared, as its bodies take it.
@@ -97,7 +99,11 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @param superclass its superclass
     /// @param members its members, in the order they were declared
     /// @param <Self> the brand of the class
-    record Declared<Self>(ClassDeclaration<Self> owner, Superclass superclass, List<Member> members) {
+    record Declared<Self>(
+            ClassDeclaration<Self> owner,
+            Superclass superclass,
+            List<Member> members,
+            Function<List<ClassMember>, JavaFile> written) {
         Declared {
             members = List.copyOf(members);
         }
@@ -110,6 +116,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         this.described = owner.described();
         this.self = owner.self();
         this.superclass = declared.superclass();
+        this.written = declared.written();
         this.slots = declared.members().stream()
                 .<Slot>map(member -> switch (member) {
                     case Member.Callable callable -> new Slot.Awaiting(callable);
@@ -488,30 +495,29 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
 
     /// `super.method(args)`, on `this` of this class.
     private Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args) {
-        if (receiver.type() != self || !(receiver.node() instanceof Node.This(var body))) {
+        if (receiver.type() != self) {
             throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
                     + ", got this of " + receiver.type());
         }
         Inheritance.Group group = superclass.member(described, method);
         Inheritance.Entry member = group.stands();
-        switch (group.standing()) {
-            case DEFAULT, CONCRETE, FINAL -> {}
+        return switch (group.standing()) {
+            case DEFAULT, CONCRETE, FINAL ->
+                switch (member.method().visibility()) {
+                    case PUBLIC, PROTECTED -> new Node.SuperCall(receiver.body(), superclass.token(), method, args);
+                    case PACKAGE ->
+                        throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
+                                + " cannot call " + member + ": the method has package access and the class is in"
+                                + " its package — whether the class reaches it depends on the packages of the"
+                                + " classes between, which the typed layer does not tell");
+                };
             case ABSTRACT ->
                 throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
                         + " calls no body: " + member + " is abstract in " + superclass.token() + " (JLS 15.12.3)");
             case STATIC ->
                 throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
                         + " calls an instance method, and " + member + " is static in " + superclass.token());
-        }
-        switch (member.method().visibility()) {
-            case PUBLIC, PROTECTED -> {}
-            case PACKAGE ->
-                throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
-                        + " cannot call " + member + ": the method has package access and the class is in its"
-                        + " package — whether the class reaches it depends on the packages of the classes"
-                        + " between, which the typed layer does not tell");
-        }
-        return new Node.SuperCall(body, superclass.token(), method, args);
+        };
     }
 
     // ------------------------------------------------------------------
@@ -584,7 +590,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalStateException if a type the class names cannot be written in its file
     private void requireWritable(List<Slot> with, String added) {
         try {
-            owner.file(members(with)).render();
+            written.apply(members(with)).render();
         } catch (IllegalStateException unwritable) {
             throw new IllegalStateException(
                     added + " of " + described + " cannot be written: " + unwritable.getMessage()
@@ -600,13 +606,13 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// by its fact itself: two facts that tell the same are two members.
     private Slot.Awaiting definable(Invocable member) {
         String what = member.toString();
-        owner.requireDefining(this, what);
+        owner.requireDefining(what);
         return slots.stream()
                 .flatMap(slot -> switch (slot) {
                     case Slot.Awaiting awaiting when awaiting.declared().fact() == member -> Stream.of(awaiting);
                     case Slot.Defined(Member.Callable declared, var _)
                     when declared.fact() == member -> throw alreadyDefined(what);
-                    case Slot.Awaiting _, Slot.Blank _, Slot.Defined _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot _ -> Stream.<Slot.Awaiting>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
@@ -615,13 +621,13 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// The slot of a field that is declared and has no initializer yet.
     private Slot.Blank initializable(FieldRef<?, ?> field) {
         String what = "field " + field;
-        owner.requireDefining(this, what);
+        owner.requireDefining(what);
         return slots.stream()
                 .flatMap(slot -> switch (slot) {
                     case Slot.Blank blank when blank.declared().fact() == field -> Stream.of(blank);
                     case Slot.Defined(Member.Field declared, var _)
                     when declared.fact() == field -> throw alreadyDefined(what);
-                    case Slot.Awaiting _, Slot.Blank _, Slot.Defined _ -> Stream.<Slot.Blank>empty();
+                    case Slot _ -> Stream.<Slot.Blank>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
@@ -660,15 +666,9 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     }
 
     /// The declared member is there whole.
-    private void defined(Slot from, ClassMember member, String what) {
-        Member declared =
-                switch (from) {
-                    case Slot.Awaiting(var callable) -> callable;
-                    case Slot.Blank(var field) -> field;
-                    case Slot.Defined(var defined, var _) -> defined;
-                };
+    private void defined(Slot.Open from, ClassMember member, String what) {
         List<Slot> with = slots.stream()
-                .map(slot -> slot == from ? new Slot.Defined(declared, member) : slot)
+                .map(slot -> slot == from ? new Slot.Defined(from.declared(), member) : slot)
                 .toList();
         requireWritable(with, what);
         slots = with;
@@ -749,16 +749,21 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
 
     /// A member of the class, in the order it was declared.
     private sealed interface Slot {
+        /// A slot that waits for what defines it.
+        sealed interface Open extends Slot {
+            /// The member as it is declared.
+            Member declared();
+        }
 
         /// A method or constructor that has no body yet.
         ///
         /// @param declared the member as it was declared
-        record Awaiting(Member.Callable declared) implements Slot {}
+        record Awaiting(Member.Callable declared) implements Open {}
 
         /// A field that has no initializer yet.
         ///
         /// @param declared the field as it was declared
-        record Blank(Member.Field declared) implements Slot {}
+        record Blank(Member.Field declared) implements Open {}
 
         /// A member that is there whole.
         ///

@@ -1056,8 +1056,8 @@ final class MetamodelEmitter {
     private static Expr told(Heritage.Type type) {
         return switch (type) {
             case Heritage.Type.Fixed(TypeRef fixed) -> Exprs.new_(CD_HERITAGE_FIXED, typeRef(fixed));
-            case Heritage.Type.OfType(int index) -> Exprs.new_(CD_HERITAGE_OF_TYPE, Exprs.literal(index));
-            case Heritage.Type.OfMember(int index) -> Exprs.new_(CD_HERITAGE_OF_MEMBER, Exprs.literal(index));
+            case Heritage.Type.OfType ofType -> Exprs.new_(CD_HERITAGE_OF_TYPE, Exprs.literal(ofType.index()));
+            case Heritage.Type.OfMember ofMember -> Exprs.new_(CD_HERITAGE_OF_MEMBER, Exprs.literal(ofMember.index()));
             case Heritage.Type.Array(Heritage.Type component) -> Exprs.new_(CD_HERITAGE_ARRAY, told(component));
             case Heritage.Type.Parameterized(ClassDesc raw, List<Heritage.Argument> arguments) ->
                 Exprs.new_(
@@ -1133,10 +1133,11 @@ final class MetamodelEmitter {
         return switch (param) {
             case MethodTableTemplate.Fixed(ClassDesc erasure) ->
                 Exprs.staticCall(CD_PARAM, "fixed", classDesc(erasure));
-            case MethodTableTemplate.Var(int index, int dimensions)
-            when dimensions == 0 -> Exprs.staticCall(CD_PARAM, "var", Exprs.literal(index));
-            case MethodTableTemplate.Var(int index, int dimensions) ->
-                Exprs.staticCall(CD_PARAM, "var", Exprs.literal(index), Exprs.literal(dimensions));
+            case MethodTableTemplate.Var variable
+            when variable.dimensions() == 0 -> Exprs.staticCall(CD_PARAM, "var", Exprs.literal(variable.index()));
+            case MethodTableTemplate.Var variable ->
+                Exprs.staticCall(
+                        CD_PARAM, "var", Exprs.literal(variable.index()), Exprs.literal(variable.dimensions()));
         };
     }
 
