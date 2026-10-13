@@ -487,7 +487,37 @@ class InheritanceTest {
     }
 
     @Test
+    void anAbstractMethodWithPackageAccessIsNoneAClassOfAnotherPackageImplements() {
+        ClassDesc far = ClassDesc.of("y", "Far");
+        Heritage.Method<Heritage.Inherited> hidden = new Heritage.Method<>(
+                Signature.of("m"),
+                List.of(new Heritage.Plain(
+                        new Heritage.Declarer.OfClass(far, Heritage.Visibility.PACKAGE, Heritage.ClassMethod.ABSTRACT),
+                        Heritage.Arity.FIXED,
+                        List.of(),
+                        new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
+                        List.of())),
+                Set.of(List.of()),
+                List.of());
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Inheritance.of(HEIR, klass(far, hidden)))
+                .withMessageContaining(OWNER + " cannot have the supertype")
+                .withMessageContaining(
+                        "is abstract and has package access, so a class of another package cannot" + " implement it");
+        // a type variable is of the class its bounds make, and implements nothing
+        assertThat(Inheritance.of(new Inheritance.Heir.OfVariable("T"), klass(far, hidden))
+                        .group(sig("m")))
+                .isPresent();
+    }
+
+    @Test
     void aShapeThatTellsNoHeritageIsNoSupertype() {
+        // a class that is being declared tells none: it is final
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> real(UnsafeFacts.declaredClassToken(
+                        new ClassTypeRef(K), () -> List.of(ConstantDescs.CD_Object), () -> MethodTable.EMPTY)))
+                .withMessageContaining("tells no heritage");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> real(String_.TOKEN))
                 .withMessageContaining("tells no heritage");
