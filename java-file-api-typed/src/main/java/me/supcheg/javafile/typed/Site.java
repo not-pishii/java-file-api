@@ -24,7 +24,8 @@ record Site(StackTraceElement at) {
     static Site here() {
         return new Site(WALKER.walk(frames -> frames.filter(frame -> !own(frame.getDeclaringClass()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("the typed layer is called by code of its own alone"))
+                // the typed layer is called by code that is none of its own: its tests, at the least
+                .orElseThrow()
                 .toStackTraceElement()));
     }
 

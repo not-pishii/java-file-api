@@ -18,6 +18,10 @@ public class Base {
         this.name = name;
     }
 
+    protected Base(String first, String second) {
+        this.name = first + second;
+    }
+
     public String pick(Object value) {
         return "object";
     }

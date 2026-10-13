@@ -2,10 +2,13 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
+import me.supcheg.javafile.facts.VoidOverriding0;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
@@ -190,6 +193,111 @@ class DeclarationStagesTest {
                     }
                 }))
                 .withMessageContaining("is not a proof about " + PROBE);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void aStepTakesAnImplementationTheClassItselfMade() {
+        AtomicReference<VoidOverriding0<?>> other = new AtomicReference<>();
+        file(ClassDesc.of("me.supcheg.example", "Other"), new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var run = h.overriding(Runnable_.run);
+                other.set(run);
+                var oh = h.extendsObject();
+                oh.implements_(Runnable_.implement(h.self()).run(run));
+                var bodies = oh.members().bodies();
+                bodies.define(run.method(), (b, self) -> b.end());
+                return bodies;
+            }
+        });
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        h.extendsObject()
+                                .implements_(Runnable_.implement(h.self()).run((VoidOverriding0<Self>) other.get()));
+                        return Unreached.here();
+                    }
+                }))
+                .withMessageContaining(
+                        "the implementation of void java.lang.Runnable.run() is not one " + PROBE + " made");
+    }
+
+    @Test
+    void aProofHasNoStepForAMethodTheTypeDoesNotHaveOnTheTargetClasspath() {
+        // a proof as the metamodel of a Runnable that had one abstract method more gave it
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        var run = h.overriding(Runnable_.run);
+                        var stop = h.overriding(
+                                UnsafeInvocables.voidMethod(Runnable_.TOKEN, "stop", MemberTraits.ABSTRACT));
+                        h.extendsObject()
+                                .implements_(UnsafeFacts.steps(Runnable_.TOKEN, h.self())
+                                        .with(MethodTableTemplate.Signature.of("run"), run)
+                                        .with(MethodTableTemplate.Signature.of("stop"), stop)
+                                        .complete());
+                        return Unreached.here();
+                    }
+                }))
+                .withMessageContaining("the proof has a step for void java.lang.Runnable.stop(), and on the target"
+                        + " classpath the type has no such method");
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void aFieldIsInitializedOnceAndByTheClassThatDeclaredIt() {
+        assertThat(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                            @Override
+                            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                                var cb = h.extendsObject().members();
+                                var first = cb.declareField("first", String_.TOKEN);
+                                var second = cb.declareField("second", String_.TOKEN);
+                                var bodies = cb.bodies();
+                                bodies.initialize(second, literal("b"));
+                                assertThatIllegalStateException()
+                                        .isThrownBy(() -> bodies.initialize(second, literal("c")))
+                                        .withMessageContaining("is already defined");
+                                assertThatIllegalStateException()
+                                        .isThrownBy(() -> bodies.initialize((FieldRef) Base_.name, literal("c")))
+                                        .withMessageContaining("it was not declared by the builder of " + PROBE);
+                                bodies.initialize(first, literal("a"));
+                                return bodies;
+                            }
+                        })
+                        .render())
+                .contains("String first = \"a\";")
+                .contains("String second = \"b\";");
+    }
+
+    @Test
+    void aProtectedMemberOfTheSuperclassIsTakenOutWhereTheBodiesAreBuilt() {
+        assertThat(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                            @Override
+                            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                                var cb = h.extends_(Base_.extend(h.self())).members();
+                                var constructor = cb.declareConstructor();
+                                var hooked = cb.declareMethod("hooked", String_.TOKEN);
+                                var bodies = cb.bodies(
+                                        constructor,
+                                        ctor -> ctor.super_(
+                                                Base_.super_String_String,
+                                                literal("a"),
+                                                literal("b"),
+                                                (b, self) -> b.end()));
+                                bodies.define(
+                                        hooked,
+                                        (b, self) -> b.return_(bodies.superCall(
+                                                self, bodies.protected_(Base_.hook_String), literal("x"))));
+                                return bodies;
+                            }
+                        })
+                        .render())
+                .contains("super(\"a\", \"b\");")
+                .contains("return super.hook(\"x\");");
     }
 
     @Test
