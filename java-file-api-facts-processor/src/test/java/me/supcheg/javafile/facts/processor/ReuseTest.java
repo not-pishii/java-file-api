@@ -236,6 +236,137 @@ class ReuseTest {
                         "p.Dep is not marked @GeneratedMetamodel; generating b.facts.p.Svc_");
     }
 
+    @Test
+    void anIndexEntryOfAnotherTypeOrOfLessThanItListsIsSkippedWithAWarning() throws IOException {
+        Path index = root.resolve("index");
+        index(index, "p.Other", "a.facts.p.Svc_\n");
+        index(index, "p.Dep", "a.facts.p.Dep_\n");
+
+        Compiled b = Javac.facts()
+                .classpath(v1, index, moduleA)
+                .compile(generator("b", "p.Other.class, p.Dep.class"))
+                .orFail();
+
+        assertThat(b.metamodels()).contains("b.facts.p.Other_", "b.facts.p.Dep_");
+        assertThat(b.warnings())
+                .containsExactly(
+                        "a.facts.p.Dep_ is listed as full, but is token-only; generating b.facts.p.Dep_",
+                        "a.facts.p.Svc_ is the metamodel of p.Svc, not of p.Other; generating b.facts.p.Other_");
+    }
+
+    @Test
+    void aFullMetamodelIsNotReusedForATokenWhileItsTypeMentionsATypeThatIsNotThereYet() throws IOException {
+        Path full = fullMetamodel(fingerprintOfDep(v1), MetamodelFormat.VERSION);
+
+        // this p.Dep mentions gen.Late, which the other processor writes in round 1: whether the full
+        // metamodel listed for it holds is not known in the round that needs its token
+        Compiled b = Javac.facts()
+                .classpath(full)
+                .with(new Generating())
+                .compile(
+                        generator("b", "p.User.class"),
+                        "package p; public class User { public Dep dep() { return null; } }",
+                        "package p; public class Dep { public gen.Late late() { return null; } }")
+                .orFail();
+
+        assertThat(b.sources().get("b.facts.p.Dep_")).contains("complete = false");
+        assertThat(b.warnings())
+                .containsExactly("p.Dep mentions gen.Late, which does not exist yet; generating b.facts.p.Dep_");
+    }
+
+    @Test
+    void aMetamodelListedForATypeNoMetamodelCanBeMadeOfIsNoReasonToMakeOne() throws IOException {
+        String outer = "package p; public class Outer<T> { public class Inner {} }";
+        Path lib = Javac.plain().compile(outer).orFail().writeTo(root.resolve("outer"));
+        Path listed = Javac.plain()
+                .classpath(lib)
+                .compile("""
+                        package x.facts.p;
+                        @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Outer.Inner.class, fingerprint = "none", complete = true, format = %d)
+                        public final class Outer_Inner_ {}
+                        """.formatted(MetamodelFormat.VERSION))
+                .orFail()
+                .writeTo(root.resolve("x"));
+        index(listed, "p.Outer$Inner", "x.facts.p.Outer_Inner_\n");
+
+        Compiled b = Javac.facts().classpath(lib, listed).compile(generator("b", "p.Outer.Inner.class"));
+
+        assertThat(b.errors())
+                .containsExactly("no metamodel of p.Outer$Inner: inner class p.Outer.Inner of generic class p.Outer"
+                        + " can mention its type parameters");
+        assertThat(b.warnings()).isEmpty();
+    }
+
+    /// A processor that writes `gen.User`, which mentions `p.Dep`, in its first round.
+    private static final class Mentioning extends AbstractProcessor {
+        private boolean done;
+
+        @Override
+        public Set<String> getSupportedAnnotationTypes() {
+            return Set.of("*");
+        }
+
+        @Override
+        public SourceVersion getSupportedSourceVersion() {
+            return SourceVersion.latestSupported();
+        }
+
+        @Override
+        public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+            if (!done) {
+                done = true;
+                try (Writer writer =
+                        processingEnv.getFiler().createSourceFile("gen.User").openWriter()) {
+                    writer.write("package gen; public class User { public p.Dep dep() { return null; } }");
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+            return false;
+        }
+    }
+
+    @Test
+    void aTokenOnlyMetamodelReusedInOneRoundIsTheTokenOfTheTypeInTheNext() {
+        Compiled b = Javac.facts()
+                .classpath(v1, moduleA)
+                .with(new Mentioning())
+                .compile(generator("b", "p.Other.class, gen.User.class"))
+                .orFail();
+
+        // round 1 takes the token of Dep for Other from a.facts.p.Dep_, and so does round 2 for gen.User
+        assertThat(b.metamodels()).containsExactlyInAnyOrder("gen.User", "b.facts.p.Other_", "b.facts.gen.User_");
+        assertThat(b.sources().get("b.facts.gen.User_")).contains("a.facts.p.Dep_.Data.SHAPE");
+        assertThat(b.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void whatAReusedMetamodelDoesNotInheritIsToldToTheCompilationThatReusesIt() {
+        Path lib = Javac.plain()
+                .compile(
+                        "package q; public class Bounded<T extends Secret> { public void lost() {} }",
+                        "package q; class Secret {}",
+                        "package q; public class First extends Bounded<Secret> {}")
+                .orFail()
+                .writeTo(root.resolve("q"));
+        String lost = "q.First: no facts of the public members inherited from q.Bounded, which has no full metamodel:"
+                + " the bounds of the type parameters of q.Bounded mention types that are not public: q.Secret";
+        Compiled first = Javac.facts()
+                .classpath(lib)
+                .compile(generator("c", "q.First.class"))
+                .orFail();
+        assertThat(first.warnings()).containsExactly(lost);
+        Path c = first.writeTo(root.resolve("c"));
+
+        Compiled d = Javac.facts()
+                .classpath(lib, c)
+                .compile(generator("d", "q.First.class"))
+                .orFail();
+
+        assertThat(d.metamodels()).doesNotContain("d.facts.q.First_");
+        assertThat(d.warnings()).containsExactly(lost);
+    }
+
     /// A hand-made full metamodel `x.facts.p.Dep_` of `p.Dep`, listed in the index.
     private Path fullMetamodel(String fingerprint, int format) throws IOException {
         Path directory = Javac.plain()

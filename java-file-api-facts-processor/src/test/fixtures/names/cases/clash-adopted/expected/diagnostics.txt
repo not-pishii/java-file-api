@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.HeirCf: no fact of method x() of p.HiddenCf, method x_() of p.HiddenCf, which would all be named x_

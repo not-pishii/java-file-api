@@ -1,0 +1,74 @@
+package gen.facts.p;
+
+import gen.facts.p.Self_.Canonical;
+import gen.facts.p.Self_.Data;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
+import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
+import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.OpenClassToken;
+import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
+import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.TypeShape;
+import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
+import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
+import org.jspecify.annotations.NullMarked;
+import p.Self;
+
+/// The token-only metamodel of [Self]: its shape and its token, no facts of its members.
+///
+/// `@Facts` does not ask for [Self]: it is only mentioned in the signatures of [p.Selfish]. For the facts of its members add `Self.class` to `@Facts`.
+@Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
+@GeneratedMetamodel(of = Self.class, fingerprint = "a725fce06cb56dbd3f62c01e1d407a4b15e95e65a6246a6a020924bca966f202", complete = false, format = 14)
+@SuppressWarnings({
+    "deprecation",
+    "removal"
+})
+@NullMarked
+public final class Self_ {
+    /// The shape of [Self] as plain data: initializing it touches no other metamodel.
+    @GeneratedMetamodelPart
+    public static final class Data {
+        /// What [Self] was when this metamodel was generated. Its tokens are made from it.
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "a725fce06cb56dbd3f62c01e1d407a4b15e95e65a6246a6a020924bca966f202", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Self"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
+
+        private Data() {
+        }
+    }
+
+    /// The canonical form of [Self], loaded only to compare the type with the one on the target classpath.
+    @GeneratedMetamodelPart
+    static final class Canonical {
+        /// The canonical form of [Self].
+        static final String TEXT = """
+        javafile-facts-canonical 8
+        type p.Self open-class sealed=no nesting=top
+        tparams -
+        superclasses java.lang.Object
+        interfaces -
+        supertypes -
+        enum -
+        members none
+        table abstract -
+        table concrete clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
+        table static -
+        table ctor Self()
+        """;
+
+        private Canonical() {
+        }
+    }
+
+    /// The token of [Self].
+    public static final OpenClassToken<Self> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
+
+    private Self_() {
+    }
+}

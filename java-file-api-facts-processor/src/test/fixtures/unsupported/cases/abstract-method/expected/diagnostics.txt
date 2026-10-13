@@ -1,0 +1,1 @@
+gen/G.java:7:1: warning: p.Noted: no fact of method note(java.lang.Deprecated), which mentions java.lang.Deprecated, which has no metamodel: annotation interface java.lang.Deprecated is not supported yet

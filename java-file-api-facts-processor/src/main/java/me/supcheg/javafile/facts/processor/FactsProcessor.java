@@ -21,7 +21,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.constant.ClassDesc;
 import java.util.HashMap;
@@ -207,12 +206,11 @@ public final class FactsProcessor extends AbstractProcessor {
             }
         }
         if (when == Round.LAST) {
-            unresolvedSites.forEach(site -> site.resolve(elements)
-                    .ifPresentOrElse(
-                            element -> Requests.unresolved(element)
-                                    .forEach(literal -> diagnostics.error(
-                                            element, literal.annotation(), literal.value(), UNRESOLVED)),
-                            () -> diagnostics.error(UNRESOLVED)));
+            unresolvedSites.stream()
+                    .flatMap(site -> site.resolve(elements).stream())
+                    .forEach(element -> Requests.unresolved(element)
+                            .forEach(literal ->
+                                    diagnostics.error(element, literal.annotation(), literal.value(), UNRESOLVED)));
         }
     }
 
@@ -254,7 +252,8 @@ public final class FactsProcessor extends AbstractProcessor {
                 .flatMap(entry -> Optional.ofNullable(elements.getTypeElement(entry.getKey()))
                         .map(type -> new Asked(models.binaryName(type), type, entry.getValue()))
                         .stream())
-                .collect(Collectors.toMap(Asked::name, Function.identity(), (first, second) -> first, TreeMap::new));
+                .collect(
+                        Collectors.collectingAndThen(Collectors.toMap(Asked::name, Function.identity()), TreeMap::new));
         TypeGraph graph = Closure.of(
                 asked.values().stream().collect(Collectors.toMap(Asked::name, Asked::type)),
                 unresolvedSites.isEmpty() ? TypeGraph.Asked.ALL_THERE : TypeGraph.Asked.SOME_MISSING,
@@ -410,7 +409,7 @@ public final class FactsProcessor extends AbstractProcessor {
     private static Optional<ClassDesc> metamodel(TypeGraph.Node node, String base, Elements elements) {
         return node.request()
                 .flatMap(request -> switch (request) {
-                    case TypeGraph.Request.Settled(Done settled) -> metamodel(settled);
+                    case TypeGraph.Request.Settled(Done.Final settled) -> metamodel(settled);
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> Optional.of(metamodel);
                     case TypeGraph.Request.Ready(TypeElement type, var _) ->
                         Optional.of(MetamodelNames.metamodel(base, type, elements));
@@ -420,7 +419,7 @@ public final class FactsProcessor extends AbstractProcessor {
                     case TypeGraph.Request.Rejected _ -> Optional.<ClassDesc>empty();
                 })
                 .or(() -> node.token().flatMap(token -> switch (token) {
-                    case TypeGraph.Token.Settled(Done settled) -> metamodel(settled);
+                    case TypeGraph.Token.Settled(Done.Dealt settled) -> metamodel(settled);
                     case TypeGraph.Token.OnClasspath(ClassDesc metamodel, var _) -> Optional.of(metamodel);
                     case TypeGraph.Token.Planned(TypeElement type, var _) ->
                         Optional.of(MetamodelNames.metamodel(base, type, elements));
@@ -430,14 +429,13 @@ public final class FactsProcessor extends AbstractProcessor {
                 }));
     }
 
-    private static Optional<ClassDesc> metamodel(Done done) {
+    private static Optional<ClassDesc> metamodel(Done.Dealt done) {
         return switch (done) {
             case Done.GeneratedFull(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.GeneratedToken(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.ReusedFull(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.ReusedToken(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.Failed _ -> Optional.empty();
-            case Done.Held _ -> Optional.empty();
         };
     }
 
@@ -559,12 +557,13 @@ public final class FactsProcessor extends AbstractProcessor {
         }
         return node.request()
                 .map(request -> switch (request) {
-                    case TypeGraph.Request.Settled(Done.GeneratedFull(ClassDesc metamodel)) ->
-                        new About.Supertype.Full(metamodel);
-                    case TypeGraph.Request.Settled(Done.ReusedFull(ClassDesc metamodel)) ->
-                        new About.Supertype.Full(metamodel);
-                    case TypeGraph.Request.Settled _ ->
-                        new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
+                    case TypeGraph.Request.Settled(Done.Final settled) ->
+                        switch (settled) {
+                            case Done.GeneratedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+                            case Done.ReusedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+                            case Done.Failed _ ->
+                                new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
+                        };
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
                     case TypeGraph.Request.Ready(TypeElement type, var _) ->
                         new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements));
@@ -573,14 +572,14 @@ public final class FactsProcessor extends AbstractProcessor {
                         models.element(ClassDesc.of(name))
                                 .<About.Supertype>map(type ->
                                         new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements)))
-                                .orElseGet(() -> new About.Supertype.None(name, name + " is not generated yet"));
+                                .orElse(new About.Supertype.None(name, name + " is not generated yet"));
                     case TypeGraph.Request.Late _ ->
                         new About.Supertype.None(
                                 name, "the token-only metamodel of " + name + " was generated in an earlier round");
                     case TypeGraph.Request.Unrepresentable(String reason) -> new About.Supertype.None(name, reason);
                     case TypeGraph.Request.Rejected(String reason) -> new About.Supertype.None(name, reason);
                 })
-                .orElseGet(() -> new About.Supertype.None(name, name + " has no full metamodel"));
+                .orElse(new About.Supertype.None(name, name + " has no full metamodel"));
     }
 
     /// Whether a type that cannot be extended declares `protected` fields, constructors or methods: they
@@ -686,7 +685,9 @@ public final class FactsProcessor extends AbstractProcessor {
             }
             index.publish(planned.completeness(), planned.binaryName(), metamodel, originating);
         } catch (IOException e) {
-            throw new UncheckedIOException("cannot write " + name, e);
+            // such as a file another processor wrote under the name in this round
+            diagnostics.error(at, "cannot write " + name + " of " + planned.subject() + ": " + e.getMessage());
+            return new Done.Failed();
         }
         return Done.generated(metamodel, planned.completeness());
     }

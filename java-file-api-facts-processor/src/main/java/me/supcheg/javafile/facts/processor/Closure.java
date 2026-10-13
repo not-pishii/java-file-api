@@ -8,7 +8,6 @@ import me.supcheg.javafile.langmodel.mirror.Admission;
 import me.supcheg.javafile.langmodel.mirror.Hierarchy;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
-import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Either;
@@ -224,9 +223,7 @@ final class Closure {
     private static Found find(String name, TypeElement type, Map<String, Done> done, Models models, ReuseIndex index) {
         return switch (done.get(name)) {
             case Done.GeneratedToken(ClassDesc metamodel) -> new Found.Late(metamodel);
-            case Done.GeneratedFull settled -> new Found.Settled(settled);
-            case Done.ReusedFull settled -> new Found.Settled(settled);
-            case Done.Failed settled -> new Found.Settled(settled);
+            case Done.Final settled -> new Found.Settled(settled);
             // neither is a full metamodel: one is looked for as if no round had dealt with the type
             case Done.ReusedToken _ -> look(type, models, index);
             case Done.Held _ -> look(type, models, index);
@@ -270,7 +267,7 @@ final class Closure {
     /// What becomes of a full metamodel that can be made, as the graph tells it.
     private static Request.Plan plan(Found.Full found) {
         return switch (found) {
-            case Found.Settled(Done done) -> new Request.Settled(done);
+            case Found.Settled(Done.Final done) -> new Request.Settled(done);
             case Found.Reusable(ClassDesc metamodel) -> new Request.OnClasspath(metamodel);
             case Found.Read(Reading.Ready read, List<String> stale) -> new Request.Ready(read.type(), stale);
             case Found.Waiting _ -> new Request.Waiting();
@@ -294,17 +291,9 @@ final class Closure {
     /// Reads what the signatures of a type mention, of which a full metamodel can be made.
     private static Reading readSignatures(TypeElement requested, TypeModel full, Models models) {
         // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
-        return switch (models.sam(requested)) {
-            case Translation.Ok<Optional<SamModel>>(var sam) ->
-                read(requested, full, sam.stream().map(SamModel::method).flatMap(Mentions::of), models);
-            case Translation.Deferred<Optional<SamModel>>(var unresolved) -> new Reading.Waiting(unresolved);
-            case Translation.Unrepresentable<Optional<SamModel>> _ -> read(requested, full, Stream.empty(), models);
-        };
-    }
-
-    private static Reading read(TypeElement requested, TypeModel full, Stream<ClassDesc> samMentions, Models models) {
         String self = Models.binaryName(full.desc());
-        Pair<List<String>, List<Mention>> mentions = Stream.concat(Mentions.of(full), samMentions)
+        Pair<List<String>, List<Mention>> mentions = Stream.concat(
+                        Mentions.of(full), full.sam().stream().flatMap(Mentions::of))
                 .map(Models::binaryName)
                 .filter(name -> !name.equals(self))
                 .distinct()
@@ -337,11 +326,11 @@ final class Closure {
             Mention mention, Map<String, Done> done, Models models, ReuseIndex index, Holding holding) {
         return switch (mention) {
             case Mention.Unavailable(var _, String reason) -> new Token.Unavailable(reason);
+            // what is held is not written yet: it is looked for as if no round had dealt with the type
             case Mention.Available(String name, TypeElement type) ->
-                Optional.ofNullable(done.get(name))
-                        .filter(settled -> !(settled instanceof Done.Held))
-                        .<Token>map(Token.Settled::new)
-                        .orElseGet(() -> switch (index.find(type, ReuseIndex.Completeness.TOKEN, models)) {
+                done.get(name) instanceof Done.Dealt dealt
+                        ? new Token.Settled(dealt)
+                        : switch (index.find(type, ReuseIndex.Completeness.TOKEN, models)) {
                             case ReuseIndex.Lookup.Reusable(
                                     ClassDesc metamodel,
                                     ReuseIndex.Completeness completeness) ->
@@ -350,7 +339,7 @@ final class Closure {
                                 holding == Holding.WHAT_IS_OPEN && Inheritance.open(type)
                                         ? new Token.Held(type, stale)
                                         : new Token.Planned(type, stale);
-                        });
+                        };
         };
     }
 
@@ -454,7 +443,7 @@ final class Closure {
         sealed interface Full extends Found {}
 
         /// An earlier round dealt with the type.
-        record Settled(Done done) implements Full {}
+        record Settled(Done.Final done) implements Full {}
 
         /// A full metamodel on the classpath matches the type.
         record Reusable(ClassDesc metamodel) implements Full {}

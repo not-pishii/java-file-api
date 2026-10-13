@@ -586,6 +586,34 @@ class EntryTest {
     }
 
     @Test
+    void aTypeWhoseStepsNoNameTellsApartHasNoEntry() {
+        // a nested class and a class named like it with `_` are one name even with their package; declared by
+        // one type the two would have no facts, which refuses the entry before its steps are named
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Twins",
+                                        "package a; public class X { public static class Y {} }",
+                                        "package a; public class X_Y {}",
+                                        "package p; public interface Nested { void m(a.X.Y y); }",
+                                        "package p; public interface Joined { void m(a.X_Y y); }",
+                                        "package p; public interface Twins extends Nested, Joined {}")
+                                .entry())
+                        .reason())
+                .isEqualTo("two of its abstract methods would have one step, m_a_X_Y");
+    }
+
+    @Test
+    void aTypeWithABoundAClassOfAnotherPackageCannotNameHasNoEntry() {
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Paid",
+                                        "package p; public class Do$llar {}",
+                                        "package p; public class Paid<T extends Do$llar> { public Paid() {} }")
+                                .entry())
+                        .reason())
+                .isEqualTo("a bound of its type parameters mentions p.Do$llar, which a class of another package"
+                        + " cannot name");
+    }
+
+    @Test
     void aTypeParameterNamedLikeAClassOfTheProofIsNoObstacle() {
         Read named = ofLibrary(
                 "p.Named", "package p; public interface Named<Complete, Told, List> { Complete get(Told t, List l); }");

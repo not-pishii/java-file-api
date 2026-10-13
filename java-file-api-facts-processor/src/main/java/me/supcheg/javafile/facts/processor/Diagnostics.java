@@ -35,8 +35,7 @@ final class Diagnostics {
     /// @param element the element
     /// @param message the message
     void error(Optional<? extends Element> element, String message) {
-        messager.printMessage(
-                Diagnostic.Kind.ERROR, message, element.map(Element.class::cast).orElse(null));
+        print(Diagnostic.Kind.ERROR, element, message);
     }
 
     /// Reports an error on one value of an annotation.
@@ -54,10 +53,12 @@ final class Diagnostics {
     /// @param element the element
     /// @param message the message
     void warning(Optional<? extends Element> element, String message) {
-        messager.printMessage(
-                Diagnostic.Kind.WARNING,
-                message,
-                element.map(Element.class::cast).orElse(null));
+        print(Diagnostic.Kind.WARNING, element, message);
+    }
+
+    private void print(Diagnostic.Kind kind, Optional<? extends Element> element, String message) {
+        element.ifPresentOrElse(
+                where -> messager.printMessage(kind, message, where), () -> messager.printMessage(kind, message));
     }
 
     /// Reports what a round found to tell.
