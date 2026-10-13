@@ -24,7 +24,11 @@ final class Reachability {
 
     static boolean canCompleteNormally(Instr instr) {
         return switch (instr) {
-            case Instr.Let _, Instr.Exec _, Instr.SuperInit _, Instr.Raw _, Instr.ForEach _ -> true;
+            case Instr.Let _ -> true;
+            case Instr.Exec _ -> true;
+            case Instr.SuperInit _ -> true;
+            case Instr.Raw _ -> true;
+            case Instr.ForEach _ -> true;
             case Instr.If(var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.IfInstance(var _, var _, var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.While(var ctl, var condition, var body) ->
@@ -38,7 +42,11 @@ final class Reachability {
             case Instr.Try(var body, var catches, var _) ->
                 // A finally block completes normally by its type (FinallyBody).
                 canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body()));
-            case Instr.Return _, Instr.Yield _, Instr.Throw _, Instr.Break _, Instr.Continue _ -> false;
+            case Instr.Return _ -> false;
+            case Instr.Yield _ -> false;
+            case Instr.Throw _ -> false;
+            case Instr.Break _ -> false;
+            case Instr.Continue _ -> false;
         };
     }
 

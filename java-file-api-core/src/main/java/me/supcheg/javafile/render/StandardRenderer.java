@@ -149,7 +149,8 @@ public final class StandardRenderer implements SourceRenderer {
                     case ClassDecl c -> c.typeParams();
                     case InterfaceDecl i -> i.typeParams();
                     case RecordDecl r -> r.typeParams();
-                    case EnumDecl _, AnnotationTypeDecl _ -> List.of();
+                    case EnumDecl _ -> List.of();
+                    case AnnotationTypeDecl _ -> List.of();
                 };
         List<?> members =
                 switch (decl) {

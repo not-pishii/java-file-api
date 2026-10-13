@@ -85,7 +85,15 @@ sealed interface Instr {
             case Try(var body, var catches, var finallyBlock) ->
                 Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.stream())
                         .flatMap(Function.identity());
-            case Let _, SuperInit _, Exec _, Return _, Yield _, Throw _, Break _, Continue _, Raw _ -> Stream.empty();
+            case Let _ -> Stream.empty();
+            case SuperInit _ -> Stream.empty();
+            case Exec _ -> Stream.empty();
+            case Return _ -> Stream.empty();
+            case Yield _ -> Stream.empty();
+            case Throw _ -> Stream.empty();
+            case Break _ -> Stream.empty();
+            case Continue _ -> Stream.empty();
+            case Raw _ -> Stream.empty();
         };
     }
 }

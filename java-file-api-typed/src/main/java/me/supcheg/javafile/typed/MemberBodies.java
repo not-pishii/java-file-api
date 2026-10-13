@@ -33,7 +33,6 @@ import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
-import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.typed.MemberBuilder.Member;
 
 import java.lang.constant.ClassDesc;
@@ -359,7 +358,6 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
         built(root, b -> body.build(site));
-        requireCalled(site, ctor);
         defined(slot, root, List.of());
     }
 
@@ -370,7 +368,6 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
         Var<A1> p1 = Var.param(ctor.param1(), root);
         built(root, b -> body.build(site, p1));
-        requireCalled(site, ctor);
         defined(slot, root, List.of(p1));
     }
 
@@ -383,15 +380,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Var<A1> p1 = Var.param(ctor.param1(), root);
         Var<A2> p2 = Var.param(ctor.param2(), root);
         built(root, b -> body.build(site, p1, p2));
-        requireCalled(site, ctor);
         defined(slot, root, List.of(p1, p2));
-    }
-
-    private void requireCalled(SuperSite<Self, ?> site, Invocable ctor) {
-        if (!site.called()) {
-            throw new IllegalStateException("the body of " + ctor + " of " + described + " does not begin with"
-                    + " super(...): end it by ctor.super_(constructor, arguments, rest)");
-        }
     }
 
     /// The fact of a `protected` member of the superclass or of a class above it, taken out of
@@ -729,12 +718,9 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// The last parameter of a method of variable arity, `T... v`: its type is the array `T[]` to
     /// the body, and is written by its component.
     private static Param variable(Param last) {
-        return switch (last.type()) {
-            case ArrayTypeRef array -> new Param(last.name(), array.component(), last.annotations(), true);
-            case PrimitiveTypeRef _, ClassOrInterfaceTypeRef _ ->
-                throw new IllegalStateException(
-                        "the last parameter of a method of variable arity is an array, got " + last.type());
-        };
+        // the parameters of an override are those of the method it overrides, whose last is an array (Heritage.Plain)
+        ArrayTypeRef array = (ArrayTypeRef) last.type();
+        return new Param(last.name(), array.component(), last.annotations(), true);
     }
 
     /// The `throws` clause of a member, as the scope of its body.

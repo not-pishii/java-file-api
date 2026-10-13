@@ -227,7 +227,8 @@ final class Closure {
             case Done.ReusedFull settled -> new Found.Settled(settled);
             case Done.Failed settled -> new Found.Settled(settled);
             // neither is a full metamodel: one is looked for as if no round had dealt with the type
-            case Done.ReusedToken _, Done.Held _ -> look(type, models, index);
+            case Done.ReusedToken _ -> look(type, models, index);
+            case Done.Held _ -> look(type, models, index);
             case null -> look(type, models, index);
         };
     }
@@ -250,7 +251,8 @@ final class Closure {
         return switch (kin) {
             case Kin.Asked(var _, Found found) -> Stream.of(found);
             case Kin.Inherited(var _, Found.Full found) -> Stream.of(found);
-            case Kin.Declined _, Kin.Hidden _ -> Stream.empty();
+            case Kin.Declined _ -> Stream.empty();
+            case Kin.Hidden _ -> Stream.empty();
         };
     }
 

@@ -45,23 +45,23 @@ sealed interface TypeScope {
             case Standalone _ ->
                 throw new IllegalStateException("the type parameter " + variable + mentioned + " is in scope in"
                         + " the class that declares it alone (JLS 6.3), and this code is in the body of no class");
-            case Instance(DeclarationIdentity mine, String where) -> {
-                if (mine != declaration) {
-                    throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in"
-                            + " scope in " + where + ": it is a type parameter of another class, in scope in"
-                            + " the declaration of that class alone (JLS 6.3)");
-                }
-            }
+            case Instance(DeclarationIdentity mine, String where) ->
+                requireDeclaredBy(mine, declaration, variable + mentioned, where);
             case Static(DeclarationIdentity mine, String where) -> {
-                if (mine != declaration) {
-                    throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in"
-                            + " scope in " + where + ": it is a type parameter of another class, in scope in"
-                            + " the declaration of that class alone (JLS 6.3)");
-                }
+                requireDeclaredBy(mine, declaration, variable + mentioned, where);
                 throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in scope"
                         + " in " + where + ": a static member of a generic class refers neither to a type"
                         + " parameter of the class nor to the class with its type parameters (JLS 8.1.2)");
             }
+        }
+    }
+
+    private static void requireDeclaredBy(
+            DeclarationIdentity mine, DeclarationIdentity declaration, String variable, String where) {
+        if (mine != declaration) {
+            throw new IllegalStateException("the type parameter " + variable + " is not in scope in " + where
+                    + ": it is a type parameter of another class, in scope in the declaration of that class"
+                    + " alone (JLS 6.3)");
         }
     }
 

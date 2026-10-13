@@ -104,7 +104,13 @@ sealed interface ExceptionType {
         return switch (type) {
             case ClassToken<?> cls -> new OfClass(cls);
             case TypeVarToken<?> variable -> new OfVariable(variable);
-            case InterfaceToken<?> _, ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ ->
+            case InterfaceToken<?> _ ->
+                throw new IllegalArgumentException("not an exception type: " + type
+                        + " is neither a class nor a type variable, and only those extend Throwable");
+            case ArrayToken<?, ?> _ ->
+                throw new IllegalArgumentException("not an exception type: " + type
+                        + " is neither a class nor a type variable, and only those extend Throwable");
+            case PrimitiveToken<?, ?, ?> _ ->
                 throw new IllegalArgumentException("not an exception type: " + type
                         + " is neither a class nor a type variable, and only those extend Throwable");
         };

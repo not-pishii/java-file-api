@@ -347,7 +347,8 @@ final class SignatureRegistry {
     /// unbounded wildcards alone.
     private static boolean reifiable(TypeRef type) {
         return switch (type) {
-            case PrimitiveTypeRef _, ClassTypeRef _ -> true;
+            case PrimitiveTypeRef _ -> true;
+            case ClassTypeRef _ -> true;
             case ArrayTypeRef array -> reifiable(array.component());
             case TypeVarRef _ -> false;
             case ParameterizedTypeRef parameterized ->
