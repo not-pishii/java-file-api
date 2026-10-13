@@ -313,7 +313,8 @@ final class TypeGraph {
         String next = from(way.getLast(), Edge.Awaits.class)
                 .map(Edge::to)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(way.getLast() + " awaits nothing"));
+                // the way is one of types that wait for one another
+                .orElseThrow();
         List<String> longer = append(way, next);
         return way.contains(next) ? longer : circle(longer);
     }

@@ -686,8 +686,8 @@ final class MemberFacts {
                 return Exprs.field(MetamodelNames.INSTANCE_TOKEN);
             }
         }
-        Targets.Target target =
-                targets.of(desc).orElseThrow(() -> new IllegalStateException("no metamodel of " + desc.displayName()));
+        // a fact mentions the types the plan found a metamodel of
+        Targets.Target target = targets.of(desc).orElseThrow();
         ClassDesc data = use(target.metamodel().nested(MetamodelNames.DATA));
         List<Expr> tokenArgs = Stream.concat(
                         Stream.of(Exprs.staticField(data, MetamodelNames.SHAPE)),

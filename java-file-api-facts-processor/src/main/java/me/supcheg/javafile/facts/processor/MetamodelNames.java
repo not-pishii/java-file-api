@@ -220,8 +220,7 @@ final class MetamodelNames {
 
         Map<Element, String> names = finalNames.entrySet().stream()
                 .filter(e -> byName.get(e.getValue()).size() == 1)
-                .collect(Collectors.toMap(
-                        e -> e.getKey().element(), Map.Entry::getValue, (first, second) -> second, LinkedHashMap::new));
+                .collect(LinkedHashMap::new, (map, e) -> map.put(e.getKey().element(), e.getValue()), Map::putAll);
         Map<String, List<Element>> conflicts = byName.entrySet().stream()
                 .filter(e -> e.getValue().size() > 1)
                 .collect(

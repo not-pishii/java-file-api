@@ -184,8 +184,7 @@ public final class FactsProcessor extends AbstractProcessor {
             return;
         }
         Map<Site, Element> fresh = annotated.stream()
-                .collect(Collectors.toMap(
-                        element -> Site.of(element, elements), Function.identity(), (first, second) -> first));
+                .collect(Collectors.toMap(element -> Site.of(element, elements), Function.identity()));
         sites.addAll(fresh.keySet());
         // the `@Facts` of this round, and again those of the earlier rounds that named a type not there yet
         Stream.concat(
@@ -232,19 +231,17 @@ public final class FactsProcessor extends AbstractProcessor {
 
     private static boolean formatMatches(Elements elements, Diagnostics diagnostics) {
         TypeElement format = elements.getTypeElement(FORMAT);
-        Optional<Object> version = format == null
-                ? Optional.empty()
-                : ElementFilter.fieldsIn(format.getEnclosedElements()).stream()
-                        .filter(field -> field.getSimpleName().contentEquals("VERSION"))
-                        .findFirst()
-                        .map(VariableElement::getConstantValue);
+        // none in a java-file-api-facts older than the format
+        Optional<Object> version = Optional.ofNullable(format).stream()
+                .flatMap(found -> ElementFilter.fieldsIn(found.getEnclosedElements()).stream())
+                .filter(field -> field.getSimpleName().contentEquals("VERSION"))
+                .findFirst()
+                .map(VariableElement::getConstantValue);
         if (version.equals(Optional.of(MetamodelFormat.VERSION))) {
             return true;
         }
-        diagnostics.error("the @Facts processor generates metamodel format " + MetamodelFormat.VERSION + ", but "
-                + (format == null
-                        ? FORMAT + " is not on the classpath"
-                        : "java-file-api-facts on the classpath has format " + version.orElse("none"))
+        diagnostics.error("the @Facts processor generates metamodel format " + MetamodelFormat.VERSION
+                + ", but java-file-api-facts on the classpath has format " + version.orElse("none")
                 + "; use java-file-api-facts of the same version as the processor");
         return false;
     }
