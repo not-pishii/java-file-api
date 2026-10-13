@@ -114,10 +114,12 @@ final class ExprRenderer {
                         yield prefix + renderTypeArgs(typeArgs, ctx) + method + "(" + argsStr + ")";
                     }
                     case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
-                    case IntLiteral(var value) -> Integer.toString(value);
-                    case LongLiteral(var value) -> value + "L";
-                    case DoubleLiteral(var value) -> Double.toString(value);
-                    case BooleanLiteral(var value) -> Boolean.toString(value);
+                    // a primitive component is read by its accessor: javac tests a pattern of one, though
+                    // nothing fails the test
+                    case IntLiteral literal -> Integer.toString(literal.value());
+                    case LongLiteral literal -> literal.value() + "L";
+                    case DoubleLiteral literal -> Double.toString(literal.value());
+                    case BooleanLiteral literal -> Boolean.toString(literal.value());
                     case NullLiteral ignored -> "null";
                     case TextBlockExpr(var value) -> renderTextBlock(value, ctx);
                     case BinaryExpr(var left, var op, var right) ->

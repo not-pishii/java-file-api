@@ -82,10 +82,6 @@ public final class StandardRenderer implements SourceRenderer {
         ImportManager imports = learning.stale() ? new ImportManager(meta.packageName(), learning.learned()) : learning;
         Context ctx = Context.of(format, imports);
         String first = learning.stale() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : learned;
-        if (imports.stale()) {
-            throw new IllegalStateException(
-                    "a file declares the same variables and classes however often it is rendered");
-        }
         // how a comment names a type depends on what the code after it claims: see ImportManager
         String body = imports.mentioned() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : first;
 

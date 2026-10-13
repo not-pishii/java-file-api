@@ -9,9 +9,16 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.fixtures.Signal;
+import me.supcheg.javafile.typed.fixtures.Wide;
 import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Wide_;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,15 +35,22 @@ import static me.supcheg.javafile.typed.Expressions.addDouble;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.addLong;
 import static me.supcheg.javafile.typed.Expressions.and;
+import static me.supcheg.javafile.typed.Expressions.at;
+import static me.supcheg.javafile.typed.Expressions.box;
+import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.divInt;
+import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
+import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.geInt;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
+import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.leInt;
+import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
@@ -48,10 +62,15 @@ import static me.supcheg.javafile.typed.Expressions.narrowTruncatingDoubleToInt;
 import static me.supcheg.javafile.typed.Expressions.narrowTruncatingLongToInt;
 import static me.supcheg.javafile.typed.Expressions.neqInt;
 import static me.supcheg.javafile.typed.Expressions.neqRef;
+import static me.supcheg.javafile.typed.Expressions.newArray;
+import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.not;
 import static me.supcheg.javafile.typed.Expressions.or;
+import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.subInt;
+import static me.supcheg.javafile.typed.Expressions.switch_;
+import static me.supcheg.javafile.typed.Expressions.unbox;
 import static me.supcheg.javafile.typed.Expressions.widenIntToDouble;
 import static me.supcheg.javafile.typed.Expressions.widenIntToLong;
 import static me.supcheg.javafile.typed.Expressions.widenLongToDouble;
@@ -114,7 +133,7 @@ class ConstantsTest {
     }
 
     static Stream<Arguments> conditions() {
-        return Stream.of(booleans(), ints(), longsAndDoubles(), strings(), conditionals(), others())
+        return Stream.of(booleans(), ints(), longsAndDoubles(), strings(), conditionals(), others(), nonConstants())
                 .flatMap(conditions -> conditions);
     }
 
@@ -253,6 +272,51 @@ class ConstantsTest {
                 of("Integer.MAX_VALUE > 0", gtInt(staticField(Integer_.MAX_VALUE), literal(0))),
                 // a `static final` field that is not one
                 of("Integer.TYPE == Integer.TYPE", eqRef(staticField(Integer_.TYPE), staticField(Integer_.TYPE))));
+    }
+
+    /// What is no constant expression whatever its operands are (JLS 15.29): a call, an instance
+    /// creation, an access of a field that is no constant variable or of an array, a lambda, a `switch`.
+    private static Stream<Arguments> nonConstants() {
+        var supplier = new Supplier_<>(String_.TOKEN);
+        var ints = PrimitiveToken.INT.array();
+        String signal = Signal.class.getCanonicalName();
+        String supplied = "((java.util.function.Supplier<String>) () -> \"a\")";
+        return Stream.of(
+                of("text.length() == 1", eqInt(call(TEXT, String_.length), literal(1))),
+                of("Integer.parseInt(text) == 1", eqInt(staticCall(Integer_.parseInt_String, TEXT), literal(1))),
+                of("new Object() == new Object()", eqRef(new_(Object_.new_), new_(Object_.new_))),
+                of(
+                        "Integer.valueOf(1) == Integer.valueOf(1)",
+                        eqRef(box(PrimitiveToken.INT, literal(1)), box(PrimitiveToken.INT, literal(1)))),
+                of(
+                        "Integer.valueOf(1).intValue() == 1",
+                        eqInt(unbox(PrimitiveToken.INT, box(PrimitiveToken.INT, literal(1))), literal(1))),
+                of(signal + ".RED == " + signal + ".RED", eqRef(enumConstant(Signal_.RED), enumConstant(Signal_.RED))),
+                of(
+                        "new " + Wide.class.getCanonicalName() + "().told == \"\"",
+                        eqRef(field(new_(Wide_.new_), Wide_.told), literal(""))),
+                of("new int[1].length == 1", eqInt(length(ints, newArray(ints, literal(1))), literal(1))),
+                of("(new int[1])[0] == 0", eqInt(at(ints, newArray(ints, literal(1)), literal(0)), literal(0))),
+                of(
+                        supplied + " == " + supplied,
+                        eqRef(lambda(supplier.sam, () -> literal("a")), lambda(supplier.sam, () -> literal("a")))),
+                of(
+                        "(switch (" + signal + ".RED) { default -> 1; }) == 1",
+                        eqInt(
+                                switch_(
+                                        Signal_.TOKEN,
+                                        enumConstant(Signal_.RED),
+                                        PrimitiveToken.INT,
+                                        cases -> cases.default_(literal(1))),
+                                literal(1))));
+    }
+
+    @Test
+    void anUnsafeExpressionIsTakenForNoConstant() {
+        // what the untyped core wrote is not looked into: `true` of it is a constant to javac alone
+        assertThat(folded(Unsafe.expr(me.supcheg.javafile.code.Exprs.literal(true), PrimitiveToken.BOOLEAN)))
+                .isEmpty();
+        assertThat(verdictOfJavac("true")).contains(true);
     }
 
     @ParameterizedTest(name = "{0}")

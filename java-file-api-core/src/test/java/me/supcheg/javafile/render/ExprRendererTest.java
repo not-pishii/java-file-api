@@ -421,6 +421,16 @@ class ExprRendererTest {
     }
 
     @Test
+    void aMethodRefOfATypeThatIsNoPlainClassIsQualifiedByTheTypeAsItIsWritten() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("p"));
+
+        assertThat(ExprRenderer.renderExpr(Exprs.methodRef(Types.array(Types.INT), "clone"), ctx))
+                .isEqualTo("int[]::clone");
+        assertThat(ExprRenderer.renderExpr(Exprs.methodRef(Types.parameterized(Types.LIST, Types.STRING), "size"), ctx))
+                .isEqualTo("List<String>::size");
+    }
+
+    @Test
     void instanceBoundMethodRefRendersExprColonColonMethod() {
         Expr expr = field("name").methodRef("trim");
 
