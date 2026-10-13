@@ -74,6 +74,19 @@ class HeritageTest {
     }
 
     @Test
+    void aFieldAndAMemberTypeOfOneNameAreToldEach() {
+        Heritage.Told told = Harness.run(
+                env -> (Heritage.Told) Harness.ok(env.full("p.Twice")).heritage(),
+                "package p; public class Twice { public int Both; public static class Both {} }");
+
+        java.lang.constant.ClassDesc twice = java.lang.constant.ClassDesc.of("p.Twice");
+        assertThat(told.named())
+                .containsExactly(
+                        new Heritage.Named.Field("Both", twice, Heritage.Visibility.PUBLIC),
+                        new Heritage.Named.MemberType("Both", twice, Heritage.Visibility.PUBLIC));
+    }
+
+    @Test
     void aClassTellsTheMethodsOfObjectAsItHasThem() {
         List<String> lines = Harness.run(
                 env -> Canonical.heritage(
