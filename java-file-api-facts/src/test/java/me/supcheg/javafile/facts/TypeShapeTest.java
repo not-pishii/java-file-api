@@ -312,6 +312,32 @@ class TypeShapeTest {
     }
 
     @Test
+    void aCheckedExceptionIsAThrowableThatIsNeitherARuntimeExceptionNorAnError() {
+        ClassDesc runtime = ClassDesc.of("java.lang", "RuntimeException");
+        ClassDesc error = ClassDesc.of("java.lang", "Error");
+        List<ClassDesc> ofThrowable = List.of(ConstantDescs.CD_Throwable, ConstantDescs.CD_Object);
+
+        assertThat(UnsafeFacts.openClassToken(Types.of(ConstantDescs.CD_Exception), ofThrowable, MethodTable.EMPTY)
+                        .isCheckedException())
+                .isTrue();
+        assertThat(UnsafeFacts.openClassToken(
+                                Types.of(runtime),
+                                List.of(
+                                        ConstantDescs.CD_Exception,
+                                        ConstantDescs.CD_Throwable,
+                                        ConstantDescs.CD_Object),
+                                MethodTable.EMPTY)
+                        .isCheckedException())
+                .isFalse();
+        assertThat(UnsafeFacts.openClassToken(Types.of(error), ofThrowable, MethodTable.EMPTY)
+                        .isCheckedException())
+                .isFalse();
+        assertThat(UnsafeFacts.openClassToken(Types.of(BOX), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY)
+                        .isCheckedException())
+                .isFalse();
+    }
+
+    @Test
     void aShapeTellsTheInterfacesOfItsType() {
         ClassDesc runnable = ClassDesc.of("java.lang", "Runnable");
         ClassDesc closeable = ClassDesc.of("java.lang", "AutoCloseable");
