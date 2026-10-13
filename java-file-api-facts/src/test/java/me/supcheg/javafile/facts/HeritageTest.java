@@ -282,6 +282,75 @@ class HeritageTest {
     }
 
     @Test
+    void theLastParameterOfAMethodOfVariableArityIsAnArrayHoweverItIsWritten() {
+        Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
+        List<Heritage.Variable> variable = List.of(new Heritage.Variable(List.of()));
+        Type.Parameterized listOfVariable = new Type.Parameterized(
+                ClassDesc.of("java.util", "List"), List.of(new Heritage.Argument.Exact(new Type.OfMember(0))));
+
+        // T... and int...
+        assertThat(new Declaration(
+                                base,
+                                Arity.VARIABLE,
+                                variable,
+                                List.of(new Type.Array(new Type.OfMember(0))),
+                                Result.nothing(),
+                                List.of())
+                        .arity())
+                .isEqualTo(Arity.VARIABLE);
+        assertThat(new Declaration(
+                                base,
+                                Arity.VARIABLE,
+                                List.of(),
+                                List.of(new Type.Fixed(Types.array(Types.INT))),
+                                Result.nothing(),
+                                List.of())
+                        .arity())
+                .isEqualTo(Arity.VARIABLE);
+        // and no T, no type parameter of the type, no List<T> and no parameter at all
+        for (List<Type> params : List.of(
+                List.<Type>of(new Type.OfMember(0)),
+                List.<Type>of(new Type.OfType(0)),
+                List.<Type>of(listOfVariable),
+                List.<Type>of())) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(
+                            () -> new Declaration(base, Arity.VARIABLE, variable, params, Result.nothing(), List.of()))
+                    .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
+        }
+        // as a class inherits it
+        assertThatIllegalArgumentException()
+                .isThrownBy(
+                        () -> new Heritage.Plain(base, Arity.VARIABLE, List.of(Types.INT), Result.nothing(), List.of()))
+                .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Heritage.Plain(base, Arity.VARIABLE, List.of(), Result.nothing(), List.of()))
+                .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
+        assertThat(new Heritage.Plain(
+                                base, Arity.VARIABLE, List.of(Types.array(Types.INT)), Result.nothing(), List.of())
+                        .parameters())
+                .isEqualTo(1);
+    }
+
+    @Test
+    void aGenericMethodAClassInheritsHasATypeParameterAndErasesToItsParameters() {
+        Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
+        Signature unary = Signature.of("m", Param.fixed(ConstantDescs.CD_int));
+        Declaration ofInt = new Declaration(
+                base, Arity.FIXED, List.of(), List.of(new Type.Fixed(Types.INT)), Result.nothing(), List.of());
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Heritage.Generic(ofInt))
+                .withMessage("a generic method has a type parameter");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Heritage.Method<>(unary, List.of(ofInt), Set.of(List.of()), List.of()))
+                .withMessage("method m(int) erases to its 1 parameters, got [[]]");
+        assertThat(new Heritage.Method<>(unary, List.of(ofInt), Set.of(List.of(ConstantDescs.CD_int)), List.of())
+                        .erasures())
+                .containsExactly(List.of(ConstantDescs.CD_int));
+    }
+
+    @Test
     void aMemberOfAHeritageIsConsistent() {
         Signature unary = Signature.of("m", Param.fixed(ConstantDescs.CD_int));
         Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
