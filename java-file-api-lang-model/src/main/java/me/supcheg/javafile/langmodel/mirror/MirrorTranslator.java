@@ -324,9 +324,9 @@ public final class MirrorTranslator {
         return switch (type(supertype, MemberFilter.NONE)) {
             case Translation.Ok<TypeModel>(TypeModel model) ->
                 switch (rejection(supertype, model)) {
-                    case Translation.Ok<Optional<String>>(Optional<String> reason) -> reason.isEmpty();
-                    case Translation.Deferred<Optional<String>>(String unresolved) -> throw new Unresolved(unresolved);
-                    case Translation.Unrepresentable<Optional<String>> _ -> false;
+                    case Admission.Admitted _ -> true;
+                    case Admission.Rejected _ -> false;
+                    case Admission.Deferred(String unresolved) -> throw new Unresolved(unresolved);
                 };
             case Translation.Deferred<TypeModel>(String unresolved) -> throw new Unresolved(unresolved);
             case Translation.Unrepresentable<TypeModel> _ -> false;
@@ -378,15 +378,15 @@ public final class MirrorTranslator {
     ///
     /// @param type a class, interface, enum or record
     /// @param model its model, with whatever members
-    /// @return the reason, a sentence; empty if a full metamodel can be made; deferred if a bound
-    ///         mentions a type not generated yet
-    public Translation<Optional<String>> rejection(TypeElement type, TypeModel model) {
+    /// @return whether a full metamodel can be made, with the reason, a sentence, if none can; deferred
+    ///         if a bound mentions a type not generated yet
+    public Admission rejection(TypeElement type, TypeModel model) {
         if (!model.nonPublicBoundTypes().isEmpty()) {
-            return new Translation.Ok<>(Optional.of("the bounds of the type parameters of " + type.getQualifiedName()
-                    + " mention types that are not public: " + String.join(", ", model.nonPublicBoundTypes())));
+            return new Admission.Rejected("the bounds of the type parameters of " + type.getQualifiedName()
+                    + " mention types that are not public: " + String.join(", ", model.nonPublicBoundTypes()));
         }
         try {
-            return new Translation.Ok<>(type.getTypeParameters().stream()
+            return type.getTypeParameters().stream()
                     .flatMap(parameter -> parameter.getBounds().stream())
                     .flatMap(MirrorTranslator::declaredIn)
                     .filter(mentioned -> !mentioned.equals(type))
@@ -401,9 +401,11 @@ public final class MirrorTranslator {
                             .map(reason -> "the bounds of the type parameters of " + type.getQualifiedName()
                                     + " mention " + mentioned.getKey() + ", which has no metamodel: " + reason)
                             .stream())
-                    .findFirst());
+                    .findFirst()
+                    .<Admission>map(Admission.Rejected::new)
+                    .orElseGet(Admission.Admitted::new);
         } catch (Unresolved unresolved) {
-            return new Translation.Deferred<>(unresolved.type);
+            return new Admission.Deferred(unresolved.type);
         }
     }
 
@@ -438,10 +440,8 @@ public final class MirrorTranslator {
                         .filter(bound -> bound != null)
                         .flatMap(MirrorTranslator::declaredIn);
             }
-            case INTERSECTION ->
-                ((IntersectionType) mirror).getBounds().stream().flatMap(MirrorTranslator::declaredIn);
-            case ERROR -> throw new Unresolved(mirror);
-            // a type variable is a type parameter of the type, whose bounds are read where it is declared
+            // a type variable is a type parameter of the type, whose bounds are read where it is declared; the
+            // bounds of a type that has a model are resolved, and each is a bound of its own
             default -> Stream.empty();
         };
     }
@@ -538,7 +538,10 @@ public final class MirrorTranslator {
     ///         deferred if it mentions a type not generated yet
     public Translation<Optional<SamModel>> sam(TypeElement element) {
         try {
-            return readSam(element, () -> adopted(element, (DeclaredType) element.asType()));
+            return switch (readSam(element, () -> adopted(element, (DeclaredType) element.asType()))) {
+                case SamRead.Found(Optional<SamModel> sam) -> new Translation.Ok<>(sam);
+                case SamRead.NoModel(String reason) -> new Translation.Unrepresentable<>(reason);
+            };
         } catch (Unresolved unresolved) {
             return new Translation.Deferred<>(unresolved.type);
         }
@@ -546,14 +549,14 @@ public final class MirrorTranslator {
 
     /// @param adopted the members the type adopts, see [#adopted]: asked for only where the method is
     ///     not one the type declares
-    private Translation<Optional<SamModel>> readSam(TypeElement element, Supplier<List<Element>> adopted) {
+    private SamRead readSam(TypeElement element, Supplier<List<Element>> adopted) {
         if (element.getKind() != ElementKind.INTERFACE || element.getModifiers().contains(Modifier.SEALED)) {
-            return new Translation.Ok<>(Optional.empty());
+            return new SamRead.Found(Optional.empty());
         }
         DeclaredType self = (DeclaredType) element.asType();
         Set<MethodTableTemplate.Signature> abstracts = methods(element, self).abstractMethods();
         if (abstracts.size() != 1) {
-            return new Translation.Ok<>(Optional.empty());
+            return new SamRead.Found(Optional.empty());
         }
         MethodTableTemplate.Signature signature = abstracts.iterator().next();
         List<ExecutableElement> candidates = ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
@@ -561,7 +564,7 @@ public final class MirrorTranslator {
                 .filter(m -> signature(m, element, self).equals(signature))
                 .toList();
         if (candidates.stream().anyMatch(m -> !m.getTypeParameters().isEmpty())) {
-            return new Translation.Ok<>(Optional.empty());
+            return new SamRead.Found(Optional.empty());
         }
         ExecutableElement method = mostSpecific(candidates, self);
         // declared, or adopted from a superinterface that is not public: a member the type has a fact of
@@ -571,10 +574,19 @@ public final class MirrorTranslator {
                                 && signature(adoptedMethod, element, self).equals(signature));
         return switch (method(element, self, method, functionThrows(candidates, self))) {
             case Read.Made(MemberModel model) ->
-                new Translation.Ok<>(Optional.of(new SamModel((MethodModel) model, declared)));
+                new SamRead.Found(Optional.of(new SamModel((MethodModel) model, declared)));
             case Read.Skipped(SkippedMember skip) ->
-                declared ? new Translation.Ok<>(Optional.empty()) : new Translation.Unrepresentable<>(skip.reason());
+                declared ? new SamRead.Found(Optional.empty()) : new SamRead.NoModel(skip.reason());
         };
+    }
+
+    /// The single abstract method of a type, as it was read.
+    private sealed interface SamRead {
+        /// The method, or that there is none to make a `sam` fact of.
+        record Found(Optional<SamModel> sam) implements SamRead {}
+
+        /// The method is inherited and its signature has no model.
+        record NoModel(String reason) implements SamRead {}
     }
 
     /// The method whose result is a subtype of the results of the others, as
@@ -599,9 +611,7 @@ public final class MirrorTranslator {
                         if (result.getKind().isPrimitive() || result.getKind() == TypeKind.VOID) {
                             return result.getKind() == otherResult.getKind();
                         }
-                        if (otherResult.getKind().isPrimitive() || otherResult.getKind() == TypeKind.VOID) {
-                            return false;
-                        }
+                        // of two results javac takes for one method, the other is a reference where this one is
                         return erased
                                 ? types.isSubtype(types.erasure(result), types.erasure(otherResult))
                                 : types.isSubtype(result, otherResult);
@@ -668,10 +678,8 @@ public final class MirrorTranslator {
                 };
         Optional<MethodModel> sam =
                 switch (readSam(element, adopted)) {
-                    case Translation.Ok<Optional<SamModel>>(Optional<SamModel> found) -> found.map(SamModel::method);
-                    case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
-                        throw new IllegalStateException("a deferred sam is thrown, not returned: " + unresolved);
-                    case Translation.Unrepresentable<Optional<SamModel>> _ -> Optional.empty();
+                    case SamRead.Found(Optional<SamModel> found) -> found.map(SamModel::method);
+                    case SamRead.NoModel _ -> Optional.empty();
                 };
         shape.problems.addAll(bounds.problems);
         if (!shape.problems.isEmpty()) {

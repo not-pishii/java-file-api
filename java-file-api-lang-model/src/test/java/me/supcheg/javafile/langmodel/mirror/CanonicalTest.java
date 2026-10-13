@@ -517,6 +517,15 @@ class CanonicalTest {
     }
 
     @Test
+    void aFingerprintIsADigestThePlatformHas() {
+        assertThat(Canonical.digest("SHA-256", ""))
+                .isEqualTo("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+        assertThatThrownBy(() -> Canonical.digest("SHA-none", ""))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("this Java platform has no SHA-none");
+    }
+
+    @Test
     void genericConstructorsAndShadowingTypeVariables() {
         TypeModel model = new TypeModel(
                 ClassDesc.of("p.T"),

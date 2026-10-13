@@ -1403,6 +1403,20 @@ class MirrorTranslatorTypeTest {
     }
 
     @Test
+    void theResultOfASamIsTheOneThatIsASubtypeOnlyOnceErased() {
+        // the raw List is no subtype of Collection<String> as it is written, and javac takes it for one unchecked
+        for (String order : List.of("A, B", "B, A")) {
+            SamModel sam = samOf(
+                    "p.C",
+                    "package p; public interface A { java.util.List m(); }",
+                    "package p; public interface B { java.util.Collection<String> m(); }",
+                    "package p; public interface C extends " + order + " {}");
+
+            assertThat(sam.method().result()).as(order).contains(Types.LIST);
+        }
+    }
+
+    @Test
     void aSealedInterfaceIsNotFunctional() {
         Translation<Optional<SamModel>> none = new Translation.Ok<>(Optional.empty());
         String[] sources = {

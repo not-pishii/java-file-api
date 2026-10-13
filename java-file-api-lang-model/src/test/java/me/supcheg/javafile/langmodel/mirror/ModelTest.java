@@ -53,6 +53,42 @@ class ModelTest {
                 .hasMessage("a declared type is a class or interface, got int");
     }
 
+    /// The model of `p.Plain`, with another kind and filter.
+    private static TypeModel plain(TypeModel model, DeclaredKind kind, MemberFilter filter) {
+        return new TypeModel(
+                model.desc(),
+                kind,
+                model.nesting(),
+                model.typeParams(),
+                model.nonPublicBoundTypes(),
+                model.superclasses(),
+                model.interfaces(),
+                model.supertypes(),
+                model.methods(),
+                model.enumConstants(),
+                model.sealed(),
+                model.sam(),
+                model.heritage(),
+                filter,
+                List.of(),
+                List.of());
+    }
+
+    @Test
+    void aHeritageIsToldWithTheMembersOfATypeThatCanBeExtended() {
+        TypeModel model = Harness.run(env -> Harness.ok(env.full("p.Plain")), "package p; public class Plain {}");
+
+        assertThat(plain(model, model.kind(), model.filter()).heritage()).isEqualTo(model.heritage());
+        assertThatThrownBy(() -> plain(model, model.kind(), MemberFilter.NONE))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("only a class that is not final and an interface tell a heritage, with their members;"
+                        + " got Plain");
+        assertThatThrownBy(() -> plain(model, DeclaredKind.FINAL_CLASS, model.filter()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("only a class that is not final and an interface tell a heritage, with their members;"
+                        + " got Plain");
+    }
+
     private static TypeModel functional(DeclaredKind kind, boolean sealed, MethodModel sam) {
         return new TypeModel(
                 ClassDesc.of("p.T"),
