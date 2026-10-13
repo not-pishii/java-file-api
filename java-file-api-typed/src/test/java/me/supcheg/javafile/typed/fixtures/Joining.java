@@ -7,4 +7,6 @@ public interface Joining {
     void put(String key);
 
     void put(String key, String value);
+
+    String pick(String value);
 }

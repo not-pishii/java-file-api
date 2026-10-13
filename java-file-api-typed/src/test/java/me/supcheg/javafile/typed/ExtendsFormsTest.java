@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Carrier;
 import me.supcheg.javafile.typed.fixtures.Joining;
+import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Thread_;
@@ -196,10 +197,14 @@ class ExtendsFormsTest {
             @Override
             public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Mid_.extend(h.self()));
+                assertThat(sh.self()).isSameAs(h.self());
+                var risk = sh.throwing(IOException_.TOKEN).overriding(Mid_.risk);
                 Upcast<Self, Joining> asJoining = sh.implements_(Joining_.implement(h.self())
                         .join_String_String(sh.inherited(Mid_.join_String_String))
+                        .pick_String(sh.inherited(Base_.pick_String))
                         .put_String(sh.inherited(Mid_.put_String))
                         .put_String_String(sh.inherited(Mid_.put_String_String)));
+                assertThat(asJoining).hasToString("me.supcheg.example.Probe is a " + Joining.class.getName());
                 var cb = sh.members();
                 var constructor = cb.declareConstructor();
                 var joined = cb.declareMethod("joined", String_.TOKEN);
@@ -221,12 +226,14 @@ class ExtendsFormsTest {
                         runs,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
                                 .return_(field(cb.asSuper().apply(self), Mid_.runs)));
+                bodies.define(risk.method(), (b, self) -> b.end());
                 return bodies;
             }
         }));
 
         assertThat(compiled.source())
                 .contains("public final class Probe extends Mid implements Joining {")
+                .contains("@Override\n    public void risk() throws IOException {")
                 .contains("super.put(\"k\", \"v\");")
                 .contains("super.join(\"a\", \"b\")");
         assertThat(compiled.invoke("joined")).isEqualTo("abcd");

@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -194,27 +193,27 @@ final class MetamodelNames {
                 parsed.stream().collect(Collectors.groupingBy(member -> member.name(new boolean[0])));
 
         Map<Member, String> escaped = parsed.stream()
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        member -> {
+                .collect(
+                        LinkedHashMap::new,
+                        (map, member) -> {
                             String name = member.name(qualified(member, overloads.get(member.name(new boolean[0]))));
-                            return RESERVED.contains(name) || taken.contains(name) ? name + "_" : name;
+                            map.put(member, RESERVED.contains(name) || taken.contains(name) ? name + "_" : name);
                         },
-                        (first, second) -> second,
-                        LinkedHashMap::new));
+                        Map::putAll);
         Set<String> fields = escaped.entrySet().stream()
                 .filter(e -> e.getKey().field())
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());
 
         Map<Member, String> finalNames = escaped.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> !e.getKey().field() && e.getKey().bare() && fields.contains(e.getValue())
-                                ? e.getValue() + "_"
-                                : e.getValue(),
-                        (first, second) -> second,
-                        LinkedHashMap::new));
+                .collect(
+                        LinkedHashMap::new,
+                        (map, e) -> map.put(
+                                e.getKey(),
+                                !e.getKey().field() && e.getKey().bare() && fields.contains(e.getValue())
+                                        ? e.getValue() + "_"
+                                        : e.getValue()),
+                        Map::putAll);
         Map<String, List<Member>> byName = finalNames.entrySet().stream()
                 .collect(Collectors.groupingBy(
                         Map.Entry::getValue, TreeMap::new, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
@@ -225,11 +224,12 @@ final class MetamodelNames {
                         e -> e.getKey().element(), Map.Entry::getValue, (first, second) -> second, LinkedHashMap::new));
         Map<String, List<Element>> conflicts = byName.entrySet().stream()
                 .filter(e -> e.getValue().size() > 1)
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().stream().map(Member::element).toList(),
-                        (first, second) -> second,
-                        TreeMap::new));
+                .collect(
+                        TreeMap::new,
+                        (map, e) -> map.put(
+                                e.getKey(),
+                                e.getValue().stream().map(Member::element).toList()),
+                        Map::putAll);
         return new MemberNames(names, conflicts);
     }
 
