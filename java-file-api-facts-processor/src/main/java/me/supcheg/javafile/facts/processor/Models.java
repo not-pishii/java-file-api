@@ -162,8 +162,8 @@ final class Models {
                                 !method.getEnclosingElement().equals(type))
                         .thenComparing(method -> binaryName((TypeElement) method.getEnclosingElement())))
                 .map(method -> reference(type, method))
-                .orElseThrow(() -> new IllegalStateException(
-                        binaryName(type) + " has no abstract method " + sam.name() + " to link `sam` to"));
+                // the single abstract method was read off the type
+                .orElseThrow();
     }
 
     private List<ClassDesc> erasedParameters(ExecutableElement executable) {
