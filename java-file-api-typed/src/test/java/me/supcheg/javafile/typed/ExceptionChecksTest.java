@@ -649,6 +649,45 @@ class ExceptionChecksTest {
         }
 
         @Test
+        void whatAFinallyBlockOfAnInnerTryThrowsIsThrownToTheOuterTry() {
+            asJavacAccepts(
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                            outer -> outer.try_(h -> h.finally_(f -> f.exec(read())), _ -> {})
+                                    .return_(literal(1)))),
+                    "static int m() { try { try { } finally { " + READ + "; } return 1; }"
+                            + " catch (IOException e) { return 2; } }");
+        }
+
+        @Test
+        void aBindingRethrownInAClauseOfAClauseThrowsWhatItsOwnTryBlockDoes() {
+            // the inner binding is another variable than the outer one, which is known still
+            asJavacAccepts(
+                    () -> declare(cb -> {
+                        var m = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("m");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                m,
+                                b -> b.try_(
+                                                h -> h.catch_(
+                                                        IOException_.TOKEN,
+                                                        (c, outer) -> c.try_(
+                                                                g -> g.catch_(
+                                                                        IOException_.TOKEN,
+                                                                        (d, inner) -> d.if_(
+                                                                                        literal(true),
+                                                                                        x -> x.throw_(inner))
+                                                                                .throw_(outer)),
+                                                                t -> t.exec(read()))),
+                                                t -> t.exec(read()))
+                                        .end());
+                        return bodies;
+                    }),
+                    "static void m() throws IOException { try { " + READ + "; } catch (IOException outer) { try { "
+                            + READ + "; } catch (IOException inner) { if (true) { throw inner; } throw outer; } } }");
+        }
+
+        @Test
         void aSwitchOfValuesInATryBlockHasNoBlockToLookIn() {
             asJavacAccepts(
                     () -> intMethod(b -> b.tryTerminated(

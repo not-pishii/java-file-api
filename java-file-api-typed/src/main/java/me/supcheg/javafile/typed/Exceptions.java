@@ -232,7 +232,7 @@ final class Exceptions {
     /// The block `block` is nested in: only the body of a member or of a
     /// lambda has none, and that one declares.
     private static Block<?, ?> enclosing(Block<?, ?> block) {
-        return Objects.requireNonNull(block.parent(), () -> "the " + block.path() + " declares no exceptions");
+        return Objects.requireNonNull(block.parent(), "a block that declares no exceptions is nested in one");
     }
 
     // ------------------------------------------------------------------
