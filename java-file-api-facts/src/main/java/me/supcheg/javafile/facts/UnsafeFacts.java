@@ -1,8 +1,8 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.facts.source.MemberResolver;
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeVarRef;
 
@@ -263,7 +263,7 @@ public final class UnsafeFacts {
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> FinalClassToken<T> finalClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
         return finalClassToken(typeRef, superclasses, Supertypes.NONE, methods);
     }
 
@@ -279,7 +279,7 @@ public final class UnsafeFacts {
     /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
     ///                                  type arguments do not match the type parameters of `supertypes`
     public static <T> FinalClassToken<T> finalClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
         TypeShape<DeclaredKind.FinalClass> shape =
                 TypeShape.unsafe(DeclaredKind.FINAL_CLASS, typeRef, superclasses, supertypes, () -> methods, List.of());
         return new FinalClassToken<>(shape, typeRef, shape.boundErasures());
@@ -298,7 +298,7 @@ public final class UnsafeFacts {
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> FinalClassToken<T> finalClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, Supplier<MethodTable> methods) {
         TypeShape<DeclaredKind.FinalClass> shape =
                 TypeShape.unsafe(DeclaredKind.FINAL_CLASS, typeRef, superclasses, Supertypes.NONE, methods, List.of());
         return new FinalClassToken<>(shape, typeRef, shape.boundErasures());
@@ -358,7 +358,7 @@ public final class UnsafeFacts {
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> OpenClassToken<T> openClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
         return openClassToken(typeRef, superclasses, Supertypes.NONE, methods);
     }
 
@@ -374,7 +374,7 @@ public final class UnsafeFacts {
     /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
     ///                                  type arguments do not match the type parameters of `supertypes`
     public static <T> OpenClassToken<T> openClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
         TypeShape<DeclaredKind.OpenClass> shape =
                 TypeShape.unsafe(DeclaredKind.OPEN_CLASS, typeRef, superclasses, supertypes, () -> methods, List.of());
         return new OpenClassToken<>(shape, typeRef, shape.boundErasures());
@@ -389,7 +389,7 @@ public final class UnsafeFacts {
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
     public static <T> AbstractClassToken<T> abstractClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, MethodTable methods) {
         return abstractClassToken(typeRef, superclasses, Supertypes.NONE, methods);
     }
 
@@ -405,7 +405,7 @@ public final class UnsafeFacts {
     /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
     ///                                  type arguments do not match the type parameters of `supertypes`
     public static <T> AbstractClassToken<T> abstractClassToken(
-            ClassOrInterfaceTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
+            DeclaredTypeRef typeRef, List<ClassDesc> superclasses, Supertypes supertypes, MethodTable methods) {
         TypeShape<DeclaredKind.AbstractClass> shape = TypeShape.unsafe(
                 DeclaredKind.ABSTRACT_CLASS, typeRef, superclasses, supertypes, () -> methods, List.of());
         return new AbstractClassToken<>(shape, typeRef, shape.boundErasures());
@@ -418,7 +418,7 @@ public final class UnsafeFacts {
     /// @param <T> the Java type the token stands for
     /// @return the token
     /// @throws IllegalArgumentException if `typeRef` is a type variable
-    public static <T> InterfaceToken<T> interfaceToken(ClassOrInterfaceTypeRef typeRef, MethodTable methods) {
+    public static <T> InterfaceToken<T> interfaceToken(DeclaredTypeRef typeRef, MethodTable methods) {
         return interfaceToken(typeRef, Supertypes.NONE, methods);
     }
 
@@ -433,7 +433,7 @@ public final class UnsafeFacts {
     /// @throws IllegalArgumentException if `typeRef` is a type variable, or its
     ///                                  type arguments do not match the type parameters of `supertypes`
     public static <T> InterfaceToken<T> interfaceToken(
-            ClassOrInterfaceTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
+            DeclaredTypeRef typeRef, Supertypes supertypes, MethodTable methods) {
         TypeShape<DeclaredKind.Interface> shape =
                 TypeShape.unsafe(DeclaredKind.INTERFACE, typeRef, List.of(), supertypes, () -> methods, List.of());
         return new InterfaceToken<>(shape, typeRef, shape.boundErasures());

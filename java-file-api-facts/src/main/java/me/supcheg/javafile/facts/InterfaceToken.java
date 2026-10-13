@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -17,8 +17,7 @@ public final class InterfaceToken<T> extends DeclaredTokenData implements Declar
         super(shape, args);
     }
 
-    InterfaceToken(
-            TypeShape<DeclaredKind.Interface> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+    InterfaceToken(TypeShape<DeclaredKind.Interface> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments) {
         super(shape, typeRef, arguments);
     }
 }

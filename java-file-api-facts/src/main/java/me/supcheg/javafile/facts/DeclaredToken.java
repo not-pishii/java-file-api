@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -16,7 +16,7 @@ public sealed interface DeclaredToken<T> extends RefToken<T> permits ClassToken,
     ///
     /// @return the core type reference
     @Override
-    ClassOrInterfaceTypeRef typeRef();
+    DeclaredTypeRef typeRef();
 
     /// The shape the token applies to its type arguments: the data of the
     /// type that does not depend on them, and who vouches for it.

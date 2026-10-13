@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -15,8 +15,7 @@ public final class FinalClassToken<T> extends ClassTokenData implements Concrete
         super(shape, args);
     }
 
-    FinalClassToken(
-            TypeShape<DeclaredKind.FinalClass> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+    FinalClassToken(TypeShape<DeclaredKind.FinalClass> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments) {
         super(shape, typeRef, arguments);
     }
 }

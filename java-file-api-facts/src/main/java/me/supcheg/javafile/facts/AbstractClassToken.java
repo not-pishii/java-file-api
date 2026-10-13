@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -15,7 +15,7 @@ public final class AbstractClassToken<T> extends ClassTokenData implements Exten
     }
 
     AbstractClassToken(
-            TypeShape<DeclaredKind.AbstractClass> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+            TypeShape<DeclaredKind.AbstractClass> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments) {
         super(shape, typeRef, arguments);
     }
 }

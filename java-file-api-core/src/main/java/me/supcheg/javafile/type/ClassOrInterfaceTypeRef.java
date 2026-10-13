@@ -5,5 +5,4 @@ package me.supcheg.javafile.type;
 ///
 /// Required where Java allows only such types: `extends`/`implements`,
 /// type-parameter bounds, and `throws` clauses.
-public sealed interface ClassOrInterfaceTypeRef extends TypeRef
-        permits ClassTypeRef, ParameterizedTypeRef, TypeVarRef {}
+public sealed interface ClassOrInterfaceTypeRef extends TypeRef permits DeclaredTypeRef, TypeVarRef {}

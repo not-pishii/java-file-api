@@ -5,7 +5,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.facts.testfacts.java.lang.String_;
 import me.supcheg.javafile.facts.testfacts.java.util.List_;
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -455,7 +455,7 @@ class TypeShapeTest {
     void aTableKnownOnlyLaterIsAskedUntilItIsKnown() {
         AtomicInteger asked = new AtomicInteger();
         MethodTable table = new MethodTable(Set.of(), Set.of(new MethodSignature("run", List.of())), Set.of());
-        ClassOrInterfaceTypeRef self = Types.of(ClassDesc.of("fixtures", "Self"));
+        DeclaredTypeRef self = Types.of(ClassDesc.of("fixtures", "Self"));
         FinalClassToken<Object> token = UnsafeFacts.finalClassToken(self, List.of(ConstantDescs.CD_Object), () -> {
             if (asked.incrementAndGet() == 1) {
                 throw new IllegalStateException("not yet");

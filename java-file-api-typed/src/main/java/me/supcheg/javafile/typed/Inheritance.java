@@ -17,7 +17,6 @@ import me.supcheg.javafile.type.ExtendsTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeRef;
-import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
@@ -123,7 +122,10 @@ final class Inheritance {
                 throw new IllegalArgumentException(owner + " cannot have the supertype " + token
                         + ": its metamodel tells no heritage — the type cannot be extended, or the"
                         + " metamodel is not a full one");
-            case Heritage.Told told -> new Supertype(token, told.applied(arguments(owner, token)));
+            case Heritage.Told told -> {
+                List<TypeRef> arguments = arguments(owner, token);
+                yield new Supertype(token, arguments, told.applied(arguments));
+            }
         };
     }
 
@@ -142,9 +144,6 @@ final class Inheritance {
                                         + ": a supertype has no wildcard type argument (JLS 8.1.4, 8.1.5)");
                         })
                         .toList();
-            case TypeVarRef variable ->
-                throw new IllegalArgumentException(
-                        owner + " cannot have the type variable " + variable.name() + " for a supertype");
         };
     }
 
@@ -219,14 +218,15 @@ final class Inheritance {
                 .filter(entry -> !reached(heir, entry))
                 .collect(Collectors.groupingBy(Entry::signature));
         Map<MethodSignature, Group> groups = bySignature.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> new Group(
+                .collect(
+                        LinkedHashMap::new,
+                        (bySoFar, entry) -> bySoFar.put(
                                 entry.getKey(),
-                                inherited(entry.getValue()),
-                                hidden.getOrDefault(entry.getKey(), List.of())),
-                        (first, _) -> first,
-                        LinkedHashMap::new));
+                                new Group(
+                                        entry.getKey(),
+                                        inherited(entry.getValue()),
+                                        hidden.getOrDefault(entry.getKey(), List.of()))),
+                        Map::putAll);
         groups.values().forEach(group -> requireAgreed(owner, group));
         requireNoBridgeClash(owner, groups);
         return Collections.unmodifiableMap(groups);
@@ -377,27 +377,26 @@ final class Inheritance {
     private static Stream<ParameterizedTypeRef> parameterizations(Supertype supertype) {
         DeclaredToken<?> token = supertype.token();
         return switch (token.typeRef()) {
-            case ParameterizedTypeRef parameterized -> {
-                List<TypeRef> arguments = parameterized.args().stream()
-                        .flatMap(argument -> argument instanceof ExactTypeArg(TypeRef type)
-                                ? Stream.of(type)
-                                : Stream.<TypeRef>empty())
-                        .toList();
-                yield Stream.concat(
+            case ParameterizedTypeRef parameterized ->
+                Stream.concat(
                         Stream.of(parameterized),
                         token.supertypes().supertypes().stream()
-                                .flatMap(generic -> token.supertypes().supertype(generic.raw(), arguments).stream()));
-            }
+                                .flatMap(generic ->
+                                        token.supertypes().supertype(generic.raw(), supertype.arguments()).stream()));
             case ClassTypeRef _ -> token.supertypes().supertypes().stream();
-            case TypeVarRef _ -> Stream.empty();
         };
     }
 
     /// A supertype of the class being declared.
     ///
     /// @param token the supertype
+    /// @param arguments the type arguments of `token`, none of them a wildcard
     /// @param told its heritage, in terms of the type arguments of `token`
-    record Supertype(DeclaredToken<?> token, Heritage.Applied told) {}
+    record Supertype(DeclaredToken<?> token, List<TypeRef> arguments, Heritage.Applied told) {
+        Supertype {
+            arguments = List.copyOf(arguments);
+        }
+    }
 
     /// Who inherits: what decides whether a method with package access is a member to inherit.
     sealed interface Heir {
@@ -468,35 +467,35 @@ final class Inheritance {
 
         /// Whether the two methods, of the same parameters, have the same result as it is written.
         boolean sameResult(Member other) {
+            return result().equals(other.result());
+        }
+
+        /// The result as it is written: of a method that is generic in terms of its type parameters,
+        /// which no result of one that is not is equal to.
+        private Heritage.Result<?> result() {
+            return switch (declared) {
+                case Heritage.Plain plain -> plain.result();
+                case Heritage.Generic(Heritage.Declaration told) -> told.result();
+            };
+        }
+
+        /// The exceptions of the `throws` clause as they are written.
+        private List<String> thrown() {
             return switch (declared) {
                 case Heritage.Plain plain ->
-                    other.declared() instanceof Heritage.Plain otherPlain
-                            && plain.result().equals(otherPlain.result());
+                    plain.throwsTypes().stream().map(TypeNames::describe).toList();
                 case Heritage.Generic(Heritage.Declaration told) ->
-                    other.declared() instanceof Heritage.Generic(Heritage.Declaration otherTold)
-                            && told.result().equals(otherTold.result());
+                    told.throwsTypes().stream().map(Object::toString).toList();
             };
         }
 
         /// The exception types of the `throws` clause the other method does not have in its own, as
         /// they are written.
         private List<String> undeclaredBy(Member other) {
-            return switch (declared) {
-                case Heritage.Plain plain ->
-                    other.declared() instanceof Heritage.Plain otherPlain
-                            ? plain.throwsTypes().stream()
-                                    .filter(thrown -> !otherPlain.throwsTypes().contains(thrown))
-                                    .map(TypeNames::describe)
-                                    .toList()
-                            : List.of("of a method that is not generic, as the other is");
-                case Heritage.Generic(Heritage.Declaration told) ->
-                    other.declared() instanceof Heritage.Generic(Heritage.Declaration otherTold)
-                            ? told.throwsTypes().stream()
-                                    .filter(thrown -> !otherTold.throwsTypes().contains(thrown))
-                                    .map(Object::toString)
-                                    .toList()
-                            : List.of("of a generic method, as the other is not");
-            };
+            List<String> declaredByOther = other.thrown();
+            return thrown().stream()
+                    .filter(thrown -> !declaredByOther.contains(thrown))
+                    .toList();
         }
 
         /// Why the method, one of a class, cannot be had for `other`, one of an interface of the same

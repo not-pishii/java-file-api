@@ -36,58 +36,41 @@ sealed interface Node {
             case Call(var target, var method, var _) ->
                 isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
             case ArrayAt(var array, var _) -> isExact(array);
-            // A lambda has no type but that of its context, and lowering renders it under a cast to
-            // its token or where the target type is exactly its token.
-            case Lambda _ -> true;
             // javac types the expression by what it is of, not by the supertype its token tells.
             case Upcast _ -> false;
-            // The method is the one the superclass has, with the result of the fact (MemberBodies.superCall).
-            case SuperCall _ -> true;
-            // Every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
-            case Switch _ -> true;
-            case Lit _,
-                    RawLit _,
-                    Local _,
-                    This _,
-                    Box _,
-                    Unbox _,
-                    StaticCall _,
-                    New _,
-                    FieldGet _,
-                    StaticFieldGet _,
-                    EnumConst _,
-                    ArrayLength _,
-                    NewArray _,
-                    Cond _,
-                    Binary _,
-                    Not _,
-                    Convert _,
-                    Cast _,
-                    Assign _,
-                    Raw _ -> true;
+            case Exact _ -> true;
         };
     }
 
+    /// An expression javac types by its token whatever its operands are: every form but a call and
+    /// an array access, which are of what their receiver is of, and a widening to a supertype.
+    ///
+    /// Among them: a lambda has no type but that of its context, and lowering renders it under a
+    /// cast to its token or where the target type is exactly its token; the method of `super.m()`
+    /// is the one the superclass has, with the result of the fact (`MemberBodies.superCall`); and
+    /// every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
+    sealed interface Exact extends Node {}
+
     /// A literal, with its value for constant folding.
-    record Lit(Expr literal, Object value) implements Node {}
+    record Lit(Expr literal, Object value) implements Exact {}
 
     /// A literal that is not a constant expression: `null`. (A text block is
     /// a constant `String` (JLS 15.29) and, once supported, must be a [Lit]
     /// so that [Constants] folds it as javac does.)
-    record RawLit(Expr literal) implements Node {}
+    record RawLit(Expr literal) implements Exact {}
 
     /// A reference to a local variable or parameter.
-    record Local(Var<?> var) implements Node {}
+    record Local(Var<?> var) implements Exact {}
 
     /// `this`, handed to the body of an instance member (§6.5); `owner` is the
     /// root block of that body, where `this` is in scope.
-    record This(Block<?, ?> owner) implements Node {}
+    record This(Block<?, ?> owner) implements Exact {}
 
     /// Boxing of a primitive value, `Integer.valueOf(operand)`.
-    record Box(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
+    record Box(PrimitiveToken<?, ?, ?> type, Node operand) implements Exact {}
 
     /// Unboxing of a box, `operand.intValue()`.
-    record Unbox(PrimitiveToken<?, ?, ?> type, Node operand) implements Node {}
+    record Unbox(PrimitiveToken<?, ?, ?> type, Node operand) implements Exact {}
 
     /// An instance method call; `method` is `void` or not. The receiver and
     /// the arguments keep their static types: lowering pins the member the
@@ -102,38 +85,38 @@ sealed interface Node {
     /// @param method the fact of the method
     /// @param args the arguments, with their static types
     record SuperCall(Block<?, ?> owner, DeclaredToken<?> superclass, Invocable method, List<Operand> args)
-            implements Node {}
+            implements Exact {}
 
     /// A static method call.
-    record StaticCall(Invocable method, List<Operand> args) implements Node {}
+    record StaticCall(Invocable method, List<Operand> args) implements Exact {}
 
     /// An instance creation, `new T(args)`; lowering renders `new T<>(args)`
     /// itself where the target type is exactly `T`.
-    record New(Invocable ctor, List<Operand> args) implements Node {}
+    record New(Invocable ctor, List<Operand> args) implements Exact {}
 
     /// An instance field read.
-    record FieldGet(Operand target, FieldRef<?, ?> field) implements Node {}
+    record FieldGet(Operand target, FieldRef<?, ?> field) implements Exact {}
 
     /// A static field read.
-    record StaticFieldGet(StaticFieldRef<?> field) implements Node {}
+    record StaticFieldGet(StaticFieldRef<?> field) implements Exact {}
 
     /// An enum constant.
-    record EnumConst(EnumConstant<?> constant) implements Node {}
+    record EnumConst(EnumConstant<?> constant) implements Exact {}
 
     /// An array element read.
     record ArrayAt(Node array, Node index) implements Node {}
 
     /// An array length read.
-    record ArrayLength(Node array) implements Node {}
+    record ArrayLength(Node array) implements Exact {}
 
     /// An array creation, `new T[length]`.
-    record NewArray(TypeToken<?> component, Node length) implements Node {}
+    record NewArray(TypeToken<?> component, Node length) implements Exact {}
 
     /// A conditional, `c ? a : b`.
-    record Cond(Node condition, Node whenTrue, Node whenFalse) implements Node {}
+    record Cond(Node condition, Node whenTrue, Node whenFalse) implements Exact {}
 
     /// A binary operator, `left op right`.
-    record Binary(Operator op, Node left, Node right) implements Node {}
+    record Binary(Operator op, Node left, Node right) implements Exact {}
 
     /// The binary operators of the typed layer: each is of the type of its operands, so what it
     /// folds to where they are constant ([Constants]) is told by the operator alone.
@@ -177,10 +160,10 @@ sealed interface Node {
     }
 
     /// A logical complement, `!operand`.
-    record Not(Node operand) implements Node {}
+    record Not(Node operand) implements Exact {}
 
     /// A conversion of a number to another primitive type, `(int) operand`.
-    record Convert(Conversion conversion, Node operand) implements Node {}
+    record Convert(Conversion conversion, Node operand) implements Exact {}
 
     /// The numeric conversions of the typed layer, by the type they convert to.
     enum Conversion {
@@ -201,7 +184,7 @@ sealed interface Node {
     }
 
     /// A cast to a reference type.
-    record Cast(RefToken<?> type, Node operand) implements Node {}
+    record Cast(RefToken<?> type, Node operand) implements Exact {}
 
     /// An expression seen as of a supertype by an [me.supcheg.javafile.typed.Upcast]: `inner` is
     /// rendered as it is, without a cast, so javac types it by `innerType`
@@ -217,7 +200,7 @@ sealed interface Node {
 
     /// A lambda expression typed by a functional interface fact: `sam` is
     /// the single abstract method of the interface, its owner.
-    record Lambda(Invocable sam, List<Var<?>> params, LambdaBody body) implements Node {}
+    record Lambda(Invocable sam, List<Var<?>> params, LambdaBody body) implements Exact {}
 
     /// A `switch` expression over an enum, `switch (selector) { case A, B -> ...; default -> ... }`.
     /// Every result is of the type of the expression, see [Arm].
@@ -227,7 +210,7 @@ sealed interface Node {
     /// @param cases the cases, in order: every constant in at most one, and in exactly one if there is no
     ///     `otherwise`
     /// @param otherwise the `default` case, or that there is none
-    record Switch(Operand selector, EnumToken<?> enumType, List<Case> cases, Default otherwise) implements Node {
+    record Switch(Operand selector, EnumToken<?> enumType, List<Case> cases, Default otherwise) implements Exact {
         public Switch {
             cases = List.copyOf(cases);
         }
@@ -273,10 +256,10 @@ sealed interface Node {
     }
 
     /// An assignment, used as a statement.
-    record Assign(Target target, Node value) implements Node {}
+    record Assign(Target target, Node value) implements Exact {}
 
     /// An untyped core expression from `Unsafe`.
-    record Raw(Expr expr) implements Node {}
+    record Raw(Expr expr) implements Exact {}
 
     /// A subexpression together with the token of its static type, where
     /// lowering needs the type to pin the member the fact names: the

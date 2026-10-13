@@ -31,10 +31,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -153,6 +155,85 @@ class SubtypingTest {
                 .isFalse();
         assertThat(proven(new List_<>(String_.TOKEN).token, List_.ANY.typeRef()))
                 .isTrue();
+    }
+
+    @Test
+    void theArgumentsOfOneGenericTypeAreContainedAsTheyAreWritten() {
+        ClassDesc map = ClassDesc.of("java.util.Map");
+        TypeRef string = String_.TOKEN.typeRef();
+        TypeRef strings = new List_<>(String_.TOKEN).token.typeRef();
+        // a Map of the first argument and of String, asked whether it is a Map of the second and of anything
+        BiPredicate<TypeArg, TypeArg> contained = (sub, sup) -> proven(
+                UnsafeFacts.interfaceToken(
+                        new ParameterizedTypeRef(map, List.of(sub, new ExactTypeArg(string)), List.of()),
+                        MethodTable.EMPTY),
+                new ParameterizedTypeRef(map, List.of(sup, UnboundedTypeArg.INSTANCE), List.of()));
+
+        assertThat(contained.test(new ExactTypeArg(string), new ExtendsTypeArg(string)))
+                .isTrue();
+        assertThat(contained.test(new ExtendsTypeArg(string), new ExtendsTypeArg(string)))
+                .isTrue();
+        assertThat(contained.test(new ExactTypeArg(strings), new ExtendsTypeArg(strings)))
+                .isTrue();
+        assertThat(contained.test(new ExtendsTypeArg(strings), new ExtendsTypeArg(string)))
+                .isFalse();
+        assertThat(contained.test(new SuperTypeArg(string), new ExtendsTypeArg(string)))
+                .isFalse();
+        assertThat(contained.test(UnboundedTypeArg.INSTANCE, new ExtendsTypeArg(string)))
+                .isFalse();
+
+        assertThat(contained.test(new ExactTypeArg(string), new SuperTypeArg(string)))
+                .isTrue();
+        assertThat(contained.test(new SuperTypeArg(string), new SuperTypeArg(string)))
+                .isTrue();
+        assertThat(contained.test(new SuperTypeArg(strings), new SuperTypeArg(string)))
+                .isFalse();
+        assertThat(contained.test(new ExtendsTypeArg(string), new SuperTypeArg(string)))
+                .isFalse();
+        assertThat(contained.test(UnboundedTypeArg.INSTANCE, new SuperTypeArg(string)))
+                .isFalse();
+
+        assertThat(contained.test(new ExtendsTypeArg(string), new ExactTypeArg(string)))
+                .isFalse();
+        // a type of other type arguments in number is none javac would have let be written
+        assertThat(proven(
+                        UnsafeFacts.interfaceToken(
+                                new ParameterizedTypeRef(
+                                        map, List.of(new ExactTypeArg(string), new ExactTypeArg(string)), List.of()),
+                                MethodTable.EMPTY),
+                        new ParameterizedTypeRef(map, List.of(UnboundedTypeArg.INSTANCE), List.of())))
+                .isFalse();
+    }
+
+    @Test
+    void aTypeThatIsNotGenericIsOfTheParameterizationsItsShapeRecordsAndARawOneOfNone() {
+        assertThat(proven(String_.TOKEN, new Comparable_<>(String_.TOKEN).token.typeRef()))
+                .isTrue();
+        assertThat(proven(String_.TOKEN, new Comparable_<>(Integer_.TOKEN).token.typeRef()))
+                .isFalse();
+        // raw List: a Collection<String> to javac with an unchecked warning
+        assertThat(proven(
+                        UnsafeFacts.interfaceToken(List_.Data.SHAPE), new Collection_<>(String_.TOKEN).token.typeRef()))
+                .isFalse();
+    }
+
+    @Test
+    void aTypeParameterOfTheClassBeingDeclaredIsOfWhatItsOwnBoundsAreOf() {
+        var t = UnsafeFacts.typeVarToken(new TypeVarRef("T", List.of()), ConstantDescs.CD_Object);
+        var u = UnsafeFacts.typeVarToken(new TypeVarRef("U", List.of()), ConstantDescs.CD_Object);
+        Subtyping.Declaring declaring = new Subtyping.Declaring(
+                SELF,
+                List.of(),
+                List.of(
+                        new Subtyping.Bounded(t, List.of(STRINGS)),
+                        new Subtyping.Bounded(u, List.of(Runnable_.TOKEN))));
+
+        assertThat(proven(declaring, t, new Collection_<>(String_.TOKEN).token.typeRef()))
+                .isTrue();
+        assertThat(proven(declaring, u, Runnable_.TOKEN.typeRef())).isTrue();
+        // the bound of another type parameter is none of its own
+        assertThat(proven(declaring, t, Runnable_.TOKEN.typeRef())).isFalse();
+        assertThat(proven(declaring, u, STRINGS.typeRef())).isFalse();
     }
 
     @Test
