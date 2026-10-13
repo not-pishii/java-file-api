@@ -7,7 +7,6 @@ import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
-import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.TypeToken;
@@ -144,7 +143,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     private <F extends FieldRef<Self, ?>> F declared(F field, Set<Modifier> modifiers) {
         String name = field.name();
         Site site = Site.here();
-        owner.requireDeclaring(this, "field " + name + " of " + described);
+        owner.requireDeclaring("field " + name + " of " + described);
         owner.scope("the type of field " + name).require(field.type());
         registry.field(name);
         declared(new Member.Field(field, modifiers, site));
@@ -188,7 +187,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @return this builder
     /// @throws IllegalStateException if the declarations of the class have ended
     public final MemberBuilder<Self, S> add(UnsafeMember member) {
-        owner.requireDeclaring(this, "an unsafe member of " + described);
+        owner.requireDeclaring("an unsafe member of " + described);
         declared(new Member.Given(member.member()));
         return this;
     }
@@ -222,7 +221,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
 
     /// Declares a method or constructor of the class, said at `site`.
     <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown, Site site) {
-        owner.requireDeclaring(this, member.toString());
+        owner.requireDeclaring(member.toString());
         requireInScope(member);
         registry.member(member);
         declared(new Member.Callable(
@@ -248,7 +247,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
 
     /// Declares a method of the class that overrides, said at `site`.
     <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown, Site site) {
-        owner.requireDeclaring(this, own.toString());
+        owner.requireDeclaring(own.toString());
         requireInScope(own);
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
         own.resultType().ifPresent(owner.target()::verify);
@@ -280,10 +279,13 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @throws IllegalStateException if the declarations have ended already, or leave undone what
     ///     only a method of the class can do
     final <B extends MemberBodies<Self, S>> B begin(Function<MemberBodies.Declared<Self>, B> make) {
-        owner.requireDeclaring(this, "the bodies of " + described);
-        registry.requireComplete();
-        MethodTable methods = registry.table();
-        return owner.bodies(methods, () -> make.apply(new MemberBodies.Declared<>(owner, superclass, members)));
+        return owner.bodies(
+                "the bodies of " + described,
+                () -> {
+                    registry.requireComplete();
+                    return registry.table();
+                },
+                written -> make.apply(new MemberBodies.Declared<>(owner, superclass, members, written)));
     }
 
     /// A member of the class as it is declared, in the order it was.

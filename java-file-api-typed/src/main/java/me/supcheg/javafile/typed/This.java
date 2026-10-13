@@ -12,7 +12,15 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the class being declared
 public final class This<T> extends Expr<T> {
+    private final Block<?, ?> body;
+
     This(Block<?, ?> root, TypeToken<T> type) {
         super(new Node.This(root), type);
+        this.body = root;
+    }
+
+    /// The body `this` is that of.
+    Block<?, ?> body() {
+        return body;
     }
 }

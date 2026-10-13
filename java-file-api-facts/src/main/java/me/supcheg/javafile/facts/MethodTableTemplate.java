@@ -102,7 +102,7 @@ public record MethodTableTemplate(
                 .flatMap(s -> s.params().stream())
                 .mapToInt(p -> switch (p) {
                     case Fixed _ -> 0;
-                    case Var(int index, int _) -> index + 1;
+                    case Var variable -> variable.index() + 1;
                 })
                 .max()
                 .orElse(0);

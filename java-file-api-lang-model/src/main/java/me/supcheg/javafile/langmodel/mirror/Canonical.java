@@ -361,8 +361,8 @@ public final class Canonical {
     private static String type(Heritage.Type type) {
         return switch (type) {
             case Heritage.Type.Fixed(TypeRef fixed) -> NO_VARIABLES.type(fixed);
-            case Heritage.Type.OfType(int index) -> "#" + index;
-            case Heritage.Type.OfMember(int index) -> "^" + index;
+            case Heritage.Type.OfType ofType -> "#" + ofType.index();
+            case Heritage.Type.OfMember ofMember -> "^" + ofMember.index();
             case Heritage.Type.Array(Heritage.Type component) -> type(component) + "[]";
             case Heritage.Type.Parameterized(ClassDesc raw, List<Heritage.Argument> arguments) ->
                 arguments.stream()
@@ -444,8 +444,8 @@ public final class Canonical {
                 .map(s -> s.params().stream()
                         .map(p -> switch (p) {
                             case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
-                            case MethodTableTemplate.Var(int index, int dimensions) ->
-                                "#" + index + "[]".repeat(dimensions);
+                            case MethodTableTemplate.Var variable ->
+                                "#" + variable.index() + "[]".repeat(variable.dimensions());
                         })
                         .collect(Collectors.joining(", ", s.name() + "(", ")")))
                 .sorted()

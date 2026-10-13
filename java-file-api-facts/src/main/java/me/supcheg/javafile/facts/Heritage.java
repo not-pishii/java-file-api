@@ -297,12 +297,12 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
             return switch (this) {
                 case Fixed fixed -> fixed;
                 case OfMember member -> member;
-                case OfType(int index) -> {
-                    if (index >= arguments.size()) {
-                        throw new IllegalArgumentException("a member mentions the type parameter #" + index
+                case OfType ofType -> {
+                    if (ofType.index() >= arguments.size()) {
+                        throw new IllegalArgumentException("a member mentions the type parameter #" + ofType.index()
                                 + " of the type, got " + arguments.size() + " type arguments");
                     }
-                    yield new Fixed(arguments.get(index));
+                    yield new Fixed(arguments.get(ofType.index()));
                 }
                 case Array(Type component) -> array(component.applied(arguments));
                 case Parameterized(ClassDesc raw, List<Argument> given) ->
@@ -320,7 +320,7 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         default Stream<Integer> ofMember() {
             return switch (this) {
                 case Fixed _, OfType _ -> Stream.empty();
-                case OfMember(int index) -> Stream.of(index);
+                case OfMember ofMember -> Stream.of(ofMember.index());
                 case Array(Type component) -> component.ofMember();
                 case Parameterized(ClassDesc _, List<Argument> given) ->
                     given.stream().flatMap(argument -> argument.type().stream()).flatMap(Type::ofMember);
