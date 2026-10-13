@@ -270,7 +270,10 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         static Type array(Type component) {
             return switch (component) {
                 case Fixed(TypeRef type) -> new Fixed(new ArrayTypeRef(type));
-                case OfType _, OfMember _, Array _, Parameterized _ -> new Array(component);
+                case OfType _ -> new Array(component);
+                case OfMember _ -> new Array(component);
+                case Array _ -> new Array(component);
+                case Parameterized _ -> new Array(component);
             };
         }
 
@@ -319,7 +322,8 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         /// @return the positions, each as often as it is mentioned
         default Stream<Integer> ofMember() {
             return switch (this) {
-                case Fixed _, OfType _ -> Stream.empty();
+                case Fixed _ -> Stream.empty();
+                case OfType _ -> Stream.empty();
                 case OfMember ofMember -> Stream.of(ofMember.index());
                 case Array(Type component) -> component.ofMember();
                 case Parameterized(ClassDesc _, List<Argument> given) ->
@@ -401,7 +405,9 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
                 case Extends(Type.Fixed(TypeRef bound)) -> Optional.of(new ExtendsTypeArg(bound));
                 case Super(Type.Fixed(TypeRef bound)) -> Optional.of(new SuperTypeArg(bound));
                 case Unbounded _ -> Optional.of(me.supcheg.javafile.type.Types.unbounded());
-                case Exact _, Extends _, Super _ -> Optional.empty();
+                case Exact _ -> Optional.empty();
+                case Extends _ -> Optional.empty();
+                case Super _ -> Optional.empty();
             };
         }
 
@@ -906,7 +912,9 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
                                 && switch (params.getLast()) {
                                     case Type.Array _ -> true;
                                     case Type.Fixed(TypeRef type) -> type instanceof ArrayTypeRef;
-                                    case Type.OfType _, Type.OfMember _, Type.Parameterized _ -> false;
+                                    case Type.OfType _ -> false;
+                                    case Type.OfMember _ -> false;
+                                    case Type.Parameterized _ -> false;
                                 };
                 };
         if (!valid) {

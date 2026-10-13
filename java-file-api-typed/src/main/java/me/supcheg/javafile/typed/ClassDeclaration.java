@@ -283,7 +283,15 @@ final class ClassDeclaration<Self> {
 
     private MethodTable methodTable() {
         return switch (phase) {
-            case Phase.Named<Self> _, Phase.Heading<Self> _, Phase.Members<Self> _ ->
+            case Phase.Named<Self> _ ->
+                throw new IllegalStateException("the methods of " + described + " are known only once its"
+                        + " members are declared: the class is still declaring them, and bodies() of the"
+                        + " builder of its members ends that");
+            case Phase.Heading<Self> _ ->
+                throw new IllegalStateException("the methods of " + described + " are known only once its"
+                        + " members are declared: the class is still declaring them, and bodies() of the"
+                        + " builder of its members ends that");
+            case Phase.Members<Self> _ ->
                 throw new IllegalStateException("the methods of " + described + " are known only once its"
                         + " members are declared: the class is still declaring them, and bodies() of the"
                         + " builder of its members ends that");
@@ -388,7 +396,16 @@ final class ClassDeclaration<Self> {
     private Phase.Named<Self> requireNamed() {
         return switch (phase) {
             case Phase.Named<Self> named -> named;
-            case Phase.Heading<Self> _, Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ ->
+            case Phase.Heading<Self> _ ->
+                throw new IllegalStateException(described + " has its superclass already: a class header is"
+                        + " used once, and what follows is declared through the stage it gave");
+            case Phase.Members<Self> _ ->
+                throw new IllegalStateException(described + " has its superclass already: a class header is"
+                        + " used once, and what follows is declared through the stage it gave");
+            case Phase.Bodies<Self> _ ->
+                throw new IllegalStateException(described + " has its superclass already: a class header is"
+                        + " used once, and what follows is declared through the stage it gave");
+            case Phase.Complete<Self> _ ->
                 throw new IllegalStateException(described + " has its superclass already: a class header is"
                         + " used once, and what follows is declared through the stage it gave");
         };
@@ -401,7 +418,9 @@ final class ClassDeclaration<Self> {
     private Phase.Header<Self> header(Supplier<IllegalStateException> ended) {
         return switch (phase) {
             case Phase.Header<Self> header -> header;
-            case Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ -> throw ended.get();
+            case Phase.Members<Self> _ -> throw ended.get();
+            case Phase.Bodies<Self> _ -> throw ended.get();
+            case Phase.Complete<Self> _ -> throw ended.get();
         };
     }
 
@@ -596,12 +615,13 @@ final class ClassDeclaration<Self> {
                             + ", which the proof has no step for — the generator was compiled against another"
                             + " version of the type");
                 });
-        stepped.stream()
-                .filter(step -> merged.group(step.signature()).isEmpty())
+        IntStream.range(0, stepped.size())
+                .filter(i -> merged.group(stepped.get(i).signature()).isEmpty())
+                .mapToObj(i -> proof.steps().get(i).method())
                 .findFirst()
                 .ifPresent(step -> {
                     throw new IllegalArgumentException(described + " cannot " + verb + " " + supertype + " by "
-                            + proof + ": the proof has a step for " + step.satisfies() + ", and on the target"
+                            + proof + ": the proof has a step for " + step + ", and on the target"
                             + " classpath the type has no such method — the generator was compiled against"
                             + " another version of the type");
                 });
@@ -832,19 +852,11 @@ final class ClassDeclaration<Self> {
         /// The erased signature of the method the class has, in the class.
         MethodSignature signature();
 
-        /// The fact of the method of the supertype the step is of.
-        Invocable satisfies();
-
         /// By a method it said it overrides.
         record Own(Intention intention) implements Stepped {
             @Override
             public MethodSignature signature() {
                 return intention.own().signature();
-            }
-
-            @Override
-            public Invocable satisfies() {
-                return intention.overridden();
             }
         }
 
@@ -853,11 +865,6 @@ final class ClassDeclaration<Self> {
             @Override
             public MethodSignature signature() {
                 return method.signature();
-            }
-
-            @Override
-            public Invocable satisfies() {
-                return method;
             }
         }
     }

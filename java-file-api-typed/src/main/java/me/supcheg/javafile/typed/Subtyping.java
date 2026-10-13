@@ -231,13 +231,15 @@ final class Subtyping {
                         || switch (sub) {
                             case ExactTypeArg(TypeRef mine) -> mine.equals(bound);
                             case ExtendsTypeArg(TypeRef mine) -> mine.equals(bound);
-                            case SuperTypeArg _, UnboundedTypeArg _ -> false;
+                            case SuperTypeArg _ -> false;
+                            case UnboundedTypeArg _ -> false;
                         };
             case SuperTypeArg(TypeRef bound) ->
                 switch (sub) {
                     case ExactTypeArg(TypeRef mine) -> mine.equals(bound);
                     case SuperTypeArg(TypeRef mine) -> mine.equals(bound);
-                    case ExtendsTypeArg _, UnboundedTypeArg _ -> false;
+                    case ExtendsTypeArg _ -> false;
+                    case UnboundedTypeArg _ -> false;
                 };
         };
     }

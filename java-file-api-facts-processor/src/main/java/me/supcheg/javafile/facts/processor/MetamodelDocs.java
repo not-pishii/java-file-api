@@ -366,7 +366,9 @@ final class MetamodelDocs {
     private static DocText skipped(MemberPlan.Skip skip) {
         return switch (skip.origin()) {
             case MemberPlan.Origin.Inherited _ -> DocText.of(skip.told());
-            case MemberPlan.Origin.Declared _, MemberPlan.Origin.Adopted _ ->
+            case MemberPlan.Origin.Declared _ ->
+                DocText.of(code(skip.member()), words(MemberPlan.Skip.WHICH + skip.reason()));
+            case MemberPlan.Origin.Adopted _ ->
                 DocText.of(code(skip.member()), words(MemberPlan.Skip.WHICH + skip.reason()));
         };
     }
@@ -691,7 +693,8 @@ final class MetamodelDocs {
         return Stream.<Stream<DocInline>>of(
                         Stream.of(words("The fact of "), new DocInline.Link(fact.member())),
                         switch (fact.origin()) {
-                            case MemberPlan.Origin.Declared _, MemberPlan.Origin.Inherited _ -> Stream.empty();
+                            case MemberPlan.Origin.Declared _ -> Stream.empty();
+                            case MemberPlan.Origin.Inherited _ -> Stream.empty();
                             case MemberPlan.Origin.Adopted(String from) ->
                                 Stream.of(
                                         words(", declared in "), code(from), words(", which is not "), code("public"));

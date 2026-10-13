@@ -397,7 +397,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                     default -> "method " + member;
                 };
         return switch (Origin.of(type, member)) {
-            case Origin.Declared _, Origin.Inherited _ -> described;
+            case Origin.Declared _ -> described;
+            case Origin.Inherited _ -> described;
             case Origin.Adopted(String from) -> described + " of " + from;
         };
     }

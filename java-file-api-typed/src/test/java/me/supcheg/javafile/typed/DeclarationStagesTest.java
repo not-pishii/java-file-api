@@ -243,7 +243,7 @@ class DeclarationStagesTest {
                         return Unreached.here();
                     }
                 }))
-                .withMessageContaining("the proof has a step for void java.lang.Runnable.stop(), and on the target"
+                .withMessageContaining("the proof has a step for stop(), and on the target"
                         + " classpath the type has no such method");
     }
 

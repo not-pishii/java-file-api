@@ -348,7 +348,10 @@ final class TypeGraph {
             return switch (this) {
                 case Requested(var _, Request asked) -> Optional.of(asked);
                 case Inherited(var _, Request.Plan plan) -> Optional.of(plan);
-                case Declined _, Hidden _, Mentioned _, Absent _ -> Optional.empty();
+                case Declined _ -> Optional.empty();
+                case Hidden _ -> Optional.empty();
+                case Mentioned _ -> Optional.empty();
+                case Absent _ -> Optional.empty();
             };
         }
 
@@ -359,7 +362,10 @@ final class TypeGraph {
             return switch (this) {
                 case Declined(var _, var _, Optional<Token> mentioned) -> mentioned;
                 case Mentioned(var _, Token mentioned) -> Optional.of(mentioned);
-                case Requested _, Inherited _, Hidden _, Absent _ -> Optional.empty();
+                case Requested _ -> Optional.empty();
+                case Inherited _ -> Optional.empty();
+                case Hidden _ -> Optional.empty();
+                case Absent _ -> Optional.empty();
             };
         }
 

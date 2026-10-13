@@ -48,25 +48,7 @@ final class Constants {
             case Node.Cast(var type, var operand) ->
                 type.erasure().equals(ConstantDescs.CD_String) ? fold(operand) : null;
             // None of these is a constant expression (JLS 15.29): a call, a lambda and a switch never are.
-            case Node.RawLit _,
-                    Node.Local _,
-                    Node.This _,
-                    Node.Upcast _,
-                    Node.Box _,
-                    Node.Unbox _,
-                    Node.Call _,
-                    Node.SuperCall _,
-                    Node.StaticCall _,
-                    Node.New _,
-                    Node.FieldGet _,
-                    Node.EnumConst _,
-                    Node.ArrayAt _,
-                    Node.ArrayLength _,
-                    Node.NewArray _,
-                    Node.Lambda _,
-                    Node.Switch _,
-                    Node.Assign _,
-                    Node.Raw _ -> null;
+            case Node _ -> null;
         };
     }
 

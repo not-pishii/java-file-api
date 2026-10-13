@@ -139,7 +139,13 @@ final class Inheritance {
                 parameterized.args().stream()
                         .map(argument -> switch (argument) {
                             case ExactTypeArg(TypeRef type) -> type;
-                            case ExtendsTypeArg _, SuperTypeArg _, UnboundedTypeArg _ ->
+                            case ExtendsTypeArg _ ->
+                                throw new IllegalArgumentException(owner + " cannot have the supertype " + token
+                                        + ": a supertype has no wildcard type argument (JLS 8.1.4, 8.1.5)");
+                            case SuperTypeArg _ ->
+                                throw new IllegalArgumentException(owner + " cannot have the supertype " + token
+                                        + ": a supertype has no wildcard type argument (JLS 8.1.4, 8.1.5)");
+                            case UnboundedTypeArg _ ->
                                 throw new IllegalArgumentException(owner + " cannot have the supertype " + token
                                         + ": a supertype has no wildcard type argument (JLS 8.1.4, 8.1.5)");
                         })

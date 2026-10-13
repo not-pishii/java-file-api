@@ -307,8 +307,11 @@ public final class MirrorTranslator {
     /// @return `true` for a class whose token is an `ExtendableClassToken`
     public static boolean extendable(TypeElement type) {
         return switch (kind(type)) {
-            case DeclaredKind.OpenClass _, DeclaredKind.AbstractClass _ -> true;
-            case DeclaredKind.FinalClass _, DeclaredKind.Interface _, DeclaredKind.EnumClass _ -> false;
+            case DeclaredKind.OpenClass _ -> true;
+            case DeclaredKind.AbstractClass _ -> true;
+            case DeclaredKind.FinalClass _ -> false;
+            case DeclaredKind.Interface _ -> false;
+            case DeclaredKind.EnumClass _ -> false;
         };
     }
 

@@ -430,7 +430,8 @@ final class Exceptions {
     private static Stream<Raise> raised(Node node) {
         return descendants(node).flatMap(n -> switch (act(n)) {
             case Act.Invokes(var member) -> invoked(member);
-            case Act.Defers _, Act.Computes _ -> Stream.empty();
+            case Act.Defers _ -> Stream.empty();
+            case Act.Computes _ -> Stream.empty();
         });
     }
 
@@ -445,7 +446,8 @@ final class Exceptions {
     private static Stream<Act.Defers> deferred(Node node) {
         return descendants(node).map(Exceptions::act).flatMap(act -> switch (act) {
             case Act.Defers lambda -> Stream.of(lambda);
-            case Act.Invokes _, Act.Computes _ -> Stream.empty();
+            case Act.Invokes _ -> Stream.empty();
+            case Act.Computes _ -> Stream.empty();
         });
     }
 
@@ -458,26 +460,26 @@ final class Exceptions {
             case Node.Lambda(var _, var _, Node.LambdaBody.Value(var scope, var value)) -> new Act.Defers(scope, value);
             // The statements of a block lambda are checked as they are appended to its block.
             case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
-            case Node.Lit _,
-                    Node.RawLit _,
-                    Node.Local _,
-                    Node.This _,
-                    Node.Box _,
-                    Node.Unbox _,
-                    Node.FieldGet _,
-                    Node.StaticFieldGet _,
-                    Node.EnumConst _,
-                    Node.ArrayAt _,
-                    Node.ArrayLength _,
-                    Node.NewArray _,
-                    Node.Cond _,
-                    Node.Binary _,
-                    Node.Not _,
-                    Node.Convert _,
-                    Node.Cast _,
-                    Node.Upcast _,
-                    Node.Assign _,
-                    Node.Raw _ -> new Act.Computes();
+            case Node.Lit _ -> new Act.Computes();
+            case Node.RawLit _ -> new Act.Computes();
+            case Node.Local _ -> new Act.Computes();
+            case Node.This _ -> new Act.Computes();
+            case Node.Box _ -> new Act.Computes();
+            case Node.Unbox _ -> new Act.Computes();
+            case Node.FieldGet _ -> new Act.Computes();
+            case Node.StaticFieldGet _ -> new Act.Computes();
+            case Node.EnumConst _ -> new Act.Computes();
+            case Node.ArrayAt _ -> new Act.Computes();
+            case Node.ArrayLength _ -> new Act.Computes();
+            case Node.NewArray _ -> new Act.Computes();
+            case Node.Cond _ -> new Act.Computes();
+            case Node.Binary _ -> new Act.Computes();
+            case Node.Not _ -> new Act.Computes();
+            case Node.Convert _ -> new Act.Computes();
+            case Node.Cast _ -> new Act.Computes();
+            case Node.Upcast _ -> new Act.Computes();
+            case Node.Assign _ -> new Act.Computes();
+            case Node.Raw _ -> new Act.Computes();
             // A switch throws what its selector, its values and its blocks do, and nothing of its own:
             // a selector that is null is a NullPointerException, which is not checked.
             case Node.Switch _ -> new Act.Computes();
@@ -510,7 +512,10 @@ final class Exceptions {
             case Instr.Return(var value) -> value.stream();
             case Instr.Yield(var value) -> Stream.of(value);
             case Instr.Throw(var value, var _) -> Stream.of(value);
-            case Instr.Break _, Instr.Continue _, Instr.Try _, Instr.Raw _ -> Stream.empty();
+            case Instr.Break _ -> Stream.empty();
+            case Instr.Continue _ -> Stream.empty();
+            case Instr.Try _ -> Stream.empty();
+            case Instr.Raw _ -> Stream.empty();
         };
     }
 
@@ -540,14 +545,14 @@ final class Exceptions {
 
     private static Stream<Node> children(Node node) {
         return switch (node) {
-            case Node.Lit _,
-                    Node.RawLit _,
-                    Node.Local _,
-                    Node.This _,
-                    Node.StaticFieldGet _,
-                    Node.EnumConst _,
-                    Node.Raw _,
-                    Node.Lambda _ -> Stream.empty();
+            case Node.Lit _ -> Stream.empty();
+            case Node.RawLit _ -> Stream.empty();
+            case Node.Local _ -> Stream.empty();
+            case Node.This _ -> Stream.empty();
+            case Node.StaticFieldGet _ -> Stream.empty();
+            case Node.EnumConst _ -> Stream.empty();
+            case Node.Raw _ -> Stream.empty();
+            case Node.Lambda _ -> Stream.empty();
             case Node.Box(var _, var operand) -> Stream.of(operand);
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
             case Node.Not(var operand) -> Stream.of(operand);
@@ -578,7 +583,8 @@ final class Exceptions {
 
     private static Stream<Node> children(Node.Target target) {
         return switch (target) {
-            case Node.Target.Local _, Node.Target.StaticField _ -> Stream.empty();
+            case Node.Target.Local _ -> Stream.empty();
+            case Node.Target.StaticField _ -> Stream.empty();
             case Node.Target.Field(var receiver, var _) -> Stream.of(receiver.node());
             case Node.Target.Element(var array, var index) -> Stream.of(array, index);
         };

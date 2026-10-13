@@ -128,14 +128,6 @@ public final class SuperSite<Self, S> {
         return call(ctor, Expressions.arguments(a1, a2), rest);
     }
 
-    /// Whether the body called `super_`: the call is its first statement.
-    boolean called() {
-        return root.instrs().stream()
-                .findFirst()
-                .filter(Instr.SuperInit.class::isInstance)
-                .isPresent();
-    }
-
     private Terminated<Void> call(Invocable ctor, List<Node.Operand> args, InstanceBody0<Self, VoidBody, Void> rest) {
         if (!root.instrs().isEmpty()) {
             throw new IllegalStateException("the " + root.path() + " has called super(...) already: a"

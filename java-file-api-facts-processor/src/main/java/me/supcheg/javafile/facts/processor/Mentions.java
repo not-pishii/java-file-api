@@ -93,7 +93,8 @@ final class Mentions {
             case ParameterizedTypeRef(var raw, var args, var _) ->
                 Stream.concat(Stream.of(raw), args.stream().flatMap(Mentions::of));
             case ArrayTypeRef(var component, var _) -> of(component);
-            case TypeVarRef _, PrimitiveTypeRef _ -> Stream.empty();
+            case TypeVarRef _ -> Stream.empty();
+            case PrimitiveTypeRef _ -> Stream.empty();
         };
     }
 

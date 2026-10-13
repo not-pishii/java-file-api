@@ -611,7 +611,9 @@ final class MemberFacts {
         return switch (type) {
             case TypeVarRef _ -> true;
             case ArrayTypeRef array -> erasesWithItsVariable(array.component());
-            case PrimitiveTypeRef _, ClassTypeRef _, ParameterizedTypeRef _ -> false;
+            case PrimitiveTypeRef _ -> false;
+            case ClassTypeRef _ -> false;
+            case ParameterizedTypeRef _ -> false;
         };
     }
 
