@@ -87,11 +87,7 @@ final class TypeGraph {
     ///                                  type that is not a node, or a token-only metamodel is held
     ///                                  back though the graph is complete
     private TypeGraph(SortedMap<String, Node> nodes, SortedSet<Edge> edges, Asked asked) {
-        nodes.forEach((name, node) -> {
-            if (!node.name().equals(name)) {
-                throw new IllegalArgumentException("node " + node.name() + " is under the name " + name);
-            }
-        });
+
         edges.stream()
                 .flatMap(edge -> Stream.of(edge.from(), edge.to()))
                 .filter(name -> !nodes.containsKey(name))
@@ -130,13 +126,6 @@ final class TypeGraph {
     /// @return the edges, in [Edge#ORDER]
     SortedSet<Edge> edges() {
         return edges;
-    }
-
-    /// Whether every type `@Facts` asks for is a node.
-    ///
-    /// @return whether one is missing
-    Asked asked() {
-        return asked;
     }
 
     @Override

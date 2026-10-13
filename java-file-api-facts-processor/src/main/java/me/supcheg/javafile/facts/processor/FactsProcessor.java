@@ -6,7 +6,6 @@ import me.supcheg.javafile.facts.processor.MetamodelDocs.About;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
-import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Pair;
 import org.jspecify.annotations.Nullable;
@@ -632,14 +631,9 @@ public final class FactsProcessor extends AbstractProcessor {
                     case FULL -> MemberFilter.DECLARED_ACCESSIBLE;
                     case TOKEN -> MemberFilter.NONE;
                 };
+        // the type was read with a model when it was planned
         TypeModel model =
-                switch (models.of(planned.type(), filter)) {
-                    case Translation.Ok<TypeModel>(TypeModel value) -> value;
-                    case Translation.Deferred<TypeModel> _ ->
-                        throw new IllegalStateException(planned.binaryName() + " was read, but is deferred now");
-                    case Translation.Unrepresentable<TypeModel> _ ->
-                        throw new IllegalStateException(planned.binaryName() + " was read, but is unrepresentable now");
-                };
+                Models.settled(models.of(planned.type(), filter)).right().orElseThrow();
         Element[] originating = planned.requesters().stream()
                 .map(site -> site.resolve(elements))
                 .flatMap(Optional::stream)

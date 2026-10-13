@@ -6,7 +6,6 @@ import me.supcheg.javafile.langmodel.mirror.MemberModel;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
-import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.routine.Either;
 import me.supcheg.routine.EitherCollectors;
 import me.supcheg.routine.Pair;
@@ -313,22 +312,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// A `public` field, constructor or method: the member and its model, or why it has no fact.
     private static Either<Skip, Map.Entry<Element, MemberModel>> candidate(
             TypeElement type, Element member, MirrorTranslator translator, Targets targets) {
-        return switch (translator.member(type, member)) {
-            case Translation.Ok<MemberModel>(MemberModel model) -> {
-                Optional<String> unsupported = member.getKind() == ElementKind.CONSTRUCTOR && inner(type)
-                        ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
-                        : unsupported(model, targets);
-                yield unsupported
-                        .<Either<Skip, Map.Entry<Element, MemberModel>>>map(reason ->
-                                Either.left(new Skip(describe(type, member), reason, Origin.of(type, member))))
-                        .orElseGet(() -> Either.right(Map.entry(member, model)));
-            }
-            case Translation.Deferred<MemberModel>(String unresolved) ->
-                throw new IllegalStateException(
-                        describe(type, member) + " was read, but mentions " + unresolved + " now");
-            case Translation.Unrepresentable<MemberModel>(String reason) ->
-                Either.left(new Skip(describe(type, member), reason, Origin.of(type, member)));
-        };
+        return Models.settled(translator.member(type, member))
+                .mapLeft(Optional::of)
+                .flatMapRight(model -> {
+                    Optional<String> unsupported = member.getKind() == ElementKind.CONSTRUCTOR && inner(type)
+                            ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
+                            : unsupported(model, targets);
+                    return unsupported.isPresent()
+                            ? Either.<Optional<String>, Map.Entry<Element, MemberModel>>left(unsupported)
+                            : Either.<Optional<String>, Map.Entry<Element, MemberModel>>right(Map.entry(member, model));
+                })
+                .mapLeft(reason -> new Skip(describe(type, member), reason.orElseThrow(), Origin.of(type, member)));
     }
 
     private static boolean inner(TypeElement type) {
@@ -340,14 +334,12 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// the interface declares it and it has no fact, as is reported for the member.
     private static Optional<Either<Skip, SamFact>> sam(
             TypeElement type, Models models, Targets targets, List<Fact> members) {
-        return switch (models.sam(type)) {
-            case Translation.Ok<Optional<SamModel>>(Optional<SamModel> sam) ->
-                sam.flatMap(found -> samFact(found, targets, members, () -> models.samReference(type, found.method())));
-            case Translation.Deferred<Optional<SamModel>>(String unresolved) ->
-                throw new IllegalStateException("the single abstract method was read, but mentions " + unresolved);
-            case Translation.Unrepresentable<Optional<SamModel>>(String reason) ->
-                Optional.of(Either.left(new Skip("the single abstract method", reason, new Origin.Inherited())));
-        };
+        return Models.settled(models.sam(type))
+                .<Optional<Either<Skip, SamFact>>>fold(
+                        reason -> Optional.of(
+                                Either.left(new Skip("the single abstract method", reason, new Origin.Inherited()))),
+                        sam -> sam.flatMap(found ->
+                                samFact(found, targets, members, () -> models.samReference(type, found.method()))));
     }
 
     /// @param member the method as the comment of `sam` links to it, asked for only if there is a fact

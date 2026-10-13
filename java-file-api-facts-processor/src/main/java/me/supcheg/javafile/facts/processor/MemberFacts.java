@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -289,11 +290,7 @@ final class MemberFacts {
     private record Scope(Map<String, Var> vars, boolean instance) {
 
         Var var(String declared) {
-            Var found = vars.get(declared);
-            if (found == null) {
-                throw new IllegalStateException("type variable " + declared + " is not in scope");
-            }
-            return found;
+            return Objects.requireNonNull(vars.get(declared), "type variable " + declared + " is not in scope");
         }
     }
 
@@ -355,11 +352,9 @@ final class MemberFacts {
         // the factory of the fact, what it takes after the owner, the name and the type, and the family
         FieldFact made =
                 switch (field.mutability()) {
-                    case FieldModel.Mutability.Constant constant
-                    when field.isStatic() ->
+                    // a constant is static (FieldModel)
+                    case FieldModel.Mutability.Constant constant ->
                         new FieldFact("constantField", Stream.of(constantValue(constant.value())), "StaticFieldRef");
-                    case FieldModel.Mutability.Constant _ ->
-                        throw new IllegalStateException("an instance field is not a constant: " + field.name());
                     case FieldModel.Mutability.Final _ ->
                         field.isStatic()
                                 ? new FieldFact("staticField", Stream.empty(), "StaticFieldRef")
@@ -435,7 +430,6 @@ final class MemberFacts {
     /// writes — `NaN` and the infinities — is made from its bits.
     private Expr constantValue(Object value) {
         return switch (value) {
-            case String string -> Exprs.literal(string);
             case Boolean bool -> Exprs.literal(bool);
             case Integer integer -> Exprs.literal(integer);
             case Long number -> Exprs.literal(number);
@@ -449,7 +443,8 @@ final class MemberFacts {
             case Double number when Double.isFinite(number) -> Exprs.literal(number.doubleValue());
             case Double number ->
                 Exprs.staticCall(use(CD_DOUBLE), "longBitsToDouble", Exprs.literal(Double.doubleToRawLongBits(number)));
-            default -> throw new IllegalStateException("not a constant: " + value);
+            // a constant is of a primitive type or a String (FieldModel.Mutability.Constant)
+            default -> Exprs.literal((String) value);
         };
     }
 
@@ -457,9 +452,7 @@ final class MemberFacts {
 
     private Spec ctor(MemberPlan.Fact fact, CtorModel ctor) {
         String name = fact.name();
-        if (!ctor.typeParams().isEmpty()) {
-            throw new IllegalStateException("a generic constructor has no fact: " + name);
-        }
+
         Scope scope = scope(false);
         boolean forSubclass = self.kind() instanceof DeclaredKind.AbstractClass
                 || switch (ctor.access()) {
@@ -635,10 +628,7 @@ final class MemberFacts {
     }
 
     private static int requireArity(int arity) {
-        if (arity > MAX_ARITY) {
-            throw new IllegalStateException(arity + " parameters, more than " + MAX_ARITY);
-        }
-        return arity;
+        return Objects.checkIndex(arity, MAX_ARITY + 1);
     }
 
     private static String capitalized(String name) {
