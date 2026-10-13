@@ -17,6 +17,7 @@ import me.supcheg.routine.Pair;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import java.lang.constant.ClassDesc;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -122,15 +123,13 @@ final class Closure {
                         .flatMap(found -> found instanceof Found.Read(Reading.Ready read, var _)
                                 ? Stream.of(Map.entry(type.name(), read))
                                 : Stream.empty()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
         SortedMap<String, String> waiting = kin.stream()
                 .flatMap(type -> found(type)
                         .flatMap(found -> found instanceof Found.Waiting(String awaited)
                                 ? Stream.of(Map.entry(type.name(), awaited))
                                 : Stream.empty()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
         // a type of which a full metamodel is wanted needs no token-only one, and a hidden type has none
         Set<String> untokened = kin.stream()
                 .filter(type -> !(type instanceof Kin.Declined))
@@ -148,8 +147,7 @@ final class Closure {
                 .flatMap(entry -> entry.getValue() instanceof Done.Held held
                         ? Stream.of(Map.entry(entry.getKey(), held))
                         : Stream.empty())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
         SortedMap<String, Mention> mentioned = Stream.concat(
                         ready.values().stream().flatMap(read -> read.mentions().stream()),
                         owed.keySet().stream().flatMap(name -> mention(name, models).right().stream()))
@@ -373,11 +371,11 @@ final class Closure {
             return Stream.empty();
         }
         SortedMap<String, Set<String>> factMentions = ready.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> factMentions(entry.getKey(), entry.getValue(), models, base, elements),
-                        (first, second) -> first,
-                        TreeMap::new));
+                .collect(
+                        TreeMap::new,
+                        (map, entry) -> map.put(
+                                entry.getKey(), factMentions(entry.getKey(), entry.getValue(), models, base, elements)),
+                        Map::putAll);
         // the types that wait: those that are not read, and every type a fact of which mentions one that waits
         Set<String> held = Stream.concat(
                         waiting.keySet().stream(),
@@ -409,10 +407,11 @@ final class Closure {
                                                 ? Stream.of(Map.entry(mentioned, type))
                                                 : Stream.empty()),
                         Stream.of(Map.entry(name, read.type())))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> MetamodelNames.metamodel(base, entry.getValue(), elements),
-                        (first, second) -> second));
+                .collect(
+                        HashMap::new,
+                        (map, entry) ->
+                                map.put(entry.getKey(), MetamodelNames.metamodel(base, entry.getValue(), elements)),
+                        Map::putAll);
         Map<String, String> unavailable = read.mentions().stream()
                 .flatMap(mention -> mention instanceof Mention.Unavailable none ? Stream.of(none) : Stream.empty())
                 .collect(Collectors.toMap(Mention.Unavailable::name, Mention.Unavailable::reason));

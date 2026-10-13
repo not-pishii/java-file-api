@@ -767,8 +767,7 @@ public final class MirrorTranslator {
                 .flatMap(supertype -> declared(supertype, reading) instanceof ParameterizedTypeRef parameterized
                         ? Stream.of(Map.entry(binaryName(supertype), parameterized))
                         : Stream.empty())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first, TreeMap::new));
+                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
         return new Supertypes(
                 typeParams.stream().map(p -> new TypeVarRef(p.name())).toList(), List.copyOf(found.values()));
     }

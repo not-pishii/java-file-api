@@ -180,7 +180,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                                 .orElseGet(() ->
                                         Origin.of(type, conflict.getValue().getFirst()))))
                 .toList();
-        Pair<List<Skip>, Map<Element, String>> named = names.names().entrySet().stream()
+        Pair<List<Skip>, List<Map.Entry<Element, String>>> named = names.names().entrySet().stream()
                 .filter(entry -> live.contains(entry.getKey()))
                 .<Either<Skip, Map.Entry<Element, String>>>map(entry -> taken.contains(entry.getValue())
                         ? Either.left(new Skip(
@@ -188,14 +188,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                                 "would be named " + entry.getValue() + ", a name the metamodel itself uses",
                                 Origin.of(type, entry.getKey())))
                         : Either.right(entry))
-                .collect(EitherCollectors.groupingTo(
-                        Collectors.toList(),
-                        Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (first, second) -> second,
-                                LinkedHashMap::new)));
-        Map<Element, String> factNames = named.right();
+                .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
+        Map<Element, String> factNames = inOrder(named.right());
         List<EnumFact> enums = candidates.enumConstants().stream()
                 .filter(factNames::containsKey)
                 .map(e -> new EnumFact(factNames.get(e), e.getSimpleName().toString()))
@@ -303,17 +297,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                                     .filter(member ->
                                             !member.getEnclosingElement().equals(type)))
                     .toList();
-            Pair<List<Skip>, Map<Element, MemberModel>> read = publicMembers.stream()
+            Pair<List<Skip>, List<Map.Entry<Element, MemberModel>>> read = publicMembers.stream()
                     .map(member -> candidate(type, member, models.translator(), targets))
-                    .collect(EitherCollectors.groupingTo(
-                            Collectors.toList(),
-                            Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    (first, second) -> second,
-                                    LinkedHashMap::new)));
-            return new Candidates(named, enumConstants, read.right(), read.left());
+                    .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
+            return new Candidates(named, enumConstants, inOrder(read.right()), read.left());
         }
+    }
+
+    /// The entries as a map that keeps their order.
+    private static <K, V> Map<K, V> inOrder(List<Map.Entry<K, V>> entries) {
+        return entries.stream()
+                .collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()), Map::putAll);
     }
 
     /// A `public` field, constructor or method: the member and its model, or why it has no fact.

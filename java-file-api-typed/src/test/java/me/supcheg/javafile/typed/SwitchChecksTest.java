@@ -66,6 +66,35 @@ class SwitchChecksTest {
         });
     }
 
+    @Test
+    void aSwitchIsMadeOfCasesThatAreBuiltAndOnce() {
+        // the body of a case that failed is no case: the switch is not made of what was left half built
+        assertThatIllegalStateException()
+                .isThrownBy(() -> intMethod((b, s) -> b.return_(intSwitch(s, cases -> {
+                    try {
+                        cases.default_(y -> {
+                            throw new UnsupportedOperationException("the body is not built");
+                        });
+                    } catch (UnsupportedOperationException ignored) {
+                        // the generator goes on as if the case had been added
+                    }
+                }))))
+                .withMessageContaining("the switch_ over me.supcheg.javafile.typed.fixtures.Signal in the body of"
+                        + " static method m is made while its default_ is being built");
+        AtomicReference<EnumSwitchCases<Signal, Prim.Int>> kept = new AtomicReference<>();
+        AtomicReference<Node.Operand> selector = new AtomicReference<>();
+        intMethod((b, s) -> {
+            selector.set(Expressions.operand(s));
+            return b.return_(intSwitch(s, cases -> {
+                cases.default_(literal(1));
+                kept.set(cases);
+            }));
+        });
+        assertThatIllegalStateException()
+                .isThrownBy(() -> kept.get().close(selector.get()))
+                .withMessageContaining("is made twice");
+    }
+
     /// `switch (s) { cases }` of type `int`.
     private static Expr<Prim.Int> intSwitch(Expr<Signal> s, Consumer<EnumSwitchCases<Signal, Prim.Int>> cases) {
         return switch_(Signal_.TOKEN, s, PrimitiveToken.INT, cases);

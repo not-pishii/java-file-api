@@ -3,8 +3,10 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
+import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -17,6 +19,7 @@ import java.lang.constant.ClassDesc;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.new_;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -287,6 +290,72 @@ class DeclarationStagesTest {
                 }))
                 .withMessageContaining("the method has package access and the class is in its package: whether the"
                         + " class inherits it, and so overrides it, depends on the packages of the classes between");
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void whatIsOfAnotherClassIsNoneOfTheSuperclass() {
+        // the proof of another superclass than the one the class was said to extend
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        h.extending(Mid_.TOKEN).extends_((Complete) Base_.extend(h.self()));
+                        return Unreached.here();
+                    }
+                }))
+                .withMessageContaining(
+                        PROBE + " was said to extend " + Mid_.TOKEN + ", and the proof is of " + Base_.TOKEN);
+        // a protected member of a class the class does not extend
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        var cb = h.extends_(Base_.extend(h.self())).members();
+                        cb.protected_((Protected) Shape_.check);
+                        return Unreached.here();
+                    }
+                }))
+                .withMessageContaining(PROBE + " cannot reach")
+                .withMessageContaining("a protected member is reached by a subclass alone (JLS 6.6.2)");
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void theWitnessOfAnExceptionIsOfTheClassThatIsThrown() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        var cb = h.extends_(Exception_.extend(h.self())).members();
+                        Upcast<Self, Exception> asException = cb.asSuper();
+                        var constructor = cb.declareConstructor();
+                        var m = cb.declareVoidMethod("m");
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
+                        bodies.define(m, (b, self) -> b.throw_((Upcast) asException, new_(Exception_.new_)));
+                        return bodies;
+                    }
+                }))
+                .withMessageContaining("is no witness that java.lang.Exception is an exception");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        var cb = h.extends_(Exception_.extend(h.self())).members();
+                        Upcast<Self, Exception> asException = cb.asSuper();
+                        var constructor = cb.declareConstructor();
+                        var m = cb.declareVoidMethod("m");
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
+                        bodies.define(m, (b, self) -> b.throw_((Upcast) asException, (Expr) literal(1)));
+                        return bodies;
+                    }
+                }))
+                .withMessageContaining("is no witness that int, which is no class, is an exception");
+    }
+
+    @Test
+    void aTypeParameterIsDescribedAsItIsWritten() {
+        assertThat(TypedJavaFile.typeParam("T", Runnable_.TOKEN)).hasToString("T extends java.lang.Runnable");
     }
 
     @Test
