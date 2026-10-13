@@ -7,6 +7,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 import java.util.stream.Stream;
@@ -68,26 +69,22 @@ final class Requests {
                         annotation.getElementValues().values().stream().flatMap(value -> literals(annotation, value)));
     }
 
-    /// The literals of one value of `@Facts`: one per class literal, or an unresolved one if the
-    /// value is not a list of them.
+    /// The literals of one value of `@Facts`: one per class literal; a value that is not a list of them
+    /// is read as one literal.
     private static Stream<Found> literals(AnnotationMirror annotation, AnnotationValue value) {
-        return value.getValue() instanceof List<?> items
-                ? items.stream().map(item -> {
-                    AnnotationValue literal = (AnnotationValue) item;
-                    return new Found(annotation, literal, literal(literal.getValue()));
-                })
-                : Stream.of(new Found(annotation, value, new Literal.Unresolved()));
+        Stream<?> items = value.getValue() instanceof List<?> list ? list.stream() : Stream.of(value);
+        return items.map(AnnotationValue.class::cast)
+                .map(literal -> new Found(annotation, literal, literal(literal.getValue())));
     }
 
     private static Literal literal(Object value) {
-        if (!(value instanceof TypeMirror type)) {
+        // javac has a string for the literal of a type that does not exist; an error type is as good
+        if (!(value instanceof TypeMirror type) || type.getKind() == TypeKind.ERROR) {
             return new Literal.Unresolved();
         }
-        return switch (type.getKind()) {
-            case DECLARED -> declared((TypeElement) ((DeclaredType) type).asElement());
-            case ERROR -> new Literal.Unresolved();
-            default -> new Literal.Rejected("@Facts asks for classes, interfaces, enums and records, got " + type);
-        };
+        return type instanceof DeclaredType declared
+                ? declared((TypeElement) declared.asElement())
+                : new Literal.Rejected("@Facts asks for classes, interfaces, enums and records, got " + type);
     }
 
     private static Literal declared(TypeElement type) {

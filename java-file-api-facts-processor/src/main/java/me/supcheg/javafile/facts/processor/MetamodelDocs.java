@@ -206,24 +206,22 @@ final class MetamodelDocs {
                 words(": its shape and its token, no facts of its members.")));
     }
 
-    /// That signatures mention the type, and whose; nothing if none does.
+    /// That signatures mention the type, and whose: a type has a token-only metamodel for those alone.
     private static Stream<DocInline> mentioned(ClassDesc type, List<TypeGraph.Reason> reasons) {
         List<ClassDesc> by = reasons.stream()
                 .flatMap(reason -> reason instanceof TypeGraph.Reason.Mentioned(String name)
                         ? Stream.of(ClassDesc.of(name))
                         : Stream.empty())
                 .toList();
-        return by.isEmpty()
-                ? Stream.empty()
-                : Stream.of(
-                                Stream.of(
-                                        code("@Facts"),
-                                        words(" does not ask for "),
-                                        link(type),
-                                        words(": it is only mentioned in the signatures of ")),
-                                named(by, "type"),
-                                Stream.of(words(". ")))
-                        .flatMap(Function.identity());
+        return Stream.of(
+                        Stream.of(
+                                code("@Facts"),
+                                words(" does not ask for "),
+                                link(type),
+                                words(": it is only mentioned in the signatures of ")),
+                        named(by, "type"),
+                        Stream.of(words(". ")))
+                .flatMap(Function.identity());
     }
 
     /// The requested types the type is a supertype of.
@@ -694,7 +692,6 @@ final class MetamodelDocs {
                         Stream.of(words("The fact of "), new DocInline.Link(fact.member())),
                         switch (fact.origin()) {
                             case MemberPlan.Origin.Declared _ -> Stream.empty();
-                            case MemberPlan.Origin.Inherited _ -> Stream.empty();
                             case MemberPlan.Origin.Adopted(String from) ->
                                 Stream.of(
                                         words(", declared in "), code(from), words(", which is not "), code("public"));

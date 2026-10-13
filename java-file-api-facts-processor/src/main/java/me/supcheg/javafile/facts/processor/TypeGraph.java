@@ -413,7 +413,7 @@ final class TypeGraph {
         /// An earlier round dealt with the type.
         ///
         /// @param done what became of it
-        record Settled(Done done) implements Plan {}
+        record Settled(Done.Final done) implements Plan {}
 
         /// A full metamodel on the classpath matches the type and is reused.
         ///
@@ -460,7 +460,7 @@ final class TypeGraph {
         /// An earlier round dealt with the type.
         ///
         /// @param done what became of it
-        record Settled(Done done) implements Token {}
+        record Settled(Done.Dealt done) implements Token {}
 
         /// A metamodel on the classpath matches the type and is reused.
         ///

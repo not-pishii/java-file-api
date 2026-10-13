@@ -9,6 +9,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -19,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -950,5 +953,215 @@ class MultiroundTest {
                 .contains("Sam0<Sub, Missing> sam")
                 .contains("Missing_.Data.SHAPE");
         assertThat(compilation.metamodels()).contains("gen.facts.gen.Missing_");
+    }
+
+    /// Reads the comments of classes the processors wrote, in the last round: a compilation that fails
+    /// keeps no source of them.
+    private static final class Written extends AbstractProcessor {
+        private final List<String> names;
+        private final Map<String, String> comments = new TreeMap<>();
+
+        /// @param names the qualified names of the classes to read
+        Written(String... names) {
+            this.names = List.of(names);
+        }
+
+        /// The comment of a class as it was written.
+        String comment(String name) {
+            return comments.get(name);
+        }
+
+        @Override
+        public Set<String> getSupportedAnnotationTypes() {
+            return Set.of("*");
+        }
+
+        @Override
+        public SourceVersion getSupportedSourceVersion() {
+            return SourceVersion.latestSupported();
+        }
+
+        @Override
+        public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+            if (round.processingOver()) {
+                Elements elements = processingEnv.getElementUtils();
+                names.forEach(name -> comments.put(
+                        name,
+                        Optional.ofNullable(elements.getTypeElement(name))
+                                .map(type -> elements.getDocComment(type).replaceAll("\\s+", " "))
+                                .orElse("no such class")));
+            }
+            return false;
+        }
+    }
+
+    private static final String BOUNDED = "package p; public class Bounded<T extends Secret> { public void lost() {} }";
+    private static final String SECRET = "package p; class Secret {}";
+    private static final String NO_FACTS_OF_BOUNDED =
+            ": no facts of the public members inherited from p.Bounded, which has no full metamodel: the bounds of"
+                    + " the type parameters of p.Bounded mention types that are not public: p.Secret";
+
+    @Test
+    void aTypeAskedForAfterItsTokenOnlyMetamodelWasWrittenGetsNoFullOne() {
+        Written written = new Written("gen.facts.gen.Late_");
+        Compiled compilation = Javac.facts()
+                .with(
+                        new InRounds(List.of(Map.of(
+                                "gen.Late",
+                                LATE,
+                                "gen.More",
+                                "package gen; @me.supcheg.javafile.facts.meta.Facts({p.Base.class, gen.Late.class})"
+                                        + " class More {}"))),
+                        written)
+                .compile(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Holder.class)
+                class G {}
+                """,
+                        HOLDER,
+                        "package p; public class Base extends Bounded<Secret> { public int inherited() { return 7; } }",
+                        BOUNDED,
+                        SECRET,
+                        OTHER);
+
+        // round 1 writes the token-only Base_ for Holder; the @Facts of round 2 asks for Base itself
+        assertThat(compilation.errors())
+                .containsExactly("p.Base is requested after its token-only metamodel gen.facts.p.Base_ was generated in"
+                        + " an earlier round; request it with the types whose signatures mention it");
+        // what Base inherits is told once, in the round that deals with the request
+        assertThat(compilation.warnings()).contains("gen.Late, p.Base" + NO_FACTS_OF_BOUNDED);
+        assertThat(written.comment("gen.facts.gen.Late_"))
+                .contains("the token-only metamodel of p.Base was generated in an earlier round");
+    }
+
+    @Test
+    void aTypeReadAfterItsRequestedSupertypeFailedGetsItsMetamodelWithoutTheFactsOfThatOne() {
+        Compiled compilation = process(
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Bounded.class, p.Second.class})
+                class G {}
+                """,
+                BOUNDED,
+                SECRET,
+                "package p; public class Second extends Bounded<Secret> {"
+                        + " public gen.Missing missing() { return null; } }");
+
+        assertThat(compilation.errors())
+                .containsExactly("no metamodel of p.Bounded: the bounds of the type parameters of p.Bounded mention"
+                        + " types that are not public: p.Secret");
+        // the round after an error is the last: Second, read now that gen.Missing is there, gets its metamodel in it
+        assertThat(compilation.warnings()).contains(lastRound("gen.facts.p.Second_"));
+    }
+
+    @Test
+    void whatASupertypeWithoutAFullMetamodelLosesIsToldOnceTheTypeThatInheritsItIsDealtWith() {
+        Compiled compilation = process(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.First.class, p.Uses.class})
+                class G {}
+                """,
+                        BOUNDED,
+                        SECRET,
+                        "package p; public class First extends Bounded<Secret> { public Uses uses() { return null; } }",
+                        "package p; public class Uses extends Bounded<Secret> {"
+                                + " public gen.Missing missing() { return null; } }")
+                .orFail();
+
+        // round 1 reads neither to the end: Uses is not read for gen.Missing, and First waits for the metamodel
+        // of Uses; round 2 writes both, and tells what they do not inherit
+        assertThat(compilation.warnings()).containsExactly("p.First, p.Uses" + NO_FACTS_OF_BOUNDED);
+    }
+
+    @Test
+    void aTypeThatIsNotAMemberOfAGenericClassOnlyByItsSupertypeIsToldWhy() {
+        String outer = "package p; public class Outer<T> { public class Inner extends Bounded<Secret> {} }";
+        String sub = "package p; @SuppressWarnings(\"rawtypes\") public class Sub extends Outer.Inner {"
+                + " public Sub(Outer outer) { outer.super(); } }";
+        String inner = "inner class p.Outer.Inner of generic class p.Outer can mention its type parameters";
+
+        // asked for itself, the inner class is an error, and what it inherits is told with it
+        Written written = new Written("gen.facts.p.Sub_");
+        Compiled asked = Javac.facts().with(written).compile("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Outer.Inner.class, p.Sub.class})
+                class G {}
+                """, outer, sub, BOUNDED, SECRET);
+        assertThat(asked.errors()).containsExactly("no metamodel of p.Outer$Inner: " + inner);
+        assertThat(asked.warnings()).containsExactly("p.Outer$Inner, p.Sub" + NO_FACTS_OF_BOUNDED);
+        assertThat(written.comment("gen.facts.p.Sub_")).contains(inner);
+
+        // as a supertype alone it is declined, which fails nothing
+        Compiled inherited =
+                Javac.facts().compile("""
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Sub.class)
+                class G {}
+                """, outer, sub, BOUNDED, SECRET).orFail();
+        assertThat(inherited.warnings())
+                .containsExactly(
+                        "p.Sub" + NO_FACTS_OF_BOUNDED,
+                        "p.Sub: no facts of the public members inherited from p.Outer$Inner, which has no full"
+                                + " metamodel: " + inner);
+    }
+
+    @Test
+    void aTypeWaitsForWhatATypeItMentionsExtends() {
+        Compiled compilation = process(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.A.class, p.Ready.class})
+                class G {}
+                """,
+                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class B extends gen.Missing {}",
+                        "package p; public class Ready { public void take(Deprecated deprecated) {} }")
+                .orFail();
+
+        // the shape of B is not known before gen.Missing is there, so nor is the token A takes of it
+        assertThat(compilation.metamodels())
+                .contains("gen.facts.p.A_", "gen.facts.p.B_", "gen.facts.p.Ready_")
+                .doesNotContain("gen.facts.gen.Missing_");
+        assertThat(compilation.sources().get("gen.facts.p.B_")).contains("complete = false");
+        assertThat(compilation.warnings())
+                .containsExactly("p.Ready: no fact of method take(java.lang.Deprecated), which mentions"
+                        + " java.lang.Deprecated, which has no metamodel: annotation interface java.lang.Deprecated is"
+                        + " not supported yet");
+    }
+
+    @Test
+    void aTypeWaitsForWhatABoundOfABoundOfItsTypeParametersMentions() {
+        Compiled compilation = process(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.G.class)
+                class G {}
+                """,
+                        "package p; public class G<T extends Waiting<?>> {}",
+                        "package p; public class Waiting<X extends gen.Missing> {}")
+                .orFail();
+
+        // whether Waiting has a metamodel the bound of G can be declared with is not known before gen.Missing is
+        // there
+        assertThat(compilation.metamodels()).contains("gen.facts.p.G_", "gen.facts.p.Waiting_");
+        assertThat(compilation.diagnostics()).isEmpty();
+    }
+
+    @Test
+    void aMetamodelAnotherProcessorWroteInTheRoundIsAnErrorOfTheType() {
+        Compiled compilation = process(
+                new InRounds(List.of(Map.of("gen.facts.p.Other_", "package gen.facts.p; public class Other_ {}"))),
+                """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.Other.class)
+                class G {}
+                """,
+                OTHER);
+
+        assertThat(compilation.errors())
+                .containsExactly("cannot write gen.facts.p.Other_ of p.Other: Attempt to recreate a file for type"
+                        + " gen.facts.p.Other_");
     }
 }

@@ -80,7 +80,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// @param model the member
     /// @param origin where the type has the member from: it declares it, or adopts it
     /// @param member the member as the comment of the fact links to it, see [Models#reference]
-    record Fact(String name, MemberModel model, Origin origin, DocRef member) {}
+    record Fact(String name, MemberModel model, Origin.Had origin, DocRef member) {}
 
     /// The fact of the single abstract method.
     ///
@@ -120,7 +120,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         /// @param type the type
         /// @param member the member, declared or adopted
         /// @return the origin
-        static Origin of(TypeElement type, Element member) {
+        static Had of(TypeElement type, Element member) {
             return member.getEnclosingElement().equals(type)
                     ? new Declared()
                     : new Adopted(((TypeElement) member.getEnclosingElement())
@@ -128,14 +128,17 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                             .toString());
         }
 
+        /// The type has the member among its own: it declares it or adopts it.
+        sealed interface Had extends Origin {}
+
         /// The type declares the member.
-        record Declared() implements Origin {}
+        record Declared() implements Had {}
 
         /// The type adopts the member from a supertype that is not `public`, which has no metamodel
         /// to tell it.
         ///
         /// @param from the canonical name of the supertype that declares the member
-        record Adopted(String from) implements Origin {}
+        record Adopted(String from) implements Had {}
 
         /// The type inherits the member from a supertype that has a metamodel of its own: the single
         /// abstract method of a functional interface, the one inherited member a type has a fact of.
@@ -390,7 +393,6 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 };
         return switch (Origin.of(type, member)) {
             case Origin.Declared _ -> described;
-            case Origin.Inherited _ -> described;
             case Origin.Adopted(String from) -> described + " of " + from;
         };
     }

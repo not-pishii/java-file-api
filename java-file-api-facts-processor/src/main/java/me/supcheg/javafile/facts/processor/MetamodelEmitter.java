@@ -1099,9 +1099,7 @@ final class MetamodelEmitter {
     }
 
     private static Expr template(MethodTableTemplate template) {
-        if (template.equals(MethodTableTemplate.EMPTY)) {
-            return Exprs.staticField(CD_TEMPLATE, "EMPTY");
-        }
+
         return Exprs.new_(
                 CD_TEMPLATE,
                 signatures(template.abstractMethods()),
