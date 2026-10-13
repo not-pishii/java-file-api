@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -110,8 +111,8 @@ public final class Fail_<X extends Exception> {
     /// @param x the token of the type argument `X`
     public Fail_(RefToken<X> x) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(x));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.run = UnsafeFacts.voidMethod(token, "run", MemberTraits.OVERRIDABLE.throwing(x));
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.run = UnsafeInvocables.voidMethod(token, "run", MemberTraits.OVERRIDABLE.throwing(x));
     }
 
     /// Starts the proof that a class being declared extends [Fail]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

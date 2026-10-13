@@ -5,6 +5,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Carrier;
 import me.supcheg.javafile.typed.fixtures.Joining;
@@ -109,7 +110,7 @@ class ExtendsFormsTest {
                         var sh = h.extends_(Base_.extend(h.self()));
                         return sh.members()
                                 .bodies(
-                                        UnsafeFacts.ctor(h.self(), MemberTraits.FINAL),
+                                        UnsafeInvocables.ctor(h.self(), MemberTraits.FINAL),
                                         ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     }
                 }))
@@ -288,7 +289,7 @@ class ExtendsFormsTest {
                                 m,
                                 (b, self) -> b.return_(bodies.superCall(
                                         self,
-                                        UnsafeFacts.method(
+                                        UnsafeInvocables.method(
                                                 Base_.TOKEN, "local", String_.TOKEN, MemberTraits.OVERRIDABLE))));
                         return bodies;
                     }
@@ -312,7 +313,8 @@ class ExtendsFormsTest {
                                 m,
                                 (b, self) -> b.return_(bodies.superCall(
                                         self,
-                                        UnsafeFacts.method(Base_.TOKEN, "util", String_.TOKEN, MemberTraits.FINAL))));
+                                        UnsafeInvocables.method(
+                                                Base_.TOKEN, "util", String_.TOKEN, MemberTraits.FINAL))));
                         return bodies;
                     }
                 }),

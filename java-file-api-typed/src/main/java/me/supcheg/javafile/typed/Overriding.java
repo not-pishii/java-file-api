@@ -13,7 +13,7 @@ import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.SelfOverriding0;
 import me.supcheg.javafile.facts.SelfOverriding1;
 import me.supcheg.javafile.facts.SelfOverriding2;
-import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
@@ -62,7 +62,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R> Overriding0<Self, R> overriding(MethodRef0<O, R> method) {
-        return UnsafeFacts.overriding0(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding0(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -77,7 +77,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, A1> Overriding1<Self, R, A1> overriding(MethodRef1<O, R, A1> method) {
-        return UnsafeFacts.overriding1(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding1(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -93,7 +93,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, A1, A2> Overriding2<Self, R, A1, A2> overriding(MethodRef2<O, R, A1, A2> method) {
-        return UnsafeFacts.overriding2(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding2(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -123,7 +123,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     is not proven a subtype of the result of a method among them
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, R2 extends R> Overriding0<Self, R2> overriding(MethodRef0<O, R> method, RefToken<R2> result) {
-        return UnsafeFacts.overriding0(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding0(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
     }
@@ -142,7 +142,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, R2 extends R, A1> Overriding1<Self, R2, A1> overriding(
             MethodRef1<O, R, A1> method, RefToken<R2> result) {
-        return UnsafeFacts.overriding1(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding1(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
     }
@@ -162,7 +162,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, R2 extends R, A1, A2> Overriding2<Self, R2, A1, A2> overriding(
             MethodRef2<O, R, A1, A2> method, RefToken<R2> result) {
-        return UnsafeFacts.overriding2(new Implemented.ByOverride(
+        return UnsafeInvocables.overriding2(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
     }
@@ -213,7 +213,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, X extends R> SelfOverriding0<Self, X> overriding(MethodRef0<O, R> method, Upcast<Self, X> result) {
-        return UnsafeFacts.selfOverriding0(new Implemented.ByOverride(
+        return UnsafeInvocables.selfOverriding0(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
     }
@@ -232,7 +232,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, X extends R, A1> SelfOverriding1<Self, X, A1> overriding(
             MethodRef1<O, R, A1> method, Upcast<Self, X> result) {
-        return UnsafeFacts.selfOverriding1(new Implemented.ByOverride(
+        return UnsafeInvocables.selfOverriding1(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
     }
@@ -252,7 +252,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     /// @throws IllegalStateException if the header of the class has ended
     public <O, R, X extends R, A1, A2> SelfOverriding2<Self, X, A1, A2> overriding(
             MethodRef2<O, R, A1, A2> method, Upcast<Self, X> result) {
-        return UnsafeFacts.selfOverriding2(new Implemented.ByOverride(
+        return UnsafeInvocables.selfOverriding2(new Implemented.ByOverride(
                 method,
                 declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
     }
@@ -266,7 +266,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O> VoidOverriding0<Self> overriding(VoidMethodRef0<O> method) {
-        return UnsafeFacts.voidOverriding0(new Implemented.ByOverride(
+        return UnsafeInvocables.voidOverriding0(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -280,7 +280,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, A1> VoidOverriding1<Self, A1> overriding(VoidMethodRef1<O, A1> method) {
-        return UnsafeFacts.voidOverriding1(new Implemented.ByOverride(
+        return UnsafeInvocables.voidOverriding1(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 
@@ -295,7 +295,7 @@ public abstract sealed class Overriding<Self> permits Header, ThrowingOverriding
     ///     method of that signature already, or cannot override what it inherits under it
     /// @throws IllegalStateException if the header of the class has ended
     public <O, A1, A2> VoidOverriding2<Self, A1, A2> overriding(VoidMethodRef2<O, A1, A2> method) {
-        return UnsafeFacts.voidOverriding2(new Implemented.ByOverride(
+        return UnsafeInvocables.voidOverriding2(new Implemented.ByOverride(
                 method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 }

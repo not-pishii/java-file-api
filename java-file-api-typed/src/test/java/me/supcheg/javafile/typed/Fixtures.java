@@ -13,6 +13,7 @@ import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -145,27 +146,27 @@ final class Fixtures {
     static final OpenClassToken<SubP> SUB =
             UnsafeFacts.openClassToken(Types.of(SUB_DESC), List.of(BASE_DESC, CD_Object), BASE_METHODS);
 
-    static final CtorRef0<SubP> NEW_SUB = UnsafeFacts.ctor(SUB, MemberTraits.DEFAULT);
+    static final CtorRef0<SubP> NEW_SUB = UnsafeInvocables.ctor(SUB, MemberTraits.DEFAULT);
 
     static final MethodRef1<BaseP, String, Object> PICK_OBJECT =
-            UnsafeFacts.method(BASE, "pick", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.method(BASE, "pick", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
     static final MethodRef1<BaseP, String, String> PICK_STRING =
-            UnsafeFacts.method(BASE, "pick", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.method(BASE, "pick", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
     static final MethodRef1<BaseP, String, Object> ONLY =
-            UnsafeFacts.method(BASE, "only", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.method(BASE, "only", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
     static final MethodRef1<BaseP, String, Object> DUAL =
-            UnsafeFacts.method(BASE, "dual", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
-    static final MethodRef0<BaseP, BaseP> SELF = UnsafeFacts.method(BASE, "self", BASE, MemberTraits.DEFAULT);
+            UnsafeInvocables.method(BASE, "dual", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
+    static final MethodRef0<BaseP, BaseP> SELF = UnsafeInvocables.method(BASE, "self", BASE, MemberTraits.DEFAULT);
 
     static final MutableFieldRef<BaseP, String> NAME_OF_BASE = UnsafeFacts.mutableField(BASE, "name", String_.TOKEN);
     static final MutableFieldRef<SubP, String> NAME_OF_SUB = UnsafeFacts.mutableField(SUB, "name", String_.TOKEN);
 
     static final StaticMethodRef1<String, Object> WHICH_OBJECT =
-            UnsafeFacts.staticMethod(BASE, "which", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.staticMethod(BASE, "which", String_.TOKEN, Object_.TOKEN, MemberTraits.DEFAULT);
     static final StaticMethodRef1<String, String> WHICH_STRING =
-            UnsafeFacts.staticMethod(BASE, "which", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.staticMethod(BASE, "which", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
     static final StaticMethodRef1<String, BaseP> WHICH2_BASE =
-            UnsafeFacts.staticMethod(BASE, "which2", String_.TOKEN, BASE, MemberTraits.DEFAULT);
+            UnsafeInvocables.staticMethod(BASE, "which2", String_.TOKEN, BASE, MemberTraits.DEFAULT);
 
     /// `Box<String>`: its statics are rendered through the raw `Box`.
     static final FinalClassToken<BoxP<String>> BOX_OF_STRING = UnsafeFacts.finalClassToken(
@@ -175,6 +176,6 @@ final class Fixtures {
             UnsafeFacts.mutableStaticField(BOX_OF_STRING, "label", String_.TOKEN);
 
     /// `static <E> List<E> none()`, with `String` for `E`.
-    static final StaticMethodRef0<List<String>> NONE = UnsafeFacts.staticMethod(
+    static final StaticMethodRef0<List<String>> NONE = UnsafeInvocables.staticMethod(
             BOX_OF_STRING, "none", new List_<>(String_.TOKEN).token, MemberTraits.DEFAULT.withTypeArgs(String_.TOKEN));
 }

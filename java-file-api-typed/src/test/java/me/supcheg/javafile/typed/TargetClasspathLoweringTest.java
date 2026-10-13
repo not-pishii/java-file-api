@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.TargetType.Difference;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -98,7 +99,7 @@ class TargetClasspathLoweringTest {
 
     /// `String m(String)` of `Svc`.
     private static final MethodRef1<SvcP, String, String> M =
-            UnsafeFacts.method(SVC_TOKEN, "m", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
+            UnsafeInvocables.method(SVC_TOKEN, "m", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
 
     /// A reader that answers by the shape and tells what it was asked.
     private record Asked(Map<TypeShape<?>, TargetType> answers, List<TypeShape<?>> shapes) implements TargetReader {
@@ -153,6 +154,7 @@ class TargetClasspathLoweringTest {
                 import java.lang.constant.ClassDesc;
                 import me.supcheg.javafile.JavaFile;
                 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
                 import me.supcheg.javafile.typed.TypedClassBodies;
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
@@ -289,7 +291,7 @@ class TargetClasspathLoweringTest {
 
     /// `String m(Object)` of `Svc`, of a metamodel generated against a `Svc`
     /// without `m(String)`: its only `m`.
-    private static final MethodRef1<SvcP, String, Object> OBJECT_TAKING = UnsafeFacts.method(
+    private static final MethodRef1<SvcP, String, Object> OBJECT_TAKING = UnsafeInvocables.method(
             UnsafeFacts.<SvcP>openClassToken(metamodel(DeclaredKind.OPEN_CLASS, "Svc", List.of(), Set.of(M_OF_OBJECT))),
             "m",
             String_.TOKEN,
@@ -349,7 +351,7 @@ class TargetClasspathLoweringTest {
         TypeShape<DeclaredKind.OpenClass> box =
                 metamodel(DeclaredKind.OPEN_CLASS, "Box", List.of(new TypeParam("T", List.of())), Set.of(mOfT));
         OpenClassToken<BoxP<String>> boxOfString = UnsafeFacts.openClassToken(box, TokenArg.exact(String_.TOKEN));
-        MethodRef1<BoxP<String>, String, String> m = UnsafeFacts.method(
+        MethodRef1<BoxP<String>, String, String> m = UnsafeInvocables.method(
                 boxOfString, "m", String_.TOKEN, UnsafeFacts.param(String_.TOKEN, Param.var(0)), MemberTraits.DEFAULT);
         Function<Expr<BoxP<String>>, Expr<String>> body = b -> call(b, m, literal("a"));
 

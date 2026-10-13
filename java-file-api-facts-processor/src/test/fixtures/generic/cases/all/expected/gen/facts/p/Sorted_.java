@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -117,9 +118,9 @@ public final class Sorted_<T extends Comparable<T>> {
     /// @param t the token of the type argument `T`
     public Sorted_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.new_T = UnsafeFacts.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
-        this.max = UnsafeFacts.method(token, "max", t, MemberTraits.OVERRIDABLE);
-        this.with_T = UnsafeFacts.method(token, "with", token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
+        this.new_T = UnsafeInvocables.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
+        this.max = UnsafeInvocables.method(token, "max", t, MemberTraits.OVERRIDABLE);
+        this.with_T = UnsafeInvocables.method(token, "with", token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
     }
 
     /// Starts the proof that a class being declared extends [Sorted]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

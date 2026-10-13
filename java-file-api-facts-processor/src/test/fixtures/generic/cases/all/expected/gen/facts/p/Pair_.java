@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -114,8 +115,8 @@ public final class Pair_<A, B> {
         this.token = UnsafeFacts.finalClassToken(Data.SHAPE, TokenArg.exact(a), TokenArg.exact(b));
         this.first = UnsafeFacts.field(token, "first", a);
         this.second = UnsafeFacts.field(token, "second", b);
-        this.new_A_B = UnsafeFacts.ctor(token, UnsafeFacts.param(a, Param.var(0)), UnsafeFacts.param(b, Param.var(1)), MemberTraits.FINAL);
-        this.entry = UnsafeFacts.method(token, "entry", UnsafeFacts.<Entry<A, B>>interfaceToken(gen.facts.java.util.Map_Entry_.Data.SHAPE, TokenArg.exact(a), TokenArg.exact(b)), MemberTraits.FINAL);
-        this.swap = UnsafeFacts.method(token, "swap", UnsafeFacts.<Pair<B, A>>finalClassToken(Data.SHAPE, TokenArg.exact(b), TokenArg.exact(a)), MemberTraits.FINAL);
+        this.new_A_B = UnsafeInvocables.ctor(token, UnsafeFacts.param(a, Param.var(0)), UnsafeFacts.param(b, Param.var(1)), MemberTraits.FINAL);
+        this.entry = UnsafeInvocables.method(token, "entry", UnsafeFacts.<Entry<A, B>>interfaceToken(gen.facts.java.util.Map_Entry_.Data.SHAPE, TokenArg.exact(a), TokenArg.exact(b)), MemberTraits.FINAL);
+        this.swap = UnsafeInvocables.method(token, "swap", UnsafeFacts.<Pair<B, A>>finalClassToken(Data.SHAPE, TokenArg.exact(b), TokenArg.exact(a)), MemberTraits.FINAL);
     }
 }

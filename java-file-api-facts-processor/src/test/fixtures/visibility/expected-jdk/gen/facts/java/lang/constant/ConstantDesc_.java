@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -79,7 +80,7 @@ public final class ConstantDesc_ {
     public static final InterfaceToken<ConstantDesc> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [ConstantDesc#resolveConstantDesc(Lookup)].
-    public static final MethodRef1<ConstantDesc, Object, Lookup> resolveConstantDesc_MethodHandles_Lookup = UnsafeFacts.method(TOKEN, "resolveConstantDesc", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), UnsafeFacts.<Lookup>finalClassToken(gen.facts.java.lang.invoke.MethodHandles_Lookup_.Data.SHAPE), MemberTraits.ABSTRACT.throwing(UnsafeFacts.<ReflectiveOperationException>openClassToken(gen.facts.java.lang.ReflectiveOperationException_.Data.SHAPE)));
+    public static final MethodRef1<ConstantDesc, Object, Lookup> resolveConstantDesc_MethodHandles_Lookup = UnsafeInvocables.method(TOKEN, "resolveConstantDesc", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), UnsafeFacts.<Lookup>finalClassToken(gen.facts.java.lang.invoke.MethodHandles_Lookup_.Data.SHAPE), MemberTraits.ABSTRACT.throwing(UnsafeFacts.<ReflectiveOperationException>openClassToken(gen.facts.java.lang.ReflectiveOperationException_.Data.SHAPE)));
 
     private ConstantDesc_() {
     }

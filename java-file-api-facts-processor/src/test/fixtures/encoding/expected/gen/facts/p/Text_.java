@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -139,7 +140,7 @@ public final class Text_ {
     public static final MutableFieldRef<Text, Int> \u0447\u0438\u0441\u043b\u043e = UnsafeFacts.mutableField(TOKEN, "\u0447\u0438\u0441\u043b\u043e", PrimitiveToken.INT);
 
     /// The fact of [Text#Text()].
-    public static final CtorRef0<Text> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Text> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     private Text_() {
     }

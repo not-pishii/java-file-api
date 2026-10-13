@@ -115,15 +115,15 @@ class FactValuesTest {
     @Test
     void aSamIsTheSingleAbstractMethodOfAnInterface() {
         MethodRef0<String, Prim.Int> length =
-                UnsafeFacts.method(String_.TOKEN, "length", PrimitiveToken.INT, MemberTraits.DEFAULT);
-        VoidMethodRef0<Runnable> run = UnsafeFacts.voidMethod(RUNNABLE, "run", MemberTraits.DEFAULT);
+                UnsafeInvocables.method(String_.TOKEN, "length", PrimitiveToken.INT, MemberTraits.DEFAULT);
+        VoidMethodRef0<Runnable> run = UnsafeInvocables.voidMethod(RUNNABLE, "run", MemberTraits.DEFAULT);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.sam(length))
+                .isThrownBy(() -> UnsafeInvocables.sam(length))
                 .withMessage("int java.lang.String.length() is not a method of an interface");
         // the table of the interface tells no abstract method
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.voidSam(run))
+                .isThrownBy(() -> UnsafeInvocables.voidSam(run))
                 .withMessage("void java.lang.Runnable.run() is not the single abstract method of java.lang.Runnable,"
                         + " whose abstract methods are []");
     }

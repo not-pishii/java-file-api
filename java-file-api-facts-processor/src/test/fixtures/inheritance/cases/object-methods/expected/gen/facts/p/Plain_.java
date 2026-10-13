@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -92,10 +93,10 @@ public final class Plain_ {
     public static final OpenClassToken<Plain> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Plain#Plain()].
-    public static final CtorRef0<Plain> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Plain> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Plain#plain()].
-    public static final VoidMethodRef0<Plain> plain = UnsafeFacts.voidMethod(TOKEN, "plain", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Plain> plain = UnsafeInvocables.voidMethod(TOKEN, "plain", MemberTraits.OVERRIDABLE);
 
     private Plain_() {
     }

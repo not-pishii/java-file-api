@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -115,9 +116,9 @@ public final class Abs_<T> {
     /// @param t the token of the type argument `T`
     public Abs_(RefToken<T> t) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
-        this.m_String = UnsafeFacts.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
-        this.m_T = UnsafeFacts.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
+        this.super_ = UnsafeInvocables.superCtor(token, MemberTraits.FINAL);
+        this.m_String = UnsafeInvocables.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+        this.m_T = UnsafeInvocables.method(token, "m", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
     }
 
     /// Starts the proof that a class being declared extends [Abs]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

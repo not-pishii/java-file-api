@@ -72,6 +72,7 @@ final class MemberFacts {
     private static final String FACTS = "me.supcheg.javafile.facts";
 
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
+    private static final ClassDesc CD_UNSAFE_INVOCABLES = ClassDesc.of(FACTS, "UnsafeInvocables");
     private static final ClassDesc CD_MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
     private static final ClassDesc CD_ACCESS = ClassDesc.of(FACTS, "Access");
     private static final ClassDesc CD_PROTECTED = ClassDesc.of(FACTS, "Protected");
@@ -479,7 +480,7 @@ final class MemberFacts {
         return value(
                 name,
                 parameterized(family(family), typeArgs),
-                unsafe(forSubclass ? "superCtor" : "ctor", args),
+                unsafeInvocable(forSubclass ? "superCtor" : "ctor", args),
                 scope,
                 MetamodelDocs.fact(fact));
     }
@@ -577,7 +578,7 @@ final class MemberFacts {
         return parameterized(family(family), typeArgs);
     }
 
-    /// The `UnsafeFacts.method(owner, "name", result, params…, traits)` of a
+    /// The `UnsafeInvocables.method(owner, "name", result, params…, traits)` of a
     /// method, or the factory of its kind.
     private Expr methodFact(MethodModel method, List<Expr> witnesses, Scope scope) {
         List<Expr> args = Stream.of(
@@ -589,7 +590,7 @@ final class MemberFacts {
                 .flatMap(Function.identity())
                 .toList();
         String factory = method.isStatic() ? "staticMethod" : "method";
-        return unsafe(method.result().isEmpty() ? "void" + capitalized(factory) : factory, args);
+        return unsafeInvocable(method.result().isEmpty() ? "void" + capitalized(factory) : factory, args);
     }
 
     /// The parameters of a method or constructor as its fact takes them: the
@@ -626,7 +627,7 @@ final class MemberFacts {
         return value(
                 "sam",
                 parameterized(family(family), typeArgs),
-                unsafe(isVoid ? "voidSam" : "sam", fact),
+                unsafeInvocable(isVoid ? "voidSam" : "sam", List.of(fact)),
                 scope,
                 MetamodelDocs.sam(sam));
     }
@@ -790,6 +791,11 @@ final class MemberFacts {
 
     private Expr unsafe(String factory, List<Expr> args) {
         return Exprs.staticCall(use(CD_UNSAFE_FACTS), factory, args);
+    }
+
+    /// The call of a factory of `UnsafeInvocables`: of the fact of a method or of a constructor.
+    private Expr unsafeInvocable(String factory, List<Expr> args) {
+        return Exprs.staticCall(use(CD_UNSAFE_INVOCABLES), factory, args);
     }
 
     private ClassDesc family(String name) {

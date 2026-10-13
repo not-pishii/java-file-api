@@ -11,7 +11,7 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
-import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidInherited0;
 import me.supcheg.javafile.facts.VoidInherited1;
 import me.supcheg.javafile.facts.VoidInherited2;
@@ -154,7 +154,7 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     ///     has it abstract, `static` or not `public`, or otherwise than the fact tells
     /// @throws IllegalStateException if the header of the class has ended
     public <R> Inherited0<Self, R> inherited(MethodRef0<? super S, R> method) {
-        return UnsafeFacts.inherited0(declaration().inherit(method));
+        return UnsafeInvocables.inherited0(declaration().inherit(method));
     }
 
     /// Says the class has a method with one parameter by inheriting it from its superclass, see
@@ -167,7 +167,7 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
     /// @throws IllegalStateException if the header of the class has ended
     public <R, A1> Inherited1<Self, R, A1> inherited(MethodRef1<? super S, R, A1> method) {
-        return UnsafeFacts.inherited1(declaration().inherit(method));
+        return UnsafeInvocables.inherited1(declaration().inherit(method));
     }
 
     /// Says the class has a method with two parameters by inheriting it from its superclass, see
@@ -181,7 +181,7 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
     /// @throws IllegalStateException if the header of the class has ended
     public <R, A1, A2> Inherited2<Self, R, A1, A2> inherited(MethodRef2<? super S, R, A1, A2> method) {
-        return UnsafeFacts.inherited2(declaration().inherit(method));
+        return UnsafeInvocables.inherited2(declaration().inherit(method));
     }
 
     /// Says the class has a `void` method by inheriting it from its superclass, see
@@ -192,7 +192,7 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
     /// @throws IllegalStateException if the header of the class has ended
     public VoidInherited0<Self> inherited(VoidMethodRef0<? super S> method) {
-        return UnsafeFacts.voidInherited0(declaration().inherit(method));
+        return UnsafeInvocables.voidInherited0(declaration().inherit(method));
     }
 
     /// Says the class has a `void` method with one parameter by inheriting it from its superclass,
@@ -204,7 +204,7 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
     /// @throws IllegalStateException if the header of the class has ended
     public <A1> VoidInherited1<Self, A1> inherited(VoidMethodRef1<? super S, A1> method) {
-        return UnsafeFacts.voidInherited1(declaration().inherit(method));
+        return UnsafeInvocables.voidInherited1(declaration().inherit(method));
     }
 
     /// Says the class has a `void` method with two parameters by inheriting it from its
@@ -217,6 +217,6 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
     /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
     /// @throws IllegalStateException if the header of the class has ended
     public <A1, A2> VoidInherited2<Self, A1, A2> inherited(VoidMethodRef2<? super S, A1, A2> method) {
-        return UnsafeFacts.voidInherited2(declaration().inherit(method));
+        return UnsafeInvocables.voidInherited2(declaration().inherit(method));
     }
 }

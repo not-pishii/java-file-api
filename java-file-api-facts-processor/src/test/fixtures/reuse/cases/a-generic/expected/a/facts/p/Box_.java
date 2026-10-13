@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -124,8 +125,8 @@ public final class Box_<T extends Comparable<T>> {
         this.t = t;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.value = UnsafeFacts.mutableField(token, "value", t);
-        this.new_T = UnsafeFacts.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
-        this.all_TArray = UnsafeFacts.method(token, "all", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.FINAL);
+        this.new_T = UnsafeInvocables.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
+        this.all_TArray = UnsafeInvocables.method(token, "all", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.FINAL);
     }
 
     /// The fact of [Box#as(Object)], for the type arguments the tokens give.
@@ -134,7 +135,7 @@ public final class Box_<T extends Comparable<T>> {
     /// @param r the token of the type argument `R`
     /// @return the fact
     public <R> MethodRef1<Box<T>, R, R> as_R(RefToken<R> r) {
-        return UnsafeFacts.method(token, "as", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(r));
+        return UnsafeInvocables.method(token, "as", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(r));
     }
 
     /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

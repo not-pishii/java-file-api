@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -86,16 +87,16 @@ public final class WithDefault_ {
     public static final InterfaceToken<WithDefault> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [WithDefault#f(int)].
-    public static final MethodRef1<WithDefault, Int, Int> f_int = UnsafeFacts.method(TOKEN, "f", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef1<WithDefault, Int, Int> f_int = UnsafeInvocables.method(TOKEN, "f", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     /// The fact of [WithDefault#g(int)].
-    public static final MethodRef1<WithDefault, Int, Int> g_int = UnsafeFacts.method(TOKEN, "g", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<WithDefault, Int, Int> g_int = UnsafeInvocables.method(TOKEN, "g", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [WithDefault#id()].
-    public static final StaticMethodRef0<WithDefault> id = UnsafeFacts.staticMethod(TOKEN, "id", TOKEN, MemberTraits.FINAL);
+    public static final StaticMethodRef0<WithDefault> id = UnsafeInvocables.staticMethod(TOKEN, "id", TOKEN, MemberTraits.FINAL);
 
     /// The fact of the single abstract method [WithDefault#f(int)], which a lambda implements.
-    public static final Sam1<WithDefault, Int, Int> sam = UnsafeFacts.sam(f_int);
+    public static final Sam1<WithDefault, Int, Int> sam = UnsafeInvocables.sam(f_int);
 
     private WithDefault_() {
     }

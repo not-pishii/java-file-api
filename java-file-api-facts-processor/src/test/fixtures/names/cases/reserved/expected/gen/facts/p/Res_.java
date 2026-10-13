@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -138,13 +139,13 @@ public final class Res_ {
     public static final MutableFieldRef<Res, Int> token_ = UnsafeFacts.mutableField(TOKEN, "token", PrimitiveToken.INT);
 
     /// The fact of [Res#Res()].
-    public static final CtorRef0<Res> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Res> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Res#count()].
-    public static final MethodRef0<Res, Int> count_ = UnsafeFacts.method(TOKEN, "count", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Res, Int> count_ = UnsafeInvocables.method(TOKEN, "count", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Res#sam(int)].
-    public static final VoidMethodRef1<Res, Int> sam_int = UnsafeFacts.voidMethod(TOKEN, "sam", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Res, Int> sam_int = UnsafeInvocables.voidMethod(TOKEN, "sam", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private Res_() {
     }

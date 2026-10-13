@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -128,7 +129,7 @@ public final class PBox_<T> {
         this.t_ = t_;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t_));
         this.t = UnsafeFacts.mutableField(token, "t", t_);
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
     }
 
     /// The fact of [PBox#map(Function)], for the type arguments the tokens give.
@@ -137,7 +138,7 @@ public final class PBox_<T> {
     /// @param r the token of the type argument `R`
     /// @return the fact
     public <R> MethodRef1<PBox<T>, PBox<R>, Function<? super T, ? extends R>> map_Function(RefToken<R> r) {
-        return UnsafeFacts.method(token, "map", UnsafeFacts.<PBox<R>>openClassToken(Data.SHAPE, TokenArg.exact(r)), UnsafeFacts.<Function<? super T, ? extends R>>interfaceToken(gen.facts.java.util.function.Function_.Data.SHAPE, TokenArg.superBound(t_), TokenArg.extendsBound(r)), MemberTraits.OVERRIDABLE.withTypeArgs(r));
+        return UnsafeInvocables.method(token, "map", UnsafeFacts.<PBox<R>>openClassToken(Data.SHAPE, TokenArg.exact(r)), UnsafeFacts.<Function<? super T, ? extends R>>interfaceToken(gen.facts.java.util.function.Function_.Data.SHAPE, TokenArg.superBound(t_), TokenArg.extendsBound(r)), MemberTraits.OVERRIDABLE.withTypeArgs(r));
     }
 
     /// The fact of [PBox#ofEnum(Class)], for the type arguments the tokens give.
@@ -146,7 +147,7 @@ public final class PBox_<T> {
     /// @param e the token of the type argument `E`
     /// @return the fact
     public static <E extends Enum<E>> StaticMethodRef1<PBox<E>, Class<E>> ofEnum_Class(RefToken<E> e) {
-        return UnsafeFacts.staticMethod(ANY, "ofEnum", UnsafeFacts.<PBox<E>>openClassToken(Data.SHAPE, TokenArg.exact(e)), UnsafeFacts.<Class<E>>finalClassToken(gen.facts.java.lang.Class_.Data.SHAPE, TokenArg.exact(e)), MemberTraits.FINAL.withTypeArgs(e));
+        return UnsafeInvocables.staticMethod(ANY, "ofEnum", UnsafeFacts.<PBox<E>>openClassToken(Data.SHAPE, TokenArg.exact(e)), UnsafeFacts.<Class<E>>finalClassToken(gen.facts.java.lang.Class_.Data.SHAPE, TokenArg.exact(e)), MemberTraits.FINAL.withTypeArgs(e));
     }
 
     /// The fact of [PBox#of(Object)], for the type arguments the tokens give.
@@ -155,7 +156,7 @@ public final class PBox_<T> {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef1<PBox<T>, T> of_T(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<PBox<T>>openClassToken(Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(ANY, "of", UnsafeFacts.<PBox<T>>openClassToken(Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t));
     }
 
     /// The fact of [PBox#put(Object)], for the type arguments the tokens give.
@@ -164,7 +165,7 @@ public final class PBox_<T> {
     /// @param u the token of the type argument `U`
     /// @return the fact
     public <U extends T> VoidMethodRef1<PBox<T>, U> put_U(RefToken<U> u) {
-        return UnsafeFacts.voidMethod(token, "put", UnsafeFacts.param(u, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(u));
+        return UnsafeInvocables.voidMethod(token, "put", UnsafeFacts.param(u, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(u));
     }
 
     /// The fact of [PBox#shadow(Object)], for the type arguments the tokens give.
@@ -173,7 +174,7 @@ public final class PBox_<T> {
     /// @param t__ the token of the type argument `T_`
     /// @return the fact
     public <T_> MethodRef1<PBox<T>, T_, T_> shadow_T(RefToken<T_> t__) {
-        return UnsafeFacts.method(token, "shadow", t__, UnsafeFacts.param(t__, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t__));
+        return UnsafeInvocables.method(token, "shadow", t__, UnsafeFacts.param(t__, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t__));
     }
 
     /// Starts the proof that a class being declared extends [PBox]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

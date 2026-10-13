@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -105,10 +106,10 @@ public final class Taken_Abstract_ {
     public static final MutableFieldRef<Abstract, Int> Implementation0 = UnsafeFacts.mutableField(TOKEN, "Implementation0", PrimitiveToken.INT);
 
     /// The fact of [Abstract#Abstract()].
-    public static final SuperCtorRef0<Abstract> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Abstract> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Abstract#Method()].
-    public static final MethodRef0<Abstract, Int> Method = UnsafeFacts.method(TOKEN, "Method", PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Abstract, Int> Method = UnsafeInvocables.method(TOKEN, "Method", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     private Taken_Abstract_() {
     }

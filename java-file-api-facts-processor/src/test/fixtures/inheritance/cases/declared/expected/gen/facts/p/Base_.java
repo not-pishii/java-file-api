@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -110,25 +111,25 @@ public final class Base_ {
     public static final OpenClassToken<Base> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Base#Base()].
-    public static final CtorRef0<Base> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Base> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Base#f()].
-    public static final MethodRef0<Base, Int> f = UnsafeFacts.method(TOKEN, "f", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Base, Int> f = UnsafeInvocables.method(TOKEN, "f", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Base#hidden(String)].
-    public static final VoidStaticMethodRef1<String> hidden_String = UnsafeFacts.voidStaticMethod(TOKEN, "hidden", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final VoidStaticMethodRef1<String> hidden_String = UnsafeInvocables.voidStaticMethod(TOKEN, "hidden", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Base#inherited()].
-    public static final VoidMethodRef0<Base> inherited = UnsafeFacts.voidMethod(TOKEN, "inherited", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Base> inherited = UnsafeInvocables.voidMethod(TOKEN, "inherited", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Base#over()].
-    public static final VoidMethodRef0<Base> over = UnsafeFacts.voidMethod(TOKEN, "over", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Base> over = UnsafeInvocables.voidMethod(TOKEN, "over", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Base#prot()], which is `protected`: a subclass alone uses it.
-    public static final Protected<Base, VoidMethodRef0<Base>> prot = UnsafeFacts.protected_(TOKEN, UnsafeFacts.voidMethod(TOKEN, "prot", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
+    public static final Protected<Base, VoidMethodRef0<Base>> prot = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.voidMethod(TOKEN, "prot", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
 
     /// The fact of [Base#sbase()].
-    public static final StaticMethodRef0<Int> sbase = UnsafeFacts.staticMethod(TOKEN, "sbase", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef0<Int> sbase = UnsafeInvocables.staticMethod(TOKEN, "sbase", PrimitiveToken.INT, MemberTraits.FINAL);
 
     private Base_() {
     }

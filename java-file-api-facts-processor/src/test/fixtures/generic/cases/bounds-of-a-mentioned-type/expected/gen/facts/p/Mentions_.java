@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -100,16 +101,16 @@ public final class Mentions_ {
     public static final OpenClassToken<Mentions> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Mentions#Mentions()].
-    public static final CtorRef0<Mentions> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Mentions> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Mentions#dollar()].
-    public static final MethodRef0<Mentions, ByDollar<?>> dollar = UnsafeFacts.method(TOKEN, "dollar", UnsafeFacts.<ByDollar<?>>openClassToken(ByDollar_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mentions, ByDollar<?>> dollar = UnsafeInvocables.method(TOKEN, "dollar", UnsafeFacts.<ByDollar<?>>openClassToken(ByDollar_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mentions#hidden()].
-    public static final MethodRef0<Mentions, ByHidden<?>> hidden = UnsafeFacts.method(TOKEN, "hidden", UnsafeFacts.<ByHidden<?>>openClassToken(ByHidden_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mentions, ByHidden<?>> hidden = UnsafeInvocables.method(TOKEN, "hidden", UnsafeFacts.<ByHidden<?>>openClassToken(ByHidden_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mentions#marker()].
-    public static final MethodRef0<Mentions, ByMarker<?>> marker = UnsafeFacts.method(TOKEN, "marker", UnsafeFacts.<ByMarker<?>>openClassToken(ByMarker_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mentions, ByMarker<?>> marker = UnsafeInvocables.method(TOKEN, "marker", UnsafeFacts.<ByMarker<?>>openClassToken(ByMarker_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     private Mentions_() {
     }

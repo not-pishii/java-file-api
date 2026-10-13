@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -98,13 +99,13 @@ public final class Pub1_ {
     public static final OpenClassToken<Pub1> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Pub1#Pub1()].
-    public static final CtorRef0<Pub1> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Pub1> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Pub1#one()].
-    public static final MethodRef0<Pub1, String> one = UnsafeFacts.method(TOKEN, "one", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Pub1, String> one = UnsafeInvocables.method(TOKEN, "one", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Pub1#zero()], declared in `p.H0`, which is not `public`.
-    public static final MethodRef0<Pub1, String> zero = UnsafeFacts.method(TOKEN, "zero", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Pub1, String> zero = UnsafeInvocables.method(TOKEN, "zero", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Pub1_() {
     }

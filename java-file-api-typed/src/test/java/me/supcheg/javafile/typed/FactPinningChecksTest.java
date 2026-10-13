@@ -12,6 +12,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
@@ -252,7 +253,7 @@ class FactPinningChecksTest {
                 Types.parameterized(ClassDesc.of("java.util", "ArrayList"), Types.unbounded()),
                 List.of(ConstantDescs.CD_Object),
                 MethodTable.EMPTY);
-        CtorRef0<ArrayList<?>> ctor = UnsafeFacts.ctor(anyArrayList, MemberTraits.DEFAULT);
+        CtorRef0<ArrayList<?>> ctor = UnsafeInvocables.ctor(anyArrayList, MemberTraits.DEFAULT);
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new_(ctor))

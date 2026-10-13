@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
@@ -111,40 +112,40 @@ public final class Object_ {
     public static final OpenClassToken<Object> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Object#Object()].
-    public static final CtorRef0<Object> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Object> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Object#clone()], which is `protected`: a subclass alone uses it.
-    public static final Protected<Object, MethodRef0<Object, Object>> clone = UnsafeFacts.protected_(TOKEN, UnsafeFacts.method(TOKEN, "clone", TOKEN, MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<CloneNotSupportedException>openClassToken(CloneNotSupportedException_.Data.SHAPE)).with(Access.PROTECTED)));
+    public static final Protected<Object, MethodRef0<Object, Object>> clone = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.method(TOKEN, "clone", TOKEN, MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<CloneNotSupportedException>openClassToken(CloneNotSupportedException_.Data.SHAPE)).with(Access.PROTECTED)));
 
     /// The fact of [Object#equals(Object)].
-    public static final MethodRef1<Object, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<Object, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Object#finalize()], which is `protected`: a subclass alone uses it.
-    public static final Protected<Object, VoidMethodRef0<Object>> finalize = UnsafeFacts.protected_(TOKEN, UnsafeFacts.voidMethod(TOKEN, "finalize", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<Throwable>openClassToken(Throwable_.Data.SHAPE)).with(Access.PROTECTED)));
+    public static final Protected<Object, VoidMethodRef0<Object>> finalize = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.voidMethod(TOKEN, "finalize", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<Throwable>openClassToken(Throwable_.Data.SHAPE)).with(Access.PROTECTED)));
 
     /// The fact of [Object#getClass()].
-    public static final MethodRef0<Object, Class<?>> getClass = UnsafeFacts.method(TOKEN, "getClass", UnsafeFacts.<Class<?>>finalClassToken(Class_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
+    public static final MethodRef0<Object, Class<?>> getClass = UnsafeInvocables.method(TOKEN, "getClass", UnsafeFacts.<Class<?>>finalClassToken(Class_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
 
     /// The fact of [Object#hashCode()].
-    public static final MethodRef0<Object, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Object, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Object#notify()].
-    public static final VoidMethodRef0<Object> notify = UnsafeFacts.voidMethod(TOKEN, "notify", MemberTraits.FINAL);
+    public static final VoidMethodRef0<Object> notify = UnsafeInvocables.voidMethod(TOKEN, "notify", MemberTraits.FINAL);
 
     /// The fact of [Object#notifyAll()].
-    public static final VoidMethodRef0<Object> notifyAll = UnsafeFacts.voidMethod(TOKEN, "notifyAll", MemberTraits.FINAL);
+    public static final VoidMethodRef0<Object> notifyAll = UnsafeInvocables.voidMethod(TOKEN, "notifyAll", MemberTraits.FINAL);
 
     /// The fact of [Object#toString()].
-    public static final MethodRef0<Object, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Object, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Object#wait()].
-    public static final VoidMethodRef0<Object> wait = UnsafeFacts.voidMethod(TOKEN, "wait", MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+    public static final VoidMethodRef0<Object> wait = UnsafeInvocables.voidMethod(TOKEN, "wait", MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
 
     /// The fact of [Object#wait(long)].
-    public static final VoidMethodRef1<Object, Long> wait_long = UnsafeFacts.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+    public static final VoidMethodRef1<Object, Long> wait_long = UnsafeInvocables.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
 
     /// The fact of [Object#wait(long, int)].
-    public static final VoidMethodRef2<Object, Long, Int> wait_long_int = UnsafeFacts.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
+    public static final VoidMethodRef2<Object, Long, Int> wait_long_int = UnsafeInvocables.voidMethod(TOKEN, "wait", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<InterruptedException>openClassToken(InterruptedException_.Data.SHAPE)));
 
     private Object_() {
     }

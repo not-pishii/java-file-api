@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -107,16 +108,16 @@ public final class Mid_ {
     public static final StaticFieldRef<String> K = UnsafeFacts.constantField(TOKEN, "K", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "k");
 
     /// The fact of [Mid#Mid()].
-    public static final CtorRef0<Mid> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Mid> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Mid#mid()].
-    public static final VoidMethodRef0<Mid> mid = UnsafeFacts.voidMethod(TOKEN, "mid", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Mid> mid = UnsafeInvocables.voidMethod(TOKEN, "mid", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mid#more()], declared in `p.HiddenI`, which is not `public`.
-    public static final MethodRef0<Mid, String> more = UnsafeFacts.method(TOKEN, "more", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mid, String> more = UnsafeInvocables.method(TOKEN, "more", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mid#run()], declared in `p.HiddenI`, which is not `public`.
-    public static final MethodRef0<Mid, String> run = UnsafeFacts.method(TOKEN, "run", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mid, String> run = UnsafeInvocables.method(TOKEN, "run", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Mid_() {
     }

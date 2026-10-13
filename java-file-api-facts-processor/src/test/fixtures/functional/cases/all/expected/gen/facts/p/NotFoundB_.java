@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -83,10 +84,10 @@ public final class NotFoundB_ {
     public static final InterfaceToken<NotFoundB> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [NotFoundB#m()].
-    public static final VoidMethodRef0<NotFoundB> m = UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<FileNotFoundException>openClassToken(gen.facts.java.io.FileNotFoundException_.Data.SHAPE)));
+    public static final VoidMethodRef0<NotFoundB> m = UnsafeInvocables.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<FileNotFoundException>openClassToken(gen.facts.java.io.FileNotFoundException_.Data.SHAPE)));
 
     /// The fact of the single abstract method [NotFoundB#m()], which a lambda implements.
-    public static final VoidSam0<NotFoundB> sam = UnsafeFacts.voidSam(m);
+    public static final VoidSam0<NotFoundB> sam = UnsafeInvocables.voidSam(m);
 
     private NotFoundB_() {
     }

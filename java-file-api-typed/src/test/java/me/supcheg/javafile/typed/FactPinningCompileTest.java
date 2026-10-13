@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
@@ -142,10 +143,10 @@ class FactPinningCompileTest {
     @Test
     void listRemoveOfAnObjectIsNotRemoveAtAnIndex() throws Throwable {
         List_<Integer> integers = new List_<>(Integer_.TOKEN);
-        MethodRef1<List<Integer>, Prim.Bool, Object> removeObject = UnsafeFacts.method(
+        MethodRef1<List<Integer>, Prim.Bool, Object> removeObject = UnsafeInvocables.method(
                 integers.token, "remove", PrimitiveToken.BOOLEAN, Object_.TOKEN, MemberTraits.DEFAULT);
-        MethodRef1<List<Integer>, Integer, Prim.Int> removeAt =
-                UnsafeFacts.method(integers.token, "remove", Integer_.TOKEN, PrimitiveToken.INT, MemberTraits.DEFAULT);
+        MethodRef1<List<Integer>, Integer, Prim.Int> removeAt = UnsafeInvocables.method(
+                integers.token, "remove", Integer_.TOKEN, PrimitiveToken.INT, MemberTraits.DEFAULT);
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
@@ -185,7 +186,7 @@ class FactPinningCompileTest {
     @Test
     void printlnOfAnObjectIsNotPrintlnOfAString() throws Throwable {
         VoidMethodRef1<PrintStream, Object> printlnObject =
-                UnsafeFacts.voidMethod(PrintStream_.TOKEN, "println", Object_.TOKEN, MemberTraits.DEFAULT);
+                UnsafeInvocables.voidMethod(PrintStream_.TOKEN, "println", Object_.TOKEN, MemberTraits.DEFAULT);
 
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override

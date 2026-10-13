@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -120,8 +121,8 @@ public final class Up_<Gen, Java> {
         this.gen_ = gen_;
         this.java = java;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(gen_), TokenArg.exact(java));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.all_Java = UnsafeFacts.method(token, "all", UnsafeFacts.<Set<Gen>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen_)), UnsafeFacts.param(java, Param.var(1)), MemberTraits.OVERRIDABLE);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.all_Java = UnsafeInvocables.method(token, "all", UnsafeFacts.<Set<Gen>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen_)), UnsafeFacts.param(java, Param.var(1)), MemberTraits.OVERRIDABLE);
     }
 
     /// The fact of [Up#each(Object)], for the type arguments the tokens give.
@@ -130,7 +131,7 @@ public final class Up_<Gen, Java> {
     /// @param me the token of the type argument `Me`
     /// @return the fact
     public <Me> MethodRef1<Up<Gen, Java>, Set<Me>, Me> each_Me(RefToken<Me> me) {
-        return UnsafeFacts.method(token, "each", UnsafeFacts.<Set<Me>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(me)), UnsafeFacts.param(me, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(me));
+        return UnsafeInvocables.method(token, "each", UnsafeFacts.<Set<Me>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(me)), UnsafeFacts.param(me, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(me));
     }
 
     /// Starts the proof that a class being declared extends [Up]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

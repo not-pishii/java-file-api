@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -92,10 +93,10 @@ public final class OverDollar_ {
     public static final OpenClassToken<OverDollar> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [OverDollar#OverDollar()].
-    public static final CtorRef0<OverDollar> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<OverDollar> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [OverDollar#own()].
-    public static final VoidMethodRef0<OverDollar> own = UnsafeFacts.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<OverDollar> own = UnsafeInvocables.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
 
     private OverDollar_() {
     }

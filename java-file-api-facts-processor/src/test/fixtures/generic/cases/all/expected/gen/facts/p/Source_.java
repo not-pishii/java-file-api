@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -99,8 +100,8 @@ public final class Source_<T> {
     /// @param t the token of the type argument `T`
     public Source_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.next = UnsafeFacts.method(token, "next", t, MemberTraits.ABSTRACT.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
-        this.sam = UnsafeFacts.sam(next);
+        this.next = UnsafeInvocables.method(token, "next", t, MemberTraits.ABSTRACT.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
+        this.sam = UnsafeInvocables.sam(next);
     }
 
     /// Starts the proof that a class being declared implements [Source]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

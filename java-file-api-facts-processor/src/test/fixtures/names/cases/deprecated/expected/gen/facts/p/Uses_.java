@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -96,13 +97,13 @@ public final class Uses_ {
     public static final OpenClassToken<Uses> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Uses#Uses()].
-    public static final CtorRef0<Uses> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Uses> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Uses#old()].
-    public static final MethodRef0<Uses, Old> old = UnsafeFacts.method(TOKEN, "old", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, Old> old = UnsafeInvocables.method(TOKEN, "old", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#take(Old)].
-    public static final VoidMethodRef1<Uses, Old> take_Old = UnsafeFacts.voidMethod(TOKEN, "take", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Uses, Old> take_Old = UnsafeInvocables.voidMethod(TOKEN, "take", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Uses_() {
     }

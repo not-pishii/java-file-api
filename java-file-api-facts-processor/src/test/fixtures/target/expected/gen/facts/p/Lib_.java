@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -76,7 +77,7 @@ public final class Lib_ {
     public static final FinalClassToken<Lib> TOKEN = UnsafeFacts.finalClassToken(Data.SHAPE);
 
     /// The fact of [Lib#take(Marker)].
-    public static final StaticMethodRef1<String, Marker> take_Marker = UnsafeFacts.staticMethod(TOKEN, "take", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<Marker>interfaceToken(Marker_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Marker> take_Marker = UnsafeInvocables.staticMethod(TOKEN, "take", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<Marker>interfaceToken(Marker_.Data.SHAPE), MemberTraits.FINAL);
 
     private Lib_() {
     }

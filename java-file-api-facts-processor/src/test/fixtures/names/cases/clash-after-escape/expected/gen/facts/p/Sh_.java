@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -108,10 +109,10 @@ public final class Sh_ {
     public static final MutableFieldRef<Sh, Int> x = UnsafeFacts.mutableField(TOKEN, "x", PrimitiveToken.INT);
 
     /// The fact of [Sh#Sh()].
-    public static final CtorRef0<Sh> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Sh> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Sh#other()].
-    public static final VoidMethodRef0<Sh> other = UnsafeFacts.voidMethod(TOKEN, "other", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Sh> other = UnsafeInvocables.voidMethod(TOKEN, "other", MemberTraits.OVERRIDABLE);
 
     private Sh_() {
     }

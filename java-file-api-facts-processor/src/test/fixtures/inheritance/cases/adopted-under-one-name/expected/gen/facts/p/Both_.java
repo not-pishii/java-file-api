@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -98,7 +99,7 @@ public final class Both_ {
     public static final OpenClassToken<Both> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Both#Both()].
-    public static final CtorRef0<Both> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Both> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     private Both_() {
     }

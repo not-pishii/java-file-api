@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -105,13 +106,13 @@ public final class PubSame_ {
     public static final StaticFieldRef<String> TAG = UnsafeFacts.constantField(TOKEN, "TAG", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "field");
 
     /// The fact of [PubSame#PubSame()].
-    public static final CtorRef0<PubSame> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<PubSame> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [PubSame#tag()], declared in `p.HSame`, which is not `public`.
-    public static final MethodRef0<PubSame, String> tag = UnsafeFacts.method(TOKEN, "tag", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<PubSame, String> tag = UnsafeInvocables.method(TOKEN, "tag", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [PubSame#tag(int)], declared in `p.HSame`, which is not `public`.
-    public static final StaticMethodRef1<String, Int> tag_int = UnsafeFacts.staticMethod(TOKEN, "tag", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> tag_int = UnsafeInvocables.staticMethod(TOKEN, "tag", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     private PubSame_() {
     }

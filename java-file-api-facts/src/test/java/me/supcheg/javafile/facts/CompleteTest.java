@@ -25,13 +25,13 @@ class CompleteTest {
             Types.of(ClassDesc.of("fixtures", "Self")), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
     private static final Comparable_<String> COMPARABLE = new Comparable_<>(String_.TOKEN);
     private static final MethodRef1<SelfP, Prim.Int, String> OWN =
-            UnsafeFacts.method(SELF, "compareTo", PrimitiveToken.INT, String_.TOKEN, MemberTraits.FINAL);
+            UnsafeInvocables.method(SELF, "compareTo", PrimitiveToken.INT, String_.TOKEN, MemberTraits.FINAL);
     private static final Signature COMPARE_TO = Signature.of("compareTo", Param.var(0));
 
     @Test
     void theProofHasTheStepsTakenInTheirOrder() {
         Implementation1<SelfP, Prim.Int, String> how =
-                UnsafeFacts.overriding1(new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN));
+                UnsafeInvocables.overriding1(new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN));
 
         Complete<SelfP, Comparable<String>> complete =
                 UnsafeFacts.steps(COMPARABLE.token, SELF).with(COMPARE_TO, how).complete();
@@ -48,9 +48,9 @@ class CompleteTest {
     void anImplementationTellsHowTheClassHasTheMethod() {
         Implemented.ByOverride overriding = new Implemented.ByOverride(COMPARABLE.compareTo_T, OWN);
         Implemented.ByInheritance inheriting = new Implemented.ByInheritance(String_.length);
-        Overriding1<SelfP, Prim.Int, String> own = UnsafeFacts.overriding1(overriding);
-        Implementation0<SelfP, Prim.Int> inherited = UnsafeFacts.inherited0(inheriting);
-        VoidImplementation0<SelfP> ofVoid = UnsafeFacts.voidInherited0(inheriting);
+        Overriding1<SelfP, Prim.Int, String> own = UnsafeInvocables.overriding1(overriding);
+        Implementation0<SelfP, Prim.Int> inherited = UnsafeInvocables.inherited0(inheriting);
+        VoidImplementation0<SelfP> ofVoid = UnsafeInvocables.voidInherited0(inheriting);
 
         assertThat(own.how()).isSameAs(overriding);
         assertThat(own.method()).isSameAs(OWN);
@@ -66,7 +66,7 @@ class CompleteTest {
     @Test
     void aStepTakesAnImplementationOfItsMethodAlone() {
         Implementation0<SelfP, Prim.Int> ofAnother =
-                UnsafeFacts.inherited0(new Implemented.ByInheritance(String_.length));
+                UnsafeInvocables.inherited0(new Implemented.ByInheritance(String_.length));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeFacts.steps(COMPARABLE.token, SELF).with(COMPARE_TO, ofAnother))

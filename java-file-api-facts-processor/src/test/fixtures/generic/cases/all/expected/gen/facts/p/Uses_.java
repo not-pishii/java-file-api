@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -117,25 +118,25 @@ public final class Uses_ {
     public static final MutableFieldRef<Uses, Map<String, ? extends Number>> wild = UnsafeFacts.mutableField(TOKEN, "wild", UnsafeFacts.<Map<String, ? extends Number>>interfaceToken(gen.facts.java.util.Map_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)), TokenArg.extendsBound(UnsafeFacts.<Number>abstractClassToken(gen.facts.java.lang.Number_.Data.SHAPE))));
 
     /// The fact of [Uses#Uses()].
-    public static final CtorRef0<Uses> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Uses> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Uses#any()].
-    public static final MethodRef0<Uses, List<?>> any = UnsafeFacts.method(TOKEN, "any", UnsafeFacts.<List<?>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, List<?>> any = UnsafeInvocables.method(TOKEN, "any", UnsafeFacts.<List<?>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#arrays()].
-    public static final MethodRef0<Uses, Pair<int[], String[]>> arrays = UnsafeFacts.method(TOKEN, "arrays", UnsafeFacts.<Pair<int[], String[]>>finalClassToken(Pair_.Data.SHAPE, TokenArg.exact(PrimitiveToken.INT.array()), TokenArg.exact(ArrayToken.of(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, Pair<int[], String[]>> arrays = UnsafeInvocables.method(TOKEN, "arrays", UnsafeFacts.<Pair<int[], String[]>>finalClassToken(Pair_.Data.SHAPE, TokenArg.exact(PrimitiveToken.INT.array()), TokenArg.exact(ArrayToken.of(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#lists()].
-    public static final MethodRef0<Uses, List<? super Integer>[]> lists = UnsafeFacts.method(TOKEN, "lists", ArrayToken.of(UnsafeFacts.<List<? super Integer>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.superBound(UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, List<? super Integer>[]> lists = UnsafeInvocables.method(TOKEN, "lists", ArrayToken.of(UnsafeFacts.<List<? super Integer>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.superBound(UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#raw()].
-    public static final MethodRef0<Uses, Box> raw = UnsafeFacts.method(TOKEN, "raw", UnsafeFacts.<Box>openClassToken(Box_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, Box> raw = UnsafeInvocables.method(TOKEN, "raw", UnsafeFacts.<Box>openClassToken(Box_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#strings()].
-    public static final MethodRef0<Uses, Box<String>> strings = UnsafeFacts.method(TOKEN, "strings", UnsafeFacts.<Box<String>>openClassToken(Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, Box<String>> strings = UnsafeInvocables.method(TOKEN, "strings", UnsafeFacts.<Box<String>>openClassToken(Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#take(Sorted)].
-    public static final VoidMethodRef1<Uses, Sorted<Integer>> take_Sorted = UnsafeFacts.voidMethod(TOKEN, "take", UnsafeFacts.<Sorted<Integer>>openClassToken(Sorted_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Uses, Sorted<Integer>> take_Sorted = UnsafeInvocables.voidMethod(TOKEN, "take", UnsafeFacts.<Sorted<Integer>>openClassToken(Sorted_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     private Uses_() {
     }

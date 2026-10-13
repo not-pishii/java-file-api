@@ -35,6 +35,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
@@ -159,10 +160,10 @@ public final class ProtG_<T> {
     public static final Protected<ProtG<?>, MutableStaticFieldRef<Int>> count = UnsafeFacts.protected_(ANY, UnsafeFacts.mutableStaticField(ANY, "count", PrimitiveToken.INT, Access.PROTECTED));
 
     /// The fact of [ProtG#adoptedStatic()], declared in `p.ProtBase`, which is not `public`, which is `protected`: a subclass alone uses it.
-    public static final Protected<ProtG<?>, VoidStaticMethodRef0> adoptedStatic = UnsafeFacts.protected_(ANY, UnsafeFacts.voidStaticMethod(ANY, "adoptedStatic", MemberTraits.FINAL.with(Access.PROTECTED)));
+    public static final Protected<ProtG<?>, VoidStaticMethodRef0> adoptedStatic = UnsafeFacts.protected_(ANY, UnsafeInvocables.voidStaticMethod(ANY, "adoptedStatic", MemberTraits.FINAL.with(Access.PROTECTED)));
 
     /// The fact of [ProtG#reset()], which is `protected`: a subclass alone uses it.
-    public static final Protected<ProtG<?>, VoidStaticMethodRef0> reset = UnsafeFacts.protected_(ANY, UnsafeFacts.voidStaticMethod(ANY, "reset", MemberTraits.FINAL.with(Access.PROTECTED)));
+    public static final Protected<ProtG<?>, VoidStaticMethodRef0> reset = UnsafeFacts.protected_(ANY, UnsafeInvocables.voidStaticMethod(ANY, "reset", MemberTraits.FINAL.with(Access.PROTECTED)));
 
     /// The token of [ProtG] with the type arguments of this metamodel.
     public final OpenClassToken<ProtG<T>> token;
@@ -208,13 +209,13 @@ public final class ProtG_<T> {
         this.adoptedField = UnsafeFacts.protected_(token, UnsafeFacts.mutableField(token, "adoptedField", PrimitiveToken.INT, Access.PROTECTED));
         this.fin = UnsafeFacts.protected_(token, UnsafeFacts.field(token, "fin", PrimitiveToken.INT, Access.PROTECTED));
         this.item = UnsafeFacts.protected_(token, UnsafeFacts.mutableField(token, "item", t, Access.PROTECTED));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.super_T = UnsafeFacts.superCtor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).with(Access.PROTECTED));
-        this.adopted = UnsafeFacts.protected_(token, UnsafeFacts.voidMethod(token, "adopted", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
-        this.fixed = UnsafeFacts.protected_(token, UnsafeFacts.voidMethod(token, "fixed", MemberTraits.FINAL.with(Access.PROTECTED)));
-        this.get = UnsafeFacts.protected_(token, UnsafeFacts.method(token, "get", t, MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
-        this.pub = UnsafeFacts.voidMethod(token, "pub", MemberTraits.OVERRIDABLE);
-        this.set_T = UnsafeFacts.protected_(token, UnsafeFacts.voidMethod(token, "set", UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).with(Access.PROTECTED)));
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.super_T = UnsafeInvocables.superCtor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).with(Access.PROTECTED));
+        this.adopted = UnsafeFacts.protected_(token, UnsafeInvocables.voidMethod(token, "adopted", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
+        this.fixed = UnsafeFacts.protected_(token, UnsafeInvocables.voidMethod(token, "fixed", MemberTraits.FINAL.with(Access.PROTECTED)));
+        this.get = UnsafeFacts.protected_(token, UnsafeInvocables.method(token, "get", t, MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
+        this.pub = UnsafeInvocables.voidMethod(token, "pub", MemberTraits.OVERRIDABLE);
+        this.set_T = UnsafeFacts.protected_(token, UnsafeInvocables.voidMethod(token, "set", UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).with(Access.PROTECTED)));
     }
 
     /// The fact of [ProtG#pick(Object, Object)], which is `protected`: a subclass alone uses it, for the type arguments the tokens give.
@@ -223,7 +224,7 @@ public final class ProtG_<T> {
     /// @param x the token of the type argument `X`
     /// @return the fact
     public <X> Protected<ProtG<T>, MethodRef2<ProtG<T>, X, X, T>> pick_X_T(RefToken<X> x) {
-        return UnsafeFacts.protected_(token, UnsafeFacts.method(token, "pick", x, UnsafeFacts.param(x, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.withTypeArgs(x).with(Access.PROTECTED)));
+        return UnsafeFacts.protected_(token, UnsafeInvocables.method(token, "pick", x, UnsafeFacts.param(x, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.withTypeArgs(x).with(Access.PROTECTED)));
     }
 
     /// The fact of [ProtG#spick(Number)], which is `protected`: a subclass alone uses it, for the type arguments the tokens give.
@@ -232,7 +233,7 @@ public final class ProtG_<T> {
     /// @param x the token of the type argument `X`
     /// @return the fact
     public static <X extends Number> Protected<ProtG<?>, StaticMethodRef1<X, X>> spick_X(RefToken<X> x) {
-        return UnsafeFacts.protected_(ANY, UnsafeFacts.staticMethod(ANY, "spick", x, UnsafeFacts.param(x, Param.fixed(ClassDesc.of("java.lang.Number"))), MemberTraits.FINAL.withTypeArgs(x).with(Access.PROTECTED)));
+        return UnsafeFacts.protected_(ANY, UnsafeInvocables.staticMethod(ANY, "spick", x, UnsafeFacts.param(x, Param.fixed(ClassDesc.of("java.lang.Number"))), MemberTraits.FINAL.withTypeArgs(x).with(Access.PROTECTED)));
     }
 
     /// Starts the proof that a class being declared extends [ProtG]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

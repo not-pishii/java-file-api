@@ -11,6 +11,7 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
@@ -802,7 +803,7 @@ class ExceptionChecksTest {
 
         /// `static <X extends Throwable> void run() throws X`, with `thrown` for `X`.
         private static VoidStaticMethodRef0 run(TypeVarToken<? extends Throwable> thrown) {
-            return UnsafeFacts.voidStaticMethod(
+            return UnsafeInvocables.voidStaticMethod(
                     Object_.TOKEN, "run", MemberTraits.FINAL.throwing(thrown).withTypeArgs(thrown));
         }
 

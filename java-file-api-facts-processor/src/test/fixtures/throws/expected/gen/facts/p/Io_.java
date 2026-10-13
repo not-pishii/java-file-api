@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -120,28 +121,28 @@ public final class Io_ {
     public static final OpenClassToken<Io> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Io#Io()].
-    public static final CtorRef0<Io> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
+    public static final CtorRef0<Io> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
 
     /// The fact of [Io#Io(int)].
-    public static final CtorRef1<Io, Int> new_int = UnsafeFacts.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final CtorRef1<Io, Int> new_int = UnsafeInvocables.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Io#custom()].
-    public static final VoidMethodRef0<Io> custom = UnsafeFacts.voidMethod(TOKEN, "custom", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<Failure>openClassToken(Failure_.Data.SHAPE)));
+    public static final VoidMethodRef0<Io> custom = UnsafeInvocables.voidMethod(TOKEN, "custom", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<Failure>openClassToken(Failure_.Data.SHAPE)));
 
     /// The fact of [Io#locked()].
-    public static final VoidMethodRef0<Io> locked = UnsafeFacts.voidMethod(TOKEN, "locked", MemberTraits.FINAL.throwing(UnsafeFacts.<Failure>openClassToken(Failure_.Data.SHAPE)));
+    public static final VoidMethodRef0<Io> locked = UnsafeInvocables.voidMethod(TOKEN, "locked", MemberTraits.FINAL.throwing(UnsafeFacts.<Failure>openClassToken(Failure_.Data.SHAPE)));
 
     /// The fact of [Io#multi()].
-    public static final VoidMethodRef0<Io> multi = UnsafeFacts.voidMethod(TOKEN, "multi", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE), UnsafeFacts.<InterruptedException>openClassToken(gen.facts.java.lang.InterruptedException_.Data.SHAPE), UnsafeFacts.<IllegalStateException>openClassToken(gen.facts.java.lang.IllegalStateException_.Data.SHAPE)));
+    public static final VoidMethodRef0<Io> multi = UnsafeInvocables.voidMethod(TOKEN, "multi", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE), UnsafeFacts.<InterruptedException>openClassToken(gen.facts.java.lang.InterruptedException_.Data.SHAPE), UnsafeFacts.<IllegalStateException>openClassToken(gen.facts.java.lang.IllegalStateException_.Data.SHAPE)));
 
     /// The fact of [Io#read()].
-    public static final VoidMethodRef0<Io> read = UnsafeFacts.voidMethod(TOKEN, "read", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
+    public static final VoidMethodRef0<Io> read = UnsafeInvocables.voidMethod(TOKEN, "read", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
 
     /// The fact of [Io#unchecked()].
-    public static final MethodRef0<Io, Int> unchecked = UnsafeFacts.method(TOKEN, "unchecked", PrimitiveToken.INT, MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IllegalArgumentException>openClassToken(gen.facts.java.lang.IllegalArgumentException_.Data.SHAPE)));
+    public static final MethodRef0<Io, Int> unchecked = UnsafeInvocables.method(TOKEN, "unchecked", PrimitiveToken.INT, MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<IllegalArgumentException>openClassToken(gen.facts.java.lang.IllegalArgumentException_.Data.SHAPE)));
 
     /// The fact of [Io#util()].
-    public static final VoidStaticMethodRef0 util = UnsafeFacts.voidStaticMethod(TOKEN, "util", MemberTraits.FINAL.throwing(UnsafeFacts.<Exception>openClassToken(gen.facts.java.lang.Exception_.Data.SHAPE)));
+    public static final VoidStaticMethodRef0 util = UnsafeInvocables.voidStaticMethod(TOKEN, "util", MemberTraits.FINAL.throwing(UnsafeFacts.<Exception>openClassToken(gen.facts.java.lang.Exception_.Data.SHAPE)));
 
     private Io_() {
     }
@@ -152,7 +153,7 @@ public final class Io_ {
     /// @param x the token of the type argument `X`
     /// @return the fact
     public static <X extends Throwable> VoidMethodRef0<Io> generic(RefToken<X> x) {
-        return UnsafeFacts.voidMethod(TOKEN, "generic", MemberTraits.OVERRIDABLE.throwing(x).withTypeArgs(x));
+        return UnsafeInvocables.voidMethod(TOKEN, "generic", MemberTraits.OVERRIDABLE.throwing(x).withTypeArgs(x));
     }
 
     /// Starts the proof that a class being declared extends [Io]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

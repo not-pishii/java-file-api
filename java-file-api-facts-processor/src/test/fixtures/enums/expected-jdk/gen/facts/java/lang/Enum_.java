@@ -31,6 +31,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -164,17 +165,17 @@ public final class Enum_<E extends Enum<E>> {
     /// @param e the token of the type argument `E`
     public Enum_(RefToken<E> e) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(e));
-        this.super_String_int = UnsafeFacts.superCtor(token, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.with(Access.PROTECTED));
-        this.clone = UnsafeFacts.protected_(token, UnsafeFacts.method(token, "clone", UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<CloneNotSupportedException>openClassToken(CloneNotSupportedException_.Data.SHAPE)).with(Access.PROTECTED)));
-        this.compareTo_E = UnsafeFacts.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(e, Param.var(0)), MemberTraits.FINAL);
-        this.describeConstable = UnsafeFacts.method(token, "describeConstable", UnsafeFacts.<Optional<EnumDesc<E>>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<EnumDesc<E>>finalClassToken(Enum_EnumDesc_.Data.SHAPE, TokenArg.exact(e)))), MemberTraits.FINAL);
-        this.equals_Object = UnsafeFacts.method(token, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL);
-        this.finalize = UnsafeFacts.protected_(token, UnsafeFacts.voidMethod(token, "finalize", MemberTraits.FINAL.with(Access.PROTECTED)));
-        this.getDeclaringClass = UnsafeFacts.method(token, "getDeclaringClass", UnsafeFacts.<Class<E>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(e)), MemberTraits.FINAL);
-        this.hashCode = UnsafeFacts.method(token, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
-        this.name = UnsafeFacts.method(token, "name", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
-        this.ordinal = UnsafeFacts.method(token, "ordinal", PrimitiveToken.INT, MemberTraits.FINAL);
-        this.toString = UnsafeFacts.method(token, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+        this.super_String_int = UnsafeInvocables.superCtor(token, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.with(Access.PROTECTED));
+        this.clone = UnsafeFacts.protected_(token, UnsafeInvocables.method(token, "clone", UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<CloneNotSupportedException>openClassToken(CloneNotSupportedException_.Data.SHAPE)).with(Access.PROTECTED)));
+        this.compareTo_E = UnsafeInvocables.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(e, Param.var(0)), MemberTraits.FINAL);
+        this.describeConstable = UnsafeInvocables.method(token, "describeConstable", UnsafeFacts.<Optional<EnumDesc<E>>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<EnumDesc<E>>finalClassToken(Enum_EnumDesc_.Data.SHAPE, TokenArg.exact(e)))), MemberTraits.FINAL);
+        this.equals_Object = UnsafeInvocables.method(token, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL);
+        this.finalize = UnsafeFacts.protected_(token, UnsafeInvocables.voidMethod(token, "finalize", MemberTraits.FINAL.with(Access.PROTECTED)));
+        this.getDeclaringClass = UnsafeInvocables.method(token, "getDeclaringClass", UnsafeFacts.<Class<E>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(e)), MemberTraits.FINAL);
+        this.hashCode = UnsafeInvocables.method(token, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
+        this.name = UnsafeInvocables.method(token, "name", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
+        this.ordinal = UnsafeInvocables.method(token, "ordinal", PrimitiveToken.INT, MemberTraits.FINAL);
+        this.toString = UnsafeInvocables.method(token, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
     }
 
     /// The fact of [Enum#valueOf(Class, String)], for the type arguments the tokens give.
@@ -183,6 +184,6 @@ public final class Enum_<E extends Enum<E>> {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T extends Enum<T>> StaticMethodRef2<T, Class<T>, String> valueOf_Class_String(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(ANY, "valueOf", t, UnsafeFacts.<Class<T>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(ANY, "valueOf", t, UnsafeFacts.<Class<T>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.withTypeArgs(t));
     }
 }

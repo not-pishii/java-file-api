@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -78,7 +79,7 @@ public final class Disjoint_ {
     public static final InterfaceToken<Disjoint> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of the single abstract method [p.IoA#m()], which a lambda implements.
-    public static final VoidSam0<Disjoint> sam = UnsafeFacts.voidSam(UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT));
+    public static final VoidSam0<Disjoint> sam = UnsafeInvocables.voidSam(UnsafeInvocables.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT));
 
     private Disjoint_() {
     }

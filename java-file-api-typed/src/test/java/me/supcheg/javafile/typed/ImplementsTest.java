@@ -4,6 +4,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.typed.fixtures.Named;
 import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Comparable_;
@@ -414,7 +415,7 @@ class ImplementsTest {
                         public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             h.extendsObject()
                                     .implements_(Runnable_.implement(h.self())
-                                            .run(UnsafeFacts.voidInherited0(
+                                            .run(UnsafeInvocables.voidInherited0(
                                                     new Implemented.ByInheritance(Runnable_.run))));
                             return Unreached.here();
                         }

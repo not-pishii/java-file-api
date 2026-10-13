@@ -42,6 +42,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -255,34 +256,34 @@ public final class Greeter_ {
     public static final MutableFieldRef<Greeter, String> text = UnsafeFacts.mutableField(TOKEN, "text", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE));
 
     /// The fact of [Greeter#Greeter()].
-    public static final CtorRef0<Greeter> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Greeter> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Greeter#Greeter(String)].
-    public static final CtorRef1<Greeter, String> new_String = UnsafeFacts.ctor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final CtorRef1<Greeter, String> new_String = UnsafeInvocables.ctor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Greeter#Greeter(int, long, boolean\[\])].
-    public static final CtorRef3<Greeter, Int, Long, boolean[]> new_int_long_booleanArray = UnsafeFacts.ctor(TOKEN, PrimitiveToken.INT, PrimitiveToken.LONG, PrimitiveToken.BOOLEAN.array(), MemberTraits.FINAL);
+    public static final CtorRef3<Greeter, Int, Long, boolean[]> new_int_long_booleanArray = UnsafeInvocables.ctor(TOKEN, PrimitiveToken.INT, PrimitiveToken.LONG, PrimitiveToken.BOOLEAN.array(), MemberTraits.FINAL);
 
     /// The fact of [Greeter#arr(int\[\]\[\], Greeter\[\])].
-    public static final MethodRef2<Greeter, int[], int[][], Greeter[]> arr_intArrayArray_GreeterArray = UnsafeFacts.method(TOKEN, "arr", PrimitiveToken.INT.array(), ArrayToken.of(PrimitiveToken.INT.array()), ArrayToken.of(TOKEN), MemberTraits.OVERRIDABLE);
+    public static final MethodRef2<Greeter, int[], int[][], Greeter[]> arr_intArrayArray_GreeterArray = UnsafeInvocables.method(TOKEN, "arr", PrimitiveToken.INT.array(), ArrayToken.of(PrimitiveToken.INT.array()), ArrayToken.of(TOKEN), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Greeter#greet()].
-    public static final MethodRef0<Greeter, String> greet = UnsafeFacts.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Greeter, String> greet = UnsafeInvocables.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Greeter#greet(String)].
-    public static final MethodRef1<Greeter, String, String> greet_String = UnsafeFacts.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<Greeter, String, String> greet_String = UnsafeInvocables.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Greeter#greet(String, Locale)].
-    public static final MethodRef2<Greeter, String, String, Locale> greet_String_Locale = UnsafeFacts.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<Locale>finalClassToken(gen.facts.java.util.Locale_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef2<Greeter, String, String, Locale> greet_String_Locale = UnsafeInvocables.method(TOKEN, "greet", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<Locale>finalClassToken(gen.facts.java.util.Locale_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Greeter#log(String)].
-    public static final VoidMethodRef1<Greeter, String> log_String = UnsafeFacts.voidMethod(TOKEN, "log", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Greeter, String> log_String = UnsafeInvocables.voidMethod(TOKEN, "log", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Greeter#main(String\[\])].
-    public static final VoidStaticMethodRef1<String[]> main_StringArray = UnsafeFacts.voidStaticMethod(TOKEN, "main", ArrayToken.of(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)), MemberTraits.FINAL);
+    public static final VoidStaticMethodRef1<String[]> main_StringArray = UnsafeInvocables.voidStaticMethod(TOKEN, "main", ArrayToken.of(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)), MemberTraits.FINAL);
 
     /// The fact of [Greeter#parse(String)].
-    public static final StaticMethodRef1<Int, String> parse_String = UnsafeFacts.staticMethod(TOKEN, "parse", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, String> parse_String = UnsafeInvocables.staticMethod(TOKEN, "parse", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     private Greeter_() {
     }

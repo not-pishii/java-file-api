@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
@@ -109,22 +110,22 @@ public final class Derived_ {
     public static final OpenClassToken<Derived> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Derived#Derived()].
-    public static final CtorRef0<Derived> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Derived> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Derived#abs()].
-    public static final VoidMethodRef0<Derived> abs = UnsafeFacts.voidMethod(TOKEN, "abs", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Derived> abs = UnsafeInvocables.voidMethod(TOKEN, "abs", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Derived#dstatic()].
-    public static final VoidStaticMethodRef0 dstatic = UnsafeFacts.voidStaticMethod(TOKEN, "dstatic", MemberTraits.FINAL);
+    public static final VoidStaticMethodRef0 dstatic = UnsafeInvocables.voidStaticMethod(TOKEN, "dstatic", MemberTraits.FINAL);
 
     /// The fact of [Derived#hidden(Object)].
-    public static final VoidMethodRef1<Derived, Object> hidden_Object = UnsafeFacts.voidMethod(TOKEN, "hidden", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Derived, Object> hidden_Object = UnsafeInvocables.voidMethod(TOKEN, "hidden", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Derived#over()].
-    public static final VoidMethodRef0<Derived> over = UnsafeFacts.voidMethod(TOKEN, "over", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Derived> over = UnsafeInvocables.voidMethod(TOKEN, "over", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Derived#own()].
-    public static final VoidMethodRef0<Derived> own = UnsafeFacts.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Derived> own = UnsafeInvocables.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
 
     private Derived_() {
     }

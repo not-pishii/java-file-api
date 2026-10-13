@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -97,16 +98,16 @@ public final class Record_ {
     public static final AbstractClassToken<Record> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Record#Record()], which is `protected`: a subclass alone uses it.
-    public static final SuperCtorRef0<Record> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL.with(Access.PROTECTED));
+    public static final SuperCtorRef0<Record> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL.with(Access.PROTECTED));
 
     /// The fact of [Record#equals(Object)].
-    public static final MethodRef1<Record, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef1<Record, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     /// The fact of [Record#hashCode()].
-    public static final MethodRef0<Record, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Record, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     /// The fact of [Record#toString()].
-    public static final MethodRef0<Record, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Record, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     private Record_() {
     }

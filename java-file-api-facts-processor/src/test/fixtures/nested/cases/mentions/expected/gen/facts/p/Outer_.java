@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -105,16 +106,16 @@ public final class Outer_ {
     public static final OpenClassToken<Outer> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Outer#Outer()].
-    public static final CtorRef0<Outer> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Outer> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Outer#e()].
-    public static final MethodRef0<Outer, E> e = UnsafeFacts.method(TOKEN, "e", UnsafeFacts.<E>enumToken(Outer_E_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Outer, E> e = UnsafeInvocables.method(TOKEN, "e", UnsafeFacts.<E>enumToken(Outer_E_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Outer#inner()].
-    public static final MethodRef0<Outer, Inner> inner = UnsafeFacts.method(TOKEN, "inner", UnsafeFacts.<Inner>openClassToken(Outer_Inner_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Outer, Inner> inner = UnsafeInvocables.method(TOKEN, "inner", UnsafeFacts.<Inner>openClassToken(Outer_Inner_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Outer#nonStatic()].
-    public static final MethodRef0<Outer, NonStatic> nonStatic = UnsafeFacts.method(TOKEN, "nonStatic", UnsafeFacts.<NonStatic>openClassToken(Outer_NonStatic_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Outer, NonStatic> nonStatic = UnsafeInvocables.method(TOKEN, "nonStatic", UnsafeFacts.<NonStatic>openClassToken(Outer_NonStatic_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Outer_() {
     }

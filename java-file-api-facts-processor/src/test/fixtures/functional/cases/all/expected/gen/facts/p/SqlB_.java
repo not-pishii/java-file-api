@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -83,10 +84,10 @@ public final class SqlB_ {
     public static final InterfaceToken<SqlB> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [SqlB#m()].
-    public static final VoidMethodRef0<SqlB> m = UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<SQLException>openClassToken(gen.facts.java.sql.SQLException_.Data.SHAPE)));
+    public static final VoidMethodRef0<SqlB> m = UnsafeInvocables.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<SQLException>openClassToken(gen.facts.java.sql.SQLException_.Data.SHAPE)));
 
     /// The fact of the single abstract method [SqlB#m()], which a lambda implements.
-    public static final VoidSam0<SqlB> sam = UnsafeFacts.voidSam(m);
+    public static final VoidSam0<SqlB> sam = UnsafeInvocables.voidSam(m);
 
     private SqlB_() {
     }

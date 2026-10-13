@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -110,25 +111,25 @@ public final class Number_ {
     public static final AbstractClassToken<Number> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Number#Number()].
-    public static final SuperCtorRef0<Number> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Number> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Number#byteValue()].
-    public static final MethodRef0<Number, Byte> byteValue = UnsafeFacts.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Number, Byte> byteValue = UnsafeInvocables.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Number#doubleValue()].
-    public static final MethodRef0<Number, Double> doubleValue = UnsafeFacts.method(TOKEN, "doubleValue", PrimitiveToken.DOUBLE, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Number, Double> doubleValue = UnsafeInvocables.method(TOKEN, "doubleValue", PrimitiveToken.DOUBLE, MemberTraits.ABSTRACT);
 
     /// The fact of [Number#floatValue()].
-    public static final MethodRef0<Number, Float> floatValue = UnsafeFacts.method(TOKEN, "floatValue", PrimitiveToken.FLOAT, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Number, Float> floatValue = UnsafeInvocables.method(TOKEN, "floatValue", PrimitiveToken.FLOAT, MemberTraits.ABSTRACT);
 
     /// The fact of [Number#intValue()].
-    public static final MethodRef0<Number, Int> intValue = UnsafeFacts.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Number, Int> intValue = UnsafeInvocables.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     /// The fact of [Number#longValue()].
-    public static final MethodRef0<Number, Long> longValue = UnsafeFacts.method(TOKEN, "longValue", PrimitiveToken.LONG, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Number, Long> longValue = UnsafeInvocables.method(TOKEN, "longValue", PrimitiveToken.LONG, MemberTraits.ABSTRACT);
 
     /// The fact of [Number#shortValue()].
-    public static final MethodRef0<Number, Short> shortValue = UnsafeFacts.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Number, Short> shortValue = UnsafeInvocables.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.OVERRIDABLE);
 
     private Number_() {
     }

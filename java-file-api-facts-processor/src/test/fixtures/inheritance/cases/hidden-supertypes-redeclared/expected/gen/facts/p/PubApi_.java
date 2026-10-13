@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -84,13 +85,13 @@ public final class PubApi_ {
     public static final InterfaceToken<PubApi> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [PubApi#beyond()].
-    public static final MethodRef0<PubApi, String> beyond = UnsafeFacts.method(TOKEN, "beyond", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<PubApi, String> beyond = UnsafeInvocables.method(TOKEN, "beyond", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [PubApi#pub()].
-    public static final MethodRef0<PubApi, String> pub = UnsafeFacts.method(TOKEN, "pub", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef0<PubApi, String> pub = UnsafeInvocables.method(TOKEN, "pub", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [PubApi#pub()], which a lambda implements.
-    public static final Sam0<PubApi, String> sam = UnsafeFacts.sam(pub);
+    public static final Sam0<PubApi, String> sam = UnsafeInvocables.sam(pub);
 
     private PubApi_() {
     }

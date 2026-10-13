@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -100,19 +101,19 @@ public final class WithObject_ {
     public static final OpenClassToken<WithObject> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [WithObject#WithObject()].
-    public static final CtorRef0<WithObject> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<WithObject> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [WithObject#equals(Object)].
-    public static final MethodRef1<WithObject, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<WithObject, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [WithObject#hashCode()].
-    public static final MethodRef0<WithObject, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<WithObject, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [WithObject#plain()].
-    public static final VoidMethodRef0<WithObject> plain = UnsafeFacts.voidMethod(TOKEN, "plain", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<WithObject> plain = UnsafeInvocables.voidMethod(TOKEN, "plain", MemberTraits.OVERRIDABLE);
 
     /// The fact of [WithObject#toString()].
-    public static final MethodRef0<WithObject, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<WithObject, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private WithObject_() {
     }

@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -96,7 +97,7 @@ public final class Op_<T> {
     /// @param t the token of the type argument `T`
     public Op_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.sam = UnsafeFacts.sam(UnsafeFacts.method(token, "apply", t, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT));
+        this.sam = UnsafeInvocables.sam(UnsafeInvocables.method(token, "apply", t, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT));
     }
 
     /// Starts the proof that a class being declared implements [Op]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

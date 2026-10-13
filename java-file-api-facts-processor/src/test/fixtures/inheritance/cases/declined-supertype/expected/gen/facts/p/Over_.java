@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -97,10 +98,10 @@ public final class Over_ {
     public static final OpenClassToken<Over> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Over#Over()].
-    public static final CtorRef0<Over> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Over> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Over#same()].
-    public static final MethodRef0<Over, Bounded<?>> same = UnsafeFacts.method(TOKEN, "same", UnsafeFacts.<Bounded<?>>openClassToken(Bounded_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Over, Bounded<?>> same = UnsafeInvocables.method(TOKEN, "same", UnsafeFacts.<Bounded<?>>openClassToken(Bounded_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
 
     private Over_() {
     }

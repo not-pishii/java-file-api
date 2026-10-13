@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -93,25 +94,25 @@ public final class Point_ {
     public static final StaticFieldRef<String> NAME = UnsafeFacts.constantField(TOKEN, "NAME", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "name");
 
     /// The fact of [Point#Point(int, int)].
-    public static final CtorRef2<Point, Int, Int> new_int_int = UnsafeFacts.ctor(TOKEN, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final CtorRef2<Point, Int, Int> new_int_int = UnsafeInvocables.ctor(TOKEN, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Point#equals(Object)].
-    public static final MethodRef1<Point, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef1<Point, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Point#hashCode()].
-    public static final MethodRef0<Point, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<Point, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Point#label()], declared in `p.HLabel`, which is not `public`.
-    public static final MethodRef0<Point, String> label = UnsafeFacts.method(TOKEN, "label", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef0<Point, String> label = UnsafeInvocables.method(TOKEN, "label", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Point#toString()].
-    public static final MethodRef0<Point, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef0<Point, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Point#x()].
-    public static final MethodRef0<Point, Int> x = UnsafeFacts.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<Point, Int> x = UnsafeInvocables.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Point#y()].
-    public static final MethodRef0<Point, Int> y = UnsafeFacts.method(TOKEN, "y", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<Point, Int> y = UnsafeInvocables.method(TOKEN, "y", PrimitiveToken.INT, MemberTraits.FINAL);
 
     private Point_() {
     }

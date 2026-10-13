@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -83,10 +84,10 @@ public final class IoA_ {
     public static final InterfaceToken<IoA> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [IoA#m()].
-    public static final VoidMethodRef0<IoA> m = UnsafeFacts.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
+    public static final VoidMethodRef0<IoA> m = UnsafeInvocables.voidMethod(TOKEN, "m", MemberTraits.ABSTRACT.throwing(UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)));
 
     /// The fact of the single abstract method [IoA#m()], which a lambda implements.
-    public static final VoidSam0<IoA> sam = UnsafeFacts.voidSam(m);
+    public static final VoidSam0<IoA> sam = UnsafeInvocables.voidSam(m);
 
     private IoA_() {
     }

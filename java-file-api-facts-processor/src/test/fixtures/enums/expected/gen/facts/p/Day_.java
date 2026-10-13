@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -100,16 +101,16 @@ public final class Day_ {
     public static final StaticFieldRef<Int> COUNT = UnsafeFacts.constantField(TOKEN, "COUNT", PrimitiveToken.INT, 3);
 
     /// The fact of [Day#next()].
-    public static final MethodRef0<Day, Day> next = UnsafeFacts.method(TOKEN, "next", TOKEN, MemberTraits.FINAL);
+    public static final MethodRef0<Day, Day> next = UnsafeInvocables.method(TOKEN, "next", TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Day#of(int)].
-    public static final StaticMethodRef1<Day, Int> of_int = UnsafeFacts.staticMethod(TOKEN, "of", TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Day, Int> of_int = UnsafeInvocables.staticMethod(TOKEN, "of", TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Day#valueOf(String)].
-    public static final StaticMethodRef1<Day, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Day, String> valueOf_String = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Day#values()].
-    public static final StaticMethodRef0<Day[]> values = UnsafeFacts.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
+    public static final StaticMethodRef0<Day[]> values = UnsafeInvocables.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
 
     private Day_() {
     }

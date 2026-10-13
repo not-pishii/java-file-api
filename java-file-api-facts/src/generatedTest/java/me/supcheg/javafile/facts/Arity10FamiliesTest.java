@@ -28,7 +28,7 @@ class Arity10FamiliesTest {
     @Test
     public void methodRef() {
         Asked asked = new Asked();
-        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().method("run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.RESULT, fact.result());
@@ -50,7 +50,7 @@ class Arity10FamiliesTest {
     @Test
     public void voidMethodRef() {
         Asked asked = new Asked();
-        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().voidMethod("run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.PARAM1, fact.param1());
@@ -71,7 +71,7 @@ class Arity10FamiliesTest {
     @Test
     public void staticMethodRef() {
         Asked asked = new Asked();
-        StaticMethodRef10<Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.staticMethod(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        StaticMethodRef10<Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.staticMethod(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         StaticMethodRef10<Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().staticMethod("run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (StaticMethodRef10<Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.RESULT, fact.result());
@@ -93,7 +93,7 @@ class Arity10FamiliesTest {
     @Test
     public void voidStaticMethodRef() {
         Asked asked = new Asked();
-        VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.voidStaticMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.voidStaticMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().voidStaticMethod("run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.PARAM1, fact.param1());
@@ -114,7 +114,7 @@ class Arity10FamiliesTest {
     @Test
     public void ctorRef() {
         Asked asked = new Asked();
-        CtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.ctor(ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        CtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.ctor(ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         CtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().ctor(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (CtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.PARAM1, fact.param1());
@@ -135,7 +135,7 @@ class Arity10FamiliesTest {
     @Test
     public void superCtorRef() {
         Asked asked = new Asked();
-        SuperCtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeFacts.superCtor(ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        SuperCtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> made = UnsafeInvocables.superCtor(ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         SuperCtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> proved = asked.source().superCtor(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
         for (SuperCtorRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> fact : List.of(made, proved)) {
             Assertions.assertSame(ArityFamilies.PARAM1, fact.param1());
@@ -156,8 +156,8 @@ class Arity10FamiliesTest {
     @Test
     public void sam() {
         InterfaceToken<Functional> owner = ArityFamilies.functional(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
-        MethodRef10<Functional, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method = UnsafeFacts.method(owner, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
-        Sam10<Functional, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam = UnsafeFacts.sam(method);
+        MethodRef10<Functional, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method = UnsafeInvocables.method(owner, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        Sam10<Functional, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam = UnsafeInvocables.sam(method);
         Assertions.assertSame(owner, sam.owner());
         Assertions.assertSame(method, sam.method());
         Assertions.assertSame(ArityFamilies.RESULT, sam.result());
@@ -177,8 +177,8 @@ class Arity10FamiliesTest {
     @Test
     public void voidSam() {
         InterfaceToken<Functional> owner = ArityFamilies.functional(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10);
-        VoidMethodRef10<Functional, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method = UnsafeFacts.voidMethod(owner, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
-        VoidSam10<Functional, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam = UnsafeFacts.voidSam(method);
+        VoidMethodRef10<Functional, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method = UnsafeInvocables.voidMethod(owner, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidSam10<Functional, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam = UnsafeInvocables.voidSam(method);
         Assertions.assertSame(owner, sam.owner());
         Assertions.assertSame(method, sam.method());
         Assertions.assertSame(ArityFamilies.PARAM1, sam.param1());
@@ -196,10 +196,10 @@ class Arity10FamiliesTest {
 
     @Test
     public void overriding() {
-        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
-        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         ByOverride how = new ByOverride(ofSupertype, own);
-        Overriding10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeFacts.overriding10(how);
+        Overriding10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeInvocables.overriding10(how);
         Assertions.assertSame(how, implementation.how());
         Assertions.assertSame(own, implementation.method());
         org.assertj.core.api.Assertions.assertThat(implementation).hasToString("arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10) overriding arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10)");
@@ -207,10 +207,10 @@ class Arity10FamiliesTest {
 
     @Test
     public void selfOverriding() {
-        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
-        MethodRef10<Subject, Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.OWNER, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         ByOverride how = new ByOverride(ofSupertype, own);
-        SelfOverriding10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeFacts.selfOverriding10(how);
+        SelfOverriding10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeInvocables.selfOverriding10(how);
         Assertions.assertSame(how, implementation.how());
         Assertions.assertSame(own, implementation.method());
         org.assertj.core.api.Assertions.assertThat(implementation).hasToString("arity.Subject arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10) overriding arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10)");
@@ -218,19 +218,19 @@ class Arity10FamiliesTest {
 
     @Test
     public void inherited() {
-        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeFacts.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        MethodRef10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         ByInheritance how = new ByInheritance(ofSupertype);
-        Inherited10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeFacts.inherited10(how);
+        Inherited10<Subject, Result, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeInvocables.inherited10(how);
         Assertions.assertSame(how, implementation.how());
         org.assertj.core.api.Assertions.assertThat(implementation).hasToString("inherited arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10)");
     }
 
     @Test
     public void voidOverriding() {
-        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeFacts.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
-        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeFacts.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeInvocables.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> own = UnsafeInvocables.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         ByOverride how = new ByOverride(ofSupertype, own);
-        VoidOverriding10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeFacts.voidOverriding10(how);
+        VoidOverriding10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeInvocables.voidOverriding10(how);
         Assertions.assertSame(how, implementation.how());
         Assertions.assertSame(own, implementation.method());
         org.assertj.core.api.Assertions.assertThat(implementation).hasToString("void arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10) overriding void arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10)");
@@ -238,9 +238,9 @@ class Arity10FamiliesTest {
 
     @Test
     public void voidInherited() {
-        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeFacts.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
+        VoidMethodRef10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ofSupertype = UnsafeInvocables.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.PARAM5, ArityFamilies.PARAM6, ArityFamilies.PARAM7, ArityFamilies.PARAM8, ArityFamilies.PARAM9, ArityFamilies.PARAM10, ArityFamilies.TRAITS);
         ByInheritance how = new ByInheritance(ofSupertype);
-        VoidInherited10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeFacts.voidInherited10(how);
+        VoidInherited10<Subject, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> implementation = UnsafeInvocables.voidInherited10(how);
         Assertions.assertSame(how, implementation.how());
         org.assertj.core.api.Assertions.assertThat(implementation).hasToString("inherited void arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4, arity.A5, arity.A6, arity.A7, arity.A8, arity.A9, arity.A10)");
     }

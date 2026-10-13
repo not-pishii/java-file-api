@@ -31,6 +31,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
@@ -134,7 +135,7 @@ public final class Poly_ {
     public static final MutableFieldRef<Poly, Int> t = UnsafeFacts.mutableField(TOKEN, "t", PrimitiveToken.INT);
 
     /// The fact of [Poly#Poly()].
-    public static final CtorRef0<Poly> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Poly> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     private Poly_() {
     }
@@ -145,7 +146,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T extends Number & Comparable<T>> MethodRef1<Poly, T, T> clamp_T(RefToken<T> t) {
-        return UnsafeFacts.method(TOKEN, "clamp", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Number"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.method(TOKEN, "clamp", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Number"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// The fact of [Poly#id(Object)], for the type arguments the tokens give.
@@ -154,7 +155,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> MethodRef1<Poly, T, T> id_T(RefToken<T> t) {
-        return UnsafeFacts.method(TOKEN, "id", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.method(TOKEN, "id", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// The fact of [Poly#listOf(Object\[\])], for the type arguments the tokens give.
@@ -163,7 +164,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef1<List<T>, T[]> listOf_TArray(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t));
     }
 
     /// The fact of [Poly#max(Collection)], for the type arguments the tokens give.
@@ -172,7 +173,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T extends Comparable<? super T>> StaticMethodRef1<T, Collection<? extends T>> max_Collection(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(TOKEN, "max", t, UnsafeFacts.<Collection<? extends T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.extendsBound(t)), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(TOKEN, "max", t, UnsafeFacts.<Collection<? extends T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.extendsBound(t)), MemberTraits.FINAL.withTypeArgs(t));
     }
 
     /// The fact of [Poly#none()], for the type arguments the tokens give.
@@ -181,7 +182,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> VoidMethodRef0<Poly> none(RefToken<T> t) {
-        return UnsafeFacts.voidMethod(TOKEN, "none", MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.voidMethod(TOKEN, "none", MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// The fact of [Poly#odd(Object, Object)], for the type arguments the tokens give.
@@ -192,7 +193,7 @@ public final class Poly_ {
     /// @param gen_ the token of the type argument `Gen`
     /// @return the fact
     public static <TOKEN, Gen> VoidMethodRef2<Poly, TOKEN, Gen> odd_TOKEN_Gen(RefToken<TOKEN> tOKEN, RefToken<Gen> gen_) {
-        return UnsafeFacts.voidMethod(TOKEN, "odd", UnsafeFacts.param(tOKEN, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(gen_, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(tOKEN, gen_));
+        return UnsafeInvocables.voidMethod(TOKEN, "odd", UnsafeFacts.param(tOKEN, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(gen_, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(tOKEN, gen_));
     }
 
     /// The fact of [Poly#run(Class)], for the type arguments the tokens give.
@@ -201,7 +202,7 @@ public final class Poly_ {
     /// @param x the token of the type argument `X`
     /// @return the fact
     public static <X extends Exception> VoidMethodRef1<Poly, Class<X>> run_Class(RefToken<X> x) {
-        return UnsafeFacts.voidMethod(TOKEN, "run", UnsafeFacts.<Class<X>>finalClassToken(gen.facts.java.lang.Class_.Data.SHAPE, TokenArg.exact(x)), MemberTraits.OVERRIDABLE.throwing(x, UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).withTypeArgs(x));
+        return UnsafeInvocables.voidMethod(TOKEN, "run", UnsafeFacts.<Class<X>>finalClassToken(gen.facts.java.lang.Class_.Data.SHAPE, TokenArg.exact(x)), MemberTraits.OVERRIDABLE.throwing(x, UnsafeFacts.<IOException>openClassToken(gen.facts.java.io.IOException_.Data.SHAPE)).withTypeArgs(x));
     }
 
     /// The fact of [Poly#widen(Object)], for the type arguments the tokens give.
@@ -212,7 +213,7 @@ public final class Poly_ {
     /// @param b the token of the type argument `B`
     /// @return the fact
     public static <A, B extends A> MethodRef1<Poly, A, B> widen_B(RefToken<A> a, RefToken<B> b) {
-        return UnsafeFacts.method(TOKEN, "widen", a, UnsafeFacts.param(b, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(a, b));
+        return UnsafeInvocables.method(TOKEN, "widen", a, UnsafeFacts.param(b, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(a, b));
     }
 
     /// Starts the proof that a class being declared extends [Poly]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

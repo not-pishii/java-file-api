@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidSam3;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -83,10 +84,10 @@ public final class Fn2_ {
     public static final InterfaceToken<Fn2> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Fn2#call(String, int, long)].
-    public static final VoidMethodRef3<Fn2, String, Int, Long> call_String_int_long = UnsafeFacts.voidMethod(TOKEN, "call", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.LONG, MemberTraits.ABSTRACT);
+    public static final VoidMethodRef3<Fn2, String, Int, Long> call_String_int_long = UnsafeInvocables.voidMethod(TOKEN, "call", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.LONG, MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Fn2#call(String, int, long)], which a lambda implements.
-    public static final VoidSam3<Fn2, String, Int, Long> sam = UnsafeFacts.voidSam(call_String_int_long);
+    public static final VoidSam3<Fn2, String, Int, Long> sam = UnsafeInvocables.voidSam(call_String_int_long);
 
     private Fn2_() {
     }

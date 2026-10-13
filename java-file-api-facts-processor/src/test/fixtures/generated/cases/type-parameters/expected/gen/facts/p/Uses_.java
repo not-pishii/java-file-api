@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -105,7 +106,7 @@ public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
     /// @param t the token of the type argument `T`
     public Uses_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
     }
 
     /// Starts the proof that a class being declared extends [Uses]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

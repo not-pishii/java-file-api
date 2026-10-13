@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -94,7 +95,7 @@ public final class Canonical_ {
     public static final MutableFieldRef<p.Canonical, p.Data> data = UnsafeFacts.mutableField(TOKEN, "data", UnsafeFacts.<p.Data>openClassToken(Data_.Data.SHAPE));
 
     /// The fact of [p.Canonical#Canonical()].
-    public static final CtorRef0<p.Canonical> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<p.Canonical> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     private Canonical_() {
     }

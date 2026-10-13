@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.SuperCtorRef2;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -107,22 +108,22 @@ public final class Abs_ {
     public static final AbstractClassToken<Abs> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Abs#Abs()].
-    public static final SuperCtorRef0<Abs> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Abs> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Abs#Abs(String, int)].
-    public static final SuperCtorRef2<Abs, String, Int> super_String_int = UnsafeFacts.superCtor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final SuperCtorRef2<Abs, String, Int> super_String_int = UnsafeInvocables.superCtor(TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Abs#Abs(long)], which is `protected`: a subclass alone uses it.
-    public static final SuperCtorRef1<Abs, Long> super_long = UnsafeFacts.superCtor(TOKEN, PrimitiveToken.LONG, MemberTraits.FINAL.with(Access.PROTECTED));
+    public static final SuperCtorRef1<Abs, Long> super_long = UnsafeInvocables.superCtor(TOKEN, PrimitiveToken.LONG, MemberTraits.FINAL.with(Access.PROTECTED));
 
     /// The fact of [Abs#done()].
-    public static final VoidMethodRef0<Abs> done = UnsafeFacts.voidMethod(TOKEN, "done", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Abs> done = UnsafeInvocables.voidMethod(TOKEN, "done", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Abs#make()].
-    public static final StaticMethodRef0<Abs> make = UnsafeFacts.staticMethod(TOKEN, "make", TOKEN, MemberTraits.FINAL);
+    public static final StaticMethodRef0<Abs> make = UnsafeInvocables.staticMethod(TOKEN, "make", TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Abs#run()].
-    public static final VoidMethodRef0<Abs> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Abs> run = UnsafeInvocables.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
 
     private Abs_() {
     }
