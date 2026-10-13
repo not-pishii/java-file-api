@@ -146,7 +146,6 @@ final class ScopeCheck {
                 node(array, use, where);
                 node(index, use, where);
             }
-            case Node.Target.Init ignored -> {}
         }
     }
 

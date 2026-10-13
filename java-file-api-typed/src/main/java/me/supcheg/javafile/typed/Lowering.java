@@ -502,10 +502,6 @@ final class Lowering {
                     // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
                     case Node.Target.Element(var array, var index) ->
                         expr(array, true).arrayAccess(expr(index));
-                    case Node.Target.Init(var field) -> {
-                        uses(field);
-                        yield new FieldAccessExpr(Optional.of(new ThisExpr()), field.name());
-                    }
                 };
         return new AssignStmt(assigned, AssignOp.ASSIGN, value);
     }
