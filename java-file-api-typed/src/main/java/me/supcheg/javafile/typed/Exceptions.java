@@ -578,7 +578,7 @@ final class Exceptions {
 
     private static Stream<Node> children(Node.Target target) {
         return switch (target) {
-            case Node.Target.Local _, Node.Target.StaticField _, Node.Target.Init _ -> Stream.empty();
+            case Node.Target.Local _, Node.Target.StaticField _ -> Stream.empty();
             case Node.Target.Field(var receiver, var _) -> Stream.of(receiver.node());
             case Node.Target.Element(var array, var index) -> Stream.of(array, index);
         };

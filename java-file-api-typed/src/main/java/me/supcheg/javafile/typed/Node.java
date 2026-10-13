@@ -313,8 +313,5 @@ sealed interface Node {
 
         /// An array element.
         record Element(Node array, Node index) implements Target {}
-
-        /// The initialization of a blank `final` field of `this` in a constructor.
-        record Init(FieldRef<?, ?> field) implements Target {}
     }
 }
