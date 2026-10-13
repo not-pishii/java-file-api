@@ -862,9 +862,8 @@ final class Lowering {
                         > itself;
             }
             case TypeVarToken<?> _ -> !method.params().isEmpty();
-            // an array has the methods of Object and no other
-            case ArrayToken<?, ?> _ -> false;
-            case PrimitiveToken<?, ?, ?> _ -> false;
+            // an array has the methods of Object and no other, and a primitive is no receiver (Expressions)
+            case TypeToken<?> _ -> false;
         };
     }
 

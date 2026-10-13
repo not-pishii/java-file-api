@@ -52,11 +52,7 @@ final class TypeRefRenderer {
     static String renderQualifier(TypeRef ref, Context ctx) {
         return switch (ref) {
             case ClassTypeRef(var desc, var annotations) when annotations.isEmpty() -> ctx.qualifier(desc);
-            case ClassTypeRef _ -> renderType(ref, ctx);
-            case ParameterizedTypeRef _ -> renderType(ref, ctx);
-            case TypeVarRef _ -> renderType(ref, ctx);
-            case ArrayTypeRef _ -> renderType(ref, ctx);
-            case PrimitiveTypeRef _ -> renderType(ref, ctx);
+            case TypeRef _ -> renderType(ref, ctx);
         };
     }
 

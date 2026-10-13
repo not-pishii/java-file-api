@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.cond;
@@ -141,6 +142,15 @@ class FactPinningChecksTest {
                 pairOfStringInteger,
                 "fixtures.Other<java.lang.String> is not a recorded supertype of"
                         + " fixtures.Pair<java.lang.String, java.lang.Integer>");
+    }
+
+    @Test
+    void anElementOfAnArrayCastToItsTypeIsTheElement() {
+        // (String) strings[0] would be a redundant cast
+        var strings = ArrayToken.of(String_.TOKEN);
+        var element = at(strings, newArray(strings, literal(1)), literal(0));
+
+        assertThat(castChecked(String_.TOKEN, element).node()).isSameAs(element.node());
     }
 
     private static void assertCheckedCast(TypeToken<?> from, TypeToken<?> to) {

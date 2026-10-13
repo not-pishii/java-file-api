@@ -861,11 +861,8 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
 
     /// A type that mentions no type parameter any more, as it is written.
     private static TypeRef plain(Type type) {
-        return switch (type) {
-            case Type.Fixed(TypeRef fixed) -> fixed;
-            case Type.OfType _, Type.OfMember _, Type.Array _, Type.Parameterized _ ->
-                throw new IllegalStateException("a type parameter is left in " + type);
-        };
+        // applied, a type mentions no type parameter of the type, and a method without type parameters none of its own
+        return ((Type.Fixed) type).type();
     }
 
     private static ClassOrInterfaceTypeRef thrown(TypeRef thrown) {

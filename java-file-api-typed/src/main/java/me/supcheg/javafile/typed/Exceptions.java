@@ -386,18 +386,16 @@ final class Exceptions {
         List<Instr.Catch> catches = statement.catches();
         List<ExceptionType> thrown = thrown(statement.body(), rethrows).toList();
         List<ExceptionType.OfClass> types = types(catches);
-        boolean known = !throwsUnknown(statement.body());
+        // what the block throws is known: the clauses of a try block with untyped code are not checked
+        // (requireCatchable)
         return Stream.concat(
                 thrown.stream().filter(t -> types.stream().noneMatch(type -> type.covers(t))),
                 IntStream.range(0, catches.size())
                         .boxed()
                         .flatMap(i -> thrown(
                                 catches.get(i).body(),
-                                known
-                                        ? rethrows.with(
-                                                catches.get(i).var(),
-                                                rethrown(types.get(i), types.subList(0, i), thrown))
-                                        : rethrows)));
+                                rethrows.with(
+                                        catches.get(i).var(), rethrown(types.get(i), types.subList(0, i), thrown)))));
     }
 
     /// Whether what `block` throws is not known: it holds, at any depth, a

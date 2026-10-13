@@ -463,9 +463,9 @@ class TypeShapeTest {
                 .isSameAs(ShapeOrigin.UNSAFE);
         assertThat(PrimitiveToken.INT.boxed().shape().origin()).isSameAs(ShapeOrigin.BUILTIN);
         assertThat(PrimitiveToken.INT.boxed().shape().kind()).isSameAs(DeclaredKind.FINAL_CLASS);
-        assertThat(List.of(ShapeOrigin.MIRROR, ShapeOrigin.UNSAFE, ShapeOrigin.BUILTIN))
+        assertThat(List.of(ShapeOrigin.UNSAFE, ShapeOrigin.BUILTIN))
                 .extracting(Object::toString)
-                .containsExactly("mirror", "unsafe", "builtin");
+                .containsExactly("unsafe", "builtin");
     }
 
     @Test

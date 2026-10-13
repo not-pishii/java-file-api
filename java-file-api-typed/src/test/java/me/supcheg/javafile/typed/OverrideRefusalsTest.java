@@ -166,6 +166,26 @@ class OverrideRefusalsTest {
     }
 
     @Test
+    void aMethodOfVariableArityOfPrimitivesIsOverridden() {
+        // int m(int... all)
+        ClassDesc ints = ConstantDescs.CD_int.arrayType();
+        Inheritance.Group group = group(
+                List.of(ints),
+                object(),
+                iface(m(
+                        ABSTRACT_OF_I,
+                        Heritage.Arity.VARIABLE,
+                        List.of(Types.array(PrimitiveTypeRef.INT)),
+                        List.of(ints))));
+
+        assertThatCode(() -> overrides(
+                        UnsafeInvocables.method(
+                                SELF_TOKEN, "m", PrimitiveToken.INT, PrimitiveToken.INT.array(), MemberTraits.DEFAULT),
+                        group))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     void aMethodOfOtherParametersOfTheSameErasureIsNoOverride() {
         // int m(List<Integer>) and int m(List<String>): a name clash to javac
         Inheritance.Group group = group(
