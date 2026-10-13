@@ -27,7 +27,7 @@ import p.Wide;
 import p.WithDefault;
 
 @Facts({
-    Fn.class, Sub.class, Sub2.class, Redecl.class, Run.class, Two.class, Wide.class, Empty.class, Gen.class,
+    p.Overloaded.class, Fn.class, Sub.class, Sub2.class, Redecl.class, Run.class, Two.class, Wide.class, Empty.class, Gen.class,
     Def.class, Comp.class, WithDefault.class, StrFn.class, StrOp.class, Hid.class, Hid2.class, Sub3.class,
     Fn2.class, Sealed.class, SealedSub.class, Disjoint.class, Nested.class, Same.class, OneWithout.class
 })

@@ -1108,6 +1108,28 @@ class MultiroundTest {
     }
 
     @Test
+    void aRequestedTypeWithoutAFullMetamodelIsToldToTheTypesThatInheritFromItAndWhatItInherits() {
+        Written written = new Written("gen.facts.p.Second_");
+        Compiled compilation = Javac.facts()
+                .with(written)
+                .compile(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Narrow.class, p.Second.class})
+                class G {}
+                """,
+                        BOUNDED,
+                        SECRET,
+                        "package p; public class Narrow<T extends Secret> extends Bounded<T> {}",
+                        "package p; public class Second extends Narrow<Secret> {}");
+
+        String narrow = "the bounds of the type parameters of p.Narrow mention types that are not public: p.Secret";
+        assertThat(compilation.errors()).containsExactly("no metamodel of p.Narrow: " + narrow);
+        assertThat(compilation.warnings()).containsExactly("p.Narrow, p.Second" + NO_FACTS_OF_BOUNDED);
+        assertThat(written.comment("gen.facts.p.Second_")).contains(narrow);
+    }
+
+    @Test
     void aTypeWaitsForWhatATypeItMentionsExtends() {
         Compiled compilation = process(
                         """

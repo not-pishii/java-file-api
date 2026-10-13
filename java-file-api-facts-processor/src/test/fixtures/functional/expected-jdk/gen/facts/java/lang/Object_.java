@@ -40,7 +40,7 @@ import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Object]: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
-/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Comp], [p.Def], [p.Disjoint] and 21 more requested types, whose inherited members are called through this metamodel.
+/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Comp], [p.Def], [p.Disjoint] and 22 more requested types, whose inherited members are called through this metamodel.
 ///
 /// A generated class extends or implements [Object] by the proof its metamodel starts, with the stages of `Object_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")

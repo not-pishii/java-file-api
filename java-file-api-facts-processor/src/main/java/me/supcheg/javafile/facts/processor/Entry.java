@@ -108,8 +108,14 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
     }
 
     private static Optional<String> refusal(TypeModel model) {
-        if (!(model.kind() instanceof DeclaredKind.Inheritable)) {
-            return Optional.of("it is " + article(model.kind().toString()) + ", which no class extends");
+        Optional<String> closed =
+                switch (model.kind()) {
+                    case DeclaredKind.FinalClass kind -> Optional.of("it is a " + kind + ", which no class extends");
+                    case DeclaredKind.EnumClass kind -> Optional.of("it is an " + kind + ", which no class extends");
+                    case DeclaredKind.Inheritable _ -> Optional.empty();
+                };
+        if (closed.isPresent()) {
+            return closed;
         }
         if (model.sealed()) {
             return Optional.of("it is sealed: only the classes it permits extend or implement it");
@@ -382,12 +388,5 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
             case ParameterizedTypeRef parameterized ->
                 parameterized.args().stream().allMatch(UnboundedTypeArg.class::isInstance);
         };
-    }
-
-    private static String article(String kind) {
-        return (kind.startsWith("e") || kind.startsWith("i") || kind.startsWith("a") || kind.startsWith("o")
-                        ? "an "
-                        : "a ")
-                + kind;
     }
 }

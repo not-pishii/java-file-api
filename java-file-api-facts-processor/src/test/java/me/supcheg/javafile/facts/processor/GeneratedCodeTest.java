@@ -58,6 +58,17 @@ class GeneratedCodeTest {
     /// `@GeneratedMetamodel` and `@GeneratedMetamodelPart` of what it writes, which are its own. `@Generated` of
     /// the JDK and `@NullMarked` of JSpecify are not its to claim.
     @Test
+    void theMetamodelsOfAFactsInTheUnnamedPackageAreUnderFacts() {
+        Compiled compiled = Javac.facts()
+                .compile(
+                        "@me.supcheg.javafile.facts.meta.Facts(p.Small.class) class G {}",
+                        "package p; public final class Small {}")
+                .orFail();
+
+        assertThat(compiled.metamodels()).contains("facts.p.Small_", "facts.java.lang.Object_");
+    }
+
+    @Test
     void theProcessorClaimsItsOwnAnnotations() {
         Compiled compiled = Javac.facts()
                 .options("-Xlint:processing")
