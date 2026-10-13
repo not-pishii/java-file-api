@@ -20,12 +20,13 @@ sealed interface Site extends Comparable<Site> {
     /// @return the site
     static Site of(Element element, Elements elements) {
         return switch (element) {
-            case PackageElement pkg -> new PackageSite(pkg.getQualifiedName().toString());
             case TypeElement type ->
                 new TypeSite(
                         type.getQualifiedName().toString(),
                         elements.getPackageOf(type).getQualifiedName().toString());
-            default -> throw new IllegalArgumentException("@Facts is on types and packages only, got " + element);
+            // @Facts is on types and packages alone (its @Target)
+            default ->
+                new PackageSite(((PackageElement) element).getQualifiedName().toString());
         };
     }
 

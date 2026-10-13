@@ -319,10 +319,8 @@ final class Closure {
 
     /// A type a signature mentions, or the type it is not read for yet.
     private static Either<String, Mention> mention(String name, Models models) {
+        // of a named package: a type of the unnamed one has no metamodel, and no other type mentions it
         ClassDesc desc = ClassDesc.of(name);
-        if (desc.packageName().isEmpty()) {
-            return Either.right(new Mention.Unavailable(name, "a metamodel in a named package cannot refer to it"));
-        }
         return models.element(desc)
                 .<Either<String, Mention>>map(element -> switch (models.of(element, MemberFilter.NONE)) {
                     case Translation.Ok<TypeModel> _ -> Either.right(new Mention.Available(name, element));
