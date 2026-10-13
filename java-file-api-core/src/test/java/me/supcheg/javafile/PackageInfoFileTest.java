@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PackageInfoFileTest {
 
@@ -49,14 +50,10 @@ class PackageInfoFileTest {
     }
 
     @Test
-    void writeToWritesDirectlyUnderOutputDirWhenPackageNameIsEmpty(@TempDir Path tempDir) throws IOException {
-        PackageInfoFile file = PackageInfoFile.of("");
-
-        file.writeTo(tempDir);
-
-        Path expected = tempDir.resolve("package-info.java");
-        assertThat(Files.exists(expected)).isTrue();
-        assertThat(Files.readString(expected)).isEqualTo(file.render());
-        assertThat(Files.list(tempDir).toList()).containsExactly(expected);
+    void theUnnamedPackageHasNoPackageInfo() {
+        // a package declaration names its package (JLS 7.4.1): `package ;` is no Java
+        assertThatThrownBy(() -> PackageInfoFile.of(""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("the unnamed package has no package declaration, so no package-info.java");
     }
 }

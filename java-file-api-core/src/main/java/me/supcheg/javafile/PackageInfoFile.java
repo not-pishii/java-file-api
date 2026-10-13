@@ -32,7 +32,13 @@ public final class PackageInfoFile implements RenderableFile {
     /// @param packageName the package being annotated
     /// @param annotations the package annotations, in order
     /// @return the finished file
+    /// @throws IllegalArgumentException if `packageName` is empty: the unnamed package has no package
+    ///     declaration (JLS 7.4.1), which is all a `package-info.java` is
     public static PackageInfoFile of(String packageName, AnnotationUse... annotations) {
+        if (packageName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "the unnamed package has no package declaration, so no package-info.java");
+        }
         return new PackageInfoFile(packageName, List.of(annotations), Optional.empty());
     }
 
