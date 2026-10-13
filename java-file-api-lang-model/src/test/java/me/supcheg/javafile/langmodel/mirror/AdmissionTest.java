@@ -107,6 +107,22 @@ class AdmissionTest {
     }
 
     @Test
+    void aSupertypeWithoutAModelTellsNothing() {
+        // p.Outer.Inner is an inner class of a generic class: it has no model, and tells no member of p.Hidden
+        TypeModel low = Harness.run(
+                env -> Harness.ok(env.full("p.Low")),
+                "package p; public class Low extends Hidden { public Low(Outer<String> o) { super(o); } }",
+                """
+                package p;
+                @SuppressWarnings("rawtypes")
+                class Hidden extends Outer.Inner { Hidden(Outer o) { o.super(); } public void hid() {} }
+                """,
+                "package p; public class Outer<T> { public class Inner {} }");
+
+        assertThat(low.members().toString()).contains("MethodModel[name=hid,");
+    }
+
+    @Test
     void theHeritageOfATypeIsNotAskedForWhileItWaits() {
         assertThat(Harness.<Boolean>run(
                         env -> env.translator()

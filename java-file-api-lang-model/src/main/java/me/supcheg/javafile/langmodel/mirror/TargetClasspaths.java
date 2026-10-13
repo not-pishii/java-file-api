@@ -16,7 +16,6 @@ import javax.lang.model.util.Types;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /// The target classpath of a compilation (§5): what an annotation processor
 /// that generates code with the typed layer gives to its entry.
@@ -116,18 +115,17 @@ public final class TargetClasspaths {
         List<? extends TypeElement> named = all.stream()
                 .filter(type -> elements.getBinaryName(type).contentEquals(binaryName))
                 .toList();
-        return switch (named.size()) {
-            case 0 -> new Found.Nowhere("type " + name + " not found on the target classpath");
-            case 1 -> new Found.Type(named.getFirst());
-            default ->
-                new Found.Nowhere("type " + name + " is in several modules of the target: "
-                        + named.stream()
-                                .map(elements::getModuleOf)
-                                .map(ModuleElement::getQualifiedName)
-                                .map(Object::toString)
-                                .sorted()
-                                .collect(Collectors.joining(", ")));
-        };
+        List<String> modules = named.stream()
+                .map(elements::getModuleOf)
+                .map(ModuleElement::getQualifiedName)
+                .map(Object::toString)
+                .sorted()
+                .toList();
+        String nowhere = "type " + name + " not found on the target classpath";
+        String several = "type " + name + " is in several modules of the target: " + String.join(", ", modules);
+        return named.size() == 1
+                ? new Found.Type(named.getFirst())
+                : new Found.Nowhere(modules.isEmpty() ? nowhere : several);
     }
 
     /// The type of a name, or why there is none to read.
