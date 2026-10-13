@@ -362,6 +362,59 @@ class DocRendererTest {
     // ---- declarations
 
     @Test
+    void aCommentIsBuiltInPlaceForEveryKindOfDeclaration() {
+        ClassDesc outer = ClassDesc.of("com.example", "Outer");
+        JavaFile file = JavaFile.class_(
+                outer,
+                cb -> cb.withField("count", Types.INT, fb -> fb.withDoc(d -> d.paragraph("A field.")))
+                        .withNestedInterface(
+                                outer.nested("Shape"),
+                                ib -> ib.withDoc(d -> d.paragraph("An interface."))
+                                        .withConstant(
+                                                "SIDES",
+                                                Types.INT,
+                                                kb -> kb.withDoc(d -> d.paragraph("A constant."))
+                                                        .withInitializer(literal(4))))
+                        .withNestedEnum(
+                                outer.nested("Level"),
+                                eb -> eb.withDoc(d -> d.paragraph("An enum."))
+                                        .withConstant("LOW")
+                                        .withConstructor(
+                                                ctor -> ctor.withDoc(d -> d.paragraph("An enum constructor."))))
+                        .withNestedAnnotationType(
+                                outer.nested("Mark"), ab -> ab.withDoc(d -> d.paragraph("An annotation."))));
+
+        assertThat(file.render(SourceRenderer.standardFormat(DocStyle.MARKDOWN)))
+                .isEqualTo("""
+                        package com.example;
+
+                        public class Outer {
+                            /// A field.
+                            public int count;
+
+                            /// An interface.
+                            public interface Shape {
+                                /// A constant.
+                                int SIDES = 4;
+                            }
+
+                            /// An enum.
+                            public enum Level {
+                                LOW;
+
+                                /// An enum constructor.
+                                Level() {
+                                }
+                            }
+
+                            /// An annotation.
+                            public @interface Mark {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void aCommentComesBeforeTheAnnotationsOfEveryKindOfDeclaration() {
         ClassDesc outer = ClassDesc.of("com.example", "Outer");
         JavaFile file = JavaFile.class_(
