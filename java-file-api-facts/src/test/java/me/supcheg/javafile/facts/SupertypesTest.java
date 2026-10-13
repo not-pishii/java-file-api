@@ -45,6 +45,36 @@ class SupertypesTest {
     }
 
     @Test
+    void theTypeArgumentsStandForTheTypeParametersWhereverASupertypeMentionsThem() {
+        ClassDesc function = ClassDesc.of("java.util.function", "Function");
+        ClassDesc comparable = ClassDesc.of("java.lang", "Comparable");
+        Supertypes supertypes = new Supertypes(
+                List.of(Types.typeVar("T")),
+                List.of(
+                        // Function<? super T, ? extends T[]>
+                        Types.parameterized(
+                                function,
+                                Types.superBound(Types.typeVar("T")),
+                                Types.extendsBound(Types.array(Types.typeVar("T")))),
+                        // Map<?, int[]>
+                        Types.parameterized(
+                                ConstantDescs.CD_Map, Types.unbounded(), Types.exact(Types.array(Types.INT))),
+                        Types.parameterized(comparable, Types.STRING)));
+
+        assertThat(supertypes.supertype(function, List.of(Types.STRING)))
+                .contains(Types.parameterized(
+                        function, Types.superBound(Types.STRING), Types.extendsBound(Types.array(Types.STRING))));
+        assertThat(supertypes.supertype(ConstantDescs.CD_Map, List.of(Types.STRING)))
+                .contains(Types.parameterized(
+                        ConstantDescs.CD_Map, Types.unbounded(), Types.exact(Types.array(Types.INT))));
+        assertThat(supertypes.supertype(comparable, List.of(Types.OBJECT)))
+                .contains(Types.parameterized(comparable, Types.STRING));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> supertypes.supertype(function, List.of()))
+                .withMessage("expected 1 type arguments, got 0");
+    }
+
+    @Test
     void supertypesNameOnlyDeclaredTypeParameters() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new Supertypes(List.of(Types.typeVar("E"), Types.typeVar("E")), List.of()))

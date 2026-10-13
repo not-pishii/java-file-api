@@ -12,6 +12,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -70,6 +71,39 @@ class FactSourceTest {
                 .isThrownBy(source::ctor)
                 .withMessageContaining("interface java.lang.Runnable");
         assertThat(asked).isEmpty();
+    }
+
+    @Test
+    void anEnumHasNoConstructorFacts() {
+        EnumToken<TimeUnit> state =
+                UnsafeFacts.enumToken(Types.of(TimeUnit.class), List.of("SECONDS"), MethodTable.EMPTY);
+        FactSource<TimeUnit> source = source(state, Optional.empty());
+
+        assertThatExceptionOfType(FactLookupException.class)
+                .isThrownBy(source::ctor)
+                .withMessageContaining("enum java.util.concurrent.TimeUnit");
+        assertThat(asked).isEmpty();
+    }
+
+    @Test
+    void aFieldIsAskedForByItsKind() {
+        FactSource<String> source = source(String_.TOKEN, Optional.empty());
+
+        FieldRef<String, Prim.Int> field = source.field("hash", PrimitiveToken.INT);
+        MutableFieldRef<String, Prim.Int> mutable = source.mutableField("hash", PrimitiveToken.INT);
+        MutableStaticFieldRef<Prim.Int> mutableStatic = source.mutableStaticField("count", PrimitiveToken.INT);
+
+        assertThat(asked)
+                .containsExactly(
+                        MemberQuery.field(MemberKind.FIELD, "hash", PrimitiveToken.INT),
+                        MemberQuery.field(MemberKind.MUTABLE_FIELD, "hash", PrimitiveToken.INT),
+                        MemberQuery.field(MemberKind.MUTABLE_STATIC_FIELD, "count", PrimitiveToken.INT));
+        assertThat(List.of(field.name(), mutable.name(), mutableStatic.name()))
+                .containsExactly("hash", "hash", "count");
+        assertThat(List.of(field.owner(), mutable.owner(), mutableStatic.owner()))
+                .containsOnly(String_.TOKEN);
+        assertThat(List.of(field.access(), mutable.access(), mutableStatic.access()))
+                .containsOnly(Access.PUBLIC);
     }
 
     @Test
