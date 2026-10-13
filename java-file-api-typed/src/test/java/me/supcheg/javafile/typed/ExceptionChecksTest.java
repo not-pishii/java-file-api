@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
+import me.supcheg.javafile.code.EmptyStmt;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.facts.ClassToken;
@@ -26,6 +27,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.RuntimeException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Throwable_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,9 +43,11 @@ import java.util.stream.Stream;
 import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
+import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
+import static me.supcheg.javafile.typed.Expressions.switch_;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -628,6 +632,34 @@ class ExceptionChecksTest {
                                     h -> h.catch_(InterruptedException_.TOKEN, (c, _) -> c.return_(literal(0))),
                                     t -> t.return_(expression))))
                     .doesNotThrowAnyException();
+        }
+
+        @Test
+        void whatAClauseOfATryBlockWithUntypedCodeRethrowsIsTheTypeOfTheClause() {
+            // what the inner block throws is not known: its binding, rethrown, is an IOException to the outer try
+            UnsafeStmt statement = Unsafe.stmt(new EmptyStmt());
+
+            assertThatCode(() -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                            outer -> outer.try_(
+                                            h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e)),
+                                            t -> t.add(statement))
+                                    .return_(literal(1)))))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void aSwitchOfValuesInATryBlockHasNoBlockToLookIn() {
+            asJavacAccepts(
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                            t -> t.return_(switch_(
+                                    Signal_.TOKEN,
+                                    enumConstant(Signal_.RED),
+                                    PrimitiveToken.INT,
+                                    c -> c.case_(Signal_.RED, literal(1)).default_(literal(0)))))),
+                    "static int m() { try { return switch (java.util.concurrent.TimeUnit.DAYS) { case DAYS -> 1;"
+                            + " default -> 0; }; } catch (RuntimeException e) { return 2; } }");
         }
     }
 
