@@ -159,6 +159,16 @@ class JavaFileTest {
     }
 
     @Test
+    void aFileOfTheUnnamedPackageHasNoPackageDeclaration() {
+        JavaFile unnamed = JavaFile.class_(ClassDesc.of("Empty"), cb -> {});
+        JavaFile named = JavaFile.class_(ClassDesc.of("com.example", "Empty"), cb -> {});
+
+        // a compilation unit of the unnamed package has no package declaration (JLS 7.4.2)
+        assertThat(named.render()).startsWith("package com.example;\n\n");
+        assertThat(unnamed.render()).isEqualTo(named.render().replace("package com.example;\n\n", ""));
+    }
+
+    @Test
     void writeToWritesDirectlyIntoTheOutputDirForTheUnnamedPackage(@TempDir Path tempDir) throws IOException {
         JavaFile file = JavaFile.class_(ClassDesc.of("Empty"), cb -> {});
 

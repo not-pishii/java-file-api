@@ -86,11 +86,14 @@ public final class StandardRenderer implements SourceRenderer {
         String body = imports.mentioned() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : first;
 
         StringBuilder out = new StringBuilder();
-        out.append("package ")
-                .append(meta.packageName())
-                .append(";")
-                .append(ctx.newline())
-                .append(ctx.newline());
+        // a compilation unit of the unnamed package has no package declaration (JLS 7.4.2)
+        if (!meta.packageName().isEmpty()) {
+            out.append("package ")
+                    .append(meta.packageName())
+                    .append(";")
+                    .append(ctx.newline())
+                    .append(ctx.newline());
+        }
 
         List<String> sortedImports = imports.sortedImports();
         if (!sortedImports.isEmpty()) {
