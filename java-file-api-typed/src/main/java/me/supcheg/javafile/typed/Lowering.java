@@ -710,10 +710,7 @@ final class Lowering {
         return hasTwin(subclass, method)
                 ? Optional.of("the class has another method that erases as it does, which javac would take for"
                         + " it — "
-                        + (method.traits().typeArgs().isEmpty()
-                                ? "call it as super." + method.name() + "(...) by superCall"
-                                : "a generic method of a superclass is not called in a class that has such an"
-                                        + " overload"))
+                        + "a generic method of a superclass is not called in a class that has such an overload")
                 : Optional.empty();
     }
 
@@ -865,7 +862,9 @@ final class Lowering {
                         > itself;
             }
             case TypeVarToken<?> _ -> !method.params().isEmpty();
-            case ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ -> false;
+            // an array has the methods of Object and no other
+            case ArrayToken<?, ?> _ -> false;
+            case PrimitiveToken<?, ?, ?> _ -> false;
         };
     }
 

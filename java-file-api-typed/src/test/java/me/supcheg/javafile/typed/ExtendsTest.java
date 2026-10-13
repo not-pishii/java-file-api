@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -787,6 +788,51 @@ class ExtendsTest {
                     "is reached on an expression that is not this",
                     "extends Base",
                     "public int peek(Probe other) { return other.hits; }");
+        }
+
+        @Test
+        void aProtectedFieldOfAClassAboveTheSuperclassIsNotReached() {
+            // stricter than javac: whether a class between hides the field is not told
+            classUnlikeJavac(
+                    IllegalStateException.class,
+                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                            var sh = h.extends_(Mid_.extend(h.self()));
+                            var cb = sh.members();
+                            var constructor = cb.declareConstructor();
+                            var hits = cb.protected_(Base_.hits);
+                            var peek = cb.declareMethod("peek", PrimitiveToken.INT);
+                            var bodies = cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
+                            bodies.define(
+                                    peek,
+                                    (b, self) -> b.return_(field(cb.asSuper().apply(self), hits)));
+                            return bodies;
+                        }
+                    }),
+                    "is a field of a class above the superclass",
+                    "extends Mid",
+                    "public int peek() { return super.hits; }");
+        }
+
+        @Test
+        void superCallsAConstructorOfTheSuperclassAlone() {
+            // the types say so; a fact cast to the superclass is held to it all the same
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            CtorRef0<Base> ofMid = (CtorRef0) Mid_.new_;
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                        @Override
+                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                            var sh = h.extends_(Base_.extend(h.self()));
+                            var cb = sh.members();
+                            var constructor = cb.declareConstructor();
+                            return cb.bodies(constructor, ctor -> ctor.super_(ofMid, (b, self) -> b.end()));
+                        }
+                    }))
+                    .withMessageContaining("is not a constructor of me.supcheg.javafile.typed.fixtures.Base, the"
+                            + " superclass: super(...) calls a constructor of the direct superclass (JLS 8.8.7.1)");
         }
 
         @Test

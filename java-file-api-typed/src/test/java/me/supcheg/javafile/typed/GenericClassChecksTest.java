@@ -322,6 +322,23 @@ class GenericClassChecksTest {
         }
 
         @Test
+        void aTypeParameterIsNotInScopeInTheBodyOfNoClass() {
+            TypeVarToken<?>[] kept = new TypeVarToken<?>[1];
+            probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                @Override
+                public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
+                    kept[0] = t;
+                    return h.extendsObject().members().bodies();
+                }
+            });
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> new TypeScope.Standalone().require(kept[0]))
+                    .withMessageContaining("the type parameter T is in scope in the class that declares it alone"
+                            + " (JLS 6.3), and this code is in the body of no class");
+        }
+
+        @Test
         void aSupertypeAndABoundMentionNoTypeParameterOfAnotherClass() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {

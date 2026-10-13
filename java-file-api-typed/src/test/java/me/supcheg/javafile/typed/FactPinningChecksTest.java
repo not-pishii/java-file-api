@@ -133,6 +133,14 @@ class FactPinningChecksTest {
                         + " fixtures.Pair<java.lang.String, java.lang.Integer>");
         assertUncheckedCast(
                 strings.token, unrecorded, "the facts of java.util.ArrayList<java.lang.String> record no supertypes");
+        assertUncheckedCast(
+                UnsafeFacts.openClassToken(
+                        Types.parameterized(ClassDesc.of("fixtures", "Other"), Types.STRING),
+                        List.of(ConstantDescs.CD_Object),
+                        MethodTable.EMPTY),
+                pairOfStringInteger,
+                "fixtures.Other<java.lang.String> is not a recorded supertype of"
+                        + " fixtures.Pair<java.lang.String, java.lang.Integer>");
     }
 
     private static void assertCheckedCast(TypeToken<?> from, TypeToken<?> to) {
