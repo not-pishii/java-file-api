@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 
 /// The token-only metamodel of [String]: its shape and its token, no facts of its members.
 ///
-/// `@Facts` does not ask for [String]: it is only mentioned in the signatures of [Object]. For the facts of its members add `String.class` to `@Facts`.
+/// `@Facts` does not ask for [String]: it is only mentioned in the signatures of [Object], [p.Box] and [p.Uses]. For the facts of its members add `String.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodel(of = String.class, fingerprint = "95447b45917fb6a033b5c43af387bbd57125088ab986dce0721e08ef524eb2a7", complete = false, format = 14)
 @SuppressWarnings({
