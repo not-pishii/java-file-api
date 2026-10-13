@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -94,10 +95,10 @@ public final class ProtAbs_ {
     public static final AbstractClassToken<ProtAbs> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [ProtAbs#ProtAbs()], which is `protected`: a subclass alone uses it.
-    public static final SuperCtorRef0<ProtAbs> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL.with(Access.PROTECTED));
+    public static final SuperCtorRef0<ProtAbs> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL.with(Access.PROTECTED));
 
     /// The fact of [ProtAbs#hook(String)], which is `protected`: a subclass alone uses it.
-    public static final Protected<ProtAbs, MethodRef1<ProtAbs, String, String>> hook_String = UnsafeFacts.protected_(TOKEN, UnsafeFacts.method(TOKEN, "hook", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT.with(Access.PROTECTED)));
+    public static final Protected<ProtAbs, MethodRef1<ProtAbs, String, String>> hook_String = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.method(TOKEN, "hook", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT.with(Access.PROTECTED)));
 
     private ProtAbs_() {
     }

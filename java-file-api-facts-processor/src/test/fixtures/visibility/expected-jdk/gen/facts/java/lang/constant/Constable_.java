@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -85,10 +86,10 @@ public final class Constable_ {
     public static final InterfaceToken<Constable> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Constable#describeConstable()].
-    public static final MethodRef0<Constable, Optional<? extends ConstantDesc>> describeConstable = UnsafeFacts.method(TOKEN, "describeConstable", UnsafeFacts.<Optional<? extends ConstantDesc>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.extendsBound(UnsafeFacts.<ConstantDesc>interfaceToken(ConstantDesc_.Data.SHAPE))), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Constable, Optional<? extends ConstantDesc>> describeConstable = UnsafeInvocables.method(TOKEN, "describeConstable", UnsafeFacts.<Optional<? extends ConstantDesc>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.extendsBound(UnsafeFacts.<ConstantDesc>interfaceToken(ConstantDesc_.Data.SHAPE))), MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Constable#describeConstable()], which a lambda implements.
-    public static final Sam0<Constable, Optional<? extends ConstantDesc>> sam = UnsafeFacts.sam(describeConstable);
+    public static final Sam0<Constable, Optional<? extends ConstantDesc>> sam = UnsafeInvocables.sam(describeConstable);
 
     private Constable_() {
     }

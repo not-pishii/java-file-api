@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -98,7 +99,7 @@ public final class Num_ {
     public static final AbstractClassToken<Num> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Num#Num()].
-    public static final SuperCtorRef0<Num> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Num> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL);
 
     private Num_() {
     }

@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -111,8 +112,8 @@ public final class Box_<T extends Comparable<T>> {
     /// @param t the token of the type argument `T`
     public Box_(RefToken<T> t) {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.get = UnsafeFacts.method(token, "get", t, MemberTraits.OVERRIDABLE);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.get = UnsafeInvocables.method(token, "get", t, MemberTraits.OVERRIDABLE);
     }
 
     /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

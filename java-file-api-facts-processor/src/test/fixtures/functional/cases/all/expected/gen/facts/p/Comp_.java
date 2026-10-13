@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -85,16 +86,16 @@ public final class Comp_ {
     public static final InterfaceToken<Comp> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Comp#compareTo(Comp)].
-    public static final MethodRef1<Comp, Int, Comp> compareTo_Comp = UnsafeFacts.method(TOKEN, "compareTo", PrimitiveToken.INT, TOKEN, MemberTraits.ABSTRACT);
+    public static final MethodRef1<Comp, Int, Comp> compareTo_Comp = UnsafeInvocables.method(TOKEN, "compareTo", PrimitiveToken.INT, TOKEN, MemberTraits.ABSTRACT);
 
     /// The fact of [Comp#hashCode()].
-    public static final MethodRef0<Comp, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef0<Comp, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     /// The fact of [Comp#toString()].
-    public static final MethodRef0<Comp, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Comp, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Comp#compareTo(Comp)], which a lambda implements.
-    public static final Sam1<Comp, Int, Comp> sam = UnsafeFacts.sam(compareTo_Comp);
+    public static final Sam1<Comp, Int, Comp> sam = UnsafeInvocables.sam(compareTo_Comp);
 
     private Comp_() {
     }

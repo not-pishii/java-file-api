@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -143,8 +144,8 @@ public final class Low_<gen_, java_, me_, p_> {
         this.p_ = p_;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(gen_), TokenArg.exact(java_), TokenArg.exact(me_), TokenArg.exact(p_));
         this.first = UnsafeFacts.mutableField(token, "first", gen_);
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.all_java_me_p = UnsafeFacts.method(token, "all", UnsafeFacts.<Set<gen_>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen_)), UnsafeFacts.param(java_, Param.var(1)), UnsafeFacts.param(me_, Param.var(2)), UnsafeFacts.param(p_, Param.var(3)), MemberTraits.OVERRIDABLE);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.all_java_me_p = UnsafeInvocables.method(token, "all", UnsafeFacts.<Set<gen_>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen_)), UnsafeFacts.param(java_, Param.var(1)), UnsafeFacts.param(me_, Param.var(2)), UnsafeFacts.param(p_, Param.var(3)), MemberTraits.OVERRIDABLE);
     }
 
     /// The fact of [Low#each(Set)], for the type arguments the tokens give.
@@ -153,7 +154,7 @@ public final class Low_<gen_, java_, me_, p_> {
     /// @param gen__ the token of the type argument `gen__`
     /// @return the fact
     public <gen__> VoidMethodRef1<Low<gen_, java_, me_, p_>, Set<gen__>> each_Set(RefToken<gen__> gen__) {
-        return UnsafeFacts.voidMethod(token, "each", UnsafeFacts.<Set<gen__>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen__)), MemberTraits.OVERRIDABLE.withTypeArgs(gen__));
+        return UnsafeInvocables.voidMethod(token, "each", UnsafeFacts.<Set<gen__>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(gen__)), MemberTraits.OVERRIDABLE.withTypeArgs(gen__));
     }
 
     /// The fact of [Low#of(Object, Object, Object, Object)], for the type arguments the tokens give.
@@ -168,7 +169,7 @@ public final class Low_<gen_, java_, me_, p_> {
     /// @param p_ the token of the type argument `p_`
     /// @return the fact
     public static <gen_, java_, me_, p_> StaticMethodRef4<Low<gen_, java_, me_, p_>, gen_, java_, me_, p_> of_gen_java_me_p(RefToken<gen_> gen_, RefToken<java_> java_, RefToken<me_> me_, RefToken<p_> p_) {
-        return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<Low<gen_, java_, me_, p_>>openClassToken(Data.SHAPE, TokenArg.exact(gen_), TokenArg.exact(java_), TokenArg.exact(me_), TokenArg.exact(p_)), UnsafeFacts.param(gen_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(java_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(me_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(p_, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(gen_, java_, me_, p_));
+        return UnsafeInvocables.staticMethod(ANY, "of", UnsafeFacts.<Low<gen_, java_, me_, p_>>openClassToken(Data.SHAPE, TokenArg.exact(gen_), TokenArg.exact(java_), TokenArg.exact(me_), TokenArg.exact(p_)), UnsafeFacts.param(gen_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(java_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(me_, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(p_, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(gen_, java_, me_, p_));
     }
 
     /// The fact of [Low#pick(Object, Set)], for the type arguments the tokens give.
@@ -179,6 +180,6 @@ public final class Low_<gen_, java_, me_, p_> {
     /// @param me__ the token of the type argument `me__`
     /// @return the fact
     public <java__, me__> MethodRef2<Low<gen_, java_, me_, p_>, java__, me__, Set<p_>> pick_me_Set(RefToken<java__> java__, RefToken<me__> me__) {
-        return UnsafeFacts.method(token, "pick", java__, UnsafeFacts.param(me__, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.<Set<p_>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(p_)), MemberTraits.OVERRIDABLE.withTypeArgs(java__, me__));
+        return UnsafeInvocables.method(token, "pick", java__, UnsafeFacts.param(me__, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.<Set<p_>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(p_)), MemberTraits.OVERRIDABLE.withTypeArgs(java__, me__));
     }
 }

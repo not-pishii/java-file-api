@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -98,16 +99,16 @@ public final class Iface_ {
     public static final StaticFieldRef<String> NAME = UnsafeFacts.constantField(TOKEN, "NAME", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), "n");
 
     /// The fact of [Iface#empty()].
-    public static final StaticMethodRef0<Iface> empty = UnsafeFacts.staticMethod(TOKEN, "empty", TOKEN, MemberTraits.FINAL);
+    public static final StaticMethodRef0<Iface> empty = UnsafeInvocables.staticMethod(TOKEN, "empty", TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Iface#run()].
-    public static final VoidMethodRef0<Iface> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Iface> run = UnsafeInvocables.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
 
     /// The fact of [Iface#size()].
-    public static final MethodRef0<Iface, Int> size = UnsafeFacts.method(TOKEN, "size", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Iface, Int> size = UnsafeInvocables.method(TOKEN, "size", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of the single abstract method [Iface#run()], which a lambda implements.
-    public static final VoidSam0<Iface> sam = UnsafeFacts.voidSam(run);
+    public static final VoidSam0<Iface> sam = UnsafeInvocables.voidSam(run);
 
     private Iface_() {
     }

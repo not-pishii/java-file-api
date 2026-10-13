@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -92,10 +93,10 @@ public final class Unused_ {
     public static final OpenClassToken<Unused> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Unused#Unused()].
-    public static final CtorRef0<Unused> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Unused> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Unused#gone()].
-    public static final VoidMethodRef0<Unused> gone = UnsafeFacts.voidMethod(TOKEN, "gone", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Unused> gone = UnsafeInvocables.voidMethod(TOKEN, "gone", MemberTraits.OVERRIDABLE);
 
     private Unused_() {
     }

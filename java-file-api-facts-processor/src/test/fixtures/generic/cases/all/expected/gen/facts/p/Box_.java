@@ -37,6 +37,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -155,10 +156,10 @@ public final class Box_<T> {
     public static final MutableStaticFieldRef<Int> count = UnsafeFacts.mutableStaticField(ANY, "count", PrimitiveToken.INT);
 
     /// The fact of [Box#ofString()].
-    public static final StaticMethodRef0<Box<String>> ofString = UnsafeFacts.staticMethod(ANY, "ofString", UnsafeFacts.<Box<String>>openClassToken(Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.FINAL);
+    public static final StaticMethodRef0<Box<String>> ofString = UnsafeInvocables.staticMethod(ANY, "ofString", UnsafeFacts.<Box<String>>openClassToken(Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.FINAL);
 
     /// The fact of [Box#size(Box)].
-    public static final StaticMethodRef1<Int, Box<?>> size_Box = UnsafeFacts.staticMethod(ANY, "size", PrimitiveToken.INT, UnsafeFacts.<Box<?>>openClassToken(Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Box<?>> size_Box = UnsafeInvocables.staticMethod(ANY, "size", PrimitiveToken.INT, UnsafeFacts.<Box<?>>openClassToken(Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);
 
     /// The token of [Box] with the type arguments of this metamodel.
     public final OpenClassToken<Box<T>> token;
@@ -218,20 +219,20 @@ public final class Box_<T> {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.initial = UnsafeFacts.field(token, "initial", t);
         this.value = UnsafeFacts.mutableField(token, "value", t);
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.new_T = UnsafeFacts.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
-        this.addAll_Collection = UnsafeFacts.voidMethod(token, "addAll", UnsafeFacts.<Collection<? extends T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.extendsBound(t)), MemberTraits.OVERRIDABLE);
-        this.asList = UnsafeFacts.method(token, "asList", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), MemberTraits.OVERRIDABLE);
-        this.drainTo_Collection = UnsafeFacts.voidMethod(token, "drainTo", UnsafeFacts.<Collection<? super T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.superBound(t)), MemberTraits.OVERRIDABLE);
-        this.get = UnsafeFacts.method(token, "get", t, MemberTraits.OVERRIDABLE);
-        this.ints = UnsafeFacts.method(token, "ints", PrimitiveToken.INT.array(), MemberTraits.OVERRIDABLE);
-        this.nested = UnsafeFacts.method(token, "nested", UnsafeFacts.<Box<Box<T>>>openClassToken(Data.SHAPE, TokenArg.exact(token)), MemberTraits.OVERRIDABLE);
-        this.rawSelf = UnsafeFacts.method(token, "rawSelf", UnsafeFacts.<Box>openClassToken(Data.SHAPE), MemberTraits.OVERRIDABLE);
-        this.raw_Map = UnsafeFacts.method(token, "raw", UnsafeFacts.<List>interfaceToken(gen.facts.java.util.List_.Data.SHAPE), UnsafeFacts.<Map>interfaceToken(gen.facts.java.util.Map_.Data.SHAPE), MemberTraits.OVERRIDABLE);
-        this.sameAs_Box = UnsafeFacts.method(token, "sameAs", PrimitiveToken.BOOLEAN, UnsafeFacts.<Box<?>>openClassToken(Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
-        this.self = UnsafeFacts.method(token, "self", token, MemberTraits.OVERRIDABLE);
-        this.set_T = UnsafeFacts.voidMethod(token, "set", UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
-        this.toArray_TArray = UnsafeFacts.method(token, "toArray", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.new_T = UnsafeInvocables.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
+        this.addAll_Collection = UnsafeInvocables.voidMethod(token, "addAll", UnsafeFacts.<Collection<? extends T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.extendsBound(t)), MemberTraits.OVERRIDABLE);
+        this.asList = UnsafeInvocables.method(token, "asList", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), MemberTraits.OVERRIDABLE);
+        this.drainTo_Collection = UnsafeInvocables.voidMethod(token, "drainTo", UnsafeFacts.<Collection<? super T>>interfaceToken(gen.facts.java.util.Collection_.Data.SHAPE, TokenArg.superBound(t)), MemberTraits.OVERRIDABLE);
+        this.get = UnsafeInvocables.method(token, "get", t, MemberTraits.OVERRIDABLE);
+        this.ints = UnsafeInvocables.method(token, "ints", PrimitiveToken.INT.array(), MemberTraits.OVERRIDABLE);
+        this.nested = UnsafeInvocables.method(token, "nested", UnsafeFacts.<Box<Box<T>>>openClassToken(Data.SHAPE, TokenArg.exact(token)), MemberTraits.OVERRIDABLE);
+        this.rawSelf = UnsafeInvocables.method(token, "rawSelf", UnsafeFacts.<Box>openClassToken(Data.SHAPE), MemberTraits.OVERRIDABLE);
+        this.raw_Map = UnsafeInvocables.method(token, "raw", UnsafeFacts.<List>interfaceToken(gen.facts.java.util.List_.Data.SHAPE), UnsafeFacts.<Map>interfaceToken(gen.facts.java.util.Map_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+        this.sameAs_Box = UnsafeInvocables.method(token, "sameAs", PrimitiveToken.BOOLEAN, UnsafeFacts.<Box<?>>openClassToken(Data.SHAPE, TokenArg.unbounded()), MemberTraits.OVERRIDABLE);
+        this.self = UnsafeInvocables.method(token, "self", token, MemberTraits.OVERRIDABLE);
+        this.set_T = UnsafeInvocables.voidMethod(token, "set", UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE);
+        this.toArray_TArray = UnsafeInvocables.method(token, "toArray", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE);
     }
 
     /// Starts the proof that a class being declared extends [Box]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

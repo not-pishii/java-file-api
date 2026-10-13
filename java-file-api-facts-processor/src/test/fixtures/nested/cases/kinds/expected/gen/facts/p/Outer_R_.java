@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -84,19 +85,19 @@ public final class Outer_R_ {
     public static final FinalClassToken<R> TOKEN = UnsafeFacts.finalClassToken(Data.SHAPE);
 
     /// The fact of [R#R(int)].
-    public static final CtorRef1<R, Int> new_int = UnsafeFacts.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final CtorRef1<R, Int> new_int = UnsafeInvocables.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [R#equals(Object)].
-    public static final MethodRef1<R, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef1<R, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [R#hashCode()].
-    public static final MethodRef0<R, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<R, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [R#toString()].
-    public static final MethodRef0<R, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef0<R, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [R#x()].
-    public static final MethodRef0<R, Int> x = UnsafeFacts.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<R, Int> x = UnsafeInvocables.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.FINAL);
 
     private Outer_R_() {
     }

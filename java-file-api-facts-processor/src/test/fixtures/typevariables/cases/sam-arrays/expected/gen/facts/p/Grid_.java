@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -101,8 +102,8 @@ public final class Grid_<A, B> {
     /// @param b the token of the type argument `B`
     public Grid_(RefToken<A> a, RefToken<B> b) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(a), TokenArg.exact(b));
-        this.row_BArrayArray = UnsafeFacts.method(token, "row", ArrayToken.of(a), UnsafeFacts.param(ArrayToken.of(ArrayToken.of(b)), Param.var(1, 2)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.sam(row_BArrayArray);
+        this.row_BArrayArray = UnsafeInvocables.method(token, "row", ArrayToken.of(a), UnsafeFacts.param(ArrayToken.of(ArrayToken.of(b)), Param.var(1, 2)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.sam(row_BArrayArray);
     }
 
     /// Starts the proof that a class being declared implements [Grid]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

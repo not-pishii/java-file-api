@@ -43,8 +43,8 @@ import static me.supcheg.javafile.code.Exprs.this_;
 ///
 /// Every generated type is marked `@Generated`. The families have
 /// package-private constructors: facts are introduced only through
-/// `UnsafeFacts`, which inherits the generated factories of
-/// `InvocableFactories`, and through the checked lookups of `FactSource`,
+/// `UnsafeFacts` and the generated factories of `UnsafeInvocables`, and
+/// through the checked lookups of `FactSource`,
 /// which inherits the generated `InvocableLookup` (§3.1).
 ///
 /// Beside the families it generates their tests, `ArityNFamiliesTest`: a family is the same code at
@@ -464,12 +464,15 @@ public final class FactsCodegen {
         });
     }
 
-    /// The package-private superclass of `UnsafeFacts` holding its generated
-    /// member factories, one per family and arity.
+    /// `UnsafeInvocables`, the generated member factories, one per family
+    /// and arity: what `UnsafeFacts` is to tokens and fields, to methods and
+    /// constructors. A class of static factories has no instance: its one
+    /// constructor is private.
     private static JavaFile factories() {
-        return JavaFile.class_(ClassDesc.of(FACTS, "InvocableFactories"), cb -> {
+        return JavaFile.class_(UNSAFE_INVOCABLES, cb -> {
             generated(cb);
-            cb.withExactModifiers(Set.of(Modifier.ABSTRACT));
+            cb.withModifiers(Modifier.FINAL);
+            cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
             for (int n = 0; n <= MAX_ARITY; n++) {
                 for (Family family : Family.values()) {
                     factory(cb, family, n);
@@ -615,7 +618,7 @@ public final class FactsCodegen {
 
     private static final ClassDesc ARITY_FAMILIES = ClassDesc.of(FACTS, "ArityFamilies");
     private static final ClassDesc ASKED = ARITY_FAMILIES.nested("Asked");
-    private static final ClassDesc UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
+    private static final ClassDesc UNSAFE_INVOCABLES = ClassDesc.of(FACTS, "UnsafeInvocables");
     private static final ClassDesc TEST = ClassDesc.of("org.junit.jupiter.api", "Test");
     private static final ClassDesc JUNIT_ASSERTIONS = ClassDesc.of("org.junit.jupiter.api", "Assertions");
     private static final ClassDesc ASSERTJ_ASSERTIONS = ClassDesc.of("org.assertj.core.api", "Assertions");
@@ -725,10 +728,10 @@ public final class FactsCodegen {
                 .toList();
     }
 
-    /// A fact of `run` made by the factory of `UnsafeFacts`.
+    /// A fact of `run` made by the factory of `UnsafeInvocables`.
     private static Expr made(Family family, Expr owner, Expr result, int n) {
         return staticCall(
-                UNSAFE_FACTS,
+                UNSAFE_INVOCABLES,
                 family.factory,
                 Stream.of(Stream.of(owner), signature(family, result, n).stream(), Stream.of(fixture("TRAITS")))
                         .flatMap(parts -> parts)
@@ -788,7 +791,7 @@ public final class FactsCodegen {
             b.localVar(
                     "sam",
                     tested(family.desc(n), family.typeVars(n)),
-                    staticCall(UNSAFE_FACTS, family.factory, field("method")));
+                    staticCall(UNSAFE_INVOCABLES, family.factory, field("method")));
             assertSame(b, field("owner"), field("sam").call("owner"));
             assertSame(b, field("method"), field("sam").call("method"));
             if (family.hasResult) {
@@ -831,7 +834,7 @@ public final class FactsCodegen {
             b.localVar(
                     "implementation",
                     tested(ClassDesc.of(FACTS, name), vars),
-                    staticCall(UNSAFE_FACTS, decapitalized(name), field("how")));
+                    staticCall(UNSAFE_INVOCABLES, decapitalized(name), field("how")));
             assertSame(b, field("how"), field("implementation").call("how"));
             if (had != Had.INHERITED) {
                 assertSame(b, field("own"), field("implementation").call("method"));

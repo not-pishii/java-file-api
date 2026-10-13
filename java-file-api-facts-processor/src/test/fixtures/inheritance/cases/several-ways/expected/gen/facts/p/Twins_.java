@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.SuperCtorRef0;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -94,10 +95,10 @@ public final class Twins_ {
     public static final AbstractClassToken<Twins> TOKEN = UnsafeFacts.abstractClassToken(Data.SHAPE);
 
     /// The fact of [Twins#Twins()].
-    public static final SuperCtorRef0<Twins> super_ = UnsafeFacts.superCtor(TOKEN, MemberTraits.FINAL);
+    public static final SuperCtorRef0<Twins> super_ = UnsafeInvocables.superCtor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Twins#twin()], declared in `p.Tight`, which is not `public`.
-    public static final MethodRef0<Twins, String> twin = UnsafeFacts.method(TOKEN, "twin", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Twins, String> twin = UnsafeInvocables.method(TOKEN, "twin", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     private Twins_() {
     }

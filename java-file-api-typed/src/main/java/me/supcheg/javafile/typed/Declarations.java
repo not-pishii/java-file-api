@@ -13,7 +13,7 @@ import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TypeToken;
-import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef2;
@@ -81,7 +81,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
     /// @throws IllegalStateException if the declarations of the class have ended
     public CtorRef0<Self> declareConstructor() {
-        return declare(UnsafeFacts.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
+        return declare(UnsafeInvocables.ctor(builder().self(), traits(MemberTraits.DEFAULT)));
     }
 
     /// Declares a `public` constructor with one parameter.
@@ -92,7 +92,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the constructor
     /// @throws IllegalStateException if the declarations of the class have ended
     public <A1> CtorRef1<Self, A1> declareConstructor(TypeToken<A1> p1) {
-        return declare(UnsafeFacts.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, traits(MemberTraits.DEFAULT)));
     }
 
     /// Declares a `public` constructor with two parameters.
@@ -105,7 +105,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the constructor
     /// @throws IllegalStateException if the declarations of the class have ended
     public <A1, A2> CtorRef2<Self, A1, A2> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, p2, traits(MemberTraits.DEFAULT)));
     }
 
     // ------------------------------------------------------------------
@@ -122,7 +122,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
     /// @throws IllegalStateException if the declarations of the class have ended
     public <R> MethodRef0<Self, R> declareMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.method(builder().self(), name, result, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.method(builder().self(), name, result, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public` method with one parameter.
@@ -136,7 +136,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1> MethodRef1<Self, R, A1> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.method(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public` method with two parameters.
@@ -153,7 +153,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1, A2> MethodRef2<Self, R, A1, A2> declareMethod(
             String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.method(builder().self(), name, result, p1, p2, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, p2, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public void` method.
@@ -163,7 +163,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public VoidMethodRef0<Self> declareVoidMethod(String name) {
-        return declare(UnsafeFacts.voidMethod(builder().self(), name, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public void` method with one parameter.
@@ -175,7 +175,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <A1> VoidMethodRef1<Self, A1> declareVoidMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public void` method with two parameters.
@@ -189,7 +189,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <A1, A2> VoidMethodRef2<Self, A1, A2> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2) {
-        return declare(UnsafeFacts.voidMethod(builder().self(), name, p1, p2, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, p2, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public static` method.
@@ -201,7 +201,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <R> StaticMethodRef0<R> declareStaticMethod(String name, TypeToken<R> result) {
-        return declare(UnsafeFacts.staticMethod(builder().self(), name, result, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public static` method with one parameter.
@@ -215,7 +215,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <R, A1> StaticMethodRef1<R, A1> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.staticMethod(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, p1, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public static void` method.
@@ -225,7 +225,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public VoidStaticMethodRef0 declareVoidStaticMethod(String name) {
-        return declare(UnsafeFacts.voidStaticMethod(builder().self(), name, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, traits(MemberTraits.FINAL)));
     }
 
     /// Declares a `public static void` method with one parameter.
@@ -237,7 +237,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// @throws IllegalArgumentException if javac would reject the method
     /// @throws IllegalStateException if the declarations of the class have ended
     public <A1> VoidStaticMethodRef1<A1> declareVoidStaticMethod(String name, TypeToken<A1> p1) {
-        return declare(UnsafeFacts.voidStaticMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
     }
 
     // ------------------------------------------------------------------

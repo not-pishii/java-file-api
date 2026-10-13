@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -228,13 +229,13 @@ public final class Taken_ {
     public static final MutableFieldRef<Taken, Int> me = UnsafeFacts.mutableField(TOKEN, "me", PrimitiveToken.INT);
 
     /// The fact of [Taken#Taken()].
-    public static final CtorRef0<Taken> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Taken> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Taken#extend()].
-    public static final VoidMethodRef0<Taken> extend_ = UnsafeFacts.voidMethod(TOKEN, "extend", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Taken> extend_ = UnsafeInvocables.voidMethod(TOKEN, "extend", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Taken#implement()].
-    public static final VoidMethodRef0<Taken> implement_ = UnsafeFacts.voidMethod(TOKEN, "implement", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Taken> implement_ = UnsafeInvocables.voidMethod(TOKEN, "implement", MemberTraits.OVERRIDABLE);
 
     private Taken_() {
     }

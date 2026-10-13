@@ -5,7 +5,10 @@ import me.supcheg.javafile.facts.Implemented.ByInheritance;
 import me.supcheg.javafile.facts.Implemented.ByOverride;
 
 @Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
-abstract class InvocableFactories {
+public final class UnsafeInvocables {
+    private UnsafeInvocables() {
+    }
+
     public static <O, R> MethodRef0<O, R> method(DeclaredToken<O> owner, String name, TypeToken<R> result, MemberTraits traits) {
         return new MethodRef0<>(owner, name, result, traits, Invocables.declared(owner));
     }

@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -125,10 +126,10 @@ public final class Gen_<E> {
     public static final MutableStaticFieldRef<Int> counter = UnsafeFacts.mutableStaticField(ANY, "counter", PrimitiveToken.INT);
 
     /// The fact of [Gen#sfar()], declared in `p.Far`, which is not `public`.
-    public static final StaticMethodRef0<String> sfar = UnsafeFacts.staticMethod(ANY, "sfar", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef0<String> sfar = UnsafeInvocables.staticMethod(ANY, "sfar", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Gen#snear()], declared in `p.Near`, which is not `public`.
-    public static final StaticMethodRef0<String> snear = UnsafeFacts.staticMethod(ANY, "snear", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef0<String> snear = UnsafeInvocables.staticMethod(ANY, "snear", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The token of [Gen] with the type arguments of this metamodel.
     public final FinalClassToken<Gen<E>> token;
@@ -172,15 +173,15 @@ public final class Gen_<E> {
         this.e = e;
         this.token = UnsafeFacts.finalClassToken(Data.SHAPE, TokenArg.exact(e));
         this.item = UnsafeFacts.mutableField(token, "item", e);
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
-        this.api = UnsafeFacts.method(token, "api", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.dflt = UnsafeFacts.method(token, "dflt", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.get = UnsafeFacts.method(token, "get", e, MemberTraits.FINAL);
-        this.near = UnsafeFacts.method(token, "near", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.overridden = UnsafeFacts.method(token, "overridden", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.pub = UnsafeFacts.method(token, "pub", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.redeclared = UnsafeFacts.method(token, "redeclared", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
-        this.set_E = UnsafeFacts.voidMethod(token, "set", UnsafeFacts.param(e, Param.var(0)), MemberTraits.FINAL);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
+        this.api = UnsafeInvocables.method(token, "api", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.dflt = UnsafeInvocables.method(token, "dflt", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.get = UnsafeInvocables.method(token, "get", e, MemberTraits.FINAL);
+        this.near = UnsafeInvocables.method(token, "near", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.overridden = UnsafeInvocables.method(token, "overridden", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.pub = UnsafeInvocables.method(token, "pub", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.redeclared = UnsafeInvocables.method(token, "redeclared", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+        this.set_E = UnsafeInvocables.voidMethod(token, "set", UnsafeFacts.param(e, Param.var(0)), MemberTraits.FINAL);
     }
 
     /// The fact of [Gen#pick(Object)], declared in `p.Far`, which is not `public`, for the type arguments the tokens give.
@@ -189,6 +190,6 @@ public final class Gen_<E> {
     /// @param r the token of the type argument `R`
     /// @return the fact
     public <R> MethodRef1<Gen<E>, R, R> pick_R(RefToken<R> r) {
-        return UnsafeFacts.method(token, "pick", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(r));
+        return UnsafeInvocables.method(token, "pick", r, UnsafeFacts.param(r, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(r));
     }
 }

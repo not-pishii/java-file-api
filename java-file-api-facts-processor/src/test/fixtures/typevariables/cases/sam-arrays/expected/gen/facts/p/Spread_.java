@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidSam1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -98,7 +99,7 @@ public final class Spread_<T> {
     /// @param t the token of the type argument `T`
     public Spread_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.accept_TArray = UnsafeFacts.voidMethod(token, "accept", UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.voidSam(accept_TArray);
+        this.accept_TArray = UnsafeInvocables.voidMethod(token, "accept", UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.voidSam(accept_TArray);
     }
 }

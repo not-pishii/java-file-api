@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -97,13 +98,13 @@ public final class Uses_ {
     public static final OpenClassToken<Uses> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Uses#Uses()].
-    public static final CtorRef0<Uses> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Uses> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Uses#any(Box)].
-    public static final MethodRef1<Uses, Box<?>, Box<Integer>> any_Box = UnsafeFacts.method(TOKEN, "any", UnsafeFacts.<Box<?>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.unbounded()), UnsafeFacts.<Box<Integer>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<Integer>finalClassToken(b.facts.java.lang.Integer_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<Uses, Box<?>, Box<Integer>> any_Box = UnsafeInvocables.method(TOKEN, "any", UnsafeFacts.<Box<?>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.unbounded()), UnsafeFacts.<Box<Integer>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<Integer>finalClassToken(b.facts.java.lang.Integer_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Uses#strings()].
-    public static final MethodRef0<Uses, Box<String>> strings = UnsafeFacts.method(TOKEN, "strings", UnsafeFacts.<Box<String>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(a.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Uses, Box<String>> strings = UnsafeInvocables.method(TOKEN, "strings", UnsafeFacts.<Box<String>>openClassToken(a.facts.p.Box_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(a.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     private Uses_() {
     }

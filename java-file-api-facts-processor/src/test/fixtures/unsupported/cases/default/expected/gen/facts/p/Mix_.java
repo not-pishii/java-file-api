@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -133,22 +134,22 @@ public final class Mix_ {
     public static final MutableFieldRef<Mix, Function<String, String>> field = UnsafeFacts.mutableField(TOKEN, "field", UnsafeFacts.<Function<String, String>>interfaceToken(gen.facts.java.util.function.Function_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)), TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))));
 
     /// The fact of [Mix#Mix(Set)].
-    public static final CtorRef1<Mix, Set<String>> new_Set = UnsafeFacts.ctor(TOKEN, UnsafeFacts.<Set<String>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.FINAL);
+    public static final CtorRef1<Mix, Set<String>> new_Set = UnsafeInvocables.ctor(TOKEN, UnsafeFacts.<Set<String>>interfaceToken(gen.facts.java.util.Set_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.FINAL);
 
     /// The fact of [Mix#array()].
-    public static final MethodRef0<Mix, List<String>[]> array = UnsafeFacts.method(TOKEN, "array", ArrayToken.of(UnsafeFacts.<List<String>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mix, List<String>[]> array = UnsafeInvocables.method(TOKEN, "array", ArrayToken.of(UnsafeFacts.<List<String>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE)))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mix#names()].
-    public static final MethodRef0<Mix, List<String>> names = UnsafeFacts.method(TOKEN, "names", UnsafeFacts.<List<String>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mix, List<String>> names = UnsafeInvocables.method(TOKEN, "names", UnsafeFacts.<List<String>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mix#plain()].
-    public static final MethodRef0<Mix, String> plain = UnsafeFacts.method(TOKEN, "plain", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mix, String> plain = UnsafeInvocables.method(TOKEN, "plain", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mix#raw()].
-    public static final MethodRef0<Mix, List> raw = UnsafeFacts.method(TOKEN, "raw", UnsafeFacts.<List>interfaceToken(gen.facts.java.util.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Mix, List> raw = UnsafeInvocables.method(TOKEN, "raw", UnsafeFacts.<List>interfaceToken(gen.facts.java.util.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Mix#wild(Map)].
-    public static final VoidMethodRef1<Mix, Map<?, ? extends Number>> wild_Map = UnsafeFacts.voidMethod(TOKEN, "wild", UnsafeFacts.<Map<?, ? extends Number>>interfaceToken(gen.facts.java.util.Map_.Data.SHAPE, TokenArg.unbounded(), TokenArg.extendsBound(UnsafeFacts.<Number>abstractClassToken(gen.facts.java.lang.Number_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Mix, Map<?, ? extends Number>> wild_Map = UnsafeInvocables.voidMethod(TOKEN, "wild", UnsafeFacts.<Map<?, ? extends Number>>interfaceToken(gen.facts.java.util.Map_.Data.SHAPE, TokenArg.unbounded(), TokenArg.extendsBound(UnsafeFacts.<Number>abstractClassToken(gen.facts.java.lang.Number_.Data.SHAPE))), MemberTraits.OVERRIDABLE);
 
     private Mix_() {
     }
@@ -159,7 +160,7 @@ public final class Mix_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> MethodRef1<Mix, T, T> id_T(RefToken<T> t) {
-        return UnsafeFacts.method(TOKEN, "id", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.method(TOKEN, "id", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// Starts the proof that a class being declared extends [Mix]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

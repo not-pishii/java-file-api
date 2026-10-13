@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -102,8 +103,8 @@ public final class Coll_<E> {
     /// @param e the token of the type argument `E`
     public Coll_(RefToken<E> e) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(e));
-        this.add_E = UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, UnsafeFacts.param(e, Param.var(0)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.sam(add_E);
+        this.add_E = UnsafeInvocables.method(token, "add", PrimitiveToken.BOOLEAN, UnsafeFacts.param(e, Param.var(0)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.sam(add_E);
     }
 
     /// Starts the proof that a class being declared implements [Coll]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

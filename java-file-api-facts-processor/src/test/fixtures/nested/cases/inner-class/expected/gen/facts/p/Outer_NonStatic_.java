@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -98,7 +99,7 @@ public final class Outer_NonStatic_ {
     public static final OpenClassToken<NonStatic> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [NonStatic#x()].
-    public static final MethodRef0<NonStatic, Int> x = UnsafeFacts.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<NonStatic, Int> x = UnsafeInvocables.method(TOKEN, "x", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private Outer_NonStatic_() {
     }

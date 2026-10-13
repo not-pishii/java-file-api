@@ -28,6 +28,7 @@ import me.supcheg.javafile.facts.SuperCtorRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -139,22 +140,22 @@ public final class Vis_ {
     public static final MutableFieldRef<Vis, Int> pub = UnsafeFacts.mutableField(TOKEN, "pub", PrimitiveToken.INT);
 
     /// The fact of [Vis#Vis()].
-    public static final CtorRef0<Vis> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Vis> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Vis#Vis(int)], which is `protected`: a subclass alone uses it.
-    public static final SuperCtorRef1<Vis, Int> super_int = UnsafeFacts.superCtor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL.with(Access.PROTECTED));
+    public static final SuperCtorRef1<Vis, Int> super_int = UnsafeInvocables.superCtor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL.with(Access.PROTECTED));
 
     /// The fact of [Vis#ok()].
-    public static final MethodRef0<Vis, Pub> ok = UnsafeFacts.method(TOKEN, "ok", UnsafeFacts.<Pub>openClassToken(Outer_Pub_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Vis, Pub> ok = UnsafeInvocables.method(TOKEN, "ok", UnsafeFacts.<Pub>openClassToken(Outer_Pub_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Vis#protM()], which is `protected`: a subclass alone uses it.
-    public static final Protected<Vis, VoidMethodRef0<Vis>> protM = UnsafeFacts.protected_(TOKEN, UnsafeFacts.voidMethod(TOKEN, "protM", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
+    public static final Protected<Vis, VoidMethodRef0<Vis>> protM = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.voidMethod(TOKEN, "protM", MemberTraits.OVERRIDABLE.with(Access.PROTECTED)));
 
     /// The fact of [Vis#pubM()].
-    public static final VoidMethodRef0<Vis> pubM = UnsafeFacts.voidMethod(TOKEN, "pubM", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Vis> pubM = UnsafeInvocables.voidMethod(TOKEN, "pubM", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Vis#sPub()].
-    public static final VoidStaticMethodRef0 sPub = UnsafeFacts.voidStaticMethod(TOKEN, "sPub", MemberTraits.FINAL);
+    public static final VoidStaticMethodRef0 sPub = UnsafeInvocables.voidStaticMethod(TOKEN, "sPub", MemberTraits.FINAL);
 
     private Vis_() {
     }

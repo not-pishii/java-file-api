@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -96,13 +97,13 @@ public final class Other_ {
     public static final OpenClassToken<Other> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Other#Other()].
-    public static final CtorRef0<Other> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Other> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Other#greeter()].
-    public static final MethodRef0<Other, Greeter> greeter = UnsafeFacts.method(TOKEN, "greeter", UnsafeFacts.<Greeter>openClassToken(Greeter_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Other, Greeter> greeter = UnsafeInvocables.method(TOKEN, "greeter", UnsafeFacts.<Greeter>openClassToken(Greeter_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Other#other(Greeter)].
-    public static final MethodRef1<Other, Other, Greeter> other_Greeter = UnsafeFacts.method(TOKEN, "other", TOKEN, UnsafeFacts.<Greeter>openClassToken(Greeter_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<Other, Other, Greeter> other_Greeter = UnsafeInvocables.method(TOKEN, "other", TOKEN, UnsafeFacts.<Greeter>openClassToken(Greeter_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Other_() {
     }

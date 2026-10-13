@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -82,10 +83,10 @@ public final class Api_ {
     public static final InterfaceToken<Api> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Api#raw()].
-    public static final MethodRef0<Api, Raw<?>> raw = UnsafeFacts.method(TOKEN, "raw", UnsafeFacts.<Raw<?>>openClassToken(Raw_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Api, Raw<?>> raw = UnsafeInvocables.method(TOKEN, "raw", UnsafeFacts.<Raw<?>>openClassToken(Raw_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Api#raw()], which a lambda implements.
-    public static final Sam0<Api, Raw<?>> sam = UnsafeFacts.sam(raw);
+    public static final Sam0<Api, Raw<?>> sam = UnsafeInvocables.sam(raw);
 
     private Api_() {
     }

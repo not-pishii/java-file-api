@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -114,8 +115,8 @@ public final class Function_<T, R> {
         this.t = t;
         this.r = r;
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(r));
-        this.apply_T = UnsafeFacts.method(token, "apply", r, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.sam(apply_T);
+        this.apply_T = UnsafeInvocables.method(token, "apply", r, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.sam(apply_T);
     }
 
     /// The fact of [Function#andThen(Function)], for the type arguments the tokens give.
@@ -124,7 +125,7 @@ public final class Function_<T, R> {
     /// @param v the token of the type argument `V`
     /// @return the fact
     public <V> MethodRef1<Function<T, R>, Function<T, V>, Function<? super R, ? extends V>> andThen_Function(RefToken<V> v) {
-        return UnsafeFacts.method(token, "andThen", UnsafeFacts.<Function<T, V>>interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(v)), UnsafeFacts.<Function<? super R, ? extends V>>interfaceToken(Data.SHAPE, TokenArg.superBound(r), TokenArg.extendsBound(v)), MemberTraits.OVERRIDABLE.withTypeArgs(v));
+        return UnsafeInvocables.method(token, "andThen", UnsafeFacts.<Function<T, V>>interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(v)), UnsafeFacts.<Function<? super R, ? extends V>>interfaceToken(Data.SHAPE, TokenArg.superBound(r), TokenArg.extendsBound(v)), MemberTraits.OVERRIDABLE.withTypeArgs(v));
     }
 
     /// The fact of [Function#compose(Function)], for the type arguments the tokens give.
@@ -133,7 +134,7 @@ public final class Function_<T, R> {
     /// @param v the token of the type argument `V`
     /// @return the fact
     public <V> MethodRef1<Function<T, R>, Function<V, R>, Function<? super V, ? extends T>> compose_Function(RefToken<V> v) {
-        return UnsafeFacts.method(token, "compose", UnsafeFacts.<Function<V, R>>interfaceToken(Data.SHAPE, TokenArg.exact(v), TokenArg.exact(r)), UnsafeFacts.<Function<? super V, ? extends T>>interfaceToken(Data.SHAPE, TokenArg.superBound(v), TokenArg.extendsBound(t)), MemberTraits.OVERRIDABLE.withTypeArgs(v));
+        return UnsafeInvocables.method(token, "compose", UnsafeFacts.<Function<V, R>>interfaceToken(Data.SHAPE, TokenArg.exact(v), TokenArg.exact(r)), UnsafeFacts.<Function<? super V, ? extends T>>interfaceToken(Data.SHAPE, TokenArg.superBound(v), TokenArg.extendsBound(t)), MemberTraits.OVERRIDABLE.withTypeArgs(v));
     }
 
     /// The fact of [Function#identity()], for the type arguments the tokens give.
@@ -142,7 +143,7 @@ public final class Function_<T, R> {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef0<Function<T, T>> identity(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(ANY, "identity", UnsafeFacts.<Function<T, T>>interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(ANY, "identity", UnsafeFacts.<Function<T, T>>interfaceToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
     }
 
     /// Starts the proof that a class being declared implements [Function]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -119,9 +120,9 @@ public final class Self_<S extends Self<S>> {
     /// @param s the token of the type argument `S`
     public Self_(RefToken<S> s) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(s));
-        this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
-        this.compare_S = UnsafeFacts.method(token, "compare", PrimitiveToken.INT, UnsafeFacts.param(s, Param.var(0)), MemberTraits.OVERRIDABLE);
-        this.me = UnsafeFacts.method(token, "me", s, MemberTraits.ABSTRACT);
+        this.super_ = UnsafeInvocables.superCtor(token, MemberTraits.FINAL);
+        this.compare_S = UnsafeInvocables.method(token, "compare", PrimitiveToken.INT, UnsafeFacts.param(s, Param.var(0)), MemberTraits.OVERRIDABLE);
+        this.me = UnsafeInvocables.method(token, "me", s, MemberTraits.ABSTRACT);
     }
 
     /// Starts the proof that a class being declared extends [Self]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

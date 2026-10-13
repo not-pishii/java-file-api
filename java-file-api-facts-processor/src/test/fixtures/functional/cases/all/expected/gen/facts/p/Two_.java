@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -80,10 +81,10 @@ public final class Two_ {
     public static final InterfaceToken<Two> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Two#a()].
-    public static final VoidMethodRef0<Two> a = UnsafeFacts.voidMethod(TOKEN, "a", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Two> a = UnsafeInvocables.voidMethod(TOKEN, "a", MemberTraits.ABSTRACT);
 
     /// The fact of [Two#b()].
-    public static final VoidMethodRef0<Two> b = UnsafeFacts.voidMethod(TOKEN, "b", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Two> b = UnsafeInvocables.voidMethod(TOKEN, "b", MemberTraits.ABSTRACT);
 
     private Two_() {
     }

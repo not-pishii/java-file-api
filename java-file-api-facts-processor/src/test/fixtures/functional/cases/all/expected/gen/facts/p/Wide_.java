@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -81,10 +82,10 @@ public final class Wide_ {
     public static final InterfaceToken<Wide> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Wide#a()].
-    public static final VoidMethodRef0<Wide> a = UnsafeFacts.voidMethod(TOKEN, "a", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Wide> a = UnsafeInvocables.voidMethod(TOKEN, "a", MemberTraits.OVERRIDABLE);
 
     /// The fact of the single abstract method [p.Two#b()], which a lambda implements.
-    public static final VoidSam0<Wide> sam = UnsafeFacts.voidSam(UnsafeFacts.voidMethod(TOKEN, "b", MemberTraits.ABSTRACT));
+    public static final VoidSam0<Wide> sam = UnsafeInvocables.voidSam(UnsafeInvocables.voidMethod(TOKEN, "b", MemberTraits.ABSTRACT));
 
     private Wide_() {
     }

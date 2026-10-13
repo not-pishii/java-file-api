@@ -18,6 +18,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
@@ -111,18 +112,18 @@ class OverloadTwinsTest {
 
     /// `String m(T)` of `Twin<T>`.
     private static <T> MethodRef1<TwinP<T>, String, T> mOfT(DeclaredToken<TwinP<T>> owner, RefToken<T> argument) {
-        return UnsafeFacts.method(
+        return UnsafeInvocables.method(
                 owner, "m", String_.TOKEN, UnsafeFacts.param(argument, Param.var(0)), MemberTraits.DEFAULT);
     }
 
     /// `String m(String)` of `Twin<T>`.
     private static <T> MethodRef1<TwinP<T>, String, String> mOfString(DeclaredToken<TwinP<T>> owner) {
-        return UnsafeFacts.method(owner, "m", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
+        return UnsafeInvocables.method(owner, "m", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT);
     }
 
     /// `<T> String g(T)` of `owner`, with `witness` for `T`.
     private static <O, T> MethodRef1<O, String, T> genericG(DeclaredToken<O> owner, RefToken<T> witness) {
-        return UnsafeFacts.method(
+        return UnsafeInvocables.method(
                 owner,
                 "g",
                 String_.TOKEN,
@@ -195,7 +196,7 @@ class OverloadTwinsTest {
                         sequences,
                         t -> call(
                                 t,
-                                UnsafeFacts.method(
+                                UnsafeInvocables.method(
                                         sequences, "m", String_.TOKEN, CharSequence_.TOKEN, MemberTraits.DEFAULT),
                                 literal("x"))))
                 .contains("v0.m((CharSequence) \"x\")");
@@ -207,11 +208,12 @@ class OverloadTwinsTest {
         FactParam<Integer> notTheArgument = UnsafeFacts.param(Integer_.TOKEN, Param.var(0));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.method(strings, "m", String_.TOKEN, notTheArgument, MemberTraits.DEFAULT))
+                .isThrownBy(() ->
+                        UnsafeInvocables.method(strings, "m", String_.TOKEN, notTheArgument, MemberTraits.DEFAULT))
                 .withMessage("a parameter declared #0 of fixtures.Twin<java.lang.String> is java.lang.String,"
                         + " not java.lang.Integer");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.method(
+                .isThrownBy(() -> UnsafeInvocables.method(
                         strings,
                         "m",
                         String_.TOKEN,
@@ -242,7 +244,7 @@ class OverloadTwinsTest {
         assertThat(render(strings, t -> call(t, nOfTs(strings, String_.TOKEN), noneOf(String_.TOKEN))))
                 .contains("v0.n((String[]) null)");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.method(
+                .isThrownBy(() -> UnsafeInvocables.method(
                         strings,
                         "n",
                         String_.TOKEN,
@@ -254,7 +256,7 @@ class OverloadTwinsTest {
 
     /// `String n(T[])` of `Twin<T>`.
     private static <T> MethodRef1<TwinP<T>, String, T[]> nOfTs(DeclaredToken<TwinP<T>> owner, RefToken<T> argument) {
-        return UnsafeFacts.method(
+        return UnsafeInvocables.method(
                 owner,
                 "n",
                 String_.TOKEN,
@@ -291,7 +293,7 @@ class OverloadTwinsTest {
                         PLAIN_TOKEN,
                         p -> call(
                                 p,
-                                UnsafeFacts.method(
+                                UnsafeInvocables.method(
                                         PLAIN_TOKEN, "g", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT),
                                 literal("x"))))
                 .contains("v0.g(\"x\")");
@@ -310,7 +312,7 @@ class OverloadTwinsTest {
 
     /// Renders the call of `static <T> String g(T)` of `owner` with `witness` for `T`.
     private static <T> String renderStaticG(DeclaredToken<?> owner, RefToken<T> witness) {
-        StaticMethodRef1<String, T> g = UnsafeFacts.staticMethod(
+        StaticMethodRef1<String, T> g = UnsafeInvocables.staticMethod(
                 owner,
                 "g",
                 String_.TOKEN,
@@ -331,7 +333,7 @@ class OverloadTwinsTest {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> render(String_.TOKEN, s -> {
                     Expr<TwinP<String>> made = new_(
-                            UnsafeFacts.ctor(
+                            UnsafeInvocables.ctor(
                                     strings, UnsafeFacts.param(String_.TOKEN, Param.var(0)), MemberTraits.DEFAULT),
                             literal("x"));
                     return call(made, mOfString(strings), s);
@@ -340,7 +342,7 @@ class OverloadTwinsTest {
                 .withMessageContaining("as the overload declared Twin(java.lang.String) is");
         assertThat(render(String_.TOKEN, s -> {
                     Expr<TwinP<Integer>> made = new_(
-                            UnsafeFacts.ctor(
+                            UnsafeInvocables.ctor(
                                     integers, UnsafeFacts.param(Integer_.TOKEN, Param.var(0)), MemberTraits.DEFAULT),
                             literalNull(Integer_.TOKEN));
                     return call(made, mOfString(integers), s);
@@ -393,7 +395,7 @@ class OverloadTwinsTest {
         assertThat(render(x, v -> call(v, genericG(base, String_.TOKEN), literal("x"))))
                 .contains("((Plain) v0).<String>g(\"x\")");
         // no arguments, no overload to tell from
-        assertThat(render(x, v -> call(v, UnsafeFacts.method(base, "name", String_.TOKEN, MemberTraits.DEFAULT))))
+        assertThat(render(x, v -> call(v, UnsafeInvocables.method(base, "name", String_.TOKEN, MemberTraits.DEFAULT))))
                 .contains("return v0.name();");
     }
 }

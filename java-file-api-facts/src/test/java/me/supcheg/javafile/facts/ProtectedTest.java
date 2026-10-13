@@ -63,13 +63,13 @@ class ProtectedTest {
         assertThat(traits.access()).isEqualTo(Access.PROTECTED);
         assertThat(traits.overridability()).isEqualTo(Overridability.FINAL);
         assertThat(traits.with(Access.PUBLIC).access()).isEqualTo(Access.PUBLIC);
-        assertThat(UnsafeFacts.method(BASE, "m", String_.TOKEN, traits).access())
+        assertThat(UnsafeInvocables.method(BASE, "m", String_.TOKEN, traits).access())
                 .isEqualTo(Access.PROTECTED);
     }
 
     @Test
     void theFactOfAProtectedMemberIsHeldBackByItsClass() {
-        MethodRef0<BaseP, String> hook = UnsafeFacts.method(BASE, "hook", String_.TOKEN, PROTECTED);
+        MethodRef0<BaseP, String> hook = UnsafeInvocables.method(BASE, "hook", String_.TOKEN, PROTECTED);
         Protected<BaseP, MethodRef0<BaseP, String>> held = UnsafeFacts.protected_(BASE, hook);
 
         assertThat(held.owner()).isSameAs(BASE);
@@ -102,7 +102,7 @@ class ProtectedTest {
 
     @Test
     void aFactThatIsNotOfAProtectedMemberIsNotHeldBack() {
-        MethodRef0<BaseP, String> publicOne = UnsafeFacts.method(BASE, "m", String_.TOKEN, MemberTraits.DEFAULT);
+        MethodRef0<BaseP, String> publicOne = UnsafeInvocables.method(BASE, "m", String_.TOKEN, MemberTraits.DEFAULT);
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeFacts.protected_(BASE, publicOne))
@@ -112,7 +112,7 @@ class ProtectedTest {
 
     @Test
     void aFactIsHeldBackByTheClassThatOwnsItAlone() {
-        MethodRef0<Number, String> ofNumber = UnsafeFacts.method(NUMBER, "m", String_.TOKEN, PROTECTED);
+        MethodRef0<Number, String> ofNumber = UnsafeInvocables.method(NUMBER, "m", String_.TOKEN, PROTECTED);
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeFacts.protected_(BASE, ofNumber))
@@ -131,16 +131,17 @@ class ProtectedTest {
 
     @Test
     void aConstructorForASubclassIsOfAClassThatCanBeExtendedAbstractOrNot() {
-        SuperCtorRef0<BaseP> ofAnOpenClass = UnsafeFacts.superCtor(BASE, MemberTraits.FINAL.with(Access.PROTECTED));
+        SuperCtorRef0<BaseP> ofAnOpenClass =
+                UnsafeInvocables.superCtor(BASE, MemberTraits.FINAL.with(Access.PROTECTED));
         SuperCtorRef1<Number, String> ofAnAbstractClass =
-                UnsafeFacts.superCtor(NUMBER, String_.TOKEN, MemberTraits.FINAL);
+                UnsafeInvocables.superCtor(NUMBER, String_.TOKEN, MemberTraits.FINAL);
 
         assertThat(ofAnOpenClass.owner()).isSameAs(BASE);
         assertThat(ofAnOpenClass.access()).isEqualTo(Access.PROTECTED);
         assertThat(ofAnOpenClass).hasToString("super fixtures.Base()");
         assertThat(ofAnAbstractClass.access()).isEqualTo(Access.PUBLIC);
         assertThat(ofAnAbstractClass).hasToString("super java.lang.Number(java.lang.String)");
-        assertThat(UnsafeFacts.ctor(BASE, MemberTraits.FINAL)).hasToString("new fixtures.Base()");
+        assertThat(UnsafeInvocables.ctor(BASE, MemberTraits.FINAL)).hasToString("new fixtures.Base()");
     }
 
     @Test

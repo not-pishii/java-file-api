@@ -30,6 +30,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -151,8 +152,8 @@ public final class Gt_<T, E> {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(e));
         this.U = UnsafeFacts.mutableField(token, "U", e);
         this.value = UnsafeFacts.mutableField(token, "value", t);
-        this.new_T_E = UnsafeFacts.ctor(token, UnsafeFacts.param(t, Param.var(0)), UnsafeFacts.param(e, Param.var(1)), MemberTraits.FINAL);
-        this.T_E = UnsafeFacts.method(token, "T", t, UnsafeFacts.param(e, Param.var(1)), MemberTraits.OVERRIDABLE);
+        this.new_T_E = UnsafeInvocables.ctor(token, UnsafeFacts.param(t, Param.var(0)), UnsafeFacts.param(e, Param.var(1)), MemberTraits.FINAL);
+        this.T_E = UnsafeInvocables.method(token, "T", t, UnsafeFacts.param(e, Param.var(1)), MemberTraits.OVERRIDABLE);
     }
 
     /// The fact of [Gt#E(Object, Object)], for the type arguments the tokens give.
@@ -161,7 +162,7 @@ public final class Gt_<T, E> {
     /// @param u the token of the type argument `U`
     /// @return the fact
     public <U> MethodRef2<Gt<T, E>, U, U, T> E_U_T(RefToken<U> u) {
-        return UnsafeFacts.method(token, "E", u, UnsafeFacts.param(u, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
+        return UnsafeInvocables.method(token, "E", u, UnsafeFacts.param(u, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(t, Param.var(0)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
     }
 
     /// The fact of [Gt#of(Object, Object)], for the type arguments the tokens give.
@@ -172,7 +173,7 @@ public final class Gt_<T, E> {
     /// @param e the token of the type argument `E`
     /// @return the fact
     public static <T, E> StaticMethodRef2<Gt<T, E>, T, E> of_T_E(RefToken<T> t, RefToken<E> e) {
-        return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<Gt<T, E>>openClassToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(e)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(e, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t, e));
+        return UnsafeInvocables.staticMethod(ANY, "of", UnsafeFacts.<Gt<T, E>>openClassToken(Data.SHAPE, TokenArg.exact(t), TokenArg.exact(e)), UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), UnsafeFacts.param(e, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.FINAL.withTypeArgs(t, e));
     }
 
     /// Starts the proof that a class being declared extends [Gt]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -111,7 +112,7 @@ public final class Lists_<T> {
     public Lists_(RefToken<T> t) {
         this.t = t;
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.new_ = UnsafeFacts.ctor(token, MemberTraits.FINAL);
+        this.new_ = UnsafeInvocables.ctor(token, MemberTraits.FINAL);
     }
 
     /// The fact of [Lists#all(Number\[\], Object\[\])], for the type arguments the tokens give.
@@ -120,7 +121,7 @@ public final class Lists_<T> {
     /// @param u the token of the type argument `U`
     /// @return the fact
     public <U extends Number> VoidMethodRef2<Lists<T>, U[], T[]> all_UArray_TArray(RefToken<U> u) {
-        return UnsafeFacts.voidMethod(token, "all", UnsafeFacts.param(ArrayToken.of(u), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;"))), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
+        return UnsafeInvocables.voidMethod(token, "all", UnsafeFacts.param(ArrayToken.of(u), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;"))), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.OVERRIDABLE.withTypeArgs(u));
     }
 
     /// Starts the proof that a class being declared extends [Lists]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

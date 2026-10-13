@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -108,13 +109,13 @@ public final class X_ {
     public static final StaticFieldRef<Int> OWN = UnsafeFacts.constantField(TOKEN, "OWN", PrimitiveToken.INT, 2);
 
     /// The fact of [X#X()].
-    public static final CtorRef0<X> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<X> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [X#more()].
-    public static final MethodRef0<X, String> more = UnsafeFacts.method(TOKEN, "more", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<X, String> more = UnsafeInvocables.method(TOKEN, "more", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [X#own()], declared in `p.Own`, which is not `public`.
-    public static final VoidMethodRef0<X> own = UnsafeFacts.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<X> own = UnsafeInvocables.voidMethod(TOKEN, "own", MemberTraits.OVERRIDABLE);
 
     private X_() {
     }

@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -93,10 +94,10 @@ public final class B_ {
     public static final OpenClassToken<B> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [B#B()].
-    public static final CtorRef0<B> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<B> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [B#a()].
-    public static final MethodRef0<B, A> a = UnsafeFacts.method(TOKEN, "a", UnsafeFacts.<A>openClassToken(A_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<B, A> a = UnsafeInvocables.method(TOKEN, "a", UnsafeFacts.<A>openClassToken(A_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private B_() {
     }

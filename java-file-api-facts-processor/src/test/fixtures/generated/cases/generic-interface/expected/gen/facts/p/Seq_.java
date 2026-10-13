@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -98,7 +99,7 @@ public final class Seq_<E> {
     /// @param e the token of the type argument `E`
     public Seq_(RefToken<E> e) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(e));
-        this.sam = UnsafeFacts.sam(UnsafeFacts.method(token, "add", PrimitiveToken.BOOLEAN, UnsafeFacts.param(e, Param.var(0)), MemberTraits.ABSTRACT));
+        this.sam = UnsafeInvocables.sam(UnsafeInvocables.method(token, "add", PrimitiveToken.BOOLEAN, UnsafeFacts.param(e, Param.var(0)), MemberTraits.ABSTRACT));
     }
 
     /// The fact of [Seq#of()], for the type arguments the tokens give.
@@ -107,7 +108,7 @@ public final class Seq_<E> {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef0<Seq<T>> of(RefToken<T> t) {
-        return UnsafeFacts.staticMethod(ANY, "of", UnsafeFacts.<Seq<T>>interfaceToken(Data.SHAPE, TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(ANY, "of", UnsafeFacts.<Seq<T>>interfaceToken(Data.SHAPE, TokenArg.exact(t)), MemberTraits.FINAL.withTypeArgs(t));
     }
 
     /// Starts the proof that a class being declared implements [Seq]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -96,10 +97,10 @@ public final class OnHid_ {
     public static final OpenClassToken<OnHid> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [OnHid#OnHid()].
-    public static final CtorRef0<OnHid> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<OnHid> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [OnHid#renamed()], declared in `p.HidBase`, which is not `public`.
-    public static final MethodRef0<OnHid, Int> renamed = UnsafeFacts.method(TOKEN, "renamed", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<OnHid, Int> renamed = UnsafeInvocables.method(TOKEN, "renamed", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     private OnHid_() {
     }

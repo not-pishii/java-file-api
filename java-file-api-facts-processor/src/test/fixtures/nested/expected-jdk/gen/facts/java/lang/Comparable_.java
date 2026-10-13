@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -101,8 +102,8 @@ public final class Comparable_<T> {
     /// @param t the token of the type argument `T`
     public Comparable_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.compareTo_T = UnsafeFacts.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.sam(compareTo_T);
+        this.compareTo_T = UnsafeInvocables.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(t, Param.var(0)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.sam(compareTo_T);
     }
 
     /// Starts the proof that a class being declared implements [Comparable]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -95,10 +96,10 @@ public final class High_ {
     public static final OpenClassToken<High> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [High#High()].
-    public static final CtorRef0<High> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<High> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [High#seen()].
-    public static final MethodRef0<High, Seen> seen = UnsafeFacts.method(TOKEN, "seen", UnsafeFacts.<Seen>openClassToken(Seen_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<High, Seen> seen = UnsafeInvocables.method(TOKEN, "seen", UnsafeFacts.<Seen>openClassToken(Seen_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private High_() {
     }

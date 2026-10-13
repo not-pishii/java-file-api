@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.TypeParam;
@@ -99,8 +100,8 @@ public final class Arr_<T> {
     /// @param t the token of the type argument `T`
     public Arr_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.m_TArray = UnsafeFacts.method(token, "m", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
-        this.sam = UnsafeFacts.sam(m_TArray);
+        this.m_TArray = UnsafeInvocables.method(token, "m", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
+        this.sam = UnsafeInvocables.sam(m_TArray);
     }
 
     /// Starts the proof that a class being declared implements [Arr]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

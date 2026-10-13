@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
@@ -86,16 +87,16 @@ public final class Api_ {
     public static final InterfaceToken<Api> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Api#abs()].
-    public static final VoidMethodRef0<Api> abs = UnsafeFacts.voidMethod(TOKEN, "abs", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Api> abs = UnsafeInvocables.voidMethod(TOKEN, "abs", MemberTraits.ABSTRACT);
 
     /// The fact of [Api#dflt()].
-    public static final VoidMethodRef0<Api> dflt = UnsafeFacts.voidMethod(TOKEN, "dflt", MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef0<Api> dflt = UnsafeInvocables.voidMethod(TOKEN, "dflt", MemberTraits.OVERRIDABLE);
 
     /// The fact of [Api#iface()].
-    public static final VoidStaticMethodRef0 iface = UnsafeFacts.voidStaticMethod(TOKEN, "iface", MemberTraits.FINAL);
+    public static final VoidStaticMethodRef0 iface = UnsafeInvocables.voidStaticMethod(TOKEN, "iface", MemberTraits.FINAL);
 
     /// The fact of the single abstract method [Api#abs()], which a lambda implements.
-    public static final VoidSam0<Api> sam = UnsafeFacts.voidSam(abs);
+    public static final VoidSam0<Api> sam = UnsafeInvocables.voidSam(abs);
 
     private Api_() {
     }

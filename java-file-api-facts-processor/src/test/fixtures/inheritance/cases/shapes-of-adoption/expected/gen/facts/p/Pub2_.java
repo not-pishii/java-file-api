@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -98,13 +99,13 @@ public final class Pub2_ {
     public static final OpenClassToken<Pub2> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Pub2#Pub2()].
-    public static final CtorRef0<Pub2> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Pub2> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Pub2#between()], declared in `p.HBetween`, which is not `public`.
-    public static final MethodRef0<Pub2, String> between = UnsafeFacts.method(TOKEN, "between", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Pub2, String> between = UnsafeInvocables.method(TOKEN, "between", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Pub2#two()].
-    public static final MethodRef0<Pub2, String> two = UnsafeFacts.method(TOKEN, "two", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef0<Pub2, String> two = UnsafeInvocables.method(TOKEN, "two", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Pub2_() {
     }

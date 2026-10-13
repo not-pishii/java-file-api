@@ -25,6 +25,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -116,16 +117,16 @@ public final class Ov_ {
     public static final MutableFieldRef<Ov, Int> size = UnsafeFacts.mutableField(TOKEN, "size", PrimitiveToken.INT);
 
     /// The fact of [Ov#Ov(java.awt.List)].
-    public static final CtorRef1<Ov, java.awt.List> new_java_awt_List = UnsafeFacts.ctor(TOKEN, UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.FINAL);
+    public static final CtorRef1<Ov, java.awt.List> new_java_awt_List = UnsafeInvocables.ctor(TOKEN, UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Ov#k(int)].
-    public static final VoidMethodRef1<Ov, Int> k_int = UnsafeFacts.voidMethod(TOKEN, "k", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Ov, Int> k_int = UnsafeInvocables.voidMethod(TOKEN, "k", PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Ov#m(java.awt.List)].
-    public static final VoidMethodRef1<Ov, java.awt.List> m_java_awt_List = UnsafeFacts.voidMethod(TOKEN, "m", UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Ov, java.awt.List> m_java_awt_List = UnsafeInvocables.voidMethod(TOKEN, "m", UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Ov#n(java.awt.List)].
-    public static final VoidMethodRef1<Ov, java.awt.List> n_List = UnsafeFacts.voidMethod(TOKEN, "n", UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final VoidMethodRef1<Ov, java.awt.List> n_List = UnsafeInvocables.voidMethod(TOKEN, "n", UnsafeFacts.<java.awt.List>openClassToken(gen.facts.java.awt.List_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Ov_() {
     }
@@ -136,7 +137,7 @@ public final class Ov_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> VoidMethodRef1<Ov, T> k_T(RefToken<T> t) {
-        return UnsafeFacts.voidMethod(TOKEN, "k", UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.voidMethod(TOKEN, "k", UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// The fact of [Ov#size()], for the type arguments the tokens give.
@@ -145,7 +146,7 @@ public final class Ov_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> MethodRef0<Ov, T> size_(RefToken<T> t) {
-        return UnsafeFacts.method(TOKEN, "size", t, MemberTraits.OVERRIDABLE.withTypeArgs(t));
+        return UnsafeInvocables.method(TOKEN, "size", t, MemberTraits.OVERRIDABLE.withTypeArgs(t));
     }
 
     /// Starts the proof that a class being declared extends [Ov]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

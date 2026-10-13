@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -89,7 +90,7 @@ public final class Outer_Deep_Deeper_ {
     public static final OpenClassToken<Deeper> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
     /// The fact of [Deeper#Deeper()].
-    public static final CtorRef0<Deeper> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Deeper> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     private Outer_Deep_Deeper_() {
     }

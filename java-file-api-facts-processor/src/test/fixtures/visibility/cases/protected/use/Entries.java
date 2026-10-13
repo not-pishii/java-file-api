@@ -9,7 +9,7 @@ import me.supcheg.javafile.facts.Implemented;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
-import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import p.ProtAbs;
 import p.ProtG;
 
@@ -24,11 +24,11 @@ public final class Entries {
 
     public static void theProofOfAnAbstractClassTakesAStepPerAbstractMethod() {
         MethodRef1<String, String, String> own =
-                UnsafeFacts.method(String_.TOKEN, "hook", String_.TOKEN, String_.TOKEN, MemberTraits.FINAL);
+                UnsafeInvocables.method(String_.TOKEN, "hook", String_.TOKEN, String_.TOKEN, MemberTraits.FINAL);
         MethodRef1<ProtAbs, String, String> hook =
-                UnsafeFacts.method(ProtAbs_.TOKEN, "hook", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
+                UnsafeInvocables.method(ProtAbs_.TOKEN, "hook", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
         Implementation1<String, String, String> how =
-                UnsafeFacts.overriding1(new Implemented.ByOverride(hook, own));
+                UnsafeInvocables.overriding1(new Implemented.ByOverride(hook, own));
 
         Complete<String, ProtAbs> complete =
                 ProtAbs_.extend(String_.TOKEN).hook_String(how);
@@ -40,9 +40,9 @@ public final class Entries {
 
     public static void aStepTakesTheImplementationOfItsMethodAlone() {
         MethodRef1<ProtAbs, String, String> other =
-                UnsafeFacts.method(ProtAbs_.TOKEN, "other", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
+                UnsafeInvocables.method(ProtAbs_.TOKEN, "other", String_.TOKEN, String_.TOKEN, MemberTraits.ABSTRACT);
         Implementation1<String, String, String> ofAnother =
-                UnsafeFacts.inherited1(new Implemented.ByInheritance(other));
+                UnsafeInvocables.inherited1(new Implemented.ByInheritance(other));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> ProtAbs_.extend(String_.TOKEN).hook_String(ofAnother))
@@ -61,7 +61,7 @@ public final class Entries {
 
     public static void theHeritageOfTheShapeIsTheOneOfItsClass() {
         assertThat(ProtAbs_.TOKEN.shape().heritage()).isSameAs(new ProtAbs_Heritage().get());
-        MethodRef0<ProtAbs, String> unused = UnsafeFacts.method(ProtAbs_.TOKEN, "x", String_.TOKEN, MemberTraits.FINAL);
+        MethodRef0<ProtAbs, String> unused = UnsafeInvocables.method(ProtAbs_.TOKEN, "x", String_.TOKEN, MemberTraits.FINAL);
         assertThat(unused.name()).isEqualTo("x");
     }
 }

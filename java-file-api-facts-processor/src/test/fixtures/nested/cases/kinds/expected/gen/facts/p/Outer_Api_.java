@@ -20,6 +20,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -80,10 +81,10 @@ public final class Outer_Api_ {
     public static final InterfaceToken<Api> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Api#run()].
-    public static final VoidMethodRef0<Api> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
+    public static final VoidMethodRef0<Api> run = UnsafeInvocables.voidMethod(TOKEN, "run", MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Api#run()], which a lambda implements.
-    public static final VoidSam0<Api> sam = UnsafeFacts.voidSam(run);
+    public static final VoidSam0<Api> sam = UnsafeInvocables.voidSam(run);
 
     private Outer_Api_() {
     }

@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -84,10 +85,10 @@ public final class Color_ {
     public static final EnumConstant<Color> RED = TOKEN.constant("RED");
 
     /// The fact of [Color#valueOf(String)].
-    public static final StaticMethodRef1<Color, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Color, String> valueOf_String = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Color#values()].
-    public static final StaticMethodRef0<Color[]> values = UnsafeFacts.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
+    public static final StaticMethodRef0<Color[]> values = UnsafeInvocables.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
 
     private Color_() {
     }

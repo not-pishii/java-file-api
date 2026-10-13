@@ -23,6 +23,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -111,8 +112,8 @@ public final class Both_<T extends Number & Comparable<T>> {
     /// @param t the token of the type argument `T`
     public Both_(RefToken<T> t) {
         this.token = UnsafeFacts.abstractClassToken(Data.SHAPE, TokenArg.exact(t));
-        this.super_ = UnsafeFacts.superCtor(token, MemberTraits.FINAL);
-        this.pick = UnsafeFacts.method(token, "pick", t, MemberTraits.ABSTRACT);
+        this.super_ = UnsafeInvocables.superCtor(token, MemberTraits.FINAL);
+        this.pick = UnsafeInvocables.method(token, "pick", t, MemberTraits.ABSTRACT);
     }
 
     /// Starts the proof that a class being declared extends [Both]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.

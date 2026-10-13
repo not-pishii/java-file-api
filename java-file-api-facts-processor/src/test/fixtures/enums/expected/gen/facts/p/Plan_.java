@@ -21,6 +21,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -78,7 +79,7 @@ public final class Plan_ {
     public static final FinalClassToken<Plan> TOKEN = UnsafeFacts.finalClassToken(Data.SHAPE);
 
     /// The fact of [Plan#mode(boolean)].
-    public static final StaticMethodRef1<Mode, Bool> mode_boolean = UnsafeFacts.staticMethod(TOKEN, "mode", UnsafeFacts.<Mode>enumToken(Mode_.Data.SHAPE), PrimitiveToken.BOOLEAN, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Mode, Bool> mode_boolean = UnsafeInvocables.staticMethod(TOKEN, "mode", UnsafeFacts.<Mode>enumToken(Mode_.Data.SHAPE), PrimitiveToken.BOOLEAN, MemberTraits.FINAL);
 
     private Plan_() {
     }

@@ -36,6 +36,7 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -167,169 +168,169 @@ public final class Integer_ {
     public static final StaticFieldRef<Class<Integer>> TYPE = UnsafeFacts.staticField(TOKEN, "TYPE", UnsafeFacts.<Class<Integer>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(TOKEN)));
 
     /// The fact of [Integer#Integer(String)].
-    public static final CtorRef1<Integer, String> new_String = UnsafeFacts.ctor(TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final CtorRef1<Integer, String> new_String = UnsafeInvocables.ctor(TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#Integer(int)].
-    public static final CtorRef1<Integer, Int> new_int = UnsafeFacts.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final CtorRef1<Integer, Int> new_int = UnsafeInvocables.ctor(TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#bitCount(int)].
-    public static final StaticMethodRef1<Int, Int> bitCount_int = UnsafeFacts.staticMethod(TOKEN, "bitCount", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> bitCount_int = UnsafeInvocables.staticMethod(TOKEN, "bitCount", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#byteValue()].
-    public static final MethodRef0<Integer, Byte> byteValue = UnsafeFacts.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Byte> byteValue = UnsafeInvocables.method(TOKEN, "byteValue", PrimitiveToken.BYTE, MemberTraits.FINAL);
 
     /// The fact of [Integer#compareTo(Integer)].
-    public static final MethodRef1<Integer, Int, Integer> compareTo_Integer = UnsafeFacts.method(TOKEN, "compareTo", PrimitiveToken.INT, TOKEN, MemberTraits.FINAL);
+    public static final MethodRef1<Integer, Int, Integer> compareTo_Integer = UnsafeInvocables.method(TOKEN, "compareTo", PrimitiveToken.INT, TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Integer#compareUnsigned(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> compareUnsigned_int_int = UnsafeFacts.staticMethod(TOKEN, "compareUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> compareUnsigned_int_int = UnsafeInvocables.staticMethod(TOKEN, "compareUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#compare(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> compare_int_int = UnsafeFacts.staticMethod(TOKEN, "compare", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> compare_int_int = UnsafeInvocables.staticMethod(TOKEN, "compare", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#compress(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> compress_int_int = UnsafeFacts.staticMethod(TOKEN, "compress", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> compress_int_int = UnsafeInvocables.staticMethod(TOKEN, "compress", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#decode(String)].
-    public static final StaticMethodRef1<Integer, String> decode_String = UnsafeFacts.staticMethod(TOKEN, "decode", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef1<Integer, String> decode_String = UnsafeInvocables.staticMethod(TOKEN, "decode", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#describeConstable()].
-    public static final MethodRef0<Integer, Optional<Integer>> describeConstable = UnsafeFacts.method(TOKEN, "describeConstable", UnsafeFacts.<Optional<Integer>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(TOKEN)), MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Optional<Integer>> describeConstable = UnsafeInvocables.method(TOKEN, "describeConstable", UnsafeFacts.<Optional<Integer>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(TOKEN)), MemberTraits.FINAL);
 
     /// The fact of [Integer#divideUnsigned(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> divideUnsigned_int_int = UnsafeFacts.staticMethod(TOKEN, "divideUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> divideUnsigned_int_int = UnsafeInvocables.staticMethod(TOKEN, "divideUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#doubleValue()].
-    public static final MethodRef0<Integer, Double> doubleValue = UnsafeFacts.method(TOKEN, "doubleValue", PrimitiveToken.DOUBLE, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Double> doubleValue = UnsafeInvocables.method(TOKEN, "doubleValue", PrimitiveToken.DOUBLE, MemberTraits.FINAL);
 
     /// The fact of [Integer#equals(Object)].
-    public static final MethodRef1<Integer, Bool, Object> equals_Object = UnsafeFacts.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef1<Integer, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Integer#expand(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> expand_int_int = UnsafeFacts.staticMethod(TOKEN, "expand", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> expand_int_int = UnsafeInvocables.staticMethod(TOKEN, "expand", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#floatValue()].
-    public static final MethodRef0<Integer, Float> floatValue = UnsafeFacts.method(TOKEN, "floatValue", PrimitiveToken.FLOAT, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Float> floatValue = UnsafeInvocables.method(TOKEN, "floatValue", PrimitiveToken.FLOAT, MemberTraits.FINAL);
 
     /// The fact of [Integer#getInteger(String)].
-    public static final StaticMethodRef1<Integer, String> getInteger_String = UnsafeFacts.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Integer, String> getInteger_String = UnsafeInvocables.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Integer#getInteger(String, Integer)].
-    public static final StaticMethodRef2<Integer, String, Integer> getInteger_String_Integer = UnsafeFacts.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), TOKEN, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Integer, String, Integer> getInteger_String_Integer = UnsafeInvocables.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Integer#getInteger(String, int)].
-    public static final StaticMethodRef2<Integer, String, Int> getInteger_String_int = UnsafeFacts.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Integer, String, Int> getInteger_String_int = UnsafeInvocables.staticMethod(TOKEN, "getInteger", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#hashCode()].
-    public static final MethodRef0<Integer, Int> hashCode = UnsafeFacts.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Int> hashCode = UnsafeInvocables.method(TOKEN, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#hashCode(int)].
-    public static final StaticMethodRef1<Int, Int> hashCode_int = UnsafeFacts.staticMethod(TOKEN, "hashCode", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> hashCode_int = UnsafeInvocables.staticMethod(TOKEN, "hashCode", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#highestOneBit(int)].
-    public static final StaticMethodRef1<Int, Int> highestOneBit_int = UnsafeFacts.staticMethod(TOKEN, "highestOneBit", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> highestOneBit_int = UnsafeInvocables.staticMethod(TOKEN, "highestOneBit", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#intValue()].
-    public static final MethodRef0<Integer, Int> intValue = UnsafeFacts.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Int> intValue = UnsafeInvocables.method(TOKEN, "intValue", PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#longValue()].
-    public static final MethodRef0<Integer, Long> longValue = UnsafeFacts.method(TOKEN, "longValue", PrimitiveToken.LONG, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Long> longValue = UnsafeInvocables.method(TOKEN, "longValue", PrimitiveToken.LONG, MemberTraits.FINAL);
 
     /// The fact of [Integer#lowestOneBit(int)].
-    public static final StaticMethodRef1<Int, Int> lowestOneBit_int = UnsafeFacts.staticMethod(TOKEN, "lowestOneBit", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> lowestOneBit_int = UnsafeInvocables.staticMethod(TOKEN, "lowestOneBit", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#max(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> max_int_int = UnsafeFacts.staticMethod(TOKEN, "max", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> max_int_int = UnsafeInvocables.staticMethod(TOKEN, "max", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#min(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> min_int_int = UnsafeFacts.staticMethod(TOKEN, "min", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> min_int_int = UnsafeInvocables.staticMethod(TOKEN, "min", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#numberOfLeadingZeros(int)].
-    public static final StaticMethodRef1<Int, Int> numberOfLeadingZeros_int = UnsafeFacts.staticMethod(TOKEN, "numberOfLeadingZeros", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> numberOfLeadingZeros_int = UnsafeInvocables.staticMethod(TOKEN, "numberOfLeadingZeros", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#numberOfTrailingZeros(int)].
-    public static final StaticMethodRef1<Int, Int> numberOfTrailingZeros_int = UnsafeFacts.staticMethod(TOKEN, "numberOfTrailingZeros", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> numberOfTrailingZeros_int = UnsafeInvocables.staticMethod(TOKEN, "numberOfTrailingZeros", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#parseInt(CharSequence, int, int, int)].
-    public static final StaticMethodRef4<Int, CharSequence, Int, Int, Int> parseInt_CharSequence_int_int_int = UnsafeFacts.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<CharSequence>interfaceToken(CharSequence_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef4<Int, CharSequence, Int, Int, Int> parseInt_CharSequence_int_int_int = UnsafeInvocables.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<CharSequence>interfaceToken(CharSequence_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#parseInt(String)].
-    public static final StaticMethodRef1<Int, String> parseInt_String = UnsafeFacts.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef1<Int, String> parseInt_String = UnsafeInvocables.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#parseInt(String, int)].
-    public static final StaticMethodRef2<Int, String, Int> parseInt_String_int = UnsafeFacts.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef2<Int, String, Int> parseInt_String_int = UnsafeInvocables.staticMethod(TOKEN, "parseInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#parseUnsignedInt(CharSequence, int, int, int)].
-    public static final StaticMethodRef4<Int, CharSequence, Int, Int, Int> parseUnsignedInt_CharSequence_int_int_int = UnsafeFacts.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<CharSequence>interfaceToken(CharSequence_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef4<Int, CharSequence, Int, Int, Int> parseUnsignedInt_CharSequence_int_int_int = UnsafeInvocables.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<CharSequence>interfaceToken(CharSequence_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#parseUnsignedInt(String)].
-    public static final StaticMethodRef1<Int, String> parseUnsignedInt_String = UnsafeFacts.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef1<Int, String> parseUnsignedInt_String = UnsafeInvocables.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#parseUnsignedInt(String, int)].
-    public static final StaticMethodRef2<Int, String, Int> parseUnsignedInt_String_int = UnsafeFacts.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef2<Int, String, Int> parseUnsignedInt_String_int = UnsafeInvocables.staticMethod(TOKEN, "parseUnsignedInt", PrimitiveToken.INT, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#remainderUnsigned(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> remainderUnsigned_int_int = UnsafeFacts.staticMethod(TOKEN, "remainderUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> remainderUnsigned_int_int = UnsafeInvocables.staticMethod(TOKEN, "remainderUnsigned", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#resolveConstantDesc(Lookup)].
-    public static final MethodRef1<Integer, Integer, Lookup> resolveConstantDesc_MethodHandles_Lookup = UnsafeFacts.method(TOKEN, "resolveConstantDesc", TOKEN, UnsafeFacts.<Lookup>finalClassToken(gen.facts.java.lang.invoke.MethodHandles_Lookup_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef1<Integer, Integer, Lookup> resolveConstantDesc_MethodHandles_Lookup = UnsafeInvocables.method(TOKEN, "resolveConstantDesc", TOKEN, UnsafeFacts.<Lookup>finalClassToken(gen.facts.java.lang.invoke.MethodHandles_Lookup_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Integer#reverseBytes(int)].
-    public static final StaticMethodRef1<Int, Int> reverseBytes_int = UnsafeFacts.staticMethod(TOKEN, "reverseBytes", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> reverseBytes_int = UnsafeInvocables.staticMethod(TOKEN, "reverseBytes", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#reverse(int)].
-    public static final StaticMethodRef1<Int, Int> reverse_int = UnsafeFacts.staticMethod(TOKEN, "reverse", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> reverse_int = UnsafeInvocables.staticMethod(TOKEN, "reverse", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#rotateLeft(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> rotateLeft_int_int = UnsafeFacts.staticMethod(TOKEN, "rotateLeft", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> rotateLeft_int_int = UnsafeInvocables.staticMethod(TOKEN, "rotateLeft", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#rotateRight(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> rotateRight_int_int = UnsafeFacts.staticMethod(TOKEN, "rotateRight", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> rotateRight_int_int = UnsafeInvocables.staticMethod(TOKEN, "rotateRight", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#shortValue()].
-    public static final MethodRef0<Integer, Short> shortValue = UnsafeFacts.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.FINAL);
+    public static final MethodRef0<Integer, Short> shortValue = UnsafeInvocables.method(TOKEN, "shortValue", PrimitiveToken.SHORT, MemberTraits.FINAL);
 
     /// The fact of [Integer#signum(int)].
-    public static final StaticMethodRef1<Int, Int> signum_int = UnsafeFacts.staticMethod(TOKEN, "signum", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Int, Int> signum_int = UnsafeInvocables.staticMethod(TOKEN, "signum", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#sum(int, int)].
-    public static final StaticMethodRef2<Int, Int, Int> sum_int_int = UnsafeFacts.staticMethod(TOKEN, "sum", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<Int, Int, Int> sum_int_int = UnsafeInvocables.staticMethod(TOKEN, "sum", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toBinaryString(int)].
-    public static final StaticMethodRef1<String, Int> toBinaryString_int = UnsafeFacts.staticMethod(TOKEN, "toBinaryString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> toBinaryString_int = UnsafeInvocables.staticMethod(TOKEN, "toBinaryString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toHexString(int)].
-    public static final StaticMethodRef1<String, Int> toHexString_int = UnsafeFacts.staticMethod(TOKEN, "toHexString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> toHexString_int = UnsafeInvocables.staticMethod(TOKEN, "toHexString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toOctalString(int)].
-    public static final StaticMethodRef1<String, Int> toOctalString_int = UnsafeFacts.staticMethod(TOKEN, "toOctalString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> toOctalString_int = UnsafeInvocables.staticMethod(TOKEN, "toOctalString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toString()].
-    public static final MethodRef0<Integer, String> toString = UnsafeFacts.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final MethodRef0<Integer, String> toString = UnsafeInvocables.method(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Integer#toString(int)].
-    public static final StaticMethodRef1<String, Int> toString_int = UnsafeFacts.staticMethod(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> toString_int = UnsafeInvocables.staticMethod(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toString(int, int)].
-    public static final StaticMethodRef2<String, Int, Int> toString_int_int = UnsafeFacts.staticMethod(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<String, Int, Int> toString_int_int = UnsafeInvocables.staticMethod(TOKEN, "toString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toUnsignedLong(int)].
-    public static final StaticMethodRef1<Long, Int> toUnsignedLong_int = UnsafeFacts.staticMethod(TOKEN, "toUnsignedLong", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Long, Int> toUnsignedLong_int = UnsafeInvocables.staticMethod(TOKEN, "toUnsignedLong", PrimitiveToken.LONG, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toUnsignedString(int)].
-    public static final StaticMethodRef1<String, Int> toUnsignedString_int = UnsafeFacts.staticMethod(TOKEN, "toUnsignedString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<String, Int> toUnsignedString_int = UnsafeInvocables.staticMethod(TOKEN, "toUnsignedString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#toUnsignedString(int, int)].
-    public static final StaticMethodRef2<String, Int, Int> toUnsignedString_int_int = UnsafeFacts.staticMethod(TOKEN, "toUnsignedString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef2<String, Int, Int> toUnsignedString_int_int = UnsafeInvocables.staticMethod(TOKEN, "toUnsignedString", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.FINAL);
 
     /// The fact of [Integer#valueOf(String)].
-    public static final StaticMethodRef1<Integer, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef1<Integer, String> valueOf_String = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#valueOf(String, int)].
-    public static final StaticMethodRef2<Integer, String, Int> valueOf_String_int = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
+    public static final StaticMethodRef2<Integer, String, Int> valueOf_String_int = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), PrimitiveToken.INT, MemberTraits.FINAL.throwing(UnsafeFacts.<NumberFormatException>openClassToken(NumberFormatException_.Data.SHAPE)));
 
     /// The fact of [Integer#valueOf(int)].
-    public static final StaticMethodRef1<Integer, Int> valueOf_int = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
+    public static final StaticMethodRef1<Integer, Int> valueOf_int = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, PrimitiveToken.INT, MemberTraits.FINAL);
 
     private Integer_() {
     }

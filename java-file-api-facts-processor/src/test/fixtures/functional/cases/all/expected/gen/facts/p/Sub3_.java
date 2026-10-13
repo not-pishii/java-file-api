@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -80,10 +81,10 @@ public final class Sub3_ {
     public static final InterfaceToken<Sub3> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     /// The fact of [Sub3#get()].
-    public static final MethodRef0<Sub3, String> get = UnsafeFacts.method(TOKEN, "get", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
+    public static final MethodRef0<Sub3, String> get = UnsafeInvocables.method(TOKEN, "get", UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.ABSTRACT);
 
     /// The fact of the single abstract method [Sub3#get()], which a lambda implements.
-    public static final Sam0<Sub3, String> sam = UnsafeFacts.sam(get);
+    public static final Sam0<Sub3, String> sam = UnsafeInvocables.sam(get);
 
     private Sub3_() {
     }

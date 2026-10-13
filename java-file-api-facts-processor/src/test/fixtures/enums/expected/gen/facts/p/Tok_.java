@@ -22,6 +22,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
@@ -92,13 +93,13 @@ public final class Tok_ {
     public static final EnumConstant<Tok> token_ = TOKEN.constant("token");
 
     /// The fact of [Tok#run()].
-    public static final VoidMethodRef0<Tok> run = UnsafeFacts.voidMethod(TOKEN, "run", MemberTraits.FINAL);
+    public static final VoidMethodRef0<Tok> run = UnsafeInvocables.voidMethod(TOKEN, "run", MemberTraits.FINAL);
 
     /// The fact of [Tok#valueOf(String)].
-    public static final StaticMethodRef1<Tok, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Tok, String> valueOf_String = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Tok#values()].
-    public static final StaticMethodRef0<Tok[]> values = UnsafeFacts.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
+    public static final StaticMethodRef0<Tok[]> values = UnsafeInvocables.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
 
     private Tok_() {
     }

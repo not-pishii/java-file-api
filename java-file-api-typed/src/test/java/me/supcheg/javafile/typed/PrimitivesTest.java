@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
@@ -59,7 +60,7 @@ class PrimitivesTest {
 
     @Test
     void primitiveReceiverOfAVoidCallIsRejected() {
-        VoidMethodRef0<Object> notify = UnsafeFacts.voidMethod(Object_.TOKEN, "notify", MemberTraits.DEFAULT);
+        VoidMethodRef0<Object> notify = UnsafeInvocables.voidMethod(Object_.TOKEN, "notify", MemberTraits.DEFAULT);
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> voidCall(literal(true), notify))

@@ -26,6 +26,7 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -93,16 +94,16 @@ public final class Op_ {
     public static final EnumConstant<Op> SUB = TOKEN.constant("SUB");
 
     /// The fact of [Op#apply(int, int)].
-    public static final MethodRef2<Op, Int, Int, Int> apply_int_int = UnsafeFacts.method(TOKEN, "apply", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.ABSTRACT);
+    public static final MethodRef2<Op, Int, Int, Int> apply_int_int = UnsafeInvocables.method(TOKEN, "apply", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.ABSTRACT);
 
     /// The fact of [Op#twice(int)].
-    public static final MethodRef1<Op, Int, Int> twice_int = UnsafeFacts.method(TOKEN, "twice", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
+    public static final MethodRef1<Op, Int, Int> twice_int = UnsafeInvocables.method(TOKEN, "twice", PrimitiveToken.INT, PrimitiveToken.INT, MemberTraits.OVERRIDABLE);
 
     /// The fact of [Op#valueOf(String)].
-    public static final StaticMethodRef1<Op, String> valueOf_String = UnsafeFacts.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
+    public static final StaticMethodRef1<Op, String> valueOf_String = UnsafeInvocables.staticMethod(TOKEN, "valueOf", TOKEN, UnsafeFacts.<String>finalClassToken(gen.facts.java.lang.String_.Data.SHAPE), MemberTraits.FINAL);
 
     /// The fact of [Op#values()].
-    public static final StaticMethodRef0<Op[]> values = UnsafeFacts.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
+    public static final StaticMethodRef0<Op[]> values = UnsafeInvocables.staticMethod(TOKEN, "values", ArrayToken.of(TOKEN), MemberTraits.FINAL);
 
     private Op_() {
     }

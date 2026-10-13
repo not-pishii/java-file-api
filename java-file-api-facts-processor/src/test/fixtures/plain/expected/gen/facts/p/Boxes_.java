@@ -29,6 +29,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -106,13 +107,13 @@ public final class Boxes_ {
     public static final StaticFieldRef<Double> D = UnsafeFacts.constantField(TOKEN, "D", PrimitiveToken.DOUBLE, 1.0);
 
     /// The fact of [Boxes#Boxes()].
-    public static final CtorRef0<Boxes> new_ = UnsafeFacts.ctor(TOKEN, MemberTraits.FINAL);
+    public static final CtorRef0<Boxes> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
     /// The fact of [Boxes#box(double, Long, long, Float, float, Byte, byte, Short, short, Integer, int, Character)].
-    public static final MethodRef12<Boxes, java.lang.Double, Double, Long, me.supcheg.javafile.facts.Prim.Long, Float, me.supcheg.javafile.facts.Prim.Float, Byte, me.supcheg.javafile.facts.Prim.Byte, Short, me.supcheg.javafile.facts.Prim.Short, Integer, Int, Character> box_double_Long_long_Float_float_Byte_byte_Short_short_Integer_int_Character = UnsafeFacts.method(TOKEN, "box", UnsafeFacts.<java.lang.Double>finalClassToken(gen.facts.java.lang.Double_.Data.SHAPE), PrimitiveToken.DOUBLE, UnsafeFacts.<Long>finalClassToken(gen.facts.java.lang.Long_.Data.SHAPE), PrimitiveToken.LONG, UnsafeFacts.<Float>finalClassToken(gen.facts.java.lang.Float_.Data.SHAPE), PrimitiveToken.FLOAT, UnsafeFacts.<Byte>finalClassToken(gen.facts.java.lang.Byte_.Data.SHAPE), PrimitiveToken.BYTE, UnsafeFacts.<Short>finalClassToken(gen.facts.java.lang.Short_.Data.SHAPE), PrimitiveToken.SHORT, UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE), PrimitiveToken.INT, UnsafeFacts.<Character>finalClassToken(gen.facts.java.lang.Character_.Data.SHAPE), MemberTraits.OVERRIDABLE);
+    public static final MethodRef12<Boxes, java.lang.Double, Double, Long, me.supcheg.javafile.facts.Prim.Long, Float, me.supcheg.javafile.facts.Prim.Float, Byte, me.supcheg.javafile.facts.Prim.Byte, Short, me.supcheg.javafile.facts.Prim.Short, Integer, Int, Character> box_double_Long_long_Float_float_Byte_byte_Short_short_Integer_int_Character = UnsafeInvocables.method(TOKEN, "box", UnsafeFacts.<java.lang.Double>finalClassToken(gen.facts.java.lang.Double_.Data.SHAPE), PrimitiveToken.DOUBLE, UnsafeFacts.<Long>finalClassToken(gen.facts.java.lang.Long_.Data.SHAPE), PrimitiveToken.LONG, UnsafeFacts.<Float>finalClassToken(gen.facts.java.lang.Float_.Data.SHAPE), PrimitiveToken.FLOAT, UnsafeFacts.<Byte>finalClassToken(gen.facts.java.lang.Byte_.Data.SHAPE), PrimitiveToken.BYTE, UnsafeFacts.<Short>finalClassToken(gen.facts.java.lang.Short_.Data.SHAPE), PrimitiveToken.SHORT, UnsafeFacts.<Integer>finalClassToken(gen.facts.java.lang.Integer_.Data.SHAPE), PrimitiveToken.INT, UnsafeFacts.<Character>finalClassToken(gen.facts.java.lang.Character_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     /// The fact of [Boxes#flags(char, Boolean, boolean)].
-    public static final MethodRef3<Boxes, Boolean, Char, Boolean, Bool> flags_char_Boolean_boolean = UnsafeFacts.method(TOKEN, "flags", UnsafeFacts.<Boolean>finalClassToken(gen.facts.java.lang.Boolean_.Data.SHAPE), PrimitiveToken.CHAR, UnsafeFacts.<Boolean>finalClassToken(gen.facts.java.lang.Boolean_.Data.SHAPE), PrimitiveToken.BOOLEAN, MemberTraits.OVERRIDABLE);
+    public static final MethodRef3<Boxes, Boolean, Char, Boolean, Bool> flags_char_Boolean_boolean = UnsafeInvocables.method(TOKEN, "flags", UnsafeFacts.<Boolean>finalClassToken(gen.facts.java.lang.Boolean_.Data.SHAPE), PrimitiveToken.CHAR, UnsafeFacts.<Boolean>finalClassToken(gen.facts.java.lang.Boolean_.Data.SHAPE), PrimitiveToken.BOOLEAN, MemberTraits.OVERRIDABLE);
 
     private Boxes_() {
     }

@@ -4,6 +4,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Mid;
 import me.supcheg.javafile.typed.fixtures.Named;
@@ -418,7 +419,7 @@ class ExtendsTest {
                             var eh = h.extending(Shape_.TOKEN);
                             var describe = eh.overriding(eh.protected_(Shape_.describe_String));
                             eh.extends_(Shape_.extend(h.self())
-                                    .area(UnsafeFacts.inherited0(
+                                    .area(UnsafeInvocables.inherited0(
                                             new me.supcheg.javafile.facts.Implemented.ByInheritance(Shape_.area)))
                                     .describe_String(describe));
                             return Unreached.here();
@@ -559,7 +560,7 @@ class ExtendsTest {
                         @Override
                         public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Base_.extend(h.self()));
-                            sh.inherited(UnsafeFacts.voidMethod(Base_.TOKEN, "absent", MemberTraits.FINAL));
+                            sh.inherited(UnsafeInvocables.voidMethod(Base_.TOKEN, "absent", MemberTraits.FINAL));
                             return Unreached.here();
                         }
                     }))
