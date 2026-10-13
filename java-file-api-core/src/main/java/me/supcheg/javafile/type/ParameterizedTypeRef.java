@@ -11,7 +11,7 @@ import java.util.List;
 /// @param args the type arguments applied to `raw`
 /// @param annotations the type-use annotations on this reference (JLS 9.7.4)
 public record ParameterizedTypeRef(ClassDesc raw, List<TypeArg> args, List<AnnotationUse> annotations)
-        implements ClassOrInterfaceTypeRef {
+        implements DeclaredTypeRef {
     public ParameterizedTypeRef {
         args = List.copyOf(args);
         annotations = List.copyOf(annotations);

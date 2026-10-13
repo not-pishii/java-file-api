@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -15,8 +15,7 @@ public final class OpenClassToken<T> extends ClassTokenData implements ConcreteC
         super(shape, args);
     }
 
-    OpenClassToken(
-            TypeShape<DeclaredKind.OpenClass> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+    OpenClassToken(TypeShape<DeclaredKind.OpenClass> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments) {
         super(shape, typeRef, arguments);
     }
 }

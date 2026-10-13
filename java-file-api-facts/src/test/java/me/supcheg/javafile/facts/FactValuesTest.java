@@ -130,10 +130,7 @@ class FactValuesTest {
 
     @Test
     void aDeclaredTypeIsAClassAndAGenericOneHasATokenForEachOfItsTypeParameters() {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> UnsafeFacts.finalClassToken(
-                        Types.typeVar("T"), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY))
-                .withMessage("a declared type token needs a class or parameterized type, got type variable T");
+
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeFacts.declaredClassToken(
                         ClassDesc.of("fixtures", "Box"),

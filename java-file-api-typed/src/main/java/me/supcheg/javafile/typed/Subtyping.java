@@ -211,11 +211,7 @@ final class Subtyping {
             }
             // Not generic: its supertypes are in terms of no type parameter. A raw type has erased ones.
             case ClassTypeRef _ ->
-                declared.shape().typeParameters().isEmpty()
-                                && supertypes.typeParameters().isEmpty()
-                        ? supertypes.supertype(raw)
-                        : Optional.empty();
-            case TypeVarRef _ -> Optional.empty();
+                declared.shape().typeParameters().isEmpty() ? supertypes.supertype(raw) : Optional.empty();
         };
     }
 

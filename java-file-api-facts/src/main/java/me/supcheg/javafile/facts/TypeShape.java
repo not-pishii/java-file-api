@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeVarRef;
@@ -179,7 +180,7 @@ public final class TypeShape<K extends DeclaredKind> {
     /// type arguments of `typeRef`.
     static <K extends DeclaredKind> TypeShape<K> unsafe(
             K kind,
-            ClassOrInterfaceTypeRef typeRef,
+            DeclaredTypeRef typeRef,
             List<ClassDesc> superclasses,
             Supertypes supertypes,
             Supplier<MethodTable> methods,
@@ -188,10 +189,6 @@ public final class TypeShape<K extends DeclaredKind> {
                 switch (typeRef) {
                     case ClassTypeRef cls -> cls.desc();
                     case ParameterizedTypeRef parameterized -> parameterized.raw();
-                    case TypeVarRef var ->
-                        throw new IllegalArgumentException(
-                                "a declared type token needs a class or parameterized type, got type variable "
-                                        + var.name());
                 };
         int arity = typeRef instanceof ParameterizedTypeRef parameterized
                 ? parameterized.args().size()
@@ -359,7 +356,7 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @param args one argument per type parameter, or none for the raw type
     /// @return the type reference
     /// @throws IllegalArgumentException if `args` is neither empty nor one per type parameter
-    ClassOrInterfaceTypeRef typeRef(List<TokenArg> args) {
+    DeclaredTypeRef typeRef(List<TokenArg> args) {
         if (args.isEmpty()) {
             return Types.of(desc);
         }

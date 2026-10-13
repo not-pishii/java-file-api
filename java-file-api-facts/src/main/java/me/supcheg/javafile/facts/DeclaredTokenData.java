@@ -1,6 +1,6 @@
 package me.supcheg.javafile.facts;
 
-import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.DeclaredTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import org.jspecify.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /// type arguments.
 abstract class DeclaredTokenData {
     private final TypeShape<?> shape;
-    private final ClassOrInterfaceTypeRef typeRef;
+    private final DeclaredTypeRef typeRef;
     private final List<ClassDesc> arguments;
     private final List<TokenArg> typeArguments;
     private volatile @Nullable MethodTable methods;
@@ -22,12 +22,12 @@ abstract class DeclaredTokenData {
 
     /// @param typeRef the shape's type, raw or with one type argument per type parameter
     /// @param arguments the erasures the shape's method table is instantiated with
-    DeclaredTokenData(TypeShape<?> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments) {
+    DeclaredTokenData(TypeShape<?> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments) {
         this(shape, typeRef, arguments, List.of());
     }
 
     private DeclaredTokenData(
-            TypeShape<?> shape, ClassOrInterfaceTypeRef typeRef, List<ClassDesc> arguments, List<TokenArg> args) {
+            TypeShape<?> shape, DeclaredTypeRef typeRef, List<ClassDesc> arguments, List<TokenArg> args) {
         this.shape = shape;
         this.typeRef = typeRef;
         this.arguments = List.copyOf(arguments);
@@ -38,7 +38,7 @@ abstract class DeclaredTokenData {
         return shape;
     }
 
-    public final ClassOrInterfaceTypeRef typeRef() {
+    public final DeclaredTypeRef typeRef() {
         return typeRef;
     }
 

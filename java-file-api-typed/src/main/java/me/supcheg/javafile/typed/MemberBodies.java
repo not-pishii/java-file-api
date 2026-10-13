@@ -690,7 +690,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                 };
         CodeBody code = lowering.lowerBlock(root.instrs());
         List<ClassOrInterfaceTypeRef> throwsClause = declared.thrown().stream()
-                .map(type -> lowering.named(type).typeRef())
+                .<ClassOrInterfaceTypeRef>map(type -> lowering.named(type).typeRef())
                 .toList();
         List<AnnotationUse> annotations =
                 switch (declared.kind()) {

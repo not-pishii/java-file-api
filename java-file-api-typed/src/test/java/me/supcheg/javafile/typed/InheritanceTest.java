@@ -3,12 +3,16 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Heritage.Dispatch;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeRef;
@@ -20,6 +24,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.Comparator_;
+import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -57,6 +62,7 @@ class InheritanceTest {
     private static Supertype iface(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
         return new Supertype(
                 UnsafeFacts.interfaceToken(new ClassTypeRef(desc), MethodTable.EMPTY),
+                List.of(),
                 new Heritage.Applied(List.of(methods), List.of()));
     }
 
@@ -65,6 +71,7 @@ class InheritanceTest {
     private static Supertype klass(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
         return new Supertype(
                 UnsafeFacts.openClassToken(new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY),
+                List.of(),
                 new Heritage.Applied(List.of(methods), List.of()));
     }
 
@@ -105,6 +112,37 @@ class InheritanceTest {
                         by, Heritage.Arity.FIXED, params, new Heritage.Result.Of<>(PrimitiveTypeRef.INT), List.of())),
                 Set.of(erasure),
                 List.of(overrides));
+    }
+
+    /// A generic method `m`, of `variables` type parameters without bounds, as a supertype has it.
+    private static Heritage.Method<Heritage.Inherited> generic(
+            Heritage.Declarer by,
+            int variables,
+            List<Heritage.Type> params,
+            List<ClassDesc> erasure,
+            Heritage.Result<Heritage.Type> result,
+            Heritage.Type... thrown) {
+        return new Heritage.Method<>(
+                Signature.of("m", erasure.stream().map(Param::fixed).toArray(Param[]::new)),
+                List.of(new Heritage.Generic(new Heritage.Declaration(
+                        by,
+                        Heritage.Arity.FIXED,
+                        Stream.generate(() -> new Heritage.Variable(List.of()))
+                                .limit(variables)
+                                .toList(),
+                        params,
+                        result,
+                        List.of(thrown)))),
+                Set.of(erasure),
+                List.of());
+    }
+
+    private static Heritage.Declarer abstractOf(ClassDesc declarer) {
+        return new Heritage.Declarer.OfInterface(declarer, Heritage.InterfaceMethod.ABSTRACT);
+    }
+
+    private static Heritage.Declarer concreteOf(ClassDesc declarer) {
+        return new Heritage.Declarer.OfClass(declarer, Heritage.Visibility.PUBLIC, Heritage.ClassMethod.CONCRETE);
     }
 
     private static MethodSignature sig(String name, ClassDesc... params) {
@@ -290,6 +328,114 @@ class InheritanceTest {
     }
 
     @Test
+    void genericMethodsAreOfTheSameParametersWhenTheirTypeParametersAndParametersAreTheSame() {
+        Heritage.Result<Heritage.Type> ofVariable = new Heritage.Result.Of<>(new Heritage.Type.OfMember(0));
+        Heritage.Type variable = new Heritage.Type.OfMember(0);
+        Heritage.Type object = new Heritage.Type.Fixed(Types.OBJECT);
+        List<ClassDesc> erased = List.of(ConstantDescs.CD_Object);
+        Inheritance inheritance =
+                ofObject().with(iface(I, generic(abstractOf(I), 1, List.of(variable), erased, ofVariable)));
+
+        // <T> T m(T) of two interfaces is one method to implement
+        assertThat(inheritance
+                        .with(iface(J, generic(abstractOf(J), 1, List.of(variable), erased, ofVariable)))
+                        .group(sig("m", ConstantDescs.CD_Object))
+                        .orElseThrow()
+                        .entries())
+                .hasSize(2);
+        // <T> T m(Object), <T, U> T m(T) and a method that is not generic erase as it does, and are others
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        inheritance.with(iface(J, generic(abstractOf(J), 1, List.of(object), erased, ofVariable))))
+                .withMessageContaining("name clash, both erase to m(java.lang.Object)");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        inheritance.with(iface(J, generic(abstractOf(J), 2, List.of(variable), erased, ofVariable))))
+                .withMessageContaining("name clash, both erase to m(java.lang.Object)");
+        Supertype plain = iface(J, method(Dispatch.ABSTRACT, J, "m", List.of(Types.OBJECT), erased));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> inheritance.with(plain))
+                .withMessageContaining("name clash, both erase to m(java.lang.Object)");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> ofObject()
+                        .with(plain)
+                        .with(iface(I, generic(abstractOf(I), 1, List.of(variable), erased, ofVariable))))
+                .withMessageContaining("name clash, both erase to m(java.lang.Object)");
+    }
+
+    @Test
+    void aGenericMethodOfAClassStandsForOneOfAnInterfaceOfItsResultAndItsExceptions() {
+        Heritage.Result<Heritage.Type> ofVariable = new Heritage.Result.Of<>(new Heritage.Type.OfMember(0));
+        Heritage.Type failure = new Heritage.Type.Fixed(Types.of(java.io.IOException.class));
+        Supertype declaring = iface(I, generic(abstractOf(I), 1, List.of(), List.of(), ofVariable, failure));
+
+        assertThat(Inheritance.of(HEIR, klass(K, generic(concreteOf(K), 1, List.of(), List.of(), ofVariable, failure)))
+                        .with(declaring)
+                        .group(sig("m"))
+                        .orElseThrow()
+                        .conflict())
+                .isEmpty();
+        assertThat(Inheritance.of(
+                                HEIR,
+                                klass(
+                                        K,
+                                        generic(
+                                                concreteOf(K),
+                                                1,
+                                                List.of(),
+                                                List.of(),
+                                                new Heritage.Result.Of<>(new Heritage.Type.Fixed(Types.OBJECT)))))
+                        .with(declaring)
+                        .group(sig("m"))
+                        .orElseThrow()
+                        .conflict())
+                .hasValueSatisfying(why -> assertThat(why).contains("its result is not the one the other has"));
+        assertThat(Inheritance.of(HEIR, klass(K, generic(concreteOf(K), 1, List.of(), List.of(), ofVariable, failure)))
+                        .with(iface(I, generic(abstractOf(I), 1, List.of(), List.of(), ofVariable)))
+                        .group(sig("m"))
+                        .orElseThrow()
+                        .conflict())
+                .hasValueSatisfying(why -> assertThat(why).contains("it declares the exception"));
+    }
+
+    @Test
+    void aMemberOfTheSuperclassIsTheMethodAFactTellsWhenItIsWrittenAsTheFact() {
+        DeclaredToken<Object> owner =
+                UnsafeFacts.openClassToken(new ClassTypeRef(K), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
+        var strings = new List_<>(String_.TOKEN).token;
+        Inheritance.Entry member = Inheritance.of(
+                        HEIR, klass(K, method(Dispatch.CONCRETE, K, "m", List.of(strings.typeRef()), List.of(CD_LIST))))
+                .group(sig("m", CD_LIST))
+                .orElseThrow()
+                .stands();
+
+        assertThat(member.differsFrom(
+                        UnsafeInvocables.method(owner, "m", PrimitiveToken.INT, strings, MemberTraits.DEFAULT)))
+                .isEmpty();
+        assertThat(member.differsFrom(UnsafeInvocables.method(
+                        owner, "m", PrimitiveToken.INT, new List_<>(Integer_.TOKEN).token, MemberTraits.DEFAULT)))
+                .hasValue("its parameters are not those of the fact");
+        assertThat(member.differsFrom(
+                        UnsafeInvocables.method(owner, "m", String_.TOKEN, strings, MemberTraits.DEFAULT)))
+                .hasValue("its result is not that of the fact");
+        assertThat(Inheritance.of(
+                                HEIR,
+                                klass(
+                                        K,
+                                        generic(
+                                                concreteOf(K),
+                                                1,
+                                                List.of(),
+                                                List.of(),
+                                                new Heritage.Result.Of<>(new Heritage.Type.OfMember(0)))))
+                        .group(sig("m"))
+                        .orElseThrow()
+                        .stands()
+                        .differsFrom(UnsafeInvocables.method(owner, "m", Object_.TOKEN, MemberTraits.DEFAULT)))
+                .hasValue("it is generic, and the fact tells it with type arguments");
+    }
+
+    @Test
     void aMethodThatWouldBeTheBridgeOfAnotherIsRejected() {
         // Comparable<String>: compareTo(String), bridged as compareTo(Object)
         Inheritance inheritance = ofObject().with(real(new Comparable_<>(String_.TOKEN).token));
@@ -326,6 +472,14 @@ class InheritanceTest {
     void aSupertypeHasExactTypeArguments() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> real(Comparable_.ANY))
+                .withMessageContaining("a supertype has no wildcard type argument");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        real(UnsafeFacts.interfaceToken(Comparable_.Data.SHAPE, TokenArg.extendsBound(String_.TOKEN))))
+                .withMessageContaining("a supertype has no wildcard type argument");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        real(UnsafeFacts.interfaceToken(Comparable_.Data.SHAPE, TokenArg.superBound(String_.TOKEN))))
                 .withMessageContaining("a supertype has no wildcard type argument");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> real(UnsafeFacts.interfaceToken(Comparable_.Data.SHAPE)))

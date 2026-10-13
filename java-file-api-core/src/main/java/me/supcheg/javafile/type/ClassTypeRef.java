@@ -9,7 +9,7 @@ import java.util.List;
 ///
 /// @param desc the referenced class or interface
 /// @param annotations the type-use annotations on this reference (JLS 9.7.4)
-public record ClassTypeRef(ClassDesc desc, List<AnnotationUse> annotations) implements ClassOrInterfaceTypeRef {
+public record ClassTypeRef(ClassDesc desc, List<AnnotationUse> annotations) implements DeclaredTypeRef {
     public ClassTypeRef {
         annotations = List.copyOf(annotations);
     }
