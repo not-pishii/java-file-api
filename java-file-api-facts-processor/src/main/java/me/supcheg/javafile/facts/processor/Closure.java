@@ -4,6 +4,7 @@ import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
 import me.supcheg.javafile.facts.processor.TypeGraph.Token;
+import me.supcheg.javafile.langmodel.mirror.Admission;
 import me.supcheg.javafile.langmodel.mirror.Hierarchy;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
@@ -283,13 +284,9 @@ final class Closure {
             case Translation.Unrepresentable<TypeModel>(String reason) -> new Reading.Unrepresentable(reason);
             case Translation.Ok<TypeModel>(TypeModel full) ->
                 switch (models.translator().rejection(requested, full)) {
-                    case Translation.Ok<Optional<String>>(Optional<String> rejection) ->
-                        rejection
-                                .<Reading>map(Reading.Rejected::new)
-                                .orElseGet(() -> readSignatures(requested, full, models));
-                    case Translation.Deferred<Optional<String>>(String unresolved) -> new Reading.Waiting(unresolved);
-                    case Translation.Unrepresentable<Optional<String>>(String reason) ->
-                        new Reading.Unrepresentable(reason);
+                    case Admission.Admitted _ -> readSignatures(requested, full, models);
+                    case Admission.Rejected(String reason) -> new Reading.Rejected(reason);
+                    case Admission.Deferred(String unresolved) -> new Reading.Waiting(unresolved);
                 };
         };
     }

@@ -123,7 +123,7 @@ public final class Canonical {
 
     private Canonical(String text) {
         this.text = text;
-        this.fingerprint = sha256(text);
+        this.fingerprint = digest("SHA-256", text);
     }
 
     /// The canonical form of a type.
@@ -504,12 +504,15 @@ public final class Canonical {
         return items.isEmpty() ? "-" : String.join("; ", items);
     }
 
-    private static String sha256(String text) {
+    /// The digest of a text, in hex: by SHA-256, which every Java platform supports.
+    ///
+    /// @throws IllegalStateException if the platform has no such algorithm
+    static String digest(String algorithm, String text) {
         try {
             return HexFormat.of()
-                    .formatHex(MessageDigest.getInstance("SHA-256").digest(text.getBytes(StandardCharsets.UTF_8)));
+                    .formatHex(MessageDigest.getInstance(algorithm).digest(text.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("every Java platform supports SHA-256", e);
+            throw new IllegalStateException("this Java platform has no " + algorithm, e);
         }
     }
 

@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /// What a change of a type between the version a metamodel was generated
 /// from and the version of the target classpath comes to: the metamodel
@@ -701,6 +702,9 @@ class ConformanceTest {
                 .containsExactly("method m", "sam");
         assertThat(Conformance.name("member ctor public <^0>(^0) throws -")).isEqualTo("ctor");
         assertThat(Conformance.name("member ctor public () throws -")).isEqualTo("ctor");
+        assertThatThrownBy(() -> Conformance.name("member method public static <^0 max(^0[])"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("the type parameters do not end: <^0 max(^0[])");
     }
 
     @Test
