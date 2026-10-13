@@ -7,6 +7,7 @@ import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
+import me.supcheg.routine.Either;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -35,6 +36,23 @@ import java.util.Optional;
 /// A new instance per round: a type deferred in one round may be complete
 /// in the next.
 final class Models {
+
+    /// A translation of what the round has read already, read again: what was no longer deferred then
+    /// is not deferred now.
+    ///
+    /// @param again the translation
+    /// @param <T> the type of the translation
+    /// @return the translation, or why there is none
+    /// @throws IllegalStateException if it is deferred
+    static <T> Either<String, T> settled(Translation<T> again) {
+        return switch (again) {
+            case Translation.Ok<T>(T value) -> Either.right(value);
+            case Translation.Unrepresentable<T>(String reason) -> Either.left(reason);
+            case Translation.Deferred<T>(String unresolved) ->
+                throw new IllegalStateException("what was read mentions " + unresolved + " now");
+        };
+    }
+
     private final Elements elements;
     private final Types types;
     private final MirrorTranslator translator;

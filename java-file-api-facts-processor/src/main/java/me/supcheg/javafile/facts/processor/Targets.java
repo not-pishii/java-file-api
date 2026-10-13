@@ -78,8 +78,7 @@ final class Targets {
     private Optional<TypeModel> read(TypeElement element) {
         return switch (models.of(element, MemberFilter.NONE)) {
             case Translation.Ok<TypeModel>(TypeModel model) -> Optional.of(model);
-            case Translation.Deferred<TypeModel> ignored -> Optional.empty();
-            case Translation.Unrepresentable<TypeModel> ignored -> Optional.empty();
+            case Translation<TypeModel> ignored -> Optional.empty();
         };
     }
 

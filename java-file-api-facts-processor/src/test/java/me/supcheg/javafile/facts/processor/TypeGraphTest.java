@@ -130,7 +130,12 @@ class TypeGraphTest {
             Collections.shuffle(shuffledEdges, new Random(seed));
             TypeGraph shuffled = graph(shuffledNodes, shuffledEdges);
 
-            assertThat(shuffled).isEqualTo(expected);
+            assertThat(shuffled)
+                    .isEqualTo(expected)
+                    .hasSameHashCodeAs(expected)
+                    .hasToString(expected.toString())
+                    .isNotEqualTo(graph(List.of(), List.of()))
+                    .isNotEqualTo(expected.toString());
             assertThat(List.copyOf(shuffled.edges())).isEqualTo(List.copyOf(expected.edges()));
             assertThat(List.copyOf(shuffled.nodes().keySet())).containsExactly("gen.X", "p.A", "p.B", "p.C", "p.D");
             // of the two ways of the same length, the one through the first name

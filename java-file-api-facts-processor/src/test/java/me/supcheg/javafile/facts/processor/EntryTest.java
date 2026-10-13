@@ -531,6 +531,49 @@ class EntryTest {
     }
 
     @Test
+    void aTypeWhoseHeritageOrBoundsCannotBeToldHasNoEntry() {
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Odd",
+                                        "package p; public class Odd { public Outer<String>.Inner odd() { return null; } }",
+                                        "package p; public class Outer<T> { public class Inner {} }")
+                                .entry())
+                        .reason())
+                .isEqualTo("a member a class would inherit of it has a signature that cannot be told");
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Bounded",
+                                        "package p; public class Bounded<T extends Hidden> { public Bounded() {} }",
+                                        "package p; class Hidden {}")
+                                .entry())
+                        .reason())
+                .isEqualTo("a bound of its type parameters mentions a type that is not public: p.Hidden");
+    }
+
+    @Test
+    void anAbstractMethodOfMoreParametersThanAStepTakesRefusesTheEntry() {
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Wide",
+                                        "package p; public interface Wide { void m(int a, int b, int c, int d, int e, int f,"
+                                                + " int g, int h, int i, int j, int k, int l, int n); }")
+                                .entry())
+                        .reason())
+                .endsWith(" has 13 parameters, more than 12");
+    }
+
+    @Test
+    void aMethodOfVariableArityOfAReifiableElementTypeIsAStep() {
+        // an override of it is declared without a warning of javac: a primitive, an array, a List<?>
+        assertThat(ofLibrary("p.Ints", "package p; public interface Ints { void m(int... more); }")
+                        .entry())
+                .isInstanceOf(Entry.Offered.class);
+        assertThat(ofLibrary("p.Arrays", "package p; public interface Arrays { void m(String[]... more); }")
+                        .entry())
+                .isInstanceOf(Entry.Offered.class);
+        assertThat(ofLibrary("p.Lists", "package p; public interface Lists { void m(java.util.List<?>... more); }")
+                        .entry())
+                .isInstanceOf(Entry.Offered.class);
+    }
+
+    @Test
     void anEntryIsOfferedOnlyWhereTheFactsItIsUsedWithAreThere() {
         String thirteen = IntStream.range(0, 13).mapToObj(i -> "int p" + i).collect(Collectors.joining(", "));
 

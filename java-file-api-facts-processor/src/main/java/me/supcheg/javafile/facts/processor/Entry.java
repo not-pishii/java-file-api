@@ -95,10 +95,19 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
     /// @param elements the element utilities of the compilation
     /// @return the entry, or why there is none
     static Entry of(TypeModel model, MemberPlan plan, Elements elements) {
-        return refusal(model, plan, elements).<Entry>map(Refused::new).orElseGet(() -> steps(model, plan, elements));
+        return switch (model.heritage()) {
+            case Heritage.Untold _ ->
+                new Refused(refusal(model)
+                        .orElse("a member a class would inherit of it has a signature that cannot be told"));
+            case Heritage.Told told ->
+                refusal(model)
+                        .or(() -> refusal(model, told, plan, elements))
+                        .<Entry>map(Refused::new)
+                        .orElseGet(() -> steps(model, told, plan, elements));
+        };
     }
 
-    private static Optional<String> refusal(TypeModel model, MemberPlan plan, Elements elements) {
+    private static Optional<String> refusal(TypeModel model) {
         if (!(model.kind() instanceof DeclaredKind.Inheritable)) {
             return Optional.of("it is " + article(model.kind().toString()) + ", which no class extends");
         }
@@ -117,11 +126,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         if (inner) {
             return Optional.of("it is an inner class, which is extended with an instance of the class it is nested in");
         }
-        return switch (model.heritage()) {
-            case Heritage.Untold _ ->
-                Optional.of("a member a class would inherit of it has a signature that cannot be told");
-            case Heritage.Told told -> refusal(model, told, plan, elements);
-        };
+        return Optional.empty();
     }
 
     private static Optional<String> refusal(
@@ -253,12 +258,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
                 new Step(stepName(method.name(), first, qualified), index, method, first.params(), first.result()));
     }
 
-    private static Entry steps(TypeModel model, MemberPlan plan, Elements elements) {
-        Heritage.Told heritage =
-                switch (model.heritage()) {
-                    case Heritage.Told told -> told;
-                    case Heritage.Untold _ -> throw new IllegalStateException(model.desc() + " tells no heritage");
-                };
+    private static Entry steps(TypeModel model, Heritage.Told heritage, MemberPlan plan, Elements elements) {
         List<Either<String, Step>> plain = abstractMethods(heritage)
                 .map(method -> step(method.getKey(), method.getValue(), model, plan, elements, false)
                         .mapLeft(why ->
