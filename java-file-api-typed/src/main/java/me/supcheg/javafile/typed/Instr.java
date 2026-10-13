@@ -13,17 +13,23 @@ import java.util.stream.Stream;
 /// The untyped statement IR of the typed layer.
 sealed interface Instr {
 
+    /// A statement without a block that completes normally: a declaration, an expression statement.
+    sealed interface Plain extends Instr {}
+
+    /// A statement that completes abruptly, always (JLS 14.22).
+    sealed interface Jump extends Instr {}
+
     /// A local variable declaration with its initializer.
-    record Let(Var<?> var, Node init) implements Instr {}
+    record Let(Var<?> var, Node init) implements Plain {}
 
     /// `super(args);`, the first statement of a constructor of a class with a superclass.
     ///
     /// @param ctor the fact of the constructor of the superclass
     /// @param args the arguments, with their static types
-    record SuperInit(Invocable ctor, List<Node.Operand> args) implements Instr {}
+    record SuperInit(Invocable ctor, List<Node.Operand> args) implements Plain {}
 
     /// An expression statement: a call, an instance creation, or an assignment.
-    record Exec(Node effect) implements Instr {}
+    record Exec(Node effect) implements Plain {}
 
     /// `if (c) { ... }` with an optional `else { ... }`.
     record If(Node condition, Block<?, ?> then, Optional<Block<?, ?>> otherwise) implements Instr {}
@@ -45,19 +51,19 @@ sealed interface Instr {
     record ForEach(LoopCtl ctl, Var<?> var, Node iterable, Block<?, ?> body) implements Instr {}
 
     /// `return;` or `return value;`.
-    record Return(Optional<Node> value) implements Instr {}
+    record Return(Optional<Node> value) implements Jump {}
 
     /// `yield value;` of the block of a case of a `switch` expression.
-    record Yield(Node value) implements Instr {}
+    record Yield(Node value) implements Jump {}
 
     /// `throw value;`, with the static type of `value`.
-    record Throw(Node value, ExceptionType type) implements Instr {}
+    record Throw(Node value, ExceptionType type) implements Jump {}
 
     /// `break;` out of a loop.
-    record Break(LoopCtl ctl) implements Instr {}
+    record Break(LoopCtl ctl) implements Jump {}
 
     /// `continue;` of a loop.
-    record Continue(LoopCtl ctl) implements Instr {}
+    record Continue(LoopCtl ctl) implements Jump {}
 
     /// `try { ... } catch (...) { ... } finally { ... }`.
     record Try(Block<?, ?> body, List<Catch> catches, Optional<Block<?, ?>> finallyBlock) implements Instr {}
@@ -66,7 +72,7 @@ sealed interface Instr {
     record Catch(ClassToken<? extends Throwable> type, Var<?> var, Block<?, ?> body) {}
 
     /// An untyped core statement from `Unsafe`.
-    record Raw(Stmt stmt) implements Instr {}
+    record Raw(Stmt stmt) implements Plain {}
 
     /// The blocks that are part of the statement `instr`: its branches,
     /// its body. Not the blocks of the expressions it evaluates.
@@ -85,15 +91,8 @@ sealed interface Instr {
             case Try(var body, var catches, var finallyBlock) ->
                 Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.stream())
                         .flatMap(Function.identity());
-            case Let _ -> Stream.empty();
-            case SuperInit _ -> Stream.empty();
-            case Exec _ -> Stream.empty();
-            case Return _ -> Stream.empty();
-            case Yield _ -> Stream.empty();
-            case Throw _ -> Stream.empty();
-            case Break _ -> Stream.empty();
-            case Continue _ -> Stream.empty();
-            case Raw _ -> Stream.empty();
+            case Plain _ -> Stream.empty();
+            case Jump _ -> Stream.empty();
         };
     }
 }

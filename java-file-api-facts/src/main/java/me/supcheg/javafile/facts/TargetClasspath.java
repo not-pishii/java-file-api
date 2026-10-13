@@ -102,7 +102,7 @@ public final class TargetClasspath {
                         throw new TargetClasspathMismatchException(metamodel, shape.desc(), mismatched);
                     case TargetType.Holds holds -> holds;
                 };
-            case ShapeOrigin.Mirror _ -> TargetType.UNCHANGED;
+
             case ShapeOrigin.Unsafe _ -> TargetType.UNCHANGED;
             case ShapeOrigin.Builtin _ -> TargetType.UNCHANGED;
         };
