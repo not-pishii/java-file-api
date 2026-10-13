@@ -16,6 +16,7 @@ META-INF/javafile/metamodel/full/p.Nested -> gen.facts.p.Nested_
 META-INF/javafile/metamodel/full/p.NoneB -> gen.facts.p.NoneB_
 META-INF/javafile/metamodel/full/p.NotFoundB -> gen.facts.p.NotFoundB_
 META-INF/javafile/metamodel/full/p.OneWithout -> gen.facts.p.OneWithout_
+META-INF/javafile/metamodel/full/p.Overloaded -> gen.facts.p.Overloaded_
 META-INF/javafile/metamodel/full/p.Redecl -> gen.facts.p.Redecl_
 META-INF/javafile/metamodel/full/p.Run -> gen.facts.p.Run_
 META-INF/javafile/metamodel/full/p.Same -> gen.facts.p.Same_

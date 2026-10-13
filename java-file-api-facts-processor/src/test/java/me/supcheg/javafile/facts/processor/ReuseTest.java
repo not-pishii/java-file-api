@@ -241,13 +241,15 @@ class ReuseTest {
         Path index = root.resolve("index");
         index(index, "p.Other", "a.facts.p.Svc_\n");
         index(index, "p.Dep", "a.facts.p.Dep_\n");
+        // an entry that names nothing is none
+        index(index, "p.Svc", "\n");
 
         Compiled b = Javac.facts()
                 .classpath(v1, index, moduleA)
-                .compile(generator("b", "p.Other.class, p.Dep.class"))
+                .compile(generator("b", "p.Other.class, p.Dep.class, p.Svc.class"))
                 .orFail();
 
-        assertThat(b.metamodels()).contains("b.facts.p.Other_", "b.facts.p.Dep_");
+        assertThat(b.metamodels()).contains("b.facts.p.Other_", "b.facts.p.Dep_", "b.facts.p.Svc_");
         assertThat(b.warnings())
                 .containsExactly(
                         "a.facts.p.Dep_ is listed as full, but is token-only; generating b.facts.p.Dep_",

@@ -135,6 +135,8 @@ class TypeGraphTest {
                     .hasSameHashCodeAs(expected)
                     .hasToString(expected.toString())
                     .isNotEqualTo(graph(List.of(), List.of()))
+                    .isNotEqualTo(graph(nodes, edges.subList(1, edges.size())))
+                    .isNotEqualTo(TypeGraph.of(nodes.stream(), edges.stream(), TypeGraph.Asked.SOME_MISSING))
                     .isNotEqualTo(expected.toString());
             assertThat(List.copyOf(shuffled.edges())).isEqualTo(List.copyOf(expected.edges()));
             assertThat(List.copyOf(shuffled.nodes().keySet())).containsExactly("gen.X", "p.A", "p.B", "p.C", "p.D");
