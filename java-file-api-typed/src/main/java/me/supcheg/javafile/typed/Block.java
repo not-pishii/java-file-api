@@ -338,6 +338,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param <K> what the rest of the block returns
     /// @return what `rest` returned
     public final <T, K> K let(TypeToken<T> type, Expr<? extends T> init, Function<? super Var<T>, K> rest) {
+        Tokens.requireNoBoxing(init.type(), type, "let");
         Var<T> var = new Var<>(type, Var.Role.Fixed.LOCAL, this);
         append(new Instr.Let(var, init.node()));
         return rest.apply(var);
@@ -352,6 +353,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param <K> what the rest of the block returns
     /// @return what `rest` returned
     public final <T, K> K letVar(TypeToken<T> type, Expr<? extends T> init, Function<? super MutVar<T>, K> rest) {
+        Tokens.requireNoBoxing(init.type(), type, "letVar");
         MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.LOCAL, this);
         append(new Instr.Let(var, init.node()));
         return rest.apply(var);
@@ -525,6 +527,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B bodyBlock = child("body of for_");
         LoopCtl ctl = new LoopCtl(bodyBlock);
+        Tokens.requireNoBoxing(init.type(), type, "for_");
         MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.FOR_VARIABLE, bodyBlock);
         Expr<Prim.Bool> conditionExpr = condition.apply(var);
         requireReachableBody(conditionExpr, "for_");

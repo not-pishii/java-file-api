@@ -164,6 +164,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     ///     (see [#define(MethodRef0, InstanceBody0)])
     public final <T> void initialize(FieldRef<Self, T> field, Expr<? extends T> initializer) {
         String name = field.name();
+        Tokens.requireNoBoxing(initializer.type(), field.type(), "the initializer of field " + name);
         Slot.Blank slot = initializable(field);
         ScopeCheck.standalone(initializer.node(), "initializer of field " + name);
         Exceptions.initializer(initializer.node(), "initializer of field " + name);

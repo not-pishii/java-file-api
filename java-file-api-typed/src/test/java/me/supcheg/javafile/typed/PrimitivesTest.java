@@ -116,7 +116,10 @@ class PrimitivesTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 sameAsObjects,
-                                b -> b.return_(staticCall(Objects_.equals_Object_Object, literal(1), literal(1L))));
+                                b -> b.return_(staticCall(
+                                        Objects_.equals_Object_Object,
+                                        box(PrimitiveToken.INT, literal(1)),
+                                        box(PrimitiveToken.LONG, literal(1L)))));
                         bodies.define(member2, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
                         bodies.define(unboxed, (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
                         bodies.define(
@@ -141,7 +144,7 @@ class PrimitivesTest {
 
         String source = file.render();
         assertThat(source)
-                .contains("Objects.equals((Object) 1, (Object) 1L)")
+                .contains("Objects.equals((Object) Integer.valueOf(1), (Object) Long.valueOf(1L))")
                 .contains("Integer.valueOf(1)")
                 .contains(".intValue()")
                 .contains("new int[3]")

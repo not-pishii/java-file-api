@@ -522,7 +522,7 @@ final class Exceptions {
             case Instr.For(var _, var _, var init, var condition, var update, var _) ->
                 Stream.of(init, condition, update);
             case Instr.ForEach(var _, var _, var iterable, var _) -> Stream.of(iterable);
-            case Instr.Return(var value) -> Stream.of(value);
+            case Instr.Return(var value) -> Stream.of(value.node());
             case Instr.ReturnNothing _ -> Stream.empty();
             case Instr.Yield(var value) -> Stream.of(value);
             case Instr.Throw(var value, var _) -> Stream.of(value);

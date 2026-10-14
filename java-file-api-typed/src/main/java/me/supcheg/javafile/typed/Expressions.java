@@ -64,13 +64,15 @@ import java.util.stream.Stream;
 /// explicit — [#box(PrimitiveToken, Expr)] and [#unbox(PrimitiveToken, Expr)]
 /// — so passing an `int` where an `Integer` is expected, or the reverse, is
 /// a compile error of the generator. A marker is still a subtype of
-/// `Object`, which leaves two cases to run time:
+/// `Object`, so where a reference is taken a primitive value is refused at
+/// run time, with a hint to box it — Java would box it implicitly:
 ///
-/// - a primitive receiver — `call(literal(1), Object_.toString)` — is
-///   rejected when the call is built, with a hint to box it;
-/// - a primitive argument of an `Object` parameter —
-///   `call(list, remove_Object, literal(1))` — is allowed and rendered with
-///   an explicit cast, `list.remove((Object) 1)`.
+/// - a primitive receiver — `call(literal(1), Object_.toString)` — when the
+///   call is built;
+/// - the initializer of a variable or a field, an assigned value, the value
+///   of an expression lambda, when it is built;
+/// - an argument — `call(list, remove_Object, literal(1))` — and a returned
+///   value, where the body is defined.
 ///
 /// **The fact chosen is the member called** (§6.1, §10). A fact names one
 /// overload, one field; lowering makes javac select exactly it, whatever
@@ -732,9 +734,7 @@ public final class Expressions {
     ///     checked exception the method does not declare
     public static <F, R> Expr<F> lambda(Sam0<F, R> sam, Supplier<? extends Expr<? extends R>> body) {
         return expressionLambda(
-                sam.owner(),
-                sam.method(),
-                _ -> new LambdaValue(List.of(), body.get().node()));
+                sam.owner(), sam.method(), _ -> new LambdaValue(List.of(), returned(body.get(), sam.method())));
     }
 
     /// A lambda with an expression body, `(A1 a1) -> value`, of the functional
@@ -752,7 +752,7 @@ public final class Expressions {
             Sam1<F, R, A1> sam, Function<? super Var<A1>, ? extends Expr<? extends R>> body) {
         return expressionLambda(sam.owner(), sam.method(), scope -> {
             Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            return new LambdaValue(List.of(p1), body.apply(p1).node());
+            return new LambdaValue(List.of(p1), returned(body.apply(p1), sam.method()));
         });
     }
 
@@ -773,7 +773,7 @@ public final class Expressions {
         return expressionLambda(sam.owner(), sam.method(), scope -> {
             Var<A1> p1 = lambdaParameter(sam.param1(), scope);
             Var<A2> p2 = lambdaParameter(sam.param2(), scope);
-            return new LambdaValue(List.of(p1, p2), body.apply(p1, p2).node());
+            return new LambdaValue(List.of(p1, p2), returned(body.apply(p1, p2), sam.method()));
         });
     }
 
@@ -797,7 +797,7 @@ public final class Expressions {
             Var<A1> p1 = lambdaParameter(sam.param1(), scope);
             Var<A2> p2 = lambdaParameter(sam.param2(), scope);
             Var<A3> p3 = lambdaParameter(sam.param3(), scope);
-            return new LambdaValue(List.of(p1, p2, p3), body.apply(p1, p2, p3).node());
+            return new LambdaValue(List.of(p1, p2, p3), returned(body.apply(p1, p2, p3), sam.method()));
         });
     }
 
@@ -1055,6 +1055,13 @@ public final class Expressions {
     /// The parameters and the body of an expression lambda.
     private record LambdaValue(List<Var<?>> params, Node value) {}
 
+    /// The value of an expression lambda of `sam`, which has a result: no primitive one of a reference
+    /// result, which Java would box.
+    private static Node returned(Expr<?> value, Invocable sam) {
+        sam.resultType().ifPresent(result -> Tokens.requireNoBoxing(value.type(), result, "the lambda of " + sam));
+        return value.node();
+    }
+
     private static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
         return new Var<>(type, Var.Role.Fixed.LAMBDA_PARAMETER, scope);
     }
@@ -1089,6 +1096,7 @@ public final class Expressions {
 
     /// `var = value;`
     public static <T> Assignment assign(MutVar<T> var, Expr<? extends T> value) {
+        Tokens.requireNoBoxing(value.type(), var.type(), "assign");
         return new Assignment(new Node.Assign(new Node.Target.Local(var), value.node()));
     }
 
@@ -1097,11 +1105,13 @@ public final class Expressions {
     /// @throws IllegalArgumentException if `target` is of a primitive type
     public static <O, T> Assignment assignField(
             Expr<? extends O> target, MutableFieldRef<O, T> field, Expr<? extends T> value) {
+        Tokens.requireNoBoxing(value.type(), field.type(), "assignField");
         return new Assignment(new Node.Assign(new Node.Target.Field(receiver(target, field), field), value.node()));
     }
 
     /// `Owner.field = value;`
     public static <T> Assignment assignStaticField(MutableStaticFieldRef<T> field, Expr<? extends T> value) {
+        Tokens.requireNoBoxing(value.type(), field.type(), "assignStaticField");
         return new Assignment(new Node.Assign(new Node.Target.StaticField(field), value.node()));
     }
 
@@ -1122,6 +1132,7 @@ public final class Expressions {
     /// @return the assignment
     public static <A, T> Assignment assignAt(
             ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index, Expr<? extends T> value) {
+        Tokens.requireNoBoxing(value.type(), type.component(), "assignAt");
         return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), value.node()));
     }
 

@@ -68,6 +68,6 @@ public final class Body<R> extends Block<R, Body<R>> {
     /// @param value the returned expression
     /// @return the proof that this block ended
     public Terminated<R> return_(Expr<? extends R> value) {
-        return appendFinal(new Instr.Return(value.node()), "return_");
+        return appendFinal(new Instr.Return(Expressions.operand(value)), "return_");
     }
 }

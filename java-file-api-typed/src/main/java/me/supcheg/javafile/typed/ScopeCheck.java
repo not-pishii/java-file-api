@@ -53,7 +53,7 @@ final class ScopeCheck {
             }
             case Instr.ForEach(var ignored, var ignoredVar, var iterable, var ignoredBody) ->
                 node(iterable, block, block.path());
-            case Instr.Return(var value) -> node(value, block, block.path());
+            case Instr.Return(var value) -> node(value.node(), block, block.path());
             case Instr.ReturnNothing ignored -> {}
             case Instr.Yield(var value) -> node(value, block, block.path());
             case Instr.Throw(var value, var ignoredType) -> node(value, block, block.path());

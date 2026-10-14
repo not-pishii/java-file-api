@@ -6,7 +6,9 @@ package me.supcheg.javafile.facts;
 /// its box: `int` is `Prim.Int`, while `Integer` is `Integer`. So an
 /// `Expr<Prim.Int>` and an `Expr<Integer>` are different types to javac, and
 /// boxing or unboxing happens only where the generator asks for it
-/// explicitly — a `null` box can never be unboxed silently.
+/// explicitly — a `null` box can never be unboxed silently. A marker is a
+/// class, and so an `Object` to javac: where a reference is taken, the typed
+/// layer refuses a value of a marker at run time rather than box it.
 ///
 /// The markers are final and cannot be instantiated: they exist only as type
 /// arguments. Refer to them qualified, `Prim.Long`, rather than importing

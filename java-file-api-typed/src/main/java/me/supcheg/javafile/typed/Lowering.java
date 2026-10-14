@@ -126,7 +126,8 @@ import java.util.stream.Stream;
 ///   receiver type proves the fact is its only method of that name and
 ///   arity — the only candidate of the fixed-arity phases, which is where an
 ///   applicable fact is found. A primitive argument of a reference parameter
-///   is always cast, `(Object) 1`: boxing is never left implicit (§6.1).
+///   is refused, as a primitive returned of a reference result is: boxing is
+///   never left implicit (§6.1), and the generator boxes by `box`.
 ///   The arguments of static methods and constructors are always cast.
 /// - **Overloads that erase alike.** A fact is known among the members of
 ///   its owner by the signature it declares
@@ -438,7 +439,11 @@ final class Lowering {
                 }
                 yield labeled(ctl, new EnhancedForStmt(written(var_.type()).typeRef(), name, iterableExpr, bodyCode));
             }
-            case Instr.Return(var value) -> new ReturnStmt(Optional.of(returned(value)));
+            case Instr.Return(var value) -> {
+                // the result type of the body is known here alone: a primitive value of a reference one would box
+                result.ifPresent(declared -> Tokens.requireNoBoxing(value.type(), declared, "return_"));
+                yield new ReturnStmt(Optional.of(returned(value.node())));
+            }
             case Instr.ReturnNothing _ -> new ReturnStmt(Optional.empty());
             // The value is of the type of the switch already (YieldBody.yield_); pinned, it is exactly.
             case Instr.Yield(var value) -> new YieldStmt(expr(value, Typing.EXACT));
@@ -832,8 +837,12 @@ final class Lowering {
                     // of variable arity, not knowing which of the two calls is meant. Of exactly the type
                     // of the parameter it is the array of the arguments, whatever the arity.
                     boolean spreads = i == args.size() - 1 && param instanceof ArrayToken<?, ?>;
-                    if (boxes
-                            || (!onlyCandidate && !Tokens.sameType(arg.type(), param))
+                    if (boxes) {
+                        throw new IllegalStateException(member + " takes a " + param + " and is given a value of the"
+                                + " primitive type " + arg.type() + ", which Java would box implicitly; box it"
+                                + " explicitly, by box(...)");
+                    }
+                    if ((!onlyCandidate && !Tokens.sameType(arg.type(), param))
                             || (spreads && !Tokens.sameType(arg.type(), param))) {
                         return cast(param, arg, member);
                     }

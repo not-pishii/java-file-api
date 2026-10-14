@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeNames;
@@ -41,6 +42,23 @@ final class Tokens {
                 !(declared.typeRef() instanceof ParameterizedTypeRef parameterized)
                         || parameterized.args().stream().allMatch(UnboundedTypeArg.class::isInstance);
         };
+    }
+
+    /// Rejects a value of a primitive type where one of a reference type is taken: Java would box it
+    /// implicitly (JLS 5.1.7), and the typed layer boxes only where the generator asks for it
+    /// ([Expressions#box]), as it unboxes ([me.supcheg.javafile.facts.Prim]).
+    ///
+    /// @param value the type of the value
+    /// @param target the type taken
+    /// @param where what takes it, for the message
+    /// @throws IllegalArgumentException if `value` is primitive and `target` is not
+    static void requireNoBoxing(TypeToken<?> value, TypeToken<?> target, String where) {
+        if (value instanceof PrimitiveToken<?, ?, ?> primitive && target instanceof RefToken<?>) {
+            throw new IllegalArgumentException(where + " takes a " + target + " and is given a value of the primitive"
+                    + " type " + primitive
+                    + ", which Java would box implicitly; box it explicitly, e.g. box(PrimitiveToken."
+                    + primitive.typeRef().sourceName().toUpperCase(java.util.Locale.ROOT) + ", expr)");
+        }
     }
 
     /// Rejects a type that is or mentions a raw type, a generic class or interface without its type

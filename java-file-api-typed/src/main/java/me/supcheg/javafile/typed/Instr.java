@@ -61,8 +61,8 @@ sealed interface Instr {
     /// `for (T v : iterable) { ... }`.
     record ForEach(LoopCtl ctl, Var<?> var, Node iterable, Block<?, ?> body) implements Instr {}
 
-    /// `return value;`.
-    record Return(Node value) implements Jump {}
+    /// `return value;`, with the static type of `value`.
+    record Return(Node.Operand value) implements Jump {}
 
     /// `return;` of a `void` body.
     record ReturnNothing() implements Jump {}

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,20 +36,32 @@ class LiteralsTest {
                         var bottom = cb.declareStaticMethod("bottom", PrimitiveToken.DOUBLE);
                         var bodies = cb.bodies();
                         // each under the cast that pins valueOf(Object) among the overloads
-                        bodies.define(negative, b -> b.return_(staticCall(String_.valueOf_Object, literal(-1))));
                         bodies.define(
-                                lowest, b -> b.return_(staticCall(String_.valueOf_Object, literal(Integer.MIN_VALUE))));
+                                negative,
+                                b -> b.return_(
+                                        staticCall(String_.valueOf_Object, box(PrimitiveToken.INT, literal(-1)))));
+                        bodies.define(
+                                lowest,
+                                b -> b.return_(staticCall(
+                                        String_.valueOf_Object, box(PrimitiveToken.INT, literal(Integer.MIN_VALUE)))));
                         bodies.define(
                                 lowestLong,
-                                b -> b.return_(staticCall(String_.valueOf_Object, literal(Long.MIN_VALUE))));
+                                b -> b.return_(staticCall(
+                                        String_.valueOf_Object, box(PrimitiveToken.LONG, literal(Long.MIN_VALUE)))));
                         bodies.define(
-                                notANumber, b -> b.return_(staticCall(String_.valueOf_Object, literal(Double.NaN))));
+                                notANumber,
+                                b -> b.return_(staticCall(
+                                        String_.valueOf_Object, box(PrimitiveToken.DOUBLE, literal(Double.NaN)))));
                         bodies.define(
                                 infinite,
-                                b -> b.return_(staticCall(String_.valueOf_Object, literal(Double.POSITIVE_INFINITY))));
+                                b -> b.return_(staticCall(
+                                        String_.valueOf_Object,
+                                        box(PrimitiveToken.DOUBLE, literal(Double.POSITIVE_INFINITY)))));
                         bodies.define(
                                 negativeInfinite,
-                                b -> b.return_(staticCall(String_.valueOf_Object, literal(Double.NEGATIVE_INFINITY))));
+                                b -> b.return_(staticCall(
+                                        String_.valueOf_Object,
+                                        box(PrimitiveToken.DOUBLE, literal(Double.NEGATIVE_INFINITY)))));
                         bodies.define(nan, b -> b.return_(literal(Double.NaN)));
                         bodies.define(bottom, b -> b.return_(literal(-Double.MAX_VALUE)));
                         return bodies;
@@ -56,9 +69,9 @@ class LiteralsTest {
                 }));
 
         assertThat(compiled.source())
-                .contains("String.valueOf((Object) (-1))")
-                .contains("String.valueOf((Object) (0.0 / 0.0))")
-                .contains("String.valueOf((Object) (-1.0 / 0.0))");
+                .contains("String.valueOf((Object) Integer.valueOf(-1))")
+                .contains("String.valueOf((Object) Double.valueOf(0.0 / 0.0))")
+                .contains("String.valueOf((Object) Double.valueOf(-1.0 / 0.0))");
         assertThat(compiled.invoke("negative")).isEqualTo("-1");
         assertThat(compiled.invoke("lowest")).isEqualTo("-2147483648");
         assertThat(compiled.invoke("lowestLong")).isEqualTo("-9223372036854775808");

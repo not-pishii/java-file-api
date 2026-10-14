@@ -151,14 +151,9 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
-                var removeValue = cb.declareStaticMethod("removeValue", PrimitiveToken.INT, integers.token);
                 var removeBoxed = cb.declareStaticMethod("removeBoxed", PrimitiveToken.INT, integers.token);
                 var removeIndex = cb.declareStaticMethod("removeIndex", PrimitiveToken.INT, integers.token);
                 var bodies = cb.bodies();
-                bodies.define(
-                        removeValue,
-                        (b, l) -> b.exec(call(l, removeObject, literal(1)))
-                                .return_(unbox(PrimitiveToken.INT, call(l, integers.get_int, literal(0)))));
                 bodies.define(
                         removeBoxed,
                         (b, l) -> b.exec(call(l, removeObject, box(PrimitiveToken.INT, literal(1))))
@@ -172,11 +167,8 @@ class FactPinningCompileTest {
         });
 
         assertThat(compiled.source())
-                .contains(".remove((Object) 1)")
                 .contains(".remove((Object) Integer.valueOf(1))")
                 .contains(".remove(1)");
-        assertThat(compiled.invoke("removeValue", new ArrayList<>(List.of(1, 7))))
-                .isEqualTo(7);
         assertThat(compiled.invoke("removeBoxed", new ArrayList<>(List.of(1, 7))))
                 .isEqualTo(7);
         assertThat(compiled.invoke("removeIndex", new ArrayList<>(List.of(1, 7))))
@@ -589,7 +581,7 @@ class FactPinningCompileTest {
         CompiledClasses compiled = compile(new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
-                // "a".equals((Object) true): the cast lowering adds is in a call, never a constant
+                // "a".equals(Boolean.valueOf(true)): a call is never a constant
                 var member50 = cb.declareStaticMethod("call", PrimitiveToken.INT);
                 // a conditional cast to CharSequence is not a constant expression (JLS 15.29)
                 var charSequence = cb.declareStaticMethod("charSequence", PrimitiveToken.INT);
@@ -598,7 +590,12 @@ class FactPinningCompileTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         member50,
-                        b -> b.while_(call(literal("a"), Object_.equals_Object, literal(true)), (_, _) -> {})
+                        b -> b.while_(
+                                        call(
+                                                literal("a"),
+                                                Object_.equals_Object,
+                                                box(PrimitiveToken.BOOLEAN, literal(true))),
+                                        (_, _) -> {})
                                 .return_(literal(1)));
                 bodies.define(
                         charSequence,
@@ -617,7 +614,7 @@ class FactPinningCompileTest {
         });
 
         assertThat(compiled.source())
-                .contains("\"a\".equals((Object) true)")
+                .contains("\"a\".equals(Boolean.valueOf(true))")
                 .contains("(true ? (CharSequence) \"a\" : (CharSequence) \"b\") == \"a\"");
         assertThat(compiled.invoke("charSequence")).isEqualTo(2);
         assertThat(compiled.invoke("nulls")).isEqualTo(3);
