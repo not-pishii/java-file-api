@@ -32,11 +32,16 @@ final class ScopeCheck {
 
     /// Checks the expressions and loop capabilities of `instr`, about to be
     /// appended to `block`.
+    /// Checks the arguments of the explicit invocation a constructor begins with: they are in the
+    /// scope of the parameters of the constructor, `block` its body.
+    static void check(SuperInvocation invocation, Block<?, ?> block) {
+        operands(invocation.args(), block, block.path());
+    }
+
     static void check(Instr instr, Block<?, ?> block) {
         switch (instr) {
             case Instr.Let(var ignored, var init) -> node(init, block, block.path());
             case Instr.Exec(var effect) -> node(effect, block, block.path());
-            case Instr.SuperInit(var ignored, var args) -> operands(args, block, block.path());
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, block, block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
                 node(operand, block, block.path());

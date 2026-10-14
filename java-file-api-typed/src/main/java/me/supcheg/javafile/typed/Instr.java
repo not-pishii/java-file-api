@@ -2,7 +2,6 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.RefToken;
 
 import java.util.List;
@@ -21,12 +20,6 @@ sealed interface Instr {
 
     /// A local variable declaration with its initializer.
     record Let(Var<?> var, Node init) implements Plain {}
-
-    /// `super(args);`, the first statement of a constructor of a class with a superclass.
-    ///
-    /// @param ctor the fact of the constructor of the superclass
-    /// @param args the arguments, with their static types
-    record SuperInit(Invocable ctor, List<Node.Operand> args) implements Plain {}
 
     /// An expression statement: a call, an instance creation, or an assignment.
     record Exec(Node effect) implements Plain {}

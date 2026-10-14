@@ -372,7 +372,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
         built(root, b -> body.build(site));
-        defined(slot, root, List.of());
+        defined(slot, root, List.of(), new Start.Super(site.invocation()));
     }
 
     /// Defines a declared constructor with a parameter that begins with `super(...)`.
@@ -382,7 +382,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
         Var<A1> p1 = Var.param(ctor.param1(), root);
         built(root, b -> body.build(site, p1));
-        defined(slot, root, List.of(p1));
+        defined(slot, root, List.of(p1), new Start.Super(site.invocation()));
     }
 
     /// Defines a declared constructor with two parameters that begins with `super(...)`.
@@ -394,7 +394,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Var<A1> p1 = Var.param(ctor.param1(), root);
         Var<A2> p2 = Var.param(ctor.param2(), root);
         built(root, b -> body.build(site, p1, p2));
-        defined(slot, root, List.of(p1, p2));
+        defined(slot, root, List.of(p1, p2), new Start.Super(site.invocation()));
     }
 
     /// The fact of a `protected` member of the superclass or of a class above it, taken out of
@@ -665,7 +665,23 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
 
     /// The declared member gets the body built in `root`: lowered here, against all the class declared.
     private void defined(Slot.Awaiting slot, Block<?, ?> root, List<Var<?>> params) {
-        defined(slot, lower(slot.declared(), root, params), "the " + root.path());
+        defined(slot, root, params, new Start.Implicit());
+    }
+
+    /// Defines a declared member: a method, or a constructor that begins as `start` tells.
+    private void defined(Slot.Awaiting slot, Block<?, ?> root, List<Var<?>> params, Start start) {
+        defined(slot, lower(slot.declared(), root, params, start), "the " + root.path());
+    }
+
+    /// How the body of a constructor begins.
+    private sealed interface Start {
+        /// With no explicit invocation: javac calls `super()`. So does the body of every method.
+        record Implicit() implements Start {}
+
+        /// With `super(args)`.
+        ///
+        /// @param invocation the invocation
+        record Super(SuperInvocation invocation) implements Start {}
     }
 
     /// The declared member is there whole.
@@ -677,7 +693,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         slots = with;
     }
 
-    private ClassMember lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params) {
+    private ClassMember lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params, Start start) {
         Invocable fact = declared.fact();
         Lowering lowering = new Lowering(
                 target, new Lowering.Place.InClass(self, declared.scope(), owner.bounded()), fact.resultType());
@@ -699,7 +715,11 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                 };
         return switch (fact.kind()) {
             case CONSTRUCTOR -> {
-                ConstructorBody body = lowering.lowerConstructor(root.instrs());
+                ConstructorBody body =
+                        switch (start) {
+                            case Start.Implicit _ -> lowering.lowerConstructor(root.instrs());
+                            case Start.Super(var invocation) -> lowering.lowerConstructor(invocation, root.instrs());
+                        };
                 yield new ConstructorDecl(
                         List.of(),
                         Set.of(Modifier.PUBLIC),

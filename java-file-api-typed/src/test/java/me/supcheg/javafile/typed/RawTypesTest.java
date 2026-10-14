@@ -23,6 +23,7 @@ class RawTypesTest {
     }
 
     @Test
+    @SuppressWarnings("rawtypes") // the variable of the generator is of the raw type the fact has
     void aVariableOfARawTypeIsNotDeclared() {
         asJavacWarns(
                 () -> declaring(new TypedJavaFile.TypedClassHeaderSpec() {

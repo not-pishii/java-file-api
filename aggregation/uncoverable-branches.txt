@@ -194,6 +194,9 @@ me/supcheg/javafile/typed/Constants.java :: Invariants.require(divisor != 0, "a 
 me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && element.getEnclosingElement() instanceof TypeElement owner
     a method is enclosed by the class or interface that declares it (javax.lang.model.element.ExecutableElement#getEnclosingElement)
 
+me/supcheg/javafile/typed/SuperSite.java :: phase instanceof Phase.Invoked(var invocation) ? Optional.of(invocation) : Optional.empty(),
+    the body of a constructor ends by what follows super(...) alone, and a body ended by the token of another block is refused (Block.build): once the body is built, super(...) was called
+
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
 me/supcheg/javafile/facts/Invocables.java :: case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {

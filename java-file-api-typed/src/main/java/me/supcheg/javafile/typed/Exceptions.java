@@ -157,6 +157,20 @@ final class Exceptions {
     /// when they were appended to those blocks.
     ///
     /// @throws IllegalStateException if `instr` can throw a checked exception that is neither caught nor declared
+    /// Checks the explicit invocation a constructor begins with: what its arguments and the constructor
+    /// of the superclass throw is caught nowhere, and is declared by the constructor (JLS 11.2.2).
+    ///
+    /// @param invocation the invocation
+    /// @param block the body of the constructor
+    /// @throws IllegalStateException if a checked exception the invocation can throw is not declared
+    static void check(SuperInvocation invocation, Block<?, ?> block) {
+        Stream.concat(
+                        invocation.args().stream().map(Node.Operand::node).flatMap(Exceptions::raised),
+                        invoked(invocation.ctor()))
+                .forEach(raise -> requireCovered(raise, block));
+        invocation.args().forEach(arg -> requireCoveredInLambdas(arg.node()));
+    }
+
     static void check(Instr instr, Block<?, ?> block) {
         raised(instr, Rethrows.UNKNOWN).forEach(raise -> requireCovered(raise, block));
         nodes(instr).forEach(Exceptions::requireCoveredInLambdas);
@@ -420,7 +434,7 @@ final class Exceptions {
                         ? rethrows.of(value).orElseGet(() -> List.of(type)).stream()
                                 .filter(ExceptionType::isChecked)
                                 .map(thrown -> new Raise(thrown, "throw_"))
-                        : instr instanceof Instr.SuperInit(var ctor, var _) ? invoked(ctor) : Stream.empty());
+                        : Stream.empty());
     }
 
     /// The checked exceptions evaluating `node` can throw. A lambda in it
@@ -499,7 +513,6 @@ final class Exceptions {
         return switch (instr) {
             case Instr.Let(var _, var init) -> Stream.of(init);
             case Instr.Exec(var effect) -> Stream.of(effect);
-            case Instr.SuperInit(var _, var args) -> args.stream().map(Node.Operand::node);
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
             case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);
             case Instr.While(var _, var condition, var _) -> Stream.of(condition);

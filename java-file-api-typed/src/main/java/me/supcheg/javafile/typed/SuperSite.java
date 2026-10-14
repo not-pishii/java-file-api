@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
@@ -10,6 +11,7 @@ import me.supcheg.javafile.facts.SuperCtorRef2;
 import me.supcheg.javafile.typed.MemberBodies.InstanceBody0;
 
 import java.util.List;
+import java.util.Optional;
 
 /// The place of `super(...)` in a constructor of a class that extends `S`:
 /// what the body of the constructor is given, and the only thing it can end
@@ -34,6 +36,18 @@ public final class SuperSite<Self, S> {
     private final Superclass superclass;
     private final VoidBody root;
     private final This<Self> self;
+    private Phase phase = new Phase.Waiting();
+
+    /// Whether the body has called `super(...)`.
+    private sealed interface Phase {
+        /// Not yet.
+        record Waiting() implements Phase {}
+
+        /// It has, by this invocation.
+        ///
+        /// @param invocation the invocation
+        record Invoked(SuperInvocation invocation) implements Phase {}
+    }
 
     SuperSite(Superclass superclass, VoidBody root, This<Self> self) {
         this.superclass = superclass;
@@ -129,7 +143,7 @@ public final class SuperSite<Self, S> {
     }
 
     private Terminated<Void> call(Invocable ctor, List<Node.Operand> args, InstanceBody0<Self, VoidBody, Void> rest) {
-        if (!root.instrs().isEmpty()) {
+        if (phase instanceof Phase.Invoked) {
             throw new IllegalStateException("the " + root.path() + " has called super(...) already: a"
                     + " constructor begins with one call of a constructor of its superclass (JLS 8.8.7)");
         }
@@ -137,7 +151,20 @@ public final class SuperSite<Self, S> {
             throw new IllegalArgumentException(ctor + " is not a constructor of " + superclass.token()
                     + ", the superclass: super(...) calls a constructor of the direct superclass (JLS 8.8.7.1)");
         }
-        root.append(new Instr.SuperInit(ctor, args));
+        SuperInvocation invocation = new SuperInvocation(ctor, args);
+        root.requireOpen();
+        ScopeCheck.check(invocation, root);
+        Exceptions.check(invocation, root);
+        phase = new Phase.Invoked(invocation);
         return rest.build(root, self);
+    }
+
+    /// The invocation the body began with: the body ends by what follows it alone, so once it is
+    /// built, it has.
+    SuperInvocation invocation() {
+        return Invariants.present(
+                phase instanceof Phase.Invoked(var invocation) ? Optional.of(invocation) : Optional.empty(),
+                "the %s ended without super(...), which alone ends it",
+                root.path());
     }
 }

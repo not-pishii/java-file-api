@@ -131,20 +131,15 @@ class LoweringChecksTest {
     }
 
     @Test
-    void anInvocationOfASuperclassConstructorIsNoStatementOfABlock() {
-        // SuperSite puts it first in the body of a constructor, where lowerConstructor takes it from
+    void aConstructorBeginsWithTheInvocationItIsGivenOrWithNone() {
         Lowering lowering = new Lowering(
                 UnsafeFacts.unverifiedClasspath(),
                 new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
                 Optional.empty());
-        Instr superInit = new Instr.SuperInit(
+        SuperInvocation invocation = new SuperInvocation(
                 Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
 
-        assertThatIllegalStateException()
-                .isThrownBy(() -> lowering.lowerBlock(List.of(superInit)))
-                .withMessageContaining("does not begin the body of a constructor: an explicit constructor"
-                        + " invocation is no statement of a block (JLS 8.8.7.1)");
-        assertThat(lowering.lowerConstructor(List.of(superInit)))
+        assertThat(lowering.lowerConstructor(invocation, List.of()))
                 .isEqualTo(new ConstructorBody.Explicit(
                         CodeBody.EMPTY, new ConstructorInvocation.Super(List.of(Exprs.literal("x"))), CodeBody.EMPTY));
         assertThat(lowering.lowerConstructor(List.of())).isEqualTo(ConstructorBody.EMPTY);
