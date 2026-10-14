@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
@@ -768,7 +769,10 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// the body, and is written by its component.
     private static Param variable(Param last) {
         // the parameters of an override are those of the method it overrides, whose last is an array (Heritage.Plain)
-        ArrayTypeRef array = (ArrayTypeRef) last.type();
+        ArrayTypeRef array = Invariants.present(
+                Optional.of(last.type()).filter(ArrayTypeRef.class::isInstance).map(ArrayTypeRef.class::cast),
+                "the last parameter of a method of variable arity is an array, got %s",
+                last.type());
         return new Param(last.name(), array.component(), last.annotations(), true);
     }
 

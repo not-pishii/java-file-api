@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.InheritedName;
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
@@ -38,7 +39,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Gatherers;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -225,11 +225,11 @@ final class ClassDeclaration<Self> {
                     untold);
         }
         Inheritance merged = Stream.concat(bounded.more().stream(), Stream.of(bound))
-                .gather(Gatherers.fold(
-                        () -> Inheritance.of(new Inheritance.Heir.OfVariable(owner), first),
-                        (had, next) -> had.with(Inheritance.supertype(owner, target, next))))
-                .findFirst()
-                .orElseThrow();
+                // a sequential stream: its partial results are never combined
+                .reduce(
+                        Inheritance.of(new Inheritance.Heir.OfVariable(owner), first),
+                        (had, next) -> had.with(Inheritance.supertype(owner, target, next)),
+                        Invariants::unique);
         merged.groups().flatMap(group -> group.conflict().stream()).findFirst().ifPresent(why -> {
             throw new IllegalArgumentException(owner + " cannot have the bound " + bound
                     + ": a type variable is of the class its bounds make (JLS 4.9), and " + why);
@@ -396,16 +396,7 @@ final class ClassDeclaration<Self> {
     private Phase.Named<Self> requireNamed() {
         return switch (phase) {
             case Phase.Named<Self> named -> named;
-            case Phase.Heading<Self> _ ->
-                throw new IllegalStateException(described + " has its superclass already: a class header is"
-                        + " used once, and what follows is declared through the stage it gave");
-            case Phase.Members<Self> _ ->
-                throw new IllegalStateException(described + " has its superclass already: a class header is"
-                        + " used once, and what follows is declared through the stage it gave");
-            case Phase.Bodies<Self> _ ->
-                throw new IllegalStateException(described + " has its superclass already: a class header is"
-                        + " used once, and what follows is declared through the stage it gave");
-            case Phase.Complete<Self> _ ->
+            case Phase.Heading<Self> _, Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ ->
                 throw new IllegalStateException(described + " has its superclass already: a class header is"
                         + " used once, and what follows is declared through the stage it gave");
         };
