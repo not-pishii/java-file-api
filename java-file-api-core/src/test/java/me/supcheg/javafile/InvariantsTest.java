@@ -18,6 +18,32 @@ class InvariantsTest {
     }
 
     @Test
+    void whatIsSureToSucceedGivesItsResultAndSaysWhyItShouldHaveWhenItFails() {
+        assertThat(Invariants.sure(() -> "done", "never said")).isEqualTo("done");
+
+        Exception cause = new java.io.IOException("no such algorithm");
+        assertThatThrownBy(() -> Invariants.sure(
+                        () -> {
+                            throw cause;
+                        },
+                        "every Java platform supports %s",
+                        "SHA-256"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("every Java platform supports SHA-256")
+                .hasCause(cause);
+    }
+
+    @Test
+    void theKeysOfACollectorThatAreKnownToDifferHaveNothingToMerge() {
+        assertThat(java.util.stream.Stream.of("a", "b")
+                        .collect(java.util.stream.Collectors.toMap(key -> key, String::length, Invariants::unique)))
+                .containsOnlyKeys("a", "b");
+        assertThatThrownBy(() -> Invariants.unique("first", "second"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("one key has two values: first and second");
+    }
+
+    @Test
     void aBrokenInvariantSaysWhichOneItIs() {
         assertThatThrownBy(
                         () -> Invariants.present(Optional.empty(), "the model of %s is read after round %d", "p.A", 2))

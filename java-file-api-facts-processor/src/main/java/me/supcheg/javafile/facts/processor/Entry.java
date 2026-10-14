@@ -358,8 +358,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
 
     private static Stream<ClassDesc> mentions(TypeRef type) {
         return switch (type) {
-            case PrimitiveTypeRef _ -> Stream.empty();
-            case TypeVarRef _ -> Stream.empty();
+            case PrimitiveTypeRef _, TypeVarRef _ -> Stream.empty();
             case ArrayTypeRef array -> mentions(array.component());
             case ClassTypeRef cls -> Stream.of(cls.desc());
             case ParameterizedTypeRef parameterized ->
@@ -382,8 +381,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
     /// unbounded wildcards alone.
     private static boolean reifiable(TypeRef type) {
         return switch (type) {
-            case PrimitiveTypeRef _ -> true;
-            case ClassTypeRef _ -> true;
+            case PrimitiveTypeRef _, ClassTypeRef _ -> true;
             case ArrayTypeRef array -> reifiable(array.component());
             case TypeVarRef _ -> false;
             case ParameterizedTypeRef parameterized ->

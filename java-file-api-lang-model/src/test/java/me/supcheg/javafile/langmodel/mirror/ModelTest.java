@@ -18,6 +18,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -263,14 +264,25 @@ class ModelTest {
 
     @Test
     void constantsAreStaticAndOfAConstantType() {
-        assertThatThrownBy(() -> new FieldModel("x", false, Types.INT, new Mutability.Constant(1), Access.PUBLIC))
+        assertThatThrownBy(() -> new FieldModel("x", false, Types.INT, Mutability.Constant.of(1), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("instance field x cannot be a constant");
-        assertThatThrownBy(() -> new Mutability.Constant(new Object()))
+        assertThatThrownBy(() -> Mutability.Constant.of(new Object()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constant is a String or a boxed primitive, got java.lang.Object");
-        assertThat(List.of('c', (byte) 1, (short) 1, 1, 1L, 1f, 1d, true, "s"))
-                .allSatisfy(value ->
-                        assertThat(new Mutability.Constant(value).value()).isEqualTo(value));
+        // the value of a constant is of one of nine types, each a case of its own
+        assertThat(Stream.of('c', (byte) 1, (short) 2, 3, 4L, 5f, 6d, true, "s")
+                        .map(value -> Mutability.Constant.of(value).value()))
+                .containsExactly(
+                        new ConstantValue.OfChar('c'),
+                        new ConstantValue.OfByte((byte) 1),
+                        new ConstantValue.OfShort((short) 2),
+                        new ConstantValue.OfInt(3),
+                        new ConstantValue.OfLong(4L),
+                        new ConstantValue.OfFloat(5f),
+                        new ConstantValue.OfDouble(6d),
+                        new ConstantValue.OfBoolean(true),
+                        new ConstantValue.OfString("s"));
+        assertThat(ConstantValue.of(Float.NaN)).isEqualTo(new ConstantValue.OfFloat(Float.NaN));
     }
 }

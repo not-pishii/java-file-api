@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -22,7 +23,6 @@ import me.supcheg.javafile.type.UnboundedTypeArg;
 import java.lang.constant.ClassDesc;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HexFormat;
 import java.util.List;
@@ -36,7 +36,9 @@ import java.util.stream.Stream;
 /// the form, which a generated metamodel records and the check against the
 /// target classpath compares first.
 ///
-/// The form is ASCII text, one item per line, and depends only on what the
+/// The form is text, one item per line — a name as it is, which may be of any letters, and the value of
+/// a constant in printable ASCII, the rest of it escaped — and is digested as UTF-8. It is one item per
+/// line, and depends only on what the
 /// model means:
 ///
 /// - type variables are by position — `#0` for the first type parameter of
@@ -125,7 +127,7 @@ public final class Canonical {
 
     private Canonical(String text) {
         this.text = text;
-        this.fingerprint = digest("SHA-256", text);
+        this.fingerprint = sha256(text);
     }
 
     /// The canonical form of a type.
@@ -373,8 +375,8 @@ public final class Canonical {
     private static String type(Heritage.Type type) {
         return switch (type) {
             case Heritage.Type.Fixed(TypeRef fixed) -> NO_VARIABLES.type(fixed);
-            case Heritage.Type.OfType ofType -> "#" + ofType.index();
-            case Heritage.Type.OfMember ofMember -> "^" + ofMember.index();
+            case Heritage.Type.OfType(int index) -> "#" + index;
+            case Heritage.Type.OfMember(int index) -> "^" + index;
             case Heritage.Type.Array(Heritage.Type component) -> type(component) + "[]";
             case Heritage.Type.Parameterized(ClassDesc raw, List<Heritage.Argument> arguments) ->
                 arguments.stream()
@@ -418,7 +420,7 @@ public final class Canonical {
                 yield switch (field.mutability()) {
                     case Mutability.Mutable _ -> prefix + "mutable " + declaration;
                     case Mutability.Final _ -> prefix + "final " + declaration;
-                    case Mutability.Constant(Object value) ->
+                    case Mutability.Constant(ConstantValue value) ->
                         prefix + "constant " + declaration + " = " + literal(value);
                 };
             }
@@ -457,8 +459,8 @@ public final class Canonical {
                 .map(s -> s.params().stream()
                         .map(p -> switch (p) {
                             case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
-                            case MethodTableTemplate.Var variable ->
-                                "#" + variable.index() + "[]".repeat(variable.dimensions());
+                            case MethodTableTemplate.Var(int index, int dimensions) ->
+                                "#" + index + "[]".repeat(dimensions);
                         })
                         .collect(Collectors.joining(", ", s.name() + "(", ")")))
                 .sorted()
@@ -482,14 +484,18 @@ public final class Canonical {
         };
     }
 
-    private static String literal(Object constant) {
+    private static String literal(ConstantValue constant) {
         return switch (constant) {
-            case String string ->
-                string.chars().mapToObj(Canonical::escape).collect(Collectors.joining("", "\"", "\""));
-            case Character character -> "'" + escape(character) + "'";
-            case Long value -> value + "L";
-            case Float value -> value + "f";
-            default -> constant.toString();
+            case ConstantValue.OfString(String value) ->
+                value.chars().mapToObj(Canonical::escape).collect(Collectors.joining("", "\"", "\""));
+            case ConstantValue.OfChar(char value) -> "'" + escape(value) + "'";
+            case ConstantValue.OfLong(long value) -> value + "L";
+            case ConstantValue.OfFloat(float value) -> value + "f";
+            case ConstantValue.OfBoolean(boolean value) -> Boolean.toString(value);
+            case ConstantValue.OfByte(byte value) -> Byte.toString(value);
+            case ConstantValue.OfShort(short value) -> Short.toString(value);
+            case ConstantValue.OfInt(int value) -> Integer.toString(value);
+            case ConstantValue.OfDouble(double value) -> Double.toString(value);
         };
     }
 
@@ -518,15 +524,10 @@ public final class Canonical {
     }
 
     /// The digest of a text, in hex: by SHA-256, which every Java platform supports.
-    ///
-    /// @throws IllegalStateException if the platform has no such algorithm
-    static String digest(String algorithm, String text) {
-        try {
-            return HexFormat.of()
-                    .formatHex(MessageDigest.getInstance(algorithm).digest(text.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("this Java platform has no " + algorithm, e);
-        }
+    private static String sha256(String text) {
+        MessageDigest digest =
+                Invariants.sure(() -> MessageDigest.getInstance("SHA-256"), "every Java platform supports SHA-256");
+        return HexFormat.of().formatHex(digest.digest(text.getBytes(StandardCharsets.UTF_8)));
     }
 
     /// Positional names of the type variables in scope: those of a member

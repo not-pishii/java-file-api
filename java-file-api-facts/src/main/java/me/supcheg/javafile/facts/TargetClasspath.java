@@ -103,8 +103,7 @@ public final class TargetClasspath {
                     case TargetType.Holds holds -> holds;
                 };
 
-            case ShapeOrigin.Unsafe _ -> TargetType.UNCHANGED;
-            case ShapeOrigin.Builtin _ -> TargetType.UNCHANGED;
+            case ShapeOrigin.Unsafe _, ShapeOrigin.Builtin _ -> TargetType.UNCHANGED;
         };
     }
 
@@ -123,8 +122,7 @@ public final class TargetClasspath {
     /// arguments.
     private static Stream<TypeShape<?>> shapes(TypeToken<?> type) {
         return switch (type) {
-            case PrimitiveToken<?, ?, ?> _ -> Stream.empty();
-            case TypeVarToken<?> _ -> Stream.empty();
+            case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
             case ArrayToken<?, ?> array -> shapes(array.component());
             case DeclaredToken<?> declared ->
                 Stream.concat(

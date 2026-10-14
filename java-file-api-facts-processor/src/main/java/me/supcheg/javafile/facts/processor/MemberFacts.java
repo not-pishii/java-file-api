@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
@@ -9,6 +10,7 @@ import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.langmodel.mirror.ConstantValue;
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
 import me.supcheg.javafile.langmodel.mirror.FieldModel;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
@@ -430,23 +432,23 @@ final class MemberFacts {
     /// box of the field's type. `byte`, `short`, `char` and `float` are cast,
     /// since a literal is an `int` or a `double`; a value no literal
     /// writes — `NaN` and the infinities — is made from its bits.
-    private Expr constantValue(Object value) {
+    private Expr constantValue(ConstantValue value) {
         return switch (value) {
-            case Boolean bool -> Exprs.literal(bool);
-            case Integer integer -> Exprs.literal(integer);
-            case Long number -> Exprs.literal(number);
-            case Byte number -> Exprs.cast(PrimitiveTypeRef.BYTE, Exprs.literal((int) number));
-            case Short number -> Exprs.cast(PrimitiveTypeRef.SHORT, Exprs.literal((int) number));
-            case Character character -> Exprs.cast(PrimitiveTypeRef.CHAR, Exprs.literal((int) character));
-            case Float number
+            case ConstantValue.OfBoolean(boolean bool) -> Exprs.literal(bool);
+            case ConstantValue.OfInt(int number) -> Exprs.literal(number);
+            case ConstantValue.OfLong(long number) -> Exprs.literal(number);
+            case ConstantValue.OfByte(byte number) -> Exprs.cast(PrimitiveTypeRef.BYTE, Exprs.literal((int) number));
+            case ConstantValue.OfShort(short number) -> Exprs.cast(PrimitiveTypeRef.SHORT, Exprs.literal((int) number));
+            case ConstantValue.OfChar(char character) ->
+                Exprs.cast(PrimitiveTypeRef.CHAR, Exprs.literal((int) character));
+            case ConstantValue.OfFloat(float number)
             when Float.isFinite(number) -> Exprs.cast(PrimitiveTypeRef.FLOAT, Exprs.literal((double) number));
-            case Float number ->
+            case ConstantValue.OfFloat(float number) ->
                 Exprs.staticCall(use(CD_FLOAT), "intBitsToFloat", Exprs.literal(Float.floatToRawIntBits(number)));
-            case Double number when Double.isFinite(number) -> Exprs.literal(number.doubleValue());
-            case Double number ->
+            case ConstantValue.OfDouble(double number) when Double.isFinite(number) -> Exprs.literal(number);
+            case ConstantValue.OfDouble(double number) ->
                 Exprs.staticCall(use(CD_DOUBLE), "longBitsToDouble", Exprs.literal(Double.doubleToRawLongBits(number)));
-            // a constant is of a primitive type or a String (FieldModel.Mutability.Constant)
-            default -> Exprs.literal((String) value);
+            case ConstantValue.OfString(String string) -> Exprs.literal(string);
         };
     }
 
@@ -617,9 +619,7 @@ final class MemberFacts {
         return switch (type) {
             case TypeVarRef _ -> true;
             case ArrayTypeRef array -> erasesWithItsVariable(array.component());
-            case PrimitiveTypeRef _ -> false;
-            case ClassTypeRef _ -> false;
-            case ParameterizedTypeRef _ -> false;
+            case PrimitiveTypeRef _, ClassTypeRef _, ParameterizedTypeRef _ -> false;
         };
     }
 
@@ -717,7 +717,8 @@ final class MemberFacts {
             }
         }
         // a fact mentions the types the plan found a metamodel of
-        Targets.Target target = targets.of(desc).orElseThrow();
+        Targets.Target target = Invariants.present(
+                targets.of(desc), "a fact mentions %s, which the plan found a metamodel of", Models.binaryName(desc));
         ClassDesc data = use(target.metamodel().nested(MetamodelNames.DATA));
         List<Expr> tokenArgs = Stream.concat(
                         Stream.of(Exprs.staticField(data, MetamodelNames.SHAPE)),

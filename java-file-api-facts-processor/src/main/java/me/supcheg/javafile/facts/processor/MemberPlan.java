@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.doc.DocRef;
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
 import me.supcheg.javafile.langmodel.mirror.MemberModel;
@@ -309,23 +310,20 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
     /// The entries as a map that keeps their order.
     private static <K, V> Map<K, V> inOrder(List<Map.Entry<K, V>> entries) {
         return entries.stream()
-                .collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()), Map::putAll);
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, Invariants::unique, LinkedHashMap::new));
     }
 
     /// A `public` field, constructor or method: the member and its model, or why it has no fact.
     private static Either<Skip, Map.Entry<Element, MemberModel>> candidate(
             TypeElement type, Element member, MirrorTranslator translator, Targets targets) {
         return Models.settled(translator.member(type, member))
-                .mapLeft(Optional::of)
-                .flatMapRight(model -> {
-                    Optional<String> unsupported = member.getKind() == ElementKind.CONSTRUCTOR && inner(type)
-                            ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
-                            : unsupported(model, targets);
-                    return unsupported.isPresent()
-                            ? Either.<Optional<String>, Map.Entry<Element, MemberModel>>left(unsupported)
-                            : Either.<Optional<String>, Map.Entry<Element, MemberModel>>right(Map.entry(member, model));
-                })
-                .mapLeft(reason -> new Skip(describe(type, member), reason.orElseThrow(), Origin.of(type, member)));
+                .flatMapRight(model -> (member.getKind() == ElementKind.CONSTRUCTOR && inner(type)
+                                ? Optional.of("is the constructor of an inner class, which needs an enclosing instance")
+                                : unsupported(model, targets))
+                        .<Either<String, Map.Entry<Element, MemberModel>>>map(Either::left)
+                        .orElseGet(() -> Either.right(Map.entry(member, model))))
+                .mapLeft(reason -> new Skip(describe(type, member), reason, Origin.of(type, member)));
     }
 
     private static boolean inner(TypeElement type) {

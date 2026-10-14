@@ -1,6 +1,7 @@
 package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.InheritedName;
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
@@ -84,6 +85,11 @@ public final class StandardRenderer implements SourceRenderer {
                 learning.stale() ? new ImportManager(meta.packageName().name(), learning.learned()) : learning;
         Context ctx = Context.of(format, imports);
         String first = learning.stale() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : learned;
+        Invariants.require(
+                !imports.stale(),
+                "%s was rendered knowing what it declares, and declared more: a file declares the same variables"
+                        + " and classes however often it is rendered",
+                meta.typeDecl().getClass().getSimpleName());
         // how a comment names a type depends on what the code after it claims: see ImportManager
         String body = imports.mentioned() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : first;
 
@@ -149,8 +155,7 @@ public final class StandardRenderer implements SourceRenderer {
                     case ClassDecl c -> c.typeParams();
                     case InterfaceDecl i -> i.typeParams();
                     case RecordDecl r -> r.typeParams();
-                    case EnumDecl _ -> List.of();
-                    case AnnotationTypeDecl _ -> List.of();
+                    case EnumDecl _, AnnotationTypeDecl _ -> List.of();
                 };
         List<?> members =
                 switch (decl) {

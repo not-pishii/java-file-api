@@ -492,8 +492,8 @@ class MirrorTranslatorTypeTest {
                         new FieldModel("instanceFinal", false, Types.INT, Mutability.FINAL, Access.PUBLIC),
                         new FieldModel("staticMutable", true, Types.INT, Mutability.MUTABLE, Access.PUBLIC),
                         new FieldModel("staticFinal", true, Types.OBJECT, Mutability.FINAL, Access.PUBLIC),
-                        new FieldModel("CONSTANT", true, Types.INT, new Mutability.Constant(7), Access.PUBLIC),
-                        new FieldModel("TEXT", true, Types.STRING, new Mutability.Constant("hi"), Access.PUBLIC),
+                        new FieldModel("CONSTANT", true, Types.INT, Mutability.Constant.of(7), Access.PUBLIC),
+                        new FieldModel("TEXT", true, Types.STRING, Mutability.Constant.of("hi"), Access.PUBLIC),
                         new FieldModel("value", false, Types.typeVar("T"), Mutability.MUTABLE, Access.PUBLIC),
                         // Fields can be extended: a subclass reaches prot
                         new FieldModel("prot", false, Types.INT, Mutability.MUTABLE, Access.PROTECTED));
@@ -898,7 +898,7 @@ class MirrorTranslatorTypeTest {
 
         assertThat(jdk.get("java.lang.Integer").members())
                 .contains(new FieldModel(
-                        "MAX_VALUE", true, Types.INT, new Mutability.Constant(Integer.MAX_VALUE), Access.PUBLIC));
+                        "MAX_VALUE", true, Types.INT, Mutability.Constant.of(Integer.MAX_VALUE), Access.PUBLIC));
     }
 
     @Test
@@ -1153,8 +1153,8 @@ class MirrorTranslatorTypeTest {
         assertThat(model.members())
                 .contains(
                         new FieldModel("item", false, Types.STRING, Mutability.MUTABLE, Access.PUBLIC),
-                        new FieldModel("HID", true, Types.STRING, new Mutability.Constant("near"), Access.PUBLIC),
-                        new FieldModel("CONST", true, Types.STRING, new Mutability.Constant("const"), Access.PUBLIC));
+                        new FieldModel("HID", true, Types.STRING, Mutability.Constant.of("near"), Access.PUBLIC),
+                        new FieldModel("CONST", true, Types.STRING, Mutability.Constant.of("const"), Access.PUBLIC));
         assertThat(methods.get("snear").isStatic()).isTrue();
         assertThat(methods.get("near").overridability()).isEqualTo(Overridability.OVERRIDABLE);
         assertThat(methods.get("redeclared").overridability()).isEqualTo(Overridability.OVERRIDABLE);

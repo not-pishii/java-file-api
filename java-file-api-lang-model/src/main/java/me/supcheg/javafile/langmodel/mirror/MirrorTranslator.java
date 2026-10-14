@@ -323,11 +323,8 @@ public final class MirrorTranslator {
     /// @return `true` for a class whose token is an `ExtendableClassToken`
     public static boolean extendable(TypeElement type) {
         return switch (kind(type)) {
-            case DeclaredKind.OpenClass _ -> true;
-            case DeclaredKind.AbstractClass _ -> true;
-            case DeclaredKind.FinalClass _ -> false;
-            case DeclaredKind.Interface _ -> false;
-            case DeclaredKind.EnumClass _ -> false;
+            case DeclaredKind.OpenClass _, DeclaredKind.AbstractClass _ -> true;
+            case DeclaredKind.FinalClass _, DeclaredKind.Interface _, DeclaredKind.EnumClass _ -> false;
         };
     }
 
@@ -813,7 +810,8 @@ public final class MirrorTranslator {
                 .flatMap(supertype -> declared(supertype, reading) instanceof ParameterizedTypeRef parameterized
                         ? Stream.of(Map.entry(binaryName(supertype), parameterized))
                         : Stream.empty())
-                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
+                // each supertype once
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Invariants::unique, TreeMap::new));
         return new Supertypes(
                 typeParams.stream().map(p -> new TypeVarRef(p.name())).toList(), List.copyOf(found.values()));
     }
@@ -1361,7 +1359,7 @@ public final class MirrorTranslator {
                 ? Mutability.MUTABLE
                 : Optional.ofNullable(field.getConstantValue())
                         .filter(_ -> isStatic)
-                        .<Mutability>map(Mutability.Constant::new)
+                        .<Mutability>map(Mutability.Constant::of)
                         .orElse(Mutability.FINAL);
         String name = field.getSimpleName().toString();
         return rival(owner, field)

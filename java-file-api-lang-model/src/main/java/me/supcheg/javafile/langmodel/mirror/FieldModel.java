@@ -4,8 +4,6 @@ import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.type.TypeRef;
 
-import java.util.Set;
-
 /// A field.
 ///
 /// @param name the field name
@@ -48,25 +46,16 @@ public record FieldModel(String name, boolean isStatic, TypeRef type, Mutability
         /// too, but reading it through an instance is not a constant
         /// expression, so it is [#FINAL].
         ///
-        /// @param value the value: a `String` or the box of a primitive
-        record Constant(Object value) implements Mutability {
-            private static final Set<Class<?>> TYPES = Set.of(
-                    String.class,
-                    Boolean.class,
-                    Byte.class,
-                    Short.class,
-                    Character.class,
-                    Integer.class,
-                    Long.class,
-                    Float.class,
-                    Double.class);
+        /// @param value the value
+        record Constant(ConstantValue value) implements Mutability {
 
+            /// The constant of a value as `javax.lang.model` gives it.
+            ///
+            /// @param value a `String` or the box of a primitive
+            /// @return the constant
             /// @throws IllegalArgumentException if `value` is neither a `String` nor the box of a primitive
-            public Constant {
-                if (!TYPES.contains(value.getClass())) {
-                    throw new IllegalArgumentException("a constant is a String or a boxed primitive, got "
-                            + value.getClass().getName());
-                }
+            public static Constant of(Object value) {
+                return new Constant(ConstantValue.of(value));
             }
         }
     }

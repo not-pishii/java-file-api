@@ -6,8 +6,134 @@
 
 # ---- compiler artifacts: branches javac makes and no input reaches ----
 
+me/supcheg/javafile/facts/Heritage.java :: case Exact _, Extends _, Super _ -> Optional.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/Heritage.java :: case Fixed _, OfType _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/Heritage.java :: case OfType _, OfMember _, Array _, Parameterized _ -> new Array(component);
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/Heritage.java :: case OfType(int index) -> {
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/MethodTableTemplate.java :: case Var(int index, var _) -> index + 1;
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/TargetClasspath.java :: case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/TargetClasspath.java :: case ShapeOrigin.Unsafe _, ShapeOrigin.Builtin _ -> TargetType.UNCHANGED;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/Closure.java :: case Done.ReusedToken _, Done.Held _ -> look(type, models, index);
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/Closure.java :: case Kin.Declined _, Kin.Hidden _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/Entry.java :: case PrimitiveTypeRef _, ClassTypeRef _ -> true;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/Entry.java :: case PrimitiveTypeRef _, TypeVarRef _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
 me/supcheg/javafile/facts/processor/FactsProcessor.java :: case Done.Failed _, Done.RefusedFull _ ->
     a case of several type patterns: javac tests each label once more after it matched; the second label is reached only in the last round, after the error of a late request, when no source the round writes is kept
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case Done.ReusedFull _, Done.ReusedToken _, Done.Failed _, Done.Held _ ->
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case TypeGraph.Request.OnClasspath _,
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case TypeGraph.Request.Settled _, TypeGraph.Request.Ready _, TypeGraph.Request.Waiting _ ->
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case TypeGraph.Request.Settled _, TypeGraph.Request.Waiting _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case TypeGraph.Request.Waiting _,
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case TypeGraph.Token.OnClasspath _, TypeGraph.Token.Unavailable _ ->
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfBoolean(boolean bool) -> Exprs.literal(bool);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfByte(byte number) -> Exprs.cast(PrimitiveTypeRef.BYTE, Exprs.literal((int) number));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfChar(char character) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfInt(int number) -> Exprs.literal(number);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfLong(long number) -> Exprs.literal(number);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case ConstantValue.OfShort(short number) -> Exprs.cast(PrimitiveTypeRef.SHORT, Exprs.literal((int) number));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case PrimitiveTypeRef _, ClassTypeRef _, ParameterizedTypeRef _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/Mentions.java :: case TypeVarRef _, PrimitiveTypeRef _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/MetamodelDocs.java :: case MemberPlan.Origin.Declared _, MemberPlan.Origin.Adopted _ ->
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case TypeVarRef _, PrimitiveTypeRef _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/TypeGraph.java :: case Declined _, Hidden _, Mentioned _, Absent _ -> Optional.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/TypeGraph.java :: case Requested _, Inherited _, Hidden _, Absent _ -> Optional.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfBoolean(boolean value) -> Boolean.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfByte(byte value) -> Byte.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfChar(char value) -> "'" + escape(value) + "'";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfDouble(double value) -> Double.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfFloat(float value) -> value + "f";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfInt(int value) -> Integer.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfLong(long value) -> value + "L";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case ConstantValue.OfShort(short value) -> Short.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case Heritage.Type.OfMember(int index) -> "^" + index;
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case Heritage.Type.OfType(int index) -> "#" + index;
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case MethodTableTemplate.Var(int index, int dimensions) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case DeclaredKind.FinalClass _, DeclaredKind.Interface _, DeclaredKind.EnumClass _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case DeclaredKind.OpenClass _, DeclaredKind.AbstractClass _ -> true;
+    a case of several type patterns: javac tests each label once more after it matched
 
 me/supcheg/javafile/render/ExprRenderer.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
     a record pattern with a primitive component: javac tests the component, and no value fails the test
@@ -33,6 +159,9 @@ me/supcheg/javafile/render/Precedence.java :: case IntLiteral(var value) -> valu
 me/supcheg/javafile/render/Precedence.java :: case LongLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
     a record pattern with a primitive component: javac tests the component, and no value fails the test
 
+me/supcheg/javafile/render/StandardRenderer.java :: case EnumDecl _, AnnotationTypeDecl _ -> List.of();
+    a case of several type patterns: javac tests each label once more after it matched
+
 me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassOrInterfaceTypeRef _, PrimitiveTypeRef _ -> "";
     a case of several type patterns: javac tests each label once more after it matched
 
@@ -41,6 +170,11 @@ me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassOrInterfaceTypeRef 
 
 me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _, ArrayTypeRef _, PrimitiveTypeRef _ ->
     a case of several type patterns: javac tests each label once more after it matched
+
+# ---- what cannot happen: worded checks neither a test nor a type removes ----
+
+me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
+    the second rendering of a file knows what the first learned it declares, and a file declares the same however often it is rendered: the check words what would be a bug of the import manager
 
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
@@ -177,9 +311,6 @@ me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || other.getModifi
     untested when the gate was introduced
 
 me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || overridden.getKind().isInterface()
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: : new Found.Nowhere(modules.isEmpty() ? nowhere : several);
     untested when the gate was introduced
 
 me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(

@@ -364,9 +364,7 @@ final class MetamodelDocs {
     private static DocText skipped(MemberPlan.Skip skip) {
         return switch (skip.origin()) {
             case MemberPlan.Origin.Inherited _ -> DocText.of(skip.told());
-            case MemberPlan.Origin.Declared _ ->
-                DocText.of(code(skip.member()), words(MemberPlan.Skip.WHICH + skip.reason()));
-            case MemberPlan.Origin.Adopted _ ->
+            case MemberPlan.Origin.Declared _, MemberPlan.Origin.Adopted _ ->
                 DocText.of(code(skip.member()), words(MemberPlan.Skip.WHICH + skip.reason()));
         };
     }

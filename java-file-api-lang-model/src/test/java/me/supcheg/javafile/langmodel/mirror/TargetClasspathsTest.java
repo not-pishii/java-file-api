@@ -14,9 +14,15 @@ import me.supcheg.javafile.facts.TargetType.Difference;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import javax.tools.ToolProvider;
+import java.io.File;
+import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -88,6 +94,32 @@ class TargetClasspathsTest {
 
         assertThat(read(svc, "package p; public class Other {}"))
                 .isEqualTo(absent("type p.Svc not found on the target classpath"));
+    }
+
+    /// A module `name` with the class `p.Svc`, in a package it does not export.
+    private static Path module(Path root, String name) throws IOException {
+        Path sources = Files.createDirectories(root.resolve(name + "-src").resolve("p"));
+        Path info = Files.writeString(sources.resolveSibling("module-info.java"), "module " + name + " {}");
+        Path svc = Files.writeString(sources.resolve("Svc.java"), SVC);
+        Path classes = root.resolve(name);
+        int status = ToolProvider.getSystemJavaCompiler()
+                .run(null, null, null, "-d", classes.toString(), info.toString(), svc.toString());
+        assertThat(status).isZero();
+        return classes;
+    }
+
+    @Test
+    void aTypeOfSeveralModulesOfTheTargetIsAbsent(@TempDir Path root) throws IOException {
+        TypeShape<?> svc = metamodel("p.Svc", canonical("p.Svc", SVC));
+        String modulePath = module(root, "one") + File.pathSeparator + module(root, "two");
+
+        // neither module exports the package, so the two classes of one name are no clash to javac
+        TargetType read = Harness.run(
+                List.of("--module-path", modulePath, "--add-modules", "one,two"),
+                env -> read(svc, env),
+                "package q; class Empty {}");
+
+        assertThat(read).isEqualTo(absent("type p.Svc is in several modules of the target: one, two"));
     }
 
     @Test

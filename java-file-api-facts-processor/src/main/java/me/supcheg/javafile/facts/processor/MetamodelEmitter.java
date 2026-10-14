@@ -520,8 +520,7 @@ final class MetamodelEmitter {
                     case UnboundedTypeArg _ -> false;
                 });
             case ArrayTypeRef array -> raw(array.component(), targets);
-            case TypeVarRef _ -> false;
-            case PrimitiveTypeRef _ -> false;
+            case TypeVarRef _, PrimitiveTypeRef _ -> false;
         };
     }
 

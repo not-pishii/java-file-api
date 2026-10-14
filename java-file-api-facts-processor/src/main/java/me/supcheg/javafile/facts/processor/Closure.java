@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.processor.TypeGraph.Edge;
 import me.supcheg.javafile.facts.processor.TypeGraph.Node;
 import me.supcheg.javafile.facts.processor.TypeGraph.Request;
@@ -123,13 +124,13 @@ final class Closure {
                         .flatMap(found -> found instanceof Found.Read(Reading.Ready read, var _)
                                 ? Stream.of(Map.entry(type.name(), read))
                                 : Stream.empty()))
-                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Invariants::unique, TreeMap::new));
         SortedMap<String, String> waiting = kin.stream()
                 .flatMap(type -> found(type)
                         .flatMap(found -> found instanceof Found.Waiting(String awaited)
                                 ? Stream.of(Map.entry(type.name(), awaited))
                                 : Stream.empty()))
-                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Invariants::unique, TreeMap::new));
         // a type of which a full metamodel is wanted needs no token-only one, and a hidden type has none
         Set<String> untokened = kin.stream()
                 .filter(type -> !(type instanceof Kin.Declined))
@@ -147,7 +148,7 @@ final class Closure {
                 .flatMap(entry -> entry.getValue() instanceof Done.Held held
                         ? Stream.of(Map.entry(entry.getKey(), held))
                         : Stream.empty())
-                .collect(TreeMap::new, (map, entry) -> map.putIfAbsent(entry.getKey(), entry.getValue()), Map::putAll);
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Invariants::unique, TreeMap::new));
         SortedMap<String, Mention> mentioned = Stream.concat(
                         ready.values().stream().flatMap(read -> read.mentions().stream()),
                         owed.keySet().stream().flatMap(name -> mention(name, models).right().stream()))
@@ -225,8 +226,7 @@ final class Closure {
             case Done.GeneratedToken(ClassDesc metamodel) -> new Found.Late(metamodel);
             case Done.Final settled -> new Found.Settled(settled);
             // neither is a full metamodel: one is looked for as if no round had dealt with the type
-            case Done.ReusedToken _ -> look(type, models, index);
-            case Done.Held _ -> look(type, models, index);
+            case Done.ReusedToken _, Done.Held _ -> look(type, models, index);
             case null -> look(type, models, index);
         };
     }
@@ -249,8 +249,7 @@ final class Closure {
         return switch (kin) {
             case Kin.Asked(var _, Found found) -> Stream.of(found);
             case Kin.Inherited(var _, Found.Full found) -> Stream.of(found);
-            case Kin.Declined _ -> Stream.empty();
-            case Kin.Hidden _ -> Stream.empty();
+            case Kin.Declined _, Kin.Hidden _ -> Stream.empty();
         };
     }
 

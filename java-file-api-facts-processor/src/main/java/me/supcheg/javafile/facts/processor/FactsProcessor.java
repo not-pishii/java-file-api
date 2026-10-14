@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
 import me.supcheg.javafile.facts.processor.MetamodelDocs.About;
@@ -271,13 +272,12 @@ public final class FactsProcessor extends AbstractProcessor {
         // a requested type the round deals with for the first time: one that is settled or written now
         Predicate<String> dealtWith =
                 name -> graph.nodes().get(name).request().stream().anyMatch(request -> switch (request) {
-                    case TypeGraph.Request.Settled _ -> false;
-                    case TypeGraph.Request.Waiting _ -> false;
+                    case TypeGraph.Request.Settled _, TypeGraph.Request.Waiting _ -> false;
                     case TypeGraph.Request.Ready _ -> !graph.waits(name);
-                    case TypeGraph.Request.OnClasspath _ -> true;
-                    case TypeGraph.Request.Late _ -> true;
-                    case TypeGraph.Request.Unrepresentable _ -> true;
-                    case TypeGraph.Request.Rejected _ -> true;
+                    case TypeGraph.Request.OnClasspath _,
+                            TypeGraph.Request.Late _,
+                            TypeGraph.Request.Unrepresentable _,
+                            TypeGraph.Request.Rejected _ -> true;
                 });
         // what the round settles without writing, and what it has to tell of it, type by type
         List<Settlement> settlements = graph.nodes().values().stream()
@@ -311,10 +311,8 @@ public final class FactsProcessor extends AbstractProcessor {
                                 Stream.of(Map.entry(metamodel, entry.getKey()));
                             case Done.RefusedFull(ClassDesc metamodel) ->
                                 Stream.of(Map.entry(metamodel, entry.getKey()));
-                            case Done.ReusedFull _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
-                            case Done.ReusedToken _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
-                            case Done.Failed _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
-                            case Done.Held _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
+                            case Done.ReusedFull _, Done.ReusedToken _, Done.Failed _, Done.Held _ ->
+                                Stream.<Map.Entry<ClassDesc, String>>empty();
                         }),
                         planned.stream().map(metamodel -> Map.entry(metamodel.metamodel(), metamodel.binaryName())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first));
@@ -389,9 +387,8 @@ public final class FactsProcessor extends AbstractProcessor {
                                 name, "no metamodel of " + name + ": " + reason, new Done.Failed()));
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) ->
                         Optional.of(new Settlement.Reused(name, new Done.ReusedFull(metamodel)));
-                    case TypeGraph.Request.Settled _ -> Optional.empty();
-                    case TypeGraph.Request.Ready _ -> Optional.empty();
-                    case TypeGraph.Request.Waiting _ -> Optional.empty();
+                    case TypeGraph.Request.Settled _, TypeGraph.Request.Ready _, TypeGraph.Request.Waiting _ ->
+                        Optional.empty();
                 })
                 .or(() -> node.token()
                         .flatMap(token -> token
@@ -421,9 +418,9 @@ public final class FactsProcessor extends AbstractProcessor {
                         Optional.of(MetamodelNames.metamodel(base, type, elements));
                     // the token-only metamodel an earlier round wrote stands, though the full one is refused
                     case TypeGraph.Request.Late(ClassDesc tokenOnly) -> Optional.of(tokenOnly);
-                    case TypeGraph.Request.Waiting _ -> Optional.<ClassDesc>empty();
-                    case TypeGraph.Request.Unrepresentable _ -> Optional.<ClassDesc>empty();
-                    case TypeGraph.Request.Rejected _ -> Optional.<ClassDesc>empty();
+                    case TypeGraph.Request.Waiting _,
+                            TypeGraph.Request.Unrepresentable _,
+                            TypeGraph.Request.Rejected _ -> Optional.<ClassDesc>empty();
                 })
                 .or(() -> node.token().flatMap(token -> switch (token) {
                     case TypeGraph.Token.Settled(Done.Dealt settled) -> metamodel(settled);
@@ -512,9 +509,7 @@ public final class FactsProcessor extends AbstractProcessor {
                                             case NOT_LAST -> Stream.<Pair<TypeElement, List<String>>>empty();
                                         };
                                     case TypeGraph.Token.Settled _ -> Stream.<Pair<TypeElement, List<String>>>empty();
-                                    case TypeGraph.Token.OnClasspath _ ->
-                                        Stream.<Pair<TypeElement, List<String>>>empty();
-                                    case TypeGraph.Token.Unavailable _ ->
+                                    case TypeGraph.Token.OnClasspath _, TypeGraph.Token.Unavailable _ ->
                                         Stream.<Pair<TypeElement, List<String>>>empty();
                                 })
                                 .map(tokenOnly -> new Planned(
@@ -563,32 +558,35 @@ public final class FactsProcessor extends AbstractProcessor {
         if (node instanceof TypeGraph.Node.Declined(var _, String reason, var _)) {
             return new About.Supertype.None(name, reason);
         }
-        return node.request()
-                .map(request -> switch (request) {
-                    case TypeGraph.Request.Settled(Done.Final settled) ->
-                        switch (settled) {
-                            case Done.GeneratedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
-                            case Done.ReusedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
-                            // with an error, or after its token-only one
-                            case Done.Failed _, Done.RefusedFull _ ->
-                                new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
-                        };
-                    case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
-                    case TypeGraph.Request.Ready(TypeElement type, var _) ->
-                        new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements));
-                    // a later round writes it, under the name it has now
-                    case TypeGraph.Request.Waiting _ ->
-                        models.element(ClassDesc.of(name))
-                                .<About.Supertype>map(type ->
-                                        new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements)))
-                                .orElse(new About.Supertype.None(name, name + " is not generated yet"));
-                    case TypeGraph.Request.Late _ ->
-                        new About.Supertype.None(
-                                name, "the token-only metamodel of " + name + " was generated in an earlier round");
-                    case TypeGraph.Request.Unrepresentable(String reason) -> new About.Supertype.None(name, reason);
-                    case TypeGraph.Request.Rejected(String reason) -> new About.Supertype.None(name, reason);
-                })
-                .orElse(new About.Supertype.None(name, name + " has no full metamodel"));
+        TypeGraph.Request request = Invariants.present(
+                node.request(), "a full metamodel is wanted of %s, a public supertype that is not declined", name);
+        return switch (request) {
+            case TypeGraph.Request.Settled(Done.Final settled) ->
+                switch (settled) {
+                    case Done.GeneratedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+                    case Done.ReusedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+                    // with an error, or after its token-only one
+                    case Done.Failed _, Done.RefusedFull _ ->
+                        new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
+                };
+            case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
+            case TypeGraph.Request.Ready(TypeElement type, var _) ->
+                new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements));
+            // a later round writes it, under the name it has now
+            case TypeGraph.Request.Waiting _ ->
+                new About.Supertype.Full(MetamodelNames.metamodel(
+                        base,
+                        Invariants.present(
+                                models.element(ClassDesc.of(name)),
+                                "%s, which waits for a type of a later round, is a type of this one",
+                                name),
+                        elements));
+            case TypeGraph.Request.Late _ ->
+                new About.Supertype.None(
+                        name, "the token-only metamodel of " + name + " was generated in an earlier round");
+            case TypeGraph.Request.Unrepresentable(String reason) -> new About.Supertype.None(name, reason);
+            case TypeGraph.Request.Rejected(String reason) -> new About.Supertype.None(name, reason);
+        };
     }
 
     /// Whether a type that cannot be extended declares `protected` fields, constructors or methods: they
@@ -637,8 +635,10 @@ public final class FactsProcessor extends AbstractProcessor {
                     case TOKEN -> MemberFilter.NONE;
                 };
         // the type was read with a model when it was planned
-        TypeModel model =
-                Models.settled(models.of(planned.type(), filter)).right().orElseThrow();
+        TypeModel model = Invariants.present(
+                Models.settled(models.of(planned.type(), filter)).right(),
+                "%s was read with a model when its metamodel was planned",
+                planned.binaryName());
         Element[] originating = planned.requesters().stream()
                 .map(site -> site.resolve(elements))
                 .flatMap(Optional::stream)

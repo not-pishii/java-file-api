@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ExactTypeArg;
@@ -261,10 +262,7 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         static Type array(Type component) {
             return switch (component) {
                 case Fixed(TypeRef type) -> new Fixed(new ArrayTypeRef(type));
-                case OfType _ -> new Array(component);
-                case OfMember _ -> new Array(component);
-                case Array _ -> new Array(component);
-                case Parameterized _ -> new Array(component);
+                case OfType _, OfMember _, Array _, Parameterized _ -> new Array(component);
             };
         }
 
@@ -291,12 +289,12 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
             return switch (this) {
                 case Fixed fixed -> fixed;
                 case OfMember member -> member;
-                case OfType ofType -> {
-                    if (ofType.index() >= arguments.size()) {
-                        throw new IllegalArgumentException("a member mentions the type parameter #" + ofType.index()
+                case OfType(int index) -> {
+                    if (index >= arguments.size()) {
+                        throw new IllegalArgumentException("a member mentions the type parameter #" + index
                                 + " of the type, got " + arguments.size() + " type arguments");
                     }
-                    yield new Fixed(arguments.get(ofType.index()));
+                    yield new Fixed(arguments.get(index));
                 }
                 case Array(Type component) -> array(component.applied(arguments));
                 case Parameterized(ClassDesc raw, List<Argument> given) ->
@@ -313,8 +311,7 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         /// @return the positions, each as often as it is mentioned
         default Stream<Integer> ofMember() {
             return switch (this) {
-                case Fixed _ -> Stream.empty();
-                case OfType _ -> Stream.empty();
+                case Fixed _, OfType _ -> Stream.empty();
                 case OfMember ofMember -> Stream.of(ofMember.index());
                 case Array(Type component) -> component.ofMember();
                 case Parameterized(ClassDesc _, List<Argument> given) ->
@@ -396,9 +393,7 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
                 case Extends(Type.Fixed(TypeRef bound)) -> Optional.of(new ExtendsTypeArg(bound));
                 case Super(Type.Fixed(TypeRef bound)) -> Optional.of(new SuperTypeArg(bound));
                 case Unbounded _ -> Optional.of(me.supcheg.javafile.type.Types.unbounded());
-                case Exact _ -> Optional.empty();
-                case Extends _ -> Optional.empty();
-                case Super _ -> Optional.empty();
+                case Exact _, Extends _, Super _ -> Optional.empty();
             };
         }
 
@@ -852,7 +847,11 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
 
     /// A type that mentions no type parameter any more, as it is written.
     private static TypeRef plain(Type type) {
-        // applied, a type mentions no type parameter of the type, and a method without type parameters none of its own
+        Invariants.require(
+                type instanceof Type.Fixed,
+                "%s is of a method without type parameters, applied to the type arguments of its type: it"
+                        + " mentions no type parameter",
+                type);
         return ((Type.Fixed) type).type();
     }
 
