@@ -798,10 +798,10 @@ final class Lowering {
                     TypeToken<?> param = params.get(i);
                     boolean boxes = arg.type() instanceof PrimitiveToken<?, ?, ?>
                             && !(param instanceof PrimitiveToken<?, ?, ?>);
-                    // A fact does not tell whether its last parameter is of variable arity: an array
-                    // javac may type otherwise than the parameter — `String[]` for `Object...` — would
-                    // be a call javac warns of, not knowing which of the two calls is meant. Of exactly
-                    // the type of the parameter it is the array of the arguments, whatever the arity.
+                    // An array javac may type otherwise than a last parameter of an array type —
+                    // `String[]` for `Object...` — would be a call javac warns of where the parameter is
+                    // of variable arity, not knowing which of the two calls is meant. Of exactly the type
+                    // of the parameter it is the array of the arguments, whatever the arity.
                     boolean spreads = i == args.size() - 1 && param instanceof ArrayToken<?, ?>;
                     if (boxes
                             || (!onlyCandidate && !Tokens.sameType(arg.type(), param))

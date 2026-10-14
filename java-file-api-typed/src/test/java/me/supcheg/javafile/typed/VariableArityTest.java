@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.CompilationSubject;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -54,6 +55,10 @@ class VariableArityTest {
                 var cb = oh.members();
                 var constructor = cb.declareConstructor();
                 var join = cb.declareOverride(asJoiner, Joiner_.join_StringArray);
+                // the fact of the override is of the arity of the method it overrides
+                assertThat(join.arity())
+                        .isEqualTo(Joiner_.join_StringArray.arity())
+                        .isInstanceOf(Arity.Variable.class);
                 var bodies = cb.bodies();
                 bodies.define(join, (b, self, parts) -> b.return_(literal("mine")));
                 bodies.define(constructor, (b, self) -> b.end());
