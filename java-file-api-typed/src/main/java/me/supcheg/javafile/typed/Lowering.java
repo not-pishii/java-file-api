@@ -219,15 +219,28 @@ final class Lowering {
 
     private final TargetClasspath target;
     private final Place place;
-    private final NameEnv names = new NameEnv();
-    private Deque<LoopCtl> loopStack = new ArrayDeque<>();
-    private final Map<LoopCtl, String> loopLabelNames = new HashMap<>();
-    private final Set<LoopCtl> usedLabels = new HashSet<>();
-    private int labelCounter;
+    /// The names of the variables of the top-level body, which its lambdas share.
+    private final NameEnv names;
+    /// The labels of the loops of the top-level body, which its lambdas share: a label is unique in it.
+    private final Labels labels;
+    /// The loops of this body around the statement being lowered, the innermost first: a lambda
+    /// body is lowered by a lowering of its own, which no loop around the lambda is one of.
+    private final Deque<LoopCtl> loopStack = new ArrayDeque<>();
 
     /// The result type of the body being lowered, the target type of its
     /// `return` statements; empty for a `void` body or an expression.
-    private Optional<TypeToken<?>> result;
+    private final Optional<TypeToken<?>> result;
+
+    /// The labels of the loops a `break` or a `continue` of an inner loop names.
+    private static final class Labels {
+        private final Map<LoopCtl, String> names = new HashMap<>();
+        private final Set<LoopCtl> used = new HashSet<>();
+
+        /// The label of `ctl`, the next free one the first time.
+        String of(LoopCtl ctl) {
+            return names.computeIfAbsent(ctl, _ -> "loop" + names.size());
+        }
+    }
 
     /// A lowering of a `void` body or of a standalone expression.
     ///
@@ -243,8 +256,20 @@ final class Lowering {
     /// @param result the result type; empty for a `void` body
     /// @throws TargetClasspathMismatchException if a metamodel of `result` does not hold on `target`
     Lowering(TargetClasspath target, Place place, Optional<TypeToken<?>> result) {
+        this(target, place, new NameEnv(), new Labels(), result);
+    }
+
+    /// The lowering of the body of a lambda of the body `enclosing` lowers, whose `return` statements
+    /// return `result`: in its names and its labels, with no loop around it.
+    private Lowering(Lowering enclosing, Optional<TypeToken<?>> result) {
+        this(enclosing.target, enclosing.place, enclosing.names, enclosing.labels, result);
+    }
+
+    private Lowering(TargetClasspath target, Place place, NameEnv names, Labels labels, Optional<TypeToken<?>> result) {
         this.target = target;
         this.place = place;
+        this.names = names;
+        this.labels = labels;
         this.result = result;
         result.ifPresent(this::mentions);
     }
@@ -353,7 +378,7 @@ final class Lowering {
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
-                Expr operandExpr = expr(operand, true);
+                Expr operandExpr = expr(operand, Typing.EXACT);
                 // The binding is in scope in the then-branch only.
                 names.push();
                 Expr condition;
@@ -401,7 +426,7 @@ final class Lowering {
             case Instr.ForEach(var ctl, var var_, var iterable, var body) -> {
                 // javac takes the type of the iterated expression itself (JLS 14.14.2): one seen
                 // through a witness is of the supertype the witness names.
-                Expr iterableExpr = expr(iterable, iterable instanceof Node.Upcast);
+                Expr iterableExpr = expr(iterable, Typing.exactIf(iterable instanceof Node.Upcast));
                 names.push();
                 String name;
                 CodeBody bodyCode;
@@ -416,14 +441,14 @@ final class Lowering {
             case Instr.Return(var value) -> new ReturnStmt(Optional.of(returned(value)));
             case Instr.ReturnNothing _ -> new ReturnStmt(Optional.empty());
             // The value is of the type of the switch already (YieldBody.yield_); pinned, it is exactly.
-            case Instr.Yield(var value) -> new YieldStmt(expr(value, true));
+            case Instr.Yield(var value) -> new YieldStmt(expr(value, Typing.EXACT));
             case Instr.Throw(var value, var type) -> {
                 mentions(type.token());
                 // The statement was checked by the type of the value (Exceptions): a value seen
                 // through a witness by the class it is of, as javac types it; any other javac may
                 // type narrower by exactly its token, or a catch of another subclass would be one
                 // of an exception javac says is never thrown (JLS 11.2.3).
-                yield new ThrowStmt(expr(value, !(value instanceof Node.Upcast)));
+                yield new ThrowStmt(expr(value, Typing.exactIf(!(value instanceof Node.Upcast))));
             }
             case Instr.Break(var ctl) -> new BreakStmt(label(ctl));
             case Instr.Continue(var ctl) -> new ContinueStmt(label(ctl));
@@ -446,11 +471,7 @@ final class Lowering {
     }
 
     private Stmt labeled(LoopCtl ctl, Stmt loopStmt) {
-        return usedLabels.contains(ctl) ? new LabeledStmt(labelFor(ctl), loopStmt) : loopStmt;
-    }
-
-    private String labelFor(LoopCtl ctl) {
-        return loopLabelNames.computeIfAbsent(ctl, _ -> "loop" + (labelCounter++));
+        return labels.used.contains(ctl) ? new LabeledStmt(labels.of(ctl), loopStmt) : loopStmt;
     }
 
     /// The label of a `break` or a `continue` of `ctl`: none for the innermost loop, the label of an
@@ -464,8 +485,8 @@ final class Lowering {
         if (loopStack.peek() == ctl) {
             return Optional.empty();
         }
-        usedLabels.add(ctl);
-        return Optional.of(labelFor(ctl));
+        labels.used.add(ctl);
+        return Optional.of(labels.of(ctl));
     }
 
     private Stmt tryStmt(Block<?, ?> body, List<Instr.Catch> catches, Instr.Finally finallyBlock) {
@@ -517,7 +538,7 @@ final class Lowering {
                         new StaticFieldAccessExpr(staticOwner(field), field.name());
                     // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
                     case Node.Target.Element(var array, var index) ->
-                        expr(array, true).arrayAccess(expr(index));
+                        expr(array, Typing.EXACT).arrayAccess(expr(index));
                 };
         return new AssignStmt(assigned, AssignOp.ASSIGN, value);
     }
@@ -527,12 +548,12 @@ final class Lowering {
     // ------------------------------------------------------------------
 
     private Expr expr(Node node) {
-        return expr(node, false);
+        return expr(node, Typing.AS_IT_STANDS);
     }
 
-    /// Lowers `node`; if `pin`, so that javac types it by exactly its token
+    /// Lowers `node`; [Typing#EXACT], so that javac types it by exactly its token
     /// even where [Node#isExact(Node)] does not hold.
-    private Expr expr(Node node, boolean pin) {
+    private Expr expr(Node node, Typing typing) {
         return switch (node) {
             case Node.Lit(var literal) -> literal;
             case Node.Null(var type) -> {
@@ -544,7 +565,7 @@ final class Lowering {
             case Node.Box(var type, var operand) ->
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());
-            case Node.Call(var receiver, var method, var args) -> call(receiver, method, args, pin);
+            case Node.Call(var receiver, var method, var args) -> call(receiver, method, args, typing);
             case Node.SuperCall(var _, var superclass, var method, var args) -> superCall(superclass, method, args);
             case Node.StaticCall(var method, var args) -> {
                 subclassReaching(method.access(), method.owner(), method);
@@ -569,7 +590,7 @@ final class Lowering {
                 mentions(constant.owner());
                 yield Exprs.staticField(raw(constant.owner()), constant.name());
             }
-            case Node.ArrayAt(var array, var index) -> expr(array, pin).arrayAccess(expr(index));
+            case Node.ArrayAt(var array, var index) -> expr(array, typing).arrayAccess(expr(index));
             case Node.ArrayLength(var array) -> expr(array).field("length");
             case Node.NewArray(var component, var length) -> {
                 mentions(component);
@@ -578,22 +599,25 @@ final class Lowering {
             // Each branch is of the conditional's type already (Expressions.cond); pinned, the
             // conditional is of exactly that type (JLS 15.25).
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
-                Exprs.cond(expr(condition), expr(whenTrue, true), expr(whenFalse, true));
+                Exprs.cond(expr(condition), expr(whenTrue, Typing.EXACT), expr(whenFalse, Typing.EXACT));
             case Node.Binary(var op, var left, var right) ->
                 new BinaryExpr(compared(op, left), op.rendered(), compared(op, right));
             case Node.Not(var operand) -> new UnaryExpr(UnaryOp.NOT, expr(operand));
             case Node.Convert(var conversion, var operand) ->
-                Exprs.cast(conversion.type().typeRef(), expr(operand, true));
+                Exprs.cast(conversion.type().typeRef(), expr(operand, Typing.EXACT));
             case Node.Cast(var type, var operand) -> {
                 mentions(type);
                 requireChecked(type, operand, "the cast");
-                yield Exprs.cast(written(type).typeRef(), expr(operand.node(), true));
+                yield Exprs.cast(written(type).typeRef(), expr(operand.node(), Typing.EXACT));
             }
             // Unpinned, the expression is rendered as it is and javac types it by the class it is of;
             // pinned, the cast makes it of the supertype, and is no redundant one to javac.
             case Node.Upcast(var inner, var _, var type) -> {
                 mentions(type);
-                yield pin ? Exprs.cast(written(type).typeRef(), expr(inner)) : expr(inner);
+                yield switch (typing) {
+                    case EXACT -> Exprs.cast(written(type).typeRef(), expr(inner));
+                    case AS_IT_STANDS -> expr(inner);
+                };
             }
             // No target type is known here: the cast gives the lambda the one of its fact.
             case Node.Lambda lambda -> Exprs.cast(written(lambda.sam().owner()).typeRef(), lambda(lambda));
@@ -655,7 +679,7 @@ final class Lowering {
     /// type of the receiver overrides with a narrower result.
     private Expr compared(Node.Operator op, Node operand) {
         boolean ofReferences = op == Node.Operator.EQ_REF || op == Node.Operator.NEQ_REF;
-        return expr(operand, ofReferences && !Node.isExact(operand));
+        return expr(operand, Typing.exactIf(ofReferences && !Node.isExact(operand)));
     }
 
     /// `target.method(args)`. The receiver is cast to the method's owner
@@ -664,18 +688,18 @@ final class Lowering {
     /// ([#declaresCheckedException]), or the subtype has an overload that
     /// erases as the method does ([#hasTwin]); otherwise it is pinned itself
     /// where its type decides the overload.
-    private Expr call(Node.Operand witnessed, Invocable method, List<Node.Operand> args, boolean pin) {
+    private Expr call(Node.Operand witnessed, Invocable method, List<Node.Operand> args, Typing typing) {
         Node.Operand receiving = seen(witnessed);
         DeclaredToken<?> owner = method.owner();
         mentions(receiving.type());
         Optional<ClassToken<?>> subclass = subclassReaching(method.access(), owner, method);
         if (subclass.isPresent()) {
-            return protectedCall(subclass.get(), receiving, method, args, pin);
+            return protectedCall(subclass.get(), receiving, method, args, typing);
         }
         Expr receiver;
         Searched searched;
         if (!Tokens.sameType(receiving.type(), owner)
-                && (pin || declaresCheckedException(method) || hasTwin(receiving.type(), method))) {
+                && (typing == Typing.EXACT || declaresCheckedException(method) || hasTwin(receiving.type(), method))) {
             receiver = cast(owner, receiving, method);
             searched = new Searched.In(owner);
         } else {
@@ -685,7 +709,7 @@ final class Lowering {
             // known here: it may have an overload that erases as the method does, as a type
             // variable may (hasTwin), which no method without parameters has.
             boolean narrowed = !args.isEmpty() && !Node.isExact(receiving.node());
-            receiver = expr(receiving.node(), pin || !settled || narrowed);
+            receiver = expr(receiving.node(), Typing.exactIf(typing == Typing.EXACT || !settled || narrowed));
             searched = new Searched.In(receiving.type());
         }
         return new MethodCallExpr(
@@ -697,19 +721,19 @@ final class Lowering {
     /// be an expression the class has no access to the member through. So where [#call] would
     /// cast the receiver, the call is rejected.
     private Expr protectedCall(
-            ClassToken<?> subclass, Node.Operand receiving, Invocable method, List<Node.Operand> args, boolean pin) {
+            ClassToken<?> subclass, Node.Operand receiving, Invocable method, List<Node.Operand> args, Typing typing) {
         if (!Tokens.sameType(receiving.type(), subclass)) {
             throw new IllegalStateException(method + " is protected, and is called on an expression of "
                     + receiving.type() + ": in the body of " + subclass + " a protected method of a superclass is"
                     + " called on this or on another value of the class itself (JLS 6.6.2.1)");
         }
-        castWanted(subclass, method, pin).ifPresent(why -> {
+        castWanted(subclass, method, typing).ifPresent(why -> {
             throw new IllegalStateException(method + " is protected, and cannot be called on a value of " + subclass
                     + " here: " + why + ". The receiver cannot be cast to " + method.owner()
                     + ", through which the class has no access to the member (JLS 6.6.2.1)");
         });
         return new MethodCallExpr(
-                Optional.of(expr(receiving.node(), true)),
+                Optional.of(expr(receiving.node(), Typing.EXACT)),
                 method.name(),
                 arguments(method, new Searched.In(subclass), args),
                 typeArgs(method));
@@ -717,8 +741,8 @@ final class Lowering {
 
     /// Why a call of `method` on a value of `subclass` would have its receiver cast to the owner of
     /// the method ([#call]), if it would.
-    private Optional<String> castWanted(ClassToken<?> subclass, Invocable method, boolean pin) {
-        if (pin) {
+    private Optional<String> castWanted(ClassToken<?> subclass, Invocable method, Typing typing) {
+        if (typing == Typing.EXACT) {
             return Optional.of("its result has to be of exactly its type where it stands, which only a receiver"
                     + " of the type of its owner makes it — bind the result to a variable with let first");
         }
@@ -814,11 +838,11 @@ final class Lowering {
                         return cast(param, arg, member);
                     }
                     if (spreads) {
-                        return expr(arg.node(), true);
+                        return expr(arg.node(), Typing.EXACT);
                     }
                     // The one candidate gives a lambda its target type; among several, the cast of
                     // the lambda does (expr), as the type of any other argument decides.
-                    return onlyCandidate ? targeted(arg.node(), param) : expr(arg.node(), true);
+                    return onlyCandidate ? targeted(arg.node(), param) : expr(arg.node(), Typing.EXACT);
                 })
                 .toList();
     }
@@ -1012,7 +1036,7 @@ final class Lowering {
         if (!Tokens.sameType(receiving.type(), owner)) {
             return cast(owner, receiving, field);
         }
-        return expr(receiving.node(), true);
+        return expr(receiving.node(), Typing.EXACT);
     }
 
     /// The receiver of a `protected` instance field, in the body of `subclass`: `super`. The
@@ -1075,6 +1099,17 @@ final class Lowering {
                 .toList();
     }
 
+    /// How an expression is lowered: as it stands, javac typing it as it will, or so that javac types
+    /// it by exactly its token even where [Node#isExact(Node)] does not hold — pinned.
+    private enum Typing {
+        AS_IT_STANDS,
+        EXACT;
+
+        static Typing exactIf(boolean exact) {
+            return exact ? EXACT : AS_IT_STANDS;
+        }
+    }
+
     /// Where javac searches for the member a call names.
     private sealed interface Searched {
         /// Among the methods of a type.
@@ -1115,12 +1150,12 @@ final class Lowering {
     /// `return` statements return the result of the functional interface's
     /// method, which is the target type of an expression body too.
     private Expr lambda(Node.Lambda lambda) {
-        Invocable sam = lambda.sam();
-        uses(sam);
-        Deque<LoopCtl> enclosingLoops = loopStack;
-        Optional<TypeToken<?>> enclosingResult = result;
-        loopStack = new ArrayDeque<>();
-        result = sam.resultType();
+        uses(lambda.sam());
+        return new Lowering(this, lambda.sam().resultType()).lambdaBody(lambda);
+    }
+
+    /// The parameters and the body of a lambda, lowered by the lowering of its body.
+    private Expr lambdaBody(Node.Lambda lambda) {
         names.push();
         try {
             List<Param> coreParams = lambda.params().stream()
@@ -1139,8 +1174,6 @@ final class Lowering {
             };
         } finally {
             names.pop();
-            loopStack = enclosingLoops;
-            result = enclosingResult;
         }
     }
 
@@ -1156,7 +1189,7 @@ final class Lowering {
         mentions(enumType);
         mentions(selector.type());
         Expr selected = Tokens.sameType(selector.type(), enumType)
-                ? expr(selector.node(), true)
+                ? expr(selector.node(), Typing.EXACT)
                 : Exprs.cast(written(enumType).typeRef(), expr(selector.node()));
         Stream<SwitchCase> cases = switch_.cases().stream()
                 .map(c -> new SwitchCase(
@@ -1175,7 +1208,7 @@ final class Lowering {
 
     private CaseBody caseBody(Node.Arm arm) {
         return switch (arm) {
-            case Node.Arm.Value(var value) -> new ExprCaseBody(expr(value, true));
+            case Node.Arm.Value(var value) -> new ExprCaseBody(expr(value, Typing.EXACT));
             case Node.Arm.Block(var block) -> new BlockCaseBody(lowerBlock(block.instrs()));
         };
     }
