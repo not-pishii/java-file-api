@@ -37,6 +37,7 @@
     PrintStream.class,
     Runnable.class,
     RuntimeException.class,
+    Error.class,
     Signal.class,
     Stream.class,
     String.class,

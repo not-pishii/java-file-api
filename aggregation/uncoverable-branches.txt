@@ -327,9 +327,6 @@ me/supcheg/javafile/typed/ClassDeclaration.java :: mine == bounded ? new Variabl
 me/supcheg/javafile/typed/EnumSwitchCases.java :: return "switch_ over " + enumType + (enclosing == null ? "" : " in the " + enclosing.path());
     untested when the gate was introduced; belongs to part II/III
 
-me/supcheg/javafile/typed/ExceptionType.java :: && !token.erasure().equals(CD_ERROR);
-    untested when the gate was introduced; belongs to part II/III
-
 me/supcheg/javafile/typed/Exceptions.java :: case Coverage.Uncovered(ExceptionScope.Declares(var boundary, var declared)) ->
     untested when the gate was introduced; belongs to part II/III
 
@@ -346,9 +343,6 @@ me/supcheg/javafile/typed/Inheritance.java :: .contains(group.signature().params
     untested when the gate was introduced; belongs to part II/III
 
 me/supcheg/javafile/typed/Inheritance.java :: ? entries(heir, supertype).filter(entry -> !ofObject.contains(entry.signature()))
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Lowering.java :: return isBreak ? new BreakStmt(Optional.of(label)) : new ContinueStmt(Optional.of(label));
     untested when the gate was introduced; belongs to part II/III
 
 me/supcheg/javafile/typed/Lowering.java :: || (spreads && !Tokens.sameType(arg.type(), param))) {

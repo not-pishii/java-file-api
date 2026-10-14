@@ -21,6 +21,7 @@ import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.io.Reader_;
 import me.supcheg.javafile.typed.testfacts.java.io.StringReader_;
 import me.supcheg.javafile.typed.testfacts.java.io.UnsupportedEncodingException_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Error_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;
 import me.supcheg.javafile.typed.testfacts.java.lang.InterruptedException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
@@ -898,6 +899,9 @@ class ExceptionChecksTest {
                     .withMessageContaining("can throw the checked exception X");
             assertThatCode(calling(variable("X", RuntimeException_.TOKEN), List.of()))
                     .doesNotThrowAnyException();
+            assertThatCode(calling(variable("X", Error_.TOKEN), List.of())).doesNotThrowAnyException();
+            CompilationSubject.assertThat(compiled("static <X extends Error> void m(X x) { throw x; }"))
+                    .succeeded();
         }
 
         @Test

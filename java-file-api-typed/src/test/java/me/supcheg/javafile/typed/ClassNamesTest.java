@@ -2,7 +2,12 @@ package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.Objects_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -11,6 +16,11 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.typed.Expressions.call;
+import static me.supcheg.javafile.typed.Expressions.enumConstant;
+import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.staticCall;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /// The class a declaration declares is one Java source writes as it is: a top-level class whose package and
@@ -114,5 +124,33 @@ class ClassNamesTest {
                 .isThrownBy(() -> TypedJavaFile.typeParam(name))
                 .withMessageContaining("a type parameter cannot be named '" + name + "'");
         assertThat(javacOf("gen", "Made", "Made<" + name + ">")).failed();
+    }
+
+    @Test
+    void aClassOfTheUnnamedPackageImportsWhatItNamesAndQualifiesWhatItsNameHides() throws Throwable {
+        // a class Signal of the unnamed package writes the enum Signal of the fixtures by its qualified name
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), ClassDesc.of("Signal"), new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var red = cb.declareStaticMethod("red", String_.TOKEN);
+                        var length = cb.declareStaticMethod("length", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.define(red, b -> b.return_(call(enumConstant(Signal_.RED), Object_.toString)));
+                        bodies.define(
+                                length,
+                                b -> b.return_(call(
+                                        staticCall(Objects_.requireNonNull_T(String_.TOKEN), literal("abc")),
+                                        String_.length)));
+                        return bodies;
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .doesNotContain("package ")
+                .contains("import java.util.Objects;")
+                .contains("me.supcheg.javafile.typed.fixtures.Signal.RED");
+        assertThat(compiled.invoke("red")).isEqualTo("RED");
+        assertThat(compiled.invoke("length")).isEqualTo(3);
     }
 }
