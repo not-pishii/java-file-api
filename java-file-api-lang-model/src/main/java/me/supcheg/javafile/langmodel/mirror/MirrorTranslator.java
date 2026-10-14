@@ -1,5 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
@@ -93,6 +95,10 @@ public final class MirrorTranslator {
             MethodTableTemplate.Signature.of("toString"));
 
     private static final String DOLLAR = "a class with $ in its simple name is not supported yet";
+
+    /// Why a member a class file names by what is no identifier has no fact: `toString-impl` of a value
+    /// class of Kotlin, which Java source neither calls nor overrides.
+    private static final String NO_IDENTIFIER = "has a name that is no identifier of Java, so no Java source names it";
 
     private final Elements elements;
     private final javax.lang.model.util.Types types;
@@ -206,10 +212,16 @@ public final class MirrorTranslator {
     /// Constructors are not inherited, so none is adopted.
     ///
     /// @param element the class, interface, enum or record
-    /// @return the members, each a field, constructor or method
-    public List<Element> members(TypeElement element) {
-        return Stream.concat(declared(element), adopted(element, (DeclaredType) element.asType()).stream())
-                .toList();
+    /// @return the members, each a field, constructor or method; deferred if a supertype the type adopts
+    ///         from, or one that tells its members, mentions a type not generated yet
+    public Translation<List<Element>> members(TypeElement element) {
+        try {
+            return new Translation.Ok<>(Stream.concat(
+                            declared(element), adopted(element, (DeclaredType) element.asType()).stream())
+                    .toList());
+        } catch (Unresolved unresolved) {
+            return new Translation.Deferred<>(unresolved.type);
+        }
     }
 
     /// The accessible fields, constructors and methods a type declares.
@@ -238,12 +250,12 @@ public final class MirrorTranslator {
                 .collect(Collectors.toSet());
         // the abstract methods of one signature that the type has, whoever declares them, are one member of it
         Map<MethodTableTemplate.Signature, List<ExecutableElement>> twins = ElementFilter.methodsIn(all).stream()
-                .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT))
+                .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT) && nameable(method))
                 .collect(Collectors.groupingBy(method -> signature(method, element, self)));
         return had.stream()
                 .filter(member -> switch (member) {
                     case ExecutableElement method
-                    when method.getModifiers().contains(Modifier.ABSTRACT) -> {
+                    when method.getModifiers().contains(Modifier.ABSTRACT) && nameable(method) -> {
                         List<ExecutableElement> same = twins.get(signature(method, element, self));
                         yield same.stream().noneMatch(told::contains)
                                 && pick(same, self).equals(method);
@@ -272,6 +284,9 @@ public final class MirrorTranslator {
         return hidden.stream()
                 .<Element>flatMap(supertype -> supertype.getEnclosedElements().stream())
                 .filter(member -> access(member, element).isPresent())
+                // a class has a public method of Object from Object, whatever interface declares it again
+                .filter(member -> element.getKind().isInterface()
+                        || !(member instanceof ExecutableElement method && declaresPublicOfObjectAgain(method)))
                 .filter(member -> {
                     List<Element> namesakes =
                             inherited.getOrDefault(member.getSimpleName().toString(), List.of());
@@ -362,6 +377,13 @@ public final class MirrorTranslator {
                     + " is in the unnamed package, which a metamodel in a named package cannot refer to");
         }
         return Optional.empty();
+    }
+
+    /// Whether Java source can name a member. A type it cannot name javac does not find at all: a class
+    /// file `we-ird.class` is no class of the class path, and a mention of it is of a type that is not
+    /// there.
+    private static boolean nameable(Element member) {
+        return Identifiers.isValid(member.getSimpleName().toString());
     }
 
     /// Why a type that has a model has no full metamodel all the same: a
@@ -455,11 +477,13 @@ public final class MirrorTranslator {
     }
 
     private static boolean unnamedPackage(TypeElement type) {
-        return Stream.<Element>iterate(type, Element::getEnclosingElement)
-                .filter(PackageElement.class::isInstance)
-                .map(PackageElement.class::cast)
-                .findFirst()
-                .orElseThrow()
+        return Invariants.present(
+                        Stream.<Element>iterate(type, Element::getEnclosingElement)
+                                .filter(PackageElement.class::isInstance)
+                                .map(PackageElement.class::cast)
+                                .findFirst(),
+                        "%s is declared in a package",
+                        type)
                 .isUnnamed();
     }
 
@@ -551,6 +575,12 @@ public final class MirrorTranslator {
     ///     not one the type declares
     private SamRead readSam(TypeElement element, Supplier<List<Element>> adopted) {
         if (element.getKind() != ElementKind.INTERFACE || element.getModifiers().contains(Modifier.SEALED)) {
+            return new SamRead.Found(Optional.empty());
+        }
+        // an abstract method Java source cannot name is one no lambda of Java source implements
+        boolean foreign = ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
+                .anyMatch(method -> method.getModifiers().contains(Modifier.ABSTRACT) && !nameable(method));
+        if (foreign) {
             return new SamRead.Found(Optional.empty());
         }
         DeclaredType self = (DeclaredType) element.asType();
@@ -682,6 +712,10 @@ public final class MirrorTranslator {
                     case SamRead.NoModel _ -> Optional.empty();
                 };
         shape.problems.addAll(bounds.problems);
+        enumConstants.stream()
+                .filter(constant -> !Identifiers.isValid(constant))
+                .forEach(constant -> shape.unrepresentable(
+                        "enum constant " + constant + " has a name that is no identifier of Java"));
         if (!shape.problems.isEmpty()) {
             return new Translation.Unrepresentable<>("type " + element.getQualifiedName() + ": " + shape.problem());
         }
@@ -809,18 +843,12 @@ public final class MirrorTranslator {
         Map<MethodTableTemplate.Signature, List<ExecutableElement>> table =
                 ElementFilter.methodsIn(elements.getAllMembers(element)).stream()
                         .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
+                        // a method Java source cannot name is none it can call, override or leave abstract
+                        .filter(MirrorTranslator::nameable)
                         .collect(Collectors.groupingBy(method -> signature(method, element, self)));
-        boolean isInterface = element.getKind() == ElementKind.INTERFACE;
         Map<Category, Set<MethodTableTemplate.Signature>> parts = table.entrySet().stream()
                 .collect(Collectors.groupingBy(
-                        // an interface that redeclares a public method of Object abstract does not ask its
-                        // implementations for it: every class has it from Object
-                        e -> {
-                            Category category = Category.of(e.getValue());
-                            return isInterface && category == Category.ABSTRACT && OBJECT_METHODS.contains(e.getKey())
-                                    ? Category.CONCRETE
-                                    : category;
-                        },
+                        e -> Category.of(e.getKey(), e.getValue()),
                         Collectors.mapping(Map.Entry::getKey, Collectors.toUnmodifiableSet())));
         return new MethodTableTemplate(
                 parts.getOrDefault(Category.ABSTRACT, Set.of()),
@@ -887,21 +915,25 @@ public final class MirrorTranslator {
         List<TypeElement> lineage = Stream.concat(
                         Stream.of(element), supertypes(self).map(supertype -> (TypeElement) supertype.asElement()))
                 .toList();
-        Map<String, List<ExecutableElement>> byName = lineage.stream()
+        List<ExecutableElement> inheritable = lineage.stream()
                 .flatMap(type -> ElementFilter.methodsIn(type.getEnclosedElements()).stream())
                 .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
                 .filter(method -> !(method.getEnclosingElement().getKind().isInterface()
                         && method.getModifiers().contains(Modifier.STATIC)))
+                .toList();
+        // a method Java source cannot name is no part of what a class of Java source inherits — but one
+        // that stands abstract leaves no class of Java source that extends the type
+        boolean asksForForeign = standing(byName(inheritable.stream().filter(method -> !nameable(method))), element)
+                .anyMatch(method -> method.getModifiers().contains(Modifier.ABSTRACT));
+        if (asksForForeign) {
+            return Heritage.UNTOLD;
+        }
+        Map<String, List<ExecutableElement>> byName = byName(inheritable.stream()
+                .filter(MirrorTranslator::nameable)
                 .filter(method -> !isInterface
                         || !(method.getEnclosingElement().equals(object)
-                                || OBJECT_METHODS.contains(signature(method, element, self))))
-                .collect(Collectors.groupingBy(
-                        method -> method.getSimpleName().toString(), LinkedHashMap::new, Collectors.toList()));
-        Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature = byName.values().stream()
-                .flatMap(namesakes -> namesakes.stream()
-                        .filter(method -> namesakes.stream()
-                                .noneMatch(
-                                        other -> elements.hides(other, method) || overrides(other, method, element))))
+                                || OBJECT_METHODS.contains(signature(method, element, self)))));
+        Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature = standing(byName, element)
                 .collect(Collectors.groupingBy(
                         method -> signature(method, element, self), LinkedHashMap::new, Collectors.toList()));
         List<Inherited<Heritage.Method<Heritage.Declaration>>> methods = bySignature.entrySet().stream()
@@ -931,12 +963,32 @@ public final class MirrorTranslator {
                 : Heritage.UNTOLD;
     }
 
-    /// The fields and member types of a type and its supertypes that are not `private`: each once, by
-    /// name and then by the type that declares it.
+    private static Map<String, List<ExecutableElement>> byName(Stream<ExecutableElement> methods) {
+        return methods.collect(Collectors.groupingBy(
+                method -> method.getSimpleName().toString(), LinkedHashMap::new, Collectors.toList()));
+    }
+
+    /// The methods that none of their name overrides or hides for a type — and of a class that is not
+    /// abstract none that is abstract: javac looks for the methods a class is to implement in its abstract
+    /// superclasses and its interfaces alone, so a class that extends a concrete one is asked for nothing,
+    /// whatever method of package access that one does not inherit from a superclass of another package
+    /// and so does not override as `Elements` tells it.
+    private Stream<ExecutableElement> standing(Map<String, List<ExecutableElement>> byName, TypeElement type) {
+        boolean concrete = kind(type) instanceof DeclaredKind.OpenClass;
+        return byName.values().stream()
+                .flatMap(namesakes -> namesakes.stream()
+                        .filter(method -> namesakes.stream()
+                                .noneMatch(other -> elements.hides(other, method) || overrides(other, method, type))))
+                .filter(method -> !(concrete && method.getModifiers().contains(Modifier.ABSTRACT)));
+    }
+
+    /// The fields and member types of a type and its supertypes that are not `private` and that Java
+    /// source can name: each once, by name and then by the type that declares it.
     private List<Heritage.Named> named(List<TypeElement> lineage) {
         return lineage.stream()
                 .flatMap(type -> type.getEnclosedElements().stream()
                         .filter(member -> !member.getModifiers().contains(Modifier.PRIVATE))
+                        .filter(MirrorTranslator::nameable)
                         .<Heritage.Named>flatMap(member -> {
                             String name = member.getSimpleName().toString();
                             return switch (member.getKind()) {
@@ -961,6 +1013,7 @@ public final class MirrorTranslator {
     /// declares again is not implemented by the one it overrides.
     private boolean overrides(ExecutableElement other, ExecutableElement method, TypeElement type) {
         return !other.equals(method)
+                && !againstPublicOfObject(other, method)
                 && (overridesDeclared(other, method)
                         || !overridesDeclared(method, other) && elements.overrides(other, method, type));
     }
@@ -968,7 +1021,34 @@ public final class MirrorTranslator {
     /// Whether `other` overrides `method` as the class or interface that declares `other` has the two.
     private boolean overridesDeclared(ExecutableElement other, ExecutableElement method) {
         TypeElement declarer = (TypeElement) other.getEnclosingElement();
-        return elements.overrides(other, method, declarer) || overridesInPackage(other, declarer, method);
+        return !againstPublicOfObject(other, method)
+                && (elements.overrides(other, method, declarer) || overridesInPackage(other, declarer, method));
+    }
+
+    /// Whether `other` is a method of an interface and `method` a `public` one of `Object`. An interface
+    /// that declares such a method again does not take it from a class: the class has the method of
+    /// `Object`, which implements that of the interface (JLS 8.4.8.1, 9.2). `Elements.overrides` tells the
+    /// reverse — as it does, rightly, of a `protected` method of `Object`, which the class is asked for.
+    private static boolean againstPublicOfObject(ExecutableElement other, ExecutableElement method) {
+        return other.getEnclosingElement().getKind().isInterface() && publicOfObject(method);
+    }
+
+    private static boolean publicOfObject(ExecutableElement method) {
+        return method.getModifiers().contains(Modifier.PUBLIC)
+                && ((TypeElement) method.getEnclosingElement())
+                        .getQualifiedName()
+                        .contentEquals("java.lang.Object");
+    }
+
+    /// Whether a method is one an interface declares with the signature of a `public` method of `Object`.
+    private boolean declaresPublicOfObjectAgain(ExecutableElement method) {
+        TypeElement declarer = (TypeElement) method.getEnclosingElement();
+        return declarer.getKind().isInterface()
+                && ElementFilter.methodsIn(
+                                elements.getTypeElement("java.lang.Object").getEnclosedElements())
+                        .stream()
+                        .anyMatch(
+                                ofObject -> publicOfObject(ofObject) && elements.overrides(method, ofObject, declarer));
     }
 
     /// Whether `other`, a method of the class `declarer`, overrides `method`, one with package access of
@@ -1254,11 +1334,18 @@ public final class MirrorTranslator {
 
     private Read read(TypeElement owner, DeclaredType self, Element member) {
         return switch (member.getKind()) {
-            case FIELD -> field(owner, self, (VariableElement) member);
+            case FIELD ->
+                named(member, "field " + member.getSimpleName(), () -> field(owner, self, (VariableElement) member));
+            // a constructor has no name of its own
             case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member);
-            case METHOD -> method(owner, self, (ExecutableElement) member);
+            case METHOD -> named(member, "method " + member, () -> method(owner, self, (ExecutableElement) member));
             default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
         };
+    }
+
+    /// A member with a name: read if Java source can name it, skipped if not.
+    private static Read named(Element member, String what, Supplier<Read> read) {
+        return nameable(member) ? read.get() : new Read.Skipped(new SkippedMember(what, NO_IDENTIFIER));
     }
 
     private Read field(TypeElement owner, DeclaredType self, VariableElement field) {
@@ -1527,8 +1614,11 @@ public final class MirrorTranslator {
         /// 8.4.8.4): the method of a class stands, whatever it is — an abstract one beside a default
         /// method of an interface leaves the method abstract, one with a body implements an abstract
         /// method of an interface the class that declares it does not implement. Among the methods of
-        /// interfaces alone an abstract one stands.
-        static Category of(List<ExecutableElement> twins) {
+        /// interfaces alone an abstract one stands — but not against a `public` method of `Object`,
+        /// which an interface may declare again without asking its implementations for it: a class
+        /// has the method from `Object`, though `Elements.getAllMembers` lists that of the interface
+        /// in its place.
+        static Category of(MethodTableTemplate.Signature signature, List<ExecutableElement> twins) {
             List<Set<Modifier>> ofClasses = twins.stream()
                     .filter(twin -> !twin.getEnclosingElement().getKind().isInterface())
                     .map(Element::getModifiers)
@@ -1538,6 +1628,9 @@ public final class MirrorTranslator {
                     : ofClasses;
             if (telling.stream().anyMatch(modifiers -> modifiers.contains(Modifier.STATIC))) {
                 return STATIC;
+            }
+            if (ofClasses.isEmpty() && OBJECT_METHODS.contains(signature)) {
+                return CONCRETE;
             }
             return telling.stream().anyMatch(modifiers -> modifiers.contains(Modifier.ABSTRACT)) ? ABSTRACT : CONCRETE;
         }

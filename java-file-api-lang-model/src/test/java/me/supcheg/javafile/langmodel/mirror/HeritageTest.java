@@ -335,6 +335,144 @@ class HeritageTest {
                         "inherit method twice() erased () overrides - by interface default p.Api () -> void throws -");
     }
 
+    private static final String REDECLARING = """
+            package p;
+            public interface Redeclaring {
+                String toString();
+                boolean equals(Object other);
+                int hashCode();
+                Object clone();
+            }
+            """;
+
+    @Test
+    void aClassHasThePublicMethodsOfObjectWhateverAnInterfaceOfItDeclaresAgain() {
+        // javac compiles Impl, which declares none of the three: it has them from Object (JLS 8.4.8), and
+        // `clone` alone, protected in Object, is asked of it
+        String impl = """
+                package p;
+                public class Impl implements Redeclaring {
+                    @Override public Object clone() { return this; }
+                }
+                """;
+        List<String> lines = Harness.run(
+                env -> Canonical.heritage(
+                        (Heritage.Told) Harness.ok(env.full("p.Impl")).heritage()),
+                impl,
+                REDECLARING);
+
+        assertThat(lines)
+                .filteredOn(line -> line.contains(" method toString()")
+                        || line.contains(" method equals(")
+                        || line.contains(" method hashCode()")
+                        || line.contains(" method clone()"))
+                .containsExactly(
+                        "inherit method clone() erased () overrides java.lang.Object; p.Redeclaring by class public"
+                                + " concrete p.Impl () -> java.lang.Object throws -",
+                        "inherit method equals(java.lang.Object) erased (java.lang.Object) overrides p.Redeclaring by"
+                                + " class public concrete java.lang.Object (java.lang.Object) -> boolean throws -",
+                        "inherit method hashCode() erased () overrides p.Redeclaring by class public concrete"
+                                + " java.lang.Object () -> int throws -",
+                        "inherit method toString() erased () overrides p.Redeclaring by class public concrete"
+                                + " java.lang.Object () -> java.lang.String throws -");
+        assertThat(inTable("p.Impl", "toString", impl, REDECLARING)).isEqualTo("concrete");
+        assertThat(inTable("p.Impl", "hashCode", impl, REDECLARING)).isEqualTo("concrete");
+        assertThat(inTable("p.Impl", "clone", impl, REDECLARING)).isEqualTo("concrete");
+    }
+
+    @Test
+    void anAbstractClassIsAskedForTheProtectedMethodOfObjectItsInterfaceDeclaresAndForNoPublicOne() {
+        // javac: without its own `clone`, "clone() in java.lang.Object cannot implement clone() in
+        // p.Redeclaring", and it says nothing of toString, equals and hashCode
+        String partial = """
+                package p;
+                public abstract class Partial implements Redeclaring {
+                    @Override public abstract Object clone();
+                }
+                """;
+        List<String> lines = Harness.run(
+                env -> Canonical.heritage(
+                        (Heritage.Told) Harness.ok(env.full("p.Partial")).heritage()),
+                partial,
+                REDECLARING);
+
+        assertThat(lines)
+                .filteredOn(line -> line.contains(" abstract "))
+                .containsExactly("inherit method clone() erased () overrides java.lang.Object; p.Redeclaring by class"
+                        + " public abstract p.Partial () -> java.lang.Object throws -");
+        assertThat(inTable("p.Partial", "toString", partial, REDECLARING)).isEqualTo("concrete");
+        assertThat(inTable("p.Partial", "hashCode", partial, REDECLARING)).isEqualTo("concrete");
+        assertThat(inTable("p.Partial", "clone", partial, REDECLARING)).isEqualTo("abstract");
+    }
+
+    @Test
+    void aClassThatDeclaresAPublicMethodOfObjectAbstractAsksForIt() {
+        // javac: `class X extends Strict {}` "does not override abstract method toString() in Strict"
+        String strict = """
+                package p;
+                public abstract class Strict implements Redeclaring {
+                    @Override public abstract String toString();
+                    @Override public Object clone() { return this; }
+                }
+                """;
+        String below = "package p; public abstract class Below extends Strict {}";
+        List<String> lines = Harness.run(
+                env -> Canonical.heritage(
+                        (Heritage.Told) Harness.ok(env.full("p.Below")).heritage()),
+                below,
+                strict,
+                REDECLARING);
+
+        assertThat(lines)
+                .filteredOn(line -> line.contains(" abstract "))
+                .containsExactly("inherit method toString() erased () overrides java.lang.Object; p.Redeclaring by"
+                        + " class public abstract p.Strict () -> java.lang.String throws -");
+        assertThat(inTable("p.Below", "toString", below, strict, REDECLARING)).isEqualTo("abstract");
+        assertThat(inTable("p.Below", "hashCode", below, strict, REDECLARING)).isEqualTo("concrete");
+    }
+
+    @Test
+    void aClassAdoptsNoPublicMethodOfObjectFromAHiddenInterfaceThatDeclaresItAgain() {
+        // the fact would say `toString` of Impl is abstract, and javac compiles the class without one
+        List<String> methods = Harness.run(
+                env -> Harness.ok(env.full("p.Impl")).members().stream()
+                        .filter(MethodModel.class::isInstance)
+                        .map(member -> ((MethodModel) member).name() + " " + ((MethodModel) member).overridability())
+                        .toList(),
+                """
+                package p;
+                public class Impl implements Hidden {
+                    @Override public void run() {}
+                }
+                interface Hidden {
+                    String toString();
+                    boolean equals(Object other);
+                    void run();
+                    default void twice() {}
+                }
+                """);
+
+        assertThat(methods).containsExactly("run OVERRIDABLE", "twice OVERRIDABLE");
+    }
+
+    @Test
+    void aCollectionOfTheLibraryIsAskedForNoMethodOfObject() {
+        // ArrayDeque declares neither equals nor hashCode, which Collection declares again
+        MethodTableTemplate table =
+                Harness.run(env -> Harness.ok(env.full("java.util.ArrayDeque")).methods());
+        Heritage.Told told = Harness.run(env ->
+                (Heritage.Told) Harness.ok(env.full("java.util.ArrayDeque")).heritage());
+
+        assertThat(table.abstractMethods()).isEmpty();
+        assertThat(table.concreteMethods())
+                .contains(
+                        MethodTableTemplate.Signature.of("hashCode"),
+                        MethodTableTemplate.Signature.of("toString"),
+                        MethodTableTemplate.Signature.of(
+                                "equals", MethodTableTemplate.Param.fixed(java.lang.constant.ConstantDescs.CD_Object)));
+        assertThat(Canonical.heritage(told)).noneMatch(line -> line.contains(" abstract "));
+    }
+
     @Test
     void aSealedTypeTellsItsHeritageAndATypeThatCannotBeExtendedTellsNone() {
         String sealed = "package p; public sealed interface Shape permits Dot { void draw(); }";

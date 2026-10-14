@@ -81,13 +81,23 @@ public final class Identifiers {
     /// @return `name`, unchanged
     /// @throws IllegalArgumentException if `name` is not a valid Java identifier
     public static String requireValid(String name) {
-        if (name.isEmpty()
-                || !Character.isJavaIdentifierStart(name.codePointAt(0))
-                || !name.codePoints().allMatch(Identifiers::isWrittenIdentifierPart)
-                || RESERVED.contains(name)) {
+        if (!isValid(name)) {
             throw new IllegalArgumentException("not a valid Java identifier: '" + name + "'");
         }
         return name;
+    }
+
+    /// Tells whether `name` is a valid Java identifier — a class file may
+    /// name a member by what is none, such as `toString-impl`, and Java
+    /// source cannot name that member.
+    ///
+    /// @param name the candidate identifier
+    /// @return `true` if [#requireValid(String)] accepts `name`
+    public static boolean isValid(String name) {
+        return !name.isEmpty()
+                && Character.isJavaIdentifierStart(name.codePointAt(0))
+                && name.codePoints().allMatch(Identifiers::isWrittenIdentifierPart)
+                && !RESERVED.contains(name);
     }
 
     // The compiler drops an ignorable character of an identifier (`Character.isIdentifierIgnorable`), so a name

@@ -176,7 +176,11 @@ class EntryTest {
                 "java.util.Comparator",
                 "java.lang.Object",
                 "java.lang.Exception",
-                "java.util.ArrayList"
+                "java.util.ArrayList",
+                // Collection declares equals and hashCode again, and the class declares neither
+                "java.util.ArrayDeque",
+                "java.util.AbstractCollection",
+                "java.util.concurrent.ConcurrentLinkedQueue"
             })
     void theStepsOfATypeOfTheJdkAreTheMethodsJavacAsksAClassFor(String type) {
         Read read = read(type);
@@ -240,7 +244,23 @@ class EntryTest {
             "package p2; public interface Left extends Sink<String> {}",
             "package p2; public interface Right extends Sink<String> {}",
             "package p2; public interface Twice extends Left, Right {}",
-            "package p2; public abstract class Deep<T> implements Sink<T>, Comparable<Deep<T>> {}");
+            "package p2; public abstract class Deep<T> implements Sink<T>, Comparable<Deep<T>> {}",
+            // an interface that declares the public methods of Object again, and a protected one
+            "package p2; public abstract class Cmp implements java.util.Comparator<String> {}",
+            "package p2; public class CmpDone implements java.util.Comparator<String> {"
+                    + " public int compare(String a, String b) { return 0; } }",
+            "package p2; public interface Redecl { String toString(); boolean equals(Object o); int hashCode(); }",
+            "package p2; public abstract class RImpl implements Redecl {}",
+            "package p2; public class RDone implements Redecl {}",
+            "package p2; public abstract class RStrict implements Redecl { public abstract String toString(); }",
+            "package p2; public abstract class RBelow extends RStrict {}",
+            "package p2; public interface Cloner { Object clone(); }",
+            "package p2; public abstract class CImpl implements Cloner { public abstract Object clone(); }",
+            // a method of package access a class of another package implements, above a class of its package
+            "package p1; public abstract class Packed { abstract void m(); public Packed() {} }",
+            "package p2; public abstract class Opened extends p1.Packed { public void m() {} }",
+            "package p1; public class Closed extends p2.Opened {}",
+            "package p1; public abstract class Ajar extends p2.Opened {}");
 
     private Path library() {
         return Javac.plain().compile(LIBRARY.toArray(String[]::new)).orFail().writeTo(lib);
@@ -260,7 +280,16 @@ class EntryTest {
                 "p2.Both",
                 "p2.Half",
                 "p2.Twice",
-                "p2.Deep"
+                "p2.Deep",
+                "p2.Cmp",
+                "p2.CmpDone",
+                "p2.Redecl",
+                "p2.RImpl",
+                "p2.RDone",
+                "p2.RStrict",
+                "p2.RBelow",
+                "p2.CImpl",
+                "p1.Closed"
             })
     void theStepsOfATypeOfALibraryAreTheMethodsJavacAsksAClassFor(String type) {
         Path classpath = library();
@@ -288,6 +317,42 @@ class EntryTest {
         assertThat(steps(read("p2.Half", classpath))).isEmpty();
         assertThat(steps(read("p2.Twice", classpath))).containsExactly("put_String");
         assertThat(steps(read("p2.Deep", classpath))).containsExactly("compareTo_Deep", "put_T");
+        // a class has equals of Object, whatever Comparator says of it
+        assertThat(steps(read("p2.Cmp", classpath))).containsExactly("compare_String_String");
+        assertThat(steps(read("p2.CmpDone", classpath))).isEmpty();
+        assertThat(steps(read("p2.Redecl", classpath))).isEmpty();
+        assertThat(steps(read("p2.RImpl", classpath))).isEmpty();
+        assertThat(steps(read("p2.RDone", classpath))).isEmpty();
+        // unless a class declares it abstract again
+        assertThat(steps(read("p2.RStrict", classpath))).containsExactly("toString");
+        assertThat(steps(read("p2.RBelow", classpath))).containsExactly("toString");
+        // a protected method of Object does not implement the public one of an interface
+        assertThat(steps(read("p2.Cloner", classpath))).containsExactly("clone");
+        assertThat(steps(read("p2.CImpl", classpath))).containsExactly("clone");
+        // a concrete class leaves no method abstract, whatever it does not inherit
+        assertThat(read("p1.Closed", classpath).entry()).isEqualTo(new Entry.Offered("Self", List.of()));
+    }
+
+    @Test
+    void anAbstractClassBelowAnImplementationItDoesNotInheritIsAskedForTheMethodOfPackageAccess() {
+        Path classpath = library();
+        Read read = read("p1.Ajar", classpath);
+
+        // javac: Probe "is not abstract and does not override abstract method m() in p1.Packed", though
+        // p2.Opened, between the two, implements it — and Closed, a concrete class, is asked for nothing
+        assertThat(read.entry())
+                .isEqualTo(new Entry.Refused("its abstract method m() has package access in p1.Packed, so a class of"
+                        + " another package cannot implement it"));
+        assertThat(Javac.plain()
+                        .classpath(classpath)
+                        .compile(probe("p1.Ajar", read, List.<String>of()))
+                        .errors())
+                .anyMatch(error -> error.contains("does not override abstract method m() in p1.Packed"));
+        assertThat(Javac.plain()
+                        .classpath(classpath)
+                        .compile(probe("p1.Closed", read("p1.Closed", classpath), List.<String>of()))
+                        .errors())
+                .isEmpty();
     }
 
     @Test

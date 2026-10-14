@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.doc.DocRef;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MethodModel;
@@ -98,7 +99,10 @@ final class Models {
     /// @param type the type
     /// @return the members, see [MirrorTranslator#members(TypeElement)]
     List<Element> members(TypeElement type) {
-        return translator.members(type);
+        return Invariants.present(
+                settled(translator.members(type)).right(),
+                "the members of %s are listed, whatever they are",
+                type.getQualifiedName());
     }
 
     /// The types of the parameters of a method or constructor as a member of

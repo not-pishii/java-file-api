@@ -57,6 +57,15 @@ class IdentifiersTest {
     }
 
     @Test
+    void tellsWhetherANameIsAnIdentifier() {
+        assertThat(Identifiers.isValid("counter")).isTrue();
+        assertThat(Identifiers.isValid("toString-impl")).isFalse();
+        assertThat(Identifiers.isValid("")).isFalse();
+        assertThat(Identifiers.isValid("class")).isFalse();
+        assertThat(Identifiers.isValid("1a")).isFalse();
+    }
+
+    @Test
     void rejectsEmptyString() {
         assertThatThrownBy(() -> Identifiers.requireValid("")).isInstanceOf(IllegalArgumentException.class);
     }

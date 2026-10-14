@@ -1016,11 +1016,27 @@ class MirrorTranslatorTypeTest {
     /// The members of a type as [MirrorTranslator#members] lists them: `name of Declarer`.
     private static List<String> memberElements(String name, String... sources) {
         return Harness.run(
-                env -> env.translator().members(env.element(name)).stream()
-                        .map(member -> (member.getKind() == ElementKind.CONSTRUCTOR ? "new" : member.getSimpleName())
-                                + " of " + member.getEnclosingElement().getSimpleName())
-                        .toList(),
+                env -> ((Translation.Ok<List<Element>>) env.translator().members(env.element(name)))
+                        .value().stream()
+                                .map(member ->
+                                        (member.getKind() == ElementKind.CONSTRUCTOR ? "new" : member.getSimpleName())
+                                                + " of "
+                                                + member.getEnclosingElement().getSimpleName())
+                                .toList(),
                 sources);
+    }
+
+    @Test
+    void theMembersOfATypeAreDeferredWhileASupertypeThatWouldTellThemMentionsATypeNotGeneratedYet() {
+        // whether Mid tells what Hidden declares is not known before Missing is: it was an exception of the
+        // translator that no caller could catch
+        Translation<List<Element>> members = Harness.runUnresolved(
+                env -> env.translator().members(env.element("p.Late")),
+                "package p; public class Late extends Mid implements Hidden { public void h() {} }",
+                "package p; public class Mid extends Missing {}",
+                "package p; interface Hidden { void h(); default void more() {} }");
+
+        assertThat(members).isEqualTo(new Translation.Deferred<List<Element>>("Missing"));
     }
 
     @Test
