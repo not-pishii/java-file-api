@@ -46,13 +46,13 @@ import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.typed.jdk.facts.java.lang.Math_;
 import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
 /// access, calls, `new`, arrays, `cond`, per-primitive operators, explicit
@@ -1158,11 +1158,7 @@ public final class Expressions {
     /// The arguments of a call with their static types, from which lowering
     /// pins the overload the fact names (§6.1).
     static List<Node.Operand> arguments(Expr<?>... args) {
-        List<Node.Operand> operands = new ArrayList<>(args.length);
-        for (Expr<?> arg : args) {
-            operands.add(operand(arg));
-        }
-        return List.copyOf(operands);
+        return Stream.of(args).map(Expressions::operand).toList();
     }
 
     private static Node instantiate(Invocable ctor, List<Node.Operand> args) {

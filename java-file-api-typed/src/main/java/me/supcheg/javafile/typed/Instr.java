@@ -5,7 +5,6 @@ import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.RefToken;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -24,12 +23,31 @@ sealed interface Instr {
     /// An expression statement: a call, an instance creation, or an assignment.
     record Exec(Node effect) implements Plain {}
 
-    /// `if (c) { ... }` with an optional `else { ... }`.
-    record If(Node condition, Block<?, ?> then, Optional<Block<?, ?>> otherwise) implements Instr {}
+    /// `if (c) { ... }`, with what it does where `c` does not hold.
+    record If(Node condition, Block<?, ?> then, Otherwise otherwise) implements Instr {}
 
-    /// `if (x instanceof T v) { ... }` with an optional `else { ... }`.
-    record IfInstance(Node operand, RefToken<?> type, Var<?> binding, Block<?, ?> then, Optional<Block<?, ?>> otherwise)
+    /// `if (x instanceof T v) { ... }`, with what it does where `x` is no `T`.
+    record IfInstance(Node operand, RefToken<?> type, Var<?> binding, Block<?, ?> then, Otherwise otherwise)
             implements Instr {}
+
+    /// What an `if` does where its condition does not hold: nothing, or its `else` block.
+    sealed interface Otherwise {
+        /// No `else`.
+        record Nothing() implements Otherwise {}
+
+        /// `else { ... }`.
+        ///
+        /// @param block the block
+        record Else(Block<?, ?> block) implements Otherwise {}
+
+        /// The `else` block, if there is one.
+        default Stream<Block<?, ?>> blocks() {
+            return switch (this) {
+                case Nothing _ -> Stream.empty();
+                case Else(var block) -> Stream.of(block);
+            };
+        }
+    }
 
     /// `while (c) { ... }`.
     record While(LoopCtl ctl, Node condition, Block<?, ?> body) implements Instr {}
@@ -43,8 +61,11 @@ sealed interface Instr {
     /// `for (T v : iterable) { ... }`.
     record ForEach(LoopCtl ctl, Var<?> var, Node iterable, Block<?, ?> body) implements Instr {}
 
-    /// `return;` or `return value;`.
-    record Return(Optional<Node> value) implements Jump {}
+    /// `return value;`.
+    record Return(Node value) implements Jump {}
+
+    /// `return;` of a `void` body.
+    record ReturnNothing() implements Jump {}
 
     /// `yield value;` of the block of a case of a `switch` expression.
     record Yield(Node value) implements Jump {}
@@ -58,8 +79,27 @@ sealed interface Instr {
     /// `continue;` of a loop.
     record Continue(LoopCtl ctl) implements Jump {}
 
-    /// `try { ... } catch (...) { ... } finally { ... }`.
-    record Try(Block<?, ?> body, List<Catch> catches, Optional<Block<?, ?>> finallyBlock) implements Instr {}
+    /// `try { ... } catch (...) { ... } finally { ... }`: a `catch` clause at least, or a `finally` block.
+    record Try(Block<?, ?> body, List<Catch> catches, Finally finallyBlock) implements Instr {}
+
+    /// The `finally` block of a `try`, or that it has none.
+    sealed interface Finally {
+        /// No `finally` block.
+        record None() implements Finally {}
+
+        /// `finally { ... }`.
+        ///
+        /// @param block the block
+        record Of(Block<?, ?> block) implements Finally {}
+
+        /// The `finally` block, if there is one.
+        default Stream<Block<?, ?>> blocks() {
+            return switch (this) {
+                case None _ -> Stream.empty();
+                case Of(var block) -> Stream.of(block);
+            };
+        }
+    }
 
     /// A `catch` clause of a [Try].
     record Catch(ClassToken<? extends Throwable> type, Var<?> var, Block<?, ?> body) {}
@@ -74,15 +114,15 @@ sealed interface Instr {
     /// @return its blocks, in the order of the code
     static Stream<Block<?, ?>> blocks(Instr instr) {
         return switch (instr) {
-            case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.stream());
+            case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.blocks());
             case IfInstance(var _, var _, var _, var then, var otherwise) ->
-                Stream.concat(Stream.of(then), otherwise.stream());
+                Stream.concat(Stream.of(then), otherwise.blocks());
             case While(var _, var _, var body) -> Stream.of(body);
             case DoWhile(var _, var body, var _) -> Stream.of(body);
             case For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
             case ForEach(var _, var _, var _, var body) -> Stream.of(body);
             case Try(var body, var catches, var finallyBlock) ->
-                Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.stream())
+                Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.blocks())
                         .flatMap(Function.identity());
             case Plain _ -> Stream.empty();
             case Jump _ -> Stream.empty();

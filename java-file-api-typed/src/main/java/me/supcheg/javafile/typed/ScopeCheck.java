@@ -55,7 +55,8 @@ final class ScopeCheck {
             }
             case Instr.ForEach(var ignored, var ignoredVar, var iterable, var ignoredBody) ->
                 node(iterable, block, block.path());
-            case Instr.Return(var value) -> value.ifPresent(v -> node(v, block, block.path()));
+            case Instr.Return(var value) -> node(value, block, block.path());
+            case Instr.ReturnNothing ignored -> {}
             case Instr.Yield(var value) -> node(value, block, block.path());
             case Instr.Throw(var value, var ignoredType) -> node(value, block, block.path());
             case Instr.Break(var ctl) -> loopCtl(ctl, block, "break_");

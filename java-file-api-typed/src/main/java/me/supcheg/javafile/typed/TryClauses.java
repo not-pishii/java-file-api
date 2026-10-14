@@ -1,15 +1,14 @@
 package me.supcheg.javafile.typed;
 
 import java.util.List;
-import java.util.Optional;
 
 /// The `catch` clauses and the `finally` block of a `try` statement, all
 /// built, before its `try` block is: what the `try` block is built under,
 /// and what makes the statement of it.
 ///
 /// @param catches the `catch` clauses, in order
-/// @param finallyBlock the `finally` block, if any
-record TryClauses(List<Instr.Catch> catches, Optional<Block<?, ?>> finallyBlock) {
+/// @param finallyBlock the `finally` block, or that there is none
+record TryClauses(List<Instr.Catch> catches, Instr.Finally finallyBlock) {
     TryClauses {
         catches = List.copyOf(catches);
     }

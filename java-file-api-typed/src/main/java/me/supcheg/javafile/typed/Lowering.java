@@ -68,7 +68,6 @@ import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -317,11 +316,8 @@ final class Lowering {
     CodeBody lowerBlock(List<Instr> instrs) {
         names.push();
         try {
-            List<Stmt> stmts = new ArrayList<>(instrs.size());
-            for (Instr instr : instrs) {
-                stmts.add(stmt(instr));
-            }
-            return new CodeBody(List.copyOf(stmts));
+            // in the order of the code: a statement declares the names the ones after it see
+            return new CodeBody(instrs.stream().map(this::stmt).toList());
         } finally {
             names.pop();
         }
@@ -417,7 +413,8 @@ final class Lowering {
                 }
                 yield labeled(ctl, new EnhancedForStmt(written(var_.type()).typeRef(), name, iterableExpr, bodyCode));
             }
-            case Instr.Return(var value) -> new ReturnStmt(value.map(this::returned));
+            case Instr.Return(var value) -> new ReturnStmt(Optional.of(returned(value)));
+            case Instr.ReturnNothing _ -> new ReturnStmt(Optional.empty());
             // The value is of the type of the switch already (YieldBody.yield_); pinned, it is exactly.
             case Instr.Yield(var value) -> new YieldStmt(expr(value, true));
             case Instr.Throw(var value, var type) -> {
@@ -428,15 +425,15 @@ final class Lowering {
                 // of an exception javac says is never thrown (JLS 11.2.3).
                 yield new ThrowStmt(expr(value, !(value instanceof Node.Upcast)));
             }
-            case Instr.Break(var ctl) -> breakOrContinue(ctl, true);
-            case Instr.Continue(var ctl) -> breakOrContinue(ctl, false);
+            case Instr.Break(var ctl) -> new BreakStmt(label(ctl));
+            case Instr.Continue(var ctl) -> new ContinueStmt(label(ctl));
             case Instr.Try(var body, var catches, var finallyBlock) -> tryStmt(body, catches, finallyBlock);
             case Instr.Raw(var s) -> s;
         };
     }
 
-    private Optional<CodeBody> lowerOptional(Optional<Block<?, ?>> block) {
-        return block.map(b -> lowerBlock(b.instrs()));
+    private Optional<CodeBody> lowerOptional(Instr.Otherwise otherwise) {
+        return otherwise.blocks().findFirst().map(block -> lowerBlock(block.instrs()));
     }
 
     private CodeBody withLoop(LoopCtl ctl, Block<?, ?> body) {
@@ -456,40 +453,43 @@ final class Lowering {
         return loopLabelNames.computeIfAbsent(ctl, _ -> "loop" + (labelCounter++));
     }
 
-    private Stmt breakOrContinue(LoopCtl ctl, boolean isBreak) {
+    /// The label of a `break` or a `continue` of `ctl`: none for the innermost loop, the label of an
+    /// outer one, which it is then given.
+    private Optional<String> label(LoopCtl ctl) {
         if (!loopStack.contains(ctl)) {
             throw new IllegalStateException(
                     "break/continue used for a loop that is not currently being lowered: the LoopCtl escaped its"
                             + " loop's scope, e.g. by being captured into a lambda that outlives the loop");
         }
         if (loopStack.peek() == ctl) {
-            return isBreak ? new BreakStmt(Optional.empty()) : new ContinueStmt(Optional.empty());
+            return Optional.empty();
         }
         usedLabels.add(ctl);
-        String label = labelFor(ctl);
-        return isBreak ? new BreakStmt(Optional.of(label)) : new ContinueStmt(Optional.of(label));
+        return Optional.of(labelFor(ctl));
     }
 
-    private Stmt tryStmt(Block<?, ?> body, List<Instr.Catch> catches, Optional<Block<?, ?>> finallyBlock) {
+    private Stmt tryStmt(Block<?, ?> body, List<Instr.Catch> catches, Instr.Finally finallyBlock) {
         CodeBody bodyCode = lowerBlock(body.instrs());
-        List<CatchClause> coreCatches = new ArrayList<>();
-        for (Instr.Catch c : catches) {
-            names.push();
-            try {
-                mentions(c.type());
-                String name = declare(c.var());
-                CodeBody catchBody = lowerBlock(c.body().instrs());
-                coreCatches.add(new CatchClause(
-                        NonEmptyList.copyOf(List.of(written(c.type()).typeRef())), name, catchBody));
-            } finally {
-                names.pop();
-            }
+        List<CatchClause> coreCatches = catches.stream().map(this::catchClause).toList();
+        return switch (finallyBlock) {
+            case Instr.Finally.Of(var block) ->
+                new TryStmt.WithFinally(List.of(), bodyCode, coreCatches, lowerBlock(block.instrs()));
+            // A try without a finally block has a catch clause (CatchClauses.close).
+            case Instr.Finally.None _ -> new TryStmt.CatchOnly(List.of(), bodyCode, NonEmptyList.copyOf(coreCatches));
+        };
+    }
+
+    private CatchClause catchClause(Instr.Catch clause) {
+        names.push();
+        try {
+            mentions(clause.type());
+            String name = declare(clause.var());
+            CodeBody catchBody = lowerBlock(clause.body().instrs());
+            return new CatchClause(
+                    NonEmptyList.copyOf(List.of(written(clause.type()).typeRef())), name, catchBody);
+        } finally {
+            names.pop();
         }
-        if (finallyBlock.isPresent()) {
-            CodeBody finallyCode = lowerBlock(finallyBlock.get().instrs());
-            return new TryStmt.WithFinally(List.of(), bodyCode, coreCatches, finallyCode);
-        }
-        return new TryStmt.CatchOnly(List.of(), bodyCode, NonEmptyList.copyOf(coreCatches));
     }
 
     /// An [Instr.Exec] or a `for`-loop update wraps an [Effect]'s [Node]: an

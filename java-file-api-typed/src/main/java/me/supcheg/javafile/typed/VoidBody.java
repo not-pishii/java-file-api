@@ -4,7 +4,6 @@ import me.supcheg.javafile.facts.RefToken;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /// The block that is a `void` method body, constructor body, or `void`
 /// lambda block body (§6.3): it ends with [#return_()] or [#end()].
@@ -64,7 +63,7 @@ public final class VoidBody extends Block<Void, VoidBody> {
     ///
     /// @return the proof that this block ended
     public Terminated<Void> return_() {
-        return appendFinal(new Instr.Return(Optional.empty()), "return_");
+        return appendFinal(new Instr.ReturnNothing(), "return_");
     }
 
     /// Ends this block without an explicit `return;`, e.g. when the body

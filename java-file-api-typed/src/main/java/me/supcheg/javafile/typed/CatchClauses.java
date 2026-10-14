@@ -3,7 +3,6 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.ClassToken;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 final class CatchClauses<B extends Block<?, B>> {
     private final String form;
     private final B enclosing;
-    private Phase phase = new Phase.Open(new TryClauses(List.of(), Optional.empty()));
+    private Phase phase = new Phase.Open(new TryClauses(List.of(), new Instr.Finally.None()));
 
     private sealed interface Phase {
         /// A clause may be added: `clauses` are the ones built so far.
@@ -83,13 +82,13 @@ final class CatchClauses<B extends Block<?, B>> {
     ///     add a clause
     void finally_(Consumer<? super B> fill) {
         TryClauses before = open("finally_");
-        if (before.finallyBlock().isPresent()) {
+        if (before.finallyBlock() instanceof Instr.Finally.Of) {
             throw new IllegalStateException("the " + statement() + " already has a finally_ block");
         }
         phase = new Phase.Building("finally_");
         B block = enclosing.finallyChild("finally block of " + form);
         fill.accept(block);
-        phase = new Phase.Open(new TryClauses(before.catches(), Optional.of(block)));
+        phase = new Phase.Open(new TryClauses(before.catches(), new Instr.Finally.Of(block)));
     }
 
     /// The clauses, complete: none can be added afterwards, as the `try`
@@ -98,7 +97,7 @@ final class CatchClauses<B extends Block<?, B>> {
     /// @throws IllegalStateException if there is neither a `catch` clause nor a `finally` block
     TryClauses close() {
         TryClauses clauses = open("the try block");
-        if (clauses.catches().isEmpty() && clauses.finallyBlock().isEmpty()) {
+        if (clauses.catches().isEmpty() && clauses.finallyBlock() instanceof Instr.Finally.None) {
             throw new IllegalStateException("the " + statement() + " requires at least one catch_ or a finally_");
         }
         phase = new Phase.Closed();

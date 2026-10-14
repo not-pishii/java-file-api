@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import java.util.List;
-import java.util.Optional;
 
 /// "Can complete normally" of JLS 14.22 for the statements the typed layer
 /// builds, with loop conditions folded as constant expressions (JLS 15.29,
@@ -53,9 +52,12 @@ final class Reachability {
                         instr instanceof Instr.Yield || Instr.blocks(instr).anyMatch(Reachability::yields));
     }
 
-    private static boolean ifCompletes(Block<?, ?> then, Optional<Block<?, ?>> otherwise) {
-        // An if without else can always complete normally, even `if (false)` (JLS 14.22).
-        return otherwise.isEmpty() || canCompleteNormally(then) || canCompleteNormally(otherwise.get());
+    private static boolean ifCompletes(Block<?, ?> then, Instr.Otherwise otherwise) {
+        return switch (otherwise) {
+            // An if without else can always complete normally, even `if (false)` (JLS 14.22).
+            case Instr.Otherwise.Nothing _ -> true;
+            case Instr.Otherwise.Else(var block) -> canCompleteNormally(then) || canCompleteNormally(block);
+        };
     }
 
     /// Whether `block` holds the jump `jump` — the `break` or the `continue` of a loop, which is the

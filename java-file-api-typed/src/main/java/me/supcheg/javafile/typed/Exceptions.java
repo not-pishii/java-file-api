@@ -308,7 +308,7 @@ final class Exceptions {
                     clause.body(),
                     known ? rethrows.with(clause.var(), rethrown(clause(clause), preceding, thrown)) : rethrows);
         });
-        statement.finallyBlock().ifPresent(finallyBlock -> requireCatchableIn(finallyBlock, rethrows));
+        statement.finallyBlock().blocks().forEach(finallyBlock -> requireCatchableIn(finallyBlock, rethrows));
     }
 
     /// Checks the `try` statements of `block`, at any depth.
@@ -393,7 +393,7 @@ final class Exceptions {
     private static Stream<ExceptionType> thrownByTry(Instr.Try statement, Rethrows rethrows) {
         return Stream.concat(
                 thrownByTryAndCatchBlocks(statement, rethrows),
-                statement.finallyBlock().stream().flatMap(block -> thrown(block, rethrows)));
+                statement.finallyBlock().blocks().flatMap(block -> thrown(block, rethrows)));
     }
 
     private static Stream<ExceptionType> thrownByTryAndCatchBlocks(Instr.Try statement, Rethrows rethrows) {
@@ -520,7 +520,8 @@ final class Exceptions {
             case Instr.For(var _, var _, var init, var condition, var update, var _) ->
                 Stream.of(init, condition, update);
             case Instr.ForEach(var _, var _, var iterable, var _) -> Stream.of(iterable);
-            case Instr.Return(var value) -> value.stream();
+            case Instr.Return(var value) -> Stream.of(value);
+            case Instr.ReturnNothing _ -> Stream.empty();
             case Instr.Yield(var value) -> Stream.of(value);
             case Instr.Throw(var value, var _) -> Stream.of(value);
             case Instr.Break _ -> Stream.empty();

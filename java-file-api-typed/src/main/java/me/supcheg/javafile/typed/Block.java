@@ -9,7 +9,6 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -323,7 +322,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @return this block
     public final B if_(Expr<Prim.Bool> condition, Consumer<? super B> then) {
         requireOpen();
-        return append(new Instr.If(condition.node(), open("then-branch of if_", then), Optional.empty()));
+        return append(new Instr.If(condition.node(), open("then-branch of if_", then), new Instr.Otherwise.Nothing()));
     }
 
     /// Appends `if (condition) { then } else { otherwise }` as a statement.
@@ -340,7 +339,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         B thenBlock = open("then-branch of if_", then);
         B elseBlock = open("else-branch of if_", otherwise);
         return continueWith(
-                new Instr.If(condition.node(), thenBlock, Optional.of(elseBlock)),
+                new Instr.If(condition.node(), thenBlock, new Instr.Otherwise.Else(elseBlock)),
                 "if_ whose branches both end",
                 Instead.IF_ELSE);
     }
@@ -358,7 +357,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B thenBlock = closed("then-branch of ifElse", then);
         B elseBlock = closed("else-branch of ifElse", otherwise);
-        return appendFinal(new Instr.If(condition.node(), thenBlock, Optional.of(elseBlock)), "ifElse");
+        return appendFinal(new Instr.If(condition.node(), thenBlock, new Instr.Otherwise.Else(elseBlock)), "ifElse");
     }
 
     /// Appends `if (operand instanceof U v) { then }`; the binding `v` exists
@@ -383,7 +382,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         B thenBlock = child("then-branch of ifInstanceOf");
         Var<U> binding = new Var<>(type, Var.Role.Fixed.PATTERN_BINDING, thenBlock);
         fill(thenBlock, b -> then.accept(b, binding));
-        return append(new Instr.IfInstance(operand.node(), type, binding, thenBlock, Optional.empty()));
+        return append(new Instr.IfInstance(operand.node(), type, binding, thenBlock, new Instr.Otherwise.Nothing()));
     }
 
     /// Appends `if (operand instanceof U v) { then } else { otherwise }`
@@ -408,7 +407,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         fillEnding(thenBlock, b -> then.apply(b, binding));
         B elseBlock = closed("else-branch of ifInstanceOfElse", otherwise);
         return appendFinal(
-                new Instr.IfInstance(operand.node(), type, binding, thenBlock, Optional.of(elseBlock)),
+                new Instr.IfInstance(operand.node(), type, binding, thenBlock, new Instr.Otherwise.Else(elseBlock)),
                 "ifInstanceOfElse");
     }
 

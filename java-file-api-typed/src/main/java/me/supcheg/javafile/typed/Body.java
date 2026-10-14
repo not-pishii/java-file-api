@@ -4,7 +4,6 @@ import me.supcheg.javafile.facts.RefToken;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /// The block that is a non-`void` method body, constructor tail, or lambda
 /// block body (§6.3): it must end with [#return_(Expr)] (directly, or
@@ -69,6 +68,6 @@ public final class Body<R> extends Block<R, Body<R>> {
     /// @param value the returned expression
     /// @return the proof that this block ended
     public Terminated<R> return_(Expr<? extends R> value) {
-        return appendFinal(new Instr.Return(Optional.of(value.node())), "return_");
+        return appendFinal(new Instr.Return(value.node()), "return_");
     }
 }
