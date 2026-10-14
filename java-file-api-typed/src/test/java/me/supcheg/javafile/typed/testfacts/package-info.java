@@ -96,7 +96,10 @@
     Spreading.class,
     Scattering.class,
     Taking.class,
-    Gathered.class
+    Gathered.class,
+    Paired.class,
+    PairedSink.class,
+    PairedDefaults.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -135,6 +138,9 @@ import me.supcheg.javafile.typed.fixtures.TriConsumer;
 import me.supcheg.javafile.typed.fixtures.TriFunction;
 import me.supcheg.javafile.typed.fixtures.Words;
 import me.supcheg.javafile.typed.fixtures.Origin;
+import me.supcheg.javafile.typed.fixtures.Paired;
+import me.supcheg.javafile.typed.fixtures.PairedDefaults;
+import me.supcheg.javafile.typed.fixtures.PairedSink;
 import me.supcheg.javafile.typed.fixtures.Worded;
 import me.supcheg.javafile.typed.fixtures.Numbered;
 import me.supcheg.javafile.typed.fixtures.Maker;

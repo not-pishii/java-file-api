@@ -293,7 +293,9 @@ final class Inheritance {
     }
 
     /// The methods of one signature the class inherits: not the one another overrides, and one
-    /// that two supertypes have from a common supertype once.
+    /// that two supertypes have from a common supertype once. Two methods one type declares are two
+    /// methods, though its type arguments make them of one signature in the class: `put(T)` and
+    /// `put(String)` of a `Box<String>` (JLS 8.4.8.4).
     private static List<Entry> inherited(List<Entry> entries) {
         return IntStream.range(0, entries.size())
                 .filter(i -> IntStream.range(0, entries.size())
@@ -305,7 +307,13 @@ final class Inheritance {
     private static boolean shadows(Entry by, int byIndex, Entry shadowed, int shadowedIndex) {
         ClassDesc declarer = shadowed.method().declaredBy();
         return by.method().overrides().contains(declarer)
-                || (by.method().declaredBy().equals(declarer) && byIndex < shadowedIndex);
+                || (isSameDeclaration(by.method(), shadowed.method()) && byIndex < shadowedIndex);
+    }
+
+    /// Whether two members are one declaration, had through two supertypes: of one declarer, and
+    /// erasing alike as it declares them — two methods a type declares never do (JLS 8.4.2).
+    private static boolean isSameDeclaration(Member one, Member other) {
+        return one.declaredBy().equals(other.declaredBy()) && !Collections.disjoint(one.erasures(), other.erasures());
     }
 
     /// Rejects a group whose methods the class cannot inherit together, whatever it declares.
