@@ -1,11 +1,14 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeVarToken;
+import me.supcheg.javafile.type.ClassDescNames;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -58,6 +61,9 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec populates the class, given its self-branded builder
     /// @return the rendered class, ready for [JavaFile#render()]/[JavaFile#writeTo(java.nio.file.Path)]
+    /// @throws IllegalArgumentException if `desc` describes a nested class, or a class of a package of
+    ///     `java`, or its package or simple name cannot be written in Java (a keyword, `var`, ...) — before
+    ///     `spec` is called
     /// @throws IllegalStateException if called while a method body is being built, or if a member
     ///     `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`:
@@ -96,6 +102,9 @@ public final class TypedJavaFile {
     /// @param desc the class's binary name
     /// @param spec declares the class, given the first stage of its header
     /// @return the rendered class
+    /// @throws IllegalArgumentException if `desc` describes a nested class, or a class of a package of
+    ///     `java`, or its package or simple name cannot be written in Java (a keyword, `var`, ...) — before
+    ///     `spec` is called
     /// @throws IllegalStateException if called while a method body is being built, or if a member
     ///     `spec` declared is not defined
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
@@ -114,7 +123,8 @@ public final class TypedJavaFile {
     ///
     /// @param name its name
     /// @return the type parameter
-    /// @throws IllegalArgumentException if `name` is no identifier
+    /// @throws IllegalArgumentException if `name` cannot name a type (JLS 3.8): it is no identifier, or one
+    ///     of `permits`, `record`, `sealed`, `var` and `yield`
     public static TypeParameter<Object> typeParam(String name) {
         return TypeParameter.unbounded(name);
     }
@@ -127,7 +137,8 @@ public final class TypedJavaFile {
     /// @param bound its leftmost bound
     /// @param <B> the bound
     /// @return the type parameter
-    /// @throws IllegalArgumentException if `name` is no identifier
+    /// @throws IllegalArgumentException if `name` cannot name a type (JLS 3.8): it is no identifier, or one
+    ///     of `permits`, `record`, `sealed`, `var` and `yield`
     public static <B> TypeParameter<B> typeParam(String name, DeclaredToken<B> bound) {
         return TypeParameter.bounded(name, bound);
     }
@@ -167,6 +178,9 @@ public final class TypedJavaFile {
     /// @return the rendered class
     /// @throws IllegalArgumentException if the type parameter has the simple name of the class, or its
     ///     bound is a raw type
+    /// @throws IllegalArgumentException if `desc` describes a nested class, or a class of a package of
+    ///     `java`, or its package or simple name cannot be written in Java (a keyword, `var`, ...) — before
+    ///     `spec` is called
     /// @throws IllegalStateException as [#declareClass(TargetClasspath, ClassDesc, TypedClassHeaderSpec)]
     /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
@@ -261,7 +275,32 @@ public final class TypedJavaFile {
             TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
         Scopes.requireNoneOpen(
                 "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-        return declare(target, desc, parameters, spec);
+        return declare(target, declarable(desc), parameters, spec);
+    }
+
+    /// The class `desc` describes, if the typed layer declares it: a top-level class, whose package and
+    /// simple name Java source writes as they are (JLS 3.8, 7.4.1), and of no package of the platform.
+    ///
+    /// @throws IllegalArgumentException if `desc` describes a nested class, or a name of it cannot be written
+    private static ClassDesc declarable(ClassDesc desc) {
+        String described =
+                desc.packageName().isEmpty() ? desc.displayName() : desc.packageName() + "." + desc.displayName();
+        if (ClassDescNames.nestingChain(desc).size() != 1) {
+            throw new IllegalArgumentException("cannot declare the class " + described + ": its name is that of a"
+                    + " nested class, and the typed layer declares a top-level class alone");
+        }
+        try {
+            Identifiers.requireTypeIdentifier(desc.displayName());
+            PackageName.of(desc);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("cannot declare the class " + described + ": " + e.getMessage(), e);
+        }
+        if (desc.packageName().equals("java") || desc.packageName().startsWith("java.")) {
+            throw new IllegalArgumentException("cannot declare the class " + described + ": a package of java is"
+                    + " one of the platform, which javac refuses to add to where the module java.base has it and"
+                    + " no class loader but the platform's defines a class of");
+        }
+        return desc;
     }
 
     private static <Self> JavaFile declare(

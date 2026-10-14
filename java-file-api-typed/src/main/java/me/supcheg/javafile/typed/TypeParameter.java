@@ -27,7 +27,11 @@ public final class TypeParameter<B> {
     private final DeclaredToken<B> bound;
 
     private TypeParameter(String name, DeclaredToken<B> bound) {
-        this.name = Identifiers.requireValid(name);
+        try {
+            this.name = Identifiers.requireTypeIdentifier(name);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("a type parameter cannot be named '" + name + "': " + e.getMessage(), e);
+        }
         this.bound = bound;
     }
 
