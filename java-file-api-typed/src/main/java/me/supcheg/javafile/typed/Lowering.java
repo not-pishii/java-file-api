@@ -11,6 +11,8 @@ import me.supcheg.javafile.code.CaseLabel;
 import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstantLabel;
+import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DoWhileStmt;
@@ -31,7 +33,6 @@ import me.supcheg.javafile.code.StatementExpr;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
-import me.supcheg.javafile.code.SuperConstructorCallStmt;
 import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
@@ -323,6 +324,19 @@ final class Lowering {
         }
     }
 
+    /// Lowers the body of a constructor: the explicit invocation of a constructor of the superclass that
+    /// begins it, if it has one, and the statements after it.
+    ConstructorBody lowerConstructor(List<Instr> instrs) {
+        if (instrs.stream().findFirst().orElse(null) instanceof Instr.SuperInit(var ctor, var args)) {
+            // Every argument is of exactly its parameter's type, as those of `new` are.
+            ConstructorInvocation invocation =
+                    new ConstructorInvocation.Super(arguments(ctor, new Searched.Unconsulted(), args));
+            return new ConstructorBody.Explicit(
+                    CodeBody.EMPTY, invocation, lowerBlock(instrs.subList(1, instrs.size())));
+        }
+        return new ConstructorBody.Implicit(lowerBlock(instrs));
+    }
+
     // ------------------------------------------------------------------
     // Statements
     // ------------------------------------------------------------------
@@ -335,9 +349,10 @@ final class Lowering {
                 yield new LocalVarDeclStmt.Typed(written(v.type()).typeRef(), name, Optional.of(initExpr));
             }
             case Instr.Exec(var effect) -> effectStmt(effect);
-            // Every argument is of exactly its parameter's type, as those of `new` are.
-            case Instr.SuperInit(var ctor, var args) ->
-                new SuperConstructorCallStmt(arguments(ctor, new Searched.Unconsulted(), args));
+            // lowerConstructor takes it off the head of the body of a constructor, where SuperSite alone puts it
+            case Instr.SuperInit(var ctor, var _) ->
+                throw new IllegalStateException("super(...) of " + ctor + " does not begin the body of a constructor:"
+                        + " an explicit constructor invocation is no statement of a block (JLS 8.8.7.1)");
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {

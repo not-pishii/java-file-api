@@ -31,7 +31,7 @@ public sealed interface InheritedName permits InheritedName.Field, InheritedName
     /// @param name the simple name of the member type
     record MemberType(String name) implements InheritedName {
         public MemberType {
-            Identifiers.requireValid(name);
+            Identifiers.requireTypeIdentifier(name);
         }
     }
 }

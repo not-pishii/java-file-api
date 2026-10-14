@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JavaFileTest {
 
@@ -23,7 +24,7 @@ class JavaFileTest {
     void classExposesPackageSimpleAndQualifiedName() {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Messages"), cb -> {});
 
-        assertThat(file.packageName()).isEqualTo("me.supcheg.example");
+        assertThat(file.packageName()).isEqualTo(new PackageName.Named("me.supcheg.example"));
         assertThat(file.simpleName()).isEqualTo("Messages");
         assertThat(file.qualifiedName()).isEqualTo("me.supcheg.example.Messages");
     }
@@ -149,6 +150,52 @@ class JavaFileTest {
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformRecord((builder, member) -> {}))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void aPartOfThePackageNameThatIsNoIdentifierIsRefused() {
+        // `package a.int.b;` is no Java (JLS 7.4.1)
+        assertThatThrownBy(() -> JavaFile.class_(ClassDesc.of("a.int.b", "X"), cb -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a valid Java package name: 'a.int.b': not a valid Java identifier: 'int'");
+    }
+
+    @Test
+    void theDescriptorOfANestedTypeIsNotOfAFile() {
+        // it was rendered as the top-level `class Inner` of the file Outer$Inner.java
+        assertThatThrownBy(() -> JavaFile.interface_(ClassDesc.of("com.example", "Outer$Inner"), ib -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("a file declares a top-level type, and Outer$Inner is a nested one: "
+                        + "declare it with a withNested... of the type that encloses it");
+    }
+
+    @Test
+    void aTypeIsNotNamedByWhatIsNoTypeIdentifier() {
+        // JLS 3.8: `class var {}`, `record record() {}`, `enum yield {}` are no Java
+        assertThatThrownBy(() -> JavaFile.class_(ClassDesc.of("com.example", "var"), cb -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a valid Java type identifier: 'var'");
+        assertThatThrownBy(() -> JavaFile.record(ClassDesc.of("com.example", "record"), rb -> {}))
+                .hasMessage("not a valid Java type identifier: 'record'");
+        assertThatThrownBy(() -> JavaFile.enum_(ClassDesc.of("com.example", "yield"), eb -> {}))
+                .hasMessage("not a valid Java type identifier: 'yield'");
+        assertThatThrownBy(() -> JavaFile.interface_(ClassDesc.of("com.example", "sealed"), ib -> {}))
+                .hasMessage("not a valid Java type identifier: 'sealed'");
+        assertThatThrownBy(() -> JavaFile.annotationType(ClassDesc.of("com.example", "permits"), ab -> {}))
+                .hasMessage("not a valid Java type identifier: 'permits'");
+        assertThatThrownBy(() -> JavaFile.class_(
+                        ClassDesc.of("com.example", "Outer"),
+                        cb -> cb.withNestedClass(ClassDesc.of("com.example", "Outer$var"), nested -> {})))
+                .hasMessage("not a valid Java type identifier: 'var'");
+    }
+
+    @Test
+    void aTypeIsNotDeclaredByTheDescriptorOfAnArrayOrAPrimitive() {
+        assertThatThrownBy(() -> JavaFile.class_(ClassDesc.ofDescriptor("[Lcom/example/X;"), cb -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a class or an interface: X[]");
+        assertThatThrownBy(() -> JavaFile.class_(ClassDesc.ofDescriptor("I"), cb -> {}))
+                .hasMessage("not a class or an interface: int");
     }
 
     @Test

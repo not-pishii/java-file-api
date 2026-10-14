@@ -1,6 +1,7 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import org.junit.jupiter.api.Test;
 
@@ -287,7 +288,7 @@ class ModifierValidationTest {
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.STATIC),
                         List.of(),
-                        CodeBody.EMPTY,
+                        ConstructorBody.EMPTY,
                         List.of(),
                         Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -299,7 +300,7 @@ class ModifierValidationTest {
                         List.of(),
                         Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                         List.of(),
-                        CodeBody.EMPTY,
+                        ConstructorBody.EMPTY,
                         List.of(),
                         Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -308,7 +309,12 @@ class ModifierValidationTest {
     @Test
     void constructorAllowsProtected() {
         assertThatCode(() -> new ConstructorDecl(
-                        List.of(), Set.of(Modifier.PROTECTED), List.of(), CodeBody.EMPTY, List.of(), Optional.empty()))
+                        List.of(),
+                        Set.of(Modifier.PROTECTED),
+                        List.of(),
+                        ConstructorBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
                 .doesNotThrowAnyException();
     }
 

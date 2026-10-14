@@ -1,5 +1,6 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
@@ -98,7 +99,7 @@ public final class ModuleBuilder {
     /// @param packageName the exported package
     /// @return this builder
     public ModuleBuilder withExports(String packageName) {
-        directives.add(new ExportsDirective(packageName, List.of()));
+        directives.add(new ExportsDirective(new PackageName.Named(packageName), List.of()));
         return this;
     }
 
@@ -108,7 +109,7 @@ public final class ModuleBuilder {
     /// @param to the modules the export is qualified to
     /// @return this builder
     public ModuleBuilder withExportsTo(String packageName, String... to) {
-        directives.add(new ExportsDirective(packageName, List.of(to)));
+        directives.add(new ExportsDirective(new PackageName.Named(packageName), List.of(to)));
         return this;
     }
 
@@ -117,7 +118,7 @@ public final class ModuleBuilder {
     /// @param packageName the opened package
     /// @return this builder
     public ModuleBuilder withOpens(String packageName) {
-        directives.add(new OpensDirective(packageName, List.of()));
+        directives.add(new OpensDirective(new PackageName.Named(packageName), List.of()));
         return this;
     }
 
@@ -127,7 +128,7 @@ public final class ModuleBuilder {
     /// @param to the modules the opening is qualified to
     /// @return this builder
     public ModuleBuilder withOpensTo(String packageName, String... to) {
-        directives.add(new OpensDirective(packageName, List.of(to)));
+        directives.add(new OpensDirective(new PackageName.Named(packageName), List.of(to)));
         return this;
     }
 

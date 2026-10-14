@@ -4,6 +4,7 @@ import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
+import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.RenderableFile;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
@@ -77,9 +78,10 @@ public final class StandardRenderer implements SourceRenderer {
         // a name written before the variable or the local class that takes it was met is written anew,
         // knowing what the rendering learned: see ImportManager. What a file declares is the same in
         // every rendering, so the second knows all of it.
-        ImportManager learning = new ImportManager(meta.packageName(), known);
+        ImportManager learning = new ImportManager(meta.packageName().name(), known);
         String learned = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), Context.of(format, learning));
-        ImportManager imports = learning.stale() ? new ImportManager(meta.packageName(), learning.learned()) : learning;
+        ImportManager imports =
+                learning.stale() ? new ImportManager(meta.packageName().name(), learning.learned()) : learning;
         Context ctx = Context.of(format, imports);
         String first = learning.stale() ? TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx) : learned;
         // how a comment names a type depends on what the code after it claims: see ImportManager
@@ -87,13 +89,11 @@ public final class StandardRenderer implements SourceRenderer {
 
         StringBuilder out = new StringBuilder();
         // a compilation unit of the unnamed package has no package declaration (JLS 7.4.2)
-        if (!meta.packageName().isEmpty()) {
-            out.append("package ")
-                    .append(meta.packageName())
-                    .append(";")
-                    .append(ctx.newline())
-                    .append(ctx.newline());
-        }
+        out.append(
+                switch (meta.packageName()) {
+                    case PackageName.Named(String name) -> "package " + name + ";" + ctx.newline() + ctx.newline();
+                    case PackageName.Unnamed _ -> "";
+                });
 
         List<String> sortedImports = imports.sortedImports();
         if (!sortedImports.isEmpty()) {
@@ -173,7 +173,7 @@ public final class StandardRenderer implements SourceRenderer {
     }
 
     private static String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {
-        var imports = new ImportManager(meta.packageName());
+        var imports = new ImportManager(meta.packageName().name());
         Context ctx = Context.of(format, imports);
         String annotationsText = AnnotationRenderer.renderAnnotations(meta.annotations(), ctx);
 
@@ -181,7 +181,7 @@ public final class StandardRenderer implements SourceRenderer {
         // after the annotations, whose types alone are imported: the comment names a type as they do
         out.append(DocRenderer.render(meta.doc(), ctx));
         out.append(annotationsText);
-        out.append("package ").append(meta.packageName()).append(";").append(ctx.newline());
+        out.append("package ").append(meta.packageName().name()).append(";").append(ctx.newline());
 
         List<String> sortedImports = imports.sortedImports();
         if (!sortedImports.isEmpty()) {

@@ -35,6 +35,7 @@ public record RecordDecl(
         Optional<DocComment> doc)
         implements TypeDecl {
     public RecordDecl {
+        desc = DeclaredTypes.requireDeclarable(desc);
         modifiers = ModifierValidation.requireValidTopLevel(
                 Set.copyOf(modifiers),
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC),

@@ -1,6 +1,7 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
@@ -61,7 +62,7 @@ class CanonicalConstructorDeclTest {
                 Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
+                        .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -86,7 +87,7 @@ class CanonicalConstructorDeclTest {
                 Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
+                        .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("expected 1")
                 .hasMessageContaining("but got 2");
@@ -113,7 +114,7 @@ class CanonicalConstructorDeclTest {
                 Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
+                        .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("must be 'INT x'")
                 .hasMessageContaining("but was 'LONG x'");
@@ -149,7 +150,7 @@ class CanonicalConstructorDeclTest {
                 Optional.empty());
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
-                        .render(new JavaFile.Meta("geom", decl), standardFormat()))
+                        .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

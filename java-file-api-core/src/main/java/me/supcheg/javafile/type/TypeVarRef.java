@@ -13,7 +13,7 @@ import java.util.List;
 /// @param annotations the type-use annotations on this reference (JLS 9.7.4)
 public record TypeVarRef(String name, List<AnnotationUse> annotations) implements ClassOrInterfaceTypeRef {
     public TypeVarRef {
-        name = Identifiers.requireValid(name);
+        name = Identifiers.requireTypeIdentifier(name);
         annotations = List.copyOf(annotations);
     }
 

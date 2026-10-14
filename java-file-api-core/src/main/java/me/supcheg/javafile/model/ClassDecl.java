@@ -37,6 +37,7 @@ public record ClassDecl(
         Optional<DocComment> doc)
         implements TypeDecl {
     public ClassDecl {
+        desc = DeclaredTypes.requireDeclarable(desc);
         // STATIC, PRIVATE, and PROTECTED are not legal on an actual top-level class, but
         // ClassDecl also models a nested member class (see ClassMember/InterfaceMember/
         // RecordMember/EnumMember), where they are legal and this compact constructor

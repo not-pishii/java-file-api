@@ -17,15 +17,12 @@ final class ModuleDirectiveRenderer {
 
     static String renderDirective(ModuleDirective directive) {
         return switch (directive) {
-            // the primitive components are read by their accessors: javac tests a pattern of one, though
-            // nothing fails the test
-            case RequiresDirective requires ->
-                "requires " + (requires.isTransitive() ? "transitive " : "") + (requires.isStatic() ? "static " : "")
-                        + requires.moduleName() + ";";
+            case RequiresDirective(var moduleName, var isTransitive, var isStatic) ->
+                "requires " + (isTransitive ? "transitive " : "") + (isStatic ? "static " : "") + moduleName + ";";
             case ExportsDirective(var packageName, var to) ->
-                "exports " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
+                "exports " + packageName.name() + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
             case OpensDirective(var packageName, var to) ->
-                "opens " + packageName + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
+                "opens " + packageName.name() + (to.isEmpty() ? "" : " to " + String.join(", ", to)) + ";";
             case UsesDirective(var service) -> "uses " + qualifiedName(service) + ";";
             case ProvidesDirective(var service, var implementations) ->
                 "provides "

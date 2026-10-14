@@ -1,7 +1,7 @@
 package me.supcheg.javafile.model;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
-import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 
@@ -15,7 +15,7 @@ import java.util.Set;
 /// @param annotations the annotations declared on the constructor
 /// @param modifiers the modifiers on the constructor declaration
 /// @param params the constructor's parameters, in declaration order
-/// @param body the constructor's body
+/// @param body the constructor's body, with the explicit constructor invocation if it has one
 /// @param throwsTypes the checked exception types declared in the
 ///                     constructor's `throws` clause
 /// @param doc the documentation comment, if any
@@ -23,7 +23,7 @@ public record ConstructorDecl(
         List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
         List<Param> params,
-        CodeBody body,
+        ConstructorBody body,
         List<ClassOrInterfaceTypeRef> throwsTypes,
         Optional<DocComment> doc)
         implements ClassMember {

@@ -9,7 +9,9 @@ import java.util.Set;
 /// The library checks every name you pass (fields, methods, parameters, ...),
 /// so a mistake such as `"class"` or `"my-field"` fails immediately with
 /// `IllegalArgumentException` instead of producing a file that does not
-/// compile. Contextual keywords such as `var`, `record`, or `yield` are allowed.
+/// compile. Contextual keywords such as `var`, `record`, or `yield` are allowed
+/// as the names of variables and methods, and refused as the names of types:
+/// see [#requireTypeIdentifier(String)].
 public final class Identifiers {
 
     private static final Set<String> RESERVED = Set.of(
@@ -68,6 +70,9 @@ public final class Identifiers {
             "null",
             "_");
 
+    // JLS 3.8: an identifier that is none of these is a TypeIdentifier.
+    private static final Set<String> NOT_TYPE_IDENTIFIERS = Set.of("permits", "record", "sealed", "var", "yield");
+
     private Identifiers() {}
 
     /// Returns `name` if it is a valid Java identifier.
@@ -76,16 +81,31 @@ public final class Identifiers {
     /// @return `name`, unchanged
     /// @throws IllegalArgumentException if `name` is not a valid Java identifier
     public static String requireValid(String name) {
-        if (name.isEmpty() || !Character.isJavaIdentifierStart(name.charAt(0))) {
+        if (name.isEmpty()
+                || !Character.isJavaIdentifierStart(name.codePointAt(0))
+                || !name.codePoints().allMatch(Identifiers::isWrittenIdentifierPart)
+                || RESERVED.contains(name)) {
             throw new IllegalArgumentException("not a valid Java identifier: '" + name + "'");
         }
-        for (int i = 1; i < name.length(); i++) {
-            if (!Character.isJavaIdentifierPart(name.charAt(i))) {
-                throw new IllegalArgumentException("not a valid Java identifier: '" + name + "'");
-            }
-        }
-        if (RESERVED.contains(name)) {
-            throw new IllegalArgumentException("not a valid Java identifier: '" + name + "'");
+        return name;
+    }
+
+    // The compiler drops an ignorable character of an identifier (`Character.isIdentifierIgnorable`), so a name
+    // with one is another name in the class file, and two names that differ by one are the same name.
+    private static boolean isWrittenIdentifierPart(int codePoint) {
+        return Character.isJavaIdentifierPart(codePoint) && !Character.isIdentifierIgnorable(codePoint);
+    }
+
+    /// Returns `name` if it can name a class, an interface or a type parameter:
+    /// a valid Java identifier that is not `permits`, `record`, `sealed`, `var`
+    /// or `yield` (JLS 3.8, `TypeIdentifier`).
+    ///
+    /// @param name the candidate name of a type
+    /// @return `name`, unchanged
+    /// @throws IllegalArgumentException if `name` is not a valid Java type identifier
+    public static String requireTypeIdentifier(String name) {
+        if (NOT_TYPE_IDENTIFIERS.contains(requireValid(name))) {
+            throw new IllegalArgumentException("not a valid Java type identifier: '" + name + "'");
         }
         return name;
     }

@@ -4,6 +4,41 @@
 # What may stand here: a branch the compiler makes and no input reaches, and a worded check of what cannot
 # happen that neither a test nor a type can remove. An untested condition is covered by a test, not listed.
 
+# ---- compiler artifacts: branches javac makes and no input reaches ----
+
+me/supcheg/javafile/render/ExprRenderer.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/ExprRenderer.java :: case DoubleLiteral(var value) -> renderDouble(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/ExprRenderer.java :: case IntLiteral(var value) -> Integer.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/ExprRenderer.java :: case LongLiteral(var value) -> value + "L";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/ModuleDirectiveRenderer.java :: case RequiresDirective(var moduleName, var isTransitive, var isStatic) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/Precedence.java :: case DoubleLiteral(var value) -> doubleLevel(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/Precedence.java :: case IntLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/Precedence.java :: case LongLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassOrInterfaceTypeRef _, PrimitiveTypeRef _ -> "";
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassOrInterfaceTypeRef _, PrimitiveTypeRef _ -> ref;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _, ArrayTypeRef _, PrimitiveTypeRef _ ->
+    a case of several type patterns: javac tests each label once more after it matched
+
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
 me/supcheg/javafile/facts/FactSource.java :: token instanceof ConcreteClassToken<?> ? List.of("ctor(...)") : List.of());

@@ -18,6 +18,8 @@ import me.supcheg.javafile.code.ClassLiteralExpr;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConditionalExpr;
 import me.supcheg.javafile.code.ConstantLabel;
+import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.ConstructorRefExpr;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
@@ -57,7 +59,6 @@ import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.StringLiteral;
-import me.supcheg.javafile.code.SuperConstructorCallStmt;
 import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
@@ -114,12 +115,10 @@ final class ExprRenderer {
                         yield prefix + renderTypeArgs(typeArgs, ctx) + method + "(" + argsStr + ")";
                     }
                     case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
-                    // a primitive component is read by its accessor: javac tests a pattern of one, though
-                    // nothing fails the test
-                    case IntLiteral literal -> Integer.toString(literal.value());
-                    case LongLiteral literal -> literal.value() + "L";
-                    case DoubleLiteral literal -> Double.toString(literal.value());
-                    case BooleanLiteral literal -> Boolean.toString(literal.value());
+                    case IntLiteral(var value) -> Integer.toString(value);
+                    case LongLiteral(var value) -> value + "L";
+                    case DoubleLiteral(var value) -> renderDouble(value);
+                    case BooleanLiteral(var value) -> Boolean.toString(value);
                     case NullLiteral ignored -> "null";
                     case TextBlockExpr(var value) -> renderTextBlock(value, ctx);
                     case BinaryExpr(var left, var op, var right) ->
@@ -203,8 +202,8 @@ final class ExprRenderer {
                                     case ClassOrInterfaceTypeRef ignored -> true;
                                     case ArrayTypeRef ignored -> true;
                                 };
-                        boolean needsExtraParens =
-                                isReferenceTypeCast && Precedence.needsParensAsReferenceTypeCastOperand(operand);
+                        boolean needsExtraParens = isReferenceTypeCast
+                                && Precedence.needsParensAsReferenceTypeCastOperand(renderedOperand);
                         yield "(" + TypeRefRenderer.renderType(type, ctx) + ") "
                                 + (needsExtraParens ? "(" + renderedOperand + ")" : renderedOperand);
                     }
@@ -228,10 +227,13 @@ final class ExprRenderer {
                                 + "[" + renderExpr(index, ctx) + "]";
                     }
                     case ArrayCreationExpr(var componentType, var dimensions) -> {
+                        // the dimensions with a length come first, those of the component after them, empty:
+                        // `new int[n][]` is an array of `int[]`, and `new int[][n]` is no Java (JLS 15.10.1)
                         String dims = dimensions.toList().stream()
                                 .map(d -> "[" + renderExpr(d, ctx) + "]")
                                 .collect(Collectors.joining());
-                        yield "new " + TypeRefRenderer.renderType(componentType, ctx) + dims;
+                        yield "new " + TypeRefRenderer.renderType(TypeRefRenderer.elementType(componentType), ctx)
+                                + dims + TypeRefRenderer.renderDims(componentType, ctx);
                     }
                     case ArrayInitializerExpr(var componentType, var elements) -> {
                         String elems =
@@ -240,6 +242,19 @@ final class ExprRenderer {
                     }
                 };
         return level < minPrecedence ? "(" + rendered + ")" : rendered;
+    }
+
+    // A floating-point literal has a finite value (JLS 3.10.2): what is not a number and the infinities are
+    // written as the constant expressions that have them (JLS 15.29), which name nothing a declaration of
+    // the file could hide.
+    private static String renderDouble(double value) {
+        if (Double.isNaN(value)) {
+            return "0.0 / 0.0";
+        }
+        if (Double.isInfinite(value)) {
+            return value > 0 ? "1.0 / 0.0" : "-1.0 / 0.0";
+        }
+        return Double.toString(value);
     }
 
     private static String renderUnaryOperand(String symbol, Expr operand, Context ctx) {
@@ -390,10 +405,6 @@ final class ExprRenderer {
                         + "}";
             case YieldStmt(var value) -> ctx.pad() + "yield " + renderExpr(value, ctx) + ";";
             case ThrowStmt(var exception) -> ctx.pad() + "throw " + renderExpr(exception, ctx) + ";";
-            case SuperConstructorCallStmt(var args) ->
-                ctx.pad() + "super("
-                        + args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "))
-                        + ");";
             case BreakStmt(var label) ->
                 ctx.pad() + "break" + label.map(l -> " " + l).orElse("") + ";";
             case ContinueStmt(var label) ->
@@ -426,6 +437,24 @@ final class ExprRenderer {
         return body.statements().stream()
                 .map(s -> renderStmt(s, ctx) + ctx.newline())
                 .collect(Collectors.joining());
+    }
+
+    static String renderConstructorBody(ConstructorBody body, Context ctx) {
+        return switch (body) {
+            case ConstructorBody.Implicit(var statements) -> renderBlock(statements, ctx);
+            case ConstructorBody.Explicit(var prologue, var invocation, var epilogue) -> {
+                // the prologue first: what it declares is in scope in the arguments
+                String before = renderBlock(prologue, ctx);
+                String keyword =
+                        switch (invocation) {
+                            case ConstructorInvocation.Super _ -> "super";
+                            case ConstructorInvocation.This _ -> "this";
+                        };
+                String args =
+                        invocation.args().stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                yield before + ctx.pad() + keyword + "(" + args + ");" + ctx.newline() + renderBlock(epilogue, ctx);
+            }
+        };
     }
 
     private static String renderResources(List<Resource> resources, Context ctx) {

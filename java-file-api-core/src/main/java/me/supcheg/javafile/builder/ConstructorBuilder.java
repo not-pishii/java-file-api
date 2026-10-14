@@ -4,6 +4,9 @@ import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.ConstructorInvocation;
+import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.ConstructorDecl;
@@ -36,6 +39,8 @@ public final class ConstructorBuilder {
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
     private final List<Param> params = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
+    private CodeBody prologue = CodeBody.EMPTY;
+    private @Nullable ConstructorInvocation invocation;
     private CodeBody body = CodeBody.EMPTY;
 
     ConstructorBuilder() {}
@@ -137,7 +142,61 @@ public final class ConstructorBuilder {
         return this;
     }
 
-    /// Sets the constructor body.
+    /// Begins the constructor with an explicit invocation of a constructor of
+    /// the superclass, `super(args);`. The statements of [#withBody(Consumer)]
+    /// follow it.
+    ///
+    /// @param args the arguments of the superclass constructor
+    /// @return this builder
+    public ConstructorBuilder withSuperCall(Expr... args) {
+        return withSuperCall(prologue -> {}, args);
+    }
+
+    /// Invokes a constructor of the superclass, `super(args);`, after the
+    /// statements of `prologue` — Java 25 allows statements that do not use
+    /// the object under construction before the invocation (JLS 8.8.7). The
+    /// statements of [#withBody(Consumer)] follow it.
+    ///
+    /// @param prologue receives the builder to populate the statements before the invocation
+    /// @param args the arguments of the superclass constructor
+    /// @return this builder
+    public ConstructorBuilder withSuperCall(Consumer<? super CodeBuilder> prologue, Expr... args) {
+        return withInvocation(prologue, new ConstructorInvocation.Super(List.of(args)));
+    }
+
+    /// Begins the constructor with an explicit invocation of another
+    /// constructor of the class, `this(args);`. The statements of
+    /// [#withBody(Consumer)] follow it.
+    ///
+    /// @param args the arguments of the other constructor
+    /// @return this builder
+    public ConstructorBuilder withThisCall(Expr... args) {
+        return withThisCall(prologue -> {}, args);
+    }
+
+    /// Invokes another constructor of the class, `this(args);`, after the
+    /// statements of `prologue` (JLS 8.8.7). The statements of
+    /// [#withBody(Consumer)] follow it.
+    ///
+    /// @param prologue receives the builder to populate the statements before the invocation
+    /// @param args the arguments of the other constructor
+    /// @return this builder
+    public ConstructorBuilder withThisCall(Consumer<? super CodeBuilder> prologue, Expr... args) {
+        return withInvocation(prologue, new ConstructorInvocation.This(List.of(args)));
+    }
+
+    // A constructor has one explicit invocation at most: the last one said replaces the one before it.
+    private ConstructorBuilder withInvocation(Consumer<? super CodeBuilder> spec, ConstructorInvocation invocation) {
+        CodeBuilder cb = new CodeBuilder();
+        spec.accept(cb);
+        this.prologue = cb.build();
+        this.invocation = invocation;
+        return this;
+    }
+
+    /// Sets the statements of the constructor body: all of them, or those
+    /// after the explicit constructor invocation if the constructor has one
+    /// ([#withSuperCall(Expr...)], [#withThisCall(Expr...)]).
     ///
     /// @param spec receives the builder to populate the constructor body
     /// @return this builder
@@ -154,7 +213,9 @@ public final class ConstructorBuilder {
                 List.copyOf(annotations),
                 effectiveModifiers,
                 List.copyOf(params),
-                body,
+                invocation == null
+                        ? new ConstructorBody.Implicit(body)
+                        : new ConstructorBody.Explicit(prologue, invocation, body),
                 List.copyOf(throwsTypes),
                 Optional.ofNullable(doc));
     }

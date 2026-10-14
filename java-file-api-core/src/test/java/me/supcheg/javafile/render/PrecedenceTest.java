@@ -144,6 +144,37 @@ class PrecedenceTest {
     }
 
     @Test
+    void aNegativeNumberIsANegationAndNoLiteral() {
+        // JLS 3.10.1: a literal has no sign
+        assertThat(Precedence.level(literal(-1))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(Integer.MIN_VALUE))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(-1L))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(Long.MIN_VALUE))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(-1.5))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(-0.0))).isEqualTo(Precedence.UNARY_LEVEL);
+        assertThat(Precedence.level(literal(0))).isEqualTo(Precedence.PRIMARY_LEVEL);
+        assertThat(Precedence.level(literal(0L))).isEqualTo(Precedence.PRIMARY_LEVEL);
+        assertThat(Precedence.level(literal(0.0))).isEqualTo(Precedence.PRIMARY_LEVEL);
+    }
+
+    @Test
+    void aDoubleWithoutAFiniteValueIsAQuotient() {
+        assertThat(Precedence.level(literal(Double.NaN))).isEqualTo(Precedence.MULTIPLICATIVE_LEVEL);
+        assertThat(Precedence.level(literal(Double.POSITIVE_INFINITY))).isEqualTo(Precedence.MULTIPLICATIVE_LEVEL);
+        assertThat(Precedence.level(literal(Double.NEGATIVE_INFINITY))).isEqualTo(Precedence.MULTIPLICATIVE_LEVEL);
+    }
+
+    @Test
+    void theOperandOfACastToAReferenceTypeStartsWithNoSign() {
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("-1")).isTrue();
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("+x")).isTrue();
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("--x")).isTrue();
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("++x")).isTrue();
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("!x")).isFalse();
+        assertThat(Precedence.needsParensAsReferenceTypeCastOperand("x")).isFalse();
+    }
+
+    @Test
     void unaryAndCastRenderAtLevelThirteenIncDecAtFourteen() {
         assertThat(Precedence.level(not(literal(true)))).isEqualTo(13);
         assertThat(Precedence.level(neg(literal(1)))).isEqualTo(13);

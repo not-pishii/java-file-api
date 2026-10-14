@@ -5,6 +5,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.code.CodeBuilder;
+import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.model.ConstructorDecl;
@@ -334,7 +335,8 @@ public final class FactsCodegen {
     private static void packagePrivateConstructor(ClassBuilder cb, List<Param> params, Consumer<CodeBuilder> body) {
         CodeBuilder code = new CodeBuilder();
         body.accept(code);
-        cb.accept(new ConstructorDecl(List.of(), Set.of(), params, code.build(), List.of(), Optional.empty()));
+        cb.accept(new ConstructorDecl(
+                List.of(), Set.of(), params, new ConstructorBody.Implicit(code.build()), List.of(), Optional.empty()));
     }
 
     /// The one interface the facts of methods and constructors implement: it permits the generated

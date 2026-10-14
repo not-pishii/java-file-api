@@ -26,6 +26,7 @@ public record AnnotationTypeDecl(
         Optional<DocComment> doc)
         implements TypeDecl {
     public AnnotationTypeDecl {
+        desc = DeclaredTypes.requireDeclarable(desc);
         modifiers = ModifierValidation.requireValidTopLevel(
                 Set.copyOf(modifiers),
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC),

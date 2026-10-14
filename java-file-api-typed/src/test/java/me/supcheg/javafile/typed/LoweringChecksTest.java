@@ -1,5 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.ConstructorInvocation;
+import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -120,6 +124,26 @@ class LoweringChecksTest {
                         staticCall(UnsafeFacts.open(Base_.motto)).node()))
                 .withMessageContaining("is protected: it is reached in the body of a subclass of")
                 .withMessageContaining("this code is in the body of no class");
+    }
+
+    @Test
+    void anInvocationOfASuperclassConstructorIsNoStatementOfABlock() {
+        // SuperSite puts it first in the body of a constructor, where lowerConstructor takes it from
+        Lowering lowering = new Lowering(
+                UnsafeFacts.unverifiedClasspath(),
+                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone()),
+                Optional.empty());
+        Instr superInit = new Instr.SuperInit(
+                Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> lowering.lowerBlock(List.of(superInit)))
+                .withMessageContaining("does not begin the body of a constructor: an explicit constructor"
+                        + " invocation is no statement of a block (JLS 8.8.7.1)");
+        assertThat(lowering.lowerConstructor(List.of(superInit)))
+                .isEqualTo(new ConstructorBody.Explicit(
+                        CodeBody.EMPTY, new ConstructorInvocation.Super(List.of(Exprs.literal("x"))), CodeBody.EMPTY));
+        assertThat(lowering.lowerConstructor(List.of())).isEqualTo(ConstructorBody.EMPTY);
     }
 
     @Test

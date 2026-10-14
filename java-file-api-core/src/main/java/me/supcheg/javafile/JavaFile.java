@@ -17,13 +17,13 @@ import me.supcheg.javafile.transform.EnumTransform;
 import me.supcheg.javafile.transform.InterfaceTransform;
 import me.supcheg.javafile.transform.RecordTransform;
 import me.supcheg.javafile.transform.Transforms;
+import me.supcheg.javafile.type.ClassDescNames;
 
 import java.lang.constant.ClassDesc;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /// A `.java` file with one top-level class, interface, record, enum, or
 /// annotation type.
@@ -46,16 +46,16 @@ import java.util.stream.Stream;
 /// `transform*` method that matches the declaration kind — the others throw.
 public final class JavaFile implements RenderableFile {
 
-    private final String packageName;
+    private final PackageName packageName;
     private final String simpleName;
     private final TypeDecl typeDecl;
     private final List<InheritedName> inherited;
 
-    private JavaFile(String packageName, String simpleName, TypeDecl typeDecl) {
+    private JavaFile(PackageName packageName, String simpleName, TypeDecl typeDecl) {
         this(packageName, simpleName, typeDecl, List.of());
     }
 
-    private JavaFile(String packageName, String simpleName, TypeDecl typeDecl, List<InheritedName> inherited) {
+    private JavaFile(PackageName packageName, String simpleName, TypeDecl typeDecl, List<InheritedName> inherited) {
         this.packageName = packageName;
         this.simpleName = simpleName;
         this.typeDecl = typeDecl;
@@ -83,7 +83,7 @@ public final class JavaFile implements RenderableFile {
     public static JavaFile class_(ClassDesc desc, Consumer<? super ClassBuilder> spec) {
         ClassBuilder builder = new ClassBuilder(desc);
         spec.accept(builder);
-        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+        return topLevel(desc, builder.build());
     }
 
     /// Builds a source file containing a single top-level interface declaration.
@@ -94,7 +94,7 @@ public final class JavaFile implements RenderableFile {
     public static JavaFile interface_(ClassDesc desc, Consumer<? super InterfaceBuilder> spec) {
         InterfaceBuilder builder = new InterfaceBuilder(desc);
         spec.accept(builder);
-        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+        return topLevel(desc, builder.build());
     }
 
     /// Builds a source file containing a single top-level record declaration.
@@ -105,7 +105,7 @@ public final class JavaFile implements RenderableFile {
     public static JavaFile record(ClassDesc desc, Consumer<? super RecordBuilder> spec) {
         RecordBuilder builder = new RecordBuilder(desc);
         spec.accept(builder);
-        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+        return topLevel(desc, builder.build());
     }
 
     /// Builds a source file containing a single top-level enum declaration.
@@ -116,7 +116,7 @@ public final class JavaFile implements RenderableFile {
     public static JavaFile enum_(ClassDesc desc, Consumer<? super EnumBuilder> spec) {
         EnumBuilder builder = new EnumBuilder(desc);
         spec.accept(builder);
-        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+        return topLevel(desc, builder.build());
     }
 
     /// Builds a source file containing a single top-level annotation type declaration.
@@ -127,13 +127,23 @@ public final class JavaFile implements RenderableFile {
     public static JavaFile annotationType(ClassDesc desc, Consumer<? super AnnotationTypeBuilder> spec) {
         AnnotationTypeBuilder builder = new AnnotationTypeBuilder(desc);
         spec.accept(builder);
-        return new JavaFile(desc.packageName(), desc.displayName(), builder.build());
+        return topLevel(desc, builder.build());
     }
 
-    /// The file's package name.
+    // A file declares a top-level type: the descriptor of a nested one (`Outer$Inner`) names a member of
+    // another declaration, which is declared there.
+    private static JavaFile topLevel(ClassDesc desc, TypeDecl typeDecl) {
+        if (ClassDescNames.nestingChain(desc).size() != 1) {
+            throw new IllegalArgumentException("a file declares a top-level type, and " + desc.displayName()
+                    + " is a nested one: declare it with a withNested... of the type that encloses it");
+        }
+        return new JavaFile(PackageName.of(desc), desc.displayName(), typeDecl);
+    }
+
+    /// The file's package.
     ///
-    /// @return the package name, or the empty string for the unnamed package
-    public String packageName() {
+    /// @return the package: a named one, or the unnamed package
+    public PackageName packageName() {
         return packageName;
     }
 
@@ -148,7 +158,10 @@ public final class JavaFile implements RenderableFile {
     ///
     /// @return `packageName + "." + simpleName`, or just `simpleName` for the unnamed package
     public String qualifiedName() {
-        return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
+        return switch (packageName) {
+            case PackageName.Named(String name) -> name + "." + simpleName;
+            case PackageName.Unnamed _ -> simpleName;
+        };
     }
 
     @Override
@@ -161,7 +174,7 @@ public final class JavaFile implements RenderableFile {
     /// @param packageName the file's package
     /// @param typeDecl the top-level type declaration to render
     /// @param inherited the names the type inherits from its supertypes, see [JavaFile#inheriting(Collection)]
-    public record Meta(String packageName, TypeDecl typeDecl, List<InheritedName> inherited)
+    public record Meta(PackageName packageName, TypeDecl typeDecl, List<InheritedName> inherited)
             implements RenderableFile.Meta {
         public Meta {
             inherited = List.copyOf(inherited);
@@ -171,19 +184,14 @@ public final class JavaFile implements RenderableFile {
         ///
         /// @param packageName the package
         /// @param typeDecl the declaration
-        public Meta(String packageName, TypeDecl typeDecl) {
+        public Meta(PackageName packageName, TypeDecl typeDecl) {
             this(packageName, typeDecl, List.of());
         }
     }
 
     @Override
     public Path pathSuffix() {
-        var filename = Path.of(simpleName + ".java");
-        return Stream.of(packageName.split("\\."))
-                .map(Path::of)
-                .reduce(Path::resolve)
-                .map(package_ -> package_.resolve(filename))
-                .orElse(filename);
+        return packageName.directory().resolve(simpleName + ".java");
     }
 
     /// Returns a copy of this file with the class's members passed through `transform`.

@@ -50,6 +50,22 @@ class PackageInfoFileTest {
     }
 
     @Test
+    void aPackageInfoIsOfAPackageNameThatIsOne() {
+        // `package a.int.b;` is no Java (JLS 7.4.1)
+        assertThatThrownBy(() -> PackageInfoFile.of("a.int.b"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a valid Java package name: 'a.int.b': not a valid Java identifier: 'int'");
+        assertThatThrownBy(() -> PackageInfoFile.of("not a package"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("not a valid Java package name: 'not a package'");
+
+        PackageInfoFile file = PackageInfoFile.of(new PackageName.Named("com.example"));
+
+        assertThat(file.packageName()).isEqualTo(new PackageName.Named("com.example"));
+        assertThat(file.render()).isEqualTo("package com.example;\n");
+    }
+
+    @Test
     void theUnnamedPackageHasNoPackageInfo() {
         // a package declaration names its package (JLS 7.4.1): `package ;` is no Java
         assertThatThrownBy(() -> PackageInfoFile.of(""))

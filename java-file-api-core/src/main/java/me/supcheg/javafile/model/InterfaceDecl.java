@@ -36,6 +36,7 @@ public record InterfaceDecl(
         Optional<DocComment> doc)
         implements TypeDecl {
     public InterfaceDecl {
+        desc = DeclaredTypes.requireDeclarable(desc);
         modifiers = ModifierValidation.requireValidTopLevel(
                 Set.copyOf(modifiers),
                 EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.NON_SEALED, Modifier.STATIC),

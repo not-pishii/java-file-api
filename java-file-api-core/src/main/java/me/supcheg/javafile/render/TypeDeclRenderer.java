@@ -180,7 +180,7 @@ final class TypeDeclRenderer {
                 + ')'
                 + renderThrows(c.throwsTypes(), ctx)
                 + " {" + ctx.newline()
-                + renderStatements(c.body().statements(), ctx.withIncreasedPad())
+                + ExprRenderer.renderConstructorBody(c.body(), ctx.withIncreasedPad())
                 + ctx.pad()
                 + "}" + ctx.newline();
     }
@@ -320,6 +320,7 @@ final class TypeDeclRenderer {
     }
 
     private static String renderConstant(ConstantDecl c, Context ctx) {
+        ctx.variable(c.name());
         return DocRenderer.render(c.doc(), ctx)
                 + AnnotationRenderer.renderAnnotations(c.annotations(), ctx)
                 + ctx.pad()

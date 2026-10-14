@@ -10,6 +10,8 @@ import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.CodeBuilder;
 import me.supcheg.javafile.code.ConstantLabel;
+import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DoWhileStmt;
@@ -33,7 +35,6 @@ import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.Stmt;
-import me.supcheg.javafile.code.SuperConstructorCallStmt;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.SwitchStmt;
@@ -798,13 +799,30 @@ class ExprRendererTest {
     }
 
     @Test
-    void superConstructorCallStmtRendersSuperAndItsArguments() {
+    void anExplicitConstructorInvocationIsBetweenThePrologueAndTheRestOfTheBody() {
         Context ctx = Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad();
+        CodeBody prologue = new CodeBody(List.of(new LocalVarDeclStmt.Inferred("n", literal(1))));
+        CodeBody epilogue = new CodeBody(List.of(new ReturnStmt(Optional.empty())));
 
-        assertThat(ExprRenderer.renderStmt(new SuperConstructorCallStmt(List.of()), ctx))
-                .isEqualTo("    super();");
-        assertThat(ExprRenderer.renderStmt(new SuperConstructorCallStmt(List.of(literal("a"), literal(1))), ctx))
-                .isEqualTo("    super(\"a\", 1);");
+        assertThat(ExprRenderer.renderConstructorBody(ConstructorBody.EMPTY, ctx))
+                .isEmpty();
+        assertThat(ExprRenderer.renderConstructorBody(new ConstructorBody.Implicit(epilogue), ctx))
+                .isEqualTo("    return;\n");
+        assertThat(ExprRenderer.renderConstructorBody(
+                        new ConstructorBody.Explicit(
+                                CodeBody.EMPTY, new ConstructorInvocation.Super(List.of()), CodeBody.EMPTY),
+                        ctx))
+                .isEqualTo("    super();\n");
+        assertThat(ExprRenderer.renderConstructorBody(
+                        new ConstructorBody.Explicit(
+                                prologue, new ConstructorInvocation.Super(List.of(literal("a"), field("n"))), epilogue),
+                        ctx))
+                .isEqualTo("    var n = 1;\n    super(\"a\", n);\n    return;\n");
+        assertThat(ExprRenderer.renderConstructorBody(
+                        new ConstructorBody.Explicit(
+                                CodeBody.EMPTY, new ConstructorInvocation.This(List.of(literal(1))), epilogue),
+                        ctx))
+                .isEqualTo("    this(1);\n    return;\n");
     }
 
     @Test

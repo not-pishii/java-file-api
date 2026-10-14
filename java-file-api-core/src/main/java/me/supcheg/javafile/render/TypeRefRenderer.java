@@ -5,6 +5,7 @@ import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassDescNames;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ExtendsTypeArg;
@@ -38,12 +39,30 @@ final class TypeRefRenderer {
             }
             case TypeVarRef(var name, var annotations) ->
                 AnnotationRenderer.renderInlineAnnotations(annotations, ctx) + name;
+            case ArrayTypeRef array -> renderType(elementType(array), ctx) + renderDims(array, ctx);
+            case PrimitiveTypeRef p -> p.sourceName();
+        };
+    }
+
+    // What an array type is of in the end: `int` of `int[][]`. A type that is no array is its own.
+    static TypeRef elementType(TypeRef ref) {
+        return switch (ref) {
+            case ArrayTypeRef(var component, var _) -> elementType(component);
+            case ClassOrInterfaceTypeRef _, PrimitiveTypeRef _ -> ref;
+        };
+    }
+
+    // The brackets of an array type, those of the type itself first and those of its components after
+    // them, each with the annotations of its level before it: in `int @A [] @B []` it is `@A` that is on
+    // the array of arrays (JLS 9.7.4). A type that is no array has none.
+    static String renderDims(TypeRef ref, Context ctx) {
+        return switch (ref) {
             case ArrayTypeRef(var component, var annotations) -> {
                 String renderedAnnotations = AnnotationRenderer.renderInlineAnnotations(annotations, ctx);
-                yield renderType(component, ctx) + (renderedAnnotations.isEmpty() ? "" : " " + renderedAnnotations)
-                        + "[]";
+                yield (renderedAnnotations.isEmpty() ? "" : " " + renderedAnnotations) + "[]"
+                        + renderDims(component, ctx);
             }
-            case PrimitiveTypeRef p -> p.sourceName();
+            case ClassOrInterfaceTypeRef _, PrimitiveTypeRef _ -> "";
         };
     }
 
@@ -52,7 +71,8 @@ final class TypeRefRenderer {
     static String renderQualifier(TypeRef ref, Context ctx) {
         return switch (ref) {
             case ClassTypeRef(var desc, var annotations) when annotations.isEmpty() -> ctx.qualifier(desc);
-            case TypeRef _ -> renderType(ref, ctx);
+            case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _, ArrayTypeRef _, PrimitiveTypeRef _ ->
+                renderType(ref, ctx);
         };
     }
 

@@ -3,6 +3,7 @@ package me.supcheg.javafile.render;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
+import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.model.Modifier;
@@ -34,7 +35,8 @@ class StandardRendererTest {
         builder.withModifiers(Modifier.FINAL)
                 .withField("bundle", Types.of(bundle), fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
 
-        String rendered = renderer.render(new JavaFile.Meta("me.supcheg.example", builder.build()), standardFormat());
+        String rendered = renderer.render(
+                new JavaFile.Meta(PackageName.of("me.supcheg.example"), builder.build()), standardFormat());
 
         assertThat(rendered).isEqualTo("""
                         package me.supcheg.example;
@@ -51,7 +53,8 @@ class StandardRendererTest {
     void omitsTheImportBlockWhenThereAreNoImports() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Empty"));
 
-        String rendered = renderer.render(new JavaFile.Meta("me.supcheg.example", builder.build()), standardFormat());
+        String rendered = renderer.render(
+                new JavaFile.Meta(PackageName.of("me.supcheg.example"), builder.build()), standardFormat());
 
         assertThat(rendered).isEqualTo("""
                         package me.supcheg.example;
@@ -71,7 +74,8 @@ class StandardRendererTest {
                         fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
 
         String rendered = renderer.render(
-                new JavaFile.Meta("me.supcheg.example", builder.build()), SourceRenderer.format("  ", "\n"));
+                new JavaFile.Meta(PackageName.of("me.supcheg.example"), builder.build()),
+                SourceRenderer.format("  ", "\n"));
 
         assertThat(rendered).isEqualTo("""
                         package me.supcheg.example;
@@ -94,7 +98,8 @@ class StandardRendererTest {
                         fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL));
 
         String rendered = renderer.render(
-                new JavaFile.Meta("me.supcheg.example", builder.build()), SourceRenderer.format("    ", "\r\n"));
+                new JavaFile.Meta(PackageName.of("me.supcheg.example"), builder.build()),
+                SourceRenderer.format("    ", "\r\n"));
 
         assertThat(rendered)
                 .isEqualTo(String.join(
@@ -144,7 +149,8 @@ class StandardRendererTest {
     void dispatchesToPackageAnnotationRenderingForAPackageInfoMeta() {
         var nonNullByDefault =
                 new AnnotationUse(ClassDesc.of("javax.annotation", "ParametersAreNonnullByDefault"), List.of());
-        var meta = new PackageInfoFile.Meta("me.supcheg.example", List.of(nonNullByDefault), Optional.empty());
+        var meta = new PackageInfoFile.Meta(
+                new PackageName.Named("me.supcheg.example"), List.of(nonNullByDefault), Optional.empty());
 
         String rendered = renderer.render(meta, standardFormat());
 

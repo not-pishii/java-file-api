@@ -14,7 +14,6 @@ import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.IncDecExpr;
-import me.supcheg.javafile.code.IncDecOp;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LambdaExpr;
@@ -31,7 +30,6 @@ import me.supcheg.javafile.code.SwitchExpr;
 import me.supcheg.javafile.code.TextBlockExpr;
 import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.UnaryExpr;
-import me.supcheg.javafile.code.UnaryOp;
 
 final class Precedence {
 
@@ -69,9 +67,10 @@ final class Precedence {
             case MethodCallExpr ignored -> PRIMARY_LEVEL;
             case StaticMethodCallExpr ignored -> PRIMARY_LEVEL;
             case StringLiteral ignored -> PRIMARY_LEVEL;
-            case IntLiteral ignored -> PRIMARY_LEVEL;
-            case LongLiteral ignored -> PRIMARY_LEVEL;
-            case DoubleLiteral ignored -> PRIMARY_LEVEL;
+            // a literal has no sign (JLS 3.10.1): a negative number is written as the negation of one
+            case IntLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+            case LongLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+            case DoubleLiteral(var value) -> doubleLevel(value);
             case BooleanLiteral ignored -> PRIMARY_LEVEL;
             case NullLiteral ignored -> PRIMARY_LEVEL;
             case TextBlockExpr ignored -> PRIMARY_LEVEL;
@@ -114,13 +113,20 @@ final class Precedence {
         return (operatorLastChar == '+' || operatorLastChar == '-') && operandFirstChar == operatorLastChar;
     }
 
-    // JLS 15.16: `(String) -x` is not valid, unlike `(int) -x`.
-    static boolean needsParensAsReferenceTypeCastOperand(Expr expr) {
-        return switch (expr) {
-            case UnaryExpr(var op, var ignored) -> op == UnaryOp.NEG || op == UnaryOp.UNARY_PLUS;
-            case IncDecExpr(var op, var ignored) -> op == IncDecOp.PRE_INC || op == IncDecOp.PRE_DEC;
-            default -> false;
-        };
+    // What is not a number and the infinities are written as quotients, the rest as a literal, negated if
+    // it has the sign — negative zero too, which no comparison with zero tells.
+    private static int doubleLevel(double value) {
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            return MULTIPLICATIVE_LEVEL;
+        }
+        return Double.doubleToRawLongBits(value) < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+    }
+
+    // JLS 15.16: the operand of a cast to a reference type is a UnaryExpressionNotPlusMinus — `(String) -x`
+    // is the difference of `(String)` and `x`, unlike `(int) -x`. No such expression starts with a sign, and
+    // every other unary expression does: `-x`, `+x`, `--x`, `++x`, `-1`.
+    static boolean needsParensAsReferenceTypeCastOperand(String renderedOperand) {
+        return renderedOperand.startsWith("-") || renderedOperand.startsWith("+");
     }
 
     // `new int[3][0]` is a 2D array creation, not indexing into `new int[3]`.

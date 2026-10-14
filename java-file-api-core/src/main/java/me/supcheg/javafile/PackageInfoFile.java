@@ -6,7 +6,6 @@ import me.supcheg.javafile.doc.DocComment;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /// A `package-info.java` file: a package declaration with its annotations.
 ///
@@ -17,11 +16,11 @@ import java.util.stream.Stream;
 public final class PackageInfoFile implements RenderableFile {
     private static final Path PACKAGE_INFO_JAVA = Path.of("package-info.java");
 
-    private final String packageName;
+    private final PackageName.Named packageName;
     private final List<AnnotationUse> annotations;
     private final Optional<DocComment> doc;
 
-    private PackageInfoFile(String packageName, List<AnnotationUse> annotations, Optional<DocComment> doc) {
+    private PackageInfoFile(PackageName.Named packageName, List<AnnotationUse> annotations, Optional<DocComment> doc) {
         this.packageName = packageName;
         this.annotations = List.copyOf(annotations);
         this.doc = doc;
@@ -29,16 +28,26 @@ public final class PackageInfoFile implements RenderableFile {
 
     /// Builds a `package-info.java` file for `packageName`, annotated with `annotations`.
     ///
-    /// @param packageName the package being annotated
+    /// @param packageName the dot-separated name of the package being annotated
     /// @param annotations the package annotations, in order
     /// @return the finished file
-    /// @throws IllegalArgumentException if `packageName` is empty: the unnamed package has no package
-    ///     declaration (JLS 7.4.1), which is all a `package-info.java` is
+    /// @throws IllegalArgumentException if `packageName` is not a dot-separated list of Java identifiers; the
+    ///     empty name among them: the unnamed package has no package declaration (JLS 7.4.2), which is all a
+    ///     `package-info.java` is
     public static PackageInfoFile of(String packageName, AnnotationUse... annotations) {
         if (packageName.isEmpty()) {
             throw new IllegalArgumentException(
                     "the unnamed package has no package declaration, so no package-info.java");
         }
+        return of(new PackageName.Named(packageName), annotations);
+    }
+
+    /// Builds a `package-info.java` file for `packageName`, annotated with `annotations`.
+    ///
+    /// @param packageName the package being annotated
+    /// @param annotations the package annotations, in order
+    /// @return the finished file
+    public static PackageInfoFile of(PackageName.Named packageName, AnnotationUse... annotations) {
         return new PackageInfoFile(packageName, List.of(annotations), Optional.empty());
     }
 
@@ -53,7 +62,7 @@ public final class PackageInfoFile implements RenderableFile {
     /// The annotated package's name.
     ///
     /// @return the package name
-    public String packageName() {
+    public PackageName.Named packageName() {
         return packageName;
     }
 
@@ -67,15 +76,11 @@ public final class PackageInfoFile implements RenderableFile {
     /// @param packageName the package being annotated
     /// @param annotations the package annotations, in order
     /// @param doc the documentation comment of the package, if any
-    public record Meta(String packageName, List<AnnotationUse> annotations, Optional<DocComment> doc)
+    public record Meta(PackageName.Named packageName, List<AnnotationUse> annotations, Optional<DocComment> doc)
             implements RenderableFile.Meta {}
 
     @Override
     public Path pathSuffix() {
-        return Stream.of(packageName.split("\\."))
-                .map(Path::of)
-                .reduce(Path::resolve)
-                .map(package_ -> package_.resolve(PACKAGE_INFO_JAVA))
-                .orElse(PACKAGE_INFO_JAVA);
+        return packageName.directory().resolve(PACKAGE_INFO_JAVA);
     }
 }

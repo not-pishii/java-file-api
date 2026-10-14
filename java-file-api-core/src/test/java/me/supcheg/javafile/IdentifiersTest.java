@@ -19,6 +19,44 @@ class IdentifiersTest {
     }
 
     @Test
+    void rejectsACharacterTheCompilerIgnoresInAnIdentifier() {
+        // javac drops an ignorable character (`Character.isIdentifierIgnorable`): `a\u0000b` is the name `ab`
+        // in the class file, so two such names of one type are one name
+        assertThatThrownBy(() -> Identifiers.requireValid("a\u0000b"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a valid Java identifier: 'a\u0000b'");
+        assertThatThrownBy(() -> Identifiers.requireValid("a\u200db")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("ab\u00ad")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("\u0000a")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void acceptsAndRejectsCharactersOutsideTheBasicPlaneAsWhole() {
+        // U+1D4D0, a letter of two chars, and U+1F600, which is none
+        assertThat(Identifiers.requireValid("\ud835\udcd0x")).isEqualTo("\ud835\udcd0x");
+        assertThat(Identifiers.requireValid("x\ud835\udcd0")).isEqualTo("x\ud835\udcd0");
+        assertThatThrownBy(() -> Identifiers.requireValid("x\ud83d\ude00"))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("x\ud835")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void aTypeIdentifierIsAnIdentifierThatIsNoContextualKeywordOfTypes() {
+        assertThat(Identifiers.requireTypeIdentifier("Counter")).isEqualTo("Counter");
+        // contextual keywords that do name a type (JLS 3.8 excludes five and no more)
+        assertThat(Identifiers.requireTypeIdentifier("module")).isEqualTo("module");
+        assertThat(Identifiers.requireTypeIdentifier("when")).isEqualTo("when");
+        for (String name : List.of("permits", "record", "sealed", "var", "yield")) {
+            assertThatThrownBy(() -> Identifiers.requireTypeIdentifier(name))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("not a valid Java type identifier: '" + name + "'");
+        }
+        assertThatThrownBy(() -> Identifiers.requireTypeIdentifier("class"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("not a valid Java identifier: 'class'");
+    }
+
+    @Test
     void rejectsEmptyString() {
         assertThatThrownBy(() -> Identifiers.requireValid("")).isInstanceOf(IllegalArgumentException.class);
     }

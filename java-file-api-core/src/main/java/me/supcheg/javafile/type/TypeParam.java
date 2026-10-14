@@ -16,7 +16,7 @@ import java.util.List;
 ///                     e.g. `<@Foo T>`
 public record TypeParam(String name, List<ClassOrInterfaceTypeRef> bounds, List<AnnotationUse> annotations) {
     public TypeParam {
-        name = Identifiers.requireValid(name);
+        name = Identifiers.requireTypeIdentifier(name);
         bounds = List.copyOf(bounds);
         annotations = List.copyOf(annotations);
     }

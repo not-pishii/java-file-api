@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
+import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
@@ -677,21 +678,25 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
                                 .toList();
                 };
-        CodeBody code = lowering.lowerBlock(root.instrs());
-        List<ClassOrInterfaceTypeRef> throwsClause = declared.thrown().stream()
-                .<ClassOrInterfaceTypeRef>map(type -> lowering.named(type).typeRef())
-                .toList();
         List<AnnotationUse> annotations =
                 switch (declared.kind()) {
                     case OVERRIDES -> List.of(new AnnotationUse(OVERRIDE, List.of()));
                     case DECLARES -> List.of();
                 };
         return switch (fact.kind()) {
-            case CONSTRUCTOR ->
-                new ConstructorDecl(
-                        List.of(), Set.of(Modifier.PUBLIC), coreParams, code, throwsClause, Optional.empty());
-            case INSTANCE_METHOD ->
-                new MethodDecl(
+            case CONSTRUCTOR -> {
+                ConstructorBody body = lowering.lowerConstructor(root.instrs());
+                yield new ConstructorDecl(
+                        List.of(),
+                        Set.of(Modifier.PUBLIC),
+                        coreParams,
+                        body,
+                        throwsClause(declared, lowering),
+                        Optional.empty());
+            }
+            case INSTANCE_METHOD -> {
+                CodeBody code = lowering.lowerBlock(root.instrs());
+                yield new MethodDecl(
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
                         annotations,
@@ -699,10 +704,12 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         List.of(),
                         coreParams,
                         code,
-                        throwsClause,
+                        throwsClause(declared, lowering),
                         Optional.empty());
-            case STATIC_METHOD ->
-                new MethodDecl(
+            }
+            case STATIC_METHOD -> {
+                CodeBody code = lowering.lowerBlock(root.instrs());
+                yield new MethodDecl(
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
                         List.of(),
@@ -710,9 +717,17 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         List.of(),
                         coreParams,
                         code,
-                        throwsClause,
+                        throwsClause(declared, lowering),
                         Optional.empty());
+            }
         };
+    }
+
+    /// The `throws` clause of a member, written after its body is lowered.
+    private static List<ClassOrInterfaceTypeRef> throwsClause(Member.Callable declared, Lowering lowering) {
+        return declared.thrown().stream()
+                .<ClassOrInterfaceTypeRef>map(type -> lowering.named(type).typeRef())
+                .toList();
     }
 
     /// The last parameter of a method of variable arity, `T... v`: its type is the array `T[]` to

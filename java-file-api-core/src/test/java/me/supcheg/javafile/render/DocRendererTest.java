@@ -243,6 +243,14 @@ class DocRendererTest {
     }
 
     @Test
+    void theMarkerOfAnOrderedListIsEscapedWhereTheTextEndsWithIt() {
+        // only the properties reached it, on the runs that happened to draw such a text
+        assertThat(markdown(DocComment.of("7."))).isEqualTo("/// 7&#46;\n");
+        assertThat(markdown(DocComment.of("first\n12)"))).isEqualTo("/// first\n/// 12&#41;\n");
+        assertThat(markdown(DocComment.of("7"))).isEqualTo("/// 7\n");
+    }
+
+    @Test
     void markdownTextIsEscapedAtTheStartOfALineWhereItWouldStartABlock() {
         assertThat(markdown(DocComment.of(
                         "# heading\n> quote\n- item\n+ item\n=\n1. one\n22) two\n3 three\n4.5\n6.\n@tag")))
