@@ -1,0 +1,240 @@
+# The source lines whose missed branches no test takes: see UncoveredBranchesVerification in build.gradle.kts.
+#
+# An entry is `<file> :: <trimmed text of the line>` and, indented under it, the reason no test takes the branch.
+# What may stand here: a branch the compiler makes and no input reaches, and a worded check of what cannot
+# happen that neither a test nor a type can remove. An untested condition is covered by a test, not listed.
+
+# ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
+
+me/supcheg/javafile/facts/FactSource.java :: token instanceof ConcreteClassToken<?> ? List.of("ctor(...)") : List.of());
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/Invocables.java :: case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/StaticFieldRef.java :: case RefToken<?> ref -> ref.erasure().equals(ConstantDescs.CD_String) && value instanceof String;
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/TypeShape.java :: if (superclasses.contains(desc) || Set.copyOf(superclasses).size() != superclasses.size()) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/TypeShape.java :: if (superclasses.isEmpty() || !superclasses.getLast().equals(ConstantDescs.CD_Object)) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/UnsafeFacts.java :: if (variables.isEmpty() || variables.size() != typeParameters.size()) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Closure.java :: .filter(mentioned -> held.contains(mentioned) && !mentioned.equals(entry.getKey()))
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Closure.java :: .filter(name -> !names.contains(name))
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Entry.java :: .map(inherited -> switch (inherited) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Entry.java :: first.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component());
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Entry.java :: return element != null && !desc.packageName().isEmpty() && MirrorTranslator.isPublic(element);
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Entry.java :: return qualified && !desc.packageName().isEmpty() ? desc.packageName().replace('.', '_') + "_" + name : name;
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: .anyMatch(member -> member.getModifiers().contains(Modifier.PROTECTED)
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: .filter(site -> !fresh.containsKey(site))
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: List<Element> annotated = facts == null ? List.of() : List.copyOf(round.getElementsAnnotatedWith(facts));
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: if (sites.isEmpty() && !annotated.isEmpty() && !formatMatches(elements, diagnostics)) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: if (stopped || options == null || diagnostics == null) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Inheritance.java :: .anyMatch(permitted -> permitted.getKind() != TypeKind.DECLARED
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelDocs.java :: return all.isEmpty() ? Stream.empty() : Stream.of(new DocBlock.Paragraph(text(all.stream())));
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: .filter(name -> !name.isEmpty())
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: if (partBytes > 0 || parts.isEmpty()) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelNames.java :: Element outer = chain.isEmpty() ? type : chain.getLast().getEnclosingElement();
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelNames.java :: String packageName = pkg.isUnnamed() ? base : base + "." + pkg.getQualifiedName();
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/MetamodelNames.java :: if (qualified && outer instanceof PackageElement pkg && !pkg.isUnnamed()) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Models.java :: !method.getEnclosingElement().equals(type))
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Models.java :: && element(ClassDesc.of(binaryName(declaring))).isPresent()
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Models.java :: && method.getParameters().size() == sam.params().size())
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Models.java :: String prefix = packageName.isEmpty() ? "" : packageName + ".";
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Requests.java :: Stream<?> items = value.getValue() instanceof List<?> list ? list.stream() : Stream.of(value);
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Requests.java :: if (!(value instanceof TypeMirror type) || type.getKind() == TypeKind.ERROR) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/ReuseIndex.java :: if (!(of instanceof DeclaredType ofType)
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/ReuseIndex.java :: marker.get().get("fingerprint") instanceof String recorded && Conformance.unchanged(recorded, model)
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/SourceNames.java :: switch (place) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/SourceNames.java :: while (end < source.length() && Character.isJavaIdentifierPart(source.charAt(end))) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/SourceNames.java :: while (i < source.length()
+    untested when the gate was introduced
+
+me/supcheg/javafile/facts/processor/Targets.java :: return !desc.packageName().isEmpty() && models.element(desc).isPresent();
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/Conformance.java :: return value.isEmpty() || value.equals("-") ? List.of() : List.of(value.split("; "));
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && signature(adoptedMethod, element, self).equals(signature));
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && type.asElement().equals(otherType.asElement());
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: if (!isPublic(supertype) || refusal(supertype).isPresent()) {
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: return result.getKind() == otherResult.getKind();
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: yield arguments.isEmpty() || outerArguments || !(raw instanceof ClassTypeRef(ClassDesc desc, var _))
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || member.getTypeVariables().get(i).asElement().equals(variable.asElement()))
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || other.getModifiers().contains(Modifier.STATIC)
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || overridden.getKind().isInterface()
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: : new Found.Nowhere(modules.isEmpty() ? nowhere : several);
+    untested when the gate was introduced
+
+me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(
+    untested when the gate was introduced
+
+me/supcheg/javafile/render/ImportManager.java :: String whole = packageName.isEmpty() ? dotted : packageName;
+    untested when the gate was introduced
+
+me/supcheg/javafile/render/ImportManager.java :: return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()
+    untested when the gate was introduced
+
+me/supcheg/javafile/render/ImportManager.java :: throw new IllegalStateException("cannot name " + (packageName.isEmpty() ? "" : packageName + ".")
+    untested when the gate was introduced
+
+me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassTypeRef(var desc, var annotations) when annotations.isEmpty() -> ctx.qualifier(desc);
+    untested when the gate was introduced
+
+# ---- typed — part II/III: temporary, untested conditions of the typed layer ----
+
+me/supcheg/javafile/typed/ClassDeclaration.java :: mine == bounded ? new Variable(mine.token(), mine.first(), with(mine.more(), bound)) : mine)
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/EnumSwitchCases.java :: return "switch_ over " + enumType + (enclosing == null ? "" : " in the " + enclosing.path());
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ExceptionType.java :: && !token.erasure().equals(CD_ERROR);
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Exceptions.java :: case Coverage.Uncovered(ExceptionScope.Declares(var boundary, var declared)) ->
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Exceptions.java :: case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Exceptions.java :: thrown.entrySet().stream().filter(e -> e.getKey() != binding),
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Expressions.java :: if (Tokens.sameType(operand.type(), type) && Node.isExact(operand.node())) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Inheritance.java :: .contains(group.signature().params())
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Inheritance.java :: ? entries(heir, supertype).filter(entry -> !ofObject.contains(entry.signature()))
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Lowering.java :: return isBreak ? new BreakStmt(Optional.of(label)) : new ContinueStmt(Optional.of(label));
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Lowering.java :: || (spreads && !Tokens.sameType(arg.type(), param))) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Node.java :: isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ScopeCheck.java :: for (Block<?, ?> b = use; b != null && b != owner; b = b.parent()) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ScopeCheck.java :: if (b.nesting() == Block.Nesting.LAMBDA_BODY) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ScopeCheck.java :: if (var.isVariableOfFor() && around != null && !outside(around, use) && nestedSpecially(around, use)) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ScopeCheck.java :: return Stream.<@Nullable Block<?, ?>>iterate(use, b -> b != null && b != owner, Block::parent)
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Scopes.java :: String where = innermost instanceof Block<?, ?> block ? block.path() : innermost.toString();
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Scopes.java :: return SCOPE.isBound() && SCOPE.get() instanceof Block<?, ?> block ? block : null;
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/SignatureRegistry.java :: if (member.kind() == InvocableKind.STATIC_METHOD && standing != Heritage.Dispatch.STATIC) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/SignatureRegistry.java :: method.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component())
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Superclass.java :: (standing.ofInterface() ? group.entries().stream() : Stream.of(standing))
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Tokens.java :: && target.typeRef() instanceof ParameterizedTypeRef parameterized)) {
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()));
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Tokens.java :: .anyMatch(a -> a instanceof ExactTypeArg(TypeVarRef var)
+    untested when the gate was introduced; belongs to part II/III
+
+me/supcheg/javafile/typed/Var.java :: return this instanceof MutVar<?> && role.equals(LOOP_VARIABLE);
+    untested when the gate was introduced; belongs to part II/III
