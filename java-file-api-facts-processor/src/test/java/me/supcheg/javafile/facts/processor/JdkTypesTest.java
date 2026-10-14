@@ -309,6 +309,15 @@ class JdkTypesTest {
     }
 
     @Test
+    void aRestrictedMethodHasNoFact() throws Exception {
+        // System.loadLibrary is restricted: code that calls it is code javac warns of (-Xlint:restricted)
+        Loaded loaded = load(processed("java.lang.System.class"));
+        assertThat(loaded.factNames("gen.facts.java.lang.System_"))
+                .contains("getProperty_String")
+                .doesNotContain("load", "loadLibrary");
+    }
+
+    @Test
     void anObjectMetamodelHasOnlyTheMethodsObjectDeclares() throws Exception {
         Loaded loaded = load(processed(TYPES));
 

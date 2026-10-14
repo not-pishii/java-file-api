@@ -106,6 +106,21 @@ public final class MirrorTranslator {
     private static final String DEPRECATED =
             "is deprecated, and code that names it is code javac warns of (-Xlint:deprecation, removal)";
 
+    /// Why a restricted method has no fact, see [#DEPRECATED].
+    private static final String RESTRICTED =
+            "is restricted, and code that calls it is code javac warns of (-Xlint:restricted)";
+
+    /// The restricted methods of the platform (JDK 25), by the canonical name of their class: javac
+    /// warns of a call of one (`-Xlint:restricted`).
+    private static final Map<String, Set<String>> RESTRICTED_METHODS = Map.of(
+            "java.lang.ModuleLayer.Controller", Set.of("enableNativeAccess"),
+            "java.lang.Runtime", Set.of("load", "loadLibrary"),
+            "java.lang.System", Set.of("load", "loadLibrary"),
+            "java.lang.foreign.AddressLayout", Set.of("withTargetLayout"),
+            "java.lang.foreign.Linker", Set.of("downcallHandle", "upcallStub"),
+            "java.lang.foreign.MemorySegment", Set.of("reinterpret"),
+            "java.lang.foreign.SymbolLookup", Set.of("libraryLookup"));
+
     private final Elements elements;
     private final javax.lang.model.util.Types types;
 
@@ -305,16 +320,16 @@ public final class MirrorTranslator {
     /// The access a fact of a member of a type is of: that of a `public`
     /// member, and of a `protected` one if the type is a class that can be
     /// extended; none for any other member, which code of another package
-    /// cannot name, and none for a deprecated one, which code javac warns of
-    /// names (`-Xlint:deprecation`, `removal`) — the facts describe what code
-    /// may name without a warning, and a member deprecated on the target
-    /// classpath alone is no member of the canonical form there.
+    /// cannot name, and none for a deprecated or restricted one,
+    /// which code javac warns of names ([#warned(Element)]) — the facts
+    /// describe what code may name without a warning, and a member deprecated
+    /// on the target classpath alone is no member of the canonical form there.
     ///
     /// @param member a member of `type`, declared or inherited
     /// @param type the class, interface, enum or record
     /// @return the access of the fact, if the member can have one
     private static Optional<Access> access(Element member, TypeElement type) {
-        if (member.getAnnotation(Deprecated.class) != null) {
+        if (warned(member).isPresent()) {
             return Optional.empty();
         }
         Set<Modifier> modifiers = member.getModifiers();
@@ -385,10 +400,31 @@ public final class MirrorTranslator {
             return Optional.of(type.getQualifiedName()
                     + " is in the unnamed package, which a metamodel in a named package cannot refer to");
         }
-        if (type.getAnnotation(Deprecated.class) != null) {
-            return Optional.of(type.getQualifiedName() + " " + DEPRECATED);
+        return warned(type).map(why -> type.getQualifiedName() + " " + why);
+    }
+
+    /// Why code that names `element` — a type or a member — is code javac warns of, if it is: it is
+    /// deprecated (`-Xlint:deprecation`, `removal`), or a restricted method of the platform, for which
+    /// native access is asked (`-Xlint:restricted`). The facts describe what code may name without a
+    /// warning: such an element has none.
+    ///
+    /// The restricted methods are those of [#RESTRICTED_METHODS], by name: javac tells them by an
+    /// annotation of the platform it hides where it reads the platform of a `--release`, and two
+    /// compilations told apart by `--release` alone have one canonical form of a type all the same.
+    ///
+    /// @param element a type or a member
+    /// @return the reason, a predicate of the element; empty if code may name it
+    private static Optional<String> warned(Element element) {
+        if (element.getAnnotation(Deprecated.class) != null) {
+            return Optional.of(DEPRECATED);
         }
-        return Optional.empty();
+        return element.getKind() == ElementKind.METHOD
+                        && element.getEnclosingElement() instanceof TypeElement owner
+                        && RESTRICTED_METHODS
+                                .getOrDefault(owner.getQualifiedName().toString(), Set.of())
+                                .contains(element.getSimpleName().toString())
+                ? Optional.of(RESTRICTED)
+                : Optional.empty();
     }
 
     /// Whether Java source can name a member. A type it cannot name javac does not find at all: a class
@@ -1526,9 +1562,7 @@ public final class MirrorTranslator {
         if (!isPublic(element)) {
             reading.nonPublic.add(binaryName(type));
         }
-        if (elements.isDeprecated(element)) {
-            reading.deprecated.add(binaryName(type));
-        }
+        warned(element).ifPresent(_ -> reading.warned.add(binaryName(type)));
         List<TypeArg> args =
                 type.getTypeArguments().stream().map(a -> argument(a, reading)).toList();
         Optional<TypeMirror> parameterizedOuter = Stream.iterate(
@@ -1669,7 +1703,7 @@ public final class MirrorTranslator {
         private final VarScope scope;
         private final List<String> problems = new ArrayList<>();
         private final SortedSet<String> nonPublic = new TreeSet<>();
-        private final SortedSet<String> deprecated = new TreeSet<>();
+        private final SortedSet<String> warned = new TreeSet<>();
 
         Reading(VarScope scope) {
             this.scope = scope;
@@ -1691,9 +1725,9 @@ public final class MirrorTranslator {
             if (!nonPublic.isEmpty()) {
                 return Optional.of("mentions types that are not public: " + String.join(", ", nonPublic));
             }
-            if (!deprecated.isEmpty()) {
+            if (!warned.isEmpty()) {
                 return Optional.of(
-                        "mentions deprecated types, which code javac warns of names: " + String.join(", ", deprecated));
+                        "mentions deprecated types, which code javac warns of names: " + String.join(", ", warned));
             }
             if (arity > MemberModel.MAX_ARITY) {
                 return Optional.of("has " + arity + " parameters, more than " + MemberModel.MAX_ARITY);

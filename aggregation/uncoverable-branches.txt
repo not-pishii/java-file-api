@@ -188,6 +188,9 @@ me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
 me/supcheg/javafile/typed/Constants.java :: Invariants.require(divisor != 0, "a constant divisor is no zero: divInt and modInt refuse one");
     divInt and modInt refuse a divisor that folds to zero, so no constant division by zero is folded
 
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && element.getEnclosingElement() instanceof TypeElement owner
+    a method is enclosed by the class or interface that declares it (javax.lang.model.element.ExecutableElement#getEnclosingElement)
+
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
 me/supcheg/javafile/facts/Invocables.java :: case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
