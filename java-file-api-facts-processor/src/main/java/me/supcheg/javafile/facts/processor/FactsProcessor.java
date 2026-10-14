@@ -287,10 +287,11 @@ public final class FactsProcessor extends AbstractProcessor {
         graph.nodes().values().stream()
                 .flatMap(node -> Stream.concat(
                         settlement(node)
-                                .flatMap(settlement -> settlement instanceof Settlement.Refused(var _, String error)
-                                        ? Optional.<Diagnostics.Message>of(new Diagnostics.Message.Error(
-                                                first(sitesOf.apply(node.name()), elements), error))
-                                        : Optional.empty())
+                                .flatMap(settlement ->
+                                        settlement instanceof Settlement.Refused(var _, String error, var _)
+                                                ? Optional.<Diagnostics.Message>of(new Diagnostics.Message.Error(
+                                                        first(sitesOf.apply(node.name()), elements), error))
+                                                : Optional.empty())
                                 .stream(),
                         declined(node, graph, dealtWith, asked, elements).stream()))
                 .forEach(diagnostics::report);
@@ -307,6 +308,8 @@ public final class FactsProcessor extends AbstractProcessor {
                             case Done.GeneratedFull(ClassDesc metamodel) ->
                                 Stream.of(Map.entry(metamodel, entry.getKey()));
                             case Done.GeneratedToken(ClassDesc metamodel) ->
+                                Stream.of(Map.entry(metamodel, entry.getKey()));
+                            case Done.RefusedFull(ClassDesc metamodel) ->
                                 Stream.of(Map.entry(metamodel, entry.getKey()));
                             case Done.ReusedFull _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
                             case Done.ReusedToken _ -> Stream.<Map.Entry<ClassDesc, String>>empty();
@@ -376,11 +379,14 @@ public final class FactsProcessor extends AbstractProcessor {
                                 name,
                                 name + " is requested after its token-only metamodel " + Models.binaryName(tokenOnly)
                                         + " was generated in an earlier round; request it with the types whose"
-                                        + " signatures mention it"));
+                                        + " signatures mention it",
+                                new Done.RefusedFull(tokenOnly)));
                     case TypeGraph.Request.Unrepresentable(String reason) ->
-                        Optional.of(new Settlement.Refused(name, "no metamodel of " + name + ": " + reason));
+                        Optional.of(new Settlement.Refused(
+                                name, "no metamodel of " + name + ": " + reason, new Done.Failed()));
                     case TypeGraph.Request.Rejected(String reason) ->
-                        Optional.of(new Settlement.Refused(name, "no metamodel of " + name + ": " + reason));
+                        Optional.of(new Settlement.Refused(
+                                name, "no metamodel of " + name + ": " + reason, new Done.Failed()));
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) ->
                         Optional.of(new Settlement.Reused(name, new Done.ReusedFull(metamodel)));
                     case TypeGraph.Request.Settled _ -> Optional.empty();
@@ -413,7 +419,8 @@ public final class FactsProcessor extends AbstractProcessor {
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> Optional.of(metamodel);
                     case TypeGraph.Request.Ready(TypeElement type, var _) ->
                         Optional.of(MetamodelNames.metamodel(base, type, elements));
-                    case TypeGraph.Request.Late _ -> Optional.<ClassDesc>empty();
+                    // the token-only metamodel an earlier round wrote stands, though the full one is refused
+                    case TypeGraph.Request.Late(ClassDesc tokenOnly) -> Optional.of(tokenOnly);
                     case TypeGraph.Request.Waiting _ -> Optional.<ClassDesc>empty();
                     case TypeGraph.Request.Unrepresentable _ -> Optional.<ClassDesc>empty();
                     case TypeGraph.Request.Rejected _ -> Optional.<ClassDesc>empty();
@@ -433,6 +440,7 @@ public final class FactsProcessor extends AbstractProcessor {
         return switch (done) {
             case Done.GeneratedFull(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.GeneratedToken(ClassDesc metamodel) -> Optional.of(metamodel);
+            case Done.RefusedFull(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.ReusedFull(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.ReusedToken(ClassDesc metamodel) -> Optional.of(metamodel);
             case Done.Failed _ -> Optional.empty();
@@ -561,7 +569,8 @@ public final class FactsProcessor extends AbstractProcessor {
                         switch (settled) {
                             case Done.GeneratedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
                             case Done.ReusedFull(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
-                            case Done.Failed _ ->
+                            // with an error, or after its token-only one
+                            case Done.Failed _, Done.RefusedFull _ ->
                                 new About.Supertype.None(name, "no full metamodel of " + name + " was generated");
                         };
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
@@ -772,15 +781,11 @@ public final class FactsProcessor extends AbstractProcessor {
         /// A metamodel on the classpath is reused.
         record Reused(String name, Done done) implements Settlement {}
 
-        /// The type has no metamodel.
+        /// The metamodel asked for is refused.
         ///
         /// @param error why, to report
-        record Refused(String name, String error) implements Settlement {
-            @Override
-            public Done done() {
-                return new Done.Failed();
-            }
-        }
+        /// @param done what the type is left with: no metamodel, or the token-only one it had
+        record Refused(String name, String error, Done done) implements Settlement {}
     }
 
     /// Whether a round is the last: no later round will bring a type that is missing.

@@ -67,6 +67,13 @@ sealed interface Done {
     /// It has no metamodel; an error is reported.
     record Failed() implements Final {}
 
+    /// This compilation generated its token-only metamodel, and a full one, asked for in a later round, is
+    /// refused; an error is reported. The token-only metamodel stands: what mentions the type refers to it,
+    /// as before the request.
+    ///
+    /// @param metamodel the token-only metamodel class
+    record RefusedFull(ClassDesc metamodel) implements Final {}
+
     /// Its metamodel is owed: metamodels written in earlier rounds refer to it, but it is not written
     /// yet, for the type may turn out a supertype of a type that is not there
     /// ([TypeGraph.Token.Held]). The types that mention it are done with, and are not read again to

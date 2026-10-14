@@ -6,6 +6,9 @@
 
 # ---- compiler artifacts: branches javac makes and no input reaches ----
 
+me/supcheg/javafile/facts/processor/FactsProcessor.java :: case Done.Failed _, Done.RefusedFull _ ->
+    a case of several type patterns: javac tests each label once more after it matched; the second label is reached only in the last round, after the error of a late request, when no source the round writes is kept
+
 me/supcheg/javafile/render/ExprRenderer.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
     a record pattern with a primitive component: javac tests the component, and no value fails the test
 

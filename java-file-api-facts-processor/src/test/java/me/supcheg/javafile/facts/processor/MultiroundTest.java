@@ -1036,6 +1036,39 @@ class MultiroundTest {
     }
 
     @Test
+    void aTypeRefusedAFullMetamodelKeepsTheTokenOnlyOneItHasForWhatMentionsIt() {
+        Written written = new Written("gen.facts.p.C_", "gen.facts.p.B_");
+        Compiled compilation = Javac.facts()
+                .with(
+                        new InRounds(List.of(Map.of(
+                                "gen.Second",
+                                "package gen; @me.supcheg.javafile.facts.meta.Facts({p.B.class, p.C.class})"
+                                        + " class Second {}"))),
+                        written)
+                .compile(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts(p.A.class)
+                class G {}
+                """,
+                        "package p; public class A { public B get() { return null; } }",
+                        "package p; public final class B { public int v() { return 0; } }",
+                        "package p; public class C { public B other() { return null; } public void take(B b) {} }");
+
+        // round 1 writes the token-only B_ for A; round 2 asks for B, too late, and for C, which mentions it
+        assertThat(compilation.errors())
+                .containsExactly("p.B is requested after its token-only metamodel gen.facts.p.B_ was generated in an"
+                        + " earlier round; request it with the types whose signatures mention it");
+        // B has the metamodel it had: it was forgotten, and the members of C had no facts for "p.B, which
+        // has no metamodel"
+        assertThat(compilation.warnings()).isEmpty();
+        assertThat(written.comment("gen.facts.p.C_"))
+                .startsWith("The full metamodel of [C]")
+                .doesNotContain("no fact");
+        assertThat(written.comment("gen.facts.p.B_")).startsWith("The token-only metamodel of [B]");
+    }
+
+    @Test
     void aTypeReadAfterItsRequestedSupertypeFailedGetsItsMetamodelWithoutTheFactsOfThatOne() {
         Compiled compilation = process(
                 """

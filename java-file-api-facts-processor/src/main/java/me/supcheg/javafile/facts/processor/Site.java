@@ -46,9 +46,19 @@ sealed interface Site extends Comparable<Site> {
     /// @return the element, empty if it no longer exists
     Optional<? extends Element> resolve(Elements elements);
 
+    /// By name, and a type before a package of its name: the order agrees with `equals`, so a sorted set
+    /// holds a site of each kind under one name.
     @Override
     default int compareTo(Site other) {
-        return name().compareTo(other.name());
+        int byName = name().compareTo(other.name());
+        return byName != 0 ? byName : Integer.compare(rank(this), rank(other));
+    }
+
+    private static int rank(Site site) {
+        return switch (site) {
+            case TypeSite _ -> 0;
+            case PackageSite _ -> 1;
+        };
     }
 
     /// A class, interface, enum or record annotated with `@Facts`.
