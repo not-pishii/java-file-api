@@ -4,6 +4,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
@@ -35,6 +36,7 @@ import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.MemberBuilder.Member;
 
 import java.lang.constant.ClassDesc;
@@ -123,6 +125,16 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                     case Member.Callable callable -> new Slot.Awaiting(callable);
                     case Member.Field field -> new Slot.Blank(field);
                     case Member.Given given -> new Slot.Defined(given, given.member());
+                    case Member.SerialVersion serialVersion ->
+                        new Slot.Defined(
+                                serialVersion,
+                                new FieldDecl(
+                                        Member.SerialVersion.NAME,
+                                        Types.LONG,
+                                        List.of(new AnnotationUse(ClassDesc.of("java.io", "Serial"), List.of())),
+                                        Set.of(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
+                                        Optional.of(Exprs.literal(serialVersion.value())),
+                                        Optional.empty()));
                 })
                 .toList();
         requireWritable(slots, "the members");

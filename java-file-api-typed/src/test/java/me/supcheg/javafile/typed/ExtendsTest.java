@@ -124,11 +124,12 @@ class ExtendsTest {
 
         @Test
         void aClassThatExtendsAnExceptionIsThrownCaughtAndDeclaredByItsWitness() throws Throwable {
-            CompiledClasses compiled = CompiledClasses.ofSerializable(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
                 @Override
                 public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Exception_.extend(h.self()));
                     var cb = sh.members();
+                    cb.declareSerialVersionUID(1L);
                     var constructor = cb.declareConstructor();
                     Upcast<Self, Exception> asException = cb.asSuper();
                     var ofMessage = cb.declareConstructor(String_.TOKEN);
@@ -161,6 +162,7 @@ class ExtendsTest {
 
             assertThat(compiled.source())
                     .contains("public final class Probe extends Exception {")
+                    .contains("@Serial\n    private static final long serialVersionUID = 1L;")
                     .contains("super(\"failed\");")
                     .contains("public static String raise(String v0) throws Probe {")
                     .contains("catch (Probe v0) {")
@@ -405,6 +407,7 @@ class ExtendsTest {
                                     ClassDesc.of("java.lang.Object"));
                     assertThat(h.self().isCheckedException()).isTrue();
                     var cb = sh.members();
+                    cb.declareSerialVersionUID(1L);
                     var constructor = cb.declareConstructor();
                     return cb.bodies(constructor, ctor -> ctor.super_(Exception_.new_, (b, self) -> b.end()));
                 }
@@ -844,6 +847,7 @@ class ExtendsTest {
                         public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Exception_.extend(h.self()));
                             var cb = sh.members();
+                            cb.declareSerialVersionUID(1L);
                             var constructor = cb.declareConstructor();
                             var raise = cb.declareVoidMethod("raise");
                             var bodies =

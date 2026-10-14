@@ -47,6 +47,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     private final Superclass superclass;
     private final SignatureRegistry registry;
     private final ClassDeclaration<Self> owner;
+    private final Serial serial;
     private List<Member> members = List.of();
 
     MemberBuilder(ClassDeclaration<Self> declared, Inheritance inherited, Superclass superclass) {
@@ -55,6 +56,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         this.self = declared.self();
         this.registry = new SignatureRegistry(described, inherited, declared.bounded());
         this.owner = declared;
+        this.serial = Serial.of(inherited, declared.bounded());
     }
 
     /// The fact of the class being declared: a [FinalClassToken], usable as
@@ -145,9 +147,34 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         Site site = Site.here();
         owner.requireDeclaring("field " + name + " of " + described);
         owner.scope("the type of field " + name).require(field.type());
+        serial.requireSerializable(field, described);
         registry.field(name);
         declared(new Member.Field(field, modifiers, site));
         return field;
+    }
+
+    // ------------------------------------------------------------------
+    // Serialization
+    // ------------------------------------------------------------------
+
+    /// Declares the serial version of a class that is `Serializable` by a supertype — an exception
+    /// among them —, `@Serial private static final long serialVersionUID = value;`. Such a class says
+    /// its serial version, or javac warns of it (`[serial]`, JLS 8.1.1 and the
+    /// `java.io.Serializable` contract), and its declarations do not end without it.
+    ///
+    /// @param value the serial version
+    /// @throws IllegalArgumentException if the class is not `Serializable`, or declared its serial version
+    ///     already, or a field of that name
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public final void declareSerialVersionUID(long value) {
+        owner.requireDeclaring("the serial version of " + described);
+        serial.requireSerializable(described);
+        if (members.stream().anyMatch(Member.SerialVersion.class::isInstance)) {
+            throw new IllegalArgumentException(
+                    described + " declares its serial version already: a class has one serialVersionUID");
+        }
+        registry.field(Member.SerialVersion.NAME);
+        declared(new Member.SerialVersion(value));
     }
 
     // ------------------------------------------------------------------
@@ -283,6 +310,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 "the bodies of " + described,
                 () -> {
                     registry.requireComplete();
+                    serial.requireVersion(members.stream().anyMatch(Member.SerialVersion.class::isInstance), described);
                     return registry.table();
                 },
                 written -> make.apply(new MemberBodies.Declared<>(owner, superclass, members, written)));
@@ -336,5 +364,14 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         ///
         /// @param member the member
         record Given(ClassMember member) implements Member {}
+
+        /// The serial version of a `Serializable` class, `@Serial private static final long
+        /// serialVersionUID = value;`.
+        ///
+        /// @param value the serial version
+        record SerialVersion(long value) implements Member {
+            /// The name of the field.
+            static final String NAME = "serialVersionUID";
+        }
     }
 }

@@ -436,6 +436,7 @@ class DeclarationStagesTest {
                     @Override
                     public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var cb = h.extends_(Exception_.extend(h.self())).members();
+                        cb.declareSerialVersionUID(1L);
                         Upcast<Self, Exception> asException = cb.asSuper();
                         var constructor = cb.declareConstructor();
                         var m = cb.declareVoidMethod("m");
@@ -450,6 +451,7 @@ class DeclarationStagesTest {
                     @Override
                     public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var cb = h.extends_(Exception_.extend(h.self())).members();
+                        cb.declareSerialVersionUID(1L);
                         Upcast<Self, Exception> asException = cb.asSuper();
                         var constructor = cb.declareConstructor();
                         var m = cb.declareVoidMethod("m");

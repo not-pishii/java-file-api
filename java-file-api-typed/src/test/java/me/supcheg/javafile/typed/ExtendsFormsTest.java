@@ -121,7 +121,7 @@ class ExtendsFormsTest {
     @Test
     void anExceptionOfTwoParametersImplementsAnInterfaceThatThrowsIt() throws Throwable {
         Callable_<String> callable = new Callable_<>(String_.TOKEN);
-        CompiledClasses compiled = CompiledClasses.ofSerializable(file(new TypedJavaFile.TypedClassHeaderSpec() {
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
             @Override
             public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var sh = h.extends_(Exception_.extend(h.self()));
@@ -130,6 +130,7 @@ class ExtendsFormsTest {
                 var call = sh.throwing(asException, h.self()).overriding(callable.call);
                 sh.implements_(callable.implement(h.self()).call(call));
                 var cb = sh.members();
+                cb.declareSerialVersionUID(1L);
                 var make = cb.declareConstructor(String_.TOKEN, Throwable_.TOKEN);
                 var constructor = cb.declareConstructor();
                 var handled = cb.declareMethod("handled", String_.TOKEN);
