@@ -216,6 +216,22 @@ class TypeShapeTest {
                 List.of(),
                 false,
                 "the superclass chain of open class fixtures.Box repeats a class: [fixtures.Box, java.lang.Object]");
+        // a chain that has classes, and neither ends in Object nor names each once
+        assertInvalidShape(
+                DeclaredKind.OPEN_CLASS,
+                BOX,
+                List.of(ConstantDescs.CD_Number),
+                List.of(),
+                false,
+                "the superclass chain of open class fixtures.Box must end in java.lang.Object, got [java.lang.Number]");
+        assertInvalidShape(
+                DeclaredKind.OPEN_CLASS,
+                BOX,
+                List.of(ConstantDescs.CD_Number, ConstantDescs.CD_Number, ConstantDescs.CD_Object),
+                List.of(),
+                false,
+                "the superclass chain of open class fixtures.Box repeats a class: [java.lang.Number,"
+                        + " java.lang.Number, java.lang.Object]");
         assertInvalidShape(
                 DeclaredKind.ENUM_CLASS,
                 BOX,

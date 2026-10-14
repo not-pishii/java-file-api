@@ -139,5 +139,14 @@ class FactValuesTest {
                         () -> List.of(ConstantDescs.CD_Object),
                         () -> MethodTable.EMPTY))
                 .withMessageStartingWith("a generic class has a token for each of its type parameters: ");
+        // one token and no type parameter to be of
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> UnsafeFacts.declaredClassToken(
+                        ClassDesc.of("fixtures", "Box"),
+                        List.of(),
+                        List.of(UnsafeFacts.typeVarToken(Types.typeVar("T"), ConstantDescs.CD_Object)),
+                        () -> List.of(ConstantDescs.CD_Object),
+                        () -> MethodTable.EMPTY))
+                .withMessageStartingWith("a generic class has a token for each of its type parameters: [] and [");
     }
 }

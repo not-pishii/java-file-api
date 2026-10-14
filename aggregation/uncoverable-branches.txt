@@ -178,22 +178,7 @@ me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
 
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
-me/supcheg/javafile/facts/FactSource.java :: token instanceof ConcreteClassToken<?> ? List.of("ctor(...)") : List.of());
-    untested when the gate was introduced
-
 me/supcheg/javafile/facts/Invocables.java :: case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/StaticFieldRef.java :: case RefToken<?> ref -> ref.erasure().equals(ConstantDescs.CD_String) && value instanceof String;
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/TypeShape.java :: if (superclasses.contains(desc) || Set.copyOf(superclasses).size() != superclasses.size()) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/TypeShape.java :: if (superclasses.isEmpty() || !superclasses.getLast().equals(ConstantDescs.CD_Object)) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/UnsafeFacts.java :: if (variables.isEmpty() || variables.size() != typeParameters.size()) {
     untested when the gate was introduced
 
 me/supcheg/javafile/facts/processor/Closure.java :: .filter(mentioned -> held.contains(mentioned) && !mentioned.equals(entry.getKey()))
@@ -314,18 +299,6 @@ me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || overridden.getK
     untested when the gate was introduced
 
 me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(
-    untested when the gate was introduced
-
-me/supcheg/javafile/render/ImportManager.java :: String whole = packageName.isEmpty() ? dotted : packageName;
-    untested when the gate was introduced
-
-me/supcheg/javafile/render/ImportManager.java :: return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()
-    untested when the gate was introduced
-
-me/supcheg/javafile/render/ImportManager.java :: throw new IllegalStateException("cannot name " + (packageName.isEmpty() ? "" : packageName + ".")
-    untested when the gate was introduced
-
-me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassTypeRef(var desc, var annotations) when annotations.isEmpty() -> ctx.qualifier(desc);
     untested when the gate was introduced
 
 # ---- typed — part II/III: temporary, untested conditions of the typed layer ----

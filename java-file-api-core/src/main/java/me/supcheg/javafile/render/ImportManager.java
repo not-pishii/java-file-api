@@ -191,6 +191,16 @@ final class ImportManager implements TypeContext {
         }
 
         String dotted = ClassDescNames.qualifiedByDots(desc);
+        if (packageName.isEmpty()) {
+            // no package qualifies a type of the unnamed one (JLS 7.4.2): a member type is named through the
+            // type it is nested in, and a top-level one has its simple name alone, which means the other type
+            if (chain.size() == 1) {
+                throw new IllegalStateException("cannot name " + dotted + " of the unnamed package in a file where "
+                        + dotted + " means " + qualified(existing)
+                        + ": a type of the unnamed package has no qualified name");
+            }
+            return dotted;
+        }
         return sameScopeAsCurrentFile && chain.size() > 1 ? dotted : packageName + "." + dotted;
     }
 

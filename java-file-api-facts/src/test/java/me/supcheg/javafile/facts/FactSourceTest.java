@@ -3,6 +3,7 @@ package me.supcheg.javafile.facts;
 import me.supcheg.javafile.facts.source.MemberKind;
 import me.supcheg.javafile.facts.source.MemberQuery;
 import me.supcheg.javafile.facts.source.Resolution;
+import me.supcheg.javafile.facts.testfacts.java.lang.Object_;
 import me.supcheg.javafile.facts.testfacts.java.lang.String_;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,15 @@ class FactSourceTest {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(source::ctor)
                 .withMessageContaining("interface java.lang.Runnable");
+        // nor one for a subclass, and no `ctor(...)` to offer in its place
+        assertThatExceptionOfType(FactLookupException.class)
+                .isThrownBy(source::superCtor)
+                .withMessageContaining("constructors for a subclass")
+                .withMessageContaining("interface java.lang.Runnable")
+                .satisfies(failure -> assertThat(failure.getMessage()).doesNotContain("ctor(...)"));
+        assertThatExceptionOfType(FactLookupException.class)
+                .isThrownBy(source(String_.TOKEN, Optional.empty())::superCtor)
+                .withMessageContaining("ctor(...)");
         assertThat(asked).isEmpty();
     }
 
@@ -131,6 +141,13 @@ class FactSourceTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> intConstant.staticField("ANSWER", String_.TOKEN))
                 .withMessageContaining("not a constant value of type java.lang.String");
+        // a constant is of a primitive type or a String, whatever its value
+        FactSource<String> textConstant = source(String_.TOKEN, Optional.of("text"));
+        assertThat(textConstant.staticField("TEXT", String_.TOKEN).constantValue())
+                .contains("text");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> textConstant.staticField("TEXT", Object_.TOKEN))
+                .withMessageContaining("not a constant value of type java.lang.Object: text (java.lang.String)");
     }
 
     @Test
