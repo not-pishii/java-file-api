@@ -49,4 +49,7 @@ jobs:
             --title "${{ github.ref_name }}" \
             --generate-notes \
             java-file-api-core/build/libs/*.jar \
-            java-file-api-lang-model/build/libs/*.jar
+            java-file-api-facts/build/libs/*.jar \
+            java-file-api-lang-model/build/libs/*.jar \
+            java-file-api-facts-processor/build/libs/*.jar \
+            java-file-api-typed/build/libs/*.jar

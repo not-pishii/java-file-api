@@ -103,9 +103,24 @@ public final class FixtureRun {
     /// @param only the fixture, `plain`, or the case of one, `inheritance/hidden`, to leave; every one if empty
     /// @return the tests, made as they run
     public static Stream<DynamicNode> tests(Path fixtures, Path work, Optional<String> only) {
-        return Fixture.all(fixtures).stream()
+        List<Fixture> all = Fixture.all(fixtures);
+        List<DynamicNode> found = all.stream()
                 .map(fixture -> new FixtureRun(fixture, work.resolve(fixture.name())))
-                .flatMap(run -> run.container(only));
+                .flatMap(run -> run.container(only))
+                .toList();
+        // a name that leaves nothing is a mistake, not a run without tests, which is green
+        return only.filter(name -> found.isEmpty())
+                .map(name -> Stream.<DynamicNode>of(DynamicTest.dynamicTest(
+                        "-Pfixtures.only=" + name, fixtures.toUri(), () -> {
+                            throw new AssertionError("no fixture and no case of one is named " + name + ": "
+                                    + all.stream()
+                                            .flatMap(fixture -> fixture.single()
+                                                    ? Stream.of(fixture.name())
+                                                    : fixture.cases().stream()
+                                                            .map(each -> fixture.name() + "/" + each.name()))
+                                            .collect(Collectors.joining(", ")));
+                        })))
+                .orElseGet(found::stream);
     }
 
     private Stream<DynamicNode> container(Optional<String> only) {
@@ -166,13 +181,31 @@ public final class FixtureRun {
                     executable);
         }
 
+        /// The tests that can be told only after the test before them has run. If what they need
+        /// fails — as that test has failed with the same —, a test stands for them and fails with
+        /// it too: the tests that were not run are not passed over in silence.
+        private Stream<DynamicNode> after(String what, Path source, Supplier<Stream<DynamicNode>> tests) {
+            return Stream.of(tests).flatMap(supplier -> {
+                try {
+                    return supplier.get();
+                } catch (RuntimeException | AssertionError e) {
+                    return Stream.of(test(what + " cannot be told", source, () -> {
+                        throw e;
+                    }));
+                }
+            });
+        }
+
         Stream<DynamicNode> tests() {
             return Stream.concat(
                     Stream.of(test(
                             "the output of the processor is expected/",
                             fixtureCase.expected(),
                             () -> processed.get().snapshot().verify(fixtureCase.expected(), shared()))),
-                    after(() -> processed.get().succeeded() ? afterTheMetamodels() : afterTheFailure()));
+                    after(
+                            "what follows the output of the processor",
+                            fixtureCase.expected(),
+                            () -> processed.get().succeeded() ? afterTheMetamodels() : afterTheFailure()));
         }
 
         private Stream<DynamicNode> afterTheMetamodels() {
@@ -193,7 +226,7 @@ public final class FixtureRun {
                                                     "use/ compiles under -Xlint:all -Werror",
                                                     fixtureCase.use(),
                                                     used::get)),
-                                            after(() -> checks(use))),
+                                            after("the checks of use/", fixtureCase.use(), () -> checks(use))),
                             Source.in(fixtureCase.useFails()).stream()
                                     .map(source -> test(
                                             "use-fails/" + source.path(),
@@ -529,19 +562,6 @@ public final class FixtureRun {
                 throw new IllegalStateException(e);
             }
         }
-    }
-
-    /// The tests that can be told only after the test before them has
-    /// run; none if what they need fails, as that test has failed with
-    /// the same.
-    private static Stream<DynamicNode> after(Supplier<Stream<DynamicNode>> tests) {
-        return Stream.of(tests).flatMap(supplier -> {
-            try {
-                return supplier.get();
-            } catch (RuntimeException | AssertionError e) {
-                return Stream.empty();
-            }
-        });
     }
 
     private static Class<?> load(ClassLoader loader, String name) {

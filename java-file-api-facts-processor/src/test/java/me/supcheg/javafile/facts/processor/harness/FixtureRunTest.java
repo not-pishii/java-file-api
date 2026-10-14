@@ -232,7 +232,30 @@ class FixtureRunTest {
     }
 
     @Test
-    void useThatDoesNotCompileOrHasAWarningFailsOnce() {
+    void aNameThatLeavesNoFixtureFails() {
+        file("one/lib/p/Thing.java", THING);
+        request("one", "gen", "Thing");
+        file("two/lib/p/Thing.java", THING);
+        file("two/cases/first/request/gen/G.java", "package gen; class G {}");
+
+        Map<String, Optional<Throwable>> outcomes = outcomes(FixtureRun.tests(fixtures, work, Optional.of("oen")))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        // it was no test at all, and a green run
+        assertThat(outcomes).containsOnlyKeys("-Pfixtures.only=oen");
+        assertThat(outcomes.get("-Pfixtures.only=oen"))
+                .get()
+                .isInstanceOf(AssertionError.class)
+                .asString()
+                .contains("no fixture and no case of one is named oen: one, two/first");
+        assertThat(outcomes(FixtureRun.tests(fixtures, work, Optional.of("two/first")))
+                        .map(Map.Entry::getKey))
+                .isNotEmpty()
+                .allMatch(name -> name.startsWith("two/first: ") || name.startsWith("two: "));
+    }
+
+    @Test
+    void useThatDoesNotCompileOrHasAWarningFailsAndSoDoWhatFollowsIt() {
         file("one/lib/p/Thing.java", THING);
         file("one/lib/p/Dep.java", DEP);
         request("one", "gen", "Thing");
@@ -253,11 +276,17 @@ class FixtureRunTest {
                         OUTPUT,
                         "one: the metamodels compile under -Xlint:all -Xdoclint:all/protected -Werror",
                         HERITAGE,
-                        "one: use/ compiles under -Xlint:all -Werror");
+                        "one: use/ compiles under -Xlint:all -Werror",
+                        "one: the checks of use/ cannot be told");
         assertThat(outcomes.get("one: use/ compiles under -Xlint:all -Werror"))
                 .get()
                 .asString()
                 .contains("Checks.java:3:")
+                .contains("found raw type");
+        // the checks that were not run are no passed tests: they were left out without a word
+        assertThat(outcomes.get("one: the checks of use/ cannot be told"))
+                .get()
+                .asString()
                 .contains("found raw type");
     }
 

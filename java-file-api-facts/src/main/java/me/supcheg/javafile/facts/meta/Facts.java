@@ -28,6 +28,14 @@ import java.lang.annotation.Target;
 /// array types, types that are not `public` or are nested in a type that is
 /// not, annotation types, and inner classes of a generic class.
 ///
+/// What it writes is annotated `@javax.annotation.processing.Generated` and
+/// `@org.jspecify.annotations.NullMarked`, neither of which the processor
+/// claims: under `-Xlint:processing` javac warns that no processor claims
+/// them, and under `-Werror` that warning fails the compilation. Compile the
+/// generator with `-Xlint:-processing` (or without `-Werror`), and keep
+/// `org.jspecify:jspecify` on its compile classpath, since the metamodels
+/// refer to it.
+///
 /// The retention is [RetentionPolicy#CLASS]: Gradle lets an incremental
 /// annotation processor read only annotations that survive into the class
 /// file, and `SOURCE` would cost the generator its incremental compilation.

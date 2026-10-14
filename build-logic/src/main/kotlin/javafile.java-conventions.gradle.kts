@@ -73,6 +73,9 @@ tasks {
         jvmArgumentProviders.add(objects.newInstance<MockitoAgentProvider>().apply {
             path = mockitoAgent.asFileTree.singleFile
         })
+        // the tests compare the wording of javac, which is of the locale of the JVM
+        systemProperty("user.language", "en")
+        systemProperty("user.country", "US")
         systemProperty("junit.jupiter.execution.parallel.enabled", true)
         systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
     }

@@ -230,7 +230,7 @@ Compiled compiled = Javac.facts()                                             //
         .compile(REQUEST);
 assertThat(compiled.errors()).containsExactly("…");                           // or warnings()
 assertThat(compiled.orFail().sources()).containsKey("com.acme.p.Svc_");       // or resources()
-compiled.snapshot().verify(Path.of("src/test/snapshots/MultiroundTest/late"));  // honours -Pfixtures.update
+compiled.snapshot().verify(directory);                                        // honours -Pfixtures.update
 ```
 
 `Javac` is an immutable description (`plain()` or `facts()`, then `classpath`, `options`,
@@ -240,8 +240,9 @@ compiled.snapshot().verify(Path.of("src/test/snapshots/MultiroundTest/late"));  
 choosing, such as `--release 17`);
 `Compiled` is a value (`succeeded`, `diagnostics`, `generated`, `classOutput`; `orFail()`,
 `clean()`, `errors()`, `warnings()`, `sources()`, `resources()`, `snapshot()`, `writeTo(dir)`).
-Snapshots of such tests live under `src/test/snapshots/`, never under `src/test/fixtures/`
-(every directory there is a fixture).
+No such test keeps a snapshot in the project today. One that does keeps it outside
+`src/test/fixtures/` (every directory there is a fixture) — under `src/test/snapshots/`, declared
+an input of the `test` task in `build.gradle.kts` with the first of them.
 
 A processor written in the test to get at `Elements` is a unit test with `@ExtendWith(InCompilation.class)` and
 `@InCompilation.Sources(…)`; its parameters are `Elements`, `Types`, `ProcessingEnvironment`, `RoundEnvironment`.
