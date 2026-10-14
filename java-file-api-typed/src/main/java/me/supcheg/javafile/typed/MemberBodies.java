@@ -164,7 +164,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         Optional.of(new Lowering(
                                         target,
                                         new Lowering.Place.InClass(
-                                                self, owner.scope("the initializer of field " + name)),
+                                                self, owner.scope("the initializer of field " + name), owner.bounded()),
                                         Optional.empty())
                                 .lowerInitializer(initializer.node(), field.type())),
                         Optional.empty()),
@@ -667,7 +667,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
 
     private ClassMember lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params) {
         Invocable fact = declared.fact();
-        Lowering lowering = new Lowering(target, new Lowering.Place.InClass(self, declared.scope()), fact.resultType());
+        Lowering lowering = new Lowering(
+                target, new Lowering.Place.InClass(self, declared.scope(), owner.bounded()), fact.resultType());
         List<Param> named = params.stream()
                 .map(param ->
                         new Param(lowering.declareUpfront(param), param.type().typeRef()))

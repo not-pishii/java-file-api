@@ -99,7 +99,11 @@
     Gathered.class,
     Paired.class,
     PairedSink.class,
-    PairedDefaults.class
+    PairedDefaults.class,
+    Settled.class,
+    Ranked.class,
+    Rival.class,
+    Tagged.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -122,7 +126,10 @@ import me.supcheg.javafile.typed.fixtures.Texts;
 import me.supcheg.javafile.typed.fixtures.Numbers;
 import me.supcheg.javafile.typed.fixtures.TakesTexts;
 import me.supcheg.javafile.typed.fixtures.TakesNumbers;
+import me.supcheg.javafile.typed.fixtures.Ranked;
 import me.supcheg.javafile.typed.fixtures.Renamed;
+import me.supcheg.javafile.typed.fixtures.Rival;
+import me.supcheg.javafile.typed.fixtures.Settled;
 import me.supcheg.javafile.typed.fixtures.Unnamed;
 import me.supcheg.javafile.typed.fixtures.Counted;
 import me.supcheg.javafile.typed.fixtures.Measured;
@@ -132,6 +139,7 @@ import me.supcheg.javafile.typed.fixtures.Nothing;
 import me.supcheg.javafile.typed.fixtures.Op;
 import me.supcheg.javafile.typed.fixtures.Outer;
 import me.supcheg.javafile.typed.fixtures.Signal;
+import me.supcheg.javafile.typed.fixtures.Tagged;
 import me.supcheg.javafile.typed.fixtures.Tasks;
 import me.supcheg.javafile.typed.fixtures.Thrower;
 import me.supcheg.javafile.typed.fixtures.TriConsumer;

@@ -75,6 +75,10 @@ class ClassNamesTest {
                 .withMessageContaining(
                         "cannot declare the class java.lang.Made: a package of java is one of the" + " platform");
         assertThat(javacOf("java.lang", "Made", "Made")).hadErrorContaining("package exists in another module");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("java", "Made"), NEVER))
+                .withMessageContaining("cannot declare the class java.Made: a package of java");
     }
 
     @Test

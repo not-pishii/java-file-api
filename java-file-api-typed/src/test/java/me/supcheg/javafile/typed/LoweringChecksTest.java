@@ -4,10 +4,14 @@ import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.lang.Comparable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
@@ -131,7 +135,7 @@ class LoweringChecksTest {
         // SuperSite puts it first in the body of a constructor, where lowerConstructor takes it from
         Lowering lowering = new Lowering(
                 UnsafeFacts.unverifiedClasspath(),
-                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone()),
+                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
                 Optional.empty());
         Instr superInit = new Instr.SuperInit(
                 Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
@@ -151,7 +155,7 @@ class LoweringChecksTest {
         // new Base("x") in a subclass of Base in another package: super("x") alone is its access (JLS 6.6.2.2)
         Lowering lowering = new Lowering(
                 UnsafeFacts.unverifiedClasspath(),
-                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone()),
+                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
                 Optional.empty());
         Node created = new Node.New(
                 Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
@@ -183,5 +187,21 @@ class LoweringChecksTest {
 
         assertThat(compiled.source()).contains("return new String[1].hashCode();");
         assertThat(compiled.invoke("m")).isInstanceOf(Integer.class);
+    }
+
+    @Test
+    void aReceiverOfAVariableWhoseBoundsAreNotKnownIsCastToTheOwnerOfAMethodWithArguments() {
+        // a type variable the generator vouched for may have an overload of compareTo among its bounds
+        TypeVarToken<Comparable<String>> x =
+                UnsafeFacts.typeVarToken(Types.typeVar("X"), ClassDesc.of("java.lang.Comparable"));
+        Var<Comparable<String>> value = Var.param(x, Body.root("root"));
+        Lowering lowering = new Lowering(UnsafeFacts.unverifiedClasspath());
+        lowering.declareUpfront(value);
+        Comparable_<String> comparable = new Comparable_<>(String_.TOKEN);
+
+        assertThat(lowering.lowerExpr(
+                        call(value, comparable.compareTo_T, literal("x")).node()))
+                .isEqualTo(Exprs.cast(comparable.token.typeRef(), new FieldAccessExpr(Optional.empty(), "v0"))
+                        .call("compareTo", Exprs.literal("x")));
     }
 }

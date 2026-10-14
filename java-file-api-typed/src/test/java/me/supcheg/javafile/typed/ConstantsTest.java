@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.fixtures.Settled;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import me.supcheg.javafile.typed.fixtures.Wide;
 import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;
@@ -16,6 +17,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.Supplier_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Settled_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Wide_;
 import org.junit.jupiter.api.Test;
@@ -219,6 +221,8 @@ class ConstantsTest {
                         "(int) (double) 3L == 3",
                         eqInt(narrowTruncatingDoubleToInt(widenLongToDouble(literal(3L))), literal(3))),
                 of("(int) (long) n == 3", eqInt(narrowTruncatingLongToInt(widenIntToLong(N)), literal(3))),
+                of("(int) (double) n == 3", eqInt(narrowTruncatingDoubleToInt(widenIntToDouble(N)), literal(3))),
+                of("(int) (double) big == 3", eqInt(narrowTruncatingDoubleToInt(widenLongToDouble(BIG)), literal(3))),
                 // what is not a number and the infinities are written as constant expressions, and fold so
                 of("(int) (0.0 / 0.0) == 0", eqInt(narrowTruncatingDoubleToInt(literal(Double.NaN)), literal(0))),
                 of(
@@ -285,10 +289,22 @@ class ConstantsTest {
                         eqRef(cond(literal(true), literal("a"), literal("b"), CharSequence_.TOKEN), literal("a"))));
     }
 
+    private static final String SETTLED = Settled.class.getCanonicalName();
+
     private static Stream<Arguments> others() {
         return Stream.of(
                 // a constant variable
                 of("Integer.MAX_VALUE > 0", gtInt(staticField(Integer_.MAX_VALUE), literal(0))),
+                of(SETTLED + ".ON", staticField(Settled_.ON)),
+                of(SETTLED + ".NAME == \"settled\"", eqRef(staticField(Settled_.NAME), literal("settled"))),
+                of(
+                        "(int) (" + SETTLED + ".BIG + 1L) == 1",
+                        eqInt(narrowTruncatingLongToInt(addLong(staticField(Settled_.BIG), literal(1L))), literal(1))),
+                of(
+                        "(int) (" + SETTLED + ".RATIO * 4.0) == 2",
+                        eqInt(
+                                narrowTruncatingDoubleToInt(mulDouble(staticField(Settled_.RATIO), literal(4.0))),
+                                literal(2))),
                 // a `static final` field that is not one
                 of("Integer.TYPE == Integer.TYPE", eqRef(staticField(Integer_.TYPE), staticField(Integer_.TYPE))));
     }

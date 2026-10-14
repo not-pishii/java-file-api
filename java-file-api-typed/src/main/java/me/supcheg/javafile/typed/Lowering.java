@@ -267,7 +267,7 @@ final class Lowering {
     private <T extends TypeToken<?>> T written(T type) {
         switch (place) {
             case Place.Standalone _ -> new TypeScope.Standalone().require(type);
-            case Place.InClass(var _, var scope) -> scope.require(type);
+            case Place.InClass(var _, var scope, var _) -> scope.require(type);
         }
         return type;
     }
@@ -671,7 +671,7 @@ final class Lowering {
         Searched searched;
         if (!Tokens.sameType(receiving.type(), owner)
                 && (pin || declaresCheckedException(method) || hasTwin(receiving.type(), method))) {
-            receiver = Exprs.cast(written(owner).typeRef(), expr(receiving.node()));
+            receiver = cast(owner, receiving, method);
             searched = new Searched.In(owner);
         } else {
             boolean settled = IntStream.range(0, args.size())
@@ -761,7 +761,7 @@ final class Lowering {
                         throw new IllegalStateException(member + " is protected: it is reached in the body of a"
                                 + " subclass of " + owner + " alone (JLS 6.6.2), and this code is in the body of"
                                 + " no class");
-                    case Place.InClass(var self, var _) -> {
+                    case Place.InClass(var self, var _, var _) -> {
                         if (!self.isSubclassOf(owner.erasure())) {
                             throw new IllegalStateException(member + " is protected: it is reached in the body"
                                     + " of a subclass of " + owner + " alone (JLS 6.6.2), and " + self
@@ -806,7 +806,7 @@ final class Lowering {
                     if (boxes
                             || (!onlyCandidate && !Tokens.sameType(arg.type(), param))
                             || (spreads && !Tokens.sameType(arg.type(), param))) {
-                        return Exprs.cast(written(param).typeRef(), expr(arg.node()));
+                        return cast(param, arg, member);
                     }
                     if (spreads) {
                         return expr(arg.node(), true);
@@ -860,8 +860,9 @@ final class Lowering {
     /// in terms of the subtype's type parameters, which erases as it does
     /// unless a type parameter of the method decides its erasure.
     ///
-    /// A type variable does not say what its bounds add: it may have such
-    /// an overload of any method that takes arguments.
+    /// A type variable has the methods of its bounds (JLS 4.9): a twin is one a bound has. One the
+    /// generator vouched for does not say what its bounds add: it may have such an overload of any
+    /// method that takes arguments.
     private boolean hasTwin(TypeToken<?> searched, Invocable method) {
         DeclaredToken<?> owner = method.owner();
         return switch (searched) {
@@ -876,10 +877,60 @@ final class Lowering {
                                 .count()
                         > itself;
             }
-            case TypeVarToken<?> _ -> !method.params().isEmpty();
+            case TypeVarToken<?> variable ->
+                bounds(variable)
+                        .map(bounds -> bounds.stream().anyMatch(bound -> hasTwinThrough(bound, method)))
+                        .orElseGet(() -> !method.params().isEmpty());
             // an array has the methods of Object and no other, and a primitive is no receiver (Expressions)
-            case TypeToken<?> _ -> false;
+            case ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ -> false;
         };
+    }
+
+    /// Whether `bound`, a bound of a type variable, has another method than `method` that erases as it
+    /// does: one of a subtype of the owner of `method` as [#hasTwin] tells it, and any method of that
+    /// signature of a bound that is none — which the shape of the bound proves it is not
+    /// ([me.supcheg.javafile.facts.TypeShape#interfaces()]), or which it is held not to be.
+    private boolean hasTwinThrough(DeclaredToken<?> bound, Invocable method) {
+        ClassDesc owner = method.owner().erasure();
+        boolean inherits = bound.shape() == method.owner().shape()
+                || bound.shape().superclasses().contains(owner)
+                || bound.shape().interfaces().contains(owner);
+        return inherits
+                ? hasTwin(bound, method)
+                : candidates(target.methods(bound.shape()), method)
+                        .anyMatch(s -> s.instantiate(bound.argumentErasures()).equals(method.signature()));
+    }
+
+    /// The bounds of a type parameter of the class the code is in; empty for a type variable the
+    /// generator vouched for, whose bounds are not known.
+    private Optional<List<DeclaredToken<?>>> bounds(TypeVarToken<?> variable) {
+        return switch (place) {
+            case Place.Standalone _ -> Optional.empty();
+            case Place.InClass(var _, var _, var variables) ->
+                variables.stream()
+                        .filter(bounded -> bounded.variable() == variable)
+                        .findFirst()
+                        .map(Subtyping.Bounded::bounds);
+        };
+    }
+
+    /// `(type) operand`, where `of`, the member reached, needs the operand of exactly `type`. javac
+    /// warns of the cast of a value of a type variable of several bounds to a parameterized type as
+    /// unchecked (JLS 5.1.6.2, `-Xlint:unchecked`), and the typed layer writes no code javac warns of:
+    /// such a cast is refused.
+    ///
+    /// @throws IllegalStateException if `operand` is of a type parameter of several bounds and `type` is
+    ///     parameterized
+    private Expr cast(TypeToken<?> type, Node.Operand operand, Object of) {
+        if (operand.type() instanceof TypeVarToken<?> variable
+                && type.typeRef() instanceof ParameterizedTypeRef
+                && bounds(variable).filter(bounds -> bounds.size() > 1).isPresent()) {
+            throw new IllegalStateException(of + " is reached through a value of the type parameter " + variable
+                    + ", of several bounds, which would be cast to " + type + " for it: javac warns of such a"
+                    + " cast as unchecked (-Xlint:unchecked) — bind the value to a variable of " + type
+                    + " first, by let");
+        }
+        return Exprs.cast(written(type).typeRef(), expr(operand.node()));
     }
 
     /// The members of a type javac chooses among for a use of `member`: its
@@ -944,7 +995,7 @@ final class Lowering {
             return protectedFieldReceiver(subclass.get(), receiving, field);
         }
         if (!Tokens.sameType(receiving.type(), owner)) {
-            return Exprs.cast(written(owner).typeRef(), expr(receiving.node()));
+            return cast(owner, receiving, field);
         }
         return expr(receiving.node(), true);
     }
@@ -1030,7 +1081,12 @@ final class Lowering {
         ///
         /// @param self the class
         /// @param scope the type parameters of the class that are in scope there
-        record InClass(ClassToken<?> self, TypeScope scope) implements Place {}
+        /// @param variables the type parameters of the class, each with its bounds
+        record InClass(ClassToken<?> self, TypeScope scope, List<Subtyping.Bounded> variables) implements Place {
+            public InClass {
+                variables = List.copyOf(variables);
+            }
+        }
     }
 
     // ------------------------------------------------------------------

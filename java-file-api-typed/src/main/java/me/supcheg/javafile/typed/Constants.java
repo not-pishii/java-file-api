@@ -52,28 +52,28 @@ final class Constants {
 
     /// Whether `node` is a constant expression with the value `value`.
     static boolean isConstant(Node node, boolean value) {
-        return fold(node) instanceof Folded.OfBoolean(var folded) && folded == value;
+        return fold(node) instanceof Folded.OfBoolean folded && folded.value() == value;
     }
 
     /// Whether `node` is a constant expression of the value zero: a divisor javac warns of.
     static boolean isZero(Node node) {
-        return fold(node) instanceof Folded.OfInt(var folded) && folded == 0;
+        return fold(node) instanceof Folded.OfInt folded && folded.value() == 0;
     }
 
     static Folded fold(Node node) {
         return switch (node) {
             case Node.Lit(var literal) ->
                 switch (literal) {
-                    case IntLiteral(var value) -> new Folded.OfInt(value);
-                    case LongLiteral(var value) -> new Folded.OfLong(value);
-                    case DoubleLiteral(var value) -> new Folded.OfDouble(value);
-                    case BooleanLiteral(var value) -> new Folded.OfBoolean(value);
-                    case StringLiteral(var value) -> new Folded.OfString(value);
+                    case IntLiteral value -> new Folded.OfInt(value.value());
+                    case LongLiteral value -> new Folded.OfLong(value.value());
+                    case DoubleLiteral value -> new Folded.OfDouble(value.value());
+                    case BooleanLiteral value -> new Folded.OfBoolean(value.value());
+                    case StringLiteral value -> new Folded.OfString(value.value());
                 };
             case Node.StaticFieldGet(var field) ->
                 field.constantValue().map(Constants::ofValue).orElse(NONE);
             case Node.Not(var operand) ->
-                fold(operand) instanceof Folded.OfBoolean(var value) ? new Folded.OfBoolean(!value) : NONE;
+                fold(operand) instanceof Folded.OfBoolean value ? new Folded.OfBoolean(!value.value()) : NONE;
             case Node.Binary(var op, var left, var right) -> binary(op, fold(left), fold(right));
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 cond(fold(condition), fold(whenTrue), fold(whenFalse));
@@ -122,20 +122,21 @@ final class Constants {
 
     private static Folded converted(Node.Conversion conversion, Folded operand) {
         return switch (conversion) {
-            case INT_TO_LONG -> operand instanceof Folded.OfInt(var value) ? new Folded.OfLong(value) : NONE;
-            case INT_TO_DOUBLE -> operand instanceof Folded.OfInt(var value) ? new Folded.OfDouble(value) : NONE;
-            case LONG_TO_DOUBLE -> operand instanceof Folded.OfLong(var value) ? new Folded.OfDouble(value) : NONE;
-            case LONG_TO_INT -> operand instanceof Folded.OfLong(var value) ? new Folded.OfInt((int) value) : NONE;
-            case DOUBLE_TO_INT -> operand instanceof Folded.OfDouble(var value) ? new Folded.OfInt((int) value) : NONE;
+            case INT_TO_LONG -> operand instanceof Folded.OfInt value ? new Folded.OfLong(value.value()) : NONE;
+            case INT_TO_DOUBLE -> operand instanceof Folded.OfInt value ? new Folded.OfDouble(value.value()) : NONE;
+            case LONG_TO_DOUBLE -> operand instanceof Folded.OfLong value ? new Folded.OfDouble(value.value()) : NONE;
+            case LONG_TO_INT -> operand instanceof Folded.OfLong value ? new Folded.OfInt((int) value.value()) : NONE;
+            case DOUBLE_TO_INT ->
+                operand instanceof Folded.OfDouble value ? new Folded.OfInt((int) value.value()) : NONE;
         };
     }
 
     /// A conditional is constant where its three operands are, not its condition and the chosen one alone.
     private static Folded cond(Folded condition, Folded whenTrue, Folded whenFalse) {
-        return condition instanceof Folded.OfBoolean(var chosen)
+        return condition instanceof Folded.OfBoolean chosen
                         && !(whenTrue instanceof Folded.None)
                         && !(whenFalse instanceof Folded.None)
-                ? (chosen ? whenTrue : whenFalse)
+                ? (chosen.value() ? whenTrue : whenFalse)
                 : NONE;
     }
 
@@ -174,32 +175,32 @@ final class Constants {
     }
 
     private static Folded ints(Folded left, Folded right, BiFunction<Integer, Integer, Folded> operator) {
-        return left instanceof Folded.OfInt(var l) && right instanceof Folded.OfInt(var r)
-                ? operator.apply(l, r)
+        return left instanceof Folded.OfInt l && right instanceof Folded.OfInt r
+                ? operator.apply(l.value(), r.value())
                 : NONE;
     }
 
     private static Folded longs(Folded left, Folded right, BiFunction<Long, Long, Folded> operator) {
-        return left instanceof Folded.OfLong(var l) && right instanceof Folded.OfLong(var r)
-                ? operator.apply(l, r)
+        return left instanceof Folded.OfLong l && right instanceof Folded.OfLong r
+                ? operator.apply(l.value(), r.value())
                 : NONE;
     }
 
     private static Folded doubles(Folded left, Folded right, BiFunction<Double, Double, Folded> operator) {
-        return left instanceof Folded.OfDouble(var l) && right instanceof Folded.OfDouble(var r)
-                ? operator.apply(l, r)
+        return left instanceof Folded.OfDouble l && right instanceof Folded.OfDouble r
+                ? operator.apply(l.value(), r.value())
                 : NONE;
     }
 
     private static Folded booleans(Folded left, Folded right, BiFunction<Boolean, Boolean, Folded> operator) {
-        return left instanceof Folded.OfBoolean(var l) && right instanceof Folded.OfBoolean(var r)
-                ? operator.apply(l, r)
+        return left instanceof Folded.OfBoolean l && right instanceof Folded.OfBoolean r
+                ? operator.apply(l.value(), r.value())
                 : NONE;
     }
 
     private static Folded strings(Folded left, Folded right, BiFunction<String, String, Folded> operator) {
-        return left instanceof Folded.OfString(var l) && right instanceof Folded.OfString(var r)
-                ? operator.apply(l, r)
+        return left instanceof Folded.OfString l && right instanceof Folded.OfString r
+                ? operator.apply(l.value(), r.value())
                 : NONE;
     }
 }
