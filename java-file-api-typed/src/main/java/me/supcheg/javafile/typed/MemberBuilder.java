@@ -1,9 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
-import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
@@ -228,7 +228,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 member,
                 thrown,
                 Member.Kind.DECLARES,
-                Heritage.Arity.FIXED,
+                Arity.FIXED,
                 scope(member.kind(), "the body of " + member),
                 site));
         return member;
@@ -312,7 +312,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Invocable fact,
                 List<ClassToken<? extends Throwable>> thrown,
                 Kind kind,
-                Heritage.Arity arity,
+                Arity arity,
                 TypeScope scope,
                 Site site)
                 implements Member {

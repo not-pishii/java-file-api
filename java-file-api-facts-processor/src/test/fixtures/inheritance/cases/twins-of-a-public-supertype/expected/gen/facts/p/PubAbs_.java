@@ -33,7 +33,7 @@ import p.PubAbs;
 ///
 /// A generated class extends or implements [PubAbs] by the proof its metamodel starts, with the stages of `PubAbs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubAbs.class, fingerprint = "bd48f148314a5fa4c8fe98f1199297e129df9879acf6e5a6af3e2d9e9df5927d", complete = true, format = 14)
+@GeneratedMetamodel(of = PubAbs.class, fingerprint = "ccbe068b17a1d57151df2bb90bd5a7119021fd057b26e72ffd60f299d051b847", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class PubAbs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubAbs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "bd48f148314a5fa4c8fe98f1199297e129df9879acf6e5a6af3e2d9e9df5927d", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.PStr")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), false, new PubAbs_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubAbs_"), "ccbe068b17a1d57151df2bb90bd5a7119021fd057b26e72ffd60f299d051b847", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.PubAbs"), List.of(), List.of(ClassDesc.of("p.HAbs"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.PStr")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubAbs"))), false, new PubAbs_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class PubAbs_ {
     static final class Canonical {
         /// The canonical form of [PubAbs].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.PubAbs abstract-class sealed=no nesting=top
         tparams -
         superclasses p.HAbs; java.lang.Object

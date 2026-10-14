@@ -34,7 +34,7 @@ import p.Sub2;
 ///
 /// A generated class extends or implements [Sub2] by the proof its metamodel starts, with the stages of `Sub2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub2.class, fingerprint = "1f2d468fac83f4d182e5bd028fbca053407d464de9a66157ef0e78708ab0d74b", complete = true, format = 14)
+@GeneratedMetamodel(of = Sub2.class, fingerprint = "6edf49b454f39aaa123c86792d23e08be68228247c72672446ae5eb1de981a69", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Sub2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "1f2d468fac83f4d182e5bd028fbca053407d464de9a66157ef0e78708ab0d74b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn"), ClassDesc.of("p.Sub")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Sub2_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub2_"), "6edf49b454f39aaa123c86792d23e08be68228247c72672446ae5eb1de981a69", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sub2"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn"), ClassDesc.of("p.Sub")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("twice", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Sub2_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class Sub2_ {
     static final class Canonical {
         /// The canonical form of [Sub2].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Sub2 interface sealed=no nesting=top
         tparams -
         superclasses -

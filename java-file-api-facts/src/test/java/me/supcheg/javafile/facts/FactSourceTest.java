@@ -142,8 +142,25 @@ class FactSourceTest {
     }
 
     @Test
+    void theTraitsOfAFactTellItsArity() {
+        assertThat(MemberTraits.DEFAULT.arity()).isEqualTo(Arity.FIXED);
+        assertThat(MemberTraits.FINAL.with(Arity.SAFE_VARARGS).arity())
+                .isEqualTo(new Arity.Variable(Arity.Safety.SAFE_VARARGS));
+        // and keep it, whatever else is said of the member after it
+        assertThat(MemberTraits.ABSTRACT
+                        .with(Arity.VARIABLE)
+                        .throwing()
+                        .withTypeArgs()
+                        .with(Access.PROTECTED)
+                        .with(Overridability.FINAL))
+                .isEqualTo(
+                        new MemberTraits(List.of(), Overridability.FINAL, List.of(), Access.PROTECTED, Arity.VARIABLE));
+    }
+
+    @Test
     void aSourceGivesNoBareFactOfAProtectedFieldOrMethod() {
-        MemberTraits ofProtected = new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PROTECTED);
+        MemberTraits ofProtected =
+                new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PROTECTED, Arity.FIXED);
         FactSource<Number> source =
                 UnsafeFacts.factSource(NUMBER, query -> new Resolution(ofProtected, Optional.empty()));
 

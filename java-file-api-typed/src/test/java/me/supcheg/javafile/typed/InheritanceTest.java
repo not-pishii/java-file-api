@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Heritage.Dispatch;
@@ -109,7 +110,7 @@ class InheritanceTest {
         return new Heritage.Method<>(
                 Signature.of(name, erasure.stream().map(Param::fixed).toArray(Param[]::new)),
                 List.of(new Heritage.Plain(
-                        by, Heritage.Arity.FIXED, params, new Heritage.Result.Of<>(PrimitiveTypeRef.INT), List.of())),
+                        by, Arity.FIXED, params, new Heritage.Result.Of<>(PrimitiveTypeRef.INT), List.of())),
                 Set.of(erasure),
                 List.of(overrides));
     }
@@ -126,7 +127,7 @@ class InheritanceTest {
                 Signature.of("m", erasure.stream().map(Param::fixed).toArray(Param[]::new)),
                 List.of(new Heritage.Generic(new Heritage.Declaration(
                         by,
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         Stream.generate(() -> new Heritage.Variable(List.of()))
                                 .limit(variables)
                                 .toList(),
@@ -249,7 +250,7 @@ class InheritanceTest {
                 Signature.of("m"),
                 List.of(new Heritage.Plain(
                         new Heritage.Declarer.OfClass(K, Heritage.Visibility.PROTECTED, Heritage.ClassMethod.CONCRETE),
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(),
                         new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
                         List.of())),
@@ -268,7 +269,7 @@ class InheritanceTest {
                 Signature.of("m"),
                 List.of(new Heritage.Plain(
                         new Heritage.Declarer.OfClass(far, Heritage.Visibility.PACKAGE, Heritage.ClassMethod.CONCRETE),
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(),
                         new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
                         List.of())),
@@ -493,7 +494,7 @@ class InheritanceTest {
                 Signature.of("m"),
                 List.of(new Heritage.Plain(
                         new Heritage.Declarer.OfClass(far, Heritage.Visibility.PACKAGE, Heritage.ClassMethod.ABSTRACT),
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(),
                         new Heritage.Result.Of<>(PrimitiveTypeRef.INT),
                         List.of())),

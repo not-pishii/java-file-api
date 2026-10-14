@@ -3,6 +3,7 @@ import gen.facts.java.lang.Object_;
 import gen.facts.java.lang.String_;
 import gen.facts.p.Poly_;
 import gen.facts.p.PolyFn_;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.Overridability;
@@ -49,7 +50,7 @@ public final class Witnesses {
     public static void aStaticGenericMethodIsAStaticFact() {
         StaticMethodRef1<List<String>, String[]> listOf = Poly_.listOf_TArray(String_.TOKEN);
 
-        assertThat(listOf.traits()).isEqualTo(MemberTraits.FINAL.withTypeArgs(String_.TOKEN));
+        assertThat(listOf.traits()).isEqualTo(MemberTraits.FINAL.withTypeArgs(String_.TOKEN).with(Arity.SAFE_VARARGS));
         assertThat(listOf.resultType().orElseThrow().typeRef())
                 .isEqualTo(new ParameterizedTypeRef(ConstantDescs.CD_List, List.of(Types.exact(Types.STRING))));
         // a variable-arity parameter is its array

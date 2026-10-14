@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
@@ -39,7 +40,7 @@ import p.Spread;
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "9a6276a55891cb65da6e2f568e7e76371d9d43b6ded4bbad02459052eab22320", complete = true, format = 14)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "4dfa8a1bae03062fac9a2c897e35760d6eb0fc6be7cd0e39d424ec3511bd8648", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +51,7 @@ public final class Spread_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Spread] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "9a6276a55891cb65da6e2f568e7e76371d9d43b6ded4bbad02459052eab22320", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Spread_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "4dfa8a1bae03062fac9a2c897e35760d6eb0fc6be7cd0e39d424ec3511bd8648", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Spread_Heritage());
 
         private Data() {
         }
@@ -61,7 +62,7 @@ public final class Spread_<T> {
     static final class Canonical {
         /// The canonical form of [Spread].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Spread interface sealed=no nesting=top
         tparams #0
         superclasses -
@@ -69,7 +70,7 @@ public final class Spread_<T> {
         supertypes -
         enum -
         members declared-accessible
-        member method public abstract accept(#0[]) -> void throws -
+        member method public abstract accept(#0...) -> void throws -
         sam accept(#0[]) -> void throws -
         inherit method accept(#0[]) erased (java.lang.Object[]) overrides - by interface abstract p.Spread (#0...) -> void throws -
         table abstract accept(#0[])
@@ -99,7 +100,7 @@ public final class Spread_<T> {
     /// @param t the token of the type argument `T`
     public Spread_(RefToken<T> t) {
         this.token = UnsafeFacts.interfaceToken(Data.SHAPE, TokenArg.exact(t));
-        this.accept_TArray = UnsafeInvocables.voidMethod(token, "accept", UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT);
+        this.accept_TArray = UnsafeInvocables.voidMethod(token, "accept", UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.ABSTRACT.with(Arity.VARIABLE));
         this.sam = UnsafeInvocables.voidSam(accept_TArray);
     }
 }

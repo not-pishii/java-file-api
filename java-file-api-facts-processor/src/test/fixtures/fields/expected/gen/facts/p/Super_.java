@@ -37,7 +37,7 @@ import p.Super;
 ///
 /// A generated class extends or implements [Super] by the proof its metamodel starts, with the stages of `Super_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Super.class, fingerprint = "8573a1e62a9806433dcb6b77bb7c260fdfa43ebca36543705823e377daca3548", complete = true, format = 14)
+@GeneratedMetamodel(of = Super.class, fingerprint = "250fdece415289cab8fcef3ebc749dbbe3aecc2f7f1129266b19312aea953a96", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Super_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Super] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Super_"), "8573a1e62a9806433dcb6b77bb7c260fdfa43ebca36543705823e377daca3548", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Super"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Super"))), false, new Super_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Super_"), "250fdece415289cab8fcef3ebc749dbbe3aecc2f7f1129266b19312aea953a96", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Super"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Super"))), false, new Super_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class Super_ {
     static final class Canonical {
         /// The canonical form of [Super].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Super open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

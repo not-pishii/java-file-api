@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.CtorRef0;
@@ -50,7 +51,7 @@ import p.Poly;
 ///
 /// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "c8831d5c15a2e741b0daf5261bb79ec392033c5e2f519d1c144bb5e621972f45", complete = true, format = 14)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "91b80a3030460dbd62de2af2db36cd6c48c8156b0c79fce9ee4ef723c959dbc4", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -61,7 +62,7 @@ public final class Poly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Poly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "c8831d5c15a2e741b0daf5261bb79ec392033c5e2f519d1c144bb5e621972f45", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), false, new Poly_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "91b80a3030460dbd62de2af2db36cd6c48c8156b0c79fce9ee4ef723c959dbc4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), false, new Poly_Heritage());
 
         private Data() {
         }
@@ -72,7 +73,7 @@ public final class Poly_ {
     static final class Canonical {
         /// The canonical form of [Poly].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Poly open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
@@ -91,7 +92,7 @@ public final class Poly_ {
         member method public overridable <^0> id(^0) -> ^0 throws -
         member method public overridable <^0> none() -> void throws -
         member method public static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -
-        member method public static <^0> listOf(^0[]) -> java.util.List<^0> throws -
+        member method public static <^0> listOf(^0... @SafeVarargs) -> java.util.List<^0> throws -
         inherit ctor Poly() public () throws -
         inherit ctor Poly(java.lang.Object) public <^0> (^0) throws -
         inherit field public p.Poly T
@@ -103,7 +104,7 @@ public final class Poly_ {
         inherit method getClass() erased () overrides - by class public final java.lang.Object () -> java.lang.Class<?> throws -
         inherit method hashCode() erased () overrides - by class public concrete java.lang.Object () -> int throws -
         inherit method id(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Poly <^0> (^0) -> ^0 throws -
-        inherit method listOf(java.lang.Object[]) erased (java.lang.Object[]) overrides - by class public static p.Poly <^0> (^0...) -> java.util.List<^0> throws -
+        inherit method listOf(java.lang.Object[]) erased (java.lang.Object[]) overrides - by class public static p.Poly <^0> (^0... @SafeVarargs) -> java.util.List<^0> throws -
         inherit method max(java.util.Collection) erased (java.util.Collection) overrides - by class public static p.Poly <^0 extends java.lang.Comparable<? super ^0>> (java.util.Collection<? extends ^0>) -> ^0 throws -
         inherit method none() erased () overrides - by class public concrete p.Poly <^0> () -> void throws -
         inherit method notify() erased () overrides - by class public final java.lang.Object () -> void throws -
@@ -164,7 +165,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef1<List<T>, T[]> listOf_TArray(RefToken<T> t) {
-        return UnsafeInvocables.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t));
+        return UnsafeInvocables.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t).with(Arity.SAFE_VARARGS));
     }
 
     /// The fact of [Poly#max(Collection)], for the type arguments the tokens give.

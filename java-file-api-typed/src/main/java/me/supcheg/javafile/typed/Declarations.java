@@ -67,7 +67,8 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
 
     /// The traits of a member declared here: `traits`, with the `throws` clause.
     private MemberTraits traits(MemberTraits traits) {
-        return new MemberTraits(List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access());
+        return new MemberTraits(
+                List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access(), traits.arity());
     }
 
     // ------------------------------------------------------------------

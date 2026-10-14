@@ -113,7 +113,7 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_HERITAGE_METHOD = ClassDesc.of(FACTS + ".Heritage$Method");
     private static final ClassDesc CD_HERITAGE_CONSTRUCTOR = ClassDesc.of(FACTS + ".Heritage$Constructor");
     private static final ClassDesc CD_HERITAGE_VISIBILITY = ClassDesc.of(FACTS + ".Heritage$Visibility");
-    private static final ClassDesc CD_HERITAGE_ARITY = ClassDesc.of(FACTS + ".Heritage$Arity");
+    private static final ClassDesc CD_ARITY = ClassDesc.of(FACTS, "Arity");
     private static final ClassDesc CD_HERITAGE_RESULT = ClassDesc.of(FACTS + ".Heritage$Result");
     private static final ClassDesc CD_HERITAGE_RESULT_OF = ClassDesc.of(FACTS + ".Heritage$Result$Of");
     private static final ClassDesc CD_HERITAGE_DECLARATION = ClassDesc.of(FACTS + ".Heritage$Declaration");
@@ -1002,7 +1002,7 @@ final class MetamodelEmitter {
                                 classDesc(type),
                                 Exprs.staticField(CD_HERITAGE_INTERFACE_METHOD, method.name()));
                 },
-                Exprs.staticField(CD_HERITAGE_ARITY, declaration.arity().name()),
+                Exprs.staticField(CD_ARITY, MemberFacts.constant(declaration.arity())),
                 variables(declaration.typeParams()),
                 told(declaration.params()),
                 switch (declaration.result()) {
@@ -1019,7 +1019,7 @@ final class MetamodelEmitter {
                 Exprs.staticField(
                         CD_HERITAGE_VISIBILITY, constructor.visibility().name()),
                 signature(constructor.signature()),
-                Exprs.staticField(CD_HERITAGE_ARITY, constructor.arity().name()),
+                Exprs.staticField(CD_ARITY, MemberFacts.constant(constructor.arity())),
                 variables(constructor.typeParams()),
                 told(constructor.params()),
                 told(constructor.throwsTypes()));

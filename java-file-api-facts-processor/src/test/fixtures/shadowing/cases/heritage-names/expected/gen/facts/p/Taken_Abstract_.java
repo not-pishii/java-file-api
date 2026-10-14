@@ -37,7 +37,7 @@ import p.Taken.Abstract;
 ///
 /// A generated class extends or implements [Abstract] by the proof its metamodel starts, with the stages of `Taken_Abstract_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abstract.class, fingerprint = "e0506f5285fb7b3406ff1ff5172b15387d4d9ab458ff52fab0136b59bd04e55a", complete = true, format = 14)
+@GeneratedMetamodel(of = Abstract.class, fingerprint = "968fe782523a2bb4f887cfc3f2c0f44086ab90e4f954488e3d4ae087ae5c88cc", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Taken_Abstract_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Abstract] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Taken_Abstract_"), "e0506f5285fb7b3406ff1ff5172b15387d4d9ab458ff52fab0136b59bd04e55a", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Taken$Abstract"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("Method")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Taken$Abstract"))), false, new Taken_Abstract_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Taken_Abstract_"), "968fe782523a2bb4f887cfc3f2c0f44086ab90e4f954488e3d4ae087ae5c88cc", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Taken$Abstract"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("Method")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Taken$Abstract"))), false, new Taken_Abstract_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class Taken_Abstract_ {
     static final class Canonical {
         /// The canonical form of [Abstract].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Taken$Abstract abstract-class sealed=no nesting=static
         tparams -
         superclasses java.lang.Object

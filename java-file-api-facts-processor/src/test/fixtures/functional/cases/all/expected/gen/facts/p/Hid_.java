@@ -32,7 +32,7 @@ import p.Hid;
 ///
 /// No generated class extends or implements [Hid]: its abstract method s() mentions p.Secret, which a class of another package cannot name.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Hid.class, fingerprint = "d1502af4e917f13d169ae4c124c237191c60dbf7e575f27b031573499ba50396", complete = true, format = 14)
+@GeneratedMetamodel(of = Hid.class, fingerprint = "38d0ed4e23ef0450e131cd698380678e662c9d8131477d128159f9f4364cddf3", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Hid_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Hid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Hid_"), "d1502af4e917f13d169ae4c124c237191c60dbf7e575f27b031573499ba50396", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Hid"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("s")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Hid_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Hid_"), "38d0ed4e23ef0450e131cd698380678e662c9d8131477d128159f9f4364cddf3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Hid"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("s")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Hid_Heritage());
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Hid_ {
     static final class Canonical {
         /// The canonical form of [Hid].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Hid interface sealed=no nesting=top
         tparams -
         superclasses -

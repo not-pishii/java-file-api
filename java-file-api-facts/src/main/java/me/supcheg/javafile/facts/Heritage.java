@@ -222,15 +222,6 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         }
     }
 
-    /// Whether the last parameter of a method or constructor is of variable
-    /// arity (JLS 8.4.1).
-    enum Arity {
-        /// Every parameter is a single argument.
-        FIXED,
-        /// The last parameter, an array, takes the arguments that are left: `T...`.
-        VARIABLE
-    }
-
     /// The result of a method.
     ///
     /// @param <T> how a type is told: [Type] by positions, [TypeRef] once applied
@@ -607,8 +598,8 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
             throwsTypes = List.copyOf(throwsTypes);
             boolean valid =
                     switch (arity) {
-                        case FIXED -> true;
-                        case VARIABLE -> !params.isEmpty() && params.getLast() instanceof ArrayTypeRef;
+                        case Arity.Fixed _ -> true;
+                        case Arity.Variable _ -> !params.isEmpty() && params.getLast() instanceof ArrayTypeRef;
                     };
             if (!valid) {
                 throw new IllegalArgumentException("a method of " + TypeNames.describe(by.type())
@@ -903,8 +894,8 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
     private static void requireArity(Arity arity, List<Type> params, String told) {
         boolean valid =
                 switch (arity) {
-                    case FIXED -> true;
-                    case VARIABLE ->
+                    case Arity.Fixed _ -> true;
+                    case Arity.Variable _ ->
                         !params.isEmpty()
                                 && switch (params.getLast()) {
                                     case Type.Array _ -> true;

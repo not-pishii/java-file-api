@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -651,7 +652,7 @@ final class Inheritance {
         /// has it, which an override is held to be of every one ([SignatureRegistry]).
         ///
         /// @return the arity
-        Heritage.Arity arity() {
+        Arity arity() {
             return entries.getFirst().method().declared().arity();
         }
 

@@ -37,7 +37,7 @@ import p.Seen;
 ///
 /// A generated class extends or implements [High] by the proof its metamodel starts, with the stages of `High_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = High.class, fingerprint = "f7aec96bcfc1f09773d681961c56e0a6bfc00d601f3d288732b573ca756fe5f3", complete = true, format = 14)
+@GeneratedMetamodel(of = High.class, fingerprint = "631ea878cae45d193685a390aeb9541f5620ad40c08985a0e7604ea9c4d7efc2", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class High_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [High] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.High_"), "f7aec96bcfc1f09773d681961c56e0a6bfc00d601f3d288732b573ca756fe5f3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.High"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("High"))), false, new High_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.High_"), "631ea878cae45d193685a390aeb9541f5620ad40c08985a0e7604ea9c4d7efc2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.High"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("High"))), false, new High_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class High_ {
     static final class Canonical {
         /// The canonical form of [High].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.High open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

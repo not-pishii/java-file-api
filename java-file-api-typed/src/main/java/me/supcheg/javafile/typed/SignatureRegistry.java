@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.Invocable;
@@ -179,7 +180,7 @@ final class SignatureRegistry {
     ///     it overrides is
     /// @throws IllegalArgumentException if the class inherits no method of that signature, or the
     ///     method cannot override one it inherits
-    Heritage.Arity override(Invocable own) {
+    Arity override(Invocable own) {
         MethodSignature signature = own.signature();
         requireUndeclared(own, signature);
         Inheritance.Group group = inherited
@@ -333,13 +334,13 @@ final class SignatureRegistry {
     /// (JLS 8.4.1), and the typed layer renders no code javac warns of.
     private static Optional<String> byForm(Heritage.Plain method) {
         return switch (method.arity()) {
-            case VARIABLE ->
+            case Arity.Variable _ ->
                 method.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component())
                         ? Optional.of("the method is of variable arity and of the element type "
                                 + TypeNames.describe(array.component()) + ", which is not reifiable: javac warns"
                                 + " of possible heap pollution where such a method is declared (JLS 8.4.1)")
                         : Optional.empty();
-            case FIXED -> Optional.empty();
+            case Arity.Fixed _ -> Optional.empty();
         };
     }
 

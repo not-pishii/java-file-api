@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
@@ -61,7 +62,7 @@ class OverrideRefusalsTest {
     /// `int m(params)`, as a supertype has it.
     private static Heritage.Method<Heritage.Inherited> m(
             Heritage.Declarer by,
-            Heritage.Arity arity,
+            Arity arity,
             List<TypeRef> params,
             List<ClassDesc> erasure,
             ClassOrInterfaceTypeRef... thrown) {
@@ -107,8 +108,8 @@ class OverrideRefusalsTest {
 
     @Test
     void anInstanceMethodDoesNotOverrideAStaticOne() {
-        Inheritance.Group group = group(
-                List.of(), klass(m(ofK(Heritage.ClassMethod.STATIC), Heritage.Arity.FIXED, List.of(), List.of())));
+        Inheritance.Group group =
+                group(List.of(), klass(m(ofK(Heritage.ClassMethod.STATIC), Arity.FIXED, List.of(), List.of())));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> overrides(
@@ -124,7 +125,7 @@ class OverrideRefusalsTest {
                 object(),
                 iface(m(
                         ABSTRACT_OF_I,
-                        Heritage.Arity.VARIABLE,
+                        Arity.VARIABLE,
                         List.of(Types.array(Types.typeVar("T"))),
                         List.of(ConstantDescs.CD_Object.arrayType()))));
 
@@ -150,7 +151,7 @@ class OverrideRefusalsTest {
                 object(),
                 iface(m(
                         ABSTRACT_OF_I,
-                        Heritage.Arity.VARIABLE,
+                        Arity.VARIABLE,
                         List.of(Types.array(Types.array(Types.STRING))),
                         List.of(arrays))));
 
@@ -172,11 +173,7 @@ class OverrideRefusalsTest {
         Inheritance.Group group = group(
                 List.of(ints),
                 object(),
-                iface(m(
-                        ABSTRACT_OF_I,
-                        Heritage.Arity.VARIABLE,
-                        List.of(Types.array(PrimitiveTypeRef.INT)),
-                        List.of(ints))));
+                iface(m(ABSTRACT_OF_I, Arity.VARIABLE, List.of(Types.array(PrimitiveTypeRef.INT)), List.of(ints))));
 
         assertThatCode(() -> overrides(
                         UnsafeInvocables.method(
@@ -193,7 +190,7 @@ class OverrideRefusalsTest {
                 object(),
                 iface(m(
                         ABSTRACT_OF_I,
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(new List_<>(Integer_.TOKEN).token.typeRef()),
                         List.of(CD_LIST))));
 
@@ -218,7 +215,7 @@ class OverrideRefusalsTest {
                 object(),
                 iface(m(
                         ABSTRACT_OF_I,
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(),
                         List.of(),
                         Types.of(IOException.class),
@@ -252,7 +249,7 @@ class OverrideRefusalsTest {
         Inheritance.Group group = group(
                 List.of(),
                 object(),
-                iface(m(ABSTRACT_OF_I, Heritage.Arity.FIXED, List.of(), List.of(), Types.of(IOException.class))));
+                iface(m(ABSTRACT_OF_I, Arity.FIXED, List.of(), List.of(), Types.of(IOException.class))));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> overrides(
@@ -265,14 +262,14 @@ class OverrideRefusalsTest {
     @Test
     void aMethodOfTheSuperclassThatTakesTheArrayIsNoImplementationOfOneOfVariableArity() {
         // int m(String[]) of the superclass for the abstract int m(String...) of the interface: javac warns
-        Supertype spreading = iface(
-                m(ABSTRACT_OF_I, Heritage.Arity.VARIABLE, List.of(Types.array(Types.STRING)), List.of(CD_STRINGS)));
+        Supertype spreading =
+                iface(m(ABSTRACT_OF_I, Arity.VARIABLE, List.of(Types.array(Types.STRING)), List.of(CD_STRINGS)));
         DeclaredToken<?> through = spreading.token();
         Inheritance.Group group = group(
                 List.of(CD_STRINGS),
                 klass(m(
                         ofK(Heritage.ClassMethod.CONCRETE),
-                        Heritage.Arity.FIXED,
+                        Arity.FIXED,
                         List.of(Types.array(Types.STRING)),
                         List.of(CD_STRINGS))),
                 spreading);

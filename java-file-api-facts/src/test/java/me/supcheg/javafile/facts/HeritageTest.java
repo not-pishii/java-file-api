@@ -1,7 +1,6 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.facts.Heritage.Argument;
-import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.ClassMethod;
 import me.supcheg.javafile.facts.Heritage.Declaration;
 import me.supcheg.javafile.facts.Heritage.Declarer;

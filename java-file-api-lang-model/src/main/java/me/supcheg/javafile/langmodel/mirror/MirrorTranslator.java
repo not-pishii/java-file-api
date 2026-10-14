@@ -3,6 +3,7 @@ package me.supcheg.javafile.langmodel.mirror;
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -1259,8 +1260,11 @@ public final class MirrorTranslator {
         return modifiers.contains(Modifier.PROTECTED) ? Heritage.Visibility.PROTECTED : Heritage.Visibility.PACKAGE;
     }
 
-    private static Heritage.Arity arity(ExecutableElement member) {
-        return member.isVarArgs() ? Heritage.Arity.VARIABLE : Heritage.Arity.FIXED;
+    private static Arity arity(ExecutableElement member) {
+        if (!member.isVarArgs()) {
+            return Arity.FIXED;
+        }
+        return member.getAnnotation(SafeVarargs.class) == null ? Arity.VARIABLE : Arity.SAFE_VARARGS;
     }
 
     private Heritage.Declarer declarer(ExecutableElement method) {
@@ -1396,7 +1400,12 @@ public final class MirrorTranslator {
                 params.size(),
                 "constructor " + constructor,
                 () -> new CtorModel(
-                        typeParams, params, declared(constructor, owner, self), throwsTypes, accessOf(constructor)));
+                        typeParams,
+                        params,
+                        declared(constructor, owner, self),
+                        arity(constructor),
+                        throwsTypes,
+                        accessOf(constructor)));
     }
 
     private Read method(TypeElement owner, DeclaredType self, ExecutableElement method) {
@@ -1436,6 +1445,7 @@ public final class MirrorTranslator {
                         result,
                         params,
                         declared(method, owner, self),
+                        arity(method),
                         throwsTypes,
                         overridability,
                         accessOf(method)));

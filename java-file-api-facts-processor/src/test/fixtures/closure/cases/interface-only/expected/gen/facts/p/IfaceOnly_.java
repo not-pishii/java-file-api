@@ -34,7 +34,7 @@ import p.IfaceOnly;
 ///
 /// A generated class extends or implements [IfaceOnly] by the proof its metamodel starts, with the stages of `IfaceOnly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IfaceOnly.class, fingerprint = "aea575c7f9257646b634c04e88dc5bde345e899376f1079150052245e0784fc3", complete = true, format = 14)
+@GeneratedMetamodel(of = IfaceOnly.class, fingerprint = "299aaedc76ebec989c7d72e36977e4f3722e0240f138a05802203cef10c9e43d", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class IfaceOnly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [IfaceOnly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IfaceOnly_"), "aea575c7f9257646b634c04e88dc5bde345e899376f1079150052245e0784fc3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IfaceOnly"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("name")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IfaceOnly_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.IfaceOnly_"), "299aaedc76ebec989c7d72e36977e4f3722e0240f138a05802203cef10c9e43d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.IfaceOnly"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("name")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new IfaceOnly_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class IfaceOnly_ {
     static final class Canonical {
         /// The canonical form of [IfaceOnly].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.IfaceOnly interface sealed=no nesting=top
         tparams -
         superclasses -

@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.langmodel.mirror.CtorModel;
@@ -232,8 +233,8 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         }
         boolean pollutes =
                 switch (first.arity()) {
-                    case FIXED -> false;
-                    case VARIABLE ->
+                    case Arity.Fixed _ -> false;
+                    case Arity.Variable _ ->
                         first.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component());
                 };
         if (pollutes) {

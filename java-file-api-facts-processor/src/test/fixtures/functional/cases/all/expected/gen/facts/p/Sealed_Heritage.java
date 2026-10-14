@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
-import me.supcheg.javafile.facts.Heritage.Arity;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.Heritage.Declaration;
 import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
 import me.supcheg.javafile.facts.Heritage.InterfaceMethod;

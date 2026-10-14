@@ -36,7 +36,7 @@ import p.ProtAbs;
 ///
 /// A generated class extends or implements [ProtAbs] by the proof its metamodel starts, with the stages of `ProtAbs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtAbs.class, fingerprint = "cd7c34e11c8f41ba8b8ccbdfa0009eb127df4153acae152f4c38b83556d68c6b", complete = true, format = 14)
+@GeneratedMetamodel(of = ProtAbs.class, fingerprint = "9d654ed8da61173908bdd6f7ed30248c09b6c229feeb6e681f0507c8f99a49a5", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class ProtAbs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtAbs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtAbs_"), "cd7c34e11c8f41ba8b8ccbdfa0009eb127df4153acae152f4c38b83556d68c6b", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.ProtAbs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("hook", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ProtAbs"))), false, new ProtAbs_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtAbs_"), "9d654ed8da61173908bdd6f7ed30248c09b6c229feeb6e681f0507c8f99a49a5", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.ProtAbs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("hook", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ProtAbs"))), false, new ProtAbs_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class ProtAbs_ {
     static final class Canonical {
         /// The canonical form of [ProtAbs].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.ProtAbs abstract-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

@@ -5,6 +5,7 @@ import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
@@ -75,6 +76,7 @@ final class MemberFacts {
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
     private static final ClassDesc CD_UNSAFE_INVOCABLES = ClassDesc.of(FACTS, "UnsafeInvocables");
     private static final ClassDesc CD_MEMBER_TRAITS = ClassDesc.of(FACTS, "MemberTraits");
+    private static final ClassDesc CD_ARITY = ClassDesc.of(FACTS, "Arity");
     private static final ClassDesc CD_ACCESS = ClassDesc.of(FACTS, "Access");
     private static final ClassDesc CD_PROTECTED = ClassDesc.of(FACTS, "Protected");
     private static final ClassDesc CD_PRIMITIVE_TOKEN = ClassDesc.of(FACTS, "PrimitiveToken");
@@ -466,7 +468,13 @@ final class MemberFacts {
         List<Expr> args = Stream.of(
                         Stream.of(owner(false)),
                         params(ctor.params(), ctor.declared(), scope),
-                        Stream.of(traits(Overridability.FINAL, ctor.throwsTypes(), List.of(), ctor.access(), scope)))
+                        Stream.of(traits(
+                                Overridability.FINAL,
+                                ctor.throwsTypes(),
+                                List.of(),
+                                ctor.access(),
+                                ctor.arity(),
+                                scope)))
                 .flatMap(Function.identity())
                 .toList();
         String family = (forSubclass ? "SuperCtorRef" : "CtorRef") + requireArity(arity);
@@ -579,7 +587,12 @@ final class MemberFacts {
                         method.result().stream().map(result -> token(result, scope)),
                         params(method.params(), method.declared(), scope),
                         Stream.of(traits(
-                                method.overridability(), method.throwsTypes(), witnesses, method.access(), scope)))
+                                method.overridability(),
+                                method.throwsTypes(),
+                                witnesses,
+                                method.access(),
+                                method.arity(),
+                                scope)))
                 .flatMap(Function.identity())
                 .toList();
         String factory = method.isStatic() ? "staticMethod" : "method";
@@ -643,6 +656,7 @@ final class MemberFacts {
             List<ClassOrInterfaceTypeRef> throwsTypes,
             List<Expr> witnesses,
             Access access,
+            Arity arity,
             Scope scope) {
         Expr named = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
         Expr thrown = throwsTypes.isEmpty()
@@ -651,10 +665,26 @@ final class MemberFacts {
                         "throwing",
                         throwsTypes.stream().map(t -> token(t, scope)).toList());
         Expr applied = witnesses.isEmpty() ? thrown : thrown.call("withTypeArgs", witnesses);
-        return access(access)
+        Expr accessed = access(access)
                 .findFirst()
                 .<Expr>map(of -> applied.call("with", of))
                 .orElse(applied);
+        return switch (arity) {
+            case Arity.Fixed _ -> accessed;
+            case Arity.Variable _ -> accessed.call("with", Exprs.staticField(use(CD_ARITY), constant(arity)));
+        };
+    }
+
+    /// The constant of `Arity` an arity is.
+    static String constant(Arity arity) {
+        return switch (arity) {
+            case Arity.Fixed _ -> "FIXED";
+            case Arity.Variable(Arity.Safety safety) ->
+                switch (safety) {
+                    case UNCHECKED -> "VARIABLE";
+                    case SAFE_VARARGS -> "SAFE_VARARGS";
+                };
+        };
     }
 
     // ---- tokens and their phantom types

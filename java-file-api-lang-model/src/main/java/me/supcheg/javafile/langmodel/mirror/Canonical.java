@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -55,7 +56,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 8
+/// javafile-facts-canonical 9
 /// type java.util.List interface sealed=no nesting=top
 /// tparams #0
 /// superclasses -
@@ -87,7 +88,8 @@ import java.util.stream.Stream;
 /// member field public static constant java.lang.String DEFAULT = "hi"
 /// member field public instance final #0 value
 /// member method public abstract get(int) -> #0 throws -
-/// member method public static <^0> of(^0[]) -> java.util.List<^0> throws -
+/// member method public static <^0> of(^0... @SafeVarargs) -> java.util.List<^0> throws -
+/// member method public static format(java.lang.String, java.lang.Object...) -> java.lang.String throws -
 /// ```
 ///
 /// A functional interface has a line for its single abstract method as a
@@ -114,7 +116,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 8";
+    public static final String HEADER = "javafile-facts-canonical 9";
 
     private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 
@@ -250,7 +252,7 @@ public final class Canonical {
                                 .map(constructor -> "inherit ctor " + signature(constructor.signature()) + " "
                                         + visibility(constructor.visibility()) + " "
                                         + variables(constructor.typeParams())
-                                        + params(constructor.params(), constructor.arity())
+                                        + told(constructor.params(), constructor.arity())
                                         + thrown(constructor.throwsTypes())),
                         heritage.methods().stream()
                                 .map(method -> "inherit method " + signature(method.signature()) + " erased "
@@ -308,7 +310,7 @@ public final class Canonical {
                                 + " " + binaryName(type);
                 }
                 + " " + variables(declaration.typeParams())
-                + params(declaration.params(), declaration.arity()) + " -> "
+                + told(declaration.params(), declaration.arity()) + " -> "
                 + switch (declaration.result()) {
                     case Heritage.Result.Nothing<Heritage.Type> _ -> "void";
                     case Heritage.Result.Of<Heritage.Type>(Heritage.Type type) -> type(type);
@@ -342,11 +344,21 @@ public final class Canonical {
     }
 
     /// The parameters of a member of a heritage: the last of variable arity as `T...`.
-    private static String params(List<Heritage.Type> params, Heritage.Arity arity) {
-        String fixed = params.stream().map(Canonical::type).collect(Collectors.joining(", ", "(", ")"));
+    private static String told(List<Heritage.Type> params, Arity arity) {
+        return variable(params.stream().map(Canonical::type).collect(Collectors.joining(", ", "(", ")")), arity);
+    }
+
+    /// The parameters of a method or constructor, the last of which is an array if the arity is variable:
+    /// `(int, T...)`, and `(int, T... @SafeVarargs)` of a declaration that vouches for the array.
+    private static String variable(String params, Arity arity) {
         return switch (arity) {
-            case FIXED -> fixed;
-            case VARIABLE -> fixed.substring(0, fixed.length() - "[])".length()) + "...)";
+            case Arity.Fixed _ -> params;
+            case Arity.Variable(Arity.Safety safety) ->
+                params.substring(0, params.length() - "[])".length())
+                        + switch (safety) {
+                            case UNCHECKED -> "...)";
+                            case SAFE_VARARGS -> "... @SafeVarargs)";
+                        };
         };
     }
 
@@ -389,13 +401,14 @@ public final class Canonical {
                         : method.overridability().name().toLowerCase(Locale.ROOT);
                 yield "member method " + access(method.access()) + " " + mode + " "
                         + typeParamsPrefix(method.typeParams(), scope) + method.name()
-                        + params(method.params(), scope) + " -> "
+                        + variable(params(method.params(), scope), method.arity()) + " -> "
                         + method.result().map(scope::type).orElse("void") + throwsClause(method.throwsTypes(), scope);
             }
             case CtorModel ctor -> {
                 Scope scope = new Scope(typeTypeParams, ctor.typeParams());
                 yield "member ctor " + access(ctor.access()) + " "
-                        + typeParamsPrefix(ctor.typeParams(), scope).strip() + params(ctor.params(), scope)
+                        + typeParamsPrefix(ctor.typeParams(), scope).strip()
+                        + variable(params(ctor.params(), scope), ctor.arity())
                         + throwsClause(ctor.throwsTypes(), scope);
             }
             case FieldModel field -> {

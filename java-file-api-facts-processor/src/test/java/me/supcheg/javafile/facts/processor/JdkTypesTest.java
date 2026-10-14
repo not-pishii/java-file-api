@@ -1,5 +1,6 @@
 package me.supcheg.javafile.facts.processor;
 
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
@@ -525,7 +526,11 @@ class JdkTypesTest {
         assertThat(of.owner()).isSameAs(loaded.fact(listMetamodel, "ANY"));
         assertThat(of.resultType().orElseThrow().typeRef())
                 .isEqualTo(applied(ConstantDescs.CD_List, Types.exact(integer.typeRef())));
-        assertThat(of.traits()).isEqualTo(MemberTraits.FINAL.withTypeArgs(integer));
+        // List.of(E...) is @SafeVarargs: the fact tells how a call may pass its arguments
+        assertThat(of.traits())
+                .isEqualTo(MemberTraits.FINAL.withTypeArgs(integer).with(Arity.SAFE_VARARGS));
+        assertThat(of.arity()).isEqualTo(new Arity.Variable(Arity.Safety.SAFE_VARARGS));
+        assertThat(get.arity()).isEqualTo(Arity.FIXED);
 
         // <R> Stream<R> map(Function<? super T, ? extends R>)
         Object streamOfString = loaded.instance(streamMetamodel, string);

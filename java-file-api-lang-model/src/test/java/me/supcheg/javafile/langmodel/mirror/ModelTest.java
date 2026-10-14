@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -117,6 +118,7 @@ class ModelTest {
                 Optional.empty(),
                 List.of(),
                 List.of(),
+                Arity.FIXED,
                 List.of(),
                 overridability,
                 Access.PUBLIC);
@@ -171,6 +173,7 @@ class ModelTest {
                         Optional.empty(),
                         THIRTEEN,
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.OVERRIDABLE,
                         Access.PUBLIC))
@@ -183,6 +186,7 @@ class ModelTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.OVERRIDABLE,
                         Access.PUBLIC))
@@ -195,6 +199,7 @@ class ModelTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.FINAL,
                         Access.PUBLIC))
@@ -206,6 +211,7 @@ class ModelTest {
                         Optional.empty(),
                         List.of(Types.INT),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.FINAL,
                         Access.PUBLIC))
@@ -214,11 +220,43 @@ class ModelTest {
     }
 
     @Test
+    void theLastParameterOfAMemberOfVariableArityIsAnArray() {
+        assertThatThrownBy(() -> new MethodModel(
+                        "m",
+                        false,
+                        List.of(),
+                        Optional.empty(),
+                        List.of(Types.INT),
+                        List.of(new MethodTableTemplate.Fixed(ConstantDescs.CD_int)),
+                        Arity.VARIABLE,
+                        List.of(),
+                        Overridability.FINAL,
+                        Access.PUBLIC))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("method m is of variable arity, so its last parameter is an array: [");
+        assertThatThrownBy(() ->
+                        new CtorModel(List.of(), List.of(), List.of(), Arity.SAFE_VARARGS, List.of(), Access.PUBLIC))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("a constructor is of variable arity, so its last parameter is an array: []");
+
+        CtorModel variable = new CtorModel(
+                List.of(),
+                List.of(Types.array(Types.INT)),
+                List.of(new MethodTableTemplate.Fixed(ConstantDescs.CD_int.arrayType())),
+                Arity.VARIABLE,
+                List.of(),
+                Access.PUBLIC);
+
+        assertThat(variable.arity()).isEqualTo(new Arity.Variable(Arity.Safety.UNCHECKED));
+    }
+
+    @Test
     void constructorsHaveAtMostTwelveParameters() {
-        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), List.of(), Access.PUBLIC))
+        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), Arity.FIXED, List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constructor has 13 parameters, more than 12");
-        assertThatThrownBy(() -> new CtorModel(List.of(), List.of(Types.INT), List.of(), List.of(), Access.PUBLIC))
+        assertThatThrownBy(() ->
+                        new CtorModel(List.of(), List.of(Types.INT), List.of(), Arity.FIXED, List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("a constructor has 1 parameters, but 0 are declared: []");
     }

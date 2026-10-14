@@ -40,7 +40,7 @@ import p.PubNest;
 ///
 /// A generated class extends or implements [PubNest] by the proof its metamodel starts, with the stages of `PubNest_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubNest.class, fingerprint = "acbae786bd3230174d4c7b0a9c0b96d2618e0368358e6f1307872ef17721b6c5", complete = true, format = 14)
+@GeneratedMetamodel(of = PubNest.class, fingerprint = "ff130c811d3fcb632cd5945bfe4ba436e3192aebe56802d493018b2563d9520a", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class PubNest_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubNest] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubNest_"), "acbae786bd3230174d4c7b0a9c0b96d2618e0368358e6f1307872ef17721b6c5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubNest"), List.of(), List.of(ClassDesc.of("p.HNest"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("make"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubNest"))), false, new PubNest_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubNest_"), "ff130c811d3fcb632cd5945bfe4ba436e3192aebe56802d493018b2563d9520a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubNest"), List.of(), List.of(ClassDesc.of("p.HNest"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("make"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubNest"))), false, new PubNest_Heritage());
 
         private Data() {
         }
@@ -62,7 +62,7 @@ public final class PubNest_ {
     static final class Canonical {
         /// The canonical form of [PubNest].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.PubNest open-class sealed=no nesting=top
         tparams -
         superclasses p.HNest; java.lang.Object

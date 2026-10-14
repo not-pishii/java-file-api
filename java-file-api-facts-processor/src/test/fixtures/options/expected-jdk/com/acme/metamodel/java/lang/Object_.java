@@ -44,7 +44,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Object] by the proof its metamodel starts, with the stages of `Object_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "3edc2dff9c707852eb0ac9c9faa078ce2366f1e3e48f057a4cfed2ea55f4acb4", complete = true, format = 14)
+@GeneratedMetamodel(of = Object.class, fingerprint = "f4d98af052d9bffccf47b32df7a7a84929162c3e90a66a519177a60690e3be79", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -55,7 +55,7 @@ public final class Object_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Object] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.java.lang.Object_"), "3edc2dff9c707852eb0ac9c9faa078ce2366f1e3e48f057a4cfed2ea55f4acb4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, new Object_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.java.lang.Object_"), "f4d98af052d9bffccf47b32df7a7a84929162c3e90a66a519177a60690e3be79", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, new Object_Heritage());
 
         private Data() {
         }
@@ -66,7 +66,7 @@ public final class Object_ {
     static final class Canonical {
         /// The canonical form of [Object].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type java.lang.Object open-class sealed=no nesting=top
         tparams -
         superclasses -

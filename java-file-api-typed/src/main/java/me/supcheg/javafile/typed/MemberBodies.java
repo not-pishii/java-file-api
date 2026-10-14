@@ -4,6 +4,7 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
@@ -673,8 +674,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                 .toList();
         List<Param> coreParams =
                 switch (declared.arity()) {
-                    case FIXED -> named;
-                    case VARIABLE ->
+                    case Arity.Fixed _ -> named;
+                    case Arity.Variable _ ->
                         Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
                                 .toList();
                 };

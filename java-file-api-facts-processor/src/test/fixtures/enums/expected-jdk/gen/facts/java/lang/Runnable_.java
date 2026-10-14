@@ -35,7 +35,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Runnable] by the proof its metamodel starts, with the stages of `Runnable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Runnable.class, fingerprint = "5cc11339bbbe5310e49a69c0e6b344e4fddbceab1255722918218c96e6c19c3c", complete = true, format = 14)
+@GeneratedMetamodel(of = Runnable.class, fingerprint = "f1b5f10bb2d496a3255a7cdee2dd5c24bcc993ddc865a9db874607b06fa67fd0", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Runnable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Runnable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Runnable_"), "5cc11339bbbe5310e49a69c0e6b344e4fddbceab1255722918218c96e6c19c3c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Runnable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Runnable_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Runnable_"), "f1b5f10bb2d496a3255a7cdee2dd5c24bcc993ddc865a9db874607b06fa67fd0", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Runnable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Runnable_Heritage());
 
         private Data() {
         }
@@ -57,7 +57,7 @@ public final class Runnable_ {
     static final class Canonical {
         /// The canonical form of [Runnable].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type java.lang.Runnable interface sealed=no nesting=top
         tparams -
         superclasses -

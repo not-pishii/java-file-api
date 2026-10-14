@@ -32,6 +32,13 @@ public sealed interface Invocable extends MemberFact permits InvocableFamily {
         return traits().access();
     }
 
+    /// Whether the last parameter is of variable arity, as the [#traits()] tell it.
+    ///
+    /// @return the arity
+    default Arity arity() {
+        return traits().arity();
+    }
+
     /// The member name; for a constructor, the simple name of its class.
     ///
     /// @return the name

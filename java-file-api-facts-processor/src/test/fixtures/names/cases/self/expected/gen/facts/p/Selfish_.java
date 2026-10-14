@@ -41,7 +41,7 @@ import p.Selfish;
 /// @param <Self__> a type argument of [Selfish]
 /// @param <Self___> a type argument of [Selfish]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Selfish.class, fingerprint = "184b7bec8e1082aae513f1fc944b280ee5a6b43fcfe2c02580fac474d289a2c5", complete = true, format = 14)
+@GeneratedMetamodel(of = Selfish.class, fingerprint = "6779589c95588bedc44c45699f8ac07f0141de4571c5e05307282459430a24a1", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Selfish_<Self__, Self___> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Selfish] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Selfish_"), "184b7bec8e1082aae513f1fc944b280ee5a6b43fcfe2c02580fac474d289a2c5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Selfish"), List.of(new TypeParam("Self", List.of()), new TypeParam("Self_", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Self"), Types.typeVar("Self_")), List.of()), new MethodTableTemplate(Set.of(Signature.of("take", Param.fixed(ClassDesc.of("p.Self")), Param.var(0), Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Selfish_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Selfish_"), "6779589c95588bedc44c45699f8ac07f0141de4571c5e05307282459430a24a1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Selfish"), List.of(new TypeParam("Self", List.of()), new TypeParam("Self_", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Self"), Types.typeVar("Self_")), List.of()), new MethodTableTemplate(Set.of(Signature.of("take", Param.fixed(ClassDesc.of("p.Self")), Param.var(0), Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Selfish_Heritage());
 
         private Data() {
         }
@@ -63,7 +63,7 @@ public final class Selfish_<Self__, Self___> {
     static final class Canonical {
         /// The canonical form of [Selfish].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Selfish interface sealed=no nesting=top
         tparams #0; #1
         superclasses -

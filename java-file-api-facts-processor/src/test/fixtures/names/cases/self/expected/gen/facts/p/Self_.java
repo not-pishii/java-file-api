@@ -26,7 +26,7 @@ import p.Self;
 ///
 /// `@Facts` does not ask for [Self]: it is only mentioned in the signatures of [p.Selfish]. For the facts of its members add `Self.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Self.class, fingerprint = "a725fce06cb56dbd3f62c01e1d407a4b15e95e65a6246a6a020924bca966f202", complete = false, format = 14)
+@GeneratedMetamodel(of = Self.class, fingerprint = "089b90f26abe4cbbfbe090756e8974af3bedb4054946591ac7aca9b2c6366bea", complete = false, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Self_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Self] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "a725fce06cb56dbd3f62c01e1d407a4b15e95e65a6246a6a020924bca966f202", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Self"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "089b90f26abe4cbbfbe090756e8974af3bedb4054946591ac7aca9b2c6366bea", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Self"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
 
         private Data() {
         }
@@ -48,7 +48,7 @@ public final class Self_ {
     static final class Canonical {
         /// The canonical form of [Self].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Self open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

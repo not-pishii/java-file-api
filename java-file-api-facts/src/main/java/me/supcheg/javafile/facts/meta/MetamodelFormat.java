@@ -62,7 +62,7 @@ public final class MetamodelFormat {
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 14;
+    public static final int VERSION = 15;
 
     private MetamodelFormat() {}
 }

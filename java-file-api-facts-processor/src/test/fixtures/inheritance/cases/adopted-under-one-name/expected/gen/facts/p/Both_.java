@@ -40,7 +40,7 @@ import p.Both;
 ///
 /// A generated class extends or implements [Both] by the proof its metamodel starts, with the stages of `Both_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Both.class, fingerprint = "4765adfada25ee1bd08d33a4cd148318793d951ff1113441a4fb000a4276ad37", complete = true, format = 14)
+@GeneratedMetamodel(of = Both.class, fingerprint = "504dbca84f9e856dc41a4121554296d1071f2fc8c3eb01aa5f8eb8d5a206f83c", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Both_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Both] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Both_"), "4765adfada25ee1bd08d33a4cd148318793d951ff1113441a4fb000a4276ad37", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Both"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.One"), ClassDesc.of("p.Other")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Both"))), false, new Both_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Both_"), "504dbca84f9e856dc41a4121554296d1071f2fc8c3eb01aa5f8eb8d5a206f83c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Both"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.One"), ClassDesc.of("p.Other")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Both"))), false, new Both_Heritage());
 
         private Data() {
         }
@@ -62,7 +62,7 @@ public final class Both_ {
     static final class Canonical {
         /// The canonical form of [Both].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.Both open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

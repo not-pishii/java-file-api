@@ -21,15 +21,18 @@ import java.util.List;
 /// @param overridability whether the method can be overridden
 /// @param typeArgs the explicit type arguments of a generic method; empty for none
 /// @param access the access of the member
+/// @param arity whether the last parameter of the method or constructor is of variable arity, and whether
+///              its declaration is `@SafeVarargs`
 public record MemberTraits(
         List<RefToken<? extends Throwable>> throwsTypes,
         Overridability overridability,
         List<RefToken<?>> typeArgs,
-        Access access) {
+        Access access,
+        Arity arity) {
 
-    /// No `throws` clause, overridable, not generic, `public`.
+    /// No `throws` clause, overridable, not generic, `public`, of fixed arity.
     public static final MemberTraits DEFAULT =
-            new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PUBLIC);
+            new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PUBLIC, Arity.FIXED);
 
     /// No `throws` clause, overridable, not generic, `public`; the same as [#DEFAULT].
     public static final MemberTraits OVERRIDABLE = DEFAULT;
@@ -57,7 +60,7 @@ public record MemberTraits(
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final MemberTraits throwing(RefToken<? extends Throwable>... types) {
-        return new MemberTraits(List.of(types), overridability, typeArgs, access);
+        return new MemberTraits(List.of(types), overridability, typeArgs, access, arity);
     }
 
     /// Returns these traits with the given overridability.
@@ -65,7 +68,7 @@ public record MemberTraits(
     /// @param overridability the overridability
     /// @return the new traits
     public MemberTraits with(Overridability overridability) {
-        return new MemberTraits(throwsTypes, overridability, typeArgs, access);
+        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
     }
 
     /// Returns these traits with the given access.
@@ -73,7 +76,15 @@ public record MemberTraits(
     /// @param access the access
     /// @return the new traits
     public MemberTraits with(Access access) {
-        return new MemberTraits(throwsTypes, overridability, typeArgs, access);
+        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
+    }
+
+    /// Returns these traits with the given arity.
+    ///
+    /// @param arity the arity
+    /// @return the new traits
+    public MemberTraits with(Arity arity) {
+        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
     }
 
     /// Returns these traits with explicit type arguments.
@@ -81,6 +92,6 @@ public record MemberTraits(
     /// @param typeArgs the type arguments, in order
     /// @return the new traits
     public MemberTraits withTypeArgs(RefToken<?>... typeArgs) {
-        return new MemberTraits(throwsTypes, overridability, List.of(typeArgs), access);
+        return new MemberTraits(throwsTypes, overridability, List.of(typeArgs), access, arity);
     }
 }

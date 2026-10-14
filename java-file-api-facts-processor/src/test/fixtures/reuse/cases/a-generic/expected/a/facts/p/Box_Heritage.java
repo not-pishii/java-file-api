@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
-import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.ClassMethod;
 import me.supcheg.javafile.facts.Heritage.Constructor;
 import me.supcheg.javafile.facts.Heritage.Declaration;
@@ -67,7 +67,7 @@ public final class Box_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("all", Param.var(0, 1)), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.VARIABLE, List.of(), List.of(new Array(new OfType(0))), new Of<>(new Array(new OfType(0))), List.of())), Set.of(List.of(ClassDesc.ofDescriptor("[Ljava/lang/Comparable;"))), List.of());
+            return new Method<>(Signature.of("all", Param.var(0, 1)), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.SAFE_VARARGS, List.of(), List.of(new Array(new OfType(0))), new Of<>(new Array(new OfType(0))), List.of())), Set.of(List.of(ClassDesc.ofDescriptor("[Ljava/lang/Comparable;"))), List.of());
         }
 
         private static Method<Declaration> m1() {

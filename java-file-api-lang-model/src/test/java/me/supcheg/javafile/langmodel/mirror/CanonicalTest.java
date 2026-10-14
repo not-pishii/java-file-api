@@ -1,6 +1,7 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -78,7 +79,7 @@ class CanonicalTest {
                                 + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 8
+                        javafile-facts-canonical 9
                         type p.T open-class sealed=no nesting=top
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -103,6 +104,46 @@ class CanonicalTest {
                         table static make(java.lang.CharSequence, int[])
                         table ctor T(#0)
                         """);
+    }
+
+    private static final String ARITIES = """
+            package p;
+            public class T {
+                public T(int... sizes) {}
+                @SafeVarargs public <E> T(E... items) {}
+                public void fixed(String[] names) {}
+                public void variable(String... names) {}
+                @SafeVarargs public static <E> java.util.List<E> safe(E... items) { return null; }
+                @SafeVarargs public final <E> void sure(int first, E... rest) {}
+            }
+            """;
+
+    @Test
+    void aMemberOfVariableArityIsToldSoAndWhetherItIsSafeVarargs() {
+        assertThat(canonical("p.T", MemberFilter.DECLARED_ACCESSIBLE, ARITIES)
+                        .text()
+                        .lines())
+                .filteredOn(line -> line.startsWith("member "))
+                .containsExactly(
+                        "member ctor public (int...) throws -",
+                        "member ctor public <^0>(^0... @SafeVarargs) throws -",
+                        "member method public final <^0> sure(int, ^0... @SafeVarargs) -> void throws -",
+                        "member method public overridable fixed(java.lang.String[]) -> void throws -",
+                        "member method public overridable variable(java.lang.String...) -> void throws -",
+                        "member method public static <^0> safe(^0... @SafeVarargs) -> java.util.List<^0> throws -");
+    }
+
+    @Test
+    void theArityOfAMemberIsInTheFingerprint() {
+        // one signature and two methods to a call: `m("a", "b")` compiles against the second alone
+        String array = "package p; public class T { public void m(String[] names) {} }";
+        String variable = "package p; public class T { public void m(String... names) {} }";
+        String safe = "package p; public class T { @SafeVarargs public final <E> void m(E... names) {} }";
+        String unchecked = "package p; public class T { public final <E> void m(E... names) {} }";
+
+        assertThat(fingerprint(array)).isNotEqualTo(fingerprint(variable));
+        assertThat(fingerprint(safe)).isNotEqualTo(fingerprint(unchecked));
+        assertThat(fingerprint(variable)).isEqualTo(fingerprint(variable.replace("names", "others")));
     }
 
     @Test
@@ -142,7 +183,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 8
+                        javafile-facts-canonical 9
                         type p.Day enum sealed=no nesting=top
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -389,7 +430,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 8
+                        javafile-facts-canonical 9
                         type p.T interface sealed=no nesting=top
                         tparams -
                         superclasses -
@@ -506,6 +547,7 @@ class CanonicalTest {
                         Optional.of(Types.typeVar("Q")),
                         List.of(),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.ABSTRACT,
                         Access.PUBLIC)),
@@ -549,6 +591,7 @@ class CanonicalTest {
                                 List.of(
                                         MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object),
                                         MethodTableTemplate.Param.fixed(ConstantDescs.CD_Object)),
+                                Arity.FIXED,
                                 List.of(),
                                 Access.PUBLIC),
                         new MethodModel(
@@ -558,6 +601,7 @@ class CanonicalTest {
                                 Optional.of(Types.typeVar("E")),
                                 List.of(),
                                 List.of(),
+                                Arity.FIXED,
                                 List.of(),
                                 Overridability.FINAL,
                                 Access.PUBLIC)),

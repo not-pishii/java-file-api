@@ -1,7 +1,9 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
+import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.Overridability;
@@ -442,6 +444,7 @@ class MirrorTranslatorTypeTest {
                         Optional.of(Types.array(Types.of(ClassDesc.of("p.Day")))),
                         List.of(),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.FINAL,
                         Access.PUBLIC));
@@ -509,11 +512,12 @@ class MirrorTranslatorTypeTest {
 
         assertThat(model.members())
                 .containsExactly(
-                        new CtorModel(List.of(), List.of(), List.of(), List.of(), Access.PUBLIC),
+                        new CtorModel(List.of(), List.of(), List.of(), Arity.FIXED, List.of(), Access.PUBLIC),
                         new CtorModel(
                                 List.of(new TypeParam("X", List.of(Types.of(CD_NUMBER)))),
                                 List.of(Types.typeVar("X"), Types.typeVar("T")),
                                 List.of(fixed(CD_NUMBER), var(0)),
+                                Arity.FIXED,
                                 List.of(Types.of(IOException.class)),
                                 Access.PUBLIC));
     }
@@ -545,6 +549,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.of(Types.typeVar("T")),
                                 List.of(),
                                 List.of(),
+                                Arity.FIXED,
                                 List.of(),
                                 Overridability.ABSTRACT,
                                 Access.PUBLIC),
@@ -555,6 +560,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.empty(),
                                 List.of(),
                                 List.of(),
+                                Arity.FIXED,
                                 List.of(),
                                 Overridability.FINAL,
                                 Access.PUBLIC),
@@ -565,6 +571,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.of(Types.typeVar("S")),
                                 List.of(Types.typeVar("S")),
                                 List.of(fixed(ConstantDescs.CD_Object)),
+                                Arity.FIXED,
                                 List.of(),
                                 Overridability.FINAL,
                                 Access.PUBLIC),
@@ -575,6 +582,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.empty(),
                                 List.of(Types.array(Types.INT)),
                                 List.of(fixed(ConstantDescs.CD_int.arrayType())),
+                                Arity.VARIABLE,
                                 List.of(),
                                 Overridability.OVERRIDABLE,
                                 Access.PUBLIC),
@@ -585,6 +593,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.empty(),
                                 List.of(),
                                 List.of(),
+                                Arity.FIXED,
                                 List.of(Types.typeVar("X"), Types.of(IOException.class)),
                                 Overridability.OVERRIDABLE,
                                 Access.PUBLIC),
@@ -596,6 +605,7 @@ class MirrorTranslatorTypeTest {
                                 Optional.empty(),
                                 List.of(),
                                 List.of(),
+                                Arity.FIXED,
                                 List.of(),
                                 Overridability.OVERRIDABLE,
                                 Access.PROTECTED));
@@ -686,6 +696,7 @@ class MirrorTranslatorTypeTest {
                         Optional.empty(),
                         List.of(),
                         List.of(),
+                        Arity.FIXED,
                         List.of(),
                         Overridability.OVERRIDABLE,
                         Access.PUBLIC));
@@ -1037,6 +1048,41 @@ class MirrorTranslatorTypeTest {
                 "package p; interface Hidden { void h(); default void more() {} }");
 
         assertThat(members).isEqualTo(new Translation.Deferred<List<Element>>("Missing"));
+    }
+
+    @Test
+    void aMethodAndAConstructorTellTheirArityAndWhetherTheyAreSafeVarargs() {
+        TypeModel model = Harness.run(env -> Harness.ok(env.full("p.Arities")), """
+                package p;
+                public class Arities {
+                    public Arities(int... sizes) {}
+                    @SafeVarargs public <E> Arities(E... items) {}
+                    public Arities(int[] sizes, int more) {}
+                    public void fixed(String[] names) {}
+                    public void variable(String... names) {}
+                    @SafeVarargs public static <E> void safe(E... items) {}
+                }
+                """);
+
+        assertThat(model.members())
+                .filteredOn(CtorModel.class::isInstance)
+                .extracting(member -> ((CtorModel) member).arity())
+                .containsExactly(Arity.VARIABLE, Arity.SAFE_VARARGS, Arity.FIXED);
+        assertThat(model.members())
+                .filteredOn(MethodModel.class::isInstance)
+                .extracting(member -> ((MethodModel) member).name() + " " + ((MethodModel) member).arity())
+                .containsExactly(
+                        "fixed Fixed[]", "variable Variable[safety=UNCHECKED]", "safe Variable[safety=SAFE_VARARGS]");
+        // the heritage tells the same of each declaration
+        assertThat(Canonical.heritage((Heritage.Told) model.heritage()))
+                .contains(
+                        "inherit ctor Arities(int[]) public (int...) throws -",
+                        "inherit method safe(java.lang.Object[]) erased (java.lang.Object[]) overrides - by class"
+                                + " public static p.Arities <^0> (^0... @SafeVarargs) -> void throws -",
+                        "inherit method variable(java.lang.String[]) erased (java.lang.String[]) overrides - by class"
+                                + " public concrete p.Arities (java.lang.String...) -> void throws -",
+                        "inherit method fixed(java.lang.String[]) erased (java.lang.String[]) overrides - by class"
+                                + " public concrete p.Arities (java.lang.String[]) -> void throws -");
     }
 
     @Test
@@ -1492,6 +1538,7 @@ class MirrorTranslatorTypeTest {
                 Optional.of(Types.STRING),
                 List.of(Types.INT),
                 List.of(fixed(ConstantDescs.CD_int)),
+                Arity.FIXED,
                 List.of(Types.of(ClassDesc.of("java.io.IOException"))),
                 Overridability.ABSTRACT,
                 Access.PUBLIC);

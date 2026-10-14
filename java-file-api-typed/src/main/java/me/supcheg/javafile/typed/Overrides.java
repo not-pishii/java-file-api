@@ -26,7 +26,8 @@ final class Overrides {
                 List.copyOf(thrown),
                 MemberTraits.FINAL.overridability(),
                 MemberTraits.FINAL.typeArgs(),
-                MemberTraits.FINAL.access());
+                MemberTraits.FINAL.access(),
+                MemberTraits.FINAL.arity());
     }
 
     /// The method of `self` that overrides `method`, declaring `thrown`.

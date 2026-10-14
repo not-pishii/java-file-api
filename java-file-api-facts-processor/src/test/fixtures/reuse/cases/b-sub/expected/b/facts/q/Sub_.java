@@ -34,7 +34,7 @@ import q.Sub;
 ///
 /// A generated class extends or implements [Sub] by the proof its metamodel starts, with the stages of `Sub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub.class, fingerprint = "24088bd705b4e94d4eb3049265f7da8cd0ee05069b90bcc7f80ab47945eee3c7", complete = true, format = 14)
+@GeneratedMetamodel(of = Sub.class, fingerprint = "ba25d3cc27d2d5ac0afad1d837da87ecb70a787a40e6fac99f4bd92361c14b23", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Sub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.q.Sub_"), "24088bd705b4e94d4eb3049265f7da8cd0ee05069b90bcc7f80ab47945eee3c7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("q.Sub"), List.of(), List.of(ClassDesc.of("p.Dep"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("sub"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Sub"))), false, new Sub_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("b.facts.q.Sub_"), "ba25d3cc27d2d5ac0afad1d837da87ecb70a787a40e6fac99f4bd92361c14b23", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("q.Sub"), List.of(), List.of(ClassDesc.of("p.Dep"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("sub"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Sub"))), false, new Sub_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class Sub_ {
     static final class Canonical {
         /// The canonical form of [Sub].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type q.Sub open-class sealed=no nesting=top
         tparams -
         superclasses p.Dep; java.lang.Object

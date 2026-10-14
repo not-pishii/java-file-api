@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Argument.Exact;
 import me.supcheg.javafile.facts.Heritage.Argument.Extends;
 import me.supcheg.javafile.facts.Heritage.Argument.Super;
-import me.supcheg.javafile.facts.Heritage.Arity;
 import me.supcheg.javafile.facts.Heritage.ClassMethod;
 import me.supcheg.javafile.facts.Heritage.Constructor;
 import me.supcheg.javafile.facts.Heritage.Declaration;
@@ -98,7 +98,7 @@ public final class Poly_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m7() {
-            return new Method<>(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Poly"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.VARIABLE, List.of(new Variable(List.of())), List.of(new Array(new OfMember(0))), new Of<>(new Parameterized(ClassDesc.of("java.util.List"), List.of(new Exact(new OfMember(0))))), List.of())), Set.of(List.of(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), List.of());
+            return new Method<>(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Poly"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.SAFE_VARARGS, List.of(new Variable(List.of())), List.of(new Array(new OfMember(0))), new Of<>(new Parameterized(ClassDesc.of("java.util.List"), List.of(new Exact(new OfMember(0))))), List.of())), Set.of(List.of(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), List.of());
         }
 
         private static Method<Declaration> m8() {

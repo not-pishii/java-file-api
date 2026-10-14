@@ -36,7 +36,7 @@ import p.PStr;
 ///
 /// A generated class extends or implements [PStr] by the proof its metamodel starts, with the stages of `PStr_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PStr.class, fingerprint = "0dd8e932530c75e0619e7cc640203936eadb4d7474dc654d98a1ebb656b6045c", complete = true, format = 14)
+@GeneratedMetamodel(of = PStr.class, fingerprint = "18473c3fe9795991fcc0a7749f9c51d412c0d6990bc00c3c20980d2cbda6483a", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class PStr_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PStr] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PStr_"), "0dd8e932530c75e0619e7cc640203936eadb4d7474dc654d98a1ebb656b6045c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PStr"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PStr_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PStr_"), "18473c3fe9795991fcc0a7749f9c51d412c0d6990bc00c3c20980d2cbda6483a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PStr"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PStr_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class PStr_ {
     static final class Canonical {
         /// The canonical form of [PStr].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type p.PStr interface sealed=no nesting=top
         tparams -
         superclasses -

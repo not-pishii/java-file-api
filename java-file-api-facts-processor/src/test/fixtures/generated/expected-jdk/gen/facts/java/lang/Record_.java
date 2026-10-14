@@ -38,7 +38,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [Record]: no class extends java.lang.Record but an enum or a record does.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Record.class, fingerprint = "8993a56ede3e9ca2adc65070e3b3902342ddeaa2befc4dc4420420d864b44bfe", complete = true, format = 14)
+@GeneratedMetamodel(of = Record.class, fingerprint = "c31be7f2cdaf2df7a0b86271cadea1eec9b926244bb2c6dd9d3fa883af35c222", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Record_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Record] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Record_"), "8993a56ede3e9ca2adc65070e3b3902342ddeaa2befc4dc4420420d864b44bfe", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Record"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("hashCode"), Signature.of("toString")), Set.of(Signature.of("clone"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Record"))), false, new Record_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Record_"), "c31be7f2cdaf2df7a0b86271cadea1eec9b926244bb2c6dd9d3fa883af35c222", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Record"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("hashCode"), Signature.of("toString")), Set.of(Signature.of("clone"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Record"))), false, new Record_Heritage());
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class Record_ {
     static final class Canonical {
         /// The canonical form of [Record].
         static final String TEXT = """
-        javafile-facts-canonical 8
+        javafile-facts-canonical 9
         type java.lang.Record abstract-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
