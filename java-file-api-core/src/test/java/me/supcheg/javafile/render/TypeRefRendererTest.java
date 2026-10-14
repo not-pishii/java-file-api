@@ -172,6 +172,20 @@ class TypeRefRendererTest {
     }
 
     @Test
+    void theAnnotationsOfAnArrayOfArraysAreBeforeTheBracketsOfTheirLevelTheOuterFirst() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("me.supcheg.example"));
+        var outer = new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("a", "Outer"), List.of());
+        var inner = new me.supcheg.javafile.annotation.AnnotationUse(ClassDesc.of("a", "Inner"), List.of());
+        // JLS 9.7.4: in `int @A [] @B []` it is @A that is on the array of arrays, and @B on its component
+        var rows = Types.array(Types.array(PrimitiveTypeRef.INT, inner), outer);
+
+        assertThat(TypeRefRenderer.renderType(rows, ctx)).isEqualTo("int @Outer [] @Inner []");
+        assertThat(TypeRefRenderer.renderDims(rows, ctx)).isEqualTo(" @Outer [] @Inner []");
+        assertThat(TypeRefRenderer.elementType(rows)).isEqualTo(PrimitiveTypeRef.INT);
+        assertThat(TypeRefRenderer.renderDims(PrimitiveTypeRef.INT, ctx)).isEmpty();
+    }
+
+    @Test
     void arrayTypeUseAnnotationRendersOnTheArrayLevelBeforeTheBrackets() {
         ImportManager imports = new ImportManager("me.supcheg.example");
         Context ctx = Context.of(standardFormat(), imports);
