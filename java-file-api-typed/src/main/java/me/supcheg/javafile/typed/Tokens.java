@@ -4,6 +4,7 @@ import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
@@ -15,6 +16,7 @@ import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /// Internal helpers shared by the typed-layer combinators.
 final class Tokens {
@@ -41,6 +43,36 @@ final class Tokens {
         };
     }
 
+    /// Rejects a type that is or mentions a raw type, a generic class or interface without its type
+    /// arguments: javac warns of code that writes one (`[rawtypes]`). A fact of a member whose signature
+    /// is raw has such a token.
+    ///
+    /// @param type the type the code writes
+    /// @throws IllegalStateException if `type` is or mentions a raw type
+    static void requireNotRaw(TypeToken<?> type) {
+        raw(type).findFirst().ifPresent(raw -> {
+            throw new IllegalStateException("the type " + type + " is written in the code, and "
+                    + (raw == type ? "is" : "mentions") + " the raw type " + raw + ": javac warns of it"
+                    + " (-Xlint:rawtypes) — give the generic type its type arguments, or wildcards");
+        });
+    }
+
+    private static Stream<TypeToken<?>> raw(TypeToken<?> type) {
+        return switch (type) {
+            case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
+            case ArrayToken<?, ?> array -> raw(array.component());
+            case DeclaredToken<?> declared ->
+                declared.typeRef() instanceof ParameterizedTypeRef
+                        ? declared.typeArguments().stream().flatMap(argument -> switch (argument) {
+                            case TokenArg.Exact(var exact) -> raw(exact);
+                            case TokenArg.Extends(var bound) -> raw(bound);
+                            case TokenArg.Super(var bound) -> raw(bound);
+                            case TokenArg.Unbounded _ -> Stream.<TypeToken<?>>empty();
+                        })
+                        : declared.shape().typeParameters().isEmpty() ? Stream.empty() : Stream.of(declared);
+        };
+    }
+
     /// An array creation must name a reifiable component type (JLS 15.10.1):
     /// otherwise the array's run-time component type is not the one its
     /// static type claims — heap pollution through a generic array.
@@ -50,8 +82,8 @@ final class Tokens {
     static void requireReifiableComponent(TypeToken<?> type) {
         if (!isReifiable(type)) {
             throw new IllegalArgumentException("newArray needs a reifiable type (JLS 4.7), but " + type
-                    + " is not: its type arguments are not checked at run time. Use a non-generic or raw type,"
-                    + " or a parameterization with unbounded wildcards only, e.g. List<?>");
+                    + " is not: its type arguments are not checked at run time. Use a non-generic type, or a"
+                    + " parameterization with unbounded wildcards only, e.g. List<?>");
         }
     }
 

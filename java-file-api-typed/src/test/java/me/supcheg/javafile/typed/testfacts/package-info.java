@@ -104,7 +104,8 @@
     Ranked.class,
     Rival.class,
     Tagged.class,
-    Applying.class
+    Applying.class,
+    Rawly.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -129,6 +130,7 @@ import me.supcheg.javafile.typed.fixtures.Numbers;
 import me.supcheg.javafile.typed.fixtures.TakesTexts;
 import me.supcheg.javafile.typed.fixtures.TakesNumbers;
 import me.supcheg.javafile.typed.fixtures.Ranked;
+import me.supcheg.javafile.typed.fixtures.Rawly;
 import me.supcheg.javafile.typed.fixtures.Renamed;
 import me.supcheg.javafile.typed.fixtures.Rival;
 import me.supcheg.javafile.typed.fixtures.Settled;

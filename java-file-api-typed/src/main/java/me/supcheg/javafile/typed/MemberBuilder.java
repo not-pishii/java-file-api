@@ -146,6 +146,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         String name = field.name();
         Site site = Site.here();
         owner.requireDeclaring("field " + name + " of " + described);
+        Tokens.requireNotRaw(field.type());
         owner.scope("the type of field " + name).require(field.type());
         serial.requireSerializable(field, described);
         registry.field(name);
@@ -234,7 +235,10 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// Holds the types of the signature of a member to its scope, where it is declared.
     private void requireInScope(Invocable member) {
         TypeScope scope = scope(member.kind(), "the signature of " + member);
-        Stream.concat(member.params().stream(), member.resultType().stream()).forEach(scope::require);
+        Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
+            Tokens.requireNotRaw(type);
+            scope.require(type);
+        });
     }
 
     /// Declares a method or constructor of the class.

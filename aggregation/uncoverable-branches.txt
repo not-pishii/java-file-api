@@ -180,6 +180,9 @@ me/supcheg/javafile/typed/ExceptionType.java :: case InterfaceToken<?> _, ArrayT
 me/supcheg/javafile/typed/Lowering.java :: case ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ -> false;
     a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/typed/Tokens.java :: case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
 # ---- what cannot happen: worded checks neither a test nor a type removes ----
 
 me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),

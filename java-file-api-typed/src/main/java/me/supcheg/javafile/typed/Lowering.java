@@ -260,11 +260,14 @@ final class Lowering {
         target.verify(type);
     }
 
-    /// A type the lowered code writes: its type variables are in scope where the code stands.
+    /// A type the lowered code writes: its type variables are in scope where the code stands, and it
+    /// mentions no raw type ([Tokens#requireNotRaw]).
     ///
     /// @return the type given
-    /// @throws IllegalStateException if a type parameter of a class is written out of its scope
+    /// @throws IllegalStateException if a type parameter of a class is written out of its scope, or the
+    ///     type mentions a raw type
     private <T extends TypeToken<?>> T written(T type) {
+        Tokens.requireNotRaw(type);
         switch (place) {
             case Place.Standalone _ -> new TypeScope.Standalone().require(type);
             case Place.InClass(var _, var scope, var _) -> scope.require(type);
