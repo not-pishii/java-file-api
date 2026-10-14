@@ -3,8 +3,6 @@ package me.supcheg.javafile.typed;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /// The scope check of §6.2, run when a statement is appended: every [Var]
 /// the statement refers to must be owned by the block it is appended to or
@@ -167,8 +165,7 @@ final class ScopeCheck {
                     }
                     case Node.LambdaBody.Block(var block) -> block;
                 };
-        Block<?, ?> builtIn = scope.parent();
-        if (builtIn != null && outside(builtIn, use)) {
+        if (scope.enclosing() instanceof Block.Enclosing.In(var builtIn) && outside(builtIn, use)) {
             throw new IllegalStateException("a lambda built in the " + builtIn.path() + " is used in the " + where
                     + ", which is not inside that block: the variables it captures are out of scope there (§6.2)");
         }
@@ -182,8 +179,7 @@ final class ScopeCheck {
         switch (arm) {
             case Node.Arm.Value(var value) -> node(value, use, where);
             case Node.Arm.Block(var block) -> {
-                Block<?, ?> builtIn = block.parent();
-                if (builtIn == null) {
+                if (!(block.enclosing() instanceof Block.Enclosing.In(var builtIn))) {
                     return;
                 }
                 if (outside(builtIn, use)) {
@@ -205,42 +201,38 @@ final class ScopeCheck {
     /// is the body of a lambda or a block of a `switch`: a block of an
     /// expression.
     private static boolean nestedSpecially(Block<?, ?> owner, @Nullable Block<?, ?> use) {
-        return Stream.<@Nullable Block<?, ?>>iterate(use, b -> b != null && b != owner, Block::parent)
+        return Block.chain(use)
+                .takeWhile(b -> b != owner)
                 .anyMatch(b -> b.nesting().ofExpression());
     }
 
     /// Whether a lambda body is between `use` and `owner`, which encloses it.
     private static boolean crossesLambda(Block<?, ?> owner, @Nullable Block<?, ?> use) {
-        for (Block<?, ?> b = use; b != null && b != owner; b = b.parent()) {
-            if (b.nesting() == Block.Nesting.LAMBDA_BODY) {
-                return true;
-            }
-        }
-        return false;
+        return Block.chain(use).takeWhile(b -> b != owner).anyMatch(b -> b.nesting() == Block.Nesting.LAMBDA_BODY);
     }
 
     /// Whether `use` is neither `owner` nor a block nested in it.
     private static boolean outside(Block<?, ?> owner, @Nullable Block<?, ?> use) {
-        return Stream.<@Nullable Block<?, ?>>iterate(use, Objects::nonNull, Block::parent)
-                .noneMatch(b -> b == owner);
+        return Block.chain(use).noneMatch(b -> b == owner);
     }
 
     private static void requireInScope(Var<?> var, @Nullable Block<?, ?> use, String where) {
         Block<?, ?> owner = var.owner();
-        boolean crossesLambda = false;
-        for (Block<?, ?> b = use; b != null; b = b.parent()) {
-            if (b == owner) {
-                if (crossesLambda && var instanceof MutVar<?>) {
-                    throw new IllegalStateException("the " + var + " of the " + owner.path() + " is used in the "
-                            + where + ", across a lambda boundary: a lambda can capture only effectively final"
-                            + " variables, and a MutVar is assignable; copy it into a let first (§6.2)");
-                }
-                return;
+        if (!outside(owner, use)) {
+            if (var instanceof MutVar<?> && crossesLambda(owner, use)) {
+                throw new IllegalStateException("the " + var + " of the " + owner.path() + " is used in the "
+                        + where + ", across a lambda boundary: a lambda can capture only effectively final"
+                        + " variables, and a MutVar is assignable; copy it into a let first (§6.2)");
             }
-            crossesLambda |= b.nesting() == Block.Nesting.LAMBDA_BODY;
+            return;
         }
-        Block<?, ?> around = owner.parent();
-        if (var.isVariableOfFor() && around != null && !outside(around, use) && nestedSpecially(around, use)) {
+        // the body of a loop is nested in the block of the loop
+        if (var.isVariableOfFor()
+                && owner.chain()
+                        .skip(1)
+                        .findFirst()
+                        .filter(around -> !outside(around, use) && nestedSpecially(around, use))
+                        .isPresent()) {
             throw new IllegalStateException("the " + var + " declared in the " + owner.path() + " is used in the "
                     + where + ", which is not inside the body of the loop: the variable is out of scope there. A"
                     + " lambda or a block of a switch_ built in the condition or the update of a for_ is a block"
@@ -266,11 +258,11 @@ final class ScopeCheck {
     private static void loopCtl(LoopCtl ctl, Block<?, ?> use, String form) {
         Block<?, ?> loopBody = ctl.body();
         String where = use.path();
-        for (Block<?, ?> b = use; b != loopBody; b = b.parent()) {
-            if (b == null) {
-                throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
-                        + loopBody.path() + ", which does not enclose it: the LoopCtl escaped its loop body (§6.3)");
-            }
+        if (outside(loopBody, use)) {
+            throw new IllegalStateException(form + " in the " + where + " targets the loop of the " + loopBody.path()
+                    + ", which does not enclose it: the LoopCtl escaped its loop body (§6.3)");
+        }
+        Block.chain(use).takeWhile(b -> b != loopBody).forEach(b -> {
             switch (b.nesting()) {
                 case PLAIN, FINALLY_BLOCK -> {}
                 case LAMBDA_BODY ->
@@ -282,6 +274,6 @@ final class ScopeCheck {
                             + loopBody.path() + " out of a switch expression: a block of a switch expression"
                             + " cannot break or continue a loop around the switch (JLS 15.28.1)");
             }
-        }
+        });
     }
 }

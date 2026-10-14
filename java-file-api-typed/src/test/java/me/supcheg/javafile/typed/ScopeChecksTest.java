@@ -157,6 +157,27 @@ class ScopeChecksTest {
         }
 
         @Test
+        void aLoopVariableIsRejectedOutsideOfTheBlockOfItsLoop() {
+            // the loop is in the then-branch, the variable used in the else-branch
+            AtomicReference<MutVar<Prim.Int>> stash = new AtomicReference<>();
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> intMethod((b, flag) -> b.if_(
+                                    flag,
+                                    t -> t.for_(
+                                            PrimitiveToken.INT,
+                                            literal(0),
+                                            _ -> flag,
+                                            i -> assign(i, addInt(i, literal(1))),
+                                            (_, i, _) -> stash.set(i)),
+                                    e -> e.exec(print(stash.get())))
+                            .return_(literal(0))))
+                    .withMessageContaining("loop variable of type int declared in the body of for_")
+                    .withMessageContaining("is used in the else-branch of if_")
+                    .withMessageContaining("it escaped the lambda it was handed to");
+        }
+
+        @Test
         void aVarOfTheEnclosingBlockIsInScope() {
             assertThatCode(() -> intMethod((b, flag) -> b.let(
                             PrimitiveToken.INT,

@@ -1,12 +1,12 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Invocable;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -246,7 +246,9 @@ final class Exceptions {
     /// The block `block` is nested in: only the body of a member or of a
     /// lambda has none, and that one declares.
     private static Block<?, ?> enclosing(Block<?, ?> block) {
-        return Objects.requireNonNull(block.parent(), "a block that declares no exceptions is nested in one");
+        return Invariants.present(
+                block.enclosing() instanceof Block.Enclosing.In(var parent) ? Optional.of(parent) : Optional.empty(),
+                "a block that declares no exceptions is nested in one");
     }
 
     // ------------------------------------------------------------------

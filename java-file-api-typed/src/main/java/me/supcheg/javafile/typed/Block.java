@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /// A block of statements being built (§6.2, §6.3).
 ///
@@ -110,15 +111,39 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         }
     }
 
-    private final @Nullable Block<?, ?> parent;
+    private final Enclosing enclosing;
     private final Nesting nesting;
     private final String what;
     private final ExceptionScope exceptionScope;
     private final List<Instr> instrs = new ArrayList<>();
-    private @Nullable String endedBy;
+    private Ending ending = new Ending.Open();
 
+    /// What a block is nested in.
+    sealed interface Enclosing {
+        /// Nothing: the body of a member, or a block of an expression built outside of any body.
+        record Root() implements Enclosing {}
+
+        /// A block.
+        ///
+        /// @param block the block
+        record In(Block<?, ?> block) implements Enclosing {}
+    }
+
+    /// Whether a block has ended: a statement after the one that ended it would be unreachable.
+    private sealed interface Ending {
+        /// It has not.
+        record Open() implements Ending {}
+
+        /// It has, by `form`.
+        ///
+        /// @param form the form that ended it, for messages
+        record Ended(String form) implements Ending {}
+    }
+
+    /// @param parent the block this one is nested in, or `null` for the body of a member and for a block
+    ///     of an expression built outside of any body
     Block(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
-        this.parent = parent;
+        this.enclosing = parent == null ? new Enclosing.Root() : new Enclosing.In(parent);
         this.nesting = nesting;
         this.what = what;
         this.exceptionScope = exceptionScope;
@@ -151,10 +176,24 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return exceptionScope;
     }
 
-    /// The block this one is nested in, or `null` for the body of a member
-    /// and for a block of an expression built outside of any body.
-    final @Nullable Block<?, ?> parent() {
-        return parent;
+    /// What this block is nested in.
+    final Enclosing enclosing() {
+        return enclosing;
+    }
+
+    /// This block and the blocks it is nested in, the innermost first.
+    final Stream<Block<?, ?>> chain() {
+        return Stream.concat(
+                Stream.of(this),
+                switch (enclosing) {
+                    case Enclosing.Root _ -> Stream.empty();
+                    case Enclosing.In(var block) -> block.chain();
+                });
+    }
+
+    /// The blocks `use` is, and is nested in, the innermost first; none outside of any body.
+    static Stream<Block<?, ?>> chain(@Nullable Block<?, ?> use) {
+        return Stream.<Block<?, ?>>ofNullable(use).flatMap(block -> block.chain());
     }
 
     /// What this block is to the block it is nested in.
@@ -164,7 +203,10 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     /// Where this block is, for diagnostics: `then-branch of if_ in body of method m`.
     final String path() {
-        return parent == null ? what : what + " in " + parent.path();
+        return switch (enclosing) {
+            case Enclosing.Root _ -> what;
+            case Enclosing.In(var block) -> what + " in " + block.path();
+        };
     }
 
     /// The statements of this block so far, as a view.
@@ -174,8 +216,8 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     final void requireOpen() {
         Scopes.requireInnermost(this, "the " + path());
-        if (endedBy != null) {
-            throw new IllegalStateException("the " + path() + " has already ended with " + endedBy
+        if (ending instanceof Ending.Ended(var form)) {
+            throw new IllegalStateException("the " + path() + " has already ended with " + form
                     + "; a statement after it would be unreachable (JLS 14.22)");
         }
     }
@@ -211,7 +253,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     final Terminated<R> endHere(String form) {
         requireOpen();
-        endedBy = form;
+        ending = new Ending.Ended(form);
         return new Terminated<>(this);
     }
 
