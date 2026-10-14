@@ -9,6 +9,7 @@ mockito = "5.23.0"
 nullaway = "0.14.3"
 vanniktech-maven-publish = "0.33.0"
 spotless = "8.8.0"
+palantir-java-format = "2.96.0"
 routine = "1.0.0"
 
 [libraries]
@@ -21,6 +22,7 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 routine = { module = "me.supcheg:routine", version.ref = "routine" }
+palantir-java-format = { module = "com.palantir.javaformat:palantir-java-format", version.ref = "palantir-java-format" }
 
 [plugins]
 errorprone = { id = "net.ltgt.errorprone", version = "5.2.0" }

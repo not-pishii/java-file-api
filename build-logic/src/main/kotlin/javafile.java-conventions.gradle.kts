@@ -92,12 +92,15 @@ testing {
 
 spotless {
     java {
-        palantirJavaFormat("2.96.0")
+        // the one version of the formatter: of the catalog, where a module that formats what it generates
+        // takes the library from
+        palantirJavaFormat(libs.versions.palantir.java.format.get())
         importOrder("", "javax|java", "\\#")
         forbidWildcardImports()
-        // The sources by their directories, not the source sets: those hold build/generated too, which the
-        // annotation processor rewrites while the tree is read ("Could not read path ...build/generated...").
-        target("src/*/java/**/*.java")
-        targetExclude("build/**")
+        // The sources by their directory, not the source sets, which hold build/generated too — and by a
+        // tree of `src` alone: a pattern of the project directory is matched by walking `build` as well,
+        // which the compiler and the annotation processor rewrite while the tree is read ("Could not read
+        // path ...build/generated...").
+        target(fileTree("src") { include("*/java/**/*.java") })
     }
 }
