@@ -534,7 +534,10 @@ final class Lowering {
     private Expr expr(Node node, boolean pin) {
         return switch (node) {
             case Node.Lit(var literal) -> literal;
-            case Node.RawLit(var literal) -> literal;
+            case Node.Null(var type) -> {
+                mentions(type);
+                yield Exprs.cast(written(type).typeRef(), Exprs.literalNull());
+            }
             case Node.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
             case Node.This ignored -> new ThisExpr();
             case Node.Box(var type, var operand) ->
@@ -582,7 +585,8 @@ final class Lowering {
                 Exprs.cast(conversion.type().typeRef(), expr(operand, true));
             case Node.Cast(var type, var operand) -> {
                 mentions(type);
-                yield Exprs.cast(written(type).typeRef(), expr(operand, true));
+                requireChecked(type, operand, "the cast");
+                yield Exprs.cast(written(type).typeRef(), expr(operand.node(), true));
             }
             // Unpinned, the expression is rendered as it is and javac types it by the class it is of;
             // pinned, the cast makes it of the supertype, and is no redundant one to javac.
@@ -922,6 +926,17 @@ final class Lowering {
     /// @throws IllegalStateException if `operand` is of a type parameter of several bounds and `type` is
     ///     parameterized
     private Expr cast(TypeToken<?> type, Node.Operand operand, Object of) {
+        requireChecked(type, operand, of);
+        return Exprs.cast(written(type).typeRef(), expr(operand.node()));
+    }
+
+    /// Rejects the cast of `operand` to `type` that javac warns of as unchecked: of a value of a type
+    /// parameter of several bounds to a parameterized type (JLS 5.1.6.2, `-Xlint:unchecked`).
+    ///
+    /// @param of what the cast is for, for the message
+    /// @throws IllegalStateException if `operand` is of a type parameter of several bounds and `type` is
+    ///     parameterized
+    private void requireChecked(TypeToken<?> type, Node.Operand operand, Object of) {
         if (operand.type() instanceof TypeVarToken<?> variable
                 && type.typeRef() instanceof ParameterizedTypeRef
                 && bounds(variable).filter(bounds -> bounds.size() > 1).isPresent()) {
@@ -930,7 +945,6 @@ final class Lowering {
                     + " cast as unchecked (-Xlint:unchecked) — bind the value to a variable of " + type
                     + " first, by let");
         }
-        return Exprs.cast(written(type).typeRef(), expr(operand.node()));
     }
 
     /// The members of a type javac chooses among for a use of `member`: its

@@ -459,7 +459,7 @@ final class Exceptions {
             // The statements of a block lambda are checked as they are appended to its block.
             case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
             case Node.Lit _ -> new Act.Computes();
-            case Node.RawLit _ -> new Act.Computes();
+            case Node.Null _ -> new Act.Computes();
             case Node.Local _ -> new Act.Computes();
             case Node.This _ -> new Act.Computes();
             case Node.Box _ -> new Act.Computes();
@@ -544,7 +544,7 @@ final class Exceptions {
     private static Stream<Node> children(Node node) {
         return switch (node) {
             case Node.Lit _ -> Stream.empty();
-            case Node.RawLit _ -> Stream.empty();
+            case Node.Null _ -> Stream.empty();
             case Node.Local _ -> Stream.empty();
             case Node.This _ -> Stream.empty();
             case Node.StaticFieldGet _ -> Stream.empty();
@@ -555,7 +555,7 @@ final class Exceptions {
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
             case Node.Not(var operand) -> Stream.of(operand);
             case Node.Convert(var _, var operand) -> Stream.of(operand);
-            case Node.Cast(var _, var operand) -> Stream.of(operand);
+            case Node.Cast(var _, var operand) -> Stream.of(operand.node());
             case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
             case Node.ArrayLength(var array) -> Stream.of(array);
             case Node.NewArray(var _, var length) -> Stream.of(length);

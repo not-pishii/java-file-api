@@ -73,7 +73,7 @@ class FactPinningChecksTest {
 
         assertThat(castChecked(arrayOfStrings.token, list).node()).isInstanceOf(Node.Cast.class);
         assertThat(castChecked(strings.token, collection).node()).isInstanceOf(Node.Cast.class);
-        assertThat(castChecked(strings.token, list).node()).isInstanceOf(Node.Cast.class);
+        assertThat(castChecked(strings.token, list).node()).isSameAs(list.node());
     }
 
     @Test
@@ -261,7 +261,7 @@ class FactPinningChecksTest {
 
         assertThat(same.whenTrue()).isInstanceOf(Node.Lit.class);
         assertThat(wider.whenTrue()).isInstanceOf(Node.Cast.class);
-        assertThat(((Node.Cast) wider.whenFalse()).operand()).isInstanceOf(Node.RawLit.class);
+        assertThat(wider.whenFalse()).isInstanceOf(Node.Null.class);
         assertThat(primitive.whenTrue()).isInstanceOf(Node.Lit.class);
     }
 

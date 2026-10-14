@@ -55,10 +55,12 @@ sealed interface Node {
     /// A literal, which is its value for constant folding.
     record Lit(ConstantLiteral literal) implements Exact {}
 
-    /// A literal that is not a constant expression: `null`. (A text block is
-    /// a constant `String` (JLS 15.29) and, once supported, must be a [Lit]
-    /// so that [Constants] folds it as javac does.)
-    record RawLit(Expr literal) implements Exact {}
+    /// `null` of a reference type, `((T) null)`: the bare `null` has no type of its own to javac, and is
+    /// no constant expression (JLS 15.29). (A text block is a constant `String` and, once supported, must
+    /// be a [Lit] so that [Constants] folds it as javac does.)
+    ///
+    /// @param type the type the `null` is of
+    record Null(RefToken<?> type) implements Exact {}
 
     /// A reference to a local variable or parameter.
     record Local(Var<?> var) implements Exact {}
@@ -188,7 +190,11 @@ sealed interface Node {
     }
 
     /// A cast to a reference type.
-    record Cast(RefToken<?> type, Node operand) implements Exact {}
+    ///
+    /// @param type the type cast to
+    /// @param operand what is cast, with its static type: a cast of a value of a type variable may be
+    ///     one javac warns of ([Lowering])
+    record Cast(RefToken<?> type, Operand operand) implements Exact {}
 
     /// An expression seen as of a supertype by an [me.supcheg.javafile.typed.Upcast]: `inner` is
     /// rendered as it is, without a cast, so javac types it by `innerType`

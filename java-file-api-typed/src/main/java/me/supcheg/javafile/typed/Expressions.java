@@ -153,7 +153,7 @@ public final class Expressions {
     /// @param <T> the type
     /// @return the literal
     public static <T> Expr<T> literalNull(RefToken<T> type) {
-        return Expr.of(new Node.Cast(type, new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull())), type);
+        return Expr.of(new Node.Null(type), type);
     }
 
     // ------------------------------------------------------------------
@@ -614,7 +614,7 @@ public final class Expressions {
             // `(T) operand` would be a redundant cast (javac -Xlint:cast).
             return Expr.of(operand.node(), type);
         }
-        return Expr.of(new Node.Cast(type, operand.node()), type);
+        return Expr.of(new Node.Cast(type, operand(operand)), type);
     }
 
     // ------------------------------------------------------------------
@@ -1212,7 +1212,7 @@ public final class Expressions {
                 }
                 yield Tokens.sameType(result.type(), reference)
                         ? result.node()
-                        : new Node.Cast(reference, result.node());
+                        : new Node.Cast(reference, operand(result));
             }
         };
     }

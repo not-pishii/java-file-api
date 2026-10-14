@@ -7,7 +7,15 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the type of the result
 public final class Invocation<T> extends Expr<T> implements Effect {
+    private final Node node;
+
     Invocation(Node node, TypeToken<T> type) {
-        super(node, type);
+        super(type);
+        this.node = node;
+    }
+
+    @Override
+    Node node() {
+        return node;
     }
 }

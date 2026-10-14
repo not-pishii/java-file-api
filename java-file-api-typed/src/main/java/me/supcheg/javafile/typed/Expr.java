@@ -13,18 +13,16 @@ import me.supcheg.javafile.facts.TypeToken;
 /// lowering learns what javac will: whether it is primitive, what exception
 /// type a `throw` throws.
 ///
-/// Expressions are created by [Expressions], by the invocation combinators
-/// of `Invocations`, by the statements that bind variables, and — untyped —
+/// Expressions are created by [Expressions], by the statements that bind
+/// variables, and — untyped —
 /// by [Unsafe#expr(me.supcheg.javafile.code.Expr, TypeToken)]. There is no
 /// public constructor.
 ///
 /// @param <T> the Java type of the expression
-public sealed class Expr<T> permits Var, Invocation, This {
-    private final Node node;
+public abstract sealed class Expr<T> permits Expr.Built, Var, Invocation, This {
     private final TypeToken<T> type;
 
-    Expr(Node node, TypeToken<T> type) {
-        this.node = node;
+    Expr(TypeToken<T> type) {
         this.type = type;
     }
 
@@ -35,11 +33,27 @@ public sealed class Expr<T> permits Var, Invocation, This {
         return type;
     }
 
-    Node node() {
-        return node;
-    }
+    /// The expression, as the typed layer represents it.
+    abstract Node node();
 
     static <T> Expr<T> of(Node node, TypeToken<T> type) {
-        return new Expr<>(node, type);
+        return new Built<>(node, type);
+    }
+
+    /// An expression a combinator built of its operands.
+    ///
+    /// @param <T> the Java type of the expression
+    static final class Built<T> extends Expr<T> {
+        private final Node node;
+
+        private Built(Node node, TypeToken<T> type) {
+            super(type);
+            this.node = node;
+        }
+
+        @Override
+        Node node() {
+            return node;
+        }
     }
 }

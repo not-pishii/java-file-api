@@ -18,8 +18,10 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.call;
+import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -204,5 +206,34 @@ class MultipleBoundsTest {
         Tagged<String> value = new Tagged<>();
         value.tag = "t";
         assertThat(compiled.invoke("tag", value)).isEqualTo("t");
+    }
+
+    @Test
+    void aBranchOfAVariableOfSeveralBoundsIsNotCastToAParameterizedType() {
+        // the branch of a cond of another type is cast to it: (Comparable<String>) v0 is unchecked here
+        JavacVerdict.asJavacWarns(
+                () -> TypedJavaFile.declareClass(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", COMPARABLE.token),
+                        new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                            @Override
+                            public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
+                                    ClassHeader<Self> h, TypeVarToken<T> t) {
+                                h.bound(t, Runnable_.TOKEN);
+                                var cb = h.extendsObject().members();
+                                var either = cb.declareMethod("either", COMPARABLE.token, t);
+                                var bodies = cb.bodies();
+                                bodies.define(
+                                        either,
+                                        (b, self, y) -> b.return_(cond(
+                                                literal(true), y, literalNull(COMPARABLE.token), COMPARABLE.token)));
+                                return bodies;
+                            }
+                        }),
+                "the cast is reached through a value of the type parameter T, of several bounds",
+                "static <U extends Comparable<String> & Runnable> Comparable<String> either(U y) {"
+                        + " return true ? (Comparable<String>) y : (Comparable<String>) null; }",
+                "unchecked cast");
     }
 }

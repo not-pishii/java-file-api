@@ -82,7 +82,7 @@ final class ScopeCheck {
         switch (node) {
             case Node.Local(var v) -> requireInScope(v, use, where);
             case Node.Lit ignored -> {}
-            case Node.RawLit ignored -> {}
+            case Node.Null ignored -> {}
             case Node.This(var owner) -> requireThisInScope(owner, use, where);
             case Node.StaticFieldGet ignored -> {}
             case Node.EnumConst ignored -> {}
@@ -117,7 +117,7 @@ final class ScopeCheck {
             }
             case Node.Not(var operand) -> node(operand, use, where);
             case Node.Convert(var ignored, var operand) -> node(operand, use, where);
-            case Node.Cast(var ignored, var operand) -> node(operand, use, where);
+            case Node.Cast(var ignored, var operand) -> node(operand.node(), use, where);
             case Node.Upcast(var inner, var ignoredInner, var ignored) -> node(inner, use, where);
             case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
             case Node.Switch switch_ -> {

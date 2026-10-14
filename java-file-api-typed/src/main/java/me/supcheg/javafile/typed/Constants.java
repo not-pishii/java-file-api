@@ -80,12 +80,12 @@ final class Constants {
             case Node.Convert(var conversion, var operand) -> converted(conversion, fold(operand));
             // A cast to `String` alone is one of a constant expression, and of a `String`.
             case Node.Cast(var type, var operand) ->
-                type.erasure().equals(ConstantDescs.CD_String) ? fold(operand) : NONE;
+                type.erasure().equals(ConstantDescs.CD_String) ? fold(operand.node()) : NONE;
             // None of these is a constant expression (JLS 15.29): a name of a local variable is one of
             // a constant variable alone, which the typed layer declares none of, and a call, an
             // instance creation, an access of an array or of an instance field, a lambda and a
             // `switch` never are; nor is `null`.
-            case Node.RawLit _,
+            case Node.Null _,
                     Node.Local _,
                     Node.This _,
                     Node.Box _,

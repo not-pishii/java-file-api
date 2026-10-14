@@ -21,9 +21,6 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the Java type of the variable
 public sealed class Var<T> extends Expr<T> permits MutVar {
-    /// The node handed to the superclass, never read: [#node()] is overridden.
-    private static final Node UNUSED = new Node.RawLit(me.supcheg.javafile.code.Exprs.literalNull());
-
     /// The role of the variable of a loop.
     static final String LOOP_VARIABLE = "loop variable";
 
@@ -32,7 +29,7 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
     private final Block<?, ?> owner;
 
     Var(TypeToken<T> type, String role, Block<?, ?> owner) {
-        super(UNUSED, type);
+        super(type);
         this.local = new Node.Local(this);
         this.role = role;
         this.owner = owner;
