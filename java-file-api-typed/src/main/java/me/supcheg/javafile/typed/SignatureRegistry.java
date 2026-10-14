@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The member signatures of a class being declared (§6.5, §9.7): rejects,
@@ -162,6 +164,7 @@ final class SignatureRegistry {
         }
         MethodSignature signature = member.signature();
         requireUndeclared(member, signature);
+        requireUnambiguous(member);
         inherited.group(signature).ifPresent(group -> {
             throw new IllegalArgumentException(declaredOverInherited(member, group));
         });
@@ -183,6 +186,7 @@ final class SignatureRegistry {
     Arity override(Invocable own) {
         MethodSignature signature = own.signature();
         requireUndeclared(own, signature);
+        requireUnambiguous(own);
         Inheritance.Group group = inherited
                 .group(signature)
                 .orElseThrow(() -> new IllegalArgumentException("the method " + own + " of " + owner
@@ -193,6 +197,99 @@ final class SignatureRegistry {
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         members = members.withOverride(own);
         return group.arity();
+    }
+
+    /// Rejects a method that javac warns of as potentially ambiguous with another of its name and number
+    /// of parameters (`[overloads]`): at a position where one takes a functional interface whose
+    /// method has parameters, the other takes another, unrelated one — an implicitly typed lambda would
+    /// not tell them apart. The typed layer writes its lambdas typed explicitly, and declares no such
+    /// pair all the same, for javac warns of the declaration.
+    ///
+    /// An inherited method tells its parameters by their erasures alone: one of another class or
+    /// interface where this one takes a functional interface is held to be such a one.
+    ///
+    /// @throws IllegalArgumentException if the class declares or inherits such a method
+    private void requireUnambiguous(Invocable member) {
+        List<TypeToken<?>> params = member.params();
+        // one of the same signature is refused by requireUndeclared before
+        members.methods().stream()
+                .filter(other ->
+                        other.name().equals(member.name()) && other.params().size() == params.size())
+                .filter(other -> IntStream.range(0, params.size())
+                        .anyMatch(i -> ambiguous(params.get(i), other.params().get(i))))
+                .findFirst()
+                .ifPresent(other -> {
+                    throw new IllegalArgumentException(potentiallyAmbiguous(member, other.toString()));
+                });
+        inherited
+                .groups()
+                .filter(group -> group.signature().name().equals(member.name())
+                        && group.signature().params().size() == params.size()
+                        && !group.signature().equals(member.signature()))
+                .filter(group -> IntStream.range(0, params.size())
+                        .anyMatch(i -> mayBeAmbiguous(
+                                params.get(i), group.signature().params().get(i))))
+                .findFirst()
+                .ifPresent(group -> {
+                    throw new IllegalArgumentException(potentiallyAmbiguous(
+                            member, group.entries().getFirst().toString()));
+                });
+    }
+
+    private String potentiallyAmbiguous(Invocable member, String other) {
+        return "the method " + member + " of " + owner + " is potentially ambiguous with " + other + ": at a"
+                + " position each takes a functional interface of its own whose method has parameters, and javac"
+                + " warns of the pair (-Xlint:overloads) — name the method otherwise";
+    }
+
+    /// Whether two parameters are unrelated functional interfaces whose methods have as many parameters.
+    private static boolean ambiguous(TypeToken<?> one, TypeToken<?> other) {
+        return Implicit.of(one)
+                .flatMap(first -> Implicit.of(other).filter(first::unrelatedTo))
+                .isPresent();
+    }
+
+    /// Whether a parameter that is a functional interface whose method has parameters may be one an
+    /// inherited parameter of `erasure` is ambiguous with: one of another class or interface.
+    private static boolean mayBeAmbiguous(TypeToken<?> param, ClassDesc erasure) {
+        return Implicit.of(param)
+                .filter(implicit -> erasure.isClassOrInterface()
+                        && !erasure.equals(implicit.type().erasure()))
+                .isPresent();
+    }
+
+    /// A parameter an implicitly typed lambda may be an argument of: a functional interface — an
+    /// interface of a single abstract method — whose method has parameters.
+    ///
+    /// @param type the interface
+    /// @param arity the number of parameters of its method, at least one
+    private record Implicit(InterfaceToken<?> type, int arity) {
+
+        static Optional<Implicit> of(TypeToken<?> type) {
+            return type instanceof InterfaceToken<?> functional
+                            && functional.shape().methods().abstractMethods().size() == 1
+                    ? Optional.of(new Implicit(
+                                    functional,
+                                    functional
+                                            .shape()
+                                            .methods()
+                                            .abstractMethods()
+                                            .iterator()
+                                            .next()
+                                            .params()
+                                            .size()))
+                            .filter(implicit -> implicit.arity() > 0)
+                    : Optional.empty();
+        }
+
+        /// Whether `other` takes as many parameters and is neither this interface nor a sub- or
+        /// supertype of it, which the shapes tell.
+        boolean unrelatedTo(Implicit other) {
+            return arity == other.arity
+                    && !type.erasure().equals(other.type.erasure())
+                    && !type.shape().interfaces().contains(other.type.erasure())
+                    && !other.type.shape().interfaces().contains(type.erasure());
+        }
     }
 
     private void requireUndeclared(Invocable member, MethodSignature signature) {

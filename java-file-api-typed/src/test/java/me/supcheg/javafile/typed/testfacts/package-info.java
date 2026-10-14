@@ -103,11 +103,13 @@
     Settled.class,
     Ranked.class,
     Rival.class,
-    Tagged.class
+    Tagged.class,
+    Applying.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
+import me.supcheg.javafile.typed.fixtures.Applying;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Mid;

@@ -65,6 +65,22 @@ final class JavacVerdict {
         CompilationSubject.assertThat(compiledClass(header, members)).hadErrorContaining(error);
     }
 
+    /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac accepts
+    /// the class of that header and those members with `warning`: the typed layer renders no code javac
+    /// warns of.
+    static void classAsJavacWarns(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String header,
+            String members,
+            String warning) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
+        Compilation compilation = compiledClass(header, members);
+        CompilationSubject.assertThat(compilation).succeeded();
+        CompilationSubject.assertThat(compilation).hadWarningContaining(warning);
+    }
+
     /// The typed layer rejects `typed` with an exception of `rejection` and `message` though javac
     /// accepts the class of that header and those members, with a warning or without.
     static void classUnlikeJavac(
