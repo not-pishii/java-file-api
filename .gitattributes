@@ -1,0 +1,14 @@
+# Text is LF in the repository and in every checkout: the snapshots of the tests and the formatter
+# compare bytes, and a checkout with CRLF differs from what the processor writes.
+* text=auto eol=lf
+
+# the scripts of Windows are of Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+*.jar binary
+*.class binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
