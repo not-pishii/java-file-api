@@ -1056,7 +1056,7 @@ public final class Expressions {
     private record LambdaValue(List<Var<?>> params, Node value) {}
 
     private static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
-        return new Var<>(type, "lambda parameter", scope);
+        return new Var<>(type, Var.Role.Fixed.LAMBDA_PARAMETER, scope);
     }
 
     /// Builds an expression lambda in the innermost block being built:

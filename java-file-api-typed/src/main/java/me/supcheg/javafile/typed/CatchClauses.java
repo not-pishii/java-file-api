@@ -68,7 +68,7 @@ final class CatchClauses<B extends Block<?, B>> {
         Exceptions.requireNotCaught(new ExceptionType.OfClass(caught), before.types(), statement());
         phase = new Phase.Building(clause);
         B block = enclosing.child("catch block of " + form);
-        Var<E> binding = new Var<>(type, "caught exception", block);
+        Var<E> binding = new Var<>(type, Var.Role.Fixed.CAUGHT_EXCEPTION, block);
         fill.accept(block, binding);
         phase = new Phase.Open(new TryClauses(
                 Stream.concat(before.catches().stream(), Stream.of(new Instr.Catch(caught, binding, block)))

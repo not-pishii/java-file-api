@@ -21,14 +21,16 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the Java type of the variable
 public sealed class Var<T> extends Expr<T> permits MutVar {
-    /// The role of the variable of a loop.
-    static final String LOOP_VARIABLE = "loop variable";
-
     private final Node local;
-    private final String role;
+    private final Role role;
     private final Block<?, ?> owner;
 
-    Var(TypeToken<T> type, String role, Block<?, ?> owner) {
+    Var(TypeToken<T> type, Role.Fixed role, Block<?, ?> owner) {
+        this(type, (Role) role, owner);
+    }
+
+    /// For a [MutVar], of a role of its own.
+    Var(TypeToken<T> type, Role role, Block<?, ?> owner) {
         super(type);
         this.local = new Node.Local(this);
         this.role = role;
@@ -36,14 +38,60 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
     }
 
     static <T> Var<T> param(TypeToken<T> type, Block<?, ?> owner) {
-        return new Var<>(type, "parameter", owner);
+        return new Var<>(type, Role.Fixed.PARAMETER, owner);
     }
 
-    /// Whether this is the variable of a `for` loop, in scope in the
-    /// condition and the update of the loop as in its body: the loop
-    /// variable that can be assigned, as that of a `for`-each loop cannot.
+    /// What a variable is in the code: one that cannot be assigned, or a [MutVar].
+    sealed interface Role {
+        /// How the role is told in a message.
+        String described();
+
+        /// The role of a variable that cannot be assigned.
+        enum Fixed implements Role {
+            PARAMETER("parameter"),
+            LAMBDA_PARAMETER("lambda parameter"),
+            LOCAL("local variable"),
+            PATTERN_BINDING("pattern binding"),
+            CAUGHT_EXCEPTION("caught exception"),
+            /// The variable of a `for`-each loop.
+            FOR_EACH_VARIABLE("loop variable");
+
+            private final String described;
+
+            Fixed(String described) {
+                this.described = described;
+            }
+
+            @Override
+            public String described() {
+                return described;
+            }
+        }
+
+        /// The role of a [MutVar].
+        enum Mutable implements Role {
+            LOCAL("mutable local variable"),
+            /// The variable of a `for` loop, in scope in the condition and the update of the loop as
+            /// in its body.
+            FOR_VARIABLE("loop variable");
+
+            private final String described;
+
+            Mutable(String described) {
+                this.described = described;
+            }
+
+            @Override
+            public String described() {
+                return described;
+            }
+        }
+    }
+
+    /// Whether this is the variable of a `for` loop, in scope in the condition and the update of the
+    /// loop as in its body.
     boolean isVariableOfFor() {
-        return this instanceof MutVar<?> && role.equals(LOOP_VARIABLE);
+        return role == Role.Mutable.FOR_VARIABLE;
     }
 
     /// The block this variable is in scope for.
@@ -58,6 +106,6 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
 
     @Override
     public String toString() {
-        return role + " of type " + type();
+        return role.described() + " of type " + type();
     }
 }

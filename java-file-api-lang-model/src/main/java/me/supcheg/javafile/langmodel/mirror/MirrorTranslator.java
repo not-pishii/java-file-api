@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -1385,6 +1386,14 @@ public final class MirrorTranslator {
     }
 
     private Read read(TypeElement owner, DeclaredType self, Element member) {
+        Optional<TypeElement> raw = rawDeclarer(self, member);
+        if (raw.isPresent()) {
+            return new Read.Skipped(new SkippedMember(
+                    member.getKind().toString().toLowerCase(Locale.ROOT) + " " + member,
+                    "is a member of the raw type " + raw.get().getQualifiedName() + " that takes a value of a"
+                            + " type variable of it, and javac warns of a call or an assignment of one"
+                            + " (-Xlint:unchecked)"));
+        }
         return switch (member.getKind()) {
             case FIELD ->
                 named(member, "field " + member.getSimpleName(), () -> field(owner, self, (VariableElement) member));
@@ -1392,6 +1401,52 @@ public final class MirrorTranslator {
             case CONSTRUCTOR -> constructor(owner, self, (ExecutableElement) member);
             case METHOD -> named(member, "method " + member, () -> method(owner, self, (ExecutableElement) member));
             default -> throw new IllegalArgumentException("Not a field, constructor or method: " + member);
+        };
+    }
+
+    /// The class or interface that declares `member`, if `self` has it as a raw type and the member
+    /// takes a value whose type mentions a type variable — a parameter of a method, a field that can be
+    /// assigned: javac erases the member, and warns of a call or an assignment of it as unchecked.
+    private Optional<TypeElement> rawDeclarer(DeclaredType self, Element member) {
+        TypeElement declarer = (TypeElement) member.getEnclosingElement();
+        boolean takesVariable =
+                switch (member) {
+                    case ExecutableElement method ->
+                        method.getParameters().stream().anyMatch(parameter -> mentionsVariable(parameter.asType()));
+                    case VariableElement field ->
+                        !field.getModifiers().contains(Modifier.FINAL) && mentionsVariable(field.asType());
+                    default -> false;
+                };
+        return takesVariable && !declarer.getTypeParameters().isEmpty()
+                ? supertype(self, declarer)
+                        .filter(supertype -> supertype.getTypeArguments().isEmpty())
+                        .map(_ -> declarer)
+                : Optional.empty();
+    }
+
+    /// The supertype of `type`, or `type` itself, whose class or interface is `declarer`.
+    private Optional<DeclaredType> supertype(DeclaredType type, TypeElement declarer) {
+        return type.asElement().equals(declarer)
+                ? Optional.of(type)
+                : types.directSupertypes(type).stream()
+                        // the supertypes of a class or interface type are class or interface types
+                        .map(DeclaredType.class::cast)
+                        .map(supertype -> supertype(supertype, declarer))
+                        .flatMap(Optional::stream)
+                        .findFirst();
+    }
+
+    /// Whether `type` mentions a type variable.
+    private static boolean mentionsVariable(TypeMirror type) {
+        return switch (type) {
+            case TypeVariable _ -> true;
+            case ArrayType array -> mentionsVariable(array.getComponentType());
+            case DeclaredType declared ->
+                declared.getTypeArguments().stream().anyMatch(MirrorTranslator::mentionsVariable);
+            case WildcardType wildcard ->
+                Stream.of(wildcard.getExtendsBound(), wildcard.getSuperBound())
+                        .anyMatch(bound -> bound != null && mentionsVariable(bound));
+            default -> false;
         };
     }
 

@@ -309,7 +309,7 @@ class NegativeCompileTest {
         // Var/MutVar are only ever handed out by HOAS-binding combinators.
         assertRejected(
                 "StrayVar",
-                "void use() { new Var<>(PrimitiveToken.INT, \"fabricated\", null); }",
+                "void use() { new Var<Prim.Int>(PrimitiveToken.INT, null, null); }",
                 "is not public in me.supcheg.javafile.typed.Var");
     }
 

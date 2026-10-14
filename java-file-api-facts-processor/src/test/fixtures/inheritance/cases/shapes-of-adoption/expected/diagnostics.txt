@@ -1,1 +1,3 @@
 gen/G.java:13:1: warning: p.PubNest: no fact of method make() of p.HNest, which mentions types that are not public: p.HNest$In
+gen/G.java:13:1: warning: p.PubRaw: no fact of field value of p.HG, which is a member of the raw type p.HG that takes a value of a type variable of it, and javac warns of a call or an assignment of one (-Xlint:unchecked)
+gen/G.java:13:1: warning: p.PubRaw: no fact of method put(T) of p.HG, which is a member of the raw type p.HG that takes a value of a type variable of it, and javac warns of a call or an assignment of one (-Xlint:unchecked)

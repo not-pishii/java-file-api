@@ -389,6 +389,3 @@ me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()))
 
 me/supcheg/javafile/typed/Tokens.java :: .anyMatch(a -> a instanceof ExactTypeArg(TypeVarRef var)
     untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Var.java :: return this instanceof MutVar<?> && role.equals(LOOP_VARIABLE);
-    untested when the gate was introduced; belongs to part II/III

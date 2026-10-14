@@ -18,7 +18,7 @@ import me.supcheg.javafile.facts.TypeToken;
 ///
 /// @param <T> the Java type of the variable
 public final class MutVar<T> extends Var<T> {
-    MutVar(TypeToken<T> type, String role, Block<?, ?> owner) {
+    MutVar(TypeToken<T> type, Var.Role.Mutable role, Block<?, ?> owner) {
         super(type, role, owner);
     }
 }

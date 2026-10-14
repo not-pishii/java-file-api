@@ -16,7 +16,6 @@ import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
-import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.OpenClassToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
@@ -24,7 +23,6 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
-import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -36,9 +34,14 @@ import p.PubRaw;
 ///
 /// `p.HG`, a supertype that is not `public`, has no metamodel: the `public` members inherited from it are facts of this one.
 ///
+/// These members have no fact:
+///
+/// - `field value of p.HG`, which is a member of the raw type p.HG that takes a value of a type variable of it, and javac warns of a call or an assignment of one (-Xlint:unchecked)
+/// - `method put(T) of p.HG`, which is a member of the raw type p.HG that takes a value of a type variable of it, and javac warns of a call or an assignment of one (-Xlint:unchecked)
+///
 /// A generated class extends or implements [PubRaw] by the proof its metamodel starts, with the stages of `PubRaw_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "5d9382fc6bb8b04be7dd06f7a780d20e20db9b163ae1306489bc9cad4be57863", complete = true, format = 15)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "991f61d9bd912e0686c0ac3bb017e5b5d28b96197c25e30876edb9563b49be0a", complete = true, format = 15)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -50,7 +53,7 @@ public final class PubRaw_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubRaw] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubRaw_"), "5d9382fc6bb8b04be7dd06f7a780d20e20db9b163ae1306489bc9cad4be57863", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubRaw"), List.of(), List.of(ClassDesc.of("p.HG"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubRaw"))), false, new PubRaw_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubRaw_"), "991f61d9bd912e0686c0ac3bb017e5b5d28b96197c25e30876edb9563b49be0a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubRaw"), List.of(), List.of(ClassDesc.of("p.HG"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubRaw"))), false, new PubRaw_Heritage());
 
         private Data() {
         }
@@ -70,10 +73,8 @@ public final class PubRaw_ {
         enum -
         members declared-accessible
         member ctor public () throws -
-        member field public instance mutable java.lang.Object value
         member method public overridable all() -> java.util.List throws -
         member method public overridable get() -> java.lang.Object throws -
-        member method public overridable put(java.lang.Object) -> void throws -
         inherit ctor PubRaw() public () throws -
         inherit field public p.HG value
         inherit method all() erased () overrides - by class public concrete p.HG () -> java.util.List throws -
@@ -103,9 +104,6 @@ public final class PubRaw_ {
     /// The token of [PubRaw].
     public static final OpenClassToken<PubRaw> TOKEN = UnsafeFacts.openClassToken(Data.SHAPE);
 
-    /// The fact of [PubRaw#value], declared in `p.HG`, which is not `public`.
-    public static final MutableFieldRef<PubRaw, Object> value = UnsafeFacts.mutableField(TOKEN, "value", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE));
-
     /// The fact of [PubRaw#PubRaw()].
     public static final CtorRef0<PubRaw> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
 
@@ -114,9 +112,6 @@ public final class PubRaw_ {
 
     /// The fact of [PubRaw#get()], declared in `p.HG`, which is not `public`.
     public static final MethodRef0<PubRaw, Object> get = UnsafeInvocables.method(TOKEN, "get", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
-
-    /// The fact of [PubRaw#put(Object)], declared in `p.HG`, which is not `public`.
-    public static final VoidMethodRef1<PubRaw, Object> put_Object = UnsafeInvocables.voidMethod(TOKEN, "put", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private PubRaw_() {
     }

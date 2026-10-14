@@ -297,7 +297,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param <K> what the rest of the block returns
     /// @return what `rest` returned
     public final <T, K> K let(TypeToken<T> type, Expr<? extends T> init, Function<? super Var<T>, K> rest) {
-        Var<T> var = new Var<>(type, "local variable", this);
+        Var<T> var = new Var<>(type, Var.Role.Fixed.LOCAL, this);
         append(new Instr.Let(var, init.node()));
         return rest.apply(var);
     }
@@ -311,7 +311,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param <K> what the rest of the block returns
     /// @return what `rest` returned
     public final <T, K> K letVar(TypeToken<T> type, Expr<? extends T> init, Function<? super MutVar<T>, K> rest) {
-        MutVar<T> var = new MutVar<>(type, "mutable local variable", this);
+        MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.LOCAL, this);
         append(new Instr.Let(var, init.node()));
         return rest.apply(var);
     }
@@ -381,7 +381,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOf");
-        Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
+        Var<U> binding = new Var<>(type, Var.Role.Fixed.PATTERN_BINDING, thenBlock);
         fill(thenBlock, b -> then.accept(b, binding));
         return append(new Instr.IfInstance(operand.node(), type, binding, thenBlock, Optional.empty()));
     }
@@ -404,7 +404,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOfElse");
-        Var<U> binding = new Var<>(type, "pattern binding", thenBlock);
+        Var<U> binding = new Var<>(type, Var.Role.Fixed.PATTERN_BINDING, thenBlock);
         fillEnding(thenBlock, b -> then.apply(b, binding));
         B elseBlock = closed("else-branch of ifInstanceOfElse", otherwise);
         return appendFinal(
@@ -484,7 +484,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B bodyBlock = child("body of for_");
         LoopCtl ctl = new LoopCtl(bodyBlock);
-        MutVar<T> var = new MutVar<>(type, Var.LOOP_VARIABLE, bodyBlock);
+        MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.FOR_VARIABLE, bodyBlock);
         Expr<Prim.Bool> conditionExpr = condition.apply(var);
         requireReachableBody(conditionExpr, "for_");
         Node updateNode = Assignment.nodeOf(update.apply(var));
@@ -509,7 +509,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         requireOpen();
         B bodyBlock = child("body of forEach");
         LoopCtl ctl = new LoopCtl(bodyBlock);
-        Var<T> var = new Var<>(element, Var.LOOP_VARIABLE, bodyBlock);
+        Var<T> var = new Var<>(element, Var.Role.Fixed.FOR_EACH_VARIABLE, bodyBlock);
         fill(bodyBlock, b -> body.accept(b, var, ctl));
         return append(new Instr.ForEach(ctl, var, iterable.node(), bodyBlock));
     }
