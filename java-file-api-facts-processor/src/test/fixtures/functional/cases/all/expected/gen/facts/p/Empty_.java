@@ -30,7 +30,7 @@ import p.Empty;
 ///
 /// A generated class extends or implements [Empty] by the proof its metamodel starts, with the stages of `Empty_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Empty.class, fingerprint = "7102d1c8d0de1e3611f2c55791b36c9f9c0c9133570f1443df4d967e09e1988c", complete = true, format = 15)
+@GeneratedMetamodel(of = Empty.class, fingerprint = "b2d93f672602e2a40a8ab7b172c7853b79f0906f0a4c9570be9e64b16625ae6f", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class Empty_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Empty] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Empty_"), "7102d1c8d0de1e3611f2c55791b36c9f9c0c9133570f1443df4d967e09e1988c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Empty"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Empty_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Empty_"), "b2d93f672602e2a40a8ab7b172c7853b79f0906f0a4c9570be9e64b16625ae6f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Empty"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Empty_Heritage());
 
         private Data() {
         }
@@ -52,7 +52,7 @@ public final class Empty_ {
     static final class Canonical {
         /// The canonical form of [Empty].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Empty interface sealed=no nesting=top
         tparams -
         superclasses -

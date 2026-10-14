@@ -39,7 +39,7 @@ import p.Diamond;
 ///
 /// A generated class extends or implements [Diamond] by the proof its metamodel starts, with the stages of `Diamond_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Diamond.class, fingerprint = "8f6cafe6090c218f9f4ba2d9351a393be95537dde9a9958607bf0a2c1fa9f8af", complete = true, format = 15)
+@GeneratedMetamodel(of = Diamond.class, fingerprint = "8673cf4ef9034d2f54541dc911ba08f6d39c0731d257e5293f7659d08aa8b400", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Diamond_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Diamond] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Diamond_"), "8f6cafe6090c218f9f4ba2d9351a393be95537dde9a9958607bf0a2c1fa9f8af", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Diamond"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Left"), ClassDesc.of("p.Right"), ClassDesc.of("p.Root")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("root"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Diamond"))), false, new Diamond_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Diamond_"), "8673cf4ef9034d2f54541dc911ba08f6d39c0731d257e5293f7659d08aa8b400", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Diamond"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Left"), ClassDesc.of("p.Right"), ClassDesc.of("p.Root")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("root"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Diamond"))), false, new Diamond_Heritage());
 
         private Data() {
         }
@@ -61,7 +61,7 @@ public final class Diamond_ {
     static final class Canonical {
         /// The canonical form of [Diamond].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Diamond open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

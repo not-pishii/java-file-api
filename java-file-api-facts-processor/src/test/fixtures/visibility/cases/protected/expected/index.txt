@@ -16,6 +16,5 @@ META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.ja
 META-INF/javafile/metamodel/token/java.lang.NumberFormatException -> gen.facts.java.lang.NumberFormatException_
 META-INF/javafile/metamodel/token/java.lang.ReflectiveOperationException -> gen.facts.java.lang.ReflectiveOperationException_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.lang.invoke.MethodHandles$Lookup -> gen.facts.java.lang.invoke.MethodHandles_Lookup_
 META-INF/javafile/metamodel/token/java.util.Optional -> gen.facts.java.util.Optional_

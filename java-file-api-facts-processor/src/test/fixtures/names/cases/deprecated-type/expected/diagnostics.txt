@@ -1,0 +1,1 @@
+gen/G.java:7:11: error: p.Old is deprecated, and code that names it is code javac warns of (-Xlint:deprecation, removal)

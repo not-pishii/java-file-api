@@ -22,5 +22,4 @@ META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.ja
 META-INF/javafile/metamodel/token/java.lang.Long -> gen.facts.java.lang.Long_
 META-INF/javafile/metamodel/token/java.lang.Short -> gen.facts.java.lang.Short_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.util.Locale -> gen.facts.java.util.Locale_

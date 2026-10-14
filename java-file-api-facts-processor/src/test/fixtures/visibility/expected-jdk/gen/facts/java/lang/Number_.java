@@ -42,7 +42,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Number] by the proof its metamodel starts, with the stages of `Number_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "f5220bb1b6c948319b4c08f408693269812e8846515879240010c9d1a7dde22e", complete = true, format = 15)
+@GeneratedMetamodel(of = Number.class, fingerprint = "f91bdf55c33b31ce1c2816a6f3c8a1003936418ce15c2660134b18c0097efa20", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class Number_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Number] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "f5220bb1b6c948319b4c08f408693269812e8846515879240010c9d1a7dde22e", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), false, new Number_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Number_"), "f91bdf55c33b31ce1c2816a6f3c8a1003936418ce15c2660134b18c0097efa20", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Number"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("doubleValue"), Signature.of("floatValue"), Signature.of("intValue"), Signature.of("longValue")), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Number"))), false, new Number_Heritage());
 
         private Data() {
         }
@@ -64,7 +64,7 @@ public final class Number_ {
     static final class Canonical {
         /// The canonical form of [Number].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type java.lang.Number abstract-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

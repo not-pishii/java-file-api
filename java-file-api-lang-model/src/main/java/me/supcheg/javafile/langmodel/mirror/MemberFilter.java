@@ -10,8 +10,9 @@ public enum MemberFilter {
     /// makes no facts of its members.
     NONE,
     /// The fields, constructors and methods the type declares that code of
-    /// another package can name — the `public` ones, and the `protected`
-    /// ones of a class that can be extended, which a subclass reaches —,
+    /// another package can name without a warning — the `public` ones, and
+    /// the `protected` ones of a class that can be extended, which a subclass
+    /// reaches, none of them deprecated —,
     /// `static` ones included, but not those it inherits: a full metamodel,
     /// whose inherited members are reached through the metamodels of its
     /// supertypes. A supertype that is not `public` has no metamodel, so the

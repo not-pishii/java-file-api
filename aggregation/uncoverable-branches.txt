@@ -171,7 +171,7 @@ me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassOrInterfaceTypeRef 
 me/supcheg/javafile/render/TypeRefRenderer.java :: case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _, ArrayTypeRef _, PrimitiveTypeRef _ ->
     a case of several type patterns: javac tests each label once more after it matched
 
-me/supcheg/javafile/typed/Constants.java :: case Node.RawLit _,
+me/supcheg/javafile/typed/Constants.java :: case Node.Null _,
     a case of several type patterns: javac tests each label once more after it matched
 
 me/supcheg/javafile/typed/ExceptionType.java :: case InterfaceToken<?> _, ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ ->

@@ -77,8 +77,7 @@ class ReuseTest {
                                         "Class_",
                                         "CloneNotSupportedException_",
                                         "InterruptedException_",
-                                        "String_",
-                                        "Throwable_")
+                                        "String_")
                                 .map(name -> base + ".java.lang." + name))
                 .collect(Collectors.toSet());
     }

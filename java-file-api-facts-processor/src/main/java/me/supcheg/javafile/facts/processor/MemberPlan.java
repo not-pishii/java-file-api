@@ -33,9 +33,10 @@ import java.util.stream.Stream;
 /// Which members of a requested type get a fact, and under which name
 /// (mini-spec §2.2, §2.3, Q3, Q6, Q10).
 ///
-/// Only members the type declares get one, and only accessible ones: the
-/// `public` ones, and the `protected` ones of a class that can be extended,
-/// whose facts are held back for a subclass; an inherited member is reached
+/// Only members the type declares get one, and only accessible ones that are
+/// not deprecated — code that names a deprecated member is code javac warns
+/// of: the `public` ones, and the `protected` ones of a class that can be
+/// extended, whose facts are held back for a subclass; an inherited member is reached
 /// through the metamodel of the supertype (Q6(b)). A supertype that is not
 /// `public` has no metamodel, so the accessible fields and methods the type
 /// inherits from it are adopted:
@@ -290,7 +291,11 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             List<Element> enclosed = List.copyOf(type.getEnclosedElements());
             // member types have metamodels of their own; initializers are not members
             Predicate<Element> isConstant = member -> member.getKind() == ElementKind.ENUM_CONSTANT;
-            List<Element> enumConstants = enclosed.stream().filter(isConstant).toList();
+            // a deprecated constant is one code javac warns of names, and has no fact
+            List<Element> enumConstants = enclosed.stream()
+                    .filter(isConstant)
+                    .filter(constant -> constant.getAnnotation(Deprecated.class) == null)
+                    .toList();
             List<Element> publicMembers = models.members(type);
             Set<Element> withFacts = Set.copyOf(publicMembers);
             // the constants and the declared members as they are declared, then the adopted members

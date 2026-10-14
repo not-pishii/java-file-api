@@ -184,6 +184,26 @@ class SerialTest {
                 }));
 
         assertThat(compiled.source()).contains("public T value = (T) null;");
+        // of the second type parameter, bounded by String, which is Serializable
+        CompiledClasses.of(TypedJavaFile.declareClass(
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("A"),
+                typeParam("B", String_.TOKEN),
+                new TypedJavaFile.TypedGenericClassSpec2<Object, String>() {
+                    @Override
+                    public <Self, A, B extends String> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b) {
+                        var oh = h.extendsObject();
+                        oh.implements_(Serializable_.implement(h.self()));
+                        var cb = oh.members();
+                        cb.declareSerialVersionUID(1L);
+                        var value = cb.declareMutableField("value", b);
+                        var bodies = cb.bodies();
+                        bodies.initialize(value, Expressions.literalNull(b));
+                        return bodies;
+                    }
+                }));
         // and one bounded by what is not serializable alone is refused
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> TypedJavaFile.declareClass(

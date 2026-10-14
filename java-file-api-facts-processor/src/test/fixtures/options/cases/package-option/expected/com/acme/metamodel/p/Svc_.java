@@ -39,7 +39,7 @@ import p.Svc;
 ///
 /// A generated class extends or implements [Svc] by the proof its metamodel starts, with the stages of `Svc_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "82408d3e8068bb662b1d1bd431d8a1f32a8e2c4c71f282402ef9fd51789a988f", complete = true, format = 15)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "1543aad60e3e7badb730d6e022cc9bcb5643cf1335d9da2bda9ff5d931274548", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Svc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Svc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.p.Svc_"), "82408d3e8068bb662b1d1bd431d8a1f32a8e2c4c71f282402ef9fd51789a988f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Svc"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dep"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Svc"))), false, new Svc_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.metamodel.p.Svc_"), "1543aad60e3e7badb730d6e022cc9bcb5643cf1335d9da2bda9ff5d931274548", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Svc"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dep"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Svc"))), false, new Svc_Heritage());
 
         private Data() {
         }
@@ -61,7 +61,7 @@ public final class Svc_ {
     static final class Canonical {
         /// The canonical form of [Svc].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Svc open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

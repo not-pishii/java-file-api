@@ -1177,4 +1177,16 @@ class NegativeCompileTest {
                         + " literalNull(Object_.TOKEN)); }",
                 "method assignAt in class me.supcheg.javafile.typed.Expressions cannot be applied to given types");
     }
+
+    @Test
+    void aDeprecatedMemberHasNoFact() {
+        // Thread.getId() and new Integer(int) are deprecated: code that names them is code javac warns of
+        assertRejected(
+                "DeprecatedMethod", "void use() { Object fact = Thread_.getId; }", "cannot find symbol", "getId");
+        assertRejected(
+                "DeprecatedConstructor",
+                "void use() { Object fact = Integer_.new_int; }",
+                "cannot find symbol",
+                "new_int");
+    }
 }

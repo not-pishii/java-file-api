@@ -101,6 +101,11 @@ public final class MirrorTranslator {
     /// class of Kotlin, which Java source neither calls nor overrides.
     private static final String NO_IDENTIFIER = "has a name that is no identifier of Java, so no Java source names it";
 
+    /// Why a deprecated type or member has no metamodel, no fact: code that names it is code javac warns
+    /// of, and the facts describe what code may name without a warning.
+    private static final String DEPRECATED =
+            "is deprecated, and code that names it is code javac warns of (-Xlint:deprecation, removal)";
+
     private final Elements elements;
     private final javax.lang.model.util.Types types;
 
@@ -300,12 +305,18 @@ public final class MirrorTranslator {
     /// The access a fact of a member of a type is of: that of a `public`
     /// member, and of a `protected` one if the type is a class that can be
     /// extended; none for any other member, which code of another package
-    /// cannot name.
+    /// cannot name, and none for a deprecated one, which code javac warns of
+    /// names (`-Xlint:deprecation`, `removal`) — the facts describe what code
+    /// may name without a warning, and a member deprecated on the target
+    /// classpath alone is no member of the canonical form there.
     ///
     /// @param member a member of `type`, declared or inherited
     /// @param type the class, interface, enum or record
     /// @return the access of the fact, if the member can have one
     private static Optional<Access> access(Element member, TypeElement type) {
+        if (member.getAnnotation(Deprecated.class) != null) {
+            return Optional.empty();
+        }
         Set<Modifier> modifiers = member.getModifiers();
         if (modifiers.contains(Modifier.PUBLIC)) {
             return Optional.of(Access.PUBLIC);
@@ -373,6 +384,9 @@ public final class MirrorTranslator {
         if (unnamedPackage(type)) {
             return Optional.of(type.getQualifiedName()
                     + " is in the unnamed package, which a metamodel in a named package cannot refer to");
+        }
+        if (type.getAnnotation(Deprecated.class) != null) {
+            return Optional.of(type.getQualifiedName() + " " + DEPRECATED);
         }
         return Optional.empty();
     }
@@ -1512,6 +1526,9 @@ public final class MirrorTranslator {
         if (!isPublic(element)) {
             reading.nonPublic.add(binaryName(type));
         }
+        if (elements.isDeprecated(element)) {
+            reading.deprecated.add(binaryName(type));
+        }
         List<TypeArg> args =
                 type.getTypeArguments().stream().map(a -> argument(a, reading)).toList();
         Optional<TypeMirror> parameterizedOuter = Stream.iterate(
@@ -1652,6 +1669,7 @@ public final class MirrorTranslator {
         private final VarScope scope;
         private final List<String> problems = new ArrayList<>();
         private final SortedSet<String> nonPublic = new TreeSet<>();
+        private final SortedSet<String> deprecated = new TreeSet<>();
 
         Reading(VarScope scope) {
             this.scope = scope;
@@ -1672,6 +1690,10 @@ public final class MirrorTranslator {
             }
             if (!nonPublic.isEmpty()) {
                 return Optional.of("mentions types that are not public: " + String.join(", ", nonPublic));
+            }
+            if (!deprecated.isEmpty()) {
+                return Optional.of(
+                        "mentions deprecated types, which code javac warns of names: " + String.join(", ", deprecated));
             }
             if (arity > MemberModel.MAX_ARITY) {
                 return Optional.of("has " + arity + " parameters, more than " + MemberModel.MAX_ARITY);

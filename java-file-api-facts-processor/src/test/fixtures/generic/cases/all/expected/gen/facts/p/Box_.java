@@ -54,7 +54,7 @@ import p.Box;
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "e60634e9c92000b0fd19bbe1dcef44343af49b24011b6f814a172bb2a620a719", complete = true, format = 15)
+@GeneratedMetamodel(of = Box.class, fingerprint = "e10418ad39f51e6d6229f5dd567531fedfba8783df1bc7df353711dce386e80c", complete = true, format = 15)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -66,7 +66,7 @@ public final class Box_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Box] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "e60634e9c92000b0fd19bbe1dcef44343af49b24011b6f814a172bb2a620a719", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), false, new Box_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Box_"), "e10418ad39f51e6d6229f5dd567531fedfba8783df1bc7df353711dce386e80c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("addAll", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("asList"), Signature.of("clone"), Signature.of("drainTo", Param.fixed(ClassDesc.of("java.util.Collection"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("ints"), Signature.of("nested"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw", Param.fixed(ClassDesc.of("java.util.Map"))), Signature.of("rawSelf"), Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toArray", Param.var(0, 1)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("ofString"), Signature.of("size", Param.fixed(ClassDesc.of("p.Box")))), Set.of(Signature.of("Box", Param.var(0)), Signature.of("Box"))), false, new Box_Heritage());
 
         private Data() {
         }
@@ -77,7 +77,7 @@ public final class Box_<T> {
     static final class Canonical {
         /// The canonical form of [Box].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Box open-class sealed=no nesting=top
         tparams #0
         superclasses java.lang.Object

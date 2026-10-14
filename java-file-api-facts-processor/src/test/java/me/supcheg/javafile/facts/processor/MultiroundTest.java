@@ -91,8 +91,7 @@ class MultiroundTest {
                                         "Class_",
                                         "CloneNotSupportedException_",
                                         "InterruptedException_",
-                                        "String_",
-                                        "Throwable_")
+                                        "String_")
                                 .map(name -> base + ".java.lang." + name))
                 .toList();
     }
@@ -429,7 +428,6 @@ class MultiroundTest {
                         "gen.facts.gen.Later_",
                         "gen.facts.java.lang.CloneNotSupportedException_",
                         "gen.facts.java.lang.InterruptedException_",
-                        "gen.facts.java.lang.Throwable_",
                         "gen.facts.p.Other_");
         // Holder_ of round 1 names Base_ of round 2 and Other_ of round 3
         assertThat(sources.get("gen.facts.p.Holder_"))
@@ -471,7 +469,6 @@ class MultiroundTest {
                         "gen.facts.gen.Late_",
                         "gen.facts.java.lang.CloneNotSupportedException_",
                         "gen.facts.java.lang.InterruptedException_",
-                        "gen.facts.java.lang.Throwable_",
                         "gen.facts.p.Base_",
                         "gen.facts.p.Other_",
                         "gen.facts.p.Sub_");
@@ -499,11 +496,7 @@ class MultiroundTest {
         // what gen.Late may extend: not String or Class, which are final, nor Object, a supertype already
         assertThat(graph.held())
                 .containsExactly(
-                        "java.lang.CloneNotSupportedException",
-                        "java.lang.InterruptedException",
-                        "java.lang.Throwable",
-                        "p.Base",
-                        "p.Other");
+                        "java.lang.CloneNotSupportedException", "java.lang.InterruptedException", "p.Base", "p.Other");
         assertThat(graph.missingSupertypes()).containsExactly(new TypeGraph.Edge.Supertype("p.Sub", "gen.Late"));
         assertThat(graph.nodes().get("gen.Late")).isEqualTo(new TypeGraph.Node.Absent("gen.Late"));
         // Base is only mentioned as far as this round knows
@@ -543,7 +536,6 @@ class MultiroundTest {
     private static final String[] HELD_BACK = {
         "gen.facts.java.lang.CloneNotSupportedException_",
         "gen.facts.java.lang.InterruptedException_",
-        "gen.facts.java.lang.Throwable_",
         "gen.facts.p.Base_",
         "gen.facts.p.Other_"
     };

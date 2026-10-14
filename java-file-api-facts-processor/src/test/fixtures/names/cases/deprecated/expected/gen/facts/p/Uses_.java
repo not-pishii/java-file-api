@@ -12,7 +12,6 @@ import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.OpenClass;
 import me.supcheg.javafile.facts.MemberTraits;
-import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
@@ -23,20 +22,23 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
-import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
-import p.Old;
 import p.Uses;
 
 /// The full metamodel of [Uses], which `@Facts` asks for: a fact of every `public` member the type declares.
 ///
 /// A member [Uses] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
+/// These members have no fact:
+///
+/// - `method old()`, which mentions deprecated types, which code javac warns of names: p.Old
+/// - `method take(p.Old)`, which mentions deprecated types, which code javac warns of names: p.Old
+///
 /// A generated class extends or implements [Uses] by the proof its metamodel starts, with the stages of `Uses_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "a7b6a7b2df5bb13db18f0adba4af23ebb77ab208914cd9f33cc5f9b459acfc79", complete = true, format = 15)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "48b5703ad9c224f70276bad9d60616401a3c705d1fbb4b675880e9d96d77bb3d", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +49,7 @@ public final class Uses_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Uses] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "a7b6a7b2df5bb13db18f0adba4af23ebb77ab208914cd9f33cc5f9b459acfc79", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("old"), Signature.of("take", Param.fixed(ClassDesc.of("p.Old"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses"))), false, new Uses_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "48b5703ad9c224f70276bad9d60616401a3c705d1fbb4b675880e9d96d77bb3d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("old"), Signature.of("take", Param.fixed(ClassDesc.of("p.Old"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses"))), false, new Uses_Heritage());
 
         private Data() {
         }
@@ -58,7 +60,7 @@ public final class Uses_ {
     static final class Canonical {
         /// The canonical form of [Uses].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Uses open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object
@@ -67,8 +69,6 @@ public final class Uses_ {
         enum -
         members declared-accessible
         member ctor public () throws -
-        member method public overridable old() -> p.Old throws -
-        member method public overridable take(p.Old) -> void throws -
         inherit ctor Uses() public () throws -
         inherit method clone() erased () overrides - by class protected concrete java.lang.Object () -> java.lang.Object throws java.lang.CloneNotSupportedException
         inherit method equals(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete java.lang.Object (java.lang.Object) -> boolean throws -
@@ -98,12 +98,6 @@ public final class Uses_ {
 
     /// The fact of [Uses#Uses()].
     public static final CtorRef0<Uses> new_ = UnsafeInvocables.ctor(TOKEN, MemberTraits.FINAL);
-
-    /// The fact of [Uses#old()].
-    public static final MethodRef0<Uses, Old> old = UnsafeInvocables.method(TOKEN, "old", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
-
-    /// The fact of [Uses#take(Old)].
-    public static final VoidMethodRef1<Uses, Old> take_Old = UnsafeInvocables.voidMethod(TOKEN, "take", UnsafeFacts.<Old>openClassToken(Old_.Data.SHAPE), MemberTraits.OVERRIDABLE);
 
     private Uses_() {
     }

@@ -5,4 +5,3 @@ META-INF/javafile/metamodel/token/java.lang.Class -> com.acme.metamodel.java.lan
 META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> com.acme.metamodel.java.lang.CloneNotSupportedException_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> com.acme.metamodel.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> com.acme.metamodel.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> com.acme.metamodel.java.lang.Throwable_

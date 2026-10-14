@@ -89,6 +89,25 @@ class TargetClasspathsTest {
     }
 
     @Test
+    void aMemberDeprecatedOnTheTargetAloneIsAFactTheTargetDoesNotHold() {
+        // code that names a deprecated member is code javac warns of: the target has no fact of it
+        TypeShape<?> svc = metamodel("p.Svc", canonical("p.Svc", SVC));
+
+        assertThat(read(svc, SVC.replace("{ public String m", "{ @Deprecated public String m")))
+                .isEqualTo(new TargetType.Mismatched(List.of(new Difference.MissingFact(
+                        "method public overridable m(java.lang.String) -> java.lang.String throws -", List.of()))));
+    }
+
+    @Test
+    void aTypeDeprecatedOnTheTargetIsAbsent() {
+        TypeShape<?> svc = metamodel("p.Svc", canonical("p.Svc", SVC));
+
+        assertThat(read(svc, "package p; @Deprecated " + SVC.substring("package p; ".length())))
+                .isEqualTo(absent("p.Svc is deprecated, and code that names it is code javac warns of"
+                        + " (-Xlint:deprecation, removal)"));
+    }
+
+    @Test
     void aTypeThatIsNotThereIsAbsent() {
         TypeShape<?> svc = metamodel("p.Svc", canonical("p.Svc", SVC));
 

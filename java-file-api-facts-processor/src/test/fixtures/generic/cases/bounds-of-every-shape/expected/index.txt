@@ -6,5 +6,4 @@ META-INF/javafile/metamodel/token/java.lang.Comparable -> gen.facts.java.lang.Co
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.Iterable -> gen.facts.java.lang.Iterable_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.util.function.Function -> gen.facts.java.util.function.Function_

@@ -58,7 +58,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 9
+/// javafile-facts-canonical 10
 /// type java.util.List interface sealed=no nesting=top
 /// tparams #0
 /// superclasses -
@@ -118,7 +118,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 9";
+    public static final String HEADER = "javafile-facts-canonical 10";
 
     private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 

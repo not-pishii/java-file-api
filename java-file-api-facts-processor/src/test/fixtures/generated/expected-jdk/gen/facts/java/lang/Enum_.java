@@ -32,7 +32,6 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
-import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
@@ -50,7 +49,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <E> a type argument of [Enum]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Enum.class, fingerprint = "add9d4d92c6c061effb506748564fe5c55601420be3dfe7419c17e8a362ffbd9", complete = true, format = 15)
+@GeneratedMetamodel(of = Enum.class, fingerprint = "e9c0f093538c6e17f05c89a293eb3c4e033862d593e690967cbe4bad2a23b54d", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -61,7 +60,7 @@ public final class Enum_<E extends Enum<E>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Enum] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "add9d4d92c6c061effb506748564fe5c55601420be3dfe7419c17e8a362ffbd9", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), false, new Enum_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Enum_"), "e9c0f093538c6e17f05c89a293eb3c4e033862d593e690967cbe4bad2a23b54d", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Enum"), List.of(new TypeParam("E", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.typeVar("E"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.var(0)), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Enum", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)))), false, new Enum_Heritage());
 
         private Data() {
         }
@@ -72,7 +71,7 @@ public final class Enum_<E extends Enum<E>> {
     static final class Canonical {
         /// The canonical form of [Enum].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type java.lang.Enum abstract-class sealed=no nesting=top
         tparams #0 extends java.lang.Enum<#0>
         superclasses java.lang.Object
@@ -82,7 +81,6 @@ public final class Enum_<E extends Enum<E>> {
         members declared-accessible
         member ctor protected (java.lang.String, int) throws -
         member method protected final clone() -> java.lang.Object throws java.lang.CloneNotSupportedException
-        member method protected final finalize() -> void throws -
         member method public final compareTo(#0) -> int throws -
         member method public final describeConstable() -> java.util.Optional<java.lang.Enum$EnumDesc<#0>> throws -
         member method public final equals(java.lang.Object) -> boolean throws -
@@ -142,9 +140,6 @@ public final class Enum_<E extends Enum<E>> {
     /// The fact of [Enum#equals(Object)].
     public final MethodRef1<Enum<E>, Bool, Object> equals_Object;
 
-    /// The fact of [Enum#finalize()], which is `protected`: a subclass alone uses it.
-    public final Protected<Enum<E>, VoidMethodRef0<Enum<E>>> finalize;
-
     /// The fact of [Enum#getDeclaringClass()].
     public final MethodRef0<Enum<E>, Class<E>> getDeclaringClass;
 
@@ -170,7 +165,6 @@ public final class Enum_<E extends Enum<E>> {
         this.compareTo_E = UnsafeInvocables.method(token, "compareTo", PrimitiveToken.INT, UnsafeFacts.param(e, Param.var(0)), MemberTraits.FINAL);
         this.describeConstable = UnsafeInvocables.method(token, "describeConstable", UnsafeFacts.<Optional<EnumDesc<E>>>finalClassToken(gen.facts.java.util.Optional_.Data.SHAPE, TokenArg.exact(UnsafeFacts.<EnumDesc<E>>finalClassToken(Enum_EnumDesc_.Data.SHAPE, TokenArg.exact(e)))), MemberTraits.FINAL);
         this.equals_Object = UnsafeInvocables.method(token, "equals", PrimitiveToken.BOOLEAN, UnsafeFacts.<Object>openClassToken(Object_.Data.SHAPE), MemberTraits.FINAL);
-        this.finalize = UnsafeFacts.protected_(token, UnsafeInvocables.voidMethod(token, "finalize", MemberTraits.FINAL.with(Access.PROTECTED)));
         this.getDeclaringClass = UnsafeInvocables.method(token, "getDeclaringClass", UnsafeFacts.<Class<E>>finalClassToken(Class_.Data.SHAPE, TokenArg.exact(e)), MemberTraits.FINAL);
         this.hashCode = UnsafeInvocables.method(token, "hashCode", PrimitiveToken.INT, MemberTraits.FINAL);
         this.name = UnsafeInvocables.method(token, "name", UnsafeFacts.<String>finalClassToken(String_.Data.SHAPE), MemberTraits.FINAL);

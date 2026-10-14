@@ -38,7 +38,7 @@ import p.Tk;
 ///
 /// A generated class extends or implements [Tk] by the proof its metamodel starts, with the stages of `Tk_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tk.class, fingerprint = "d5c456a4ab2f4653c9d20615e54a817d51e0c0bd467691fb53e65ca640ff212e", complete = true, format = 15)
+@GeneratedMetamodel(of = Tk.class, fingerprint = "f89da800ed9d3e38f60e954c5fd176162efbde615d36e9fd190a2f9113ce59d3", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Tk_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Tk] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "d5c456a4ab2f4653c9d20615e54a817d51e0c0bd467691fb53e65ca640ff212e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), false, new Tk_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tk_"), "f89da800ed9d3e38f60e954c5fd176162efbde615d36e9fd190a2f9113ce59d3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Tk"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Tk"))), false, new Tk_Heritage());
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class Tk_ {
     static final class Canonical {
         /// The canonical form of [Tk].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Tk open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

@@ -34,7 +34,7 @@ import p.Unused;
 ///
 /// A generated class extends or implements [Unused] by the proof its metamodel starts, with the stages of `Unused_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Unused.class, fingerprint = "f2c703b546b326a879355d0e262a3536d6dfbd65ea88e8749161fcd7c801876c", complete = true, format = 15)
+@GeneratedMetamodel(of = Unused.class, fingerprint = "6c25f940c163f73d8c4fdcaf1bd2f37ece693cf4b910d415c1c1a602667268cf", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Unused_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Unused] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Unused_"), "f2c703b546b326a879355d0e262a3536d6dfbd65ea88e8749161fcd7c801876c", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Unused"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("gone"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Unused"))), false, new Unused_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Unused_"), "6c25f940c163f73d8c4fdcaf1bd2f37ece693cf4b910d415c1c1a602667268cf", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Unused"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("gone"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Unused"))), false, new Unused_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class Unused_ {
     static final class Canonical {
         /// The canonical form of [Unused].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Unused open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

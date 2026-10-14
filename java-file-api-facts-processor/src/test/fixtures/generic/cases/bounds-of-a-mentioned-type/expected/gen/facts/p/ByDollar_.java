@@ -31,7 +31,7 @@ import p.ByDollar;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [ByDollar] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByDollar.class, fingerprint = "73609cb8e2ed637a548d840e3cafe5661c28ee9ff4df8429179ad7c0ae3db00e", complete = false, format = 15)
+@GeneratedMetamodel(of = ByDollar.class, fingerprint = "a04ddcee009c862282d31e99c094c2cad3cba767ec4e29af7f6c25bc606c4ad0", complete = false, format = 15)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -43,7 +43,7 @@ public final class ByDollar_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ByDollar] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByDollar_"), "73609cb8e2ed637a548d840e3cafe5661c28ee9ff4df8429179ad7c0ae3db00e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByDollar"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Dol$lar")))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByDollar"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByDollar_"), "a04ddcee009c862282d31e99c094c2cad3cba767ec4e29af7f6c25bc606c4ad0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByDollar"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Dol$lar")))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByDollar"))), List.of(), false);
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class ByDollar_ {
     static final class Canonical {
         /// The canonical form of [ByDollar].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.ByDollar open-class sealed=no nesting=top
         tparams #0 extends java.util.List<p.Dol$lar>
         superclasses java.lang.Object

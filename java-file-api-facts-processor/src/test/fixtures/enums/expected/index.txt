@@ -13,7 +13,6 @@ META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> gen.fa
 META-INF/javafile/metamodel/token/java.lang.Enum$EnumDesc -> gen.facts.java.lang.Enum_EnumDesc_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.lang.constant.ConstantDesc -> gen.facts.java.lang.constant.ConstantDesc_
 META-INF/javafile/metamodel/token/java.util.Optional -> gen.facts.java.util.Optional_
 META-INF/javafile/metamodel/token/p.Mode -> gen.facts.p.Mode_

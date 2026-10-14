@@ -20,7 +20,6 @@ META-INF/javafile/metamodel/token/java.lang.Integer -> gen.facts.java.lang.Integ
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.Number -> gen.facts.java.lang.Number_
 META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> gen.facts.java.lang.Throwable_
 META-INF/javafile/metamodel/token/java.util.Collection -> gen.facts.java.util.Collection_
 META-INF/javafile/metamodel/token/java.util.List -> gen.facts.java.util.List_
 META-INF/javafile/metamodel/token/java.util.Map -> gen.facts.java.util.Map_

@@ -34,7 +34,7 @@ import p.Redecl;
 ///
 /// A generated class extends or implements [Redecl] by the proof its metamodel starts, with the stages of `Redecl_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Redecl.class, fingerprint = "6f6d825e4113eb28003dab226d0edd5382e5558d69147272dfd22de6be1d57a0", complete = true, format = 15)
+@GeneratedMetamodel(of = Redecl.class, fingerprint = "ec014b82cdcec867c6433d63168d67c84a9aa482cadf6c3b3dd674747c4fa5f5", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Redecl_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Redecl] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Redecl_"), "6f6d825e4113eb28003dab226d0edd5382e5558d69147272dfd22de6be1d57a0", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Redecl"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Redecl_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Redecl_"), "ec014b82cdcec867c6433d63168d67c84a9aa482cadf6c3b3dd674747c4fa5f5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Redecl"), List.of(), List.of(), List.of(ClassDesc.of("p.Fn")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Redecl_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class Redecl_ {
     static final class Canonical {
         /// The canonical form of [Redecl].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Redecl interface sealed=no nesting=top
         tparams -
         superclasses -

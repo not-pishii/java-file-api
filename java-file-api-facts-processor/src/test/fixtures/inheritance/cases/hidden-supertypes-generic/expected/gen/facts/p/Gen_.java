@@ -53,7 +53,7 @@ import p.Gen;
 ///
 /// @param <E> a type argument of [Gen]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "d55bcfd9668f84b2f83542702845abf338fb677d375739d4ef545ca46987ed6b", complete = true, format = 15)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "4952a6ca172b214ac980550c3ab2ec498c0e8d795c0dae6d64a3c20cd1b49490", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -64,7 +64,7 @@ public final class Gen_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Gen] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "d55bcfd9668f84b2f83542702845abf338fb677d375739d4ef545ca46987ed6b", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Gen"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenApi"), ClassDesc.of("p.PubApi")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.typeVar("E")))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Gen"))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "4952a6ca172b214ac980550c3ab2ec498c0e8d795c0dae6d64a3c20cd1b49490", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Gen"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("p.Near"), ClassDesc.of("p.Far"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenApi"), ClassDesc.of("p.PubApi")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Far"), List.of(Types.exact(Types.typeVar("E")))), new ParameterizedTypeRef(ClassDesc.of("p.Near"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("api"), Signature.of("beyond"), Signature.of("clone"), Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("near"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("overridden"), Signature.of("pack"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("prot"), Signature.of("pub"), Signature.of("redeclared"), Signature.of("self"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sfar"), Signature.of("snear")), Set.of(Signature.of("Gen"))), List.of(), false);
 
         private Data() {
         }
@@ -75,7 +75,7 @@ public final class Gen_<E> {
     static final class Canonical {
         /// The canonical form of [Gen].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Gen final-class sealed=no nesting=top
         tparams #0
         superclasses p.Near; p.Far; java.lang.Object

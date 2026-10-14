@@ -33,7 +33,7 @@ import p.PubConst;
 ///
 /// A generated class extends or implements [PubConst] by the proof its metamodel starts, with the stages of `PubConst_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubConst.class, fingerprint = "b55704e2f2484f7ca213b10738f34ab051d6f85021f0c1e7a3743d65b07598bc", complete = true, format = 15)
+@GeneratedMetamodel(of = PubConst.class, fingerprint = "0a0a9f68b4476e03fb88280b4ca74050377140c2965a6bd3faa3b156e8b06e29", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class PubConst_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubConst] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubConst_"), "b55704e2f2484f7ca213b10738f34ab051d6f85021f0c1e7a3743d65b07598bc", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubConst"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubConst_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubConst_"), "0a0a9f68b4476e03fb88280b4ca74050377140c2965a6bd3faa3b156e8b06e29", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubConst"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubConst_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class PubConst_ {
     static final class Canonical {
         /// The canonical form of [PubConst].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.PubConst interface sealed=no nesting=top
         tparams -
         superclasses -

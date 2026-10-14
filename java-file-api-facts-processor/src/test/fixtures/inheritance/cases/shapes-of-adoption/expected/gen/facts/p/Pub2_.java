@@ -36,7 +36,7 @@ import p.Pub2;
 ///
 /// A generated class extends or implements [Pub2] by the proof its metamodel starts, with the stages of `Pub2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub2.class, fingerprint = "6fd1e1328c59fac18980b2a4d0a01d38cad2cfac5ba53175996b24c17a89f952", complete = true, format = 15)
+@GeneratedMetamodel(of = Pub2.class, fingerprint = "56159bdcbca40ff78d07512469a3dcf986ba21edac01d64e0e3e42c68edbebc8", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Pub2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Pub2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub2_"), "6fd1e1328c59fac18980b2a4d0a01d38cad2cfac5ba53175996b24c17a89f952", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub2"), List.of(), List.of(ClassDesc.of("p.HBetween"), ClassDesc.of("p.Pub1"), ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("between"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("two"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub2"))), false, new Pub2_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub2_"), "56159bdcbca40ff78d07512469a3dcf986ba21edac01d64e0e3e42c68edbebc8", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub2"), List.of(), List.of(ClassDesc.of("p.HBetween"), ClassDesc.of("p.Pub1"), ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("between"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("two"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub2"))), false, new Pub2_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class Pub2_ {
     static final class Canonical {
         /// The canonical form of [Pub2].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Pub2 open-class sealed=no nesting=top
         tparams -
         superclasses p.HBetween; p.Pub1; p.H0; java.lang.Object

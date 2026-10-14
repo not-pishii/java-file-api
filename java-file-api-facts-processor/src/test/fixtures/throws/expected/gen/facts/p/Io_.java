@@ -46,7 +46,7 @@ import p.Io;
 ///
 /// A generated class extends or implements [Io] by the proof its metamodel starts, with the stages of `Io_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Io.class, fingerprint = "2e1a70c727f06731bf6d13f9702bc56240a20d7b8ced3541f46034ede28c6fe2", complete = true, format = 15)
+@GeneratedMetamodel(of = Io.class, fingerprint = "b6d7731b0d52a79561de63e9b0011002167f0302778fe54c2972f713a6f21756", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -57,7 +57,7 @@ public final class Io_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Io] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Io_"), "2e1a70c727f06731bf6d13f9702bc56240a20d7b8ced3541f46034ede28c6fe2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Io"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("custom"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("generic"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("locked"), Signature.of("multi"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("read"), Signature.of("toString"), Signature.of("unchecked"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("util")), Set.of(Signature.of("Io"), Signature.of("Io", Param.fixed(ConstantDescs.CD_int)), Signature.of("Io", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Io_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Io_"), "b6d7731b0d52a79561de63e9b0011002167f0302778fe54c2972f713a6f21756", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Io"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("custom"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("generic"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("locked"), Signature.of("multi"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("read"), Signature.of("toString"), Signature.of("unchecked"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("util")), Set.of(Signature.of("Io"), Signature.of("Io", Param.fixed(ConstantDescs.CD_int)), Signature.of("Io", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Io_Heritage());
 
         private Data() {
         }
@@ -68,7 +68,7 @@ public final class Io_ {
     static final class Canonical {
         /// The canonical form of [Io].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Io open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

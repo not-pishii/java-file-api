@@ -1,14 +1,17 @@
 import gen.facts.p.Uses_;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-/// A deprecated type in a signature does not make the metamodel warn (the metamodels compile under `-Xlint:all
-/// -Werror`, as does this code that refers to the facts of the signature).
+/// A member whose signature mentions a deprecated type has no fact: code that names it is code javac warns of
+/// (`-Xlint:deprecation`), and the facts describe what code may name without a warning. The metamodel compiles
+/// under `-Xlint:all -Werror`, as does this code.
 public final class Mentioned {
     private Mentioned() {}
 
-    public static void theFactsOfAMemberThatMentionsADeprecatedTypeAreThere() {
-        assertThat(Uses_.old.name()).isEqualTo("old");
-        assertThat(Uses_.take_Old.name()).isEqualTo("take");
+    public static void theMembersThatMentionADeprecatedTypeHaveNoFact() {
+        assertThat(Arrays.stream(Uses_.class.getFields()).map(field -> field.getName()))
+                .doesNotContain("old", "take_Old");
     }
 }

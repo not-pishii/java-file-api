@@ -32,7 +32,7 @@ import p.Marker;
 ///
 /// A generated class extends or implements [Marker] by the proof its metamodel starts, with the stages of `Marker_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Marker.class, fingerprint = "a9e6207a817c493abaa5e623b6d438bdb8f0dae5945cc74206acb87d58a6857f", complete = true, format = 15)
+@GeneratedMetamodel(of = Marker.class, fingerprint = "c7a570e54759a9850db29ed9f1f7d04a6cd0676ff83c61854a3bb91dd8780645", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Marker_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Marker] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Marker_"), "a9e6207a817c493abaa5e623b6d438bdb8f0dae5945cc74206acb87d58a6857f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Marker"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Marker_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Marker_"), "c7a570e54759a9850db29ed9f1f7d04a6cd0676ff83c61854a3bb91dd8780645", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Marker"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Marker_Heritage());
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Marker_ {
     static final class Canonical {
         /// The canonical form of [Marker].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Marker interface sealed=no nesting=top
         tparams -
         superclasses -

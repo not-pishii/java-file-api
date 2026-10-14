@@ -5,4 +5,3 @@ META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> a.fact
 META-INF/javafile/metamodel/token/java.lang.Comparable -> a.facts.java.lang.Comparable_
 META-INF/javafile/metamodel/token/java.lang.InterruptedException -> a.facts.java.lang.InterruptedException_
 META-INF/javafile/metamodel/token/java.lang.String -> a.facts.java.lang.String_
-META-INF/javafile/metamodel/token/java.lang.Throwable -> a.facts.java.lang.Throwable_

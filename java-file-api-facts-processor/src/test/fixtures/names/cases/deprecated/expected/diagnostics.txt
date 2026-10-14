@@ -1,0 +1,2 @@
+gen/G.java:7:1: warning: p.Uses: no fact of method old(), which mentions deprecated types, which code javac warns of names: p.Old
+gen/G.java:7:1: warning: p.Uses: no fact of method take(p.Old), which mentions deprecated types, which code javac warns of names: p.Old

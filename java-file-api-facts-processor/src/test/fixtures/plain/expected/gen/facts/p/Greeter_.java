@@ -56,7 +56,7 @@ import p.Greeter;
 ///
 /// A generated class extends or implements [Greeter] by the proof its metamodel starts, with the stages of `Greeter_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Greeter.class, fingerprint = "e6206be72e6e3b9d1bab68dc76ef4ca42943dd90b9d405d9225f641d2d74949e", complete = true, format = 15)
+@GeneratedMetamodel(of = Greeter.class, fingerprint = "6d9bad364d29e7f3dc145d5bad8ad727eb6db21d10e2ae58d2b754c1c67c8466", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -67,7 +67,7 @@ public final class Greeter_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Greeter] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Greeter_"), "e6206be72e6e3b9d1bab68dc76ef4ca42943dd90b9d405d9225f641d2d74949e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Greeter"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr", Param.fixed(ClassDesc.ofDescriptor("[[I")), Param.fixed(ClassDesc.ofDescriptor("[Lp/Greeter;"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("greet"), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.util.Locale"))), Signature.of("hashCode"), Signature.of("log", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("main", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("parse", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Greeter"), Signature.of("Greeter", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.ofDescriptor("[Z"))), Signature.of("Greeter", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Greeter_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Greeter_"), "6d9bad364d29e7f3dc145d5bad8ad727eb6db21d10e2ae58d2b754c1c67c8466", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Greeter"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr", Param.fixed(ClassDesc.ofDescriptor("[[I")), Param.fixed(ClassDesc.ofDescriptor("[Lp/Greeter;"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("greet"), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("greet", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ClassDesc.of("java.util.Locale"))), Signature.of("hashCode"), Signature.of("log", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("main", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("parse", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Greeter"), Signature.of("Greeter", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.ofDescriptor("[Z"))), Signature.of("Greeter", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Greeter_Heritage());
 
         private Data() {
         }
@@ -78,7 +78,7 @@ public final class Greeter_ {
     static final class Canonical {
         /// The canonical form of [Greeter].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.Greeter open-class sealed=no nesting=top
         tparams -
         superclasses java.lang.Object

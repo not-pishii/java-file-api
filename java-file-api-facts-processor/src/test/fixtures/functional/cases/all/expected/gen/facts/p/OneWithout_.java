@@ -33,7 +33,7 @@ import p.OneWithout;
 ///
 /// A generated class extends or implements [OneWithout] by the proof its metamodel starts, with the stages of `OneWithout_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OneWithout.class, fingerprint = "d8eb0647998de426cadcefda7c76925002a8bc607a218fcc21b3f2fbffd76e24", complete = true, format = 15)
+@GeneratedMetamodel(of = OneWithout.class, fingerprint = "84069dbe1531c3d624fd2f9794cafff3747a2dd910d9552bb4062241fbf4d387", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class OneWithout_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [OneWithout] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OneWithout_"), "d8eb0647998de426cadcefda7c76925002a8bc607a218fcc21b3f2fbffd76e24", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.OneWithout"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.NoneB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new OneWithout_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OneWithout_"), "84069dbe1531c3d624fd2f9794cafff3747a2dd910d9552bb4062241fbf4d387", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.OneWithout"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.NoneB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new OneWithout_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class OneWithout_ {
     static final class Canonical {
         /// The canonical form of [OneWithout].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type p.OneWithout interface sealed=no nesting=top
         tparams -
         superclasses -

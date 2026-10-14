@@ -40,11 +40,11 @@ import org.jspecify.annotations.NullMarked;
 
 /// The full metamodel of [Object]: a fact of every `public` and every `protected` member the type declares, the latter held back for a subclass.
 ///
-/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Cf], whose inherited members are called through this metamodel.
+/// `@Facts` does not ask for [Object]: it is here as a supertype of [p.Aged] and [p.Phase], whose inherited members are called through this metamodel.
 ///
 /// A generated class extends or implements [Object] by the proof its metamodel starts, with the stages of `Object_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Object.class, fingerprint = "f4d98af052d9bffccf47b32df7a7a84929162c3e90a66a519177a60690e3be79", complete = true, format = 15)
+@GeneratedMetamodel(of = Object.class, fingerprint = "8446e8916600fa52481bb4abbdbf1e390d8f21a1ae6d8bf46cbe04975485a018", complete = true, format = 15)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -55,7 +55,7 @@ public final class Object_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Object] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Object_"), "f4d98af052d9bffccf47b32df7a7a84929162c3e90a66a519177a60690e3be79", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, new Object_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Object_"), "8446e8916600fa52481bb4abbdbf1e390d8f21a1ae6d8bf46cbe04975485a018", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("java.lang.Object"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Object"))), false, new Object_Heritage());
 
         private Data() {
         }
@@ -66,7 +66,7 @@ public final class Object_ {
     static final class Canonical {
         /// The canonical form of [Object].
         static final String TEXT = """
-        javafile-facts-canonical 9
+        javafile-facts-canonical 10
         type java.lang.Object open-class sealed=no nesting=top
         tparams -
         superclasses -
@@ -76,7 +76,6 @@ public final class Object_ {
         members declared-accessible
         member ctor public () throws -
         member method protected overridable clone() -> java.lang.Object throws java.lang.CloneNotSupportedException
-        member method protected overridable finalize() -> void throws java.lang.Throwable
         member method public final getClass() -> java.lang.Class<?> throws -
         member method public final notify() -> void throws -
         member method public final notifyAll() -> void throws -
@@ -119,9 +118,6 @@ public final class Object_ {
 
     /// The fact of [Object#equals(Object)].
     public static final MethodRef1<Object, Bool, Object> equals_Object = UnsafeInvocables.method(TOKEN, "equals", PrimitiveToken.BOOLEAN, TOKEN, MemberTraits.OVERRIDABLE);
-
-    /// The fact of [Object#finalize()], which is `protected`: a subclass alone uses it.
-    public static final Protected<Object, VoidMethodRef0<Object>> finalize = UnsafeFacts.protected_(TOKEN, UnsafeInvocables.voidMethod(TOKEN, "finalize", MemberTraits.OVERRIDABLE.throwing(UnsafeFacts.<Throwable>openClassToken(Throwable_.Data.SHAPE)).with(Access.PROTECTED)));
 
     /// The fact of [Object#getClass()].
     public static final MethodRef0<Object, Class<?>> getClass = UnsafeInvocables.method(TOKEN, "getClass", UnsafeFacts.<Class<?>>finalClassToken(Class_.Data.SHAPE, TokenArg.unbounded()), MemberTraits.FINAL);

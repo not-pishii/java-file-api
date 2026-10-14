@@ -79,7 +79,7 @@ class CanonicalTest {
                                 + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 9
+                        javafile-facts-canonical 10
                         type p.T open-class sealed=no nesting=top
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
@@ -183,7 +183,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 9
+                        javafile-facts-canonical 10
                         type p.Day enum sealed=no nesting=top
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
@@ -430,7 +430,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 9
+                        javafile-facts-canonical 10
                         type p.T interface sealed=no nesting=top
                         tparams -
                         superclasses -
