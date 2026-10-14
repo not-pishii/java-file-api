@@ -221,7 +221,29 @@ class ConstantsTest {
                 of(
                         "(int) (double) 3L == 3",
                         eqInt(narrowTruncatingDoubleToInt(widenLongToDouble(literal(3L))), literal(3))),
-                of("(int) (long) n == 3", eqInt(narrowTruncatingLongToInt(widenIntToLong(N)), literal(3))));
+                of("(int) (long) n == 3", eqInt(narrowTruncatingLongToInt(widenIntToLong(N)), literal(3))),
+                // what is not a number and the infinities are written as constant expressions, and fold so
+                of("(int) (0.0 / 0.0) == 0", eqInt(narrowTruncatingDoubleToInt(literal(Double.NaN)), literal(0))),
+                of(
+                        "(int) (0.0 / 0.0 + 1.0) == 0",
+                        eqInt(narrowTruncatingDoubleToInt(addDouble(literal(Double.NaN), literal(1.0))), literal(0))),
+                of(
+                        "(int) (1.0 / 0.0) == 2147483647",
+                        eqInt(
+                                narrowTruncatingDoubleToInt(literal(Double.POSITIVE_INFINITY)),
+                                literal(Integer.MAX_VALUE))),
+                of(
+                        "(int) (-1.0 / 0.0) == -2147483648",
+                        eqInt(
+                                narrowTruncatingDoubleToInt(literal(Double.NEGATIVE_INFINITY)),
+                                literal(Integer.MIN_VALUE))),
+                of(
+                        "(int) (1.0 / 0.0 * 0.0) == 1",
+                        eqInt(
+                                narrowTruncatingDoubleToInt(mulDouble(literal(Double.POSITIVE_INFINITY), literal(0.0))),
+                                literal(1))),
+                of("(int) -1.5 == -1", eqInt(narrowTruncatingDoubleToInt(literal(-1.5)), literal(-1))),
+                of("-1 + 1 == 0", eqInt(addInt(literal(-1), literal(1)), literal(0))));
     }
 
     private static Stream<Arguments> strings() {
