@@ -1163,4 +1163,18 @@ class NegativeCompileTest {
                 "cannot find symbol",
                 "method yield_(");
     }
+
+    @Test
+    void anArrayIsNoArrayOfASupertypeOfItsComponent() {
+        // an element of a String[] read or stored as one of an Object[]: javac types the element as a String
+        assertRejected(
+                "ArrayReadAsOfASupertype",
+                "void use(Expr<String[]> a) { at(ArrayToken.of(Object_.TOKEN), a, literal(0)); }",
+                "method at in class me.supcheg.javafile.typed.Expressions cannot be applied to given types");
+        assertRejected(
+                "ArrayStoredAsOfASupertype",
+                "void use(Expr<String[]> a) { assignAt(ArrayToken.of(Object_.TOKEN), a, literal(0),"
+                        + " literalNull(Object_.TOKEN)); }",
+                "method assignAt in class me.supcheg.javafile.typed.Expressions cannot be applied to given types");
+    }
 }

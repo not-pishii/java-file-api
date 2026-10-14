@@ -342,13 +342,18 @@ public final class Expressions {
 
     /// Reads an array element, `array[index]`.
     ///
+    /// The array is of exactly the type `type` names: an array of a subtype of its component is no
+    /// array of the component here, as it is to Java (JLS 10.10), for javac types the element by the
+    /// array it reads — a `String` of a `String[]`, whatever supertype the generator took it for. Bind
+    /// the array to a variable of the wider array type first to read it as one.
+    ///
     /// @param type the array type
     /// @param array the array
     /// @param index the index
     /// @param <A> the array type
     /// @param <T> the element type
     /// @return the element read
-    public static <A, T> Expr<T> at(ArrayToken<A, T> type, Expr<? extends A> array, Expr<Prim.Int> index) {
+    public static <A, T> Expr<T> at(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
         return Expr.of(new Node.ArrayAt(array.node(), index.node()), type.component());
     }
 
@@ -1079,8 +1084,11 @@ public final class Expressions {
 
     /// `array[index] = value;`
     ///
-    /// Arrays are covariant: storing through an `Object[]` view of a
-    /// `String[]` throws `ArrayStoreException` at run time, as in Java.
+    /// The array is of exactly the type `type` names, as that of [#at(ArrayToken, Expr, Expr)] is:
+    /// javac takes a store into a `String[]` for one of a `String`, whatever supertype of it the
+    /// generator took the array for (JLS 15.26.1). An array a variable of a wider array type holds is
+    /// one of that type, and storing a value its array does not take through it throws
+    /// `ArrayStoreException` at run time, as in Java.
     ///
     /// @param type the array type
     /// @param array the array
@@ -1090,7 +1098,7 @@ public final class Expressions {
     /// @param <T> the element type
     /// @return the assignment
     public static <A, T> Assignment assignAt(
-            ArrayToken<A, T> type, Expr<? extends A> array, Expr<Prim.Int> index, Expr<? extends T> value) {
+            ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index, Expr<? extends T> value) {
         return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), value.node()));
     }
 
