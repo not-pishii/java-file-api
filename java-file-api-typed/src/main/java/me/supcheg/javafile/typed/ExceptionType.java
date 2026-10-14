@@ -1,6 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
@@ -101,7 +104,7 @@ sealed interface ExceptionType {
         return switch (type) {
             case ClassToken<?> cls -> new OfClass(cls);
             case TypeVarToken<?> variable -> new OfVariable(variable);
-            case TypeToken<?> _ ->
+            case InterfaceToken<?> _, ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ ->
                 throw new IllegalArgumentException("not an exception type: " + type
                         + " is neither a class nor a type variable, and only those extend Throwable");
         };

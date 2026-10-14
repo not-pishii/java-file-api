@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.code.BinaryOp;
+import me.supcheg.javafile.code.ConstantLiteral;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
@@ -51,8 +52,8 @@ sealed interface Node {
     /// every result of a switch is of its token, so javac types the switch by it (JLS 15.28.1).
     sealed interface Exact extends Node {}
 
-    /// A literal, with its value for constant folding.
-    record Lit(Expr literal, Object value) implements Exact {}
+    /// A literal, which is its value for constant folding.
+    record Lit(ConstantLiteral literal) implements Exact {}
 
     /// A literal that is not a constant expression: `null`. (A text block is
     /// a constant `String` (JLS 15.29) and, once supported, must be a [Lit]
@@ -165,11 +166,14 @@ sealed interface Node {
     /// A conversion of a number to another primitive type, `(int) operand`.
     record Convert(Conversion conversion, Node operand) implements Exact {}
 
-    /// The numeric conversions of the typed layer, by the type they convert to.
+    /// The numeric conversions of the typed layer, each from the type it converts and to the one it
+    /// converts to.
     enum Conversion {
-        TO_INT(PrimitiveToken.INT),
-        TO_LONG(PrimitiveToken.LONG),
-        TO_DOUBLE(PrimitiveToken.DOUBLE);
+        INT_TO_LONG(PrimitiveToken.LONG),
+        INT_TO_DOUBLE(PrimitiveToken.DOUBLE),
+        LONG_TO_DOUBLE(PrimitiveToken.DOUBLE),
+        LONG_TO_INT(PrimitiveToken.INT),
+        DOUBLE_TO_INT(PrimitiveToken.INT);
 
         private final PrimitiveToken<?, ?, ?> type;
 

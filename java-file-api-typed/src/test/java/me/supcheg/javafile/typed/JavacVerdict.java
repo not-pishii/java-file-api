@@ -112,7 +112,17 @@ final class JavacVerdict {
     /// The typed layer rejects `typed` with `message` where javac accepts the Java it stands for and warns
     /// of it with `warning`: the typed layer renders no code javac warns of.
     static void asJavacWarns(ThrowingCallable typed, String message, String java, String warning) {
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(typed).withMessageContaining(message);
+        asJavacWarns(IllegalStateException.class, typed, message, java, warning);
+    }
+
+    /// As [#asJavacWarns(ThrowingCallable, String, String, String)], rejected by an exception of `rejection`.
+    static void asJavacWarns(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String java,
+            String warning) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
         javacWarns(java, warning);
     }
 

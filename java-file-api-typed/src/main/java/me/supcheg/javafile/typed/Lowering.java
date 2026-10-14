@@ -533,7 +533,7 @@ final class Lowering {
     /// even where [Node#isExact(Node)] does not hold.
     private Expr expr(Node node, boolean pin) {
         return switch (node) {
-            case Node.Lit(var literal, var ignoredValue) -> literal;
+            case Node.Lit(var literal) -> literal;
             case Node.RawLit(var literal) -> literal;
             case Node.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
             case Node.This ignored -> new ThisExpr();

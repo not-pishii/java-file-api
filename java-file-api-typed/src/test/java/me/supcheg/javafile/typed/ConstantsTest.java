@@ -165,9 +165,6 @@ class ConstantsTest {
                 of("2 * 3 == 6", eqInt(mulInt(literal(2), literal(3)), literal(6))),
                 of("7 / 2 == 3", eqInt(divInt(literal(7), literal(2)), literal(3))),
                 of("7 % 2 == 1", eqInt(modInt(literal(7), literal(2)), literal(1))),
-                // an expression that completes abruptly is no constant: the loops of both compile
-                of("1 / 0 == 0", eqInt(divInt(literal(1), literal(0)), literal(0))),
-                of("1 % 0 == 0", eqInt(modInt(literal(1), literal(0)), literal(0))),
                 of("1 == 2", eqInt(literal(1), literal(2))),
                 of("1 != 2", neqInt(literal(1), literal(2))),
                 of("1 != 1", neqInt(literal(1), literal(1))),
@@ -331,6 +328,38 @@ class ConstantsTest {
                                         PrimitiveToken.INT,
                                         cases -> cases.default_(literal(1))),
                                 literal(1))));
+    }
+
+    @Test
+    void aConstantZeroIsNoDivisor() {
+        // javac takes `1 / 0` for no constant, for it completes abruptly, and warns of it
+        JavacVerdict.asJavacWarns(
+                IllegalArgumentException.class,
+                () -> divInt(N, literal(0)),
+                "divInt by a constant expression of the value zero",
+                "int probe(int n) { return n / 0; }",
+                "division by zero");
+        JavacVerdict.asJavacWarns(
+                IllegalArgumentException.class,
+                () -> modInt(literal(1), subInt(literal(1), literal(1))),
+                "modInt by a constant expression of the value zero",
+                "int probe() { return 1 % (1 - 1); }",
+                "division by zero");
+        JavacVerdict.asJavacWarns(
+                IllegalArgumentException.class,
+                () -> divInt(N, narrowTruncatingDoubleToInt(literal(Double.NaN))),
+                "divInt by a constant expression of the value zero",
+                "int probe(int n) { return n / (int) (0.0 / 0.0); }",
+                "division by zero");
+        // a divisor that is no constant is one
+        assertThat(folded(eqInt(divInt(literal(1), N), literal(0)))).isEmpty();
+    }
+
+    @Test
+    void aConstantOfATypeTheTypedLayerHasNoOperatorOfIsFoldedToNone() {
+        // `Character.MIN_VALUE` is a constant to javac; no operator of the typed layer takes a char
+        var minValue = UnsafeFacts.constantField(Integer_.TOKEN, "MIN_VALUE", PrimitiveToken.CHAR, (char) 0);
+        assertThat(Constants.fold(staticField(minValue).node())).isEqualTo(new Constants.Folded.None());
     }
 
     @Test

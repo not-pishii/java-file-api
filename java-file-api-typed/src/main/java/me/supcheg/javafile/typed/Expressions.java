@@ -108,7 +108,7 @@ public final class Expressions {
     /// @param value the value
     /// @return the literal
     public static Expr<String> literal(String value) {
-        return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), String_.TOKEN);
+        return Expr.of(new Node.Lit(new me.supcheg.javafile.code.StringLiteral(value)), String_.TOKEN);
     }
 
     /// Creates an `int` literal.
@@ -116,7 +116,7 @@ public final class Expressions {
     /// @param value the value
     /// @return the literal
     public static Expr<Prim.Int> literal(int value) {
-        return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.INT);
+        return Expr.of(new Node.Lit(new me.supcheg.javafile.code.IntLiteral(value)), PrimitiveToken.INT);
     }
 
     /// Creates a `long` literal.
@@ -124,7 +124,7 @@ public final class Expressions {
     /// @param value the value
     /// @return the literal
     public static Expr<Prim.Long> literal(long value) {
-        return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.LONG);
+        return Expr.of(new Node.Lit(new me.supcheg.javafile.code.LongLiteral(value)), PrimitiveToken.LONG);
     }
 
     /// Creates a `double` literal.
@@ -132,7 +132,7 @@ public final class Expressions {
     /// @param value the value
     /// @return the literal
     public static Expr<Prim.Double> literal(double value) {
-        return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Lit(new me.supcheg.javafile.code.DoubleLiteral(value)), PrimitiveToken.DOUBLE);
     }
 
     /// Creates a `boolean` literal.
@@ -140,7 +140,7 @@ public final class Expressions {
     /// @param value the value
     /// @return the literal
     public static Expr<Prim.Bool> literal(boolean value) {
-        return Expr.of(new Node.Lit(me.supcheg.javafile.code.Exprs.literal(value), value), PrimitiveToken.BOOLEAN);
+        return Expr.of(new Node.Lit(new me.supcheg.javafile.code.BooleanLiteral(value)), PrimitiveToken.BOOLEAN);
     }
 
     /// Creates the `null` literal at the given reference type, rendered as
@@ -425,12 +425,35 @@ public final class Expressions {
         return binary(Node.Operator.MUL_INT, l, r, PrimitiveToken.INT);
     }
 
+    /// `l / r`.
+    ///
+    /// @param l the dividend
+    /// @param r the divisor
+    /// @return the quotient
+    /// @throws IllegalArgumentException if `r` is a constant expression of the value zero (JLS 15.29)
     public static Expr<Prim.Int> divInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(Node.Operator.DIV_INT, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.DIV_INT, l, divisor(r, "divInt"), PrimitiveToken.INT);
     }
 
+    /// `l % r`.
+    ///
+    /// @param l the dividend
+    /// @param r the divisor
+    /// @return the remainder
+    /// @throws IllegalArgumentException if `r` is a constant expression of the value zero (JLS 15.29)
     public static Expr<Prim.Int> modInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
-        return binary(Node.Operator.MOD_INT, l, r, PrimitiveToken.INT);
+        return binary(Node.Operator.MOD_INT, l, divisor(r, "modInt"), PrimitiveToken.INT);
+    }
+
+    /// A divisor that is no constant zero: the division would throw `ArithmeticException` wherever it
+    /// is evaluated, and javac warns of it (`[divzero]`).
+    private static Expr<Prim.Int> divisor(Expr<Prim.Int> divisor, String combinator) {
+        if (Constants.isZero(divisor.node())) {
+            throw new IllegalArgumentException(combinator + " by a constant expression of the value zero: the"
+                    + " division throws ArithmeticException wherever it is evaluated, and javac warns of it"
+                    + " (division by zero, -Xlint:divzero)");
+        }
+        return divisor;
     }
 
     public static Expr<Prim.Bool> eqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
@@ -536,17 +559,17 @@ public final class Expressions {
 
     /// Widening, `(long) operand`; it never loses information.
     public static Expr<Prim.Long> widenIntToLong(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Convert(Node.Conversion.TO_LONG, operand.node()), PrimitiveToken.LONG);
+        return Expr.of(new Node.Convert(Node.Conversion.INT_TO_LONG, operand.node()), PrimitiveToken.LONG);
     }
 
     /// Widening, `(double) operand`; it never loses information.
     public static Expr<Prim.Double> widenIntToDouble(Expr<Prim.Int> operand) {
-        return Expr.of(new Node.Convert(Node.Conversion.TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Convert(Node.Conversion.INT_TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Widening, `(double) operand`; it may round a large value (JLS 5.1.2).
     public static Expr<Prim.Double> widenLongToDouble(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Convert(Node.Conversion.TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
+        return Expr.of(new Node.Convert(Node.Conversion.LONG_TO_DOUBLE, operand.node()), PrimitiveToken.DOUBLE);
     }
 
     /// Checked narrowing, `Math.toIntExact(operand)`: throws
@@ -558,13 +581,13 @@ public final class Expressions {
     /// Truncating narrowing, `(int) operand`: keeps the low 32 bits of a
     /// value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingLongToInt(Expr<Prim.Long> operand) {
-        return Expr.of(new Node.Convert(Node.Conversion.TO_INT, operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Convert(Node.Conversion.LONG_TO_INT, operand.node()), PrimitiveToken.INT);
     }
 
     /// Truncating narrowing, `(int) operand`: rounds toward zero and clamps
     /// a value out of the `int` range, silently (JLS 5.1.3).
     public static Expr<Prim.Int> narrowTruncatingDoubleToInt(Expr<Prim.Double> operand) {
-        return Expr.of(new Node.Convert(Node.Conversion.TO_INT, operand.node()), PrimitiveToken.INT);
+        return Expr.of(new Node.Convert(Node.Conversion.DOUBLE_TO_INT, operand.node()), PrimitiveToken.INT);
     }
 
     // ------------------------------------------------------------------
