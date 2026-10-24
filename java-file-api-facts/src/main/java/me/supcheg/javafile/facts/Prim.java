@@ -7,8 +7,9 @@ package me.supcheg.javafile.facts;
 /// `Expr<Prim.Int>` and an `Expr<Integer>` are different types to javac, and
 /// boxing or unboxing happens only where the generator asks for it
 /// explicitly — a `null` box can never be unboxed silently. A marker is a
-/// class, and so an `Object` to javac: where a reference is taken, the typed
-/// layer refuses a value of a marker at run time rather than box it.
+/// class, and so an `Object` to javac, which would box a primitive value
+/// where a reference is taken: the typed layer refuses a value of a marker
+/// there, when the construct is built, and the generator boxes it by `box`.
 ///
 /// The markers are final and cannot be instantiated: they exist only as type
 /// arguments. Refer to them qualified, `Prim.Long`, rather than importing

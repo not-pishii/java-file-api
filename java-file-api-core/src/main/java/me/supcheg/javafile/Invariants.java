@@ -9,6 +9,10 @@ import java.util.concurrent.Callable;
 ///
 /// The message is a format of [String#format(String, Object...)] and is made
 /// only when the check fails.
+///
+/// Public because the modules of this library share it (`facts`, `lang-model`,
+/// `facts-processor`, `typed`) and the build has no module system to export it to them alone:
+/// it is no API for the code a generator writes, and code that generates Java does not need it.
 public final class Invariants {
 
     private Invariants() {}
