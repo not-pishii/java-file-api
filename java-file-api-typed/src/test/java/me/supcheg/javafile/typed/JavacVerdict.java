@@ -36,7 +36,8 @@ final class JavacVerdict {
                             .collect(Collectors.joining())
                     + "import " + Signal.class.getCanonicalName() + ";\n";
 
-    private static Compilation compiled(String members) {
+    /// What javac says of the `members` of a class `Probe`, under every lint.
+    static Compilation compiled(String members) {
         return javac().withOptions("-Xlint:all")
                 .compile(JavaFileObjects.forSourceString("Probe", IMPORTS + "class Probe {\n" + members + "\n}\n"));
     }

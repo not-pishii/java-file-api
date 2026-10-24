@@ -1,8 +1,7 @@
 package me.supcheg.javafile.typed;
 
-import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
-import com.google.testing.compile.JavaFileObjects;
+import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.EmptyStmt;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.ThrowStmt;
@@ -41,7 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
@@ -51,6 +49,10 @@ import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
+import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
+import static me.supcheg.javafile.typed.JavacVerdict.asJavacAccepts;
+import static me.supcheg.javafile.typed.JavacVerdict.compiled;
+import static me.supcheg.javafile.typed.JavacVerdict.unlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -62,10 +64,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /// where the statement or the clause is built, with a message naming what
 /// throws, where, and what to do.
 ///
-/// A check is told against javac, by the Java the typed code stands for:
-/// [#asJavac] where javac rejects that Java too — else the test could pass
-/// for a reason of its own — [#unlikeJavac] where the typed layer is
-/// stricter and javac accepts it, and [#asJavacAccepts] for what both accept.
+/// A check is told against javac by [JavacVerdict], by the Java the typed code stands for: `asJavac`
+/// where javac rejects that Java too — else the test could pass for a reason of its own —, `unlikeJavac`
+/// where the typed layer is stricter and javac accepts it, and `asJavacAccepts` for what both accept,
+/// the rendered class included.
 class ExceptionChecksTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
@@ -74,13 +76,13 @@ class ExceptionChecksTest {
     private static final String READ = "new StringReader(\"a\").read()";
 
     /// Declares the class `Probe` with the given members.
-    private static void declare(Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members) {
-        TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
+    private static JavaFile declare(Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members) {
+        return TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(members));
     }
 
     /// Declares `static int m()` with the given body.
-    private static void intMethod(Function<Body<Prim.Int>, Terminated<Prim.Int>> body) {
-        declare(cb -> {
+    private static JavaFile intMethod(Function<Body<Prim.Int>, Terminated<Prim.Int>> body) {
+        return declare(cb -> {
             var m = cb.declareStaticMethod("m", PrimitiveToken.INT);
             var bodies = cb.bodies();
             bodies.define(m, body);
@@ -91,32 +93,6 @@ class ExceptionChecksTest {
     /// `new StringReader("a").read()`.
     private static Invocation<Prim.Int> read() {
         return call(new_(StringReader_.new_String, literal("a")), StringReader_.read);
-    }
-
-    /// Compiles the members as those of a class `Probe`, without lints.
-    private static Compilation compiled(String members) {
-        return javac().compile(JavaFileObjects.forSourceString(
-                "Probe", "import java.io.*;\nclass Probe {\n" + members + "\n}\n"));
-    }
-
-    /// The typed layer rejects `typed` with `message`, and javac rejects the Java it stands for with `error`.
-    private static void asJavac(ThrowingCallable typed, String message, String java, String error) {
-        assertThatIllegalStateException().isThrownBy(typed).withMessageContaining(message);
-        Compilation compilation = compiled(java);
-        CompilationSubject.assertThat(compilation).failed();
-        CompilationSubject.assertThat(compilation).hadErrorContaining(error);
-    }
-
-    /// The typed layer rejects `typed` with `message` though javac accepts the Java it stands for.
-    private static void unlikeJavac(ThrowingCallable typed, String message, String java) {
-        assertThatIllegalStateException().isThrownBy(typed).withMessageContaining(message);
-        CompilationSubject.assertThat(compiled(java)).succeeded();
-    }
-
-    /// The typed layer accepts `typed`, and javac the Java it stands for.
-    private static void asJavacAccepts(ThrowingCallable typed, String java) {
-        assertThatCode(typed).doesNotThrowAnyException();
-        CompilationSubject.assertThat(compiled(java)).succeeded();
     }
 
     @Nested
@@ -689,17 +665,35 @@ class ExceptionChecksTest {
         }
 
         @Test
-        void aSwitchOfValuesInATryBlockHasNoBlockToLookIn() {
-            asJavacAccepts(
+        void aSwitchOfValuesInATryBlockThrowsNothingForTheCatchOfACheckedExceptionToCatch() {
+            // the values of the cases are looked in and there is no block of a case: nothing is thrown
+            asJavac(
                     () -> intMethod(b -> b.tryTerminated(
-                            h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
                             t -> t.return_(switch_(
                                     Signal_.TOKEN,
                                     enumConstant(Signal_.RED),
                                     PrimitiveToken.INT,
                                     c -> c.case_(Signal_.RED, literal(1)).default_(literal(0)))))),
-                    "static int m() { try { return switch (java.util.concurrent.TimeUnit.DAYS) { case DAYS -> 1;"
-                            + " default -> 0; }; } catch (RuntimeException e) { return 2; } }");
+                    "catch_ of java.io.IOException: the try block of tryTerminated in body of static method m"
+                            + " cannot throw this checked exception (it can throw: nothing)",
+                    "static int m() { try { return switch (Signal.RED) { case RED -> 1; default -> 0; }; }"
+                            + " catch (IOException e) { return 2; } }",
+                    "exception java.io.IOException is never thrown in body of corresponding try statement");
+        }
+
+        @Test
+        void aSwitchOfValuesInATryBlockThrowsWhatItsValuesDo() {
+            asJavacAccepts(
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
+                            t -> t.return_(switch_(
+                                    Signal_.TOKEN,
+                                    enumConstant(Signal_.RED),
+                                    PrimitiveToken.INT,
+                                    c -> c.case_(Signal_.RED, read()).default_(literal(0)))))),
+                    "static int m() { try { return switch (Signal.RED) { case RED -> " + READ + ";"
+                            + " default -> 0; }; } catch (IOException e) { return 2; } }");
         }
     }
 
