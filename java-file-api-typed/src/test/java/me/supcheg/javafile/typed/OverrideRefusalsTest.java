@@ -1,5 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import com.google.testing.compile.Compilation;
+import com.google.testing.compile.CompilationSubject;
+import com.google.testing.compile.Compiler;
+import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
@@ -29,6 +33,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import org.junit.jupiter.api.Test;
 
+import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -106,6 +111,28 @@ class OverrideRefusalsTest {
         SignatureRegistry.requireOverrides(OWNER, own, group, DECLARING);
     }
 
+    /// The source of the type `name` of the package `x`, the types of the Java a test stands for.
+    private static JavaFileObject java(String name, String declaration) {
+        return JavaFileObjects.forSourceString("x." + name, "package x;\n" + declaration + "\n");
+    }
+
+    /// What javac says of the types, under every lint.
+    private static Compilation javac(JavaFileObject... types) {
+        return Compiler.javac().withOptions("-Xlint:all").compile(types);
+    }
+
+    /// javac rejects the Java a refusal stands for with `error`.
+    private static void javacRejects(String error, JavaFileObject... types) {
+        Compilation compilation = javac(types);
+        CompilationSubject.assertThat(compilation).failed();
+        CompilationSubject.assertThat(compilation).hadErrorContaining(error);
+    }
+
+    /// javac accepts the Java of an accepted neighbour of a refusal, without a warning.
+    private static void javacAccepts(JavaFileObject... types) {
+        CompilationSubject.assertThat(javac(types)).succeededWithoutWarnings();
+    }
+
     @Test
     void anInstanceMethodDoesNotOverrideAStaticOne() {
         Inheritance.Group group =
@@ -115,6 +142,10 @@ class OverrideRefusalsTest {
                 .isThrownBy(() -> overrides(
                         UnsafeInvocables.method(SELF_TOKEN, "m", PrimitiveToken.INT, MemberTraits.DEFAULT), group))
                 .withMessageContaining("an instance method cannot override a static one (JLS 8.4.8.1)");
+        javacRejects(
+                "overridden method is static",
+                java("K", "public class K { public static int m() { return 0; } }"),
+                java("Self", "public class Self extends K { public int m() { return 0; } }"));
     }
 
     @Test
@@ -140,6 +171,13 @@ class OverrideRefusalsTest {
                         group))
                 .withMessageContaining(
                         "the method is of variable arity and its last parameter is of the type T[], which is not reifiable");
+        JavaFileObject self =
+                java("Self", "public abstract class Self<T> implements I<T> { public int m(T... all) { return 0; } }");
+        Compilation compilation = javac(java("I", "public interface I<T> { int m(T... all); }"), self);
+        CompilationSubject.assertThat(compilation).succeeded();
+        CompilationSubject.assertThat(compilation)
+                .hadWarningContaining("Possible heap pollution from parameterized vararg type T")
+                .inFile(self);
     }
 
     @Test
@@ -164,6 +202,11 @@ class OverrideRefusalsTest {
                                 MemberTraits.DEFAULT),
                         group))
                 .doesNotThrowAnyException();
+        javacAccepts(
+                java("I", "public interface I { int m(String[]... all); }"),
+                java(
+                        "Self",
+                        "public abstract class Self implements I { public int m(String[]... all) { return 0; } }"));
     }
 
     @Test
@@ -180,6 +223,9 @@ class OverrideRefusalsTest {
                                 SELF_TOKEN, "m", PrimitiveToken.INT, PrimitiveToken.INT.array(), MemberTraits.DEFAULT),
                         group))
                 .doesNotThrowAnyException();
+        javacAccepts(
+                java("I", "public interface I { int m(int... all); }"),
+                java("Self", "public abstract class Self implements I { public int m(int... all) { return 0; } }"));
     }
 
     @Test
@@ -205,6 +251,13 @@ class OverrideRefusalsTest {
                         group))
                 .withMessageContaining("its parameters are (java.util.List<java.lang.Integer>), which erase as those"
                         + " of the method do and are not the same: name clash (JLS 8.4.8.3)");
+        javacRejects(
+                "name clash: m(java.util.List<java.lang.String>) in x.Self and m(java.util.List<java.lang.Integer>) in x.I have the same erasure",
+                java("I", "import java.util.List; public interface I { int m(List<Integer> list); }"),
+                java(
+                        "Self",
+                        "import java.util.List; public abstract class Self implements I {"
+                                + " public int m(List<String> list) { return 0; } }"));
     }
 
     @Test
@@ -227,6 +280,14 @@ class OverrideRefusalsTest {
                                 SELF_TOKEN, "m", PrimitiveToken.INT, MemberTraits.DEFAULT.throwing(IOException_.TOKEN)),
                         group))
                 .doesNotThrowAnyException();
+        javacAccepts(
+                java(
+                        "I",
+                        "import java.io.*; public interface I<X extends Exception> { int m() throws IOException, X; }"),
+                java(
+                        "Self",
+                        "import java.io.*; public abstract class Self implements I<FileNotFoundException> {"
+                                + " public int m() throws IOException { return 0; } }"));
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> overrides(
                         UnsafeInvocables.method(
@@ -239,6 +300,15 @@ class OverrideRefusalsTest {
                 .withMessageContaining(
                         ": an override cannot declare the checked exception java.lang.InterruptedException"
                                 + " (JLS 8.4.8.3)");
+        javacRejects(
+                "overridden method does not throw java.lang.InterruptedException",
+                java(
+                        "I",
+                        "import java.io.*; public interface I<X extends Exception> { int m() throws IOException, X; }"),
+                java(
+                        "Self",
+                        "import java.io.*; public abstract class Self implements I<FileNotFoundException> {"
+                                + " public int m() throws InterruptedException { return 0; } }"));
     }
 
     @Test
@@ -257,6 +327,13 @@ class OverrideRefusalsTest {
                                 SELF_TOKEN, "m", PrimitiveToken.INT, MemberTraits.DEFAULT.throwing(thrown)),
                         group))
                 .withMessageContaining("an override cannot declare the checked exception X (JLS 8.4.8.3)");
+        javacRejects(
+                "overridden method does not throw X",
+                java("I", "import java.io.*; public interface I { int m() throws IOException; }"),
+                java(
+                        "Self",
+                        "public abstract class Self<X extends Exception> implements I {"
+                                + " public int m() throws X { return 0; } }"));
     }
 
     @Test
@@ -288,5 +365,13 @@ class OverrideRefusalsTest {
                         DECLARING))
                 .withMessageContaining("from its superclass: the last parameter of one is of variable arity and"
                         + " that of the other an array");
+        Compilation compilation = javac(
+                java("I", "public interface I { int m(String... all); }"),
+                java("K", "public class K { public int m(String[] all) { return 0; } }"),
+                java("Self", "public abstract class Self extends K implements I { }"));
+        CompilationSubject.assertThat(compilation).succeeded();
+        CompilationSubject.assertThat(compilation)
+                .hadWarningContaining("m(java.lang.String[]) in x.K implements m(java.lang.String...) in x.I;"
+                        + " overriding method is missing '...'");
     }
 }
