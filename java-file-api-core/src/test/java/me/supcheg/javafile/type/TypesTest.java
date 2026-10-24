@@ -92,12 +92,16 @@ class TypesTest {
 
     @Test
     void ofClassRejectsArrayTypes() {
-        assertThatThrownBy(() -> Types.of(String[].class)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Types.of(String[].class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("expected a class or interface type, got: class [Ljava.lang.String;");
     }
 
     @Test
     void ofClassRejectsPrimitiveTypes() {
-        assertThatThrownBy(() -> Types.of(int.class)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Types.of(int.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("expected a class or interface type, got: int");
     }
 
     @Test

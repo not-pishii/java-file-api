@@ -91,7 +91,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("interface cannot be 'FINAL'");
     }
 
     @Test
@@ -105,7 +106,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("record cannot be 'ABSTRACT'");
     }
 
     @Test
@@ -118,7 +120,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("enum cannot be 'ABSTRACT'");
     }
 
     @Test
@@ -131,7 +134,8 @@ class ModifierValidationTest {
                         List.of(),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("enum cannot be 'FINAL'");
     }
 
     @Test
@@ -225,7 +229,8 @@ class ModifierValidationTest {
                         Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
                         Optional.empty(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("field cannot be 'ABSTRACT'");
     }
 
     @Test
@@ -237,7 +242,8 @@ class ModifierValidationTest {
                         Set.of(Modifier.PUBLIC, Modifier.PRIVATE),
                         Optional.empty(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("field cannot combine more than one access modifier");
     }
 
     @Test
@@ -264,7 +270,8 @@ class ModifierValidationTest {
                         CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("method cannot be 'ABSTRACT'");
     }
 
     @Test
@@ -291,7 +298,8 @@ class ModifierValidationTest {
                         ConstructorBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("constructor cannot be 'STATIC'");
     }
 
     @Test
@@ -303,7 +311,8 @@ class ModifierValidationTest {
                         ConstructorBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("constructor cannot be 'ABSTRACT'");
     }
 
     @Test
@@ -326,7 +335,8 @@ class ModifierValidationTest {
                         CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("compact constructor cannot be 'STATIC'");
     }
 
     @Test
@@ -347,7 +357,8 @@ class ModifierValidationTest {
                         Set.of(Modifier.PRIVATE, Modifier.ABSTRACT),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("abstract method cannot be 'PRIVATE'");
     }
 
     @Test
@@ -361,7 +372,8 @@ class ModifierValidationTest {
                         Set.of(Modifier.PUBLIC, Modifier.FINAL),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("abstract method cannot be 'FINAL'");
     }
 
     @Test
@@ -375,7 +387,8 @@ class ModifierValidationTest {
                         Set.of(Modifier.PUBLIC, Modifier.STATIC),
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("abstract method cannot be 'STATIC'");
     }
 
     @Test
@@ -406,9 +419,11 @@ class ModifierValidationTest {
                 .hasMessageContaining("abstract with final, static, or private");
         assertThatThrownBy(() -> ModifierValidation.requireValidMember(
                         Set.of(Modifier.ABSTRACT, Modifier.STATIC), allowed, "member"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("member cannot combine abstract with final, static, or private");
         assertThatThrownBy(() -> ModifierValidation.requireValidMember(
                         Set.of(Modifier.ABSTRACT, Modifier.PRIVATE), allowed, "member"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("member cannot combine abstract with final, static, or private");
     }
 }

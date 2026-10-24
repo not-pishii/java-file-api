@@ -201,9 +201,12 @@ class TargetClasspathTest {
                         The generator was compiled against another p.Svc than this compilation has (another version\
                          of its library, or another --release). Generate the metamodels against this version: rebuild\
                          the generator against it, or align the versions.""");
-        assertThatExceptionOfType(TargetClasspathMismatchException.class).isThrownBy(() -> target.methods(SVC));
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
-                .isThrownBy(() -> target.verify(UnsafeFacts.openClassToken(BOX, TokenArg.exact(svc))));
+                .isThrownBy(() -> target.methods(SVC))
+                .withMessageContaining("metamodel gen.facts.p.Svc_ does not match p.Svc on the target classpath");
+        assertThatExceptionOfType(TargetClasspathMismatchException.class)
+                .isThrownBy(() -> target.verify(UnsafeFacts.openClassToken(BOX, TokenArg.exact(svc))))
+                .withMessageContaining("does not match");
 
         assertThat(asked.shapes()).containsExactly(SVC, BOX);
     }
@@ -227,7 +230,9 @@ class TargetClasspathTest {
 
     @Test
     void aMismatchHasADifference() {
-        assertThatIllegalArgumentException().isThrownBy(() -> new TargetType.Mismatched(List.of()));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new TargetType.Mismatched(List.of()))
+                .withMessageContaining("a mismatch has a difference");
     }
 
     @Test

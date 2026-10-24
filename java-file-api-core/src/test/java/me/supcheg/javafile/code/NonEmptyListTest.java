@@ -43,6 +43,8 @@ class NonEmptyListTest {
 
     @Test
     void copyOfRejectsEmptyList() {
-        assertThatThrownBy(() -> NonEmptyList.copyOf(List.of())).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NonEmptyList.copyOf(List.of()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("list must not be empty");
     }
 }

@@ -104,7 +104,8 @@ class JavaFileTest {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformEnum((builder, member) -> {}))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("this JavaFile does not wrap an enum declaration");
     }
 
     @Test
@@ -112,7 +113,8 @@ class JavaFileTest {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformInterface((builder, member) -> {}))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("this JavaFile does not wrap an interface declaration");
     }
 
     @Test
@@ -130,7 +132,8 @@ class JavaFileTest {
         JavaFile file = JavaFile.interface_(ClassDesc.of("me.supcheg.example", "Greeter"), ib -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformClass((builder, member) -> {}))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("this JavaFile does not wrap a class declaration");
     }
 
     @Test
@@ -149,7 +152,8 @@ class JavaFileTest {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformRecord((builder, member) -> {}))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("this JavaFile does not wrap a record declaration");
     }
 
     @Test
@@ -266,7 +270,8 @@ class JavaFileTest {
         JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "Config"), cb -> {});
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> file.transformAnnotationType((builder, element) -> {}))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("this JavaFile does not wrap an annotation type declaration");
     }
 
     @Test

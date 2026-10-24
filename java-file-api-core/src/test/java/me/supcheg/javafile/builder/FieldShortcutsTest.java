@@ -132,7 +132,8 @@ class FieldShortcutsTest {
         assertThatThrownBy(() -> new InterfaceBuilder(HOLDER)
                         .withConstant("MAX", PrimitiveTypeRef.INT, cb -> {})
                         .build())
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("interface constant MAX requires an initializer");
     }
 
     @Test
@@ -164,6 +165,7 @@ class FieldShortcutsTest {
         assertThatThrownBy(() -> new RecordBuilder(HOLDER)
                         .withStaticField("ORIGIN", PrimitiveTypeRef.INT, fb -> {})
                         .build())
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("static field ORIGIN requires an initializer");
     }
 }

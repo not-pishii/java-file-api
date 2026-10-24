@@ -15,6 +15,7 @@ class StaticFieldAccessExprTest {
     @Test
     void rejectsAnInvalidFieldName() {
         assertThatThrownBy(() -> new StaticFieldAccessExpr(integerType, "1bad"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1bad'");
     }
 }

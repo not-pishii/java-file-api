@@ -215,7 +215,8 @@ class LambdaChecksTest {
                         Expr<Supplier<Integer>> made = lambda(INTS.sam, () -> box(PrimitiveToken.INT, v));
                         reached.set("the lambda");
                         return b.let(INTS.token, made, _ -> b.end());
-                    })));
+                    })))
+                    .withMessageContaining("a lambda can capture only effectively final variables");
 
             assertThat(reached).hasValue("the variable");
         }

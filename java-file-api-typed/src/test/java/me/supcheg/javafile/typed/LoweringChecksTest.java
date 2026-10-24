@@ -28,7 +28,6 @@ import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /// Runtime/lowering checks (§7) for properties that are structural to
 /// lowering itself, not part of the residual §9 checklist: a [Var] out of
@@ -46,7 +45,9 @@ class LoweringChecksTest {
         Var<Prim.Int> escaped = Var.param(PrimitiveToken.INT, Body.root("elsewhere"));
         Lowering lowering = new Lowering(UnsafeFacts.unverifiedClasspath());
 
-        assertThrows(IllegalStateException.class, () -> lowering.lowerExpr(new Node.Local(escaped)));
+        assertThatIllegalStateException()
+                .isThrownBy(() -> lowering.lowerExpr(new Node.Local(escaped)))
+                .withMessageContaining("is not in scope where it is used");
     }
 
     @Test
@@ -84,7 +85,9 @@ class LoweringChecksTest {
         // The scope has since been popped (and the block has ended); any
         // further use of this exact builder instance must fail fast rather
         // than silently append unreachable statements.
-        assertThrows(IllegalStateException.class, () -> body.if_(literal(true), _ -> {}));
+        assertThatIllegalStateException()
+                .isThrownBy(() -> body.if_(literal(true), _ -> {}))
+                .withMessageContaining("is not the innermost open scope");
     }
 
     @Test

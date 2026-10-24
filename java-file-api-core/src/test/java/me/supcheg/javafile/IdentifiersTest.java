@@ -25,9 +25,15 @@ class IdentifiersTest {
         assertThatThrownBy(() -> Identifiers.requireValid("a\u0000b"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not a valid Java identifier: 'a\u0000b'");
-        assertThatThrownBy(() -> Identifiers.requireValid("a\u200db")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("ab\u00ad")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("\u0000a")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("a\u200db"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
+        assertThatThrownBy(() -> Identifiers.requireValid("ab\u00ad"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
+        assertThatThrownBy(() -> Identifiers.requireValid("\u0000a"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
     }
 
     @Test
@@ -36,8 +42,11 @@ class IdentifiersTest {
         assertThat(Identifiers.requireValid("\ud835\udcd0x")).isEqualTo("\ud835\udcd0x");
         assertThat(Identifiers.requireValid("x\ud835\udcd0")).isEqualTo("x\ud835\udcd0");
         assertThatThrownBy(() -> Identifiers.requireValid("x\ud83d\ude00"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("x\ud835")).isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
+        assertThatThrownBy(() -> Identifiers.requireValid("x\ud835"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
     }
 
     @Test
@@ -67,25 +76,39 @@ class IdentifiersTest {
 
     @Test
     void rejectsEmptyString() {
-        assertThatThrownBy(() -> Identifiers.requireValid("")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid(""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: ''");
     }
 
     @Test
     void rejectsLeadingDigit() {
-        assertThatThrownBy(() -> Identifiers.requireValid("1foo")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("1foo"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1foo'");
     }
 
     @Test
     void rejectsEmbeddedSpace() {
-        assertThatThrownBy(() -> Identifiers.requireValid("foo bar")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("foo bar"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'foo bar'");
     }
 
     @Test
     void rejectsReservedKeyword() {
-        assertThatThrownBy(() -> Identifiers.requireValid("class")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("this")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("true")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> Identifiers.requireValid("null")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Identifiers.requireValid("class"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'class'");
+        assertThatThrownBy(() -> Identifiers.requireValid("this"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
+        assertThatThrownBy(() -> Identifiers.requireValid("true"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
+        assertThatThrownBy(() -> Identifiers.requireValid("null"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier");
     }
 
     @Test

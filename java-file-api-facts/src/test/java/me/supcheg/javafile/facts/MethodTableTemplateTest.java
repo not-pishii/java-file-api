@@ -92,7 +92,9 @@ class MethodTableTemplateTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> Param.fixed(ConstantDescs.CD_void))
                 .withMessage("a parameter cannot be void");
-        assertThatIllegalArgumentException().isThrownBy(() -> Signature.of("not a name"));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Signature.of("not a name"))
+                .withMessageContaining("not a valid Java identifier: 'not a name'");
     }
 
     @Test

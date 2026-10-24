@@ -603,7 +603,9 @@ class GenericClassChecksTest {
                     "class me.supcheg.example.Probe cannot have the type parameter Probe",
                     "<Probe>",
                     "");
-            assertThatIllegalArgumentException().isThrownBy(() -> typeParam("not a name"));
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> typeParam("not a name"))
+                    .withMessageContaining("not a valid Java identifier");
         }
     }
 

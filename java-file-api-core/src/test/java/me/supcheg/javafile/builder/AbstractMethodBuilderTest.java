@@ -138,7 +138,8 @@ class AbstractMethodBuilderTest {
         // the model, mirroring ClassBuilder's withModifiers/withExactModifiers split.
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> new InterfaceBuilder(HOLDER)
                         .withAbstractMethod("c", PrimitiveTypeRef.INT, mb -> mb.withModifiers(Modifier.PROTECTED)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("abstract method cannot combine more than one access modifier");
     }
 
     @Test

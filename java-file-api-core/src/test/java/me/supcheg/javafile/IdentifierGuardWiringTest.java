@@ -77,7 +77,9 @@ class IdentifierGuardWiringTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("constructionSites")
     void rejectsInvalidIdentifierAtConstruction(String site, ThrowingCallable construction) {
-        assertThatThrownBy(construction).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(construction)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("1bad");
     }
 
     static Stream<Arguments> constructionSites() {

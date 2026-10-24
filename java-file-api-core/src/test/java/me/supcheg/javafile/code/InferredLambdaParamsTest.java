@@ -17,12 +17,14 @@ class InferredLambdaParamsTest {
     @Test
     void rejectsReservedKeywordAsName() {
         assertThatThrownBy(() -> new InferredLambdaParams(List.of("class")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[class] contains invalid Java identifier(s)");
     }
 
     @Test
     void rejectsLeadingDigitInName() {
         assertThatThrownBy(() -> new InferredLambdaParams(List.of("1foo")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[1foo] contains invalid Java identifier(s)");
     }
 }

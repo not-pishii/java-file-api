@@ -18,22 +18,38 @@ class DocModelTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new DocComment(List.of(), List.of()))
                 .withMessageContaining("a description or a tag");
-        assertThatIllegalArgumentException().isThrownBy(() -> DocComment.of(d -> {}));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocComment.of(""));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocComment.of(d -> {}))
+                .withMessageContaining("a documentation comment must have a description or a tag");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocComment.of(""))
+                .withMessageContaining("text must not be empty");
     }
 
     @Test
     void textAndCodeAreNotEmpty() {
-        assertThatIllegalArgumentException().isThrownBy(() -> new DocInline.Text(""));
-        assertThatIllegalArgumentException().isThrownBy(() -> new DocInline.Code(""));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocText.of(""));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocText.of(t -> {}));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocText.of(t -> t.code("")));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new DocInline.Text(""))
+                .withMessageContaining("text must not be empty");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new DocInline.Code(""))
+                .withMessageContaining("code must not be empty");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocText.of(""))
+                .withMessageContaining("text must not be empty");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocText.of(t -> {}))
+                .withMessageContaining("list must not be empty");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocText.of(t -> t.code("")))
+                .withMessageContaining("code must not be empty");
     }
 
     @Test
     void aListHasAnItem() {
-        assertThatIllegalArgumentException().isThrownBy(() -> DocComment.of(d -> d.list(List.of())));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocComment.of(d -> d.list(List.of())))
+                .withMessageContaining("list must not be empty");
     }
 
     @Test
@@ -41,17 +57,31 @@ class DocModelTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> DocRef.type(ConstantDescs.CD_int))
                 .withMessageContaining("int");
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.type(GREETER.arrayType()));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.field(ConstantDescs.CD_int, "x"));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.method(GREETER.arrayType(), "length"));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.constructor(ConstantDescs.CD_void));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.type(GREETER.arrayType()))
+                .withMessageContaining("not a class or an interface: Greeter[]");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.field(ConstantDescs.CD_int, "x"))
+                .withMessageContaining("not a class or an interface: int");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.method(GREETER.arrayType(), "length"))
+                .withMessageContaining("not a class or an interface: Greeter[]");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.constructor(ConstantDescs.CD_void))
+                .withMessageContaining("not a class or an interface: void");
     }
 
     @Test
     void aReferenceNamesAMemberByAnIdentifier() {
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.field(GREETER, "not a name"));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.method(GREETER, "class"));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.method(GREETER, "m(int)"));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.field(GREETER, "not a name"))
+                .withMessageContaining("not a valid Java identifier: 'not a name'");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.method(GREETER, "class"))
+                .withMessageContaining("not a valid Java identifier: 'class'");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.method(GREETER, "m(int)"))
+                .withMessageContaining("not a valid Java identifier: 'm(int)'");
     }
 
     @Test
@@ -59,18 +89,30 @@ class DocModelTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> DocRef.method(GREETER, "greet", ConstantDescs.CD_void))
                 .withMessageContaining("void");
-        assertThatIllegalArgumentException().isThrownBy(() -> DocRef.constructor(GREETER, ConstantDescs.CD_void));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocRef.constructor(GREETER, ConstantDescs.CD_void))
+                .withMessageContaining("void is not the type of a parameter");
     }
 
     @Test
     void aTagNamesAParameterByAnIdentifierAndAnExceptionByItsClass() {
         DocText text = DocText.of("text");
 
-        assertThatIllegalArgumentException().isThrownBy(() -> new DocTag.Param("a b", text));
-        assertThatIllegalArgumentException().isThrownBy(() -> new DocTag.TypeParam("<T>", text));
-        assertThatIllegalArgumentException().isThrownBy(() -> new DocTag.Throws(ConstantDescs.CD_int, text));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocComment.of(d -> d.param("", "text")));
-        assertThatIllegalArgumentException().isThrownBy(() -> DocComment.of(d -> d.returns("")));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new DocTag.Param("a b", text))
+                .withMessageContaining("not a valid Java identifier: 'a b'");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new DocTag.TypeParam("<T>", text))
+                .withMessageContaining("not a valid Java identifier: '<T>'");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new DocTag.Throws(ConstantDescs.CD_int, text))
+                .withMessageContaining("not a class: int");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocComment.of(d -> d.param("", "text")))
+                .withMessageContaining("not a valid Java identifier: ''");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> DocComment.of(d -> d.returns("")))
+                .withMessageContaining("text must not be empty");
     }
 
     @Test

@@ -42,7 +42,8 @@ class SealedModelTest {
                         CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1create'");
     }
 
     @Test
@@ -70,7 +71,8 @@ class SealedModelTest {
                         CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'class'");
     }
 
     @Test

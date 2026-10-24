@@ -62,7 +62,8 @@ class CanonicalConstructorDeclTest {
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("canonical constructor parameter 0 must be 'INT x' but was 'INT wrongName'");
     }
 
     @Test
@@ -150,6 +151,7 @@ class CanonicalConstructorDeclTest {
 
         assertThatThrownBy(() -> me.supcheg.javafile.render.StandardRenderer.instance()
                         .render(new JavaFile.Meta(PackageName.of("geom"), decl), standardFormat()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("canonical constructor parameter 0 must be");
     }
 }

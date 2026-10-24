@@ -341,7 +341,8 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
                 .withMessageContaining("ON; OFF; DIM");
         // the facts of the enum are those of the target or none, whether the switch leans on its constants or not
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
-                .isThrownBy(() -> render(target, token, withDefault));
+                .isThrownBy(() -> render(target, token, withDefault))
+                .withMessageContaining("does not match");
     }
 
     @Test

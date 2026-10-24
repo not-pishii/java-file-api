@@ -157,9 +157,11 @@ class ModelTest {
         SkippedMember skipped = new SkippedMember("field y", "why");
 
         assertThatThrownBy(() -> type(desc, MemberFilter.NONE, List.of(field), List.of()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("a model without members has members");
         assertThatThrownBy(() -> type(desc, MemberFilter.NONE, List.of(), List.of(skipped)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("a model without members");
         assertThat(type(desc, MemberFilter.DECLARED_ACCESSIBLE, List.of(field), List.of(skipped))
                         .members())
                 .containsExactly(field);
@@ -204,7 +206,8 @@ class ModelTest {
                         List.of(),
                         Overridability.FINAL,
                         Access.PUBLIC))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'not a name'");
         assertThatThrownBy(() -> new MethodModel(
                         "m",
                         false,

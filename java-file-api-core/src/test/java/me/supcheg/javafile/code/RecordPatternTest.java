@@ -18,13 +18,15 @@ class RecordPatternTest {
     void recordPatternRejectsUnboundComponent() {
         assertThatThrownBy(() -> new RecordPattern(
                         Types.of(POINT), List.of(new TypePattern(PrimitiveTypeRef.INT, Optional.empty()))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("record pattern component must bind a name");
     }
 
     @Test
     void patternLabelRejectsUnboundTypePattern() {
         assertThatThrownBy(() ->
                         new PatternLabel(new TypePattern(PrimitiveTypeRef.INT, Optional.empty()), Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("switch pattern label must bind a name");
     }
 }

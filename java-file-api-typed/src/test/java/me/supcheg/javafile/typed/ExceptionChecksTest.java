@@ -122,7 +122,8 @@ class ExceptionChecksTest {
                         b.exec(read());
                         reached.set("the statement after");
                         return b.return_(literal(0));
-                    }));
+                    }))
+                    .withMessageContaining("can throw the checked exception java.io.IOException");
 
             assertThat(reached).hasValue("the statement before");
         }

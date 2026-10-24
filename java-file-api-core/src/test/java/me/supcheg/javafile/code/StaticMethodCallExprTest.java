@@ -27,6 +27,7 @@ class StaticMethodCallExprTest {
     @Test
     void rejectsAnInvalidMethodName() {
         assertThatThrownBy(() -> new StaticMethodCallExpr(mathType, "1bad", List.of()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1bad'");
     }
 }

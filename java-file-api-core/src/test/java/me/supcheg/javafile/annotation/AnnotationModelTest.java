@@ -77,13 +77,15 @@ class AnnotationModelTest {
     @Test
     void memberRejectsReservedKeywordAsName() {
         assertThatThrownBy(() -> new AnnotationMember("class", AnnotationValues.literal(1)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'class'");
     }
 
     @Test
     void memberRejectsLeadingDigitInName() {
         assertThatThrownBy(() -> new AnnotationMember("1value", AnnotationValues.literal(1)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1value'");
     }
 
     @Test
@@ -93,11 +95,15 @@ class AnnotationModelTest {
 
     @Test
     void enumValueRejectsReservedKeywordAsConstantName() {
-        assertThatThrownBy(() -> new EnumValue(LEVEL, "class")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new EnumValue(LEVEL, "class"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: 'class'");
     }
 
     @Test
     void enumValueRejectsLeadingDigitInConstantName() {
-        assertThatThrownBy(() -> new EnumValue(LEVEL, "1HIGH")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new EnumValue(LEVEL, "1HIGH"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not a valid Java identifier: '1HIGH'");
     }
 }

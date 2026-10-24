@@ -170,7 +170,8 @@ class SwitchChecksTest {
                         reached.set("the first case");
                         c.case_(Signal_.RED, literal(2));
                         reached.set("the second case");
-                    }))));
+                    }))))
+                    .withMessageContaining("the constant RED has a case already");
 
             assertThat(reached).hasValue("the first case");
         }
@@ -208,7 +209,8 @@ class SwitchChecksTest {
                         Expr<Prim.Int> made = intSwitch(s, c -> c.case_(Signal_.RED, literal(1)));
                         reached.set("the switch");
                         return b.return_(made);
-                    }));
+                    }))
+                    .withMessageContaining("is not exhaustive");
 
             assertThat(reached).hasValue("the body");
         }

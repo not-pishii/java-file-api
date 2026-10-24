@@ -492,14 +492,17 @@ class CodeBuilderTest {
     @Test
     void labeledThrowsWhenSpecAppendsZeroOrMoreThanOneStatement() {
         CodeBuilder cb1 = new CodeBuilder();
-        assertThatThrownBy(() -> cb1.labeled("outer", b -> {})).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> cb1.labeled("outer", b -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("labeled statement must wrap exactly one statement, got 0");
 
         CodeBuilder cb2 = new CodeBuilder();
         assertThatThrownBy(() -> cb2.labeled("outer", b -> {
                     b.break_();
                     b.continue_();
                 }))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("labeled statement must wrap exactly one statement, got 2");
     }
 
     @Test
@@ -595,7 +598,9 @@ class CodeBuilderTest {
     void tryWithNeitherCatchNorFinallyThrows() {
         CodeBuilder cb2 = new CodeBuilder();
 
-        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> {})).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("try requires at least one catch clause or a finally block");
     }
 
     @Test
@@ -603,6 +608,7 @@ class CodeBuilderTest {
         CodeBuilder cb2 = new CodeBuilder();
 
         assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> tb.catch_(List.of(), "e", b -> {})))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("list must not be empty");
     }
 }

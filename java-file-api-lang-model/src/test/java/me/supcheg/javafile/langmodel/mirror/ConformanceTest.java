@@ -667,7 +667,9 @@ class ConformanceTest {
     void aTypeIsComparedWithItsMembers() {
         TypeModel tokenOnly = Harness.run(env -> Harness.ok(env.tokenOnly("p.T")), T);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> Conformance.of("0".repeat(64), () -> "", tokenOnly));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Conformance.of("0".repeat(64), () -> "", tokenOnly))
+                .withMessageContaining("a type is compared with its members, got a model without");
     }
 
     @Test

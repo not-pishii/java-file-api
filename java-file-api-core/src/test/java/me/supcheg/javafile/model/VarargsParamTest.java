@@ -32,7 +32,8 @@ class VarargsParamTest {
                         me.supcheg.javafile.code.CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("only the last parameter may be varargs: rest");
     }
 
     @Test
@@ -49,7 +50,8 @@ class VarargsParamTest {
                         me.supcheg.javafile.code.CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("only the last parameter may be varargs: rest");
     }
 
     @Test
@@ -66,7 +68,8 @@ class VarargsParamTest {
                         me.supcheg.javafile.code.CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("only the last parameter may be varargs: rest");
     }
 
     @Test
@@ -80,7 +83,8 @@ class VarargsParamTest {
                         me.supcheg.javafile.code.CodeBody.EMPTY,
                         List.of(),
                         Optional.empty()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("only the last parameter may be varargs: rest");
     }
 
     @Test

@@ -977,7 +977,8 @@ class MirrorTranslatorTypeTest {
                             .findFirst()
                             .orElseThrow();
                     assertThatThrownBy(() -> env.translator().member(type, nested))
-                            .isInstanceOf(IllegalArgumentException.class);
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessageContaining("Not a field, constructor or method: p.M.N");
                     return 0;
                 },
                 "package p; public class M { public static class N {} }");
