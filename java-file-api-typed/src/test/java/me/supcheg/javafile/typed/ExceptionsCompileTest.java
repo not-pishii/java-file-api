@@ -95,7 +95,7 @@ class ExceptionsCompileTest {
         // static int rethrown(String s) throws IOException {
         //     try { return new StringReader(s).read(); } catch (IOException e) { throw e; } finally { s.length(); }
         // }
-        var member7 =
+        var rethrownMethod =
                 cb.throwing(IOException_.TOKEN).declareStaticMethod("rethrown", PrimitiveToken.INT, String_.TOKEN);
 
         // static int wrapped(String s) throws Exception {
@@ -180,7 +180,7 @@ class ExceptionsCompileTest {
                                 t -> t.if_(missing, x -> x.throw_(new_(FileNotFoundException_.new_)))
                                         .throw_(new_(IOException_.new_)))));
         bodies.define(
-                member7,
+                rethrownMethod,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
                                 .finally_(f -> f.exec(call(s, String_.length))),

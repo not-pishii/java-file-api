@@ -83,10 +83,10 @@ class InheritedNamesTest {
             public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 var cb = h.extendsObject().members();
                 var constructor = cb.declareConstructor();
-                var field3 = cb.declareField("Op", PrimitiveToken.INT);
+                var fieldOp = cb.declareField("Op", PrimitiveToken.INT);
                 var which = cb.declareMethod("which", Op_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.initialize(field3, literal(1));
+                bodies.initialize(fieldOp, literal(1));
                 bodies.define(constructor, (b, self) -> b.end());
                 bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                 return bodies;
@@ -108,10 +108,10 @@ class InheritedNamesTest {
                         var sh = h.extends_(Rooted_.extend(h.self()));
                         var cb = sh.members();
                         var constructor = cb.declareConstructor();
-                        var field5 = cb.declareField("Op", PrimitiveToken.INT);
+                        var fieldOp = cb.declareField("Op", PrimitiveToken.INT);
                         var which = cb.declareMethod("which", Op_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Rooted_.new_, (b, self) -> b.end()));
-                        bodies.initialize(field5, literal(1));
+                        bodies.initialize(fieldOp, literal(1));
                         bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                         return bodies;
                     }
@@ -131,11 +131,11 @@ class InheritedNamesTest {
                     @Override
                     public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var cb = h.extendsObject().members();
-                        var field6 = cb.declareField("Op", PrimitiveToken.INT);
+                        var fieldOp = cb.declareField("Op", PrimitiveToken.INT);
                         var me = cb.declareField("me", PrimitiveToken.INT);
                         var which = cb.declareMethod("which", Op_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.initialize(field6, literal(1));
+                        bodies.initialize(fieldOp, literal(1));
                         bodies.initialize(me, literal(2));
                         bodies.define(which, (b, self) -> b.return_(enumConstant(Op_.SUB)));
                         return bodies;

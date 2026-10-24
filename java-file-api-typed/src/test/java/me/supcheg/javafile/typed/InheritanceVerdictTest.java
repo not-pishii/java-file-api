@@ -384,8 +384,8 @@ class InheritanceVerdictTest {
                 public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = extendsBase(h);
                     Upcast<Self, Local> asLocal = sh.implements_(Local_.implement(h.self()));
-                    var sh109 = sh;
-                    var cb = sh109.members();
+                    var extended = sh;
+                    var cb = extended.members();
                     var constructor = cb.declareConstructor();
                     var local = cb.declareOverride(asLocal, Local_.local);
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
@@ -501,12 +501,12 @@ class InheritanceVerdictTest {
                         public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = extendsBase(h);
                             Upcast<Self, Sealing> asSealing = sh.implements_(Sealing_.implement(h.self()));
-                            var sh122 = sh;
-                            var cb = sh122.members();
+                            var extended = sh;
+                            var cb = extended.members();
                             var constructor = cb.declareConstructor();
-                            var own125 = cb.declareOverride(asSealing, Sealing_.sealed);
+                            var sealedOverride = cb.declareOverride(asSealing, Sealing_.sealed);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            bodies.define(own125, (b, _) -> b.return_(literal("")));
+                            bodies.define(sealedOverride, (b, _) -> b.return_(literal("")));
                             return bodies;
                         }
                     }))

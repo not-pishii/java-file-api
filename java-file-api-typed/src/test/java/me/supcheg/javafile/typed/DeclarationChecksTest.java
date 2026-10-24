@@ -148,10 +148,10 @@ class DeclarationChecksTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
                         var x = cb.declareField("x", PrimitiveToken.INT);
-                        var field2 = cb.declareMutableField("x", String_.TOKEN);
+                        var fieldX = cb.declareMutableField("x", String_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.initialize(x, literal(1));
-                        bodies.initialize(field2, literal("x"));
+                        bodies.initialize(fieldX, literal("x"));
                         return bodies;
                     }))
                     .withMessageContaining("field x of class me.supcheg.example.Probe is already declared");
@@ -227,10 +227,10 @@ class DeclarationChecksTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> declare(cb -> {
                         var toString = cb.declareOverride(Object_.toString);
-                        var own5 = cb.declareOverride(Object_.toString);
+                        var toStringOverride = cb.declareOverride(Object_.toString);
                         var bodies = cb.bodies();
                         bodies.define(toString, (b, _) -> b.return_(literal("a")));
-                        bodies.define(own5, (b, _) -> b.return_(literal("b")));
+                        bodies.define(toStringOverride, (b, _) -> b.return_(literal("b")));
                         return bodies;
                     }))
                     .withMessageContaining(
@@ -299,13 +299,13 @@ class DeclarationChecksTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> declare(cb -> {
                         var a = cb.declareVoidMethod("a");
-                        var own12 = cb.declareMethod("b", String_.TOKEN);
+                        var methodB = cb.declareMethod("b", String_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(a, (b, self) -> {
                             stash.set(self);
                             return b.end();
                         });
-                        bodies.define(own12, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                        bodies.define(methodB, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
                         return bodies;
                     }))
                     .withMessageContaining("the this of the body of method a is used in the body of method b, which is"
@@ -334,9 +334,9 @@ class DeclarationChecksTest {
                             new TypedJavaFile.TypedClassSpec() {
                                 @Override
                                 public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
-                                    var member5 = cb.declareMethod("b", String_.TOKEN);
+                                    var methodB = cb.declareMethod("b", String_.TOKEN);
                                     var bodies = cb.bodies();
-                                    bodies.define(member5, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                                    bodies.define(methodB, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
                                     return bodies;
                                 }
                             }))

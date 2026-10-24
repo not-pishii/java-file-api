@@ -210,10 +210,10 @@ class ExceptionChecksTest {
         void aDeclaredSubclassDoesNotCoverTheException() {
             asJavac(
                     () -> declare(cb -> {
-                        var own5 =
+                        var methodM =
                                 cb.throwing(FileNotFoundException_.TOKEN).declareStaticMethod("m", PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(own5, b -> b.return_(read()));
+                        bodies.define(methodM, b -> b.return_(read()));
                         return bodies;
                     }),
                     "does not declare (declared: java.io.FileNotFoundException)",

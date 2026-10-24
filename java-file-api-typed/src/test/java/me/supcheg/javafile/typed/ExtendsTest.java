@@ -210,7 +210,7 @@ class ExtendsTest {
                 public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var sh = h.extends_(Base_.extend(h.self()));
                     var cb = sh.members();
-                    var ctor5 = cb.declareConstructor();
+                    var noArgConstructor = cb.declareConstructor();
                     var constructor = cb.declareConstructor(String_.TOKEN);
                     Upcast<Self, Base> asBase = cb.asSuper();
                     var hook = cb.protected_(Base_.hook_String);
@@ -223,7 +223,7 @@ class ExtendsTest {
                     var viaOwn = cb.declareMethod("viaOwn", String_.TOKEN);
                     var counted = cb.declareMethod("counted", PrimitiveToken.INT);
                     var saying = cb.declareMethod("saying", String_.TOKEN);
-                    var bodies = cb.bodies(ctor5, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                    var bodies = cb.bodies(noArgConstructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                     bodies.define(
                             own, (b, self, s) -> b.return_(concat(bodies.superCall(self, hook, s), literal("+"))));
                     bodies.define(
@@ -303,11 +303,11 @@ class ExtendsTest {
                 public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                     var cb = h.extendsObject().members();
                     var clone = cb.protected_(Object_.clone);
-                    var own7 = cb.throwing(
+                    var cloneOverride = cb.throwing(
                                     me.supcheg.javafile.typed.testfacts.java.lang.CloneNotSupportedException_.TOKEN)
                             .declareOverride(clone);
                     var bodies = cb.bodies();
-                    bodies.define(own7, (b, self) -> b.return_(bodies.superCall(self, clone)));
+                    bodies.define(cloneOverride, (b, self) -> b.return_(bodies.superCall(self, clone)));
                     return bodies;
                 }
             }));
@@ -461,9 +461,9 @@ class ExtendsTest {
                             var sh = h.extends_(Base_.extend(h.self()));
                             var cb = sh.members();
                             var constructor = cb.declareConstructor();
-                            var own11 = cb.declareOverride(Base_.sealed);
+                            var sealedOverride = cb.declareOverride(Base_.sealed);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            bodies.define(own11, (b, self) -> b.return_(literal("x")));
+                            bodies.define(sealedOverride, (b, self) -> b.return_(literal("x")));
                             return bodies;
                         }
                     }),
@@ -626,9 +626,10 @@ class ExtendsTest {
                         public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                             var sh = h.extends_(Base_.extend(h.self()));
                             var cb = sh.members();
-                            var ctor19 = cb.declareConstructor();
+                            var noArgConstructor = cb.declareConstructor();
                             var constructor = cb.declareConstructor();
-                            var bodies = cb.bodies(ctor19, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                            var bodies =
+                                    cb.bodies(noArgConstructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             bodies.define(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             return bodies;
                         }

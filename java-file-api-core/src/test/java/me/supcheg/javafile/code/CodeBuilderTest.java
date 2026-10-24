@@ -86,13 +86,13 @@ class CodeBuilderTest {
 
     @Test
     void twoArgAssignIsASynonymForAssignOpAssign() {
-        CodeBuilder cb1 = new CodeBuilder();
-        cb1.assign(field("x"), literal(1));
+        CodeBuilder twoArgs = new CodeBuilder();
+        twoArgs.assign(field("x"), literal(1));
 
-        CodeBuilder cb2 = new CodeBuilder();
-        cb2.assign(field("x"), AssignOp.ASSIGN, literal(1));
+        CodeBuilder withOp = new CodeBuilder();
+        withOp.assign(field("x"), AssignOp.ASSIGN, literal(1));
 
-        assertThat(cb1.build()).isEqualTo(cb2.build());
+        assertThat(twoArgs.build()).isEqualTo(withOp.build());
     }
 
     @Test
@@ -491,13 +491,13 @@ class CodeBuilderTest {
 
     @Test
     void labeledThrowsWhenSpecAppendsZeroOrMoreThanOneStatement() {
-        CodeBuilder cb1 = new CodeBuilder();
-        assertThatThrownBy(() -> cb1.labeled("outer", b -> {}))
+        CodeBuilder appendingNone = new CodeBuilder();
+        assertThatThrownBy(() -> appendingNone.labeled("outer", b -> {}))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("labeled statement must wrap exactly one statement, got 0");
 
-        CodeBuilder cb2 = new CodeBuilder();
-        assertThatThrownBy(() -> cb2.labeled("outer", b -> {
+        CodeBuilder appendingTwo = new CodeBuilder();
+        assertThatThrownBy(() -> appendingTwo.labeled("outer", b -> {
                     b.break_();
                     b.continue_();
                 }))
@@ -508,16 +508,16 @@ class CodeBuilderTest {
     @Test
     void tryWithSingleCatchProducesCatchOnlyTryStmt() {
         ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        cb2.try_(
+        cb.try_(
                 b -> b.exprStatement(call("risky")),
                 tb -> tb.catch_(
                         List.of(ioException),
                         "e",
                         b -> b.exprStatement(field("e").call("printStackTrace"))));
 
-        assertThat(cb2.build().statements())
+        assertThat(cb.build().statements())
                 .containsExactly(new TryStmt.CatchOnly(
                         List.of(),
                         new CodeBody(List.of(new ExprStmt(new MethodCallExpr(Optional.empty(), "risky", List.of())))),
@@ -534,21 +534,21 @@ class CodeBuilderTest {
     void tryWithMultiCatchAccumulatesAllExceptionTypes() {
         ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
         ClassOrInterfaceTypeRef sqlException = Types.of(ClassDesc.of("java.sql", "SQLException"));
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        cb2.try_(b -> {}, tb -> tb.catch_(List.of(ioException, sqlException), "e", b -> {}));
+        cb.try_(b -> {}, tb -> tb.catch_(List.of(ioException, sqlException), "e", b -> {}));
 
-        TryStmt.CatchOnly stmt = (TryStmt.CatchOnly) cb2.build().statements().get(0);
+        TryStmt.CatchOnly stmt = (TryStmt.CatchOnly) cb.build().statements().get(0);
         assertThat(stmt.catches().head().exceptionTypes().toList()).containsExactly(ioException, sqlException);
     }
 
     @Test
     void tryWithFinallyAndNoCatchProducesWithFinallyWithEmptyCatches() {
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        cb2.try_(b -> {}, tb -> tb.finally_(b -> b.exprStatement(call("cleanup"))));
+        cb.try_(b -> {}, tb -> tb.finally_(b -> b.exprStatement(call("cleanup"))));
 
-        assertThat(cb2.build().statements())
+        assertThat(cb.build().statements())
                 .containsExactly(new TryStmt.WithFinally(
                         List.of(),
                         CodeBody.EMPTY,
@@ -560,29 +560,27 @@ class CodeBuilderTest {
     @Test
     void tryWithCatchAndFinallyProducesWithFinallyWithNonEmptyCatches() {
         ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        cb2.try_(b -> {}, tb -> tb.catch_(List.of(ioException), "e", b -> {}).finally_(b -> {}));
+        cb.try_(b -> {}, tb -> tb.catch_(List.of(ioException), "e", b -> {}).finally_(b -> {}));
 
-        TryStmt.WithFinally stmt =
-                (TryStmt.WithFinally) cb2.build().statements().get(0);
+        TryStmt.WithFinally stmt = (TryStmt.WithFinally) cb.build().statements().get(0);
         assertThat(stmt.catches()).hasSize(1);
         assertThat(stmt.finallyBody()).isEqualTo(CodeBody.EMPTY);
     }
 
     @Test
     void tryWithResourcesAcceptsDeclaredInferredAndExistingForms() {
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        cb2.try_(
+        cb.try_(
                 b -> {},
                 tb -> tb.resource_("r1", Types.of(ClassDesc.of("java.io", "Reader")), call("openReader"))
                         .resource_("r2", call("openWriter"))
                         .resource_("r3")
                         .finally_(b -> {}));
 
-        TryStmt.WithFinally stmt =
-                (TryStmt.WithFinally) cb2.build().statements().get(0);
+        TryStmt.WithFinally stmt = (TryStmt.WithFinally) cb.build().statements().get(0);
         assertThat(stmt.resources())
                 .containsExactly(
                         new Resource.Declared(
@@ -596,18 +594,18 @@ class CodeBuilderTest {
 
     @Test
     void tryWithNeitherCatchNorFinallyThrows() {
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> {}))
+        assertThatThrownBy(() -> cb.try_(b -> {}, tb -> {}))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("try requires at least one catch clause or a finally block");
     }
 
     @Test
     void tryWithCatchOfEmptyExceptionTypesThrows() {
-        CodeBuilder cb2 = new CodeBuilder();
+        CodeBuilder cb = new CodeBuilder();
 
-        assertThatThrownBy(() -> cb2.try_(b -> {}, tb -> tb.catch_(List.of(), "e", b -> {})))
+        assertThatThrownBy(() -> cb.try_(b -> {}, tb -> tb.catch_(List.of(), "e", b -> {})))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("list must not be empty");
     }

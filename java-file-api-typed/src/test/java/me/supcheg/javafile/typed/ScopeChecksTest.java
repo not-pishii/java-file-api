@@ -104,13 +104,13 @@ class ScopeChecksTest {
                                 @Override
                                 public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var a = cb.declareMethod("a", PrimitiveToken.INT, PrimitiveToken.INT);
-                                    var member3 = cb.declareMethod("b", PrimitiveToken.INT);
+                                    var methodB = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
                                     bodies.define(a, (b, _, p) -> {
                                         host.add(p);
                                         return b.return_(p);
                                     });
-                                    bodies.define(member3, (b, _) -> b.return_(host.getFirst()));
+                                    bodies.define(methodB, (b, _) -> b.return_(host.getFirst()));
                                     return bodies;
                                 }
                             }))
@@ -471,13 +471,13 @@ class ScopeChecksTest {
                                 @Override
                                 public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var a = cb.declareMethod("a", PrimitiveToken.INT);
-                                    var member6 = cb.declareMethod("b", PrimitiveToken.INT);
+                                    var methodB = cb.declareMethod("b", PrimitiveToken.INT);
                                     var bodies = cb.bodies();
                                     bodies.define(a, (b, _) -> {
                                         other.set(b.return_(literal(1)));
                                         return other.get();
                                     });
-                                    bodies.define(member6, (_, _) -> other.get());
+                                    bodies.define(methodB, (_, _) -> other.get());
                                     return bodies;
                                 }
                             }))

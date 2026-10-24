@@ -220,7 +220,7 @@ class UpcastLoweringTest {
                         // javac would resolve this.pick("x") to the override of pick(String), or to the
                         // overload the class adds: the fact names pick(Object) of Base
                         var pick = cb.declareOverride(Base_.pick_String);
-                        var member13 = cb.declareMethod(
+                        var pickMethod = cb.declareMethod(
                                 "pick",
                                 String_.TOKEN,
                                 me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_.TOKEN);
@@ -228,7 +228,7 @@ class UpcastLoweringTest {
                         var pickedBySuper = cb.declareMethod("pickedBySuper", String_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.define(pick, (b, self, s) -> b.return_(literal("override")));
-                        bodies.define(member13, (b, self, s) -> b.return_(literal("overload")));
+                        bodies.define(pickMethod, (b, self, s) -> b.return_(literal("overload")));
                         bodies.define(
                                 picked,
                                 (b, self) -> b.return_(call(asBase.apply(self), Base_.pick_Object, literal("x"))));

@@ -105,7 +105,7 @@ class PrimitivesTest {
                     @Override
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var sameAsObjects = cb.declareStaticMethod("sameAsObjects", PrimitiveToken.BOOLEAN);
-                        var member2 = cb.declareStaticMethod("boxed", Integer_.TOKEN);
+                        var boxedMethod = cb.declareStaticMethod("boxed", Integer_.TOKEN);
                         var unboxed = cb.declareStaticMethod("unboxed", PrimitiveToken.INT, Integer_.TOKEN);
                         var intArray = cb.declareStaticMethod("intArray", PrimitiveToken.INT);
                         var stringArray = cb.declareStaticMethod("stringArray", PrimitiveToken.INT);
@@ -118,7 +118,7 @@ class PrimitivesTest {
                                         Objects_.equals_Object_Object,
                                         box(PrimitiveToken.INT, literal(1)),
                                         box(PrimitiveToken.LONG, literal(1L)))));
-                        bodies.define(member2, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
+                        bodies.define(boxedMethod, b -> b.return_(box(PrimitiveToken.INT, literal(1))));
                         bodies.define(unboxed, (b, boxed) -> b.return_(unbox(PrimitiveToken.INT, boxed)));
                         bodies.define(
                                 intArray,

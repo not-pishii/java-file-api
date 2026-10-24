@@ -183,11 +183,11 @@ class SuperTwinsTest {
                     public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                         var twins = overriding(h);
                         var cb = twins.cb();
-                        var member6 = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
+                        var methodG = cb.declareMethod("g", String_.TOKEN, String_.TOKEN);
                         var g = cb.protected_(BASE.g_U(String_.TOKEN));
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = twins.bodies();
-                        bodies.define(member6, (b, self, v) -> b.return_(literal("own")));
+                        bodies.define(methodG, (b, self, v) -> b.return_(literal("own")));
                         bodies.define(
                                 f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
                         return bodies;

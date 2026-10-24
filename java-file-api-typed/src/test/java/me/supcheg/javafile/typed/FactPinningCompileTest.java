@@ -277,10 +277,10 @@ class FactPinningCompileTest {
                 // Sub overrides `Base self()` with `Sub self()`: unpinned, javac would pick which2(Sub)
                 var which2 = cb.declareStaticMethod("which2", String_.TOKEN, SUB);
                 // where the type does not matter, nothing is cast
-                var member19 = cb.declareStaticMethod("self", BASE, SUB);
+                var selfMethod = cb.declareStaticMethod("self", BASE, SUB);
                 var bodies = cb.bodies();
                 bodies.define(which2, (b, s) -> b.return_(staticCall(WHICH2_BASE, call(s, SELF))));
-                bodies.define(member19, (b, s) -> b.return_(call(s, SELF)));
+                bodies.define(selfMethod, (b, s) -> b.return_(call(s, SELF)));
                 return bodies;
             }
         });
@@ -417,7 +417,7 @@ class FactPinningCompileTest {
                 var receiver = cb.declareStaticMethod("receiver", PrimitiveToken.INT);
                 var wider = cb.declareStaticMethod("wider", PrimitiveToken.INT);
                 var object = cb.declareStaticMethod("object", Object_.TOKEN);
-                var member40 = cb.declareMethod("items", arrayList.token);
+                var itemsMethod = cb.declareMethod("items", arrayList.token);
                 var bodies = cb.bodies();
                 bodies.initialize(items, new_(arrayList.new_));
                 bodies.define(
@@ -429,7 +429,7 @@ class FactPinningCompileTest {
                 bodies.define(
                         wider, b -> b.let(strings.token, new_(arrayList.new_), v -> b.return_(call(v, strings.size))));
                 bodies.define(object, b -> b.return_(new_(Object_.new_)));
-                bodies.define(member40, (b, self) -> b.return_(field(self, items)));
+                bodies.define(itemsMethod, (b, self) -> b.return_(field(self, items)));
                 return bodies;
             }
         });
@@ -583,14 +583,14 @@ class FactPinningCompileTest {
             @Override
             public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 // "a".equals(Boolean.valueOf(true)): a call is never a constant
-                var member50 = cb.declareStaticMethod("call", PrimitiveToken.INT);
+                var callMethod = cb.declareStaticMethod("call", PrimitiveToken.INT);
                 // a conditional cast to CharSequence is not a constant expression (JLS 15.29)
                 var charSequence = cb.declareStaticMethod("charSequence", PrimitiveToken.INT);
                 // (String) null is not a constant either
                 var nulls = cb.declareStaticMethod("nulls", PrimitiveToken.INT);
                 var bodies = cb.bodies();
                 bodies.define(
-                        member50,
+                        callMethod,
                         b -> b.while_(
                                         call(
                                                 literal("a"),

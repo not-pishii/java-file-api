@@ -52,7 +52,7 @@ class GenericClassTest {
                 var put = cb.declareVoidMethod("put", t);
                 var get = cb.declareMethod("get", t);
                 // the class is made in its own body with its type parameter for the type argument
-                var member1 = cb.declareMethod("copy", cb.self());
+                var copyMethod = cb.declareMethod("copy", cb.self());
                 var bodies = cb.bodies();
                 bodies.initialize(item, literalNull(t));
                 bodies.define(ctor, (b, self) -> b.end());
@@ -62,7 +62,7 @@ class GenericClassTest {
                                 b.exec(assignField(self, item, value)).end());
                 bodies.define(get, (b, self) -> b.return_(field(self, item)));
                 bodies.define(
-                        member1,
+                        copyMethod,
                         (b, self) -> b.let(
                                 cb.self(),
                                 new_(ctor),
@@ -210,14 +210,14 @@ class GenericClassTest {
                 var compare = cb.declareMethod("compare", PrimitiveToken.INT, t, t);
                 // the erasure of T is that of its leftmost bound, Object: the two methods are two to javac too
                 var show = cb.declareMethod("show", String_.TOKEN, t);
-                var member9 = cb.declareMethod("show", String_.TOKEN, new Comparable_<>(String_.TOKEN).token);
+                var showMethod = cb.declareMethod("show", String_.TOKEN, new Comparable_<>(String_.TOKEN).token);
                 var bodies = cb.bodies();
                 bodies.define(
                         compare,
                         (b, self, one, other) ->
                                 b.return_(call(asComparable.apply(one), comparable.compareTo_T, other)));
                 bodies.define(show, (b, self, one) -> b.return_(literal("T")));
-                bodies.define(member9, (b, self, one) -> b.return_(literal("Comparable")));
+                bodies.define(showMethod, (b, self, one) -> b.return_(literal("Comparable")));
                 return bodies;
             }
         }));

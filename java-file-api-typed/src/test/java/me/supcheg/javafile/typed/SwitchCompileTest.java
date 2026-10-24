@@ -179,7 +179,7 @@ class SwitchCompileTest {
 
         // public final String initial = switch (Signal.valueOf("RED")) { case RED -> { yield "r"; } default -> "?"; };
         var initial = cb.declareField("initial", String_.TOKEN);
-        var member12 = cb.declareMethod("initial", String_.TOKEN);
+        var initialMethod = cb.declareMethod("initial", String_.TOKEN);
         return bodies -> {
             bodies.initialize(
                     initial,
@@ -243,7 +243,7 @@ class SwitchCompileTest {
                             STRINGS.token,
                             c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
                                     .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
-            bodies.define(member12, (b, self) -> b.return_(Expressions.field(self, initial)));
+            bodies.define(initialMethod, (b, self) -> b.return_(Expressions.field(self, initial)));
         };
     }
 
@@ -256,7 +256,7 @@ class SwitchCompileTest {
         var looped = cb.declareStaticMethod("looped", PrimitiveToken.INT, Signal_.TOKEN);
 
         // a checked exception of a block is one of the method the switch is in
-        var member15 =
+        var readingMethod =
                 cb.throwing(IOException_.TOKEN).declareStaticMethod("reading", PrimitiveToken.INT, Signal_.TOKEN);
 
         // ... or of a try in the block, or around the switch
@@ -303,7 +303,7 @@ class SwitchCompileTest {
                                             t -> t.yield_(literal(-1)),
                                             e -> e.yield_(literal(-2)))))));
             bodies.define(
-                    member15,
+                    readingMethod,
                     (b, s) -> b.return_(switch_(
                             Signal_.TOKEN,
                             s,
@@ -342,7 +342,7 @@ class SwitchCompileTest {
     /// keywords, an enum without a constant.
     private static <Self> Consumer<TypedClassBodies<Self>> enums(TypedClassBuilder<Self> cb) {
         var named = cb.declareStaticMethod("named", String_.TOKEN, Op_.TOKEN);
-        var member18 = cb.declareStaticMethod("rank", PrimitiveToken.INT, Outer_Level_.TOKEN);
+        var rankMethod = cb.declareStaticMethod("rank", PrimitiveToken.INT, Outer_Level_.TOKEN);
         var word = cb.declareStaticMethod("word", String_.TOKEN, Words_.TOKEN);
         var ofNothing = cb.declareStaticMethod("ofNothing", String_.TOKEN, Nothing_.TOKEN);
         return bodies -> {
@@ -354,7 +354,7 @@ class SwitchCompileTest {
                             String_.TOKEN,
                             c -> c.case_(Op_.ADD, literal("add")).case_(Op_.SUB, literal("sub")))));
             bodies.define(
-                    member18,
+                    rankMethod,
                     (b, level) -> b.return_(switch_(
                             Outer_Level_.TOKEN,
                             level,
