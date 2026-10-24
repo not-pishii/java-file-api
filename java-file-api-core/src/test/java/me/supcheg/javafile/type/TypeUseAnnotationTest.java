@@ -1,5 +1,6 @@
 package me.supcheg.javafile.type;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -35,5 +36,18 @@ class TypeUseAnnotationTest {
     @Test
     void typeParamDefaultsToNoAnnotations() {
         assertThat(new TypeParam("T", List.of()).annotations()).isEmpty();
+    }
+
+    @Test
+    void theFactoriesOfTypeRefsTakeATypeUseAnnotation() {
+        AnnotationUse nonNull = new AnnotationUse(NON_NULL, List.of());
+
+        assertThat(Types.of(ClassDesc.of("java.lang", "String"), nonNull).annotations())
+                .containsExactly(nonNull);
+        assertThat(Types.parameterized(ClassDesc.of("java.util", "List"), List.of(), nonNull)
+                        .annotations())
+                .containsExactly(nonNull);
+        assertThat(Types.array(PrimitiveTypeRef.INT, nonNull).annotations()).containsExactly(nonNull);
+        assertThat(Types.typeVar("T", nonNull).annotations()).containsExactly(nonNull);
     }
 }
