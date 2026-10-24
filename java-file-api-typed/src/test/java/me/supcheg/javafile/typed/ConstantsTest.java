@@ -25,11 +25,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.tools.Diagnostic;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.testing.compile.Compiler.javac;
@@ -101,27 +106,57 @@ class ConstantsTest {
             List.of(ConstantDescs.CD_Object),
             MethodTable.EMPTY);
 
-    /// What javac makes of `condition` as the condition of a loop: the constant it is, or none.
-    private static Optional<Boolean> verdictOfJavac(String condition) {
-        String parameters = "(boolean flag, int n, long big, double real, String text)";
-        // the body of a loop of a constant `false` is unreachable, whatever follows the loop
-        if (unreachable("void probe" + parameters + " { while (" + condition + ") { n++; } }")) {
-            return Optional.of(false);
+    /// What javac makes of each condition of the cases as the condition of a loop, found by one run of it.
+    private static final class Verdicts {
+        static final Map<String, Optional<Boolean>> OF_JAVAC = of(conditions()
+                .map(arguments -> (String) arguments.get()[0])
+                .distinct()
+                .toList());
+
+        /// What javac makes of each condition as the condition of a loop: the constant it is, or none.
+        /// The body of a loop of a constant `false` is unreachable, and so is what follows a loop of a
+        /// constant `true` that nothing leaves. Each condition has two methods, a line each: the lines of
+        /// the errors tell in which method javac found an unreachable statement.
+        static Map<String, Optional<Boolean>> of(List<String> conditions) {
+            String parameters = "(boolean flag, int n, long big, double real, String text)";
+            StringBuilder source = new StringBuilder("class Probe {\n");
+            for (int i = 0; i < conditions.size(); i++) {
+                String condition = conditions.get(i);
+                source.append("void whenFalse")
+                        .append(i)
+                        .append(parameters)
+                        .append(" { while (")
+                        .append(condition)
+                        .append(") { n++; } }\n");
+                source.append("int whenTrue")
+                        .append(i)
+                        .append(parameters)
+                        .append(" { while (")
+                        .append(condition)
+                        .append(") { } return 0; }\n");
+            }
+            Compilation compilation = javac().compile(JavaFileObjects.forSourceString("Probe", source + "}\n"));
+            assertThat(compilation.errors())
+                    .allMatch(error -> error.getMessage(Locale.ROOT).contains("unreachable statement"));
+            Set<Long> unreachable =
+                    compilation.errors().stream().map(Diagnostic::getLineNumber).collect(Collectors.toSet());
+            Map<String, Optional<Boolean>> verdicts = new HashMap<>();
+            for (int i = 0; i < conditions.size(); i++) {
+                long whenFalse = 2 + 2L * i;
+                verdicts.put(
+                        conditions.get(i),
+                        unreachable.contains(whenFalse)
+                                ? Optional.of(false)
+                                : unreachable.contains(whenFalse + 1) ? Optional.of(true) : Optional.empty());
+            }
+            return verdicts;
         }
-        if (unreachable("int probe" + parameters + " { while (" + condition + ") { } return 0; }")) {
-            return Optional.of(true);
-        }
-        return Optional.empty();
     }
 
-    private static boolean unreachable(String method) {
-        Compilation compilation =
-                javac().compile(JavaFileObjects.forSourceString("Probe", "class Probe {\n" + method + "\n}\n"));
-        List<String> errors = compilation.errors().stream()
-                .map(error -> error.getMessage(Locale.ROOT))
-                .toList();
-        assertThat(errors).allMatch(error -> error.contains("unreachable statement"));
-        return !errors.isEmpty();
+    private static Optional<Boolean> verdictOfJavac(String condition) {
+        return Verdicts.OF_JAVAC.containsKey(condition)
+                ? Verdicts.OF_JAVAC.get(condition)
+                : Verdicts.of(List.of(condition)).get(condition);
     }
 
     private static Optional<Boolean> folded(Expr<Prim.Bool> condition) {
