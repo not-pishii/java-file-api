@@ -47,6 +47,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,8 +88,13 @@ class JdkTypesTest {
     }
 
     private static Compiled processed(String types) {
-        return processor().compile(generator(types)).orFail();
+        return PROCESSED.computeIfAbsent(
+                types, key -> processor().compile(generator(key)).orFail());
     }
+
+    /// What the processor made of the types, by the types: a run of it is a value, the same for every test that asks,
+    /// and the run over the types of the JDK is the longest thing the tests do.
+    private static final Map<String, Compiled> PROCESSED = new ConcurrentHashMap<>();
 
     /// The metamodels of a run of the processor, compiled under every lint and every check of their
     /// documentation comments with nothing to say, and loaded.

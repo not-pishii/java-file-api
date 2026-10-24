@@ -12,15 +12,21 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
 import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.supcheg.javafile.code.Exprs.textBlock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TextBlockProperties {
 
-    @Property(tries = 300)
-    void renderedTextBlockEvaluatesToItsValue(@ForAll("textBlockValues") String value) throws Exception {
-        assertThat(evaluate(value)).isEqualTo(value);
+    /// How many values one class of the property holds: javac runs once for all of them.
+    private static final int VALUES_PER_CLASS = 20;
+
+    @Property(tries = 300 / VALUES_PER_CLASS)
+    void renderedTextBlocksEvaluateToTheirValues(@ForAll("batchesOfTextBlockValues") List<String> values)
+            throws Exception {
+        assertThat(evaluateAll(values)).isEqualTo(values);
     }
 
     @Example
@@ -83,16 +89,33 @@ class TextBlockProperties {
         return Arbitraries.oneOf(tricky, Arbitraries.strings().ofMaxLength(40));
     }
 
+    @Provide
+    Arbitrary<List<String>> batchesOfTextBlockValues() {
+        return textBlockValues().list().ofSize(VALUES_PER_CLASS);
+    }
+
     private static String evaluate(String value) throws Exception {
-        JavaFile file = JavaFile.class_(
-                ClassDesc.of("me.supcheg.example", "TextBlockProbe"),
-                cb -> cb.withMethod(
-                        "value",
+        return evaluateAll(List.of(value)).getFirst();
+    }
+
+    /// What the text blocks of `values` evaluate to, in a class that holds a method for each.
+    private static List<String> evaluateAll(List<String> values) throws Exception {
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "TextBlockProbe"), cb -> {
+            for (int i = 0; i < values.size(); i++) {
+                String value = values.get(i);
+                cb.withMethod(
+                        "value" + i,
                         Types.STRING,
                         mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .withBody(b -> b.return_(textBlock(value)))));
+                                .withBody(b -> b.return_(textBlock(value))));
+            }
+        });
 
         Class<?> probeClass = CompiledClasses.of(file).generated();
-        return (String) probeClass.getMethod("value").invoke(null);
+        List<String> evaluated = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            evaluated.add((String) probeClass.getMethod("value" + i).invoke(null));
+        }
+        return evaluated;
     }
 }

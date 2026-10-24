@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.processor.harness.Compiled;
+import me.supcheg.javafile.facts.processor.harness.Diagnosed;
 import me.supcheg.javafile.facts.processor.harness.Javac;
 import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
@@ -23,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import java.lang.constant.ClassDesc;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -92,9 +94,15 @@ class EntryTest {
         });
     }
 
-    /// A class that extends or implements a type with a method for each of `steps`.
+    /// A class `Probe` that extends or implements a type with a method for each of `steps`.
     private static String probe(String type, Read read, List<Entry.Step> steps) {
+        return probe("Probe", type, read, steps);
+    }
+
+    /// A class that extends or implements a type with a method for each of `steps`.
+    private static String probe(String name, String type, Read read, List<Entry.Step> steps) {
         return probe(
+                name,
                 type,
                 read,
                 steps.stream()
@@ -102,17 +110,21 @@ class EntryTest {
                         .toList());
     }
 
-    /// A class that extends or implements a type, with `methods`.
+    /// A class `Probe` that extends or implements a type, with `methods`.
     private static String probe(String type, Read read, Collection<String> methods) {
+        return probe("Probe", type, read, methods);
+    }
+
+    /// A class that extends or implements a type, with `methods`.
+    private static String probe(String name, String type, Read read, Collection<String> methods) {
         String declared = read.typeParams().isEmpty() ? "" : "<" + String.join(", ", read.typeParams()) + ">";
         String applied = read.typeParams().isEmpty()
                 ? ""
                 : read.typeParams().stream()
                         .map(param -> param.split(" ")[0])
                         .collect(Collectors.joining(", ", "<", ">"));
-        return "class Probe" + declared + (read.isInterface() ? " implements " : " extends ") + type + applied + " {\n"
-                + String.join("", methods)
-                + "}\n";
+        return "class " + name + declared + (read.isInterface() ? " implements " : " extends ") + type + applied
+                + " {\n" + String.join("", methods) + "}\n";
     }
 
     /// A public method that throws, declared to throw `thrown`.
@@ -192,21 +204,40 @@ class EntryTest {
     }
 
     /// With every step a class compiles: there is no abstract method the steps do not tell. Without any
-    /// one of them it does not: every step is of a method javac asks for.
+    /// one of them it does not: every step is of a method javac asks for. The class with every step and
+    /// those without one are compiled together, by one run of javac.
     private static void requireTheStepsAreWhatJavacAsksFor(String type, Read read, Javac javac) {
         List<Entry.Step> steps = ((Entry.Offered) read.entry()).steps();
-        Compiled complete = javac.compile(probe(type, read, steps));
-        assertThat(complete.errors()).as(probe(type, read, steps)).isEmpty();
-        assertThat(IntStream.range(0, steps.size()).boxed()).allSatisfy(left -> {
-            List<Entry.Step> others = IntStream.range(0, steps.size())
-                    .filter(i -> i != left)
-                    .mapToObj(steps::get)
-                    .toList();
-            assertThat(javac.compile(probe(type, read, others)).errors())
-                    .as("without %s", steps.get(left).name())
-                    .anyMatch(error -> error.contains("is not abstract and does not override abstract method "
-                            + steps.get(left).told().name() + "("));
-        });
+        List<String> sources = Stream.concat(
+                        Stream.of(probe("Complete", type, read, steps)),
+                        IntStream.range(0, steps.size()).mapToObj(left -> {
+                            List<Entry.Step> others = IntStream.range(0, steps.size())
+                                    .filter(i -> i != left)
+                                    .mapToObj(steps::get)
+                                    .toList();
+                            return probe("Without" + left, type, read, others);
+                        }))
+                .toList();
+        Compiled compiled = javac.options("-Xmaxerrs", "100000").compile(sources.toArray(String[]::new));
+
+        assertThat(errorsIn(compiled, "Complete")).as(sources.getFirst()).isEmpty();
+        assertThat(IntStream.range(0, steps.size()).boxed())
+                .allSatisfy(left -> assertThat(errorsIn(compiled, "Without" + left))
+                        .as("without %s", steps.get(left).name())
+                        .anyMatch(error -> error.contains("is not abstract and does not override abstract method "
+                                + steps.get(left).told().name() + "(")));
+    }
+
+    /// The messages of the errors javac found in the class `name` of the unnamed package.
+    private static List<String> errorsIn(Compiled compiled, String name) {
+        return compiled.diagnostics().stream()
+                .filter(diagnostic -> diagnostic.kind() == Diagnostic.Kind.ERROR)
+                .filter(diagnostic -> diagnostic
+                        .position()
+                        .map(p -> p.file().equals(name + ".java"))
+                        .orElse(false))
+                .map(Diagnosed::message)
+                .toList();
     }
 
     // ------------------------------------------------------------------

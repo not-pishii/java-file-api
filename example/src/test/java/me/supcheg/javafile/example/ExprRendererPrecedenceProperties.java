@@ -11,29 +11,42 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
 import java.lang.constant.ClassDesc;
-import java.lang.reflect.Method;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExprRendererPrecedenceProperties {
 
-    @Property
-    void renderedExpressionEvaluatesToTheSameValueAsTheTreeItRepresents(@ForAll("intExprTrees") IntExprNode tree)
-            throws Exception {
-        ClassDesc classDesc = ClassDesc.of("me.supcheg.example", "PrecedenceProbe");
-        JavaFile file = JavaFile.class_(
-                classDesc,
-                cb -> cb.withMethod(
-                        "compute",
+    /// How many trees one class of the property holds: javac runs once for all of them.
+    private static final int TREES_PER_CLASS = 50;
+
+    @Property(tries = 1000 / TREES_PER_CLASS)
+    void renderedExpressionsEvaluateToTheSameValueAsTheTreesTheyRepresent(
+            @ForAll("batchesOfIntExprTrees") List<IntExprNode> trees) throws Exception {
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "PrecedenceProbe"), cb -> {
+            for (int i = 0; i < trees.size(); i++) {
+                IntExprNode tree = trees.get(i);
+                cb.withMethod(
+                        "compute" + i,
                         PrimitiveTypeRef.INT,
                         mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .withBody(b -> b.return_(tree.toExpr()))));
+                                .withBody(b -> b.return_(tree.toExpr())));
+            }
+        });
 
         Class<?> probeClass = CompiledClasses.of(file).generated();
-        Method computeMethod = probeClass.getMethod("compute");
 
-        int actual = (int) computeMethod.invoke(null);
-        assertThat(actual).isEqualTo(tree.evaluate());
+        for (int i = 0; i < trees.size(); i++) {
+            int actual = (int) probeClass.getMethod("compute" + i).invoke(null);
+            assertThat(actual)
+                    .as("compute%d: %s", i, trees.get(i))
+                    .isEqualTo(trees.get(i).evaluate());
+        }
+    }
+
+    @Provide
+    Arbitrary<List<IntExprNode>> batchesOfIntExprTrees() {
+        return intExprTrees().list().ofSize(TREES_PER_CLASS);
     }
 
     @Provide
