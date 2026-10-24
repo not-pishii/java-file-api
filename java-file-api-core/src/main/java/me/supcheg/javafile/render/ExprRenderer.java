@@ -2,6 +2,7 @@ package me.supcheg.javafile.render;
 
 import me.supcheg.javafile.code.ArrayAccessExpr;
 import me.supcheg.javafile.code.ArrayCreationExpr;
+import me.supcheg.javafile.code.ArrayInitializer;
 import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignStmt;
@@ -74,6 +75,7 @@ import me.supcheg.javafile.code.TypePattern;
 import me.supcheg.javafile.code.TypedLambdaParams;
 import me.supcheg.javafile.code.TypedNewTarget;
 import me.supcheg.javafile.code.UnaryExpr;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -94,6 +96,14 @@ final class ExprRenderer {
                 : typeArgs.stream()
                         .map(t -> TypeRefRenderer.renderType(t, ctx))
                         .collect(Collectors.joining(", ", "<", ">"));
+    }
+
+    static String renderInitializer(VariableInitializer initializer, Context ctx) {
+        return switch (initializer) {
+            case Expr expr -> renderExpr(expr, ctx);
+            case ArrayInitializer(var elements) ->
+                elements.stream().map(e -> renderInitializer(e, ctx)).collect(Collectors.joining(", ", "{", "}"));
+        };
     }
 
     static String renderExpr(Expr expr, Context ctx) {
@@ -235,11 +245,9 @@ final class ExprRenderer {
                         yield "new " + TypeRefRenderer.renderType(TypeRefRenderer.elementType(componentType), ctx)
                                 + dims + TypeRefRenderer.renderDims(componentType, ctx);
                     }
-                    case ArrayInitializerExpr(var componentType, var elements) -> {
-                        String elems =
-                                elements.stream().map(e -> renderExpr(e, ctx)).collect(Collectors.joining(", "));
-                        yield "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] {" + elems + "}";
-                    }
+                    case ArrayInitializerExpr(var componentType, var initializer) ->
+                        "new " + TypeRefRenderer.renderType(componentType, ctx) + "[] "
+                                + renderInitializer(initializer, ctx);
                 };
         return level < minPrecedence ? "(" + rendered + ")" : rendered;
     }
@@ -282,7 +290,9 @@ final class ExprRenderer {
                         + TypeRefRenderer.renderType(type, ctx)
                         + " "
                         + name
-                        + initializer.map(i -> " = " + renderExpr(i, ctx)).orElse("")
+                        + initializer
+                                .map(i -> " = " + renderInitializer(i, ctx))
+                                .orElse("")
                         + ";";
             }
             case LocalVarDeclStmt.Inferred(var name, var initializer) -> {

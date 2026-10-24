@@ -122,8 +122,8 @@ class ExprsTest {
                 .isEqualTo(
                         new ArrayCreationExpr(PrimitiveTypeRef.INT, new NonEmptyList<>(new IntLiteral(3), List.of())));
         assertThat(Exprs.newArrayOf(PrimitiveTypeRef.INT, Exprs.literal(1), Exprs.literal(2)))
-                .isEqualTo(
-                        new ArrayInitializerExpr(PrimitiveTypeRef.INT, List.of(new IntLiteral(1), new IntLiteral(2))));
+                .isEqualTo(new ArrayInitializerExpr(
+                        PrimitiveTypeRef.INT, Exprs.arrayInitializer(new IntLiteral(1), new IntLiteral(2))));
     }
 
     @Test

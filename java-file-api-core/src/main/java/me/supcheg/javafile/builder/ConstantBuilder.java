@@ -2,7 +2,7 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
-import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.ConstantDecl;
@@ -27,7 +27,7 @@ public final class ConstantBuilder {
     private final String name;
     private final TypeRef type;
     private final List<AnnotationUse> annotations = new ArrayList<>();
-    private @Nullable Expr initializer;
+    private @Nullable VariableInitializer initializer;
 
     ConstantBuilder(String name, TypeRef type) {
         this.name = name;
@@ -86,7 +86,7 @@ public final class ConstantBuilder {
     ///
     /// @param initializer the initializer expression
     /// @return this builder
-    public ConstantBuilder withInitializer(Expr initializer) {
+    public ConstantBuilder withInitializer(VariableInitializer initializer) {
         this.initializer = initializer;
         return this;
     }

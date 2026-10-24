@@ -13,8 +13,8 @@ public sealed interface LocalVarDeclStmt extends Stmt permits LocalVarDeclStmt.T
     ///
     /// @param type the declared variable type
     /// @param name the variable name, a valid Java identifier
-    /// @param initializer the initializer expression, or empty to omit it
-    record Typed(TypeRef type, String name, Optional<Expr> initializer) implements LocalVarDeclStmt {
+    /// @param initializer the initializer, an expression or an array initializer, or empty to omit it
+    record Typed(TypeRef type, String name, Optional<VariableInitializer> initializer) implements LocalVarDeclStmt {
         public Typed {
             name = Identifiers.requireValid(name);
         }

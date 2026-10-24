@@ -2,7 +2,7 @@ package me.supcheg.javafile.builder;
 
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
-import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.FieldDecl;
@@ -31,7 +31,7 @@ public final class FieldBuilder {
     private final TypeRef type;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
-    private @Nullable Expr initializer;
+    private @Nullable VariableInitializer initializer;
 
     FieldBuilder(String name, TypeRef type) {
         this.name = name;
@@ -99,7 +99,7 @@ public final class FieldBuilder {
     ///
     /// @param initializer the initializer expression
     /// @return this builder
-    public FieldBuilder withInitializer(Expr initializer) {
+    public FieldBuilder withInitializer(VariableInitializer initializer) {
         this.initializer = initializer;
         return this;
     }

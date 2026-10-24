@@ -143,7 +143,7 @@ final class TypeDeclRenderer {
         sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(f.modifiers()));
         sb.append(TypeRefRenderer.renderType(f.type(), ctx)).append(' ').append(f.name());
-        f.initializer().ifPresent(init -> sb.append(" = ").append(ExprRenderer.renderExpr(init, ctx)));
+        f.initializer().ifPresent(init -> sb.append(" = ").append(ExprRenderer.renderInitializer(init, ctx)));
         sb.append(";").append(ctx.newline());
         return sb.toString();
     }
@@ -328,7 +328,7 @@ final class TypeDeclRenderer {
                 + " "
                 + c.name()
                 + " = "
-                + ExprRenderer.renderExpr(c.initializer(), ctx)
+                + ExprRenderer.renderInitializer(c.initializer(), ctx)
                 + ";" + ctx.newline();
     }
 
@@ -437,7 +437,7 @@ final class TypeDeclRenderer {
                 + " "
                 + sf.name()
                 + " = "
-                + ExprRenderer.renderExpr(sf.initializer(), ctx)
+                + ExprRenderer.renderInitializer(sf.initializer(), ctx)
                 + ";" + ctx.newline();
     }
 

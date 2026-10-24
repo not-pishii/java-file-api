@@ -3,7 +3,7 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
-import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
@@ -267,7 +267,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
     /// @param type the declared field type
     /// @param initializer the initializer expression
     /// @return this builder
-    public RecordBuilder withStaticField(String name, TypeRef type, Expr initializer) {
+    public RecordBuilder withStaticField(String name, TypeRef type, VariableInitializer initializer) {
         members.add(new StaticFieldDecl(name, type, List.of(), initializer, Optional.empty()));
         return this;
     }
@@ -286,7 +286,7 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         FieldBuilder fb = new FieldBuilder(name, type);
         spec.accept(fb);
         FieldDecl fd = fb.build();
-        Expr initializer = fd.initializer()
+        VariableInitializer initializer = fd.initializer()
                 .orElseThrow(() -> new IllegalStateException("static field " + name + " requires an initializer"));
         members.add(new StaticFieldDecl(fd.name(), fd.type(), fd.annotations(), initializer, fd.doc()));
         return this;

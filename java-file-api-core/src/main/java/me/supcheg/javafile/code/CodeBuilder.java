@@ -90,7 +90,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param type the declared variable type
     /// @param initializer the initializer expression
     /// @return this builder
-    public CodeBuilder localVar(String name, TypeRef type, Expr initializer) {
+    public CodeBuilder localVar(String name, TypeRef type, VariableInitializer initializer) {
         statements.add(new LocalVarDeclStmt.Typed(type, name, Optional.of(initializer)));
         return this;
     }

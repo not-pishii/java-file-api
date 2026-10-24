@@ -279,7 +279,7 @@ public final class Exprs {
     /// @param elements the initializer elements, in order
     /// @return an array initializer expression
     public static ArrayInitializerExpr newArrayOf(TypeRef componentType, Expr... elements) {
-        return new ArrayInitializerExpr(componentType, List.of(elements));
+        return new ArrayInitializerExpr(componentType, new ArrayInitializer(List.of(elements)));
     }
 
     /// Creates an array creation with an initializer, e.g. `new componentType[]{e1, e2, ...}`.
@@ -288,7 +288,16 @@ public final class Exprs {
     /// @param elements the initializer elements, in order
     /// @return an array initializer expression
     public static ArrayInitializerExpr newArrayOf(TypeRef componentType, List<? extends Expr> elements) {
-        return new ArrayInitializerExpr(componentType, List.copyOf(elements));
+        return new ArrayInitializerExpr(componentType, new ArrayInitializer(List.copyOf(elements)));
+    }
+
+    /// Creates an array initializer, `{e1, e2, ...}`, for the initializer of a typed local variable or field, or an
+    /// element of another initializer.
+    ///
+    /// @param elements the elements, in order; each an expression or an initializer of an array
+    /// @return an array initializer
+    public static ArrayInitializer arrayInitializer(VariableInitializer... elements) {
+        return new ArrayInitializer(List.of(elements));
     }
 
     /// Creates a class literal, `type.class`.

@@ -3,7 +3,7 @@ package me.supcheg.javafile.builder;
 import me.supcheg.javafile.annotation.AnnotationBuilder;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBuilder;
-import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.AbstractMethodDecl;
@@ -277,7 +277,7 @@ public final class ClassBuilder implements Consumer<ClassMember> {
     /// @param type the declared field type
     /// @param initializer the initializer expression
     /// @return this builder
-    public ClassBuilder withField(String name, TypeRef type, Expr initializer) {
+    public ClassBuilder withField(String name, TypeRef type, VariableInitializer initializer) {
         return withField(name, type, fb -> fb.withInitializer(initializer));
     }
 

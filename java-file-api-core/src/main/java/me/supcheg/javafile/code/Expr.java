@@ -17,7 +17,7 @@ import java.util.Optional;
 ///
 /// To use an expression as a statement, pass it to
 /// [CodeBuilder#exprStatement(StatementExpr)].
-public sealed interface Expr
+public sealed interface Expr extends VariableInitializer
         permits FieldAccessExpr,
                 StaticFieldAccessExpr,
                 MethodCallExpr,

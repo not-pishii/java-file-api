@@ -2,17 +2,11 @@ package me.supcheg.javafile.code;
 
 import me.supcheg.javafile.type.TypeRef;
 
-import java.util.List;
-
-/// An array creation with an initializer, `new componentType[]{e1, e2, ...}`.
+/// An array creation with an initializer, `new componentType[] {e1, e2, ...}` (JLS 15.10.1).
 ///
-/// The short form `{e1, e2, ...}` is not supported; the `new componentType[]`
-/// prefix is always written.
+/// It is an expression, with a type of its own, and so it stands anywhere an expression does. The short form
+/// `{e1, e2, ...}` is the [ArrayInitializer], which stands where the type of the array is known.
 ///
 /// @param componentType the array's component type
-/// @param elements the initializer elements, in order
-public record ArrayInitializerExpr(TypeRef componentType, List<Expr> elements) implements Expr {
-    public ArrayInitializerExpr {
-        elements = List.copyOf(elements);
-    }
-}
+/// @param initializer the initializer of the array, in braces
+public record ArrayInitializerExpr(TypeRef componentType, ArrayInitializer initializer) implements Expr {}

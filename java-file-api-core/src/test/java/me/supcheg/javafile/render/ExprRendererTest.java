@@ -521,6 +521,19 @@ class ExprRendererTest {
     }
 
     @Test
+    void emptyAndNestedArrayInitializersRenderTheirBraces() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("p"));
+
+        assertThat(ExprRenderer.renderExpr(newArrayOf(PrimitiveTypeRef.INT), ctx))
+                .isEqualTo("new int[] {}");
+        assertThat(ExprRenderer.renderInitializer(
+                        Exprs.arrayInitializer(
+                                Exprs.arrayInitializer(literal(1)), Exprs.arrayInitializer(), literal(2)),
+                        ctx))
+                .isEqualTo("{{1}, {}, 2}");
+    }
+
+    @Test
     void assignStatementWithArrayAccessTargetRendersTargetEqualsValue() {
         ArrayAccessExpr target = field("values").arrayAccess(literal(0));
         Expr value = literal(1);
