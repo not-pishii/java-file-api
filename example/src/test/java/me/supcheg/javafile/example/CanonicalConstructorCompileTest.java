@@ -1,9 +1,9 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.gt;
 import static me.supcheg.javafile.code.Exprs.new_;
@@ -36,7 +35,7 @@ class CanonicalConstructorCompileTest {
                                         .assign(this_().field("low"), field("low"))
                                         .assign(this_().field("high"), field("high"))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

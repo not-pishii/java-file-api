@@ -1,6 +1,7 @@
 package me.supcheg.javafile.example;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ class ConstantNameCompileTest {
                                 mb -> mb.withBody(b -> b.return_(staticCall(OPTIONAL, "empty")))));
 
         String source = file.render();
-        Class<?> limits = InMemoryCompiler.compileAndLoad(file.qualifiedName(), source);
+        Class<?> limits = CompiledClasses.of(file).generated();
 
         assertThat(source).contains("int Optional = 1;").contains("return java.util.Optional.empty();");
         assertThat(limits.getField("Optional").get(null)).isEqualTo(1);

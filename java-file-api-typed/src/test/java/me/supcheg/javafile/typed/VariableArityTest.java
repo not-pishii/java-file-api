@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Joiner;
 import me.supcheg.javafile.typed.fixtures.Scattering;
 import me.supcheg.javafile.typed.fixtures.Spreading;

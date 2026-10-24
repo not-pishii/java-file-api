@@ -1,6 +1,7 @@
 package me.supcheg.javafile.example;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -26,12 +27,12 @@ class NumericLiteralCompileTest {
                         .withConstant("MIN_LONG", Types.OBJECT, cast(Types.OBJECT, literal(Long.MIN_VALUE)))
                         .withConstant("DOUBLE", Types.OBJECT, cast(Types.OBJECT, literal(-1.5)))
                         .withConstant("ZERO", Types.OBJECT, cast(Types.OBJECT, literal(-0.0)))
-                        .withConstant("PRIMITIVE", Types.INT, cast(Types.INT, literal(-1)))
+                        .withConstant("PRIMITIVE", Types.INT, cast(Types.INT, literal(-1L)))
                         .withConstant("NEGATED", Types.INT, neg(literal(-1)))
                         .withConstant("LESS", Types.INT, sub(literal(1), literal(-1))));
 
         String source = file.render();
-        Class<?> negatives = InMemoryCompiler.compileAndLoad(file.qualifiedName(), source);
+        Class<?> negatives = CompiledClasses.of(file).generated();
 
         assertThat(source)
                 .contains("Object INT = (Object) (-1);")
@@ -40,7 +41,7 @@ class NumericLiteralCompileTest {
                 .contains("Object MIN_LONG = (Object) (-9223372036854775808L);")
                 .contains("Object DOUBLE = (Object) (-1.5);")
                 .contains("Object ZERO = (Object) (-0.0);")
-                .contains("int PRIMITIVE = (int) -1;")
+                .contains("int PRIMITIVE = (int) -1L;")
                 .contains("int NEGATED = -(-1);")
                 .contains("int LESS = 1 - -1;");
         assertThat(negatives.getField("INT").get(null)).isEqualTo(-1);
@@ -68,7 +69,7 @@ class NumericLiteralCompileTest {
                         .withConstant("LESS", Types.DOUBLE, sub(literal(1.0), literal(Double.POSITIVE_INFINITY))));
 
         String source = file.render();
-        Class<?> nonFinite = InMemoryCompiler.compileAndLoad(file.qualifiedName(), source);
+        Class<?> nonFinite = CompiledClasses.of(file).generated();
 
         assertThat(source)
                 .contains("double NAN = 0.0 / 0.0;")

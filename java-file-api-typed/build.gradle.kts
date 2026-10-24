@@ -20,7 +20,7 @@ testing {
     suites {
         named<JvmTestSuite>("test") {
             dependencies {
-                implementation(libs.compile.testing)
+                implementation(testFixtures(project(":java-file-api-core")))
             }
         }
     }

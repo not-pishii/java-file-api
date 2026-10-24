@@ -7,6 +7,7 @@ import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,11 @@ class ConstructorInvocationCompileTest {
         JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Problem"),
                 cb -> cb.withSuperclass(ILLEGAL_ARGUMENT)
+                        .withField(
+                                "serialVersionUID",
+                                Types.LONG,
+                                fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                        .withInitializer(literal(1L)))
                         .withField("code", Types.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
                         .withConstructor(ctor -> ctor.withParam("message", Types.STRING)
                                 .withParam("code", Types.INT)
@@ -45,7 +51,7 @@ class ConstructorInvocationCompileTest {
                         .withMethod("code", Types.INT, mb -> mb.withBody(b -> b.return_(this_().field("code")))));
 
         String source = file.render();
-        Class<?> problem = InMemoryCompiler.compileAndLoad(file.qualifiedName(), source);
+        Class<?> problem = CompiledClasses.of(file).generated();
 
         assertThat(source).contains("""
                             public Problem(String message, int code) {

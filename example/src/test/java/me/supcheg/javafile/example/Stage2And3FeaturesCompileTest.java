@@ -1,20 +1,20 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.add;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.gt;
@@ -55,9 +55,7 @@ class Stage2And3FeaturesCompileTest {
                         .withMethod(
                                 "area", PrimitiveTypeRef.DOUBLE, mb -> mb.withBody(b -> b.return_(field("radius")))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString(shape.qualifiedName(), shape.render()),
-                        JavaFileObjects.forSourceString(circle.qualifiedName(), circle.render()));
+        Compilation compilation = RenderedJava.compile(List.of(shape, circle));
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -72,7 +70,7 @@ class Stage2And3FeaturesCompileTest {
                         .withConstant(
                                 "MINUS", ecb -> ecb.withVoidMethod("describe", mb -> mb.withBody(b -> b.return_()))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(op.qualifiedName(), op.render()));
+        Compilation compilation = RenderedJava.compile(op);
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -118,8 +116,7 @@ class Stage2And3FeaturesCompileTest {
                                                 ib -> ib.then(body -> body.throw_(
                                                         new_(ILLEGAL_ARGUMENT, literal("n must be positive"))))))));
 
-        Compilation compilation =
-                javac().compile(JavaFileObjects.forSourceString(calculator.qualifiedName(), calculator.render()));
+        Compilation compilation = RenderedJava.compile(calculator);
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -134,8 +131,7 @@ class Stage2And3FeaturesCompileTest {
                         .withConstant(
                                 "MERCURY", ecb -> ecb.withArgs(new me.supcheg.javafile.code.DoubleLiteral(3.3e23))));
 
-        Compilation compilation =
-                javac().compile(JavaFileObjects.forSourceString(planet.qualifiedName(), planet.render()));
+        Compilation compilation = RenderedJava.compile(planet);
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -176,8 +172,7 @@ class Stage2And3FeaturesCompileTest {
                                                     .defaultValue(literal("other"))));
                                 })));
 
-        Compilation compilation =
-                javac().compile(JavaFileObjects.forSourceString(validator.qualifiedName(), validator.render()));
+        Compilation compilation = RenderedJava.compile(validator);
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -202,8 +197,7 @@ class Stage2And3FeaturesCompileTest {
             }
         });
 
-        Compilation compilation =
-                javac().compile(JavaFileObjects.forSourceString(transformed.qualifiedName(), transformed.render()));
+        Compilation compilation = RenderedJava.compile(transformed);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

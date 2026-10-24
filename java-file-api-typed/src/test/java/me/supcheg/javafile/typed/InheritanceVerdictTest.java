@@ -4,6 +4,7 @@ import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Counted;
 import me.supcheg.javafile.typed.fixtures.Joiner;

@@ -11,6 +11,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
 import me.supcheg.javafile.typed.testfacts.java.lang.CharSequence_;

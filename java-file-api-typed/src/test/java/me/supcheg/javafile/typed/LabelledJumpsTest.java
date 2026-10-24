@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;

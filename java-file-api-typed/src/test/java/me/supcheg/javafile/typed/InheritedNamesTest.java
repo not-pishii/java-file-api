@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Op;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Nesting_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Obscuring_;

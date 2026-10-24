@@ -1,8 +1,8 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.eq;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
@@ -33,7 +32,7 @@ class LabeledStmtCompileTest {
                                                     eq(field("i"), literal(1)), ib -> ib.then(t -> t.break_("outer"))));
                                 }))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

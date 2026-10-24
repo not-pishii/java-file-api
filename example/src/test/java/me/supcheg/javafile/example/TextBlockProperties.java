@@ -2,6 +2,7 @@ package me.supcheg.javafile.example;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -91,7 +92,7 @@ class TextBlockProperties {
                         mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
                                 .withBody(b -> b.return_(textBlock(value)))));
 
-        Class<?> probeClass = InMemoryCompiler.compileAndLoad(file.qualifiedName(), file.render());
+        Class<?> probeClass = CompiledClasses.of(file).generated();
         return (String) probeClass.getMethod("value").invoke(null);
     }
 }

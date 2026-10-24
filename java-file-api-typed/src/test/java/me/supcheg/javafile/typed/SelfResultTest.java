@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Copied;
 import me.supcheg.javafile.typed.fixtures.Following;
 import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;

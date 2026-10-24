@@ -8,6 +8,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordComponent;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
 
@@ -80,11 +80,11 @@ class AnnotationsCompileTest {
                                         "value", AnnotationValues.array(AnnotationValues.nested(messageMeta))))
                         .withMethod("greeting", Types.of(STRING), mb -> mb.withBody(b -> b.return_(literal("hi")))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString("me.supcheg.meta.ContractMeta", CONTRACT_META_SRC),
-                        JavaFileObjects.forSourceString("me.supcheg.meta.MessageMeta", MESSAGE_META_SRC),
-                        JavaFileObjects.forSourceString("me.supcheg.meta.ParamMeta", PARAM_META_SRC),
-                        JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(
+                file,
+                JavaFileObjects.forSourceString("me.supcheg.meta.ContractMeta", CONTRACT_META_SRC),
+                JavaFileObjects.forSourceString("me.supcheg.meta.MessageMeta", MESSAGE_META_SRC),
+                JavaFileObjects.forSourceString("me.supcheg.meta.ParamMeta", PARAM_META_SRC));
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -105,10 +105,9 @@ class AnnotationsCompileTest {
                 ClassDesc.of("me.supcheg.example", "Box"),
                 rb -> rb.withComponent(new RecordComponent("value", Types.of(STRING), List.of(nullable))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString("me.supcheg.meta.Nullable", NULLABLE_SRC),
-                        JavaFileObjects.forSourceString(withParam.qualifiedName(), withParam.render()),
-                        JavaFileObjects.forSourceString(withComponent.qualifiedName(), withComponent.render()));
+        Compilation compilation = RenderedJava.compile(
+                List.of(withParam, withComponent),
+                JavaFileObjects.forSourceString("me.supcheg.meta.Nullable", NULLABLE_SRC));
 
         assertThat(compilation).succeededWithoutWarnings();
     }

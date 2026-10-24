@@ -1,11 +1,11 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.TypeMethodRefTarget;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.Types;
@@ -15,7 +15,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 
 class MethodRefCompileTest {
 
@@ -36,7 +35,7 @@ class MethodRefCompileTest {
                                 .withInitializer(
                                         new MethodRefExpr(new TypeMethodRefTarget(Types.of(INTEGER)), "parseInt"))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

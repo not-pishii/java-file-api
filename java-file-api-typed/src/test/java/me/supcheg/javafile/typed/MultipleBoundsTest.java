@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Mid;
 import me.supcheg.javafile.typed.fixtures.Ranked;
 import me.supcheg.javafile.typed.fixtures.Tagged;

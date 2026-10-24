@@ -1,16 +1,16 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
 import static me.supcheg.javafile.code.Exprs.new_;
@@ -48,9 +48,7 @@ class GenericsCompileTest {
                                         .withBody(b -> b.return_(new_(
                                                 Types.parameterized(IMPL, Types.typeVar("T")), field("renderer"))))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString(contract.qualifiedName(), contract.render()),
-                        JavaFileObjects.forSourceString(impl.qualifiedName(), impl.render()));
+        Compilation compilation = RenderedJava.compile(List.of(contract, impl));
 
         assertThat(compilation).succeededWithoutWarnings();
     }

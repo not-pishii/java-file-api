@@ -4,6 +4,7 @@ import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Op;
 import me.supcheg.javafile.typed.fixtures.Outer;
 import me.supcheg.javafile.typed.fixtures.Signal;

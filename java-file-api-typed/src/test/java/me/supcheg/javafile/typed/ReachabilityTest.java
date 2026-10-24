@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.EmptyStmt;
@@ -9,6 +8,7 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
@@ -353,9 +353,7 @@ class ReachabilityTest {
             assertThatIllegalStateException().isThrownBy(probe::build).withMessageContaining("unreachable (JLS 14.22)");
         } else {
             JavaFile file = probe.build();
-            CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
-                            .compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render())))
-                    .succeededWithoutWarnings();
+            RenderedJava.assertCompilesCleanly(file);
         }
     }
 }

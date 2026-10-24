@@ -1,4 +1,4 @@
-package me.supcheg.javafile.typed;
+package me.supcheg.javafile.testing;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 
 /// A generated class compiled by javac with every lint enabled, together
 /// with hand-written fixture classes, and loaded for running: an end-to-end
@@ -25,21 +24,20 @@ import static com.google.testing.compile.Compiler.javac;
 /// @param source the rendered source of the generated class
 /// @param loader loads the generated and the fixture classes
 /// @param generated the generated class
-record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
+public record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
 
     /// Renders, compiles and loads `file`.
     ///
     /// @param file the generated class
     /// @param fixtures the fixture classes, as `{binary name, source}` pairs
     /// @return the loaded classes
-    static CompiledClasses of(JavaFile file, String... fixtures) {
+    public static CompiledClasses of(JavaFile file, String... fixtures) {
         String source = file.render();
-        List<JavaFileObject> sources = new ArrayList<>();
-        sources.add(JavaFileObjects.forSourceString(file.qualifiedName(), source));
+        List<JavaFileObject> companions = new ArrayList<>();
         for (int i = 0; i < fixtures.length; i += 2) {
-            sources.add(JavaFileObjects.forSourceString(fixtures[i], fixtures[i + 1]));
+            companions.add(JavaFileObjects.forSourceString(fixtures[i], fixtures[i + 1]));
         }
-        Compilation compilation = javac().withOptions("-Xlint:all").compile(sources);
+        Compilation compilation = RenderedJava.compile(file, companions.toArray(JavaFileObject[]::new));
         assertThat(compilation).succeededWithoutWarnings();
         ClassLoader loader = new GeneratedClassLoader(compilation);
         try {
@@ -55,7 +53,7 @@ record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
     /// @param name the method name, unique in the class
     /// @param args the arguments
     /// @return the result
-    Object invoke(String name, Object... args) throws Throwable {
+    public Object invoke(String name, Object... args) throws Throwable {
         Method method = Arrays.stream(generated.getMethods())
                 .filter(m -> m.getName().equals(name))
                 .findFirst()
@@ -74,7 +72,7 @@ record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
     ///
     /// @param binaryName the class name
     /// @return the new instance
-    Object instantiate(String binaryName) throws ReflectiveOperationException {
+    public Object instantiate(String binaryName) throws ReflectiveOperationException {
         return loader.loadClass(binaryName).getConstructor().newInstance();
     }
 

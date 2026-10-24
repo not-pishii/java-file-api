@@ -1,8 +1,8 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.cast;
 import static me.supcheg.javafile.code.Exprs.classLiteral;
 import static me.supcheg.javafile.code.Exprs.cond;
@@ -29,7 +28,7 @@ class CastConditionalClassLiteralCompileTest {
                 ClassDesc.of("me.supcheg.example", "Describe"),
                 cb -> cb.withMethod(
                         "kind",
-                        Types.of(CLASS),
+                        Types.parameterized(CLASS, Types.unbounded()),
                         mb -> mb.withParam("value", Types.of(OBJECT))
                                 .withBody(b -> b.localVar(
                                                 "n", PrimitiveTypeRef.INT, cast(PrimitiveTypeRef.INT, literal(1.9)))
@@ -38,7 +37,7 @@ class CastConditionalClassLiteralCompileTest {
                                                 classLiteral(OBJECT),
                                                 classLiteral(PrimitiveTypeRef.INT))))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

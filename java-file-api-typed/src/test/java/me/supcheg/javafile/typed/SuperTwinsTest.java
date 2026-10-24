@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.SubTwin;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.BaseTwin_;

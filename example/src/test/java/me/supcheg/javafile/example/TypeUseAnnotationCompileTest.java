@@ -5,6 +5,7 @@ import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.field;
 
 /// Compiles a JLS 9.7.4 type-use annotation against a real `@interface` fixture
@@ -46,9 +46,8 @@ class TypeUseAnnotationCompileTest {
                 ClassDesc.of("me.supcheg.example", "Holder"),
                 cb -> cb.withField("value", Types.of(STRING, nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),
-                        JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation =
+                RenderedJava.compile(file, JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC));
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -62,9 +61,8 @@ class TypeUseAnnotationCompileTest {
                 cb -> cb.withField(
                         "values", Types.array(Types.of(STRING), nonNull), fb -> fb.withModifiers(Modifier.PRIVATE)));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),
-                        JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation =
+                RenderedJava.compile(file, JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC));
 
         assertThat(compilation).succeededWithoutWarnings();
     }
@@ -84,9 +82,8 @@ class TypeUseAnnotationCompileTest {
                                 .withParam("value", Types.typeVar("T"))
                                 .withBody(b -> b.return_(field("value")))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC),
-                        JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation =
+                RenderedJava.compile(file, JavaFileObjects.forSourceString("me.supcheg.meta.NonNull", NON_NULL_SRC));
 
         assertThat(compilation).succeededWithoutWarnings();
     }

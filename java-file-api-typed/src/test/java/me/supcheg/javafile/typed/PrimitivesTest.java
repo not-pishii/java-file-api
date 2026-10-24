@@ -1,7 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.FieldRef;
@@ -12,6 +10,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
@@ -152,7 +150,6 @@ class PrimitivesTest {
                 .contains("new String[2]")
                 .contains("Math.toIntExact(5L)")
                 .contains("(int) 5L");
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), source));
-        assertThat(compilation).succeededWithoutWarnings();
+        RenderedJava.assertCompilesCleanly(file);
     }
 }

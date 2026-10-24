@@ -4,6 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.fixtures.Signal;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
@@ -154,9 +155,7 @@ final class JavacVerdict {
     /// and the Java it stands for.
     static void asJavacAccepts(Supplier<JavaFile> typed, String java) {
         JavaFile file = typed.get();
-        CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
-                        .compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render())))
-                .succeededWithoutWarnings();
+        RenderedJava.assertCompilesCleanly(file);
         CompilationSubject.assertThat(compiled(java)).succeeded();
     }
 }

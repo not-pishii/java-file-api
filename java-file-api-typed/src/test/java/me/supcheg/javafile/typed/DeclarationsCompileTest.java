@@ -1,12 +1,12 @@
 package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
@@ -36,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DeclarationsCompileTest {
 
     private static Compilation compile(JavaFile file) {
-        return javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        return RenderedJava.compile(file);
     }
 
     /// Loads a class compiled by `compilation` into a fresh class loader.

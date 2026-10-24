@@ -1,10 +1,10 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 
 /// Proves a nested type declared via a real nested [ClassDesc]
 /// (`Outer.nested("Inner")`) round-trips through the renderer as valid Java:
@@ -47,7 +46,7 @@ class NestedTypeCompileTest {
             cb.withField("value", Types.of(inner), fb -> {});
         });
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }

@@ -1,6 +1,7 @@
 package me.supcheg.javafile.example;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
@@ -35,7 +36,7 @@ class ArrayDimensionsCompileTest {
                                 newArrayOf(Types.array(Types.INT), newArray(Types.INT, literal(1)))));
 
         String source = file.render();
-        Class<?> jagged = InMemoryCompiler.compileAndLoad(file.qualifiedName(), source);
+        Class<?> jagged = CompiledClasses.of(file).generated();
 
         assertThat(source)
                 .contains("int[][] ROWS = new int[2][];")

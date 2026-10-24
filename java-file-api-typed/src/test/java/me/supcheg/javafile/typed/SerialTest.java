@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.testfacts.java.io.Serializable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Comparable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Exception_;

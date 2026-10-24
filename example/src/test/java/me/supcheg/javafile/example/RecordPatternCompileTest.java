@@ -1,11 +1,11 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.code.Pattern;
 import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.TypePattern;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.add;
 import static me.supcheg.javafile.code.Exprs.field;
 import static me.supcheg.javafile.code.Exprs.literal;
@@ -46,9 +45,7 @@ class RecordPatternCompileTest {
                                                 ib -> ib.then(t -> t.return_(add(field("x"), field("y")))))
                                         .return_(literal(0)))));
 
-        Compilation compilation = javac().compile(
-                        JavaFileObjects.forSourceString(pointFile.qualifiedName(), pointFile.render()),
-                        JavaFileObjects.forSourceString(useFile.qualifiedName(), useFile.render()));
+        Compilation compilation = RenderedJava.compile(List.of(pointFile, useFile));
 
         assertThat(compilation).succeededWithoutWarnings();
     }

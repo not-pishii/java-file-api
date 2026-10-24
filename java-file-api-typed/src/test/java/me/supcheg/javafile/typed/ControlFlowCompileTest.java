@@ -1,11 +1,11 @@
 package me.supcheg.javafile.typed;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.testfacts.java.io.PrintStream_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.NumberFormatException_;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.geInt;
@@ -43,7 +42,7 @@ class ControlFlowCompileTest {
     }
 
     private static Compilation compile(JavaFile file) {
-        return javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        return RenderedJava.compile(file);
     }
 
     @Test

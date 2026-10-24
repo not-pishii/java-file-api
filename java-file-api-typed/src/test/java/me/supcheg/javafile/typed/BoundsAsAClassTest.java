@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Sealing;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;

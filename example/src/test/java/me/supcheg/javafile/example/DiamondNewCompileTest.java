@@ -1,15 +1,14 @@
 package me.supcheg.javafile.example;
 
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 import static me.supcheg.javafile.code.Exprs.newDiamond;
 
 class DiamondNewCompileTest {
@@ -27,7 +26,7 @@ class DiamondNewCompileTest {
                         mb -> mb.withBody(b -> b.localVar(
                                 "names", Types.parameterized(LIST, Types.of(STRING)), newDiamond(ARRAY_LIST)))));
 
-        Compilation compilation = javac().compile(JavaFileObjects.forSourceString(file.qualifiedName(), file.render()));
+        Compilation compilation = RenderedJava.compile(file);
 
         assertThat(compilation).succeededWithoutWarnings();
     }
