@@ -121,6 +121,27 @@ class SwitchChecksTest {
         }
 
         @Test
+        void aSwitchOfAFieldInitializerIsToldWithoutABodyItIsIn() {
+            asJavac(
+                    () -> declare(cb -> {
+                        var f = cb.declareField("f", PrimitiveToken.INT);
+                        var bodies = cb.bodies();
+                        bodies.initialize(
+                                f,
+                                switch_(
+                                        Signal_.TOKEN,
+                                        Expressions.enumConstant(Signal_.RED),
+                                        PrimitiveToken.INT,
+                                        c -> c.case_(Signal_.RED, literal(1)).case_(Signal_.RED, literal(2))));
+                        return bodies;
+                    }),
+                    "case_ RED of the switch_ over me.supcheg.javafile.typed.fixtures.Signal: the constant RED has a"
+                            + " case already; a constant is the label of one case (JLS 14.11.1)",
+                    "int f = switch (Signal.RED) { case RED -> 1; case RED -> 2; default -> 3; };",
+                    "duplicate case label");
+        }
+
+        @Test
         void aConstantIsOnceInACaseOfSeveral() {
             asJavac(
                     () -> intMethod((b, s) -> b.return_(intSwitch(

@@ -139,7 +139,7 @@ class OverrideRefusalsTest {
                                 MemberTraits.DEFAULT),
                         group))
                 .withMessageContaining(
-                        "the method is of variable arity and of the element type T, which is not" + " reifiable");
+                        "the method is of variable arity and its last parameter is of the type T[], which is not reifiable");
     }
 
     @Test

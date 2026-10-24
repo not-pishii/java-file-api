@@ -124,6 +124,16 @@ class FactPinningChecksTest {
                         List.of(Types.typeVar("A"), Types.typeVar("B")),
                         List.of(Types.parameterized(ConstantDescs.CD_List, Types.typeVar("A")))),
                 MethodTable.EMPTY);
+        // class Wrapping<A> implements List<List<A>>: the argument of the supertype is no type variable
+        var wrapping = UnsafeFacts.openClassToken(
+                Types.parameterized(ClassDesc.of("fixtures", "Wrapping"), Types.STRING),
+                List.of(ConstantDescs.CD_Object),
+                new Supertypes(
+                        List.of(Types.typeVar("A")),
+                        List.of(Types.parameterized(
+                                ConstantDescs.CD_List,
+                                Types.parameterized(ConstantDescs.CD_List, Types.typeVar("A"))))),
+                MethodTable.EMPTY);
         var unrecorded = UnsafeFacts.openClassToken(
                 Types.parameterized(ARRAY_LIST, Types.STRING), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
 
@@ -132,6 +142,11 @@ class FactPinningChecksTest {
                 pairOfStringInteger,
                 "java.util.List<java.lang.String> does not determine the type argument for B of"
                         + " fixtures.Pair<java.lang.String, java.lang.Integer>");
+        assertUncheckedCast(
+                strings.token,
+                wrapping,
+                "java.util.List<java.lang.String> does not determine the type argument for A of"
+                        + " fixtures.Wrapping<java.lang.String>");
         assertUncheckedCast(
                 strings.token, unrecorded, "the facts of java.util.ArrayList<java.lang.String> record no supertypes");
         assertUncheckedCast(
@@ -228,6 +243,26 @@ class FactPinningChecksTest {
         assertThat(Tokens.isReifiable(PrimitiveToken.INT.array())).isTrue();
         assertThat(Tokens.isReifiable(ArrayToken.of(ArrayToken.of(anyList)))).isTrue();
         assertThat(Tokens.isReifiable(strings.token)).isFalse();
+    }
+
+    @Test
+    void anExpressionIsTypedByItsTokenAsLongAsEveryCallInItIsThroughTheOwnerOfTheMethod() {
+        Expr<String> text = literal("s");
+        // length() is String's own; toString() is Object's, and a String may narrow its result
+        var own = Expressions.call(text, String_.length);
+        var inherited = Expressions.call(text, Object_.toString);
+        var onInherited = Expressions.call(inherited, String_.length);
+        var strings = ArrayToken.of(String_.TOKEN);
+
+        assertThat(Node.isExact(text.node())).isTrue();
+        assertThat(Node.isExact(own.node())).isTrue();
+        assertThat(Node.isExact(inherited.node())).isFalse();
+        assertThat(Node.isExact(onInherited.node())).isFalse();
+        assertThat(Node.isExact(
+                        at(strings, newArray(strings, literal(1)), literal(0)).node()))
+                .isTrue();
+        assertThat(Node.isExact(new Node.ArrayAt(inherited.node(), literal(0).node())))
+                .isFalse();
     }
 
     @Test

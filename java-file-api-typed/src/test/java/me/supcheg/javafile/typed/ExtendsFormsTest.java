@@ -16,6 +16,7 @@ import me.supcheg.javafile.typed.testfacts.java.lang.Thread_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Throwable_;
 import me.supcheg.javafile.typed.testfacts.java.util.AbstractCollection_;
 import me.supcheg.javafile.typed.testfacts.java.util.AbstractList_;
+import me.supcheg.javafile.typed.testfacts.java.util.Collection_;
 import me.supcheg.javafile.typed.testfacts.java.util.concurrent.Callable_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Base_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Carrier_;
@@ -410,5 +411,35 @@ class ExtendsFormsTest {
         assertThat(compiled.invoke("part")).isEqualTo(List.of("item"));
         assertThat((Object[]) compiled.invoke("array")).containsExactly("item", "item");
         assertThat(compiled.invoke("contained")).isEqualTo(true);
+    }
+
+    @Test
+    void aDefaultMethodOfAnInterfaceTheSuperclassImplementsIsCalledBySuper() throws Throwable {
+        // AbstractList declares no stream(): it has the default one of Collection
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var list = new AbstractList_<>(String_.TOKEN);
+                var collection = new Collection_<>(String_.TOKEN);
+                var eh = h.extending(list.token);
+                var get = eh.overriding(list.get_int);
+                var size = eh.overriding(new AbstractCollection_<>(String_.TOKEN).size);
+                var sh = eh.extends_(list.extend(h.self()).get_int(get).size(size));
+                var cb = sh.members();
+                var constructor = cb.declareConstructor();
+                var streamed = cb.declareMethod("streamed", collection.stream.result());
+                var bodies = cb.bodies(constructor, ctor -> ctor.super_(list.super_, (b, self) -> b.end()));
+                bodies.define(get.method(), (b, self, i) -> b.return_(literal("item")));
+                bodies.define(size.method(), (b, self) -> b.return_(literal(2)));
+                bodies.define(streamed, (b, self) -> b.return_(bodies.superCall(self, collection.stream)));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).contains("return super.stream();");
+        assertThat(((java.util.stream.Stream<?>) compiled.invoke("streamed"))
+                        .map(Object::toString)
+                        .toList())
+                .containsExactly("item", "item");
     }
 }

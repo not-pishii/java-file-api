@@ -4,7 +4,6 @@ import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
-import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,10 +139,9 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         record Ended(String form) implements Ending {}
     }
 
-    /// @param parent the block this one is nested in, or `null` for the body of a member and for a block
-    ///     of an expression built outside of any body
-    Block(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
-        this.enclosing = parent == null ? new Enclosing.Root() : new Enclosing.In(parent);
+    /// @param enclosing what this block is nested in
+    Block(Enclosing enclosing, Nesting nesting, String what, ExceptionScope exceptionScope) {
+        this.enclosing = enclosing;
         this.nesting = nesting;
         this.what = what;
         this.exceptionScope = exceptionScope;
@@ -192,8 +190,11 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     }
 
     /// The blocks `use` is, and is nested in, the innermost first; none outside of any body.
-    static Stream<Block<?, ?>> chain(@Nullable Block<?, ?> use) {
-        return Stream.<Block<?, ?>>ofNullable(use).flatMap(block -> block.chain());
+    static Stream<Block<?, ?>> chain(Enclosing use) {
+        return switch (use) {
+            case Enclosing.Root _ -> Stream.empty();
+            case Enclosing.In(var block) -> block.chain();
+        };
     }
 
     /// What this block is to the block it is nested in.

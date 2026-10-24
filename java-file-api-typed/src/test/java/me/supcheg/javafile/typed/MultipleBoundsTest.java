@@ -66,6 +66,36 @@ class MultipleBoundsTest {
     }
 
     @Test
+    void aBoundIsAddedToTheVariableItIsSaidOfAndToNoOtherOfTheClass() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T", COMPARABLE.token),
+                typeParam("U"),
+                new TypedJavaFile.TypedGenericClassSpec2<Comparable<String>, Object>() {
+                    @Override
+                    public <Self, T extends Comparable<String>, U> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T> t, TypeVarToken<U> u) {
+                        var asRunnable = h.bound(t, Runnable_.TOKEN);
+                        var cb = h.extendsObject().members();
+                        var go = cb.declareVoidMethod("go", t, u);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                go,
+                                (b, self, x, y) -> b.exec(voidCall(asRunnable.apply(x), Runnable_.run))
+                                        .end());
+                        return bodies;
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .contains("public final class Probe<T extends Comparable<String> & Runnable, U> {");
+        Ranked ranked = new Ranked();
+        compiled.invoke("go", ranked, "other");
+        assertThat(ranked.runs).isEqualTo(1);
+    }
+
+    @Test
     void aMethodOfABoundIsCalledOnAValueOfAVariableOfOneBoundWithoutACast() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(),

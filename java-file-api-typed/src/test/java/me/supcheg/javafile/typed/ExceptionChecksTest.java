@@ -965,7 +965,7 @@ class ExceptionChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> Scopes.within(root, () -> {
-                        Body<Prim.Int> lambda = Body.lambdaBody(root);
+                        Body<Prim.Int> lambda = Body.lambdaBody(new Block.Enclosing.In(root));
                         return Scopes.within(lambda, () -> lambda.return_(read()));
                     }))
                     .withMessageContaining("in the lambda body in body of method m can throw the checked exception"
@@ -979,7 +979,8 @@ class ExceptionChecksTest {
             Body<Prim.Int> root = Body.root("body of method m");
 
             assertThatCode(() -> Scopes.within(root, () -> {
-                        Body<Prim.Int> lambda = Body.lambdaBody(root, List.of(Exception_.TOKEN));
+                        Body<Prim.Int> lambda =
+                                Body.lambdaBody(new Block.Enclosing.In(root), List.of(Exception_.TOKEN));
                         return Scopes.within(lambda, () -> lambda.return_(read()));
                     }))
                     .doesNotThrowAnyException();
@@ -988,7 +989,7 @@ class ExceptionChecksTest {
         @Test
         void theBodyOfAnExpressionLambdaIsCheckedWhereTheLambdaIsUsed() {
             Body<Prim.Int> root = Body.root("body of method m", declaring(IOException_.TOKEN));
-            Body<Prim.Int> scope = Body.lambdaBody(root);
+            Body<Prim.Int> scope = Body.lambdaBody(new Block.Enclosing.In(root));
             Node lambda = new Node.Lambda(Object_.hashCode, List.of(), new Node.LambdaBody.Value(scope, read().node()));
 
             assertThatIllegalStateException()
@@ -1000,7 +1001,7 @@ class ExceptionChecksTest {
         @Test
         void aLambdaThrowsNothingWhereItStands() {
             VoidBody root = VoidBody.root("body of method m");
-            Body<Prim.Int> scope = Body.lambdaBody(root, List.of(IOException_.TOKEN));
+            Body<Prim.Int> scope = Body.lambdaBody(new Block.Enclosing.In(root), List.of(IOException_.TOKEN));
             Node lambda = new Node.Lambda(Object_.hashCode, List.of(), new Node.LambdaBody.Value(scope, read().node()));
 
             assertThatCode(() -> Scopes.within(root, () -> root.append(new Instr.Exec(lambda))))

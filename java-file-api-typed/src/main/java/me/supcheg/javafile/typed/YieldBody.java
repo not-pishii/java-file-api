@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.TypeToken;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -25,29 +24,26 @@ public final class YieldBody<Y> extends Block<Y, YieldBody<Y>> {
     private final TypeToken<Y> type;
 
     private YieldBody(
-            @Nullable Block<?, ?> parent,
-            Nesting nesting,
-            String what,
-            ExceptionScope exceptionScope,
-            TypeToken<Y> type) {
-        super(parent, nesting, what, exceptionScope);
+            Enclosing enclosing, Nesting nesting, String what, ExceptionScope exceptionScope, TypeToken<Y> type) {
+        super(enclosing, nesting, what, exceptionScope);
         this.type = type;
     }
 
     /// The block of a case of a `switch` expression built in `enclosing`.
     ///
-    /// @param enclosing the block the `switch` is built in, or `null` outside of any body, where nothing
-    ///     catches and nothing declares
+    /// @param enclosing what the `switch` is built in; outside of any body nothing catches and nothing declares
     /// @param type the type of the `switch`
     /// @param what the case, for diagnostics
-    static <Y> YieldBody<Y> ofCase(@Nullable Block<?, ?> enclosing, TypeToken<Y> type, String what) {
+    static <Y> YieldBody<Y> ofCase(Enclosing enclosing, TypeToken<Y> type, String what) {
         return new YieldBody<>(
                 enclosing,
                 Nesting.SWITCH_BLOCK,
                 what,
-                enclosing == null
-                        ? new ExceptionScope.Declares(ExceptionScope.Boundary.INITIALIZER, List.of())
-                        : ExceptionScope.PASSES,
+                switch (enclosing) {
+                    case Enclosing.Root _ ->
+                        new ExceptionScope.Declares(ExceptionScope.Boundary.INITIALIZER, List.of());
+                    case Enclosing.In _ -> ExceptionScope.PASSES;
+                },
                 type);
     }
 
@@ -58,7 +54,7 @@ public final class YieldBody<Y> extends Block<Y, YieldBody<Y>> {
 
     @Override
     YieldBody<Y> child(String what, Nesting nesting, ExceptionScope exceptionScope) {
-        return new YieldBody<>(this, nesting, what, exceptionScope, type);
+        return new YieldBody<>(new Enclosing.In(this), nesting, what, exceptionScope, type);
     }
 
     /// Appends `yield value;` and ends this block: `value` is the value of

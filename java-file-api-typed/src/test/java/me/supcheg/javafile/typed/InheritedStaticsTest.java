@@ -18,6 +18,7 @@ import java.lang.constant.ClassDesc;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
+import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The `static` methods a class has from its supertypes (JLS 8.4.8): those
@@ -142,5 +143,28 @@ class InheritedStaticsTest {
                 "extends Base",
                 "public String util() { return \"x\"; }",
                 "overridden method is static");
+    }
+
+    @Test
+    void aStaticMethodOfTheSignatureOfAStaticOneOfTheSuperclassIsNotDeclared() {
+        // javac takes a static method to hide a static one, and the typed layer declares none that does
+        classUnlikeJavac(
+                IllegalArgumentException.class,
+                () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
+                    @Override
+                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                        var sh = h.extends_(Base_.extend(h.self()));
+                        var cb = sh.members();
+                        var constructor = cb.declareConstructor();
+                        var util = cb.declareStaticMethod("util", String_.TOKEN);
+                        var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
+                        bodies.define(util, b -> b.return_(literal("x")));
+                        return bodies;
+                    }
+                }),
+                "has the signature of the static method util() of me.supcheg.javafile.typed.fixtures.Base, which"
+                        + " the class has from its superclass",
+                "extends Base",
+                "public static String util() { return \"x\"; }");
     }
 }

@@ -842,8 +842,7 @@ final class Lowering {
                                 + " primitive type " + arg.type() + ", which Java would box implicitly; box it"
                                 + " explicitly, by box(...)");
                     }
-                    if ((!onlyCandidate && !Tokens.sameType(arg.type(), param))
-                            || (spreads && !Tokens.sameType(arg.type(), param))) {
+                    if (!Tokens.sameType(arg.type(), param) && (!onlyCandidate || spreads)) {
                         return cast(param, arg, member);
                     }
                     if (spreads) {

@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.RefToken;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -13,8 +12,8 @@ import java.util.List;
 /// @param <R> the result type of the enclosing method or lambda
 public final class Body<R> extends Block<R, Body<R>> {
 
-    private Body(@Nullable Block<?, ?> parent, Nesting nesting, String what, ExceptionScope exceptionScope) {
-        super(parent, nesting, what, exceptionScope);
+    private Body(Enclosing enclosing, Nesting nesting, String what, ExceptionScope exceptionScope) {
+        super(enclosing, nesting, what, exceptionScope);
     }
 
     /// The body of a method that declares no exception: the root of a scope tree.
@@ -27,14 +26,14 @@ public final class Body<R> extends Block<R, Body<R>> {
     /// @param what the member, for diagnostics
     /// @param declares the `throws` clause of the member
     static <R> Body<R> root(String what, ExceptionScope.Declares declares) {
-        return new Body<>(null, Nesting.PLAIN, what, declares);
+        return new Body<>(new Enclosing.Root(), Nesting.PLAIN, what, declares);
     }
 
     /// The block body of a lambda of the generated code, nested in
     /// `enclosing`: a lambda boundary (§6.2), which a [MutVar] or [LoopCtl]
     /// of `enclosing` does not cross. The method of its functional
     /// interface declares no exception.
-    static <R> Body<R> lambdaBody(@Nullable Block<?, ?> enclosing) {
+    static <R> Body<R> lambdaBody(Enclosing enclosing) {
         return lambdaBody(enclosing, List.of());
     }
 
@@ -42,10 +41,9 @@ public final class Body<R> extends Block<R, Body<R>> {
     /// `enclosing`, that may throw what the method of its functional
     /// interface declares, and nothing `enclosing` catches or declares.
     ///
-    /// @param enclosing the block the lambda is built in, or `null` outside of any body
+    /// @param enclosing what the lambda is built in
     /// @param declared the exception types of the `throws` clause of the functional interface's method
-    static <R> Body<R> lambdaBody(
-            @Nullable Block<?, ?> enclosing, List<? extends RefToken<? extends Throwable>> declared) {
+    static <R> Body<R> lambdaBody(Enclosing enclosing, List<? extends RefToken<? extends Throwable>> declared) {
         return new Body<>(
                 enclosing,
                 Nesting.LAMBDA_BODY,
@@ -60,7 +58,7 @@ public final class Body<R> extends Block<R, Body<R>> {
 
     @Override
     Body<R> child(String what, Nesting nesting, ExceptionScope exceptionScope) {
-        return new Body<>(this, nesting, what, exceptionScope);
+        return new Body<>(new Enclosing.In(this), nesting, what, exceptionScope);
     }
 
     /// Appends `return value;` and ends this block.

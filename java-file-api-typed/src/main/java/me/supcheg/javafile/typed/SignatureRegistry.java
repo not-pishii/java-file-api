@@ -431,12 +431,15 @@ final class SignatureRegistry {
     /// (JLS 8.4.1), and the typed layer renders no code javac warns of.
     private static Optional<String> byForm(Heritage.Plain method) {
         return switch (method.arity()) {
-            case Arity.Variable _ ->
-                method.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component())
-                        ? Optional.of("the method is of variable arity and of the element type "
-                                + TypeNames.describe(array.component()) + ", which is not reifiable: javac warns"
-                                + " of possible heap pollution where such a method is declared (JLS 8.4.1)")
-                        : Optional.empty();
+            case Arity.Variable _ -> {
+                // the last parameter of a method of variable arity is an array (Heritage.Plain)
+                TypeRef last = method.params().getLast();
+                yield reifiable(last)
+                        ? Optional.empty()
+                        : Optional.of("the method is of variable arity and its last parameter is of the type "
+                                + TypeNames.describe(last) + ", which is not reifiable: javac warns"
+                                + " of possible heap pollution where such a method is declared (JLS 8.4.1)");
+            }
             case Arity.Fixed _ -> Optional.empty();
         };
     }

@@ -612,8 +612,9 @@ public final class Expressions {
     /// @throws IllegalArgumentException if the cast would be unchecked
     public static <T> Expr<T> castChecked(RefToken<T> type, Expr<? super T> operand) {
         Tokens.requireCheckedCast(operand.type(), type, "castChecked");
-        if (Tokens.sameType(operand.type(), type) && Node.isExact(operand.node())) {
-            // `(T) operand` would be a redundant cast (javac -Xlint:cast).
+        if (Tokens.sameType(operand.type(), type)) {
+            // `(T) operand` would be a redundant cast (javac -Xlint:cast); lowering pins the operand
+            // where the type javac gives it matters.
             return Expr.of(operand.node(), type);
         }
         return Expr.of(new Node.Cast(type, operand(operand)), type);
@@ -679,7 +680,7 @@ public final class Expressions {
             Expr<? extends E> selector,
             TypeToken<R> type,
             Consumer<? super EnumSwitchCases<E, R>> cases) {
-        EnumSwitchCases<E, R> collected = new EnumSwitchCases<>(enumType, type, Scopes.innermostBlock());
+        EnumSwitchCases<E, R> collected = new EnumSwitchCases<>(enumType, type, Scopes.enclosing());
         cases.accept(collected);
         return Expr.of(collected.close(operand(selector)), type);
     }
@@ -893,7 +894,7 @@ public final class Expressions {
     ///     ends with the token of another block
     public static <F, R> Expr<F> lambdaBlock(Sam0<F, R> sam, Function<? super Body<R>, Terminated<R>> body) {
         Body<R> block =
-                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
     }
 
@@ -913,7 +914,7 @@ public final class Expressions {
     public static <F, R, A1> Expr<F> lambdaBlock(
             Sam1<F, R, A1> sam, BiFunction<? super Body<R>, ? super Var<A1>, Terminated<R>> body) {
         Body<R> block =
-                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
     }
@@ -935,7 +936,7 @@ public final class Expressions {
     public static <F, R, A1, A2> Expr<F> lambdaBlock(
             Sam2<F, R, A1, A2> sam, Function3<? super Body<R>, ? super Var<A1>, ? super Var<A2>, Terminated<R>> body) {
         Body<R> block =
-                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         Var<A2> p2 = lambdaParameter(sam.param2(), block);
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
@@ -960,7 +961,7 @@ public final class Expressions {
             Sam3<F, R, A1, A2, A3> sam,
             Function4<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<R>> body) {
         Body<R> block =
-                Body.lambdaBody(Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         Var<A2> p2 = lambdaParameter(sam.param2(), block);
         Var<A3> p3 = lambdaParameter(sam.param3(), block);
@@ -979,8 +980,8 @@ public final class Expressions {
     ///     or can throw a checked exception the method does not declare, where it is built; if the block
     ///     ends with the token of another block
     public static <F> Expr<F> lambdaBlock(VoidSam0<F> sam, Function<? super VoidBody, Terminated<Void>> body) {
-        VoidBody block = VoidBody.lambdaBody(
-                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        VoidBody block =
+                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
     }
 
@@ -998,8 +999,8 @@ public final class Expressions {
     ///     ends with the token of another block
     public static <F, A1> Expr<F> lambdaBlock(
             VoidSam1<F, A1> sam, BiFunction<? super VoidBody, ? super Var<A1>, Terminated<Void>> body) {
-        VoidBody block = VoidBody.lambdaBody(
-                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        VoidBody block =
+                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
     }
@@ -1020,8 +1021,8 @@ public final class Expressions {
     public static <F, A1, A2> Expr<F> lambdaBlock(
             VoidSam2<F, A1, A2> sam,
             Function3<? super VoidBody, ? super Var<A1>, ? super Var<A2>, Terminated<Void>> body) {
-        VoidBody block = VoidBody.lambdaBody(
-                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        VoidBody block =
+                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         Var<A2> p2 = lambdaParameter(sam.param2(), block);
         return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
@@ -1044,8 +1045,8 @@ public final class Expressions {
     public static <F, A1, A2, A3> Expr<F> lambdaBlock(
             VoidSam3<F, A1, A2, A3> sam,
             Function4<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<Void>> body) {
-        VoidBody block = VoidBody.lambdaBody(
-                Scopes.innermostBlock(), sam.method().traits().throwsTypes());
+        VoidBody block =
+                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
         Var<A1> p1 = lambdaParameter(sam.param1(), block);
         Var<A2> p2 = lambdaParameter(sam.param2(), block);
         Var<A3> p3 = lambdaParameter(sam.param3(), block);
@@ -1072,8 +1073,7 @@ public final class Expressions {
     /// checked against that scope right here.
     private static <F> Expr<F> expressionLambda(
             InterfaceToken<F> type, Invocable sam, Function<? super Block<?, ?>, LambdaValue> body) {
-        Body<Object> scope =
-                Body.lambdaBody(Scopes.innermostBlock(), sam.traits().throwsTypes());
+        Body<Object> scope = Body.lambdaBody(Scopes.enclosing(), sam.traits().throwsTypes());
         LambdaValue made = Scopes.within(scope, () -> body.apply(scope));
         ScopeCheck.lambdaValue(made.value(), scope);
         Exceptions.lambdaValue(made.value(), scope);

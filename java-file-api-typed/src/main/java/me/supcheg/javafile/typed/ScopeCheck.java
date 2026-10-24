@@ -1,7 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.List;
 
 /// The scope check of §6.2, run when a statement is appended: every [Var]
@@ -33,30 +31,30 @@ final class ScopeCheck {
     /// Checks the arguments of the explicit invocation a constructor begins with: they are in the
     /// scope of the parameters of the constructor, `block` its body.
     static void check(SuperInvocation invocation, Block<?, ?> block) {
-        operands(invocation.args(), block, block.path());
+        operands(invocation.args(), in(block), block.path());
     }
 
     static void check(Instr instr, Block<?, ?> block) {
         switch (instr) {
-            case Instr.Let(var ignored, var init) -> node(init, block, block.path());
-            case Instr.Exec(var effect) -> node(effect, block, block.path());
-            case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, block, block.path());
+            case Instr.Let(var ignored, var init) -> node(init, in(block), block.path());
+            case Instr.Exec(var effect) -> node(effect, in(block), block.path());
+            case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
-                node(operand, block, block.path());
-            case Instr.While(var ignored, var condition, var ignoredBody) -> node(condition, block, block.path());
-            case Instr.DoWhile(var ignored, var ignoredBody, var condition) -> node(condition, block, block.path());
+                node(operand, in(block), block.path());
+            case Instr.While(var ignored, var condition, var ignoredBody) -> node(condition, in(block), block.path());
+            case Instr.DoWhile(var ignored, var ignoredBody, var condition) -> node(condition, in(block), block.path());
             case Instr.For(var ignored, var ignoredVar, var init, var condition, var update, var body) -> {
-                node(init, block, block.path());
+                node(init, in(block), block.path());
                 // The condition and update are in the scope of the loop variable.
-                node(condition, body, body.path());
-                node(update, body, body.path());
+                node(condition, in(body), body.path());
+                node(update, in(body), body.path());
             }
             case Instr.ForEach(var ignored, var ignoredVar, var iterable, var ignoredBody) ->
-                node(iterable, block, block.path());
-            case Instr.Return(var value) -> node(value.node(), block, block.path());
+                node(iterable, in(block), block.path());
+            case Instr.Return(var value) -> node(value.node(), in(block), block.path());
             case Instr.ReturnNothing ignored -> {}
-            case Instr.Yield(var value) -> node(value, block, block.path());
-            case Instr.Throw(var value, var ignoredType) -> node(value, block, block.path());
+            case Instr.Yield(var value) -> node(value, in(block), block.path());
+            case Instr.Throw(var value, var ignoredType) -> node(value, in(block), block.path());
             case Instr.Break(var ctl) -> loopCtl(ctl, block, "break_");
             case Instr.Continue(var ctl) -> loopCtl(ctl, block, "continue_");
             case Instr.Try ignored -> {}
@@ -70,7 +68,7 @@ final class ScopeCheck {
     /// @param node the expression
     /// @param where where it is used, for the message
     static void standalone(Node node, String where) {
-        node(node, null, where);
+        node(node, new Block.Enclosing.Root(), where);
     }
 
     /// Checks an expression that is the body of an expression lambda, where
@@ -79,10 +77,10 @@ final class ScopeCheck {
     /// @param node the expression
     /// @param scope the lambda-boundary block of the lambda
     static void lambdaValue(Node node, Block<?, ?> scope) {
-        node(node, scope, scope.path());
+        node(node, in(scope), scope.path());
     }
 
-    private static void node(Node node, @Nullable Block<?, ?> use, String where) {
+    private static void node(Node node, Block.Enclosing use, String where) {
         switch (node) {
             case Node.Local(var v) -> requireInScope(v, use, where);
             case Node.Lit ignored -> {}
@@ -135,13 +133,13 @@ final class ScopeCheck {
         }
     }
 
-    private static void operands(List<Node.Operand> operands, @Nullable Block<?, ?> use, String where) {
+    private static void operands(List<Node.Operand> operands, Block.Enclosing use, String where) {
         for (Node.Operand operand : operands) {
             node(operand.node(), use, where);
         }
     }
 
-    private static void target(Node.Target target, @Nullable Block<?, ?> use, String where) {
+    private static void target(Node.Target target, Block.Enclosing use, String where) {
         switch (target) {
             case Node.Target.Local(var v) -> requireInScope(v, use, where);
             case Node.Target.Field(var t, var ignored) -> node(t.node(), use, where);
@@ -156,11 +154,11 @@ final class ScopeCheck {
     /// A lambda's body was checked against its own block when it was built;
     /// what remains is that the lambda is used where the block it was built
     /// in is still in scope.
-    private static void lambda(Node.LambdaBody body, @Nullable Block<?, ?> use, String where) {
+    private static void lambda(Node.LambdaBody body, Block.Enclosing use, String where) {
         Block<?, ?> scope =
                 switch (body) {
                     case Node.LambdaBody.Value(var s, var value) -> {
-                        node(value, s, s.path());
+                        node(value, in(s), s.path());
                         yield s;
                     }
                     case Node.LambdaBody.Block(var block) -> block;
@@ -175,7 +173,7 @@ final class ScopeCheck {
     /// used in. A block of one was checked against the block the `switch`
     /// was built in, as it was built: the `switch` is used in that block, or
     /// in one nested in it that is not across a lambda boundary.
-    private static void arm(Node.Arm arm, @Nullable Block<?, ?> use, String where) {
+    private static void arm(Node.Arm arm, Block.Enclosing use, String where) {
         switch (arm) {
             case Node.Arm.Value(var value) -> node(value, use, where);
             case Node.Arm.Block(var block) -> {
@@ -200,23 +198,23 @@ final class ScopeCheck {
     /// Whether `use`, or a block between it and `owner`, which encloses it,
     /// is the body of a lambda or a block of a `switch`: a block of an
     /// expression.
-    private static boolean nestedSpecially(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+    private static boolean nestedSpecially(Block<?, ?> owner, Block.Enclosing use) {
         return Block.chain(use)
                 .takeWhile(b -> b != owner)
                 .anyMatch(b -> b.nesting().ofExpression());
     }
 
     /// Whether a lambda body is between `use` and `owner`, which encloses it.
-    private static boolean crossesLambda(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+    private static boolean crossesLambda(Block<?, ?> owner, Block.Enclosing use) {
         return Block.chain(use).takeWhile(b -> b != owner).anyMatch(b -> b.nesting() == Block.Nesting.LAMBDA_BODY);
     }
 
     /// Whether `use` is neither `owner` nor a block nested in it.
-    private static boolean outside(Block<?, ?> owner, @Nullable Block<?, ?> use) {
+    private static boolean outside(Block<?, ?> owner, Block.Enclosing use) {
         return Block.chain(use).noneMatch(b -> b == owner);
     }
 
-    private static void requireInScope(Var<?> var, @Nullable Block<?, ?> use, String where) {
+    private static void requireInScope(Var<?> var, Block.Enclosing use, String where) {
         Block<?, ?> owner = var.owner();
         if (!outside(owner, use)) {
             if (var instanceof MutVar<?> && crossesLambda(owner, use)) {
@@ -247,7 +245,7 @@ final class ScopeCheck {
     /// `this` is in scope in the body of the instance member it was handed
     /// to, lambdas in it included (it is effectively final), and nowhere
     /// else: not in another member, not in a field initializer (§6.5).
-    private static void requireThisInScope(Block<?, ?> owner, @Nullable Block<?, ?> use, String where) {
+    private static void requireThisInScope(Block<?, ?> owner, Block.Enclosing use, String where) {
         if (outside(owner, use)) {
             throw new IllegalStateException("the this of the " + owner.path() + " is used in the " + where
                     + ", which is not inside that body: this is handed only to the body of an instance method or"
@@ -255,14 +253,18 @@ final class ScopeCheck {
         }
     }
 
+    private static Block.Enclosing in(Block<?, ?> block) {
+        return new Block.Enclosing.In(block);
+    }
+
     private static void loopCtl(LoopCtl ctl, Block<?, ?> use, String form) {
         Block<?, ?> loopBody = ctl.body();
         String where = use.path();
-        if (outside(loopBody, use)) {
+        if (outside(loopBody, in(use))) {
             throw new IllegalStateException(form + " in the " + where + " targets the loop of the " + loopBody.path()
                     + ", which does not enclose it: the LoopCtl escaped its loop body (§6.3)");
         }
-        Block.chain(use).takeWhile(b -> b != loopBody).forEach(b -> {
+        use.chain().takeWhile(b -> b != loopBody).forEach(b -> {
             switch (b.nesting()) {
                 case PLAIN, FINALLY_BLOCK -> {}
                 case LAMBDA_BODY ->

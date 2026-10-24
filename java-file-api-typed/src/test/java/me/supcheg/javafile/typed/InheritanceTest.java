@@ -456,6 +456,25 @@ class InheritanceTest {
     }
 
     @Test
+    void aMethodThatWouldBeTheBridgeOfAnotherIsRejectedWhicheverIsInheritedFirst() {
+        // compareTo(Object) first, and the compareTo(String) of Comparable<String> bridged as it
+        Supertype clashing = iface(
+                J,
+                method(
+                        Dispatch.ABSTRACT,
+                        J,
+                        "compareTo",
+                        List.of(Types.of(Object.class)),
+                        List.of(ConstantDescs.CD_Object)));
+        Inheritance inheritance = ofObject().with(clashing);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> inheritance.with(real(new Comparable_<>(String_.TOKEN).token)))
+                .withMessageContaining("name clash")
+                .withMessageContaining("the bridge of one would be the other");
+    }
+
+    @Test
     void aSupertypeIsNamedOnce() {
         Inheritance inheritance = ofObject().with(real(Runnable_.TOKEN));
 

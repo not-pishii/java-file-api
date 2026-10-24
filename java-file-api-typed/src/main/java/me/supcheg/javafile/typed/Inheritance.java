@@ -1,9 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage;
-import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -21,7 +21,6 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
-import java.lang.constant.ConstantDescs;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -207,40 +206,25 @@ final class Inheritance {
     private static Map<MethodSignature, Group> merged(Heir heir, List<Supertype> supertypes) {
         String owner = heir.described();
         requireImplementable(heir, supertypes);
-        Set<MethodSignature> ofObject = supertypes.stream()
-                .filter(supertype -> !isInterface(supertype))
-                .flatMap(supertype -> entries(heir, supertype))
-                .filter(entry -> entry.method().visibility() == Heritage.Visibility.PUBLIC
-                        && (entry.method().declaredBy().equals(ConstantDescs.CD_Object)
-                                || entry.method().overrides().contains(ConstantDescs.CD_Object)))
-                .map(Entry::signature)
-                .collect(Collectors.toSet());
         Map<MethodSignature, List<Entry>> bySignature = supertypes.stream()
-                .flatMap(supertype -> isInterface(supertype)
-                        ? entries(heir, supertype).filter(entry -> !ofObject.contains(entry.signature()))
-                        : entries(heir, supertype))
+                .flatMap(supertype -> entries(heir, supertype))
                 .collect(Collectors.groupingBy(Entry::signature, LinkedHashMap::new, Collectors.toList()));
         Map<MethodSignature, List<Entry>> hidden = supertypes.stream()
                 .flatMap(Inheritance::told)
                 .filter(entry -> !reached(heir, entry))
                 .collect(Collectors.groupingBy(Entry::signature));
         Map<MethodSignature, Group> groups = bySignature.entrySet().stream()
-                .collect(
-                        LinkedHashMap::new,
-                        (bySoFar, entry) -> bySoFar.put(
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> new Group(
                                 entry.getKey(),
-                                new Group(
-                                        entry.getKey(),
-                                        inherited(entry.getValue()),
-                                        hidden.getOrDefault(entry.getKey(), List.of()))),
-                        Map::putAll);
+                                inherited(entry.getValue()),
+                                hidden.getOrDefault(entry.getKey(), List.of())),
+                        Invariants::unique,
+                        LinkedHashMap::new));
         groups.values().forEach(group -> requireAgreed(owner, group));
         requireNoBridgeClash(owner, groups);
         return Collections.unmodifiableMap(groups);
-    }
-
-    private static boolean isInterface(Supertype supertype) {
-        return supertype.token() instanceof InterfaceToken<?>;
     }
 
     /// Every declaration of a supertype, as an entry.

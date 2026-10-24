@@ -1,7 +1,5 @@
 package me.supcheg.javafile.typed;
 
-import org.jspecify.annotations.Nullable;
-
 import java.util.function.Supplier;
 
 /// The innermost scope being built, bound for the duration of [#within].
@@ -12,22 +10,22 @@ import java.util.function.Supplier;
 /// any scope is open, a method body is being built, so no class or member
 /// may be declared (§9: a declaration from inside a method body).
 final class Scopes {
-    private static final ScopedValue<Object> SCOPE = ScopedValue.newInstance();
+    private static final ScopedValue<Block<?, ?>> SCOPE = ScopedValue.newInstance();
 
     private Scopes() {}
 
-    static <X> X within(Object scope, Supplier<X> action) {
+    static <X> X within(Block<?, ?> scope, Supplier<X> action) {
         return ScopedValue.where(SCOPE, scope).call(action::get);
     }
 
-    /// The innermost block being built, or `null` outside of any body: where
-    /// an expression that is a scope of its own — a lambda, a `switch` with a
-    /// block — is built, and so what it is nested in.
-    static @Nullable Block<?, ?> innermostBlock() {
-        return SCOPE.isBound() && SCOPE.get() instanceof Block<?, ?> block ? block : null;
+    /// What an expression that is a scope of its own — a lambda, a `switch` with a
+    /// block — is nested in where it is built: the innermost block being built, or
+    /// nothing outside of any body.
+    static Block.Enclosing enclosing() {
+        return SCOPE.isBound() ? new Block.Enclosing.In(SCOPE.get()) : new Block.Enclosing.Root();
     }
 
-    static void requireInnermost(Object scope, String what) {
+    static void requireInnermost(Block<?, ?> scope, String what) {
         if (!SCOPE.isBound() || SCOPE.get() != scope) {
             throw new IllegalStateException(what
                     + " is not the innermost open scope: a builder of an enclosing block was used inside a"
@@ -40,11 +38,10 @@ final class Scopes {
     /// @param what the declaration, for the message
     static void requireNoneOpen(String what) {
         if (SCOPE.isBound()) {
-            Object innermost = SCOPE.get();
-            String where = innermost instanceof Block<?, ?> block ? block.path() : innermost.toString();
-            throw new IllegalStateException("cannot declare " + what + " while the " + where
-                    + " is being built: a class or member is declared outside of any method body, not from"
-                    + " inside one");
+            throw new IllegalStateException(
+                    "cannot declare " + what + " while the " + SCOPE.get().path()
+                            + " is being built: a class or member is declared outside of any method body, not from"
+                            + " inside one");
         }
     }
 }

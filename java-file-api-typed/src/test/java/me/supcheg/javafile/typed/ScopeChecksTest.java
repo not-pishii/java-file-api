@@ -199,7 +199,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> Scopes.within(
                             root,
                             () -> root.letVar(PrimitiveToken.INT, literal(0), mv -> {
-                                Body<Prim.Int> lambda = Body.lambdaBody(root);
+                                Body<Prim.Int> lambda = Body.lambdaBody(new Block.Enclosing.In(root));
                                 return Scopes.within(lambda, () -> lambda.return_(mv));
                             })))
                     .withMessageContaining("mutable local variable of type int of the body of method m is used in"
@@ -214,7 +214,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> Scopes.within(
                             root,
                             () -> root.letVar(PrimitiveToken.INT, literal(0), mv -> {
-                                VoidBody lambda = VoidBody.lambdaBody(root);
+                                VoidBody lambda = VoidBody.lambdaBody(new Block.Enclosing.In(root));
                                 return Scopes.within(lambda, () -> lambda.exec(assign(mv, literal(1))));
                             })))
                     .withMessageContaining("across a lambda boundary");
@@ -227,7 +227,7 @@ class ScopeChecksTest {
             assertThatCode(() -> Scopes.within(
                             root,
                             () -> root.let(PrimitiveToken.INT, literal(0), v -> {
-                                Body<Prim.Int> lambda = Body.lambdaBody(root);
+                                Body<Prim.Int> lambda = Body.lambdaBody(new Block.Enclosing.In(root));
                                 return Scopes.within(lambda, () -> lambda.return_(v));
                             })))
                     .doesNotThrowAnyException();
@@ -241,7 +241,7 @@ class ScopeChecksTest {
                     .isThrownBy(() -> Scopes.within(
                             root,
                             () -> root.while_(literal(true), (loop, ctl) -> {
-                                VoidBody lambda = VoidBody.lambdaBody(loop);
+                                VoidBody lambda = VoidBody.lambdaBody(new Block.Enclosing.In(loop));
                                 Scopes.within(lambda, () -> lambda.break_(ctl));
                             })))
                     .withMessageContaining("break_ in the lambda body in body of while_ in body of method m targets"
@@ -256,7 +256,7 @@ class ScopeChecksTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> Scopes.within(root, () -> {
                         root.if_(literal(true), t -> {
-                            Body<Prim.Int> lambda = Body.lambdaBody(t);
+                            Body<Prim.Int> lambda = Body.lambdaBody(new Block.Enclosing.In(t));
                             Scopes.within(lambda, () -> lambda.return_(literal(1)));
                             lambdaBody.set(lambda);
                         });

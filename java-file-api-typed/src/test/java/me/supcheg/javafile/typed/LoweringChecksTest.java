@@ -69,7 +69,7 @@ class LoweringChecksTest {
         Var<Prim.Int> outer = Var.param(PrimitiveToken.INT, root);
         Lowering lowering = new Lowering(UnsafeFacts.unverifiedClasspath());
         String outerName = lowering.declareUpfront(outer);
-        Body<Prim.Int> lambdaBody = Body.lambdaBody(root);
+        Body<Prim.Int> lambdaBody = Body.lambdaBody(new Block.Enclosing.In(root));
         Scopes.within(lambdaBody, () -> lambdaBody.return_(outer));
         Node lambda = new Node.Lambda(Object_.hashCode, List.of(), new Node.LambdaBody.Block(lambdaBody));
 

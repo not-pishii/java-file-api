@@ -106,6 +106,31 @@ class UpcastLoweringTest {
     }
 
     @Test
+    void aWitnessedExpressionCastToItsOwnTokenIsNotCast() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                Upcast<Self, Object> up = asObject(cb);
+                var same = cb.declareMethod("same", Object_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(same, (b, self) -> {
+                    Expr<Object> witnessed = up.apply(self);
+                    // javac types `this` by the class, and a call through it by the class too
+                    assertThat(Node.isExact(witnessed.node())).isFalse();
+                    assertThat(Node.isExact(call(witnessed, Object_.equals_Object, literal("x"))
+                                    .node()))
+                            .isFalse();
+                    return b.return_(castChecked(Object_.TOKEN, witnessed));
+                });
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).contains("return this;");
+        assertThat(compiled.invoke("same")).isNotNull();
+    }
+
+    @Test
     void aWitnessedExpressionIsOfTheSupertypeWhereJavacChecksItsType() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassSpec() {
             @Override

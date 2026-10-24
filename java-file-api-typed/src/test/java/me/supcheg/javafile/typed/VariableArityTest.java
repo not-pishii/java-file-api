@@ -26,6 +26,7 @@ import java.util.List;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
+import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.compiledClass;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,7 +121,7 @@ class VariableArityTest {
                         return bodies;
                     }
                 }))
-                .withMessageContaining("of variable arity and of the element type")
+                .withMessageContaining("of variable arity and its last parameter is of the type")
                 .withMessageContaining("possible heap pollution");
         CompilationSubject.assertThat(compiledClass(
                         "implements Scattering<List<String>>",
@@ -176,6 +177,32 @@ class VariableArityTest {
 
         assertThat(compiled.source()).contains("return Objects.hash((Object[]) new String[1]);");
         assertThat(compiled.invoke("m")).isEqualTo(java.util.Objects.hash(new Object[1]));
+    }
+
+    @Test
+    void anArrayOfASubtypeGivenForTheOnlyMethodOfVariableArityOfItsNameIsCastToItsType() throws Throwable {
+        // Gathered.count(Object...) with a String[]: javac warns whatever other methods the name has
+        JavacVerdict.javacWarns(
+                "static int m() { return new me.supcheg.javafile.typed.fixtures.Gathered().count(new String[1]); }",
+                "non-varargs call of varargs method with inexact argument type for last parameter");
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var cb = h.extendsObject().members();
+                var m = cb.declareStaticMethod("m", PrimitiveToken.INT);
+                var bodies = cb.bodies();
+                bodies.define(
+                        m,
+                        b -> b.return_(call(
+                                new_(Gathered_.new_),
+                                Gathered_.count_ObjectArray,
+                                newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).contains("new Gathered().count((Object[]) new String[1])");
+        assertThat(compiled.invoke("m")).isEqualTo(1);
     }
 
     @Test

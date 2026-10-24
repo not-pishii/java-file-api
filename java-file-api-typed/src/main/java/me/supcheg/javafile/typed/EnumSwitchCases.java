@@ -3,7 +3,6 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.TypeToken;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -76,7 +75,7 @@ import java.util.stream.Stream;
 public final class EnumSwitchCases<E, R> {
     private final EnumToken<E> enumType;
     private final TypeToken<R> type;
-    private final @Nullable Block<?, ?> enclosing;
+    private final Block.Enclosing enclosing;
     private Phase phase = new Phase.Open(List.of());
 
     private sealed interface Phase {
@@ -95,8 +94,8 @@ public final class EnumSwitchCases<E, R> {
 
     /// @param enumType the enum of the selector
     /// @param type the type of the `switch`
-    /// @param enclosing the block the `switch` is built in, or `null` outside of any body
-    EnumSwitchCases(EnumToken<E> enumType, TypeToken<R> type, @Nullable Block<?, ?> enclosing) {
+    /// @param enclosing what the `switch` is built in: a block, or nothing outside of any body
+    EnumSwitchCases(EnumToken<E> enumType, TypeToken<R> type, Block.Enclosing enclosing) {
         this.enumType = enumType;
         this.type = type;
         this.enclosing = enclosing;
@@ -299,6 +298,11 @@ public final class EnumSwitchCases<E, R> {
 
     /// The expression and where it is, for messages: `switch_ over p.Day in the body of method m`.
     private String statement() {
-        return "switch_ over " + enumType + (enclosing == null ? "" : " in the " + enclosing.path());
+        return "switch_ over "
+                + enumType
+                + switch (enclosing) {
+                    case Block.Enclosing.Root _ -> "";
+                    case Block.Enclosing.In(var block) -> " in the " + block.path();
+                };
     }
 }

@@ -186,6 +186,9 @@ me/supcheg/javafile/typed/Tokens.java :: case PrimitiveToken<?, ?, ?> _, TypeVar
 me/supcheg/javafile/typed/ClassDeclaration.java :: case Phase.Heading<Self> _, Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ ->
     a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
+    a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
+
 # ---- what cannot happen: worded checks neither a test nor a type removes ----
 
 me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
@@ -202,6 +205,12 @@ me/supcheg/javafile/typed/SuperSite.java :: phase instanceof Phase.Invoked(var i
 
 me/supcheg/javafile/typed/Exceptions.java :: block.enclosing() instanceof Block.Enclosing.In(var parent) ? Optional.of(parent) : Optional.empty(),
     a block that hands its exceptions on is nested in one: the body of a member or of a lambda declares what it throws
+
+me/supcheg/javafile/typed/Tokens.java :: && target.typeRef() instanceof ParameterizedTypeRef parameterized)) {
+    a declared type that gets here is not reifiable (requireCheckedCast returns before for a reifiable one), and a declared type that is not reifiable is a parameterization (isReifiable): the test only binds it
+
+me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()));
+    the type arguments of a supertype in the facts are types and never wildcards (JLS 8.1.4), so each is tested as an exact one
 
 # ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
 
@@ -327,62 +336,3 @@ me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || overridden.getK
 
 me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(
     untested when the gate was introduced
-
-# ---- typed — part II/III: temporary, untested conditions of the typed layer ----
-
-me/supcheg/javafile/typed/ClassDeclaration.java :: mine == bounded ? new Variable(mine.token(), mine.first(), with(mine.more(), bound)) : mine)
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/EnumSwitchCases.java :: return "switch_ over " + enumType + (enclosing == null ? "" : " in the " + enclosing.path());
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Exceptions.java :: case Coverage.Uncovered(ExceptionScope.Declares(var boundary, var declared)) ->
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Exceptions.java :: case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Exceptions.java :: thrown.entrySet().stream().filter(e -> e.getKey() != binding),
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Expressions.java :: if (Tokens.sameType(operand.type(), type) && Node.isExact(operand.node())) {
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Inheritance.java :: .contains(group.signature().params())
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Inheritance.java :: ? entries(heir, supertype).filter(entry -> !ofObject.contains(entry.signature()))
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Lowering.java :: || (spreads && !Tokens.sameType(arg.type(), param))) {
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Node.java :: isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Scopes.java :: String where = innermost instanceof Block<?, ?> block ? block.path() : innermost.toString();
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Scopes.java :: return SCOPE.isBound() && SCOPE.get() instanceof Block<?, ?> block ? block : null;
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/SignatureRegistry.java :: if (member.kind() == InvocableKind.STATIC_METHOD && standing != Heritage.Dispatch.STATIC) {
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/SignatureRegistry.java :: method.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component())
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Superclass.java :: (standing.ofInterface() ? group.entries().stream() : Stream.of(standing))
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Tokens.java :: && target.typeRef() instanceof ParameterizedTypeRef parameterized)) {
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()));
-    untested when the gate was introduced; belongs to part II/III
-
-me/supcheg/javafile/typed/Tokens.java :: .anyMatch(a -> a instanceof ExactTypeArg(TypeVarRef var)
-    untested when the gate was introduced; belongs to part II/III

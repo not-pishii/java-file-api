@@ -615,9 +615,11 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         return slots.stream()
                 .flatMap(slot -> switch (slot) {
                     case Slot.Awaiting awaiting when awaiting.declared().fact() == member -> Stream.of(awaiting);
+                    case Slot.Awaiting _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.Blank _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Defined(Member.Callable declared, var _)
                     when declared.fact() == member -> throw alreadyDefined(what);
-                    case Slot _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.Defined _ -> Stream.<Slot.Awaiting>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
@@ -630,9 +632,11 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         return slots.stream()
                 .flatMap(slot -> switch (slot) {
                     case Slot.Blank blank when blank.declared().fact() == field -> Stream.of(blank);
+                    case Slot.Blank _ -> Stream.<Slot.Blank>empty();
+                    case Slot.Awaiting _ -> Stream.<Slot.Blank>empty();
                     case Slot.Defined(Member.Field declared, var _)
                     when declared.fact() == field -> throw alreadyDefined(what);
-                    case Slot _ -> Stream.<Slot.Blank>empty();
+                    case Slot.Defined _ -> Stream.<Slot.Blank>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));

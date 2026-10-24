@@ -113,9 +113,7 @@ final class Exceptions {
         static final Rethrows UNKNOWN = new Rethrows(Map.of());
 
         Rethrows with(Var<?> binding, List<ExceptionType> types) {
-            return new Rethrows(Stream.concat(
-                            thrown.entrySet().stream().filter(e -> e.getKey() != binding),
-                            Stream.of(Map.entry(binding, types)))
+            return new Rethrows(Stream.concat(thrown.entrySet().stream(), Stream.of(Map.entry(binding, types)))
                     .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)));
         }
 
@@ -220,11 +218,13 @@ final class Exceptions {
     private static void requireCovered(Raise raise, Block<?, ?> block) {
         switch (coverage(raise.type(), block)) {
             case Coverage.Covered _ -> {}
-            case Coverage.Uncovered(ExceptionScope.Declares(var boundary, var declared)) ->
+            case Coverage.Uncovered uncovered ->
                 throw new IllegalStateException(raise.by() + " in the " + block.path()
                         + " can throw the checked exception " + raise.type()
-                        + ", which no catch_ of an enclosing try catches and " + boundary.doesNotDeclare()
-                        + " (declared: " + describe(declared) + "): " + boundary.advice() + " (JLS 11.2.3)");
+                        + ", which no catch_ of an enclosing try catches and "
+                        + uncovered.by().boundary().doesNotDeclare()
+                        + " (declared: " + describe(uncovered.by().types()) + "): "
+                        + uncovered.by().boundary().advice() + " (JLS 11.2.3)");
         }
     }
 
@@ -471,9 +471,12 @@ final class Exceptions {
             case Node.SuperCall(var _, var _, var method, var _) -> new Act.Invokes(method);
             case Node.StaticCall(var method, var _) -> new Act.Invokes(method);
             case Node.New(var ctor, var _) -> new Act.Invokes(ctor);
-            case Node.Lambda(var _, var _, Node.LambdaBody.Value(var scope, var value)) -> new Act.Defers(scope, value);
-            // The statements of a block lambda are checked as they are appended to its block.
-            case Node.Lambda(var _, var _, Node.LambdaBody.Block _) -> new Act.Computes();
+            case Node.Lambda lambda ->
+                switch (lambda.body()) {
+                    case Node.LambdaBody.Value(var scope, var value) -> new Act.Defers(scope, value);
+                    // The statements of a block lambda are checked as they are appended to its block.
+                    case Node.LambdaBody.Block _ -> new Act.Computes();
+                };
             case Node.Lit _ -> new Act.Computes();
             case Node.Null _ -> new Act.Computes();
             case Node.Local _ -> new Act.Computes();
