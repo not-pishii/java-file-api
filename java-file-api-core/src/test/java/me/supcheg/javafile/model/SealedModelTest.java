@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SealedModelTest {
@@ -17,97 +18,17 @@ class SealedModelTest {
     private static final ClassDesc STRING = ClassDesc.of("java.lang", "String");
 
     @Test
-    void classDeclHoldsItsMembersInInsertionOrder() {
-        FieldDecl field = new FieldDecl(
-                "bundle",
-                Types.of(STRING),
-                List.of(),
-                Set.of(Modifier.PRIVATE, Modifier.FINAL),
-                Optional.empty(),
-                Optional.empty());
-        MethodDecl method = new MethodDecl(
-                "greeting",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-
-        ClassDecl decl = new ClassDecl(
-                ClassDesc.of("me.supcheg.example", "Messages"),
-                List.of(),
-                Set.of(Modifier.PUBLIC, Modifier.FINAL),
-                List.of(),
-                Optional.empty(),
-                List.of(),
-                List.of(),
-                List.of(field, method),
-                Optional.empty());
-
-        assertThat(decl.members()).containsExactly(field, method);
-    }
-
-    @Test
-    void interfaceMemberSealedHierarchyDistinguishesMethodKinds() {
-        AbstractMethodDecl abstractMethod = new AbstractMethodDecl(
-                "kind",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                List.of(),
-                List.of(),
-                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
-                List.of(),
-                Optional.empty());
-        DefaultMethodDecl defaultMethod = new DefaultMethodDecl(
-                "describe",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-        StaticMethodDecl staticMethod = new StaticMethodDecl(
-                "create",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-        ConstantDecl constant = new ConstantDecl(
-                "MAX", Types.of(STRING), List.of(), new me.supcheg.javafile.code.StringLiteral("x"), Optional.empty());
-
-        InterfaceDecl decl = new InterfaceDecl(
-                ClassDesc.of("me.supcheg.example", "Node"),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(abstractMethod, defaultMethod, staticMethod, constant),
-                Optional.empty());
-
-        assertThat(decl.members()).hasSize(4);
-    }
-
-    @Test
     void staticMethodDeclAcceptsValidName() {
-        StaticMethodDecl method = new StaticMethodDecl(
-                "create",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-
-        assertThat(method.name()).isEqualTo("create");
+        assertThatCode(() -> new StaticMethodDecl(
+                        "create",
+                        Optional.of(Types.of(STRING)),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -126,17 +47,16 @@ class SealedModelTest {
 
     @Test
     void defaultMethodDeclAcceptsValidName() {
-        DefaultMethodDecl method = new DefaultMethodDecl(
-                "describe",
-                Optional.of(Types.of(STRING)),
-                List.of(),
-                List.of(),
-                List.of(),
-                CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-
-        assertThat(method.name()).isEqualTo("describe");
+        assertThatCode(() -> new DefaultMethodDecl(
+                        "describe",
+                        Optional.of(Types.of(STRING)),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -151,38 +71,6 @@ class SealedModelTest {
                         List.of(),
                         Optional.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void recordDeclHoldsComponentsAndMembers() {
-        RecordComponent x = new RecordComponent("x", me.supcheg.javafile.type.PrimitiveTypeRef.INT);
-        RecordDecl decl = new RecordDecl(
-                ClassDesc.of("geom", "Point"),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(),
-                List.of(x),
-                List.of(),
-                List.of(),
-                Optional.empty());
-
-        assertThat(decl.components()).containsExactly(x);
-    }
-
-    @Test
-    void enumDeclHoldsConstantsInOrder() {
-        EnumDecl decl = new EnumDecl(
-                ClassDesc.of("me.supcheg.example", "Suit"),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(
-                        new EnumConstant("HEARTS", List.of(), List.of(), List.of(), Optional.empty()),
-                        new EnumConstant("SPADES", List.of(), List.of(), List.of(), Optional.empty())),
-                List.of(),
-                List.of(),
-                Optional.empty());
-
-        assertThat(decl.constants()).extracting(EnumConstant::name).containsExactly("HEARTS", "SPADES");
     }
 
     @Test

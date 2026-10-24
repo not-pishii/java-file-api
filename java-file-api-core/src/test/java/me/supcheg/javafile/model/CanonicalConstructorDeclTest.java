@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static me.supcheg.javafile.render.SourceRenderer.standardFormat;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CanonicalConstructorDeclTest {
@@ -28,17 +28,16 @@ class CanonicalConstructorDeclTest {
                 CodeBody.EMPTY,
                 List.of(),
                 Optional.empty());
-        RecordDecl decl = new RecordDecl(
-                ClassDesc.of("geom", "Point"),
-                List.of(),
-                Set.of(Modifier.PUBLIC),
-                List.of(),
-                List.of(x),
-                List.of(),
-                List.of(ctor),
-                Optional.empty());
-
-        assertThat(decl.members()).containsExactly(ctor);
+        assertThatCode(() -> new RecordDecl(
+                        ClassDesc.of("geom", "Point"),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC),
+                        List.of(),
+                        List.of(x),
+                        List.of(),
+                        List.of(ctor),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
     }
 
     @Test

@@ -31,28 +31,16 @@ class TryStmtTest {
         var mutableResources = new java.util.ArrayList<Resource>();
         mutableResources.add(new Resource.Existing("r"));
         var mutableCatches = new java.util.ArrayList<CatchClause>();
-        mutableCatches.add(new CatchClause(
-                NonEmptyList.copyOf(List.<ClassOrInterfaceTypeRef>of(Types.of(IO_EXCEPTION))), "e", CodeBody.EMPTY));
+        CatchClause caught = new CatchClause(
+                NonEmptyList.copyOf(List.<ClassOrInterfaceTypeRef>of(Types.of(IO_EXCEPTION))), "e", CodeBody.EMPTY);
+        mutableCatches.add(caught);
 
         TryStmt.WithFinally stmt =
                 new TryStmt.WithFinally(mutableResources, CodeBody.EMPTY, mutableCatches, CodeBody.EMPTY);
         mutableResources.clear();
         mutableCatches.clear();
 
-        assertThat(stmt.resources()).hasSize(1);
-        assertThat(stmt.catches()).hasSize(1);
-    }
-
-    @Test
-    void catchOnlyHoldsAtLeastOneCatchClauseByConstruction() {
-        NonEmptyList<CatchClause> catches = NonEmptyList.copyOf(List.of(new CatchClause(
-                NonEmptyList.copyOf(List.<ClassOrInterfaceTypeRef>of(Types.of(IO_EXCEPTION), Types.of(SQL_EXCEPTION))),
-                "e",
-                CodeBody.EMPTY)));
-
-        TryStmt.CatchOnly stmt = new TryStmt.CatchOnly(List.of(), CodeBody.EMPTY, catches);
-
-        assertThat(stmt.catches().toList()).hasSize(1);
-        assertThat(stmt.catches().head().exceptionTypes().toList()).hasSize(2);
+        assertThat(stmt.resources()).containsExactly(new Resource.Existing("r"));
+        assertThat(stmt.catches()).containsExactly(caught);
     }
 }

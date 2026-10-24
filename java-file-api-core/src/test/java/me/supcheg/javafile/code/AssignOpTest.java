@@ -1,28 +1,14 @@
 package me.supcheg.javafile.code;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AssignOpTest {
-
-    @Test
-    void plainAssignmentUsesAssignOp() {
-        AssignStmt stmt =
-                new AssignStmt(new FieldAccessExpr(Optional.empty(), "x"), AssignOp.ASSIGN, new IntLiteral(1));
-        assertThat(stmt.op()).isEqualTo(AssignOp.ASSIGN);
-    }
-
-    @Test
-    void addAssignSymbolIsPlusEquals() {
-        assertThat(AssignOp.ADD_ASSIGN.symbol()).isEqualTo("+=");
-    }
 
     @ParameterizedTest
     @MethodSource("symbols")

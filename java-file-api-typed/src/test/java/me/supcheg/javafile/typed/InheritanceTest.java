@@ -200,10 +200,13 @@ class InheritanceTest {
         Inheritance inheritance =
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, I))).with(iface(J, m(Dispatch.ABSTRACT, J, I)));
 
-        assertThat(inheritance.group(sig("m")).orElseThrow())
-                .matches(group -> bodies(group).isEmpty())
-                .matches(group -> group.standing() == Dispatch.ABSTRACT)
-                .matches(group -> group.entries().size() == 1);
+        assertThat(inheritance.group(sig("m")).orElseThrow()).satisfies(group -> {
+            assertThat(bodies(group)).isEmpty();
+            assertThat(group.standing()).isEqualTo(Dispatch.ABSTRACT);
+            assertThat(group.entries())
+                    .singleElement()
+                    .matches(entry -> entry.method().declaredBy().equals(J));
+        });
     }
 
     @Test
@@ -299,7 +302,9 @@ class InheritanceTest {
         Inheritance inheritance =
                 ofObject().with(iface(I, m(Dispatch.DEFAULT, K))).with(iface(J, m(Dispatch.DEFAULT, K)));
 
-        assertThat(bodies(inheritance.group(sig("m")).orElseThrow())).hasSize(1);
+        assertThat(bodies(inheritance.group(sig("m")).orElseThrow()))
+                .singleElement()
+                .matches(entry -> entry.method().declaredBy().equals(K));
     }
 
     @Test

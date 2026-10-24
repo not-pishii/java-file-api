@@ -60,7 +60,10 @@ class AnonymousClassBuilderTest {
                 .withField("seen", PrimitiveTypeRef.INT, fb -> {})
                 .build();
 
-        assertThat(body).hasSize(1).allMatch(FieldDecl.class::isInstance);
+        assertThat(body).singleElement().isInstanceOfSatisfying(FieldDecl.class, field -> {
+            assertThat(field.name()).isEqualTo("seen");
+            assertThat(field.type()).isEqualTo(PrimitiveTypeRef.INT);
+        });
     }
 
     @Test

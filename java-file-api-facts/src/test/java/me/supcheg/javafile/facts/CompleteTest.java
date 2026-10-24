@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -76,8 +78,15 @@ class CompleteTest {
 
     @Test
     void theFamiliesAreAllTheImplementationsThereAre() {
+        List<String> families = IntStream.rangeClosed(0, 12)
+                .boxed()
+                .flatMap(arity -> Stream.of("Implementation" + arity, "VoidImplementation" + arity))
+                .toList();
+
         assertThat(Implementation.class.getPermittedSubclasses())
-                .hasSize(26)
+                .extracting(Class::getSimpleName)
+                .containsExactlyInAnyOrderElementsOf(families);
+        assertThat(Implementation.class.getPermittedSubclasses())
                 .allSatisfy(family -> assertThat(family.getConstructors()).isEmpty());
         assertThat(Complete.class.getConstructors()).isEmpty();
         assertThat(Steps.class.getConstructors()).isEmpty();

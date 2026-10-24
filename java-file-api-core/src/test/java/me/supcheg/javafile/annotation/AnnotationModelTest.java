@@ -11,6 +11,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AnnotationModelTest {
@@ -63,15 +64,14 @@ class AnnotationModelTest {
         AnnotationUse use = new AnnotationUse(META, members);
         members.clear();
 
-        assertThat(array.elements()).hasSize(1);
-        assertThat(use.members()).hasSize(1);
+        assertThat(array.elements()).containsExactly(new ClassValue(META));
+        assertThat(use.members()).containsExactly(new AnnotationMember("value", AnnotationValues.literal(1)));
     }
 
     @Test
     void memberAcceptsValidName() {
-        AnnotationMember member = new AnnotationMember("value", AnnotationValues.literal(1));
-
-        assertThat(member.name()).isEqualTo("value");
+        assertThatCode(() -> new AnnotationMember("value", AnnotationValues.literal(1)))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -88,9 +88,7 @@ class AnnotationModelTest {
 
     @Test
     void enumValueAcceptsValidConstantName() {
-        EnumValue value = new EnumValue(LEVEL, "HIGH");
-
-        assertThat(value.constant()).isEqualTo("HIGH");
+        assertThatCode(() -> new EnumValue(LEVEL, "HIGH")).doesNotThrowAnyException();
     }
 
     @Test

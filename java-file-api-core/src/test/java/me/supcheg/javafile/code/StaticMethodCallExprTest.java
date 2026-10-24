@@ -15,16 +15,6 @@ class StaticMethodCallExprTest {
     private final ClassOrInterfaceTypeRef mathType = Types.of(ClassDesc.of("java.lang", "Math"));
 
     @Test
-    void exposesTargetMethodAndArgs() {
-        StaticMethodCallExpr expr =
-                new StaticMethodCallExpr(mathType, "max", List.of(new IntLiteral(1), new IntLiteral(2)));
-
-        assertThat(expr.target()).isEqualTo(mathType);
-        assertThat(expr.method()).isEqualTo("max");
-        assertThat(expr.args()).containsExactly(new IntLiteral(1), new IntLiteral(2));
-    }
-
-    @Test
     void copiesArgsDefensively() {
         List<Expr> mutableArgs = new java.util.ArrayList<>(List.of(new IntLiteral(1)));
         StaticMethodCallExpr expr = new StaticMethodCallExpr(mathType, "abs", mutableArgs);

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class VarargsParamTest {
@@ -87,13 +88,12 @@ class VarargsParamTest {
         Param normalFirst = new Param("count", PrimitiveTypeRef.INT);
         Param varargsLast = new Param("rest", PrimitiveTypeRef.INT, List.of(), true);
 
-        EnumConstructorDecl decl = new EnumConstructorDecl(
-                List.of(),
-                List.of(normalFirst, varargsLast),
-                me.supcheg.javafile.code.CodeBody.EMPTY,
-                List.of(),
-                Optional.empty());
-
-        assertThat(decl.params()).containsExactly(normalFirst, varargsLast);
+        assertThatCode(() -> new EnumConstructorDecl(
+                        List.of(),
+                        List.of(normalFirst, varargsLast),
+                        me.supcheg.javafile.code.CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
     }
 }

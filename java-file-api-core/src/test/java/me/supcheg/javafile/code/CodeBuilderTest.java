@@ -304,7 +304,8 @@ class CodeBuilderTest {
         cb.doWhile_(lt(field("i"), literal(10)), b -> b.exprStatement(postIncrement(field("i"))));
 
         DoWhileStmt stmt = (DoWhileStmt) cb.build().statements().get(0);
-        assertThat(stmt.body().statements()).hasSize(1);
+        assertThat(stmt.body().statements()).containsExactly(new ExprStmt(postIncrement(field("i"))));
+        assertThat(stmt.condition()).isEqualTo(lt(field("i"), literal(10)));
     }
 
     @Test

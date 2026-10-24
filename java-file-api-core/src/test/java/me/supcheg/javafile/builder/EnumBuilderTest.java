@@ -1,5 +1,6 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumConstructorDecl;
@@ -7,6 +8,7 @@ import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.MethodDecl;
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -92,7 +94,10 @@ class EnumBuilderTest {
 
         EnumDecl decl = builder.build();
 
-        assertThat(decl.constants().get(0).body()).hasSize(1);
+        assertThat(decl.constants().get(0).body())
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        MethodDecl.class, method -> assertThat(method.name()).isEqualTo("apply"));
     }
 
     @Test
@@ -228,11 +233,13 @@ class EnumBuilderTest {
 
         EnumDecl decl = builder.build();
 
-        assertThat(decl.annotations()).hasSize(3);
-        assertThat(decl.constants().get(0).annotations()).hasSize(3);
+        assertThat(decl.annotations()).extracting(AnnotationUse::type).containsExactly(deprecated, since, preBuilt);
+        assertThat(decl.constants().get(0).annotations())
+                .extracting(AnnotationUse::type)
+                .containsExactly(deprecated, since, preBuilt);
         EnumConstructorDecl ctor = (EnumConstructorDecl) decl.members().get(0);
-        assertThat(ctor.annotations()).hasSize(3);
-        assertThat(ctor.params()).hasSize(1);
+        assertThat(ctor.annotations()).extracting(AnnotationUse::type).containsExactly(deprecated, since, preBuilt);
+        assertThat(ctor.params()).extracting(Param::name).containsExactly("x");
     }
 
     @Test

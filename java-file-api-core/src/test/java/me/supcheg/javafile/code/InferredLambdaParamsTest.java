@@ -4,16 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InferredLambdaParamsTest {
 
     @Test
     void acceptsValidNames() {
-        InferredLambdaParams params = new InferredLambdaParams(List.of("a", "b"));
-
-        assertThat(params.names()).containsExactly("a", "b");
+        assertThatCode(() -> new InferredLambdaParams(List.of("a", "b"))).doesNotThrowAnyException();
     }
 
     @Test

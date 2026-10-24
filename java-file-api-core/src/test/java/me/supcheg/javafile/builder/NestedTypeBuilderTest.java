@@ -43,37 +43,36 @@ class NestedTypeBuilderTest {
     }
 
     @Test
-    void nestedDeclarationIsAppendedAsAMember() {
-        ClassDecl decl = new ClassBuilder(OUTER)
-                .withNestedRecord(POINT, r -> r.withComponent("x", PrimitiveTypeRef.INT))
-                .build();
-
-        assertThat(decl.members()).hasSize(1).allMatch(RecordDecl.class::isInstance);
-    }
-
-    @Test
     void allFourBuildersAcceptNestedTypes() {
         ClassDesc iface = ClassDesc.of("com.example", "Outer$Api");
         assertThat(new ClassBuilder(OUTER)
                         .withNestedInterface(iface, i -> {})
                         .build()
                         .members())
-                .hasSize(1);
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        InterfaceDecl.class, nested -> assertThat(nested.desc()).isEqualTo(iface));
         assertThat(new InterfaceBuilder(OUTER)
                         .withNestedInterface(iface, i -> {})
                         .build()
                         .members())
-                .hasSize(1);
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        InterfaceDecl.class, nested -> assertThat(nested.desc()).isEqualTo(iface));
         assertThat(new RecordBuilder(OUTER)
                         .withNestedInterface(iface, i -> {})
                         .build()
                         .members())
-                .hasSize(1);
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        InterfaceDecl.class, nested -> assertThat(nested.desc()).isEqualTo(iface));
         assertThat(new EnumBuilder(OUTER)
                         .withNestedInterface(iface, i -> {})
                         .build()
                         .members())
-                .hasSize(1);
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        InterfaceDecl.class, nested -> assertThat(nested.desc()).isEqualTo(iface));
     }
 
     @Test

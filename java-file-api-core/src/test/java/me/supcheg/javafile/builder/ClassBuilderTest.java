@@ -1,5 +1,6 @@
 package me.supcheg.javafile.builder;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.model.AbstractMethodDecl;
@@ -8,6 +9,7 @@ import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -230,15 +232,15 @@ class ClassBuilderTest {
         ClassDecl decl = builder.build();
 
         FieldDecl field = (FieldDecl) decl.members().get(0);
-        assertThat(field.annotations()).hasSize(3);
+        assertThat(field.annotations()).extracting(AnnotationUse::type).containsExactly(marker, withSpec, preBuilt);
 
         MethodDecl method = (MethodDecl) decl.members().get(1);
-        assertThat(method.annotations()).hasSize(3);
-        assertThat(method.params()).hasSize(1);
+        assertThat(method.annotations()).extracting(AnnotationUse::type).containsExactly(marker, withSpec, preBuilt);
+        assertThat(method.params()).extracting(Param::name).containsExactly("name");
 
         ConstructorDecl ctor = (ConstructorDecl) decl.members().get(2);
-        assertThat(ctor.annotations()).hasSize(3);
-        assertThat(ctor.params()).hasSize(1);
+        assertThat(ctor.annotations()).extracting(AnnotationUse::type).containsExactly(marker, withSpec, preBuilt);
+        assertThat(ctor.params()).extracting(Param::name).containsExactly("name");
     }
 
     @Test
