@@ -96,10 +96,11 @@ final class Tokens {
     /// static type claims — heap pollution through a generic array.
     ///
     /// @param type the component type
+    /// @param where the construct, for the message
     /// @throws IllegalArgumentException if `type` is not reifiable
-    static void requireReifiableComponent(TypeToken<?> type) {
+    static void requireReifiableComponent(TypeToken<?> type, String where) {
         if (!isReifiable(type)) {
-            throw new IllegalArgumentException("newArray needs a reifiable type (JLS 4.7), but " + type
+            throw new IllegalArgumentException(where + " needs a reifiable type (JLS 4.7), but " + type
                     + " is not: its type arguments are not checked at run time. Use a non-generic type, or a"
                     + " parameterization with unbounded wildcards only, e.g. List<?>");
         }

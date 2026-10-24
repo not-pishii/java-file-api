@@ -51,7 +51,9 @@ import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
@@ -379,8 +381,37 @@ public final class Expressions {
     /// @return the new array
     /// @throws IllegalArgumentException if the element type is not reifiable
     public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length) {
-        Tokens.requireReifiableComponent(type.component());
+        Tokens.requireReifiableComponent(type.component(), "newArray");
         return Expr.of(new Node.NewArray(type.component(), length.node()), type);
+    }
+
+    /// Creates an array with its elements, `new E[] {e1, e2}`; where it initializes a variable or a
+    /// field of exactly its type the elements stand alone, `E[] v = {e1, e2}`. The element type must be
+    /// reifiable, as that of [#newArray] is, and an element of an array of arrays that is an array of
+    /// that type is the `{...}` of its own.
+    ///
+    /// No element is boxed implicitly: a value of a primitive type is an element of an array of that
+    /// primitive type alone.
+    ///
+    /// @param type the array type
+    /// @param elements the elements
+    /// @param <A> the array type
+    /// @param <E> the element type
+    /// @return the new array
+    /// @throws IllegalArgumentException if the element type is not reifiable, or an element is of a
+    ///     primitive type where the element type is not
+    @SafeVarargs
+    public static <A, E> Expr<A> newArrayOf(ArrayToken<A, E> type, Expr<? extends E>... elements) {
+        Tokens.requireReifiableComponent(type.component(), "newArrayOf");
+        List<Expr<? extends E>> given = listed(elements.length, i -> elements[i]);
+        given.forEach(element -> Tokens.requireNoBoxing(element.type(), type.component(), "newArrayOf"));
+        return Expr.of(new Node.NewArrayOf(type, given.stream().map(Expr::node).toList()), type);
+    }
+
+    /// The elements of a parameter of variable arity of a `@SafeVarargs` method, read one by one: the
+    /// array itself is passed nowhere, which javac would warn of as possible heap pollution.
+    private static <T> List<T> listed(int length, IntFunction<T> at) {
+        return IntStream.range(0, length).mapToObj(at).toList();
     }
 
     // ------------------------------------------------------------------

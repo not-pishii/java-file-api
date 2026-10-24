@@ -99,6 +99,7 @@ final class Constants {
                     Node.ArrayAt _,
                     Node.ArrayLength _,
                     Node.NewArray _,
+                    Node.NewArrayOf _,
                     Node.Upcast _,
                     Node.Lambda _,
                     Node.Switch _,

@@ -108,6 +108,7 @@ final class ScopeCheck {
             }
             case Node.ArrayLength(var array) -> node(array, use, where);
             case Node.NewArray(var ignored, var length) -> node(length, use, where);
+            case Node.NewArrayOf(var ignored, var elements) -> elements.forEach(element -> node(element, use, where));
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> {
                 node(condition, use, where);
                 node(whenTrue, use, where);

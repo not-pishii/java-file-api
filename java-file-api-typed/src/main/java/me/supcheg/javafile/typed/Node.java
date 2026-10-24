@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.ConstantLiteral;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
@@ -114,6 +115,17 @@ sealed interface Node {
 
     /// An array creation, `new T[length]`.
     record NewArray(TypeToken<?> component, Node length) implements Exact {}
+
+    /// An array creation with an initializer, `new T[] {e1, e2}`; lowering renders the `{e1, e2}`
+    /// alone where the declaration it initializes tells the type.
+    ///
+    /// @param type the array type
+    /// @param elements the elements, each assignable to the component of `type` without boxing
+    record NewArrayOf(ArrayToken<?, ?> type, List<Node> elements) implements Exact {
+        public NewArrayOf {
+            elements = List.copyOf(elements);
+        }
+    }
 
     /// A conditional, `c ? a : b`.
     record Cond(Node condition, Node whenTrue, Node whenFalse) implements Exact {}

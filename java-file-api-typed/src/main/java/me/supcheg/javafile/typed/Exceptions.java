@@ -489,6 +489,7 @@ final class Exceptions {
             case Node.ArrayAt _ -> new Act.Computes();
             case Node.ArrayLength _ -> new Act.Computes();
             case Node.NewArray _ -> new Act.Computes();
+            case Node.NewArrayOf _ -> new Act.Computes();
             case Node.Cond _ -> new Act.Computes();
             case Node.Binary _ -> new Act.Computes();
             case Node.Not _ -> new Act.Computes();
@@ -578,6 +579,7 @@ final class Exceptions {
             case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
             case Node.ArrayLength(var array) -> Stream.of(array);
             case Node.NewArray(var _, var length) -> Stream.of(length);
+            case Node.NewArrayOf(var _, var elements) -> elements.stream();
             case Node.FieldGet(var target, var _) -> Stream.of(target.node());
             case Node.Call(var target, var _, var args) ->
                 Stream.concat(Stream.of(target.node()), args.stream().map(Node.Operand::node));

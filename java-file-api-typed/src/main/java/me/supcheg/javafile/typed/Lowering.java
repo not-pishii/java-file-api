@@ -1,5 +1,7 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.ArrayInitializer;
+import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
@@ -41,6 +43,7 @@ import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
 import me.supcheg.javafile.code.UnaryExpr;
 import me.supcheg.javafile.code.UnaryOp;
+import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.facts.Access;
@@ -332,9 +335,9 @@ final class Lowering {
 
     /// Lowers the initializer of a variable or field declared of type
     /// `declared`, where the diamond may stand.
-    Expr lowerInitializer(Node node, TypeToken<?> declared) {
+    VariableInitializer lowerInitializer(Node node, TypeToken<?> declared) {
         mentions(declared);
-        return initializer(node, declared);
+        return declared(node, declared);
     }
 
     /// Lowers a sequence of statements into a `core` method/constructor/loop
@@ -371,7 +374,7 @@ final class Lowering {
     private Stmt stmt(Instr instr) {
         return switch (instr) {
             case Instr.Let(var v, var init) -> {
-                Expr initExpr = initializer(init, v.type());
+                VariableInitializer initExpr = declared(init, v.type());
                 String name = declare(v);
                 yield new LocalVarDeclStmt.Typed(written(v.type()).typeRef(), name, Optional.of(initExpr));
             }
@@ -403,7 +406,7 @@ final class Lowering {
                 yield labeled(ctl, new DoWhileStmt(bodyCode, expr(condition)));
             }
             case Instr.For(var ctl, var var_, var init, var condition, var update, var body) -> {
-                Expr initExpr = initializer(init, var_.type());
+                VariableInitializer initExpr = declared(init, var_.type());
                 // The loop variable is in scope in the condition, the update, and the body.
                 names.push();
                 LocalVarDeclStmt.Typed initStmt;
@@ -601,6 +604,10 @@ final class Lowering {
                 mentions(component);
                 yield Exprs.newArray(written(component).typeRef(), expr(length));
             }
+            case Node.NewArrayOf array -> {
+                mentions(array.type());
+                yield new ArrayInitializerExpr(written(array.type().component()).typeRef(), arrayInitializer(array));
+            }
             // Each branch is of the conditional's type already (Expressions.cond); pinned, the
             // conditional is of exactly that type (JLS 15.25).
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
@@ -653,6 +660,27 @@ final class Lowering {
             return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, new Searched.Unconsulted(), args));
         }
         return targeted(node, declared);
+    }
+
+    /// The initializer of a local variable or a field declared of type `declared`: the `{e1, e2}` of an
+    /// array creation of exactly that type, whose type the declaration tells (JLS 10.6), and
+    /// [#initializer] of any other node.
+    private VariableInitializer declared(Node node, TypeToken<?> declared) {
+        return node instanceof Node.NewArrayOf array && Tokens.sameType(array.type(), declared)
+                ? arrayInitializer(array)
+                : initializer(node, declared);
+    }
+
+    /// The `{e1, e2}` of an array creation, whose type is known where it stands: an element that is
+    /// an array creation of the component type is the `{...}` of that array in turn.
+    private ArrayInitializer arrayInitializer(Node.NewArrayOf array) {
+        TypeToken<?> component = array.type().component();
+        return new ArrayInitializer(array.elements().stream()
+                .<VariableInitializer>map(element ->
+                        element instanceof Node.NewArrayOf nested && Tokens.sameType(nested.type(), component)
+                                ? arrayInitializer(nested)
+                                : targeted(element, component))
+                .toList());
     }
 
     /// An expression in an assignment or invocation context whose target
