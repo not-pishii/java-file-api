@@ -156,6 +156,17 @@ class TargetClasspathsTest {
     }
 
     @Test
+    void aTypeThatHasNoModelIsAbsent() {
+        TypeShape<?> inner = metamodel(
+                "p.Outer$Inner",
+                canonical("p.Outer.Inner", "package p; public class Outer { public static class Inner {} }"));
+
+        assertThat(read(inner, "package p; public class Outer<T> { public class Inner {} }"))
+                .isEqualTo(absent(
+                        "inner class p.Outer.Inner of generic class p.Outer can mention its type" + " parameters"));
+    }
+
+    @Test
     void aMemberTypeIsFoundByItsBinaryName() {
         String outer = "package p; public class Outer { public static class Inner { public void m() {} } }";
         TypeShape<?> inner = metamodel("p.Outer$Inner", canonical("p.Outer.Inner", outer));

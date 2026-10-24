@@ -720,18 +720,17 @@ final class MetamodelDocs {
         return new DocText(NonEmptyList.copyOf(parts.toList()));
     }
 
-    /// A paragraph of the parts; none if there are no parts.
+    /// A paragraph of the parts, of which there is one at least: every paragraph of a comment says something.
     private static Stream<DocBlock> paragraph(Stream<DocInline> parts) {
-        List<DocInline> all = parts.toList();
-        return all.isEmpty() ? Stream.empty() : Stream.of(new DocBlock.Paragraph(text(all.stream())));
+        return Stream.of(new DocBlock.Paragraph(text(parts)));
     }
 
-    /// A paragraph of the parts, one after another; none if there are no parts.
+    /// A paragraph of the parts, one after another.
     private static Stream<DocBlock> paragraph(Stream<DocInline> first, Stream<DocInline> second) {
         return paragraph(Stream.concat(first, second));
     }
 
-    /// A paragraph of the parts, one after another; none if there are no parts.
+    /// A paragraph of the parts, one after another.
     private static Stream<DocBlock> paragraph(
             Stream<DocInline> first, Stream<DocInline> second, Stream<DocInline> third) {
         return paragraph(Stream.concat(first, Stream.concat(second, third)));

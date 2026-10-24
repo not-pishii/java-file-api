@@ -9,7 +9,6 @@ import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Pair;
-import org.jspecify.annotations.Nullable;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -115,9 +114,20 @@ public final class FactsProcessor extends AbstractProcessor {
     private static final String GENERATED_METAMODEL_PART = "me.supcheg.javafile.facts.meta.GeneratedMetamodelPart";
     private static final String UNRESOLVED = "a type in @Facts is not resolvable after all rounds";
 
-    private @Nullable Diagnostics diagnostics;
-    private @Nullable Options options;
-    private boolean stopped;
+    /// What the processor is up to: reading the rounds, or having nothing to do.
+    private sealed interface Mode {
+        /// Reads the rounds, with the options of the compilation and the means to tell what is wrong.
+        ///
+        /// @param options the options of the compilation
+        /// @param diagnostics where errors and warnings go
+        record Reading(Options options, Diagnostics diagnostics) implements Mode {}
+
+        /// Reads no round: the options are invalid, the `@Facts` is of another format than the processor
+        /// generates, or no base package can be chosen.
+        record Stopped() implements Mode {}
+    }
+
+    private Mode mode = new Mode.Stopped();
 
     private final SortedSet<Site> sites = new TreeSet<>();
     private final SortedSet<Site> unresolvedSites = new TreeSet<>();
@@ -146,14 +156,11 @@ public final class FactsProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         switch (Options.parse(processingEnv.getOptions())) {
-            case Options.Parsed.Valid(Options valid) -> {
-                options = valid;
-                diagnostics = new Diagnostics(processingEnv.getMessager(), valid.strict());
-            }
+            case Options.Parsed.Valid(Options valid) ->
+                mode = new Mode.Reading(valid, new Diagnostics(processingEnv.getMessager(), valid.strict()));
             case Options.Parsed.Invalid(List<String> errors) -> {
                 Diagnostics report = new Diagnostics(processingEnv.getMessager(), false);
                 errors.forEach(report::error);
-                stopped = true;
             }
         }
     }
@@ -173,24 +180,24 @@ public final class FactsProcessor extends AbstractProcessor {
     }
 
     private void run(RoundEnvironment round) {
-        if (stopped || options == null || diagnostics == null) {
+        if (!(mode instanceof Mode.Reading(Options options, Diagnostics diagnostics))) {
             return;
         }
         Elements elements = processingEnv.getElementUtils();
         TypeElement facts = elements.getTypeElement(Requests.FACTS);
         List<Element> annotated = facts == null ? List.of() : List.copyOf(round.getElementsAnnotatedWith(facts));
         if (sites.isEmpty() && !annotated.isEmpty() && !formatMatches(elements, diagnostics)) {
-            stopped = true;
+            mode = new Mode.Stopped();
             return;
         }
-        Map<Site, Element> fresh = annotated.stream()
-                .collect(Collectors.toMap(element -> Site.of(element, elements), Function.identity()));
-        sites.addAll(fresh.keySet());
+        var annotatedSites = annotated.stream()
+                .map(element -> Pair.pair(Site.of(element, elements), element))
+                .toList();
+        annotatedSites.forEach(read -> sites.add(read.left()));
         // the `@Facts` of this round, and again those of the earlier rounds that named a type not there yet
         Stream.concat(
-                        annotated.stream().map(element -> Pair.pair(Site.of(element, elements), element)),
+                        annotatedSites.stream(),
                         List.copyOf(unresolvedSites).stream()
-                                .filter(site -> !fresh.containsKey(site))
                                 .flatMap(site ->
                                         site.resolve(elements).stream().map(element -> Pair.pair(site, element))))
                 .forEach(read -> record(read.left(), Requests.read(read.right(), diagnostics)));
@@ -201,7 +208,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 case BasePackage.Chosen(String base) -> generate(base, options.index(), when, elements, diagnostics);
                 case BasePackage.Ambiguous ambiguous -> {
                     diagnostics.error(sites.first().resolve(elements), ambiguous.message());
-                    stopped = true;
+                    mode = new Mode.Stopped();
                     return;
                 }
             }

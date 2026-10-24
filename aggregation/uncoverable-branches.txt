@@ -189,6 +189,9 @@ me/supcheg/javafile/typed/ClassDeclaration.java :: case Phase.Heading<Self> _, P
 me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
     a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
 
+me/supcheg/javafile/facts/processor/SourceNames.java :: switch (place) {
+    a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
+
 # ---- what cannot happen: worded checks neither a test nor a type removes ----
 
 me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
@@ -212,127 +215,29 @@ me/supcheg/javafile/typed/Tokens.java :: && target.typeRef() instanceof Paramete
 me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()));
     the type arguments of a supertype in the facts are types and never wildcards (JLS 8.1.4), so each is tested as an exact one
 
-# ---- pending — part I: untested conditions found when the gate was introduced, to be covered or deleted ----
-
-me/supcheg/javafile/facts/Invocables.java :: case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Closure.java :: .filter(mentioned -> held.contains(mentioned) && !mentioned.equals(entry.getKey()))
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Closure.java :: .filter(name -> !names.contains(name))
-    untested when the gate was introduced
-
 me/supcheg/javafile/facts/processor/Entry.java :: .map(inherited -> switch (inherited) {
-    untested when the gate was introduced
+    a method with type parameters of its own is refused above (it is generic), so each declaration applied is plain: the arm for a generic one words what would be a bug
 
 me/supcheg/javafile/facts/processor/Entry.java :: first.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component());
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Entry.java :: return element != null && !desc.packageName().isEmpty() && MirrorTranslator.isPublic(element);
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Entry.java :: return qualified && !desc.packageName().isEmpty() ? desc.packageName().replace('.', '_') + "_" + name : name;
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/FactsProcessor.java :: .anyMatch(member -> member.getModifiers().contains(Modifier.PROTECTED)
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/FactsProcessor.java :: .filter(site -> !fresh.containsKey(site))
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/FactsProcessor.java :: List<Element> annotated = facts == null ? List.of() : List.copyOf(round.getElementsAnnotatedWith(facts));
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/FactsProcessor.java :: if (sites.isEmpty() && !annotated.isEmpty() && !formatMatches(elements, diagnostics)) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/FactsProcessor.java :: if (stopped || options == null || diagnostics == null) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Inheritance.java :: .anyMatch(permitted -> permitted.getKind() != TypeKind.DECLARED
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/MetamodelDocs.java :: return all.isEmpty() ? Stream.empty() : Stream.of(new DocBlock.Paragraph(text(all.stream())));
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: .filter(name -> !name.isEmpty())
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: if (partBytes > 0 || parts.isEmpty()) {
-    untested when the gate was introduced
+    the last parameter of a method of variable arity is an array (Heritage.Plain requires it): the test only binds it
 
 me/supcheg/javafile/facts/processor/MetamodelNames.java :: Element outer = chain.isEmpty() ? type : chain.getLast().getEnclosingElement();
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/MetamodelNames.java :: String packageName = pkg.isUnnamed() ? base : base + "." + pkg.getQualifiedName();
-    untested when the gate was introduced
+    the element of a declared type is a type, and the types enclosing a type start with it: the chain is not empty
 
 me/supcheg/javafile/facts/processor/MetamodelNames.java :: if (qualified && outer instanceof PackageElement pkg && !pkg.isUnnamed()) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Models.java :: !method.getEnclosingElement().equals(type))
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Models.java :: && element(ClassDesc.of(binaryName(declaring))).isPresent()
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Models.java :: && method.getParameters().size() == sam.params().size())
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Models.java :: String prefix = packageName.isEmpty() ? "" : packageName + ".";
-    untested when the gate was introduced
+    the element that encloses the outermost of the types is a package (javax.lang.model.element.Element#getEnclosingElement): the test only binds it
 
 me/supcheg/javafile/facts/processor/Requests.java :: Stream<?> items = value.getValue() instanceof List<?> list ? list.stream() : Stream.of(value);
-    untested when the gate was introduced
+    the value of an element of type Class[] is a list of values: javac rejects a value of another type (incompatible types), and the processor reads no annotation it rejected
 
 me/supcheg/javafile/facts/processor/Requests.java :: if (!(value instanceof TypeMirror type) || type.getKind() == TypeKind.ERROR) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/ReuseIndex.java :: if (!(of instanceof DeclaredType ofType)
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/ReuseIndex.java :: marker.get().get("fingerprint") instanceof String recorded && Conformance.unchanged(recorded, model)
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/SourceNames.java :: switch (place) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/SourceNames.java :: while (end < source.length() && Character.isJavaIdentifierPart(source.charAt(end))) {
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/SourceNames.java :: while (i < source.length()
-    untested when the gate was introduced
-
-me/supcheg/javafile/facts/processor/Targets.java :: return !desc.packageName().isEmpty() && models.element(desc).isPresent();
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/Conformance.java :: return value.isEmpty() || value.equals("-") ? List.of() : List.of(value.split("; "));
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && signature(adoptedMethod, element, self).equals(signature));
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && type.asElement().equals(otherType.asElement());
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: if (!isPublic(supertype) || refusal(supertype).isPresent()) {
-    untested when the gate was introduced
+    the value of a class literal is a type mirror: javac rejects a value of another type (incompatible types), and the processor reads no annotation it rejected
 
 me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: return result.getKind() == otherResult.getKind();
-    untested when the gate was introduced
+    javac accepts the methods of one signature in one type only when their primitive or void results are the same
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && type.asElement().equals(otherType.asElement());
+    a set of Supertype asks equals only of two with one hash, which is that of the element, and only a Supertype is put in it: the same element is the only answer
 
 me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: yield arguments.isEmpty() || outerArguments || !(raw instanceof ClassTypeRef(ClassDesc desc, var _))
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || member.getTypeVariables().get(i).asElement().equals(variable.asElement()))
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || other.getModifiers().contains(Modifier.STATIC)
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: || overridden.getKind().isInterface()
-    untested when the gate was introduced
-
-me/supcheg/javafile/langmodel/mirror/TargetClasspaths.java :: MirrorTranslator.refusal(type).map(TargetClasspaths::absent).orElseGet(() -> switch (translator.type(
-    untested when the gate was introduced
+    the erasure of a declared type is read as a class type: the test only binds it

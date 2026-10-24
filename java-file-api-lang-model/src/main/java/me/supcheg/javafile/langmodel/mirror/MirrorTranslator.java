@@ -358,7 +358,7 @@ public final class MirrorTranslator {
     /// Whether a supertype tells the members it adopts: it is `public`, and
     /// a full metamodel can be made of it.
     private boolean tells(TypeElement supertype) {
-        if (!isPublic(supertype) || refusal(supertype).isPresent()) {
+        if (refusal(supertype).isPresent()) {
             return false;
         }
         return switch (type(supertype, MemberFilter.NONE)) {
@@ -1107,11 +1107,10 @@ public final class MirrorTranslator {
     private boolean overridesInPackage(ExecutableElement other, TypeElement declarer, ExecutableElement method) {
         TypeElement overridden = (TypeElement) method.getEnclosingElement();
         Set<Modifier> modifiers = method.getModifiers();
+        // (a method of an interface is `public` or `private`, and a private one is none of a heritage)
         if (visibility(method) != Heritage.Visibility.PACKAGE
-                || overridden.getKind().isInterface()
                 || declarer.getKind().isInterface()
                 || modifiers.contains(Modifier.STATIC)
-                || other.getModifiers().contains(Modifier.STATIC)
                 || declarer.equals(overridden)
                 || !elements.getPackageOf(declarer).equals(elements.getPackageOf(overridden))
                 || !types.isSubtype(types.erasure(declarer.asType()), types.erasure(overridden.asType()))) {

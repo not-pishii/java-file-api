@@ -1297,7 +1297,9 @@ class MirrorTranslatorTypeTest {
 
     @Test
     void theSamAPublicSuperinterfaceHasAdoptedIsInherited() {
-        String hidden = "package p; interface HiddenFn { String apply(String s); }";
+        // the members it adopts beside the method: a field, and a method of another signature before the sam
+        String hidden = "package p; interface HiddenFn { String LIMIT = \"1\"; default int other() { return 1; }"
+                + " String apply(String s); }";
         String pub = "package p; public interface PubFn extends HiddenFn {}";
         String fn = "package p; public interface Fn extends PubFn, HiddenFn {}";
 

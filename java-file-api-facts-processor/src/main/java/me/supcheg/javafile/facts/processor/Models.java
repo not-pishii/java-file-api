@@ -149,10 +149,9 @@ final class Models {
     }
 
     /// The single abstract method of a functional interface as the comment
-    /// of `sam` links to it: the abstract method of the name and the number
-    /// of parameters of the model that the interface declares, or else the
-    /// one it inherits — of several that are override-equivalent, that of
-    /// the supertype first by name.
+    /// of `sam` links to it: the abstract method of the name that the
+    /// interface declares or inherits — of several that are
+    /// override-equivalent, that of the supertype first by name.
     ///
     /// @param type the functional interface
     /// @param sam its single abstract method, see [#sam(TypeElement)]
@@ -160,11 +159,11 @@ final class Models {
     DocRef samReference(TypeElement type, MethodModel sam) {
         return ElementFilter.methodsIn(elements.getAllMembers(type)).stream()
                 .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT)
-                        && method.getSimpleName().contentEquals(sam.name())
-                        && method.getParameters().size() == sam.params().size())
-                .min(Comparator.comparing((ExecutableElement method) ->
-                                !method.getEnclosingElement().equals(type))
-                        .thenComparing(method -> binaryName((TypeElement) method.getEnclosingElement())))
+                        && method.getSimpleName().contentEquals(sam.name()))
+                // all the members of a type leave out a method that another overrides: one that the interface
+                // declares is the only one of its name
+                .min(Comparator.comparing(
+                        (ExecutableElement method) -> binaryName((TypeElement) method.getEnclosingElement())))
                 .map(method -> reference(type, method))
                 // the single abstract method was read off the type
                 .orElseThrow();

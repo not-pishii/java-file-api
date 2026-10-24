@@ -107,4 +107,12 @@ class SourceNamesTest {
         assertThat(SourceNames.inBodyOf("Thing_", "final class Thing_ { int a; // words"))
                 .containsExactlyInAnyOrder("int", "a");
     }
+
+    /// The end of a source is the end of a name and of a number, as any other character is.
+    @Test
+    void aSourceMayEndWithANameOrANumber() {
+        assertThat(SourceNames.inBodyOf("Thing_", "class Thing_ { int size")).containsExactlyInAnyOrder("int", "size");
+        assertThat(SourceNames.inBodyOf("Thing_", "class Thing_ { int size = 12.5"))
+                .containsExactlyInAnyOrder("int", "size");
+    }
 }

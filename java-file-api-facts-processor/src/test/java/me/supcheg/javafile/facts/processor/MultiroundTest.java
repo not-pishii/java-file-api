@@ -444,6 +444,30 @@ class MultiroundTest {
     }
 
     @Test
+    void aSealedTypeThatPermitsATypeNotGeneratedYetMayYetBeExtended() {
+        Rounds rounds = new Rounds();
+        Compiled compilation = Javac.facts()
+                .with(
+                        new InRounds(
+                                List.of(Map.of("p.Late", "package p; public final class Late implements Shape {}"))),
+                        rounds)
+                .compile(
+                        """
+                package gen;
+                @me.supcheg.javafile.facts.meta.Facts({p.Holder.class, p.Late.class})
+                class G {}
+                """,
+                        "package p; public sealed interface Shape permits Late {}",
+                        "package p; public class Holder { public Shape shape() { return null; } }")
+                .orFail();
+
+        // round 1 has no p.Late: Shape, which only Late can implement, may yet turn out to be its supertype
+        assertThat(rounds.writtenIn(1)).doesNotContain("gen.facts.p.Shape_");
+        assertThat(rounds.writtenIn(2)).contains("gen.facts.p.Shape_");
+        assertThat(compilation.sources().get("gen.facts.p.Shape_")).contains("complete = true");
+    }
+
+    @Test
     void whatMayYetBeASupertypeIsHeldBackUntilTheSupertypeOfARequestedTypeIsThere() {
         Rounds rounds = new Rounds();
         Compiled compilation = Javac.facts()
@@ -874,7 +898,7 @@ class MultiroundTest {
                 .with(new Generating(), probe)
                 .compile(
                         "package gen; class G {}",
-                        "package p; public class A { public B b() { return null; } }",
+                        "package p; public class A { public B b() { return null; } public A self() { return null; } }",
                         "package p; public class B { public gen.Missing missing() { return null; } }",
                         "package p; public class C { public D d() { return null; } }",
                         "package p; public class D { public C c() { return null; } }",
@@ -883,7 +907,8 @@ class MultiroundTest {
         TypeGraph graph = probe.graph();
 
         // in the first round gen.Missing is not generated yet; C and D mention each other, and await nothing;
-        // E mentions B in a constructor that gets no fact, and so does not await it
+        // A mentions itself, and does not await itself; E mentions B in a constructor that gets no fact, and so
+        // does not await it
         assertThat(graph.edges().stream().filter(edge -> edge instanceof TypeGraph.Edge.Awaits))
                 .containsExactly(
                         new TypeGraph.Edge.Awaits("p.A", "p.B"),

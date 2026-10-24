@@ -333,7 +333,8 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
 
     private static String suffix(ClassDesc desc, boolean qualified) {
         String name = desc.displayName().replace('$', '_');
-        return qualified && !desc.packageName().isEmpty() ? desc.packageName().replace('.', '_') + "_" + name : name;
+        // a type of the unnamed package is mentioned by no step: the first naming of the steps refuses it
+        return qualified ? desc.packageName().replace('.', '_') + "_" + name : name;
     }
 
     /// Whether a class of another package can name a type: it and the types it is nested in are `public`,

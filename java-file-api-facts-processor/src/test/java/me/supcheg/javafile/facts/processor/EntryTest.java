@@ -587,6 +587,20 @@ class EntryTest {
                                 .entry())
                         .reason())
                 .isEqualTo("its abstract method m() mentions p.Hidden, which a class of another package cannot name");
+        // a class of the unnamed package is named by none of another package
+        assertThat(((Entry.Refused) ofLibrary("Unnamed", "public interface Unnamed { Unnamed m(); }")
+                                .entry())
+                        .reason())
+                .isEqualTo("its abstract method m() mentions Unnamed, which a class of another package cannot name");
+        // and so is one that a `$` in its name makes a nested class to the compiler of the generated code
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Priced",
+                                        "package p; public class Price$Tag {}",
+                                        "package p; public interface Priced { Price$Tag m(); }")
+                                .entry())
+                        .reason())
+                .isEqualTo("its abstract method m() mentions p.Price$Tag, which a class of another package cannot"
+                        + " name");
         assertThat(((Entry.Refused)
                                 ofLibrary("p.Outer.Inner", "package p; public class Outer { public class Inner {} }")
                                         .entry())

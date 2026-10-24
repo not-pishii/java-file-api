@@ -175,11 +175,10 @@ final class Closure {
                                         name, tokens.apply(name).orElseThrow())))
                 .<Node>flatMap(Function.identity())
                 .toList();
-        Set<String> names = present.stream().map(Node::name).collect(Collectors.toSet());
+        // what a type waits for is a type javac does not find: no node of the graph is one
         Stream<Node> absent = Stream.concat(
                         waiting.values().stream(), missing.stream().map(Edge::to))
                 .distinct()
-                .filter(name -> !names.contains(name))
                 .map(Node.Absent::new);
         Stream<Edge> signatures = Stream.concat(
                 ready.entrySet().stream()

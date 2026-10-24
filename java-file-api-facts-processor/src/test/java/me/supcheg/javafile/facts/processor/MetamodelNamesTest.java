@@ -11,6 +11,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -265,5 +266,17 @@ class MetamodelNamesTest {
                 .containsExactly("e", "key", "tOKEN", "int_", "e_");
         assertThat(MetamodelNames.witnesses(List.of("T", "Token", "R"), Set.of("t", "token", "token_")))
                 .containsExactly("t_", "token__", "r");
+    }
+
+    @Test
+    @InCompilation.Sources({"public class Plain {}", "package p; public class Named {}"})
+    void aClassOfTheUnnamedPackageIsNamedWithoutAPackage(Elements elements) {
+        TypeElement plain = elements.getTypeElement("Plain");
+
+        assertThat(MetamodelNames.typeSuffix(plain.asType(), true)).isEqualTo("Plain");
+        assertThat(MetamodelNames.typeSuffix(elements.getTypeElement("p.Named").asType(), true))
+                .isEqualTo("p_Named");
+        assertThat(MetamodelNames.metamodel("gen.facts", plain, elements))
+                .isEqualTo(ClassDesc.of("gen.facts", "Plain_"));
     }
 }

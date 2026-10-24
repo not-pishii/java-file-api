@@ -74,6 +74,17 @@ class HeritageTest {
     }
 
     @Test
+    void aTypeVariableOfAMethodUsedWithATypeUseAnnotationIsStillItsPosition() {
+        assertThat(heritage("p.Api", """
+                        package p;
+                        public interface Api {
+                            <T> void put(@org.jspecify.annotations.Nullable T value);
+                        }
+                        """))
+                .anyMatch(line -> line.startsWith("inherit method put(") && line.contains("<^0> (^0) -> void"));
+    }
+
+    @Test
     void aFieldAndAMemberTypeOfOneNameAreToldEach() {
         Heritage.Told told = Harness.run(
                 env -> (Heritage.Told) Harness.ok(env.full("p.Twice")).heritage(),

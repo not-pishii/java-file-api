@@ -351,7 +351,7 @@ final class MetamodelEmitter {
         var typeNames = Stream.of(
                         referenced.stream().flatMap(MetamodelEmitter::simpleNames),
                         Stream.concat(referenced.stream(), Stream.of(metamodel))
-                                .flatMap(MetamodelEmitter::outermostPackage),
+                                .map(MetamodelEmitter::outermostPackage),
                         Stream.of(
                                 metamodel.displayName(),
                                 MetamodelNames.heritage(metamodel).displayName(),
@@ -1243,9 +1243,8 @@ final class MetamodelEmitter {
             }
             lineStart = lineEnd;
         }
-        if (partBytes > 0 || parts.isEmpty()) {
-            parts.add(part.toString());
-        }
+        // the last part is what the last character went to, and the part of an empty text is empty
+        parts.add(part.toString());
         return parts;
     }
 
@@ -1315,12 +1314,11 @@ final class MetamodelEmitter {
                 ConstantDescs.CD_String);
     }
 
-    /// The first name of the package of a class, which its qualified name starts with; none for
-    /// a class of the unnamed package.
-    private static Stream<String> outermostPackage(ClassDesc desc) {
-        return Stream.of(desc.packageName())
-                .filter(name -> !name.isEmpty())
-                .map(name -> name.substring(0, name.indexOf('.') < 0 ? name.length() : name.indexOf('.')));
+    /// The first name of the package of a class, which its qualified name starts with. A metamodel refers to no
+    /// class of the unnamed package: it cannot be named from a package.
+    private static String outermostPackage(ClassDesc desc) {
+        String name = desc.packageName();
+        return name.substring(0, name.indexOf('.') < 0 ? name.length() : name.indexOf('.'));
     }
 
     /// The simple names a class may be written by: its own and those of the classes it is nested in.

@@ -34,19 +34,23 @@ final class Invocables {
     private static MethodTableTemplate.Param declared(DeclaredToken<?> owner, FactParam<?> param) {
         return switch (param) {
             case TypeToken<?> token -> new MethodTableTemplate.Fixed(token.erasure());
-            case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Fixed fixed) -> fixed;
-            case DeclaredParam<?>(TypeToken<?> token, MethodTableTemplate.Var variable) -> {
-                List<ClassDesc> arguments = owner.argumentErasures();
-                if (variable.index() >= arguments.size()
-                        || !variable.instantiate(arguments).equals(token.erasure())) {
-                    throw new IllegalArgumentException("a parameter declared " + variable + " of " + owner + " is "
-                            + (variable.index() < arguments.size()
-                                    ? TypeNames.describe(variable.instantiate(arguments))
-                                    : "of no type parameter")
-                            + ", not " + token);
-                }
-                yield variable;
-            }
+            case DeclaredParam<?>(var token, var declared) ->
+                switch (declared) {
+                    case MethodTableTemplate.Fixed fixed -> fixed;
+                    case MethodTableTemplate.Var variable -> {
+                        List<ClassDesc> arguments = owner.argumentErasures();
+                        if (variable.index() >= arguments.size()
+                                || !variable.instantiate(arguments).equals(token.erasure())) {
+                            throw new IllegalArgumentException("a parameter declared " + variable + " of " + owner
+                                    + " is "
+                                    + (variable.index() < arguments.size()
+                                            ? TypeNames.describe(variable.instantiate(arguments))
+                                            : "of no type parameter")
+                                    + ", not " + token);
+                        }
+                        yield variable;
+                    }
+                };
         };
     }
 

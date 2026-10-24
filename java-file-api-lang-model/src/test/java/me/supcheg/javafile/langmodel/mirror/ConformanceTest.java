@@ -664,6 +664,19 @@ class ConformanceTest {
     }
 
     @Test
+    void aFormWithoutALineOfItemsHasNoItemsAndNoneIsMissing() {
+        TargetType found = Harness.run(
+                env -> Conformance.of("0".repeat(64), () -> Canonical.HEADER + "\n", Harness.ok(env.full("p.T"))), T);
+
+        assertThat(found)
+                .isInstanceOfSatisfying(
+                        TargetType.Mismatched.class,
+                        mismatched -> assertThat(mismatched.differences())
+                                .isNotEmpty()
+                                .allMatch(difference -> difference instanceof Difference.ChangedData));
+    }
+
+    @Test
     void aTypeIsComparedWithItsMembers() {
         TypeModel tokenOnly = Harness.run(env -> Harness.ok(env.tokenOnly("p.T")), T);
 

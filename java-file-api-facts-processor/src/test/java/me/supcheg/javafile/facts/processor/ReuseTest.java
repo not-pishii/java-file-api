@@ -216,6 +216,55 @@ class ReuseTest {
     }
 
     @Test
+    void aMarkerWithoutTheTypeOrTheFingerprintItRecordsIsNotReused() throws IOException {
+        // compiled against a marker that lacks an element, which the class file has no such value of
+        Path withoutType = markedWithout("of", "fingerprint = \"%s\", complete = true, format = %d");
+        Path withoutFingerprint = markedWithout("fingerprint", "of = p.Dep.class, complete = true, format = %d");
+
+        Compiled b = Javac.facts()
+                .classpath(v1, withoutType)
+                .compile(generator("b", "p.Dep.class"))
+                .orFail();
+        Compiled c = Javac.facts()
+                .classpath(v1, withoutFingerprint)
+                .compile(generator("c", "p.Dep.class"))
+                .orFail();
+
+        assertThat(b.warnings())
+                .containsExactly("x.facts.p.Dep_ is the metamodel of null, not of p.Dep; generating b.facts.p.Dep_");
+        assertThat(c.warnings())
+                .containsExactly("metamodel x.facts.p.Dep_ on the classpath is stale against p.Dep: it was generated"
+                        + " from a different p.Dep; generating c.facts.p.Dep_");
+    }
+
+    /// A hand-made full metamodel `x.facts.p.Dep_` of `p.Dep`, listed in the index, marked without the element
+    /// `missing`.
+    ///
+    /// @param missing the name of the element of the marker to leave out
+    /// @param values the values of the others, as `@GeneratedMetamodel(…)` is written; `%s` for the fingerprint of
+    ///     `p.Dep`, `%d` for the format
+    private Path markedWithout(String missing, String values) throws IOException {
+        String elements = Stream.of("Class<?> of();", "String fingerprint();", "boolean complete();", "int format();")
+                .filter(element -> !element.contains(" " + missing + "("))
+                .collect(Collectors.joining(" "));
+        String use = values.contains("%s")
+                ? values.formatted(fingerprintOfDep(v1), MetamodelFormat.VERSION)
+                : values.formatted(MetamodelFormat.VERSION);
+        Path directory = Javac.plain()
+                .classpath(v1)
+                .compile(
+                        "package me.supcheg.javafile.facts.meta; public @interface GeneratedMetamodel { " + elements
+                                + " }",
+                        "package x.facts.p; @me.supcheg.javafile.facts.meta.GeneratedMetamodel(" + use
+                                + ") public final class Dep_ {}")
+                .orFail()
+                .writeTo(root.resolve("x" + missing));
+        Files.delete(directory.resolve("me/supcheg/javafile/facts/meta/GeneratedMetamodel.class"));
+        index(directory, "p.Dep", "x.facts.p.Dep_\n");
+        return directory;
+    }
+
+    @Test
     void anIndexEntryThatIsNotAMetamodelIsSkippedWithAWarning() throws IOException {
         Path index = root.resolve("index");
         index(index, "p.Other", "x.facts.p.Other_\n");
