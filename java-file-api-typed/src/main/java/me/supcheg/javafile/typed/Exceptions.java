@@ -487,6 +487,7 @@ final class Exceptions {
             case Node.StaticFieldGet _ -> new Act.Computes();
             case Node.EnumConst _ -> new Act.Computes();
             case Node.ArrayAt _ -> new Act.Computes();
+            case Node.ArrayClone _ -> new Act.Computes();
             case Node.ArrayLength _ -> new Act.Computes();
             case Node.NewArray _ -> new Act.Computes();
             case Node.NewArrayOf _ -> new Act.Computes();
@@ -525,7 +526,7 @@ final class Exceptions {
             case Instr.DoWhile(var _, var _, var condition) -> Stream.of(condition);
             case Instr.For(var _, var _, var init, var condition, var update, var _) ->
                 Stream.of(init, condition, update);
-            case Instr.ForEach(var _, var _, var iterable, var _) -> Stream.of(iterable);
+            case Instr.ForEach(var _, var _, var iterated, var _) -> Stream.of(iterated.node());
             case Instr.Return(var value) -> Stream.of(value.node());
             case Instr.ReturnNothing _ -> Stream.empty();
             case Instr.Yield(var value) -> Stream.of(value);
@@ -578,7 +579,8 @@ final class Exceptions {
             case Node.Cast(var _, var operand) -> Stream.of(operand.node());
             case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
             case Node.ArrayLength(var array) -> Stream.of(array);
-            case Node.NewArray(var _, var length) -> Stream.of(length);
+            case Node.NewArray(var _, var lengths) -> lengths.toList().stream();
+            case Node.ArrayClone(var array) -> Stream.of(array);
             case Node.NewArrayOf(var _, var elements) -> elements.stream();
             case Node.FieldGet(var target, var _) -> Stream.of(target.node());
             case Node.Call(var target, var _, var args) ->

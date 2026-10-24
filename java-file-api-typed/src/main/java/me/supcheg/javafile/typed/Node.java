@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.ConstantLiteral;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
@@ -38,6 +39,7 @@ sealed interface Node {
             case Call(var target, var method, var _) ->
                 isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
             case ArrayAt(var array, var _) -> isExact(array);
+            case ArrayClone(var array) -> isExact(array);
             // javac types the expression by what it is of, not by the supertype its token tells.
             case Upcast _ -> false;
             case Exact _ -> true;
@@ -110,11 +112,15 @@ sealed interface Node {
     /// An array element read.
     record ArrayAt(Node array, Node index) implements Node {}
 
+    /// A copy of an array, `array.clone()` (JLS 10.7): of the type of the array javac types by.
+    record ArrayClone(Node array) implements Node {}
+
     /// An array length read.
     record ArrayLength(Node array) implements Exact {}
 
-    /// An array creation, `new T[length]`.
-    record NewArray(TypeToken<?> component, Node length) implements Exact {}
+    /// An array creation, `new T[length]`, or `new T[l1][l2]` of the array of arrays: `component` is what the
+    /// array type is left once the dimensions that are given a length are taken off.
+    record NewArray(TypeToken<?> component, NonEmptyList<Node> lengths) implements Exact {}
 
     /// An array creation with an initializer, `new T[] {e1, e2}`; lowering renders the `{e1, e2}`
     /// alone where the declaration it initializes tells the type.

@@ -44,6 +44,20 @@ final class Tokens {
         };
     }
 
+    /// How many arrays deep `type` is: the dimensions of an array type, 0 for any other.
+    static int dimensions(TypeToken<?> type) {
+        return type instanceof ArrayToken<?, ?> array ? 1 + dimensions(array.component()) : 0;
+    }
+
+    /// What is left of `type` once `levels` of its dimensions are taken off, `int` of `int[][]` after two.
+    ///
+    /// @return the type left; empty if `type` has fewer dimensions than `levels`
+    static Optional<TypeToken<?>> peeled(TypeToken<?> type, int levels) {
+        return levels == 0
+                ? Optional.of(type)
+                : type instanceof ArrayToken<?, ?> array ? peeled(array.component(), levels - 1) : Optional.empty();
+    }
+
     /// Rejects a value of a primitive type where one of a reference type is taken: Java would box it
     /// implicitly (JLS 5.1.7), and the typed layer boxes only where the generator asks for it
     /// ([Expressions#box]), as it unboxes ([me.supcheg.javafile.facts.Prim]).

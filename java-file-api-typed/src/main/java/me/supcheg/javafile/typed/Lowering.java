@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.ArrayCreationExpr;
 import me.supcheg.javafile.code.ArrayInitializer;
 import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssignOp;
@@ -427,10 +428,16 @@ final class Lowering {
                         new ForStmt(
                                 Optional.of(initStmt), Optional.of(conditionExpr), Optional.of(updateStmt), bodyCode));
             }
-            case Instr.ForEach(var ctl, var var_, var iterable, var body) -> {
+            case Instr.ForEach(var ctl, var var_, var iterated, var body) -> {
                 // javac takes the type of the iterated expression itself (JLS 14.14.2): one seen
-                // through a witness is of the supertype the witness names.
-                Expr iterableExpr = expr(iterable, Typing.exactIf(iterable instanceof Node.Upcast));
+                // through a witness is of the supertype the witness names. An array is iterated as it
+                // stands: its elements are assigned to the variable of the component, whatever javac types them.
+                Expr iterableExpr =
+                        switch (iterated) {
+                            case Instr.Iterated.OfIterable(var iterable) ->
+                                expr(iterable, Typing.exactIf(iterable instanceof Node.Upcast));
+                            case Instr.Iterated.OfArray(var array) -> expr(array);
+                        };
                 names.push();
                 String name;
                 CodeBody bodyCode;
@@ -600,9 +607,14 @@ final class Lowering {
             }
             case Node.ArrayAt(var array, var index) -> expr(array, typing).arrayAccess(expr(index));
             case Node.ArrayLength(var array) -> expr(array).field("length");
-            case Node.NewArray(var component, var length) -> {
+            case Node.ArrayClone(var array) -> expr(array, typing).call("clone");
+            case Node.NewArray(var component, var lengths) -> {
                 mentions(component);
-                yield Exprs.newArray(written(component).typeRef(), expr(length));
+                yield new ArrayCreationExpr(
+                        written(component).typeRef(),
+                        new NonEmptyList<>(
+                                expr(lengths.head()),
+                                lengths.tail().stream().map(this::expr).toList()));
             }
             case Node.NewArrayOf array -> {
                 mentions(array.type());

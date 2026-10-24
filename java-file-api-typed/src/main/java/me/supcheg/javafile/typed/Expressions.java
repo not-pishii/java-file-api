@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
@@ -371,18 +372,41 @@ public final class Expressions {
         return Expr.of(new Node.ArrayLength(array.node()), PrimitiveToken.INT);
     }
 
-    /// Creates an array, `new T[length]`. The element type must be
-    /// reifiable: `new List<String>[n]` and `new T[n]` are generic array
-    /// creation, which Java rejects (JLS 15.10.1).
+    /// Creates an array, `new T[length]`, or one of arrays with the lengths of its outer dimensions,
+    /// `new T[l1][l2]`; a dimension without a length is left out, `new T[l1][]`. The element type must be
+    /// reifiable: `new List<String>[n]` and `new T[n]` are generic array creation, which Java rejects
+    /// (JLS 15.10.1).
     ///
     /// @param type the array type
-    /// @param length the length
+    /// @param length the length of the outer dimension
+    /// @param inner the lengths of the dimensions inside it, in order
     /// @param <A> the array type
     /// @return the new array
-    /// @throws IllegalArgumentException if the element type is not reifiable
-    public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length) {
-        Tokens.requireReifiableComponent(type.component(), "newArray");
-        return Expr.of(new Node.NewArray(type.component(), length.node()), type);
+    /// @throws IllegalArgumentException if the element type is not reifiable, or there are more lengths than
+    ///     the array type has dimensions
+    @SafeVarargs
+    public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length, Expr<Prim.Int>... inner) {
+        int given = 1 + inner.length;
+        NonEmptyList<Node> lengths = new NonEmptyList<>(
+                length.node(),
+                listed(inner.length, i -> inner[i]).stream().map(Expr::node).toList());
+        TypeToken<?> component = Tokens.peeled(type, given)
+                .orElseThrow(() -> new IllegalArgumentException("newArray of " + type + " takes at most "
+                        + Tokens.dimensions(type) + " length" + (Tokens.dimensions(type) == 1 ? "" : "s")
+                        + ", one for each of its dimensions, and is given " + given));
+        Tokens.requireReifiableComponent(component, "newArray");
+        return Expr.of(new Node.NewArray(component, lengths), type);
+    }
+
+    /// Copies an array, `array.clone()` (JLS 10.7): a new array of the same type and the same elements, with no
+    /// cast. Not named `clone`: every class has a method of that name, which hides a static import of it.
+    ///
+    /// @param type the array type
+    /// @param array the array
+    /// @param <A> the array type
+    /// @return the copy
+    public static <A> Expr<A> cloneArray(ArrayToken<A, ?> type, Expr<A> array) {
+        return Expr.of(new Node.ArrayClone(array.node()), type);
     }
 
     /// Creates an array with its elements, `new E[] {e1, e2}`; where it initializes a variable or a

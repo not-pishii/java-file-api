@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.RefToken;
@@ -551,12 +552,30 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             TypeToken<T> element,
             Expr<? extends Iterable<? extends T>> iterable,
             LoopBody<? super B, ? super Var<T>> body) {
+        return forEachOf(element, new Instr.Iterated.OfIterable(iterable.node()), body);
+    }
+
+    /// Appends `for (T v : array) { body }`, the loop over the elements of an array (JLS 14.14.2); the
+    /// variable is of the component of the array type, `for (int v : ints)`.
+    ///
+    /// @param type the array type
+    /// @param array the iterated array
+    /// @param body builds the body, given the variable and the loop capability
+    /// @param <A> the array type
+    /// @param <T> the component type, the loop variable type
+    /// @return this block
+    public final <A, T> B forEach(
+            ArrayToken<A, T> type, Expr<? extends A> array, LoopBody<? super B, ? super Var<T>> body) {
+        return forEachOf(type.component(), new Instr.Iterated.OfArray(array.node()), body);
+    }
+
+    private <T> B forEachOf(TypeToken<T> element, Instr.Iterated iterated, LoopBody<? super B, ? super Var<T>> body) {
         requireOpen();
         B bodyBlock = child("body of forEach");
         LoopCtl ctl = new LoopCtl(bodyBlock);
         Var<T> var = new Var<>(element, Var.Role.Fixed.FOR_EACH_VARIABLE, bodyBlock);
         fill(bodyBlock, b -> body.accept(b, var, ctl));
-        return append(new Instr.ForEach(ctl, var, iterable.node(), bodyBlock));
+        return append(new Instr.ForEach(ctl, var, iterated, bodyBlock));
     }
 
     /// Appends `break;` out of the loop `ctl` belongs to, and ends this block.

@@ -97,6 +97,7 @@ final class Constants {
                     Node.FieldGet _,
                     Node.EnumConst _,
                     Node.ArrayAt _,
+                    Node.ArrayClone _,
                     Node.ArrayLength _,
                     Node.NewArray _,
                     Node.NewArrayOf _,

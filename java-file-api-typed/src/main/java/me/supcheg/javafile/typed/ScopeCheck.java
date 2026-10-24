@@ -49,8 +49,8 @@ final class ScopeCheck {
                 node(condition, in(body), body.path());
                 node(update, in(body), body.path());
             }
-            case Instr.ForEach(var ignored, var ignoredVar, var iterable, var ignoredBody) ->
-                node(iterable, in(block), block.path());
+            case Instr.ForEach(var ignored, var ignoredVar, var iterated, var ignoredBody) ->
+                node(iterated.node(), in(block), block.path());
             case Instr.Return(var value) -> node(value.node(), in(block), block.path());
             case Instr.ReturnNothing ignored -> {}
             case Instr.Yield(var value) -> node(value, in(block), block.path());
@@ -107,7 +107,9 @@ final class ScopeCheck {
                 node(index, use, where);
             }
             case Node.ArrayLength(var array) -> node(array, use, where);
-            case Node.NewArray(var ignored, var length) -> node(length, use, where);
+            case Node.NewArray(var ignored, var lengths) ->
+                lengths.toList().forEach(length -> node(length, use, where));
+            case Node.ArrayClone(var array) -> node(array, use, where);
             case Node.NewArrayOf(var ignored, var elements) -> elements.forEach(element -> node(element, use, where));
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> {
                 node(condition, use, where);

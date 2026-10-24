@@ -58,8 +58,21 @@ sealed interface Instr {
     /// `for (T v = init; c; update) { ... }`.
     record For(LoopCtl ctl, MutVar<?> var, Node init, Node condition, Node update, Block<?, ?> body) implements Instr {}
 
-    /// `for (T v : iterable) { ... }`.
-    record ForEach(LoopCtl ctl, Var<?> var, Node iterable, Block<?, ?> body) implements Instr {}
+    /// `for (T v : iterated) { ... }`.
+    record ForEach(LoopCtl ctl, Var<?> var, Iterated iterated, Block<?, ?> body) implements Instr {}
+
+    /// What a `for`-each loop iterates (JLS 14.14.2): an `Iterable`, or an array.
+    sealed interface Iterated {
+        /// The expression iterated.
+        Node node();
+
+        /// An `Iterable`: javac takes the type of the expression itself, so one seen through a witness is of
+        /// the supertype the witness names.
+        record OfIterable(Node node) implements Iterated {}
+
+        /// An array, whose elements are those of the loop variable.
+        record OfArray(Node node) implements Iterated {}
+    }
 
     /// `return value;`, with the static type of `value`.
     record Return(Node.Operand value) implements Jump {}
