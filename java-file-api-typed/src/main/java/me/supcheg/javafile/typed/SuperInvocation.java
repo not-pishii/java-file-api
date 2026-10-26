@@ -9,7 +9,8 @@ import java.util.List;
 ///
 /// @param ctor the fact of the constructor of the superclass
 /// @param args the arguments, with their static types
-record SuperInvocation(Invocable ctor, List<Node.Operand> args) {
+/// @param passing how they meet the parameters of the constructor
+record SuperInvocation(Invocable ctor, List<Node.Operand> args, Node.Passing passing) {
     SuperInvocation {
         args = List.copyOf(args);
     }

@@ -63,7 +63,7 @@ public final class SuperSite<Self, S> {
     /// @throws IllegalStateException if `super_` was called already, or the constructor of the
     ///     superclass throws a checked exception the constructor does not declare
     public Terminated<Void> super_(SuperCtorRef0<S> ctor, InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, List.of(), rest);
+        return call(ctor, List.of(), Node.Passing.EACH, rest);
     }
 
     /// `super(a1);` by a constructor a subclass alone calls, then the rest of the body.
@@ -77,7 +77,7 @@ public final class SuperSite<Self, S> {
     ///     uses a variable out of scope or throws a checked exception the constructor does not declare
     public <A1> Terminated<Void> super_(
             SuperCtorRef1<S, A1> ctor, Expr<? extends A1> a1, InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, Expressions.arguments(a1), rest);
+        return call(ctor, Expressions.arguments(a1), Node.Passing.EACH, rest);
     }
 
     /// `super(a1, a2);` by a constructor a subclass alone calls, then the rest of the body.
@@ -95,7 +95,7 @@ public final class SuperSite<Self, S> {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, Expressions.arguments(a1, a2), rest);
+        return call(ctor, Expressions.arguments(a1, a2), Node.Passing.EACH, rest);
     }
 
     /// `super();` by a `public` constructor of a superclass that is not abstract, then the rest of
@@ -106,7 +106,7 @@ public final class SuperSite<Self, S> {
     /// @return the proof that the body ended
     /// @throws IllegalStateException as [#super_(SuperCtorRef0, InstanceBody0)]
     public Terminated<Void> super_(CtorRef0<S> ctor, InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, List.of(), rest);
+        return call(ctor, List.of(), Node.Passing.EACH, rest);
     }
 
     /// `super(a1);` by a `public` constructor of a superclass that is not abstract, then the rest
@@ -120,7 +120,7 @@ public final class SuperSite<Self, S> {
     /// @throws IllegalStateException as [#super_(SuperCtorRef1, Expr, InstanceBody0)]
     public <A1> Terminated<Void> super_(
             CtorRef1<S, A1> ctor, Expr<? extends A1> a1, InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, Expressions.arguments(a1), rest);
+        return call(ctor, Expressions.arguments(a1), Node.Passing.EACH, rest);
     }
 
     /// `super(a1, a2);` by a `public` constructor of a superclass that is not abstract, then the
@@ -139,10 +139,81 @@ public final class SuperSite<Self, S> {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             InstanceBody0<Self, VoidBody, Void> rest) {
-        return call(ctor, Expressions.arguments(a1, a2), rest);
+        return call(ctor, Expressions.arguments(a1, a2), Node.Passing.EACH, rest);
     }
 
-    private Terminated<Void> call(Invocable ctor, List<Node.Operand> args, InstanceBody0<Self, VoidBody, Void> rest) {
+    /// `super(a1, ...);` by a constructor a subclass alone calls, the arguments of its last parameter of variable
+    /// arity one by one, then the rest of the body.
+    ///
+    /// @param ctor the constructor of the superclass
+    /// @param rest the arguments of the last parameter
+    /// @param body what follows the call, given its block and `this`
+    /// @param <A1> the type of the array of the parameter
+    /// @return the proof that the body ended
+    /// @throws IllegalStateException as [#super_(SuperCtorRef1, Expr, InstanceBody0)]
+    /// @throws IllegalArgumentException as [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
+    public <A1> Terminated<Void> super_(
+            SuperCtorRef1<S, A1> ctor, Varargs<A1> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, List.of()), Expressions.spreading(rest), body);
+    }
+
+    /// `super(a1, a2, ...);` by a constructor a subclass alone calls, the arguments of its last parameter of
+    /// variable arity one by one, then the rest of the body.
+    ///
+    /// @param ctor the constructor of the superclass
+    /// @param a1 the first argument
+    /// @param rest the arguments of the last parameter
+    /// @param body what follows the call, given its block and `this`
+    /// @param <A1> the first parameter type
+    /// @param <A2> the type of the array of the last parameter
+    /// @return the proof that the body ended
+    /// @throws IllegalStateException as [#super_(SuperCtorRef1, Expr, InstanceBody0)]
+    /// @throws IllegalArgumentException as [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
+    public <A1, A2> Terminated<Void> super_(
+            SuperCtorRef2<S, A1, A2> ctor,
+            Expr<? extends A1> a1,
+            Varargs<A2> rest,
+            InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1)), Expressions.spreading(rest), body);
+    }
+
+    /// `super(a1, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its last
+    /// parameter of variable arity one by one, then the rest of the body.
+    ///
+    /// @param ctor the constructor of the superclass
+    /// @param rest the arguments of the last parameter
+    /// @param body what follows the call, given its block and `this`
+    /// @param <A1> the type of the array of the parameter
+    /// @return the proof that the body ended
+    /// @throws IllegalStateException as [#super_(SuperCtorRef1, Expr, InstanceBody0)]
+    /// @throws IllegalArgumentException as [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
+    public <A1> Terminated<Void> super_(
+            CtorRef1<S, A1> ctor, Varargs<A1> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, List.of()), Expressions.spreading(rest), body);
+    }
+
+    /// `super(a1, a2, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its
+    /// last parameter of variable arity one by one, then the rest of the body.
+    ///
+    /// @param ctor the constructor of the superclass
+    /// @param a1 the first argument
+    /// @param rest the arguments of the last parameter
+    /// @param body what follows the call, given its block and `this`
+    /// @param <A1> the first parameter type
+    /// @param <A2> the type of the array of the last parameter
+    /// @return the proof that the body ended
+    /// @throws IllegalStateException as [#super_(SuperCtorRef1, Expr, InstanceBody0)]
+    /// @throws IllegalArgumentException as [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
+    public <A1, A2> Terminated<Void> super_(
+            CtorRef2<S, A1, A2> ctor,
+            Expr<? extends A1> a1,
+            Varargs<A2> rest,
+            InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1)), Expressions.spreading(rest), body);
+    }
+
+    private Terminated<Void> call(
+            Invocable ctor, List<Node.Operand> args, Node.Passing passing, InstanceBody0<Self, VoidBody, Void> rest) {
         if (phase instanceof Phase.Invoked) {
             throw new IllegalStateException("the " + root.path() + " has called super(...) already: a"
                     + " constructor begins with one call of a constructor of its superclass (JLS 8.8.7)");
@@ -151,7 +222,7 @@ public final class SuperSite<Self, S> {
             throw new IllegalArgumentException(ctor + " is not a constructor of " + superclass.token()
                     + ", the superclass: super(...) calls a constructor of the direct superclass (JLS 8.8.7.1)");
         }
-        SuperInvocation invocation = new SuperInvocation(ctor, args);
+        SuperInvocation invocation = new SuperInvocation(ctor, args, passing);
         root.requireOpen();
         ScopeCheck.check(invocation, root);
         Exceptions.check(invocation, root);

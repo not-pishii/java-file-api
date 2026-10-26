@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
@@ -219,17 +220,20 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static <O, R> Invocation<R> call(Expr<? extends O> target, MethodRef0<O, R> method) {
-        return new Invocation<>(new Node.Call(receiver(target, method), method, List.of()), method.result());
+        return new Invocation<>(
+                new Node.Call(receiver(target, method), method, List.of(), Node.Passing.EACH), method.result());
     }
 
     public static <O, R, A1> Invocation<R> call(
             Expr<? extends O> target, MethodRef1<O, R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.Call(receiver(target, method), method, arguments(a1)), method.result());
+        return new Invocation<>(
+                new Node.Call(receiver(target, method), method, arguments(a1), Node.Passing.EACH), method.result());
     }
 
     public static <O, R, A1, A2> Invocation<R> call(
             Expr<? extends O> target, MethodRef2<O, R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.Call(receiver(target, method), method, arguments(a1, a2)), method.result());
+        return new Invocation<>(
+                new Node.Call(receiver(target, method), method, arguments(a1, a2), Node.Passing.EACH), method.result());
     }
 
     public static <O, R, A1, A2, A3> Invocation<R> call(
@@ -239,21 +243,23 @@ public final class Expressions {
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
         return new Invocation<>(
-                new Node.Call(receiver(target, method), method, arguments(a1, a2, a3)), method.result());
+                new Node.Call(receiver(target, method), method, arguments(a1, a2, a3), Node.Passing.EACH),
+                method.result());
     }
 
     public static <O> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef0<O> method) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, List.of()));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, List.of(), Node.Passing.EACH));
     }
 
     public static <O, A1> VoidInvocation voidCall(
             Expr<? extends O> target, VoidMethodRef1<O, A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(a1)));
+        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(a1), Node.Passing.EACH));
     }
 
     public static <O, A1, A2> VoidInvocation voidCall(
             Expr<? extends O> target, VoidMethodRef2<O, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(a1, a2)));
+        return new VoidInvocation(
+                new Node.Call(receiver(target, method), method, arguments(a1, a2), Node.Passing.EACH));
     }
 
     public static <O, A1, A2, A3> VoidInvocation voidCall(
@@ -262,7 +268,8 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(a1, a2, a3)));
+        return new VoidInvocation(
+                new Node.Call(receiver(target, method), method, arguments(a1, a2, a3), Node.Passing.EACH));
     }
 
     // ------------------------------------------------------------------
@@ -270,16 +277,16 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static <R> Invocation<R> staticCall(StaticMethodRef0<R> method) {
-        return new Invocation<>(new Node.StaticCall(method, List.of()), method.result());
+        return new Invocation<>(new Node.StaticCall(method, List.of(), Node.Passing.EACH), method.result());
     }
 
     public static <R, A1> Invocation<R> staticCall(StaticMethodRef1<R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1)), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(a1), Node.Passing.EACH), method.result());
     }
 
     public static <R, A1, A2> Invocation<R> staticCall(
             StaticMethodRef2<R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2)), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2), Node.Passing.EACH), method.result());
     }
 
     public static <R, A1, A2, A3> Invocation<R> staticCall(
@@ -287,20 +294,20 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2, a3)), method.result());
+        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2, a3), Node.Passing.EACH), method.result());
     }
 
     public static VoidInvocation voidStaticCall(VoidStaticMethodRef0 method) {
-        return new VoidInvocation(new Node.StaticCall(method, List.of()));
+        return new VoidInvocation(new Node.StaticCall(method, List.of(), Node.Passing.EACH));
     }
 
     public static <A1> VoidInvocation voidStaticCall(VoidStaticMethodRef1<A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1)));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(a1), Node.Passing.EACH));
     }
 
     public static <A1, A2> VoidInvocation voidStaticCall(
             VoidStaticMethodRef2<A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2)));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2), Node.Passing.EACH));
     }
 
     public static <A1, A2, A3> VoidInvocation voidStaticCall(
@@ -308,7 +315,7 @@ public final class Expressions {
             Expr<? extends A1> a1,
             Expr<? extends A2> a2,
             Expr<? extends A3> a3) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2, a3)));
+        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2, a3), Node.Passing.EACH));
     }
 
     // ------------------------------------------------------------------
@@ -322,21 +329,169 @@ public final class Expressions {
     // ------------------------------------------------------------------
 
     public static <O> Invocation<O> new_(CtorRef0<O> ctor) {
-        return new Invocation<>(instantiate(ctor, List.of()), ctor.owner());
+        return new Invocation<>(instantiate(ctor, List.of(), Node.Passing.EACH), ctor.owner());
     }
 
     public static <O, A1> Invocation<O> new_(CtorRef1<O, A1> ctor, Expr<? extends A1> a1) {
-        return new Invocation<>(instantiate(ctor, arguments(a1)), ctor.owner());
+        return new Invocation<>(instantiate(ctor, arguments(a1), Node.Passing.EACH), ctor.owner());
     }
 
     public static <O, A1, A2> Invocation<O> new_(
             CtorRef2<O, A1, A2> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(instantiate(ctor, arguments(a1, a2)), ctor.owner());
+        return new Invocation<>(instantiate(ctor, arguments(a1, a2), Node.Passing.EACH), ctor.owner());
     }
 
     public static <O, A1, A2, A3> Invocation<O> new_(
             CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3) {
-        return new Invocation<>(instantiate(ctor, arguments(a1, a2, a3)), ctor.owner());
+        return new Invocation<>(instantiate(ctor, arguments(a1, a2, a3), Node.Passing.EACH), ctor.owner());
+    }
+
+    // ------------------------------------------------------------------
+    // Calls of members of variable arity, with the arguments of the last parameter one by one:
+    // `m(a, e1, e2)`. The last argument is a Varargs; an array the code has is passed as an
+    // expression, as by the forms above.
+    // ------------------------------------------------------------------
+
+    /// The arguments of a parameter of variable arity, `m(a, e1, e2)`: the elements of the array that the last
+    /// parameter of a member of variable arity takes. Pass it as the last argument of [#call], [#voidCall],
+    /// [#staticCall], [#voidStaticCall] or [#new_] (and of `superCall` and `super_`); to pass an array the code
+    /// has, pass it as an expression.
+    ///
+    /// No element is boxed implicitly, as no argument of any call is. Where another method of the name could
+    /// apply to the arguments, javac would choose it (JLS 15.12.2: a method applicable without variable arity
+    /// is chosen first), and the call is rendered with the array of the arguments written, `m(a, new E[] {e1,
+    /// e2})`; an array of an element type that is not reifiable cannot be written, and the call is refused.
+    ///
+    /// @param type the array type of the parameter
+    /// @param elements the elements, in order
+    /// @param <A> the array type of the parameter
+    /// @param <E> the element type
+    /// @return the arguments
+    /// @throws IllegalArgumentException if an element is of a primitive type where the element type is not
+    @SafeVarargs
+    public static <A, E> Varargs<A> varargs(ArrayToken<A, E> type, Expr<? extends E>... elements) {
+        List<Expr<? extends E>> given = listed(elements.length, i -> elements[i]);
+        given.forEach(element -> Tokens.requireNoBoxing(element.type(), type.component(), "varargs"));
+        return new Varargs<>(type, List.copyOf(given));
+    }
+
+    /// The arguments of a call that passes `rest` to the parameter of variable arity of `member`: those
+    /// before it, then its elements.
+    ///
+    /// @throws IllegalArgumentException if `member` is not of variable arity, or is not `@SafeVarargs` and
+    ///     the elements are of a type that is not reifiable: javac warns of the generic array it creates
+    static List<Node.Operand> spread(Invocable member, Varargs<?> rest, List<Node.Operand> leading) {
+        switch (member.arity()) {
+            case Arity.Fixed _ ->
+                throw new IllegalArgumentException("varargs gives the arguments of a parameter of variable arity,"
+                        + " and the last parameter of " + member + " takes an array of " + rest.type.component()
+                        + ": pass one, e.g. newArrayOf(...)");
+            case Arity.Variable(var safety) -> {
+                if (safety == Arity.Safety.UNCHECKED && !Tokens.isReifiable(rest.type.component())) {
+                    throw new IllegalArgumentException(member + " is of variable arity and not @SafeVarargs, and the"
+                            + " arguments of its last parameter are of " + rest.type.component()
+                            + ", which is not reifiable: javac warns of the unchecked generic array creation of"
+                            + " every such call (-Xlint:unchecked, JLS 15.12.4.2); pass an array the code has");
+                }
+            }
+        }
+        return Stream.concat(leading.stream(), rest.elements.stream().map(Expressions::operand))
+                .toList();
+    }
+
+    static Node.Passing spreading(Varargs<?> rest) {
+        return new Node.Passing.Spread(rest.type);
+    }
+
+    private static Node callNode(Expr<?> target, Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
+        return new Node.Call(receiver(target, method), method, spread(method, rest, leading), spreading(rest));
+    }
+
+    private static Node staticCallNode(Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
+        return new Node.StaticCall(method, spread(method, rest, leading), spreading(rest));
+    }
+
+    private static Node newNode(Invocable ctor, Varargs<?> rest, List<Node.Operand> leading) {
+        return instantiate(ctor, spread(ctor, rest, leading), spreading(rest));
+    }
+
+    public static <O, R, A1> Invocation<R> call(
+            Expr<? extends O> target, MethodRef1<O, R, A1> method, Varargs<A1> rest) {
+        return new Invocation<>(callNode(target, method, rest, arguments()), method.result());
+    }
+
+    public static <O, R, A1, A2> Invocation<R> call(
+            Expr<? extends O> target, MethodRef2<O, R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new Invocation<>(callNode(target, method, rest, arguments(a1)), method.result());
+    }
+
+    public static <O, R, A1, A2, A3> Invocation<R> call(
+            Expr<? extends O> target,
+            MethodRef3<O, R, A1, A2, A3> method,
+            Expr<? extends A1> a1,
+            Expr<? extends A2> a2,
+            Varargs<A3> rest) {
+        return new Invocation<>(callNode(target, method, rest, arguments(a1, a2)), method.result());
+    }
+
+    public static <O, A1> VoidInvocation voidCall(
+            Expr<? extends O> target, VoidMethodRef1<O, A1> method, Varargs<A1> rest) {
+        return new VoidInvocation(callNode(target, method, rest, arguments()));
+    }
+
+    public static <O, A1, A2> VoidInvocation voidCall(
+            Expr<? extends O> target, VoidMethodRef2<O, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new VoidInvocation(callNode(target, method, rest, arguments(a1)));
+    }
+
+    public static <O, A1, A2, A3> VoidInvocation voidCall(
+            Expr<? extends O> target,
+            VoidMethodRef3<O, A1, A2, A3> method,
+            Expr<? extends A1> a1,
+            Expr<? extends A2> a2,
+            Varargs<A3> rest) {
+        return new VoidInvocation(callNode(target, method, rest, arguments(a1, a2)));
+    }
+
+    public static <R, A1> Invocation<R> staticCall(StaticMethodRef1<R, A1> method, Varargs<A1> rest) {
+        return new Invocation<>(staticCallNode(method, rest, arguments()), method.result());
+    }
+
+    public static <R, A1, A2> Invocation<R> staticCall(
+            StaticMethodRef2<R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new Invocation<>(staticCallNode(method, rest, arguments(a1)), method.result());
+    }
+
+    public static <R, A1, A2, A3> Invocation<R> staticCall(
+            StaticMethodRef3<R, A1, A2, A3> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
+        return new Invocation<>(staticCallNode(method, rest, arguments(a1, a2)), method.result());
+    }
+
+    public static <A1> VoidInvocation voidStaticCall(VoidStaticMethodRef1<A1> method, Varargs<A1> rest) {
+        return new VoidInvocation(staticCallNode(method, rest, arguments()));
+    }
+
+    public static <A1, A2> VoidInvocation voidStaticCall(
+            VoidStaticMethodRef2<A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new VoidInvocation(staticCallNode(method, rest, arguments(a1)));
+    }
+
+    public static <A1, A2, A3> VoidInvocation voidStaticCall(
+            VoidStaticMethodRef3<A1, A2, A3> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
+        return new VoidInvocation(staticCallNode(method, rest, arguments(a1, a2)));
+    }
+
+    public static <O, A1> Invocation<O> new_(CtorRef1<O, A1> ctor, Varargs<A1> rest) {
+        return new Invocation<>(newNode(ctor, rest, arguments()), ctor.owner());
+    }
+
+    public static <O, A1, A2> Invocation<O> new_(CtorRef2<O, A1, A2> ctor, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new Invocation<>(newNode(ctor, rest, arguments(a1)), ctor.owner());
+    }
+
+    public static <O, A1, A2, A3> Invocation<O> new_(
+            CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
+        return new Invocation<>(newNode(ctor, rest, arguments(a1, a2)), ctor.owner());
     }
 
     // ------------------------------------------------------------------
@@ -1227,14 +1382,14 @@ public final class Expressions {
         return Stream.of(args).map(Expressions::operand).toList();
     }
 
-    private static Node instantiate(Invocable ctor, List<Node.Operand> args) {
+    private static Node instantiate(Invocable ctor, List<Node.Operand> args, Node.Passing passing) {
         if (ctor.owner().typeRef() instanceof ParameterizedTypeRef parameterized
                 && !parameterized.args().stream().allMatch(ExactTypeArg.class::isInstance)) {
             throw new IllegalArgumentException("cannot instantiate " + ctor.owner()
                     + ": `new` needs exact type arguments, not wildcards (JLS 15.9); construct the class through"
                     + " the facts of an exact parameterization");
         }
-        return new Node.New(ctor, args);
+        return new Node.New(ctor, args, passing);
     }
 
     /// The expressions that choose among results and are of an explicit type,

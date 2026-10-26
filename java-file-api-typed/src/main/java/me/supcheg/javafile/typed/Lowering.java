@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -363,8 +364,8 @@ final class Lowering {
         // Every argument is of exactly its parameter's type, as those of `new` are.
         return new ConstructorBody.Explicit(
                 CodeBody.EMPTY,
-                new ConstructorInvocation.Super(
-                        arguments(invocation.ctor(), new Searched.Unconsulted(), invocation.args())),
+                new ConstructorInvocation.Super(arguments(
+                        invocation.ctor(), new Searched.Unconsulted(), invocation.args(), invocation.passing())),
                 lowerBlock(instrs));
     }
 
@@ -580,23 +581,26 @@ final class Lowering {
             case Node.Box(var type, var operand) ->
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());
-            case Node.Call(var receiver, var method, var args) -> call(receiver, method, args, typing);
-            case Node.SuperCall(var _, var superclass, var method, var args) -> superCall(superclass, method, args);
-            case Node.StaticCall(var method, var args) -> {
+            case Node.Call(var receiver, var method, var args, var passing) ->
+                call(receiver, method, args, passing, typing);
+            case Node.SuperCall(var _, var superclass, var method, var args, var passing) ->
+                superCall(superclass, method, args, passing);
+            case Node.StaticCall(var method, var args, var passing) -> {
                 subclassReaching(method.access(), method.owner(), method);
                 yield new StaticMethodCallExpr(
                         raw(method.owner()),
                         method.name(),
-                        arguments(method, new Searched.Unconsulted(), args),
+                        arguments(method, new Searched.Unconsulted(), args, passing),
                         typeArgs(method));
             }
-            case Node.New(var ctor, var args) -> {
+            case Node.New(var ctor, var args, var passing) -> {
                 subclassReaching(ctor.access(), ctor.owner(), ctor).ifPresent(subclass -> {
                     throw new IllegalStateException(ctor + " is protected: " + subclass + " calls it by the"
                             + " super(...) of its constructor alone, a class instance creation is no access a"
                             + " subclass has (JLS 6.6.2.2)");
                 });
-                yield Exprs.new_(written(ctor.owner()).typeRef(), arguments(ctor, new Searched.Unconsulted(), args));
+                yield Exprs.new_(
+                        written(ctor.owner()).typeRef(), arguments(ctor, new Searched.Unconsulted(), args, passing));
             }
             case Node.FieldGet(var receiver, var field) ->
                 fieldReceiver(receiver, field).field(field.name());
@@ -666,10 +670,10 @@ final class Lowering {
     /// context: the diamond infers exactly `declared` there (JLS 15.9.1),
     /// and a lambda is of `declared` (JLS 15.27.3).
     private Expr initializer(Node node, TypeToken<?> declared) {
-        if (node instanceof Node.New(var ctor, var args)
+        if (node instanceof Node.New(var ctor, var args, var passing)
                 && ctor.owner().typeRef() instanceof ParameterizedTypeRef
                 && Tokens.sameType(ctor.owner(), declared)) {
-            return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, new Searched.Unconsulted(), args));
+            return Exprs.newDiamond(ctor.owner().erasure(), arguments(ctor, new Searched.Unconsulted(), args, passing));
         }
         return targeted(node, declared);
     }
@@ -733,13 +737,14 @@ final class Lowering {
     /// ([#declaresCheckedException]), or the subtype has an overload that
     /// erases as the method does ([#hasTwin]); otherwise it is pinned itself
     /// where its type decides the overload.
-    private Expr call(Node.Operand witnessed, Invocable method, List<Node.Operand> args, Typing typing) {
+    private Expr call(
+            Node.Operand witnessed, Invocable method, List<Node.Operand> args, Node.Passing passing, Typing typing) {
         Node.Operand receiving = seen(witnessed);
         DeclaredToken<?> owner = method.owner();
         mentions(receiving.type());
         Optional<ClassToken<?>> subclass = subclassReaching(method.access(), owner, method);
         if (subclass.isPresent()) {
-            return protectedCall(subclass.get(), receiving, method, args, typing);
+            return protectedCall(subclass.get(), receiving, method, args, passing, typing);
         }
         Expr receiver;
         Searched searched;
@@ -749,7 +754,7 @@ final class Lowering {
             searched = new Searched.In(owner);
         } else {
             boolean settled = IntStream.range(0, args.size())
-                    .allMatch(i -> settled(args.get(i), method.params().get(i)));
+                    .allMatch(i -> settled(args.get(i), Node.parameter(method, passing, i)));
             // A receiver javac may type narrower than its token is of a type whose methods are not
             // known here: it may have an overload that erases as the method does, as a type
             // variable may (hasTwin), which no method without parameters has.
@@ -758,7 +763,7 @@ final class Lowering {
             searched = new Searched.In(receiving.type());
         }
         return new MethodCallExpr(
-                Optional.of(receiver), method.name(), arguments(method, searched, args), typeArgs(method));
+                Optional.of(receiver), method.name(), arguments(method, searched, args, passing), typeArgs(method));
     }
 
     /// `receiver.method(args)` of a `protected` method, in the body of `subclass`: the receiver is
@@ -766,7 +771,12 @@ final class Lowering {
     /// be an expression the class has no access to the member through. So where [#call] would
     /// cast the receiver, the call is rejected.
     private Expr protectedCall(
-            ClassToken<?> subclass, Node.Operand receiving, Invocable method, List<Node.Operand> args, Typing typing) {
+            ClassToken<?> subclass,
+            Node.Operand receiving,
+            Invocable method,
+            List<Node.Operand> args,
+            Node.Passing passing,
+            Typing typing) {
         if (!Tokens.sameType(receiving.type(), subclass)) {
             throw new IllegalStateException(method + " is protected, and is called on an expression of "
                     + receiving.type() + ": in the body of " + subclass + " a protected method of a superclass is"
@@ -780,7 +790,7 @@ final class Lowering {
         return new MethodCallExpr(
                 Optional.of(expr(receiving.node(), Typing.EXACT)),
                 method.name(),
-                arguments(method, new Searched.In(subclass), args),
+                arguments(method, new Searched.In(subclass), args, passing),
                 typeArgs(method));
     }
 
@@ -805,7 +815,8 @@ final class Lowering {
 
     /// `super.method(args)`: javac searches the methods of the superclass, and no cast of the
     /// receiver is there to tell an overload of it that erases as the method does.
-    private Expr superCall(DeclaredToken<?> superclass, Invocable method, List<Node.Operand> args) {
+    private Expr superCall(
+            DeclaredToken<?> superclass, Invocable method, List<Node.Operand> args, Node.Passing passing) {
         mentions(superclass);
         subclassReaching(method.access(), method.owner(), method);
         if (hasTwin(superclass, method)) {
@@ -816,7 +827,7 @@ final class Lowering {
         return new MethodCallExpr(
                 Optional.of(new SuperExpr()),
                 method.name(),
-                arguments(method, new Searched.In(superclass), args),
+                arguments(method, new Searched.In(superclass), args, passing),
                 typeArgs(method));
     }
 
@@ -856,11 +867,146 @@ final class Lowering {
         return ExceptionType.ofAll(method.traits().throwsTypes()).stream().anyMatch(ExceptionType::isChecked);
     }
 
-    /// The arguments of `member`, each of exactly its parameter's type unless
+    /// The arguments of `member` as `passing` hands them to its parameters.
+    ///
+    /// @throws FactLookupException if no arguments make javac resolve `member`, see [#requireDistinct]
+    /// @throws IllegalStateException if the arguments are the elements of the array of the last parameter, and
+    ///     javac may take another method for them while the array that tells it cannot be written
+    private List<Expr> arguments(Invocable member, Searched searched, List<Node.Operand> args, Node.Passing passing) {
+        return switch (passing) {
+            case Node.Passing.Each _ -> each(member, searched, args);
+            case Node.Passing.Spread(var type) -> spread(member, searched, args, type);
+        };
+    }
+
+    /// The arguments of a call that gives the elements of the array of the last parameter of variable arity, one by
+    /// one: written so if javac resolves the call to the member by them (JLS 15.12.2, where a method applicable
+    /// without variable arity is chosen first), else as the array of the arguments, which pins the member.
+    private List<Expr> spread(Invocable member, Searched searched, List<Node.Operand> args, ArrayToken<?, ?> type) {
+        uses(member);
+        return switch (rivalry(member, searched, args.size())) {
+            case Rivalry.Alone _ -> alone(member, args, type);
+            case Rivalry.Unproven(var why) -> explicit(member, searched, args, type, why);
+        };
+    }
+
+    /// `m(a, e1, e2)`: javac has no other method of the name to choose, so every argument is given as it is, to the
+    /// parameter, or the element type, it is passed to. A lone element that is an array is cast to the element
+    /// type, or javac would take it for the array of the parameter (`m((Object) strings)` for `m(Object...)`).
+    private List<Expr> alone(Invocable member, List<Node.Operand> args, ArrayToken<?, ?> type) {
+        args.forEach(arg -> mentions(arg.type()));
+        requireDistinct(member);
+        Node.Passing passing = new Node.Passing.Spread(type);
+        TypeToken<?> component = type.component();
+        int leading = member.params().size() - 1;
+        return IntStream.range(0, args.size())
+                .mapToObj(i -> {
+                    Node.Operand arg = args.get(i);
+                    TypeToken<?> param = Node.parameter(member, passing, i);
+                    requireNoBoxing(member, param, arg);
+                    boolean loneArray = args.size() == leading + 1
+                            && i == leading
+                            && arg.type() instanceof ArrayToken<?, ?>
+                            && !Tokens.sameType(arg.type(), component);
+                    return loneArray ? cast(component, arg, member) : targeted(arg.node(), param);
+                })
+                .toList();
+    }
+
+    /// `m(a, new E[] {e1, e2})`: javac may take another method for the arguments, and the array tells which is
+    /// meant. An array of an element type that is not reifiable cannot be written.
+    private List<Expr> explicit(
+            Invocable member, Searched searched, List<Node.Operand> args, ArrayToken<?, ?> type, String why) {
+        int leading = member.params().size() - 1;
+        if (!Tokens.isReifiable(type.component())) {
+            throw new IllegalStateException("cannot call " + member + " with these " + (args.size() - leading)
+                    + " arguments spread over its parameter of variable arity: " + why + " (JLS 15.12.2: a method"
+                    + " applicable without variable arity is chosen first), and the array of " + type.component()
+                    + " cannot be created to pass it explicitly (generic array creation, JLS 15.10.1); call the fact"
+                    + " of the method javac takes, or give the arguments another way");
+        }
+        Node.Operand array = new Node.Operand(
+                new Node.NewArrayOf(
+                        type,
+                        args.subList(leading, args.size()).stream()
+                                .map(Node.Operand::node)
+                                .toList()),
+                type);
+        return each(
+                member,
+                searched,
+                Stream.concat(args.subList(0, leading).stream(), Stream.of(array))
+                        .toList());
+    }
+
+    /// Whether javac could take another method than `member` for a call of `argc` arguments, as far as the facts
+    /// of the type searched tell it.
+    private Rivalry rivalry(Invocable member, Searched searched, int argc) {
+        return switch (searched) {
+            case Searched.In(DeclaredToken<?> declared) -> rivalry(member, declared, argc);
+            case Searched.In(var other) -> new Rivalry.Unproven("the methods of " + other + " are not known");
+            case Searched.Unconsulted _ -> rivalry(member, member.owner(), argc);
+        };
+    }
+
+    /// Every other member of the name that javac may apply to `argc` arguments is a rival: one that takes that many
+    /// parameters, and one whose last parameter is an array, which the template does not tell is of variable arity
+    /// and is taken to be so. The facts of `searched` must list `member`, or its members are not known.
+    private Rivalry rivalry(Invocable member, DeclaredToken<?> searched, int argc) {
+        List<ClassDesc> erasures = searched.argumentErasures();
+        List<MethodTableTemplate.Signature> named =
+                named(target.methods(searched.shape()), member).toList();
+        Predicate<MethodTableTemplate.Signature> isMember =
+                signature -> searched.shape() == member.owner().shape()
+                        ? signature.equals(member.declared())
+                        : signature.instantiate(erasures).equals(member.signature());
+        if (named.stream().noneMatch(isMember)) {
+            return new Rivalry.Unproven("the methods of " + searched + " do not list " + member);
+        }
+        List<String> rivals = named.stream()
+                .filter(isMember.negate())
+                .filter(signature -> mayTake(signature.instantiate(erasures), argc))
+                .map(MethodTableTemplate.Signature::toString)
+                .sorted()
+                .toList();
+        return rivals.isEmpty()
+                ? new Rivalry.Alone()
+                : new Rivalry.Unproven("javac may take " + String.join(", ", rivals) + " for the call");
+    }
+
+    /// Whether javac may apply the method of `signature` to `argc` arguments: as one of that many parameters, or
+    /// as one of variable arity if its last parameter is an array.
+    private static boolean mayTake(MethodSignature signature, int argc) {
+        List<ClassDesc> params = signature.params();
+        return params.size() == argc || (!params.isEmpty() && params.getLast().isArray() && params.size() - 1 <= argc);
+    }
+
+    /// Whether javac may take another method than the fact for a call that spreads its arguments.
+    private sealed interface Rivalry {
+        /// The facts of the type searched list the fact and no other member of its name that javac could apply.
+        record Alone() implements Rivalry {}
+
+        /// The facts do not prove it is the only one.
+        ///
+        /// @param why what javac may take, or why the members are not known
+        record Unproven(String why) implements Rivalry {}
+    }
+
+    /// Rejects a primitive argument of a parameter of a reference type: boxing is never left implicit.
+    ///
+    /// @throws IllegalStateException if `arg` is of a primitive type and `param` is not
+    private static void requireNoBoxing(Invocable member, TypeToken<?> param, Node.Operand arg) {
+        if (arg.type() instanceof PrimitiveToken<?, ?, ?> && !(param instanceof PrimitiveToken<?, ?, ?>)) {
+            throw new IllegalStateException(member + " takes a " + param + " and is given a value of the primitive"
+                    + " type " + arg.type() + ", which Java would box implicitly; box it explicitly, by box(...)");
+        }
+    }
+
+    /// The arguments of `member`, one for each of its parameters, each of exactly its parameter's type unless
     /// `searched`, the type whose methods javac searches, has no other candidate.
     ///
     /// @throws FactLookupException if no arguments make javac resolve `member`, see [#requireDistinct]
-    private List<Expr> arguments(Invocable member, Searched searched, List<Node.Operand> args) {
+    private List<Expr> each(Invocable member, Searched searched, List<Node.Operand> args) {
         uses(member);
         args.forEach(arg -> mentions(arg.type()));
         requireDistinct(member);
@@ -870,22 +1016,16 @@ final class Lowering {
                 .mapToObj(i -> {
                     Node.Operand arg = args.get(i);
                     TypeToken<?> param = params.get(i);
-                    boolean boxes = arg.type() instanceof PrimitiveToken<?, ?, ?>
-                            && !(param instanceof PrimitiveToken<?, ?, ?>);
+                    requireNoBoxing(member, param, arg);
                     // An array javac may type otherwise than a last parameter of an array type —
                     // `String[]` for `Object...` — would be a call javac warns of where the parameter is
                     // of variable arity, not knowing which of the two calls is meant. Of exactly the type
                     // of the parameter it is the array of the arguments, whatever the arity.
-                    boolean spreads = i == args.size() - 1 && param instanceof ArrayToken<?, ?>;
-                    if (boxes) {
-                        throw new IllegalStateException(member + " takes a " + param + " and is given a value of the"
-                                + " primitive type " + arg.type() + ", which Java would box implicitly; box it"
-                                + " explicitly, by box(...)");
-                    }
-                    if (!Tokens.sameType(arg.type(), param) && (!onlyCandidate || spreads)) {
+                    boolean lastArray = i == args.size() - 1 && param instanceof ArrayToken<?, ?>;
+                    if (!Tokens.sameType(arg.type(), param) && (!onlyCandidate || lastArray)) {
                         return cast(param, arg, member);
                     }
-                    if (spreads) {
+                    if (lastArray) {
                         return expr(arg.node(), Typing.EXACT);
                     }
                     // The one candidate gives a lambda its target type; among several, the cast of
@@ -1024,10 +1164,16 @@ final class Lowering {
     /// methods of that name and arity, instance and `static`, or its
     /// constructors of that arity.
     private static Stream<MethodTableTemplate.Signature> candidates(MethodTableTemplate template, Invocable member) {
+        return named(template, member)
+                .filter(s -> s.params().size() == member.params().size());
+    }
+
+    /// The members of a type javac may choose among for a use of `member`, of whatever arity: its methods of
+    /// that name, instance and `static`, or its constructors.
+    private static Stream<MethodTableTemplate.Signature> named(MethodTableTemplate template, Invocable member) {
         Stream<MethodTableTemplate.Signature> members =
                 member.kind() == InvocableKind.CONSTRUCTOR ? template.constructors().stream() : template.methods();
-        return members.filter(s -> s.name().equals(member.name())
-                && s.params().size() == member.params().size());
+        return members.filter(s -> s.name().equals(member.name()));
     }
 
     /// Rejects a fact whose owner has another member that erases as the fact

@@ -427,7 +427,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no
     ///     such method with a body on the target classpath
     public final <R> Invocation<R> superCall(This<Self> self, MethodRef0<? super S, R> method) {
-        return new Invocation<>(superCallNode(self, method, Expressions.arguments()), method.result());
+        return new Invocation<>(
+                superCallNode(self, method, Expressions.arguments(), Node.Passing.EACH), method.result());
     }
 
     /// `super.method(a1)`, see [#superCall(This, MethodRef0)].
@@ -441,7 +442,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
     public final <R, A1> Invocation<R> superCall(
             This<Self> self, MethodRef1<? super S, R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1)), method.result());
+        return new Invocation<>(
+                superCallNode(self, method, Expressions.arguments(a1), Node.Passing.EACH), method.result());
     }
 
     /// `super.method(a1, a2)`, see [#superCall(This, MethodRef0)].
@@ -457,7 +459,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
     public final <R, A1, A2> Invocation<R> superCall(
             This<Self> self, MethodRef2<? super S, R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1, a2)), method.result());
+        return new Invocation<>(
+                superCallNode(self, method, Expressions.arguments(a1, a2), Node.Passing.EACH), method.result());
     }
 
     /// `super.method()` of a `void` method, see [#superCall(This, MethodRef0)].
@@ -467,7 +470,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @return the call
     /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
     public final VoidInvocation superCall(This<Self> self, VoidMethodRef0<? super S> method) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments()));
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(), Node.Passing.EACH));
     }
 
     /// `super.method(a1)` of a `void` method, see [#superCall(This, MethodRef0)].
@@ -480,7 +483,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
     public final <A1> VoidInvocation superCall(
             This<Self> self, VoidMethodRef1<? super S, A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1)));
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1), Node.Passing.EACH));
     }
 
     /// `super.method(a1, a2)` of a `void` method, see [#superCall(This, MethodRef0)].
@@ -495,11 +498,87 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
     public final <A1, A2> VoidInvocation superCall(
             This<Self> self, VoidMethodRef2<? super S, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2)));
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2), Node.Passing.EACH));
+    }
+
+    /// `super.method(a1, ...)`, the arguments of the last parameter of variable arity one by one, see
+    /// [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])] and [#superCall(This, MethodRef0)].
+    ///
+    /// @param self `this`
+    /// @param method the fact of the method
+    /// @param rest the arguments of the last parameter
+    /// @param <R> the result type
+    /// @param <A1> the type of the array of the parameter
+    /// @return the call
+    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)] and
+    ///     [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
+    public final <R, A1> Invocation<R> superCall(
+            This<Self> self, MethodRef1<? super S, R, A1> method, Varargs<A1> rest) {
+        return new Invocation<>(
+                superCallNode(self, method, Expressions.spread(method, rest, List.of()), Expressions.spreading(rest)),
+                method.result());
+    }
+
+    /// `super.method(a1, a2, ...)`, the arguments of the last parameter of variable arity one by one, see
+    /// [#superCall(This, MethodRef1, Varargs)].
+    ///
+    /// @param self `this`
+    /// @param method the fact of the method
+    /// @param a1 the first argument
+    /// @param rest the arguments of the last parameter
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the type of the array of the last parameter
+    /// @return the call
+    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
+    public final <R, A1, A2> Invocation<R> superCall(
+            This<Self> self, MethodRef2<? super S, R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new Invocation<>(
+                superCallNode(
+                        self,
+                        method,
+                        Expressions.spread(method, rest, Expressions.arguments(a1)),
+                        Expressions.spreading(rest)),
+                method.result());
+    }
+
+    /// `super.method(a1, ...)` of a `void` method, the arguments of the last parameter of variable arity one by
+    /// one, see [#superCall(This, MethodRef1, Varargs)].
+    ///
+    /// @param self `this`
+    /// @param method the fact of the method
+    /// @param rest the arguments of the last parameter
+    /// @param <A1> the type of the array of the parameter
+    /// @return the call
+    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
+    public final <A1> VoidInvocation superCall(
+            This<Self> self, VoidMethodRef1<? super S, A1> method, Varargs<A1> rest) {
+        return new VoidInvocation(
+                superCallNode(self, method, Expressions.spread(method, rest, List.of()), Expressions.spreading(rest)));
+    }
+
+    /// `super.method(a1, a2, ...)` of a `void` method, the arguments of the last parameter of variable arity one by
+    /// one, see [#superCall(This, MethodRef1, Varargs)].
+    ///
+    /// @param self `this`
+    /// @param method the fact of the method
+    /// @param a1 the first argument
+    /// @param rest the arguments of the last parameter
+    /// @param <A1> the first parameter type
+    /// @param <A2> the type of the array of the last parameter
+    /// @return the call
+    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
+    public final <A1, A2> VoidInvocation superCall(
+            This<Self> self, VoidMethodRef2<? super S, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
+        return new VoidInvocation(superCallNode(
+                self,
+                method,
+                Expressions.spread(method, rest, Expressions.arguments(a1)),
+                Expressions.spreading(rest)));
     }
 
     /// `super.method(args)`, on `this` of this class.
-    private Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args) {
+    private Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args, Node.Passing passing) {
         if (receiver.type() != self) {
             throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
                     + ", got this of " + receiver.type());
@@ -509,7 +588,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         return switch (group.standing()) {
             case DEFAULT, CONCRETE, FINAL ->
                 switch (member.method().visibility()) {
-                    case PUBLIC, PROTECTED -> new Node.SuperCall(receiver.body(), superclass.token(), method, args);
+                    case PUBLIC, PROTECTED ->
+                        new Node.SuperCall(receiver.body(), superclass.token(), method, args, passing);
                     case PACKAGE ->
                         throw new IllegalArgumentException("super." + method.name() + "(...) of " + described
                                 + " cannot call " + member + ": the method has package access and the class is in"

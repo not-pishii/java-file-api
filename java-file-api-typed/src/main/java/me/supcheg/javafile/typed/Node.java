@@ -36,7 +36,7 @@ sealed interface Node {
     /// @return `true` if the static type javac infers is the token's
     static boolean isExact(Node node) {
         return switch (node) {
-            case Call(var target, var method, var _) ->
+            case Call(var target, var method, var _, var _) ->
                 isExact(target.node()) && Tokens.sameType(target.type(), method.owner());
             case ArrayAt(var array, var _) -> isExact(array);
             case ArrayClone(var array) -> isExact(array);
@@ -81,7 +81,7 @@ sealed interface Node {
     /// An instance method call; `method` is `void` or not. The receiver and
     /// the arguments keep their static types: lowering pins the member the
     /// fact names from them (§6.1).
-    record Call(Operand target, Invocable method, List<Operand> args) implements Node {}
+    record Call(Operand target, Invocable method, List<Operand> args, Passing passing) implements Node {}
 
     /// `super.method(args)`, in a body where `this` is that of `owner`: the method `superclass` —
     /// the superclass of the class being declared — has as a member.
@@ -90,15 +90,17 @@ sealed interface Node {
     /// @param superclass the superclass, whose methods javac searches
     /// @param method the fact of the method
     /// @param args the arguments, with their static types
-    record SuperCall(Block<?, ?> owner, DeclaredToken<?> superclass, Invocable method, List<Operand> args)
+    /// @param passing how they meet the parameters of the method
+    record SuperCall(
+            Block<?, ?> owner, DeclaredToken<?> superclass, Invocable method, List<Operand> args, Passing passing)
             implements Exact {}
 
     /// A static method call.
-    record StaticCall(Invocable method, List<Operand> args) implements Exact {}
+    record StaticCall(Invocable method, List<Operand> args, Passing passing) implements Exact {}
 
     /// An instance creation, `new T(args)`; lowering renders `new T<>(args)`
     /// itself where the target type is exactly `T`.
-    record New(Invocable ctor, List<Operand> args) implements Exact {}
+    record New(Invocable ctor, List<Operand> args, Passing passing) implements Exact {}
 
     /// An instance field read.
     record FieldGet(Operand target, FieldRef<?, ?> field) implements Exact {}
@@ -296,6 +298,35 @@ sealed interface Node {
     /// @param node the expression
     /// @param type the token of its static type
     record Operand(Node node, TypeToken<?> type) {}
+
+    /// How the arguments of a call meet the parameters of the member it calls.
+    sealed interface Passing {
+        /// One argument for each parameter.
+        Passing EACH = new Each();
+
+        /// One argument for each parameter; that of a last parameter of variable arity is its array.
+        record Each() implements Passing {}
+
+        /// The arguments from the last parameter on are the elements of its array, `type`: `m(a, e1, e2)`
+        /// for `m(A, E...)`. The member is of variable arity.
+        ///
+        /// @param type the type of the array of the last parameter
+        record Spread(ArrayToken<?, ?> type) implements Passing {}
+    }
+
+    /// The type of the parameter that the argument at `index` of a call of `member` is passed to.
+    ///
+    /// @param member the member called
+    /// @param passing how the arguments meet its parameters
+    /// @param index the position of the argument
+    /// @return the parameter type; for a spread argument, the component of the last parameter
+    static TypeToken<?> parameter(Invocable member, Passing passing, int index) {
+        List<TypeToken<?>> params = member.params();
+        return switch (passing) {
+            case Passing.Each _ -> params.get(index);
+            case Passing.Spread(var type) -> index < params.size() - 1 ? params.get(index) : type.component();
+        };
+    }
 
     /// The body of a [Lambda]. Either way the lambda's parameters are owned by
     /// a lambda-boundary block (§6.2) nested in the block the lambda is

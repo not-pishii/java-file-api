@@ -91,16 +91,16 @@ final class ScopeCheck {
             case Node.Raw ignored -> {}
             case Node.Box(var ignored, var operand) -> node(operand, use, where);
             case Node.Unbox(var ignored, var operand) -> node(operand, use, where);
-            case Node.Call(var target, var ignored, var args) -> {
+            case Node.Call(var target, var ignored, var args, var ignoredPassing) -> {
                 node(target.node(), use, where);
                 operands(args, use, where);
             }
-            case Node.SuperCall(var owner, var ignoredSuperclass, var ignored, var args) -> {
+            case Node.SuperCall(var owner, var ignoredSuperclass, var ignored, var args, var ignoredPassing) -> {
                 requireThisInScope(owner, use, where);
                 operands(args, use, where);
             }
-            case Node.StaticCall(var ignored, var args) -> operands(args, use, where);
-            case Node.New(var ignored, var args) -> operands(args, use, where);
+            case Node.StaticCall(var ignored, var args, var ignoredPassing) -> operands(args, use, where);
+            case Node.New(var ignored, var args, var ignoredPassing) -> operands(args, use, where);
             case Node.FieldGet(var target, var ignored) -> node(target.node(), use, where);
             case Node.ArrayAt(var array, var index) -> {
                 node(array, use, where);

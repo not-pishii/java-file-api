@@ -467,10 +467,10 @@ final class Exceptions {
 
     private static Act act(Node node) {
         return switch (node) {
-            case Node.Call(var _, var method, var _) -> new Act.Invokes(method);
-            case Node.SuperCall(var _, var _, var method, var _) -> new Act.Invokes(method);
-            case Node.StaticCall(var method, var _) -> new Act.Invokes(method);
-            case Node.New(var ctor, var _) -> new Act.Invokes(ctor);
+            case Node.Call(var _, var method, var _, var _) -> new Act.Invokes(method);
+            case Node.SuperCall(var _, var _, var method, var _, var _) -> new Act.Invokes(method);
+            case Node.StaticCall(var method, var _, var _) -> new Act.Invokes(method);
+            case Node.New(var ctor, var _, var _) -> new Act.Invokes(ctor);
             case Node.Lambda lambda ->
                 switch (lambda.body()) {
                     case Node.LambdaBody.Value(var scope, var value) -> new Act.Defers(scope, value);
@@ -583,11 +583,12 @@ final class Exceptions {
             case Node.ArrayClone(var array) -> Stream.of(array);
             case Node.NewArrayOf(var _, var elements) -> elements.stream();
             case Node.FieldGet(var target, var _) -> Stream.of(target.node());
-            case Node.Call(var target, var _, var args) ->
+            case Node.Call(var target, var _, var args, var _) ->
                 Stream.concat(Stream.of(target.node()), args.stream().map(Node.Operand::node));
-            case Node.SuperCall(var _, var _, var _, var args) -> args.stream().map(Node.Operand::node);
-            case Node.StaticCall(var _, var args) -> args.stream().map(Node.Operand::node);
-            case Node.New(var _, var args) -> args.stream().map(Node.Operand::node);
+            case Node.SuperCall(var _, var _, var _, var args, var _) ->
+                args.stream().map(Node.Operand::node);
+            case Node.StaticCall(var _, var args, var _) -> args.stream().map(Node.Operand::node);
+            case Node.New(var _, var args, var _) -> args.stream().map(Node.Operand::node);
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);
             case Node.Binary(var _, var left, var right) -> Stream.of(left, right);
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);

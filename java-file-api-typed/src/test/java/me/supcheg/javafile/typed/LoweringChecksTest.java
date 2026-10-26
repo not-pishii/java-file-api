@@ -141,7 +141,7 @@ class LoweringChecksTest {
                 new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
                 Optional.empty());
         SuperInvocation invocation = new SuperInvocation(
-                Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
+                Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)), Node.Passing.EACH);
 
         assertThat(lowering.lowerConstructor(invocation, List.of()))
                 .isEqualTo(new ConstructorBody.Explicit(
@@ -157,7 +157,7 @@ class LoweringChecksTest {
                 new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
                 Optional.empty());
         Node created = new Node.New(
-                Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)));
+                Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)), Node.Passing.EACH);
 
         assertThatIllegalStateException()
                 .isThrownBy(() -> lowering.lowerExpr(created))

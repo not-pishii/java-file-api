@@ -106,12 +106,25 @@
     Rival.class,
     Tagged.class,
     Applying.class,
-    Rawly.class
+    Rawly.class,
+    Spreads.class,
+    Lined.class,
+    Pairing.class,
+    Tripling.class,
+    Packed.class,
+    Numbering.class,
+    IntStream.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
 import me.supcheg.javafile.typed.fixtures.Applying;
+import me.supcheg.javafile.typed.fixtures.Lined;
+import me.supcheg.javafile.typed.fixtures.Numbering;
+import me.supcheg.javafile.typed.fixtures.Packed;
+import me.supcheg.javafile.typed.fixtures.Pairing;
+import me.supcheg.javafile.typed.fixtures.Spreads;
+import me.supcheg.javafile.typed.fixtures.Tripling;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Mid;
@@ -200,4 +213,5 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
