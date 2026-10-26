@@ -884,16 +884,24 @@ final class Lowering {
     /// without variable arity is chosen first), else as the array of the arguments, which pins the member.
     private List<Expr> spread(Invocable member, Searched searched, List<Node.Operand> args, ArrayToken<?, ?> type) {
         uses(member);
-        return switch (rivalry(member, searched, args.size())) {
-            case Rivalry.Alone _ -> alone(member, args, type);
+        Node.Passing passing = new Node.Passing.Spread(type);
+        List<TypeToken<?>> types = IntStream.range(0, args.size())
+                .<TypeToken<?>>mapToObj(i -> Node.parameter(member, passing, i))
+                .toList();
+        return switch (rivalry(member, searched, types)) {
+            case Rivalry.Alone _ -> given(member, args, type, false);
+            case Rivalry.Outranked _ -> given(member, args, type, true);
             case Rivalry.Unproven(var why) -> explicit(member, searched, args, type, why);
         };
     }
 
-    /// `m(a, e1, e2)`: javac has no other method of the name to choose, so every argument is given as it is, to the
-    /// parameter, or the element type, it is passed to. A lone element that is an array is cast to the element
-    /// type, or javac would take it for the array of the parameter (`m((Object) strings)` for `m(Object...)`).
-    private List<Expr> alone(Invocable member, List<Node.Operand> args, ArrayToken<?, ?> type) {
+    /// `m(a, e1, e2)`: javac takes the fact for these arguments, so they are given as they are, to the parameter, or
+    /// the element type, they are passed to; where another method of the name takes as many arguments and none of
+    /// them applies to arguments of exactly those types, `pinned` makes every argument of another type a cast to
+    /// the type, so that no other is applicable to the arguments and javac takes the fact (JLS 15.12.2.5). A lone
+    /// element that is an array is cast to the element type either way, or javac would take it for the array of the
+    /// parameter (`m((Object) strings)` for `m(Object...)`).
+    private List<Expr> given(Invocable member, List<Node.Operand> args, ArrayToken<?, ?> type, boolean pinned) {
         args.forEach(arg -> mentions(arg.type()));
         requireDistinct(member);
         Node.Passing passing = new Node.Passing.Spread(type);
@@ -908,7 +916,10 @@ final class Lowering {
                             && i == leading
                             && arg.type() instanceof ArrayToken<?, ?>
                             && !Tokens.sameType(arg.type(), component);
-                    return loneArray ? cast(component, arg, member) : targeted(arg.node(), param);
+                    if (loneArray || (pinned && !Tokens.sameType(arg.type(), param))) {
+                        return cast(param, arg, member);
+                    }
+                    return pinned ? expr(arg.node(), Typing.EXACT) : targeted(arg.node(), param);
                 })
                 .toList();
     }
@@ -941,18 +952,18 @@ final class Lowering {
 
     /// Whether javac could take another method than `member` for a call of `argc` arguments, as far as the facts
     /// of the type searched tell it.
-    private Rivalry rivalry(Invocable member, Searched searched, int argc) {
+    private Rivalry rivalry(Invocable member, Searched searched, List<TypeToken<?>> types) {
         return switch (searched) {
-            case Searched.In(DeclaredToken<?> declared) -> rivalry(member, declared, argc);
+            case Searched.In(DeclaredToken<?> declared) -> rivalry(member, declared, types);
             case Searched.In(var other) -> new Rivalry.Unproven("the methods of " + other + " are not known");
-            case Searched.Unconsulted _ -> rivalry(member, member.owner(), argc);
+            case Searched.Unconsulted _ -> rivalry(member, member.owner(), types);
         };
     }
 
     /// Every other member of the name that javac may apply to `argc` arguments is a rival: one that takes that many
     /// parameters, and one whose last parameter is an array, which the template does not tell is of variable arity
     /// and is taken to be so. The facts of `searched` must list `member`, or its members are not known.
-    private Rivalry rivalry(Invocable member, DeclaredToken<?> searched, int argc) {
+    private Rivalry rivalry(Invocable member, DeclaredToken<?> searched, List<TypeToken<?>> types) {
         List<ClassDesc> erasures = searched.argumentErasures();
         List<MethodTableTemplate.Signature> named =
                 named(target.methods(searched.shape()), member).toList();
@@ -963,15 +974,22 @@ final class Lowering {
         if (named.stream().noneMatch(isMember)) {
             return new Rivalry.Unproven("the methods of " + searched + " do not list " + member);
         }
-        List<String> rivals = named.stream()
+        List<MethodTableTemplate.Signature> rivals = named.stream()
                 .filter(isMember.negate())
-                .filter(signature -> mayTake(signature.instantiate(erasures), argc))
+                .filter(signature -> mayTake(signature.instantiate(erasures), types.size()))
+                .toList();
+        if (rivals.isEmpty()) {
+            return new Rivalry.Alone();
+        }
+        List<String> applicable = rivals.stream()
+                .filter(signature ->
+                        Rivals.mayApply(signature.instantiate(erasures).params(), types))
                 .map(MethodTableTemplate.Signature::toString)
                 .sorted()
                 .toList();
-        return rivals.isEmpty()
-                ? new Rivalry.Alone()
-                : new Rivalry.Unproven("javac may take " + String.join(", ", rivals) + " for the call");
+        return applicable.isEmpty()
+                ? new Rivalry.Outranked()
+                : new Rivalry.Unproven("javac may take " + String.join(", ", applicable) + " for the call");
     }
 
     /// Whether javac may apply the method of `signature` to `argc` arguments: as one of that many parameters, or
@@ -985,6 +1003,10 @@ final class Lowering {
     private sealed interface Rivalry {
         /// The facts of the type searched list the fact and no other member of its name that javac could apply.
         record Alone() implements Rivalry {}
+
+        /// Other members of the name take that many arguments, none of which can be applied to arguments of the types
+        /// the call is rendered with ([Rivals]): it is written with those types, and javac takes the fact.
+        record Outranked() implements Rivalry {}
 
         /// The facts do not prove it is the only one.
         ///

@@ -409,7 +409,7 @@ class VarargsCallsTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         mix, b -> b.return_(staticCall(Spreads_.mix_StringArray, varargs(STRINGS, literal("a")))));
-                // pick(int, String...) may apply to ("a") as to (1): the array tells
+                // pick(int, String...) takes the arguments of its arity, and no String for its int
                 bodies.define(
                         pick, b -> b.return_(staticCall(Spreads_.pick_StringArray, varargs(STRINGS, literal("a")))));
                 bodies.define(
@@ -423,7 +423,7 @@ class VarargsCallsTest {
         }));
 
         assertThat(compiled.source())
-                .contains("Spreads.pick(new String[] {\"a\"})")
+                .contains("Spreads.pick(\"a\")")
                 .contains("Spreads.mix(\"a\")")
                 .contains("Spreads.rows(v0)");
         assertThat(compiled.invoke("mix")).isEqualTo("parts:a");

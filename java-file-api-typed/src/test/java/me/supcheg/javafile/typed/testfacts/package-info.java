@@ -113,7 +113,8 @@
     Tripling.class,
     Packed.class,
     Numbering.class,
-    IntStream.class
+    IntStream.class,
+    Overloads.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -121,6 +122,7 @@ import me.supcheg.javafile.facts.meta.Facts;
 import me.supcheg.javafile.typed.fixtures.Applying;
 import me.supcheg.javafile.typed.fixtures.Lined;
 import me.supcheg.javafile.typed.fixtures.Numbering;
+import me.supcheg.javafile.typed.fixtures.Overloads;
 import me.supcheg.javafile.typed.fixtures.Packed;
 import me.supcheg.javafile.typed.fixtures.Pairing;
 import me.supcheg.javafile.typed.fixtures.Spreads;
