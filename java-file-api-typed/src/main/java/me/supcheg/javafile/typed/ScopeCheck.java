@@ -49,8 +49,12 @@ final class ScopeCheck {
                 node(condition, in(body), body.path());
                 node(update, in(body), body.path());
             }
-            case Instr.ForEach(var ignored, var ignoredVar, var iterated, var ignoredBody) ->
-                node(iterated.node(), in(block), block.path());
+            case Instr.ForEach(var ignored, var ignoredVar, var iterated, var ignoredBody) -> {
+                switch (iterated) {
+                    case Instr.Iterated.OfIterable(var iterable) -> node(iterable, in(block), block.path());
+                    case Instr.Iterated.OfArray(var array) -> arrayOperand(array, in(block), block.path());
+                }
+            }
             case Instr.Return(var value) -> node(value.node(), in(block), block.path());
             case Instr.ReturnNothing ignored -> {}
             case Instr.Yield(var value) -> node(value, in(block), block.path());
@@ -82,7 +86,10 @@ final class ScopeCheck {
 
     private static void node(Node node, Block.Enclosing use, String where) {
         switch (node) {
-            case Node.Local(var v) -> requireInScope(v, use, where);
+            case Node.Local(var v) -> {
+                requireNotSafeVarargs(v, where);
+                requireInScope(v, use, where);
+            }
             case Node.Lit ignored -> {}
             case Node.Null ignored -> {}
             case Node.This(var owner) -> requireThisInScope(owner, use, where);
@@ -103,10 +110,10 @@ final class ScopeCheck {
             case Node.New(var ignored, var args, var ignoredPassing) -> operands(args, use, where);
             case Node.FieldGet(var target, var ignored) -> node(target.node(), use, where);
             case Node.ArrayAt(var array, var index) -> {
-                node(array, use, where);
+                arrayOperand(array, use, where);
                 node(index, use, where);
             }
-            case Node.ArrayLength(var array) -> node(array, use, where);
+            case Node.ArrayLength(var array) -> arrayOperand(array, use, where);
             case Node.NewArray(var ignored, var lengths) ->
                 lengths.toList().forEach(length -> node(length, use, where));
             case Node.ArrayClone(var array) -> node(array, use, where);
@@ -136,6 +143,27 @@ final class ScopeCheck {
         }
     }
 
+    /// An array that is read, stored into, measured or looped over: the parameter of variable arity of a `@SafeVarargs`
+    /// member may be that, and nothing else (JLS 9.6.4.7).
+    private static void arrayOperand(Node array, Block.Enclosing use, String where) {
+        if (array instanceof Node.Local(var v) && v.isSafeVarargsParameter()) {
+            requireInScope(v, use, where);
+        } else {
+            node(array, use, where);
+        }
+    }
+
+    /// The array of a parameter of variable arity of a `@SafeVarargs` member is no value: javac warns of possible heap
+    /// pollution where it leaves the member, and so the typed layer lets it nowhere.
+    private static void requireNotSafeVarargs(Var<?> v, String where) {
+        if (v.isSafeVarargsParameter()) {
+            throw new IllegalStateException(v + " is used in the " + where + " as a value: javac warns of possible heap"
+                    + " pollution where the array of a parameter of variable arity of a @SafeVarargs member leaves the"
+                    + " member (-Xlint:varargs); read its elements by at, its length by length, store into it by"
+                    + " assignAt, or loop over it by forEach");
+        }
+    }
+
     private static void operands(List<Node.Operand> operands, Block.Enclosing use, String where) {
         for (Node.Operand operand : operands) {
             node(operand.node(), use, where);
@@ -148,7 +176,7 @@ final class ScopeCheck {
             case Node.Target.Field(var t, var ignored) -> node(t.node(), use, where);
             case Node.Target.StaticField ignored -> {}
             case Node.Target.Element(var array, var index) -> {
-                node(array, use, where);
+                arrayOperand(array, use, where);
                 node(index, use, where);
             }
         }

@@ -49,6 +49,9 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
         /// The role of a variable that cannot be assigned.
         enum Fixed implements Role {
             PARAMETER("parameter"),
+            /// The last parameter of a member declared `@SafeVarargs` whose array is not reifiable: the array
+            /// is read, stored into and looped over, and leaves the member nowhere (JLS 9.6.4.7).
+            SAFE_VARARGS_PARAMETER("parameter of variable arity of a @SafeVarargs member"),
             LAMBDA_PARAMETER("lambda parameter"),
             LOCAL("local variable"),
             PATTERN_BINDING("pattern binding"),
@@ -92,6 +95,11 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
     /// loop as in its body.
     boolean isVariableOfFor() {
         return role == Role.Mutable.FOR_VARIABLE;
+    }
+
+    /// Whether this is the parameter of variable arity of a `@SafeVarargs` member.
+    boolean isSafeVarargsParameter() {
+        return role == Role.Fixed.SAFE_VARARGS_PARAMETER;
     }
 
     /// The block this variable is in scope for.

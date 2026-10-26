@@ -57,7 +57,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     /// The exception classes of the `throws` clause of every member declared here.
     abstract List<ClassToken<? extends Throwable>> thrown();
 
-    private <F extends Invocable> F declare(F member) {
+    <F extends Invocable> F declare(F member) {
         return builder().declare(member, thrown());
     }
 
@@ -66,7 +66,7 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
     }
 
     /// The traits of a member declared here: `traits`, with the `throws` clause.
-    private MemberTraits traits(MemberTraits traits) {
+    MemberTraits traits(MemberTraits traits) {
         return new MemberTraits(
                 List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access(), traits.arity());
     }
@@ -241,6 +241,16 @@ public abstract sealed class Declarations<Self, S> permits MemberBuilder, Throwi
         return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, traits(MemberTraits.FINAL)));
     }
 
+    // ------------------------------------------------------------------
+    // Members of variable arity
+    // ------------------------------------------------------------------
+
+    /// The declarations whose last parameter is of variable arity, `T... v`; the body sees it as the array `T[]`.
+    ///
+    /// @return the declarations of the members of variable arity
+    public final VariableArityDeclarations<Self, S> variableArity() {
+        return new VariableArityDeclarations<>(this);
+    }
     // ------------------------------------------------------------------
     // Overrides of the methods of the superclass
     // ------------------------------------------------------------------

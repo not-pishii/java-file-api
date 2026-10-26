@@ -88,6 +88,7 @@ import java.util.stream.Stream;
 /// @param <S> the superclass of the class
 public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, TypedSubclassBodies {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
+    private static final ClassDesc SAFE_VARARGS = ClassDesc.of("java.lang", "SafeVarargs");
 
     private final ClassDeclaration<Self> owner;
     private final TargetClasspath target;
@@ -220,7 +221,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of method " + method.name(), declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A1> p1 = lastParameter(slot, method.param1(), root);
         define(slot, root, List.of(p1), b -> body.build(b, self, p1));
     }
 
@@ -238,7 +239,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Body<R> root = Body.root("body of method " + method.name(), declares(method));
         This<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
-        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A2> p2 = lastParameter(slot, method.param2(), root);
         define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
     }
 
@@ -264,7 +265,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A1> p1 = lastParameter(slot, method.param1(), root);
         define(slot, root, List.of(p1), b -> body.build(b, self, p1));
     }
 
@@ -281,7 +282,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
         This<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(method.param1(), root);
-        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A2> p2 = lastParameter(slot, method.param2(), root);
         define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
     }
 
@@ -307,7 +308,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     public final <R, A1> void define(StaticMethodRef1<R, A1> method, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of static method " + method.name(), declares(method));
-        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A1> p1 = lastParameter(slot, method.param1(), root);
         define(slot, root, List.of(p1), b -> body.apply(b, p1));
     }
 
@@ -332,7 +333,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
             VoidStaticMethodRef1<A1> method, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of static method " + method.name(), declares(method));
-        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A1> p1 = lastParameter(slot, method.param1(), root);
         define(slot, root, List.of(p1), b -> body.apply(b, p1));
     }
 
@@ -349,7 +350,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A1> p1 = lastParameter(slot, ctor.param1(), root);
         define(slot, root, List.of(p1), b -> body.build(b, self, p1));
     }
 
@@ -360,7 +361,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         This<Self> self = thisOf(root);
         Var<A1> p1 = Var.param(ctor.param1(), root);
-        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A2> p2 = lastParameter(slot, ctor.param2(), root);
         define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
     }
 
@@ -382,7 +383,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
-        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A1> p1 = lastParameter(slot, ctor.param1(), root);
         built(root, b -> body.build(site, p1));
         defined(slot, root, List.of(p1), new Start.Super(site.invocation()));
     }
@@ -394,7 +395,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         VoidBody root = VoidBody.root("body of constructor", declares(ctor));
         SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
         Var<A1> p1 = Var.param(ctor.param1(), root);
-        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A2> p2 = lastParameter(slot, ctor.param2(), root);
         built(root, b -> body.build(site, p1, p2));
         defined(slot, root, List.of(p1, p2), new Start.Super(site.invocation()));
     }
@@ -736,6 +737,22 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         return new This<>(root, self);
     }
 
+    /// The last parameter of a declared member, of `type`: that of a member of variable arity declared `@SafeVarargs`
+    /// is
+    /// one the body may read and store into and loop over, and may not let the array out of the member.
+    private static <T> Var<T> lastParameter(Slot.Awaiting slot, TypeToken<T> type, Block<?, ?> root) {
+        Var.Role.Fixed role =
+                switch (slot.declared().arity()) {
+                    case Arity.Fixed _ -> Var.Role.Fixed.PARAMETER;
+                    case Arity.Variable(var safety) ->
+                        switch (safety) {
+                            case UNCHECKED -> Var.Role.Fixed.PARAMETER;
+                            case SAFE_VARARGS -> Var.Role.Fixed.SAFE_VARARGS_PARAMETER;
+                        };
+                };
+        return new Var<>(type, role, root);
+    }
+
     /// Builds `root` — the root of its scope tree — from `bodyFn`.
     private static <R, B extends Block<R, B>> void built(B root, Function<? super B, Terminated<R>> bodyFn) {
         Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
@@ -794,11 +811,13 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
                                 .toList();
                 };
-        List<AnnotationUse> annotations =
-                switch (declared.kind()) {
-                    case OVERRIDES -> List.of(new AnnotationUse(OVERRIDE, List.of()));
-                    case DECLARES -> List.of();
-                };
+        List<AnnotationUse> annotations = Stream.concat(
+                        switch (declared.kind()) {
+                            case OVERRIDES -> Stream.of(new AnnotationUse(OVERRIDE, List.of()));
+                            case DECLARES -> Stream.<AnnotationUse>empty();
+                        },
+                        safeVarargs(declared.arity()))
+                .toList();
         return switch (fact.kind()) {
             case CONSTRUCTOR -> {
                 ConstructorBody body =
@@ -807,7 +826,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                             case Start.Super(var invocation) -> lowering.lowerConstructor(invocation, root.instrs());
                         };
                 yield new ConstructorDecl(
-                        List.of(),
+                        annotations,
                         Set.of(Modifier.PUBLIC),
                         coreParams,
                         body,
@@ -820,7 +839,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
                         annotations,
-                        Set.of(Modifier.PUBLIC),
+                        finalIfSafeVarargs(declared.arity()),
                         List.of(),
                         coreParams,
                         code,
@@ -832,7 +851,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                 yield new MethodDecl(
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
-                        List.of(),
+                        annotations,
                         Set.of(Modifier.PUBLIC, Modifier.STATIC),
                         List.of(),
                         coreParams,
@@ -841,6 +860,27 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                         Optional.empty());
             }
         };
+    }
+
+    /// `@SafeVarargs`, of a member of variable arity that vouches for the array of its last parameter: the one with
+    /// a type that is not reifiable, which javac would warn of (JLS 9.6.4.7).
+    private static Stream<AnnotationUse> safeVarargs(Arity arity) {
+        return switch (arity) {
+            case Arity.Fixed _ -> Stream.empty();
+            case Arity.Variable(var safety) ->
+                switch (safety) {
+                    case UNCHECKED -> Stream.empty();
+                    case SAFE_VARARGS -> Stream.of(new AnnotationUse(SAFE_VARARGS, List.of()));
+                };
+        };
+    }
+
+    /// The modifiers of an instance method: `public`, and `final` where it is `@SafeVarargs`, which javac accepts
+    /// of a method that cannot be overridden alone (JLS 9.6.4.7).
+    private static Set<Modifier> finalIfSafeVarargs(Arity arity) {
+        return safeVarargs(arity).findAny().isPresent()
+                ? Set.of(Modifier.PUBLIC, Modifier.FINAL)
+                : Set.of(Modifier.PUBLIC);
     }
 
     /// The `throws` clause of a member, written after its body is lowered.

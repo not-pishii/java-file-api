@@ -259,7 +259,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 member,
                 thrown,
                 Member.Kind.DECLARES,
-                Arity.FIXED,
+                member.arity(),
                 scope(member.kind(), "the body of " + member),
                 site));
         return member;
