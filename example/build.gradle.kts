@@ -14,3 +14,10 @@ dependencies {
     testImplementation(project(":java-file-api-typed"))
     testAnnotationProcessor(project(":java-file-api-facts-processor"))
 }
+
+// The typed examples of the README are held to what the README shows (ReadmeTypedExamplesTest), so the tests run
+// again when the README, or the generator code it shows, changes.
+tasks.test {
+    inputs.file(rootProject.layout.projectDirectory.file("README.md"))
+    inputs.dir("src/test/java/me/supcheg/javafile/example/typed")
+}
