@@ -336,8 +336,9 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         /// @param fact its fact
         /// @param thrown the exception classes of its `throws` clause
         /// @param kind whether it overrides
-        /// @param arity whether its last parameter is of variable arity: as that of the methods it
-        ///     overrides is, and never of a method declared by its name
+        /// @param arity whether its last parameter is of variable arity, and whether it vouches for the array
+        ///     (`@SafeVarargs`): as that of the method it overrides is, and for a member declared by its name,
+        ///     what `variableArity()` derives of the type of its elements
         /// @param scope the scope of the types its body mentions
         /// @param site where it was declared
         record Callable(

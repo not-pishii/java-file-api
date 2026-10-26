@@ -6,7 +6,9 @@ package me.supcheg.javafile.facts;
 ///
 /// A fact tells it ([MemberTraits#arity()]), and so does a declaration of a
 /// heritage ([Heritage.Declared#arity()]): `m(String[])` and `m(String...)`
-/// are one signature and two methods to the code that calls them.
+/// are one signature and two methods to the code that calls them. The typed layer declares a member of variable
+/// arity by `variableArity()`, and derives from the type of the elements of its array which of the two it vouches
+/// with: `@SafeVarargs` where they are not reifiable (JLS 4.7), none where they are.
 public sealed interface Arity permits Arity.Fixed, Arity.Variable {
 
     /// Every parameter is a single argument.

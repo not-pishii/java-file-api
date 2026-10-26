@@ -30,12 +30,12 @@ package me.supcheg.javafile.typed;
 /// declared later would change ([MemberBodies]).
 ///
 /// **Declarations match their facts.** The class renders `public final`,
-/// as its [FinalClassToken] says. A field of [#declareField] is `public
+/// as its [me.supcheg.javafile.facts.FinalClassToken] says. A field of [#declareField] is `public
 /// final` and has an initializer — a blank `final` field, definitely assigned
 /// in every constructor, is not supported yet; one of [#declareMutableField]
-/// is `public`, and only its [MutableFieldRef] can be assigned. Methods are
+/// is `public`, and only its [me.supcheg.javafile.facts.MutableFieldRef] can be assigned. Methods are
 /// `public` and, the class being final, never overridden. Once the
-/// declarations end, [FinalClassToken#methods()] of [#self()] lists the
+/// declarations end, [me.supcheg.javafile.facts.FinalClassToken#methods()] of [#self()] lists the
 /// declared methods and those inherited; asking earlier is rejected.
 ///
 /// **Checked exceptions.** A method or constructor declares the exceptions
@@ -75,9 +75,8 @@ package me.supcheg.javafile.typed;
 ///
 /// This builder is of a class that extends `Object`; one with another
 /// superclass has a [TypedSubclassBuilder]. Methods and constructors are of
-/// up to arity 2 (static methods up to 1); `abstract`/open classes come
-/// later, as does a generator of the arity families analogous to
-/// `java-file-api-facts`'s `FactsCodegen`.
+/// any arity from 0 to 12 (generated, see `DeclarationArities`); `abstract`/open classes come
+/// later.
 ///
 /// @param <Self> the brand of the class being declared, unique to one
 ///     [TypedJavaFile#class_(TargetClasspath, java.lang.constant.ClassDesc, TypedJavaFile.TypedClassSpec)] call

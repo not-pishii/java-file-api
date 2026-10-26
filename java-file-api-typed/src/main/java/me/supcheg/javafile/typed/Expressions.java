@@ -66,9 +66,18 @@ import java.util.stream.Stream;
 ///   where the declared type of the variable, field or returned value is
 ///   exactly the constructed type — `ArrayList<String> v = new ArrayList<>()`.
 ///
-/// Call/`new` combinators are shown here for arity 0..3; arity 4..12 follow
-/// the identical pattern (one overload per [me.supcheg.javafile.facts]
-/// `*RefN` family member) and are a mechanical extension.
+/// **Arities.** `call`, `voidCall`, `staticCall`, `voidStaticCall`, `new_`, `lambda` and `lambdaBlock` take the fact
+/// of a member of any number of parameters, 0 to 12: one overload for each `MethodRefN`, `CtorRefN`, `SamN` of the
+/// facts. They are generated (`TypedCodegen`) into the superclass of this class, and inherited as static methods, so
+/// that an `import static` of them finds them.
+///
+/// **Variable arity.** The last parameter of a member of variable arity is given an array the code has, as an
+/// argument of its array type, or its elements one by one, `varargs(type, e1, e2)` as the last argument of a call.
+///
+/// **Arrays.** `newArrayOf(type, e1, e2)` creates an array with its elements, `{e1, e2}` where a declaration of
+/// exactly its type tells the type; `newArray(type, length, ...)` one by its lengths, `cloneArray` copies an array
+/// without a cast, `at`, `length` and `assignAt` read, measure and store into one, and `forEach` of a block loops
+/// over its elements.
 ///
 /// Import the methods statically.
 public final class Expressions extends ExpressionArities {
@@ -704,7 +713,7 @@ public final class Expressions extends ExpressionArities {
     //   block of the code around the loop: it does not see the loop
     //   variable, which javac would only refuse it for being assigned.
     //
-    // Arity 0..3; arity 4..12 follow the identical pattern.
+    // Of any arity 0..12.
     // ------------------------------------------------------------------
 
     /// The parameters and the body of an expression lambda.
