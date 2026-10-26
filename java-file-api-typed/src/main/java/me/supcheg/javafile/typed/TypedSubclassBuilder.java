@@ -1,13 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.CtorRef1;
-import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.ExtendableClassToken;
-import me.supcheg.javafile.typed.TypedSubclassBodies.CtorBody0;
-import me.supcheg.javafile.typed.TypedSubclassBodies.CtorBody1;
-import me.supcheg.javafile.typed.TypedSubclassBodies.CtorBody2;
 
 import java.util.stream.Stream;
 
@@ -37,7 +31,7 @@ import java.util.stream.Stream;
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public final class TypedSubclassBuilder<Self, S> extends MemberBuilder<Self, S> {
+public final class TypedSubclassBuilder<Self, S> extends TypedSubclassBuilderArities<Self, S> {
     private final ExtendableClassToken<S> extended;
 
     TypedSubclassBuilder(
@@ -79,52 +73,9 @@ public final class TypedSubclassBuilder<Self, S> extends MemberBuilder<Self, S> 
                         .toList());
     }
 
-    /// The declarations of the class end and the bodies of its members begin, with that of a
-    /// constructor: `ctor.super_(...)`, whose last argument builds what follows `super(...)`.
-    ///
-    /// What can be judged of the declarations alone is judged here, as
-    /// [TypedClassBuilder#bodies()] does; the body of the constructor is built and lowered
-    /// here, as every body is by the call that gives it ([MemberBodies]).
-    ///
-    /// @param ctor a declared constructor of the class
-    /// @param first its body, given the place of its `super(...)`
-    /// @return the stage that defines the other declared members
-    /// @throws IllegalStateException if the declarations have ended already, or leave undone what
-    ///     only a method of the class can do ([SignatureRegistry#requireComplete()]); if the
-    ///     constructor was not declared by this class; and as a definition of the bodies does
-    ///     ([TypedSubclassBodies#define(CtorRef0, CtorBody0)])
-    public TypedSubclassBodies<Self, S> bodies(CtorRef0<Self> ctor, CtorBody0<Self, S> first) {
-        TypedSubclassBodies<Self, S> bodies = begin(declared -> new TypedSubclassBodies<>(declared, extended));
-        bodies.define(ctor, first);
-        return bodies;
-    }
-
-    /// The declarations of the class end and the bodies of its members begin, with that of a
-    /// constructor with one parameter, see [#bodies(CtorRef0, CtorBody0)].
-    ///
-    /// @param ctor a declared constructor of the class
-    /// @param first its body, given the place of its `super(...)` and the parameter
-    /// @param <A1> the parameter type
-    /// @return the stage that defines the other declared members
-    /// @throws IllegalStateException as [#bodies(CtorRef0, CtorBody0)]
-    public <A1> TypedSubclassBodies<Self, S> bodies(CtorRef1<Self, A1> ctor, CtorBody1<Self, S, A1> first) {
-        TypedSubclassBodies<Self, S> bodies = begin(declared -> new TypedSubclassBodies<>(declared, extended));
-        bodies.define(ctor, first);
-        return bodies;
-    }
-
-    /// The declarations of the class end and the bodies of its members begin, with that of a
-    /// constructor with two parameters, see [#bodies(CtorRef0, CtorBody0)].
-    ///
-    /// @param ctor a declared constructor of the class
-    /// @param first its body, given the place of its `super(...)` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the stage that defines the other declared members
-    /// @throws IllegalStateException as [#bodies(CtorRef0, CtorBody0)]
-    public <A1, A2> TypedSubclassBodies<Self, S> bodies(CtorRef2<Self, A1, A2> ctor, CtorBody2<Self, S, A1, A2> first) {
-        TypedSubclassBodies<Self, S> bodies = begin(declared -> new TypedSubclassBodies<>(declared, extended));
-        bodies.define(ctor, first);
-        return bodies;
+    /// The declarations of the class end and its bodies begin: what the `bodies` of a constructor does first.
+    @Override
+    TypedSubclassBodies<Self, S> beginBodies() {
+        return begin(declared -> new TypedSubclassBodies<>(declared, extended));
     }
 }

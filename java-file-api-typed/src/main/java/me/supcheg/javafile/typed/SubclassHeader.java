@@ -4,20 +4,7 @@ import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.FinalClassToken;
-import me.supcheg.javafile.facts.Inherited0;
-import me.supcheg.javafile.facts.Inherited1;
-import me.supcheg.javafile.facts.Inherited2;
-import me.supcheg.javafile.facts.MethodRef0;
-import me.supcheg.javafile.facts.MethodRef1;
-import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
-import me.supcheg.javafile.facts.UnsafeInvocables;
-import me.supcheg.javafile.facts.VoidInherited0;
-import me.supcheg.javafile.facts.VoidInherited1;
-import me.supcheg.javafile.facts.VoidInherited2;
-import me.supcheg.javafile.facts.VoidMethodRef0;
-import me.supcheg.javafile.facts.VoidMethodRef1;
-import me.supcheg.javafile.facts.VoidMethodRef2;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,7 +30,7 @@ import java.util.stream.Stream;
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public final class SubclassHeader<Self, S> extends Overriding<Self> {
+public final class SubclassHeader<Self, S> extends SubclassHeaderArities<Self, S> {
     private final ClassDeclaration<Self> declaration;
     private final ExtendableClassToken<S> superclass;
 
@@ -140,83 +127,10 @@ public final class SubclassHeader<Self, S> extends Overriding<Self> {
         return declaration().implement(proof);
     }
 
-    /// Says the class has a method by inheriting it from its superclass: what a step of the proof
-    /// that the class implements an interface takes where the superclass has the method of the
-    /// interface already — `Thread.run()` for `Runnable`. The fact is of the superclass or of a
-    /// class above it, which javac holds the generator to; that the superclass has the method with
-    /// a body, `public`, and as the fact tells it is checked here, and that it can stand for the
-    /// method of the interface, where the step is given to `implements_`.
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @param <R> the result type
-    /// @return how the class has the method: by inheritance, with no method of its own
-    /// @throws IllegalArgumentException if the superclass has no such method on the target classpath, or
-    ///     has it abstract, `static` or not `public`, or otherwise than the fact tells
-    /// @throws IllegalStateException if the header of the class has ended
-    public <R> Inherited0<Self, R> inherited(MethodRef0<? super S, R> method) {
-        return UnsafeInvocables.inherited0(declaration().inherit(method));
-    }
-
-    /// Says the class has a method with one parameter by inheriting it from its superclass, see
-    /// [#inherited(MethodRef0)].
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return how the class has the method
-    /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
-    /// @throws IllegalStateException if the header of the class has ended
-    public <R, A1> Inherited1<Self, R, A1> inherited(MethodRef1<? super S, R, A1> method) {
-        return UnsafeInvocables.inherited1(declaration().inherit(method));
-    }
-
-    /// Says the class has a method with two parameters by inheriting it from its superclass, see
-    /// [#inherited(MethodRef0)].
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return how the class has the method
-    /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
-    /// @throws IllegalStateException if the header of the class has ended
-    public <R, A1, A2> Inherited2<Self, R, A1, A2> inherited(MethodRef2<? super S, R, A1, A2> method) {
-        return UnsafeInvocables.inherited2(declaration().inherit(method));
-    }
-
-    /// Says the class has a `void` method by inheriting it from its superclass, see
-    /// [#inherited(MethodRef0)].
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @return how the class has the method
-    /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
-    /// @throws IllegalStateException if the header of the class has ended
-    public VoidInherited0<Self> inherited(VoidMethodRef0<? super S> method) {
-        return UnsafeInvocables.voidInherited0(declaration().inherit(method));
-    }
-
-    /// Says the class has a `void` method with one parameter by inheriting it from its superclass,
-    /// see [#inherited(MethodRef0)].
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @param <A1> the parameter type
-    /// @return how the class has the method
-    /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
-    /// @throws IllegalStateException if the header of the class has ended
-    public <A1> VoidInherited1<Self, A1> inherited(VoidMethodRef1<? super S, A1> method) {
-        return UnsafeInvocables.voidInherited1(declaration().inherit(method));
-    }
-
-    /// Says the class has a `void` method with two parameters by inheriting it from its
-    /// superclass, see [#inherited(MethodRef0)].
-    ///
-    /// @param method the fact of the method of the superclass
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return how the class has the method
-    /// @throws IllegalArgumentException as [#inherited(MethodRef0)]
-    /// @throws IllegalStateException if the header of the class has ended
-    public <A1, A2> VoidInherited2<Self, A1, A2> inherited(VoidMethodRef2<? super S, A1, A2> method) {
-        return UnsafeInvocables.voidInherited2(declaration().inherit(method));
-    }
+    // `inherited(method)`, of the fact of a method of the superclass of any number of parameters, is generated into
+    // the superclass of this class (SubclassHeaderArities, see TypedCodegen). It says the class has the method by
+    // inheriting it: what a step of the proof that the class implements an interface takes where the superclass has
+    // the method of the interface already — `Thread.run()` for `Runnable`. That the superclass has the method with a
+    // body, `public`, and as the fact tells it is checked there, and that it can stand for the method of the
+    // interface, where the step is given to `implements_`.
 }

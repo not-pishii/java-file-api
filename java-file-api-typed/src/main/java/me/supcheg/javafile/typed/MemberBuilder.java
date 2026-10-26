@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S>
-        permits TypedClassBuilder, TypedSubclassBuilder {
+        permits TypedClassBuilder, TypedSubclassBuilderArities {
 
     private final String described;
     private final FinalClassToken<Self> self;

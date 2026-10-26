@@ -3,46 +3,18 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
-import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.CtorRef1;
-import me.supcheg.javafile.facts.CtorRef2;
-import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
-import me.supcheg.javafile.facts.MethodRef0;
-import me.supcheg.javafile.facts.MethodRef1;
-import me.supcheg.javafile.facts.MethodRef2;
-import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
-import me.supcheg.javafile.facts.Sam0;
-import me.supcheg.javafile.facts.Sam1;
-import me.supcheg.javafile.facts.Sam2;
-import me.supcheg.javafile.facts.Sam3;
 import me.supcheg.javafile.facts.StaticFieldRef;
-import me.supcheg.javafile.facts.StaticMethodRef0;
-import me.supcheg.javafile.facts.StaticMethodRef1;
-import me.supcheg.javafile.facts.StaticMethodRef2;
-import me.supcheg.javafile.facts.StaticMethodRef3;
 import me.supcheg.javafile.facts.TypeToken;
-import me.supcheg.javafile.facts.VoidMethodRef0;
-import me.supcheg.javafile.facts.VoidMethodRef1;
-import me.supcheg.javafile.facts.VoidMethodRef2;
-import me.supcheg.javafile.facts.VoidMethodRef3;
-import me.supcheg.javafile.facts.VoidSam0;
-import me.supcheg.javafile.facts.VoidSam1;
-import me.supcheg.javafile.facts.VoidSam2;
-import me.supcheg.javafile.facts.VoidSam3;
-import me.supcheg.javafile.facts.VoidStaticMethodRef0;
-import me.supcheg.javafile.facts.VoidStaticMethodRef1;
-import me.supcheg.javafile.facts.VoidStaticMethodRef2;
-import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.typed.jdk.facts.java.lang.Math_;
@@ -50,11 +22,9 @@ import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -101,7 +71,7 @@ import java.util.stream.Stream;
 /// `*RefN` family member) and are a mechanical extension.
 ///
 /// Import the methods statically.
-public final class Expressions {
+public final class Expressions extends ExpressionArities {
 
     private Expressions() {}
 
@@ -215,136 +185,19 @@ public final class Expressions {
     }
 
     // ------------------------------------------------------------------
-    // Instance calls; each throws IllegalArgumentException for a
-    // receiver of a primitive type
+    // Calls and instance creation: `call`, `voidCall`, `staticCall`, `voidStaticCall` and `new_`, of the fact of
+    // a member of any number of parameters, and the same with the arguments of a last parameter of variable
+    // arity one by one ([#varargs]). They are the same code at every arity, generated into the superclass of this
+    // class (ExpressionArities, see TypedCodegen), and inherited as static methods: `Expressions.call` and an
+    // `import static` of it find them.
+    //
+    // - `call` and `voidCall` throw IllegalArgumentException for a receiver of a primitive type;
+    // - `new_` takes a `CtorRefN` only, the constructor of an instantiable class: the constructor of an abstract
+    //   class is a `SuperCtorRefN`, which `new_` does not take (§3.1). The type arguments are always those of the
+    //   fact: lowering renders the diamond itself where the target type is exactly the constructed one. It throws
+    //   IllegalArgumentException for a class token with a wildcard type argument, which `new` cannot instantiate
+    //   (JLS 15.9).
     // ------------------------------------------------------------------
-
-    public static <O, R> Invocation<R> call(Expr<? extends O> target, MethodRef0<O, R> method) {
-        return new Invocation<>(
-                new Node.Call(receiver(target, method), method, List.of(), Node.Passing.EACH), method.result());
-    }
-
-    public static <O, R, A1> Invocation<R> call(
-            Expr<? extends O> target, MethodRef1<O, R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(
-                new Node.Call(receiver(target, method), method, arguments(a1), Node.Passing.EACH), method.result());
-    }
-
-    public static <O, R, A1, A2> Invocation<R> call(
-            Expr<? extends O> target, MethodRef2<O, R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(
-                new Node.Call(receiver(target, method), method, arguments(a1, a2), Node.Passing.EACH), method.result());
-    }
-
-    public static <O, R, A1, A2, A3> Invocation<R> call(
-            Expr<? extends O> target,
-            MethodRef3<O, R, A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Expr<? extends A3> a3) {
-        return new Invocation<>(
-                new Node.Call(receiver(target, method), method, arguments(a1, a2, a3), Node.Passing.EACH),
-                method.result());
-    }
-
-    public static <O> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef0<O> method) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, List.of(), Node.Passing.EACH));
-    }
-
-    public static <O, A1> VoidInvocation voidCall(
-            Expr<? extends O> target, VoidMethodRef1<O, A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.Call(receiver(target, method), method, arguments(a1), Node.Passing.EACH));
-    }
-
-    public static <O, A1, A2> VoidInvocation voidCall(
-            Expr<? extends O> target, VoidMethodRef2<O, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(
-                new Node.Call(receiver(target, method), method, arguments(a1, a2), Node.Passing.EACH));
-    }
-
-    public static <O, A1, A2, A3> VoidInvocation voidCall(
-            Expr<? extends O> target,
-            VoidMethodRef3<O, A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Expr<? extends A3> a3) {
-        return new VoidInvocation(
-                new Node.Call(receiver(target, method), method, arguments(a1, a2, a3), Node.Passing.EACH));
-    }
-
-    // ------------------------------------------------------------------
-    // Static calls
-    // ------------------------------------------------------------------
-
-    public static <R> Invocation<R> staticCall(StaticMethodRef0<R> method) {
-        return new Invocation<>(new Node.StaticCall(method, List.of(), Node.Passing.EACH), method.result());
-    }
-
-    public static <R, A1> Invocation<R> staticCall(StaticMethodRef1<R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1), Node.Passing.EACH), method.result());
-    }
-
-    public static <R, A1, A2> Invocation<R> staticCall(
-            StaticMethodRef2<R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2), Node.Passing.EACH), method.result());
-    }
-
-    public static <R, A1, A2, A3> Invocation<R> staticCall(
-            StaticMethodRef3<R, A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Expr<? extends A3> a3) {
-        return new Invocation<>(new Node.StaticCall(method, arguments(a1, a2, a3), Node.Passing.EACH), method.result());
-    }
-
-    public static VoidInvocation voidStaticCall(VoidStaticMethodRef0 method) {
-        return new VoidInvocation(new Node.StaticCall(method, List.of(), Node.Passing.EACH));
-    }
-
-    public static <A1> VoidInvocation voidStaticCall(VoidStaticMethodRef1<A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1), Node.Passing.EACH));
-    }
-
-    public static <A1, A2> VoidInvocation voidStaticCall(
-            VoidStaticMethodRef2<A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2), Node.Passing.EACH));
-    }
-
-    public static <A1, A2, A3> VoidInvocation voidStaticCall(
-            VoidStaticMethodRef3<A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Expr<? extends A3> a3) {
-        return new VoidInvocation(new Node.StaticCall(method, arguments(a1, a2, a3), Node.Passing.EACH));
-    }
-
-    // ------------------------------------------------------------------
-    // Instance creation: only a `CtorRefN` — the constructor of an
-    // instantiable class — is accepted; the constructor of an abstract
-    // class is a `SuperCtorRefN`, which `new_` does not take (§3.1).
-    // The type arguments are always those of the fact: lowering renders the
-    // diamond itself where the target type is exactly the constructed one.
-    // Each throws IllegalArgumentException for a class token with a
-    // wildcard type argument, which `new` cannot instantiate (JLS 15.9).
-    // ------------------------------------------------------------------
-
-    public static <O> Invocation<O> new_(CtorRef0<O> ctor) {
-        return new Invocation<>(instantiate(ctor, List.of(), Node.Passing.EACH), ctor.owner());
-    }
-
-    public static <O, A1> Invocation<O> new_(CtorRef1<O, A1> ctor, Expr<? extends A1> a1) {
-        return new Invocation<>(instantiate(ctor, arguments(a1), Node.Passing.EACH), ctor.owner());
-    }
-
-    public static <O, A1, A2> Invocation<O> new_(
-            CtorRef2<O, A1, A2> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(instantiate(ctor, arguments(a1, a2), Node.Passing.EACH), ctor.owner());
-    }
-
-    public static <O, A1, A2, A3> Invocation<O> new_(
-            CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3) {
-        return new Invocation<>(instantiate(ctor, arguments(a1, a2, a3), Node.Passing.EACH), ctor.owner());
-    }
 
     // ------------------------------------------------------------------
     // Calls of members of variable arity, with the arguments of the last parameter one by one:
@@ -403,95 +256,16 @@ public final class Expressions {
         return new Node.Passing.Spread(rest.type);
     }
 
-    private static Node callNode(Expr<?> target, Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
+    static Node callNode(Expr<?> target, Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
         return new Node.Call(receiver(target, method), method, spread(method, rest, leading), spreading(rest));
     }
 
-    private static Node staticCallNode(Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
+    static Node staticCallNode(Invocable method, Varargs<?> rest, List<Node.Operand> leading) {
         return new Node.StaticCall(method, spread(method, rest, leading), spreading(rest));
     }
 
-    private static Node newNode(Invocable ctor, Varargs<?> rest, List<Node.Operand> leading) {
+    static Node newNode(Invocable ctor, Varargs<?> rest, List<Node.Operand> leading) {
         return instantiate(ctor, spread(ctor, rest, leading), spreading(rest));
-    }
-
-    public static <O, R, A1> Invocation<R> call(
-            Expr<? extends O> target, MethodRef1<O, R, A1> method, Varargs<A1> rest) {
-        return new Invocation<>(callNode(target, method, rest, arguments()), method.result());
-    }
-
-    public static <O, R, A1, A2> Invocation<R> call(
-            Expr<? extends O> target, MethodRef2<O, R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new Invocation<>(callNode(target, method, rest, arguments(a1)), method.result());
-    }
-
-    public static <O, R, A1, A2, A3> Invocation<R> call(
-            Expr<? extends O> target,
-            MethodRef3<O, R, A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Varargs<A3> rest) {
-        return new Invocation<>(callNode(target, method, rest, arguments(a1, a2)), method.result());
-    }
-
-    public static <O, A1> VoidInvocation voidCall(
-            Expr<? extends O> target, VoidMethodRef1<O, A1> method, Varargs<A1> rest) {
-        return new VoidInvocation(callNode(target, method, rest, arguments()));
-    }
-
-    public static <O, A1, A2> VoidInvocation voidCall(
-            Expr<? extends O> target, VoidMethodRef2<O, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new VoidInvocation(callNode(target, method, rest, arguments(a1)));
-    }
-
-    public static <O, A1, A2, A3> VoidInvocation voidCall(
-            Expr<? extends O> target,
-            VoidMethodRef3<O, A1, A2, A3> method,
-            Expr<? extends A1> a1,
-            Expr<? extends A2> a2,
-            Varargs<A3> rest) {
-        return new VoidInvocation(callNode(target, method, rest, arguments(a1, a2)));
-    }
-
-    public static <R, A1> Invocation<R> staticCall(StaticMethodRef1<R, A1> method, Varargs<A1> rest) {
-        return new Invocation<>(staticCallNode(method, rest, arguments()), method.result());
-    }
-
-    public static <R, A1, A2> Invocation<R> staticCall(
-            StaticMethodRef2<R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new Invocation<>(staticCallNode(method, rest, arguments(a1)), method.result());
-    }
-
-    public static <R, A1, A2, A3> Invocation<R> staticCall(
-            StaticMethodRef3<R, A1, A2, A3> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
-        return new Invocation<>(staticCallNode(method, rest, arguments(a1, a2)), method.result());
-    }
-
-    public static <A1> VoidInvocation voidStaticCall(VoidStaticMethodRef1<A1> method, Varargs<A1> rest) {
-        return new VoidInvocation(staticCallNode(method, rest, arguments()));
-    }
-
-    public static <A1, A2> VoidInvocation voidStaticCall(
-            VoidStaticMethodRef2<A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new VoidInvocation(staticCallNode(method, rest, arguments(a1)));
-    }
-
-    public static <A1, A2, A3> VoidInvocation voidStaticCall(
-            VoidStaticMethodRef3<A1, A2, A3> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
-        return new VoidInvocation(staticCallNode(method, rest, arguments(a1, a2)));
-    }
-
-    public static <O, A1> Invocation<O> new_(CtorRef1<O, A1> ctor, Varargs<A1> rest) {
-        return new Invocation<>(newNode(ctor, rest, arguments()), ctor.owner());
-    }
-
-    public static <O, A1, A2> Invocation<O> new_(CtorRef2<O, A1, A2> ctor, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new Invocation<>(newNode(ctor, rest, arguments(a1)), ctor.owner());
-    }
-
-    public static <O, A1, A2, A3> Invocation<O> new_(
-            CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
-        return new Invocation<>(newNode(ctor, rest, arguments(a1, a2)), ctor.owner());
     }
 
     // ------------------------------------------------------------------
@@ -933,347 +707,17 @@ public final class Expressions {
     // Arity 0..3; arity 4..12 follow the identical pattern.
     // ------------------------------------------------------------------
 
-    /// A lambda with an expression body, `() -> value`, of the functional
-    /// interface `sam` is the method of.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the value
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, R> Expr<F> lambda(Sam0<F, R> sam, Supplier<? extends Expr<? extends R>> body) {
-        return expressionLambda(
-                sam.owner(), sam.method(), _ -> new LambdaValue(List.of(), returned(body.get(), sam.method())));
-    }
-
-    /// A lambda with an expression body, `(A1 a1) -> value`, of the functional
-    /// interface `sam` is the method of.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the value, given the parameter
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, R, A1> Expr<F> lambda(
-            Sam1<F, R, A1> sam, Function<? super Var<A1>, ? extends Expr<? extends R>> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            return new LambdaValue(List.of(p1), returned(body.apply(p1), sam.method()));
-        });
-    }
-
-    /// A lambda with an expression body, `(A1 a1, A2 a2) -> value`, of the functional
-    /// interface `sam` is the method of.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the value, given the parameters
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, R, A1, A2> Expr<F> lambda(
-            Sam2<F, R, A1, A2> sam, BiFunction<? super Var<A1>, ? super Var<A2>, ? extends Expr<? extends R>> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
-            return new LambdaValue(List.of(p1, p2), returned(body.apply(p1, p2), sam.method()));
-        });
-    }
-
-    /// A lambda with an expression body, `(A1 a1, A2 a2, A3 a3) -> value`, of the functional
-    /// interface `sam` is the method of.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the value, given the parameters
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @param <A3> the type of the third parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, R, A1, A2, A3> Expr<F> lambda(
-            Sam3<F, R, A1, A2, A3> sam,
-            Function3<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? extends Expr<? extends R>> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
-            Var<A3> p3 = lambdaParameter(sam.param3(), scope);
-            return new LambdaValue(List.of(p1, p2, p3), returned(body.apply(p1, p2, p3), sam.method()));
-        });
-    }
-
-    /// A lambda with an expression body, `() -> effect`, of the functional
-    /// interface whose `void` method `sam` is. The body is a statement
-    /// expression: a call, an instance creation, or an assignment.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the effect
-    /// @param <F> the functional interface
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F> Expr<F> lambda(VoidSam0<F> sam, Supplier<? extends Effect> body) {
-        return expressionLambda(
-                sam.owner(), sam.method(), _ -> new LambdaValue(List.of(), Assignment.nodeOf(body.get())));
-    }
-
-    /// A lambda with an expression body, `(A1 a1) -> effect`, of the functional
-    /// interface whose `void` method `sam` is. The body is a statement
-    /// expression: a call, an instance creation, or an assignment.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the effect, given the parameter
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, A1> Expr<F> lambda(VoidSam1<F, A1> sam, Function<? super Var<A1>, ? extends Effect> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            return new LambdaValue(List.of(p1), Assignment.nodeOf(body.apply(p1)));
-        });
-    }
-
-    /// A lambda with an expression body, `(A1 a1, A2 a2) -> effect`, of the functional
-    /// interface whose `void` method `sam` is. The body is a statement
-    /// expression: a call, an instance creation, or an assignment.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the effect, given the parameters
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, A1, A2> Expr<F> lambda(
-            VoidSam2<F, A1, A2> sam, BiFunction<? super Var<A1>, ? super Var<A2>, ? extends Effect> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
-            return new LambdaValue(List.of(p1, p2), Assignment.nodeOf(body.apply(p1, p2)));
-        });
-    }
-
-    /// A lambda with an expression body, `(A1 a1, A2 a2, A3 a3) -> effect`, of the functional
-    /// interface whose `void` method `sam` is. The body is a statement
-    /// expression: a call, an instance creation, or an assignment.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body gives the effect, given the parameters
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @param <A3> the type of the third parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a
-    ///     checked exception the method does not declare
-    public static <F, A1, A2, A3> Expr<F> lambda(
-            VoidSam3<F, A1, A2, A3> sam,
-            Function3<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? extends Effect> body) {
-        return expressionLambda(sam.owner(), sam.method(), scope -> {
-            Var<A1> p1 = lambdaParameter(sam.param1(), scope);
-            Var<A2> p2 = lambdaParameter(sam.param2(), scope);
-            Var<A3> p3 = lambdaParameter(sam.param3(), scope);
-            return new LambdaValue(List.of(p1, p2, p3), Assignment.nodeOf(body.apply(p1, p2, p3)));
-        });
-    }
-
-    /// A lambda with a block body, `() -> { ... }`, of the functional
-    /// interface `sam` is the method of. The block ends as the body of a
-    /// method does, by `return_` or without completing normally.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, R> Expr<F> lambdaBlock(Sam0<F, R> sam, Function<? super Body<R>, Terminated<R>> body) {
-        Body<R> block =
-                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
-    }
-
-    /// A lambda with a block body, `(A1 a1) -> { ... }`, of the functional
-    /// interface `sam` is the method of. The block ends as the body of a
-    /// method does, by `return_` or without completing normally.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameter
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, R, A1> Expr<F> lambdaBlock(
-            Sam1<F, R, A1> sam, BiFunction<? super Body<R>, ? super Var<A1>, Terminated<R>> body) {
-        Body<R> block =
-                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
-    }
-
-    /// A lambda with a block body, `(A1 a1, A2 a2) -> { ... }`, of the functional
-    /// interface `sam` is the method of. The block ends as the body of a
-    /// method does, by `return_` or without completing normally.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameters
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, R, A1, A2> Expr<F> lambdaBlock(
-            Sam2<F, R, A1, A2> sam, Function3<? super Body<R>, ? super Var<A1>, ? super Var<A2>, Terminated<R>> body) {
-        Body<R> block =
-                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        Var<A2> p2 = lambdaParameter(sam.param2(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
-    }
-
-    /// A lambda with a block body, `(A1 a1, A2 a2, A3 a3) -> { ... }`, of the functional
-    /// interface `sam` is the method of. The block ends as the body of a
-    /// method does, by `return_` or without completing normally.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameters
-    /// @param <F> the functional interface
-    /// @param <R> the result type of its method
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @param <A3> the type of the third parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, R, A1, A2, A3> Expr<F> lambdaBlock(
-            Sam3<F, R, A1, A2, A3> sam,
-            Function4<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<R>> body) {
-        Body<R> block =
-                Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        Var<A2> p2 = lambdaParameter(sam.param2(), block);
-        Var<A3> p3 = lambdaParameter(sam.param3(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), b -> body.apply(b, p1, p2, p3));
-    }
-
-    /// A lambda with a block body, `() -> { ... }`, of the functional
-    /// interface whose `void` method `sam` is. The block ends as the body of
-    /// a `void` method does.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block
-    /// @param <F> the functional interface
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F> Expr<F> lambdaBlock(VoidSam0<F> sam, Function<? super VoidBody, Terminated<Void>> body) {
-        VoidBody block =
-                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        return blockLambda(sam.owner(), sam.method(), block, List.of(), body);
-    }
-
-    /// A lambda with a block body, `(A1 a1) -> { ... }`, of the functional
-    /// interface whose `void` method `sam` is. The block ends as the body of
-    /// a `void` method does.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameter
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, A1> Expr<F> lambdaBlock(
-            VoidSam1<F, A1> sam, BiFunction<? super VoidBody, ? super Var<A1>, Terminated<Void>> body) {
-        VoidBody block =
-                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1), b -> body.apply(b, p1));
-    }
-
-    /// A lambda with a block body, `(A1 a1, A2 a2) -> { ... }`, of the functional
-    /// interface whose `void` method `sam` is. The block ends as the body of
-    /// a `void` method does.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameters
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, A1, A2> Expr<F> lambdaBlock(
-            VoidSam2<F, A1, A2> sam,
-            Function3<? super VoidBody, ? super Var<A1>, ? super Var<A2>, Terminated<Void>> body) {
-        VoidBody block =
-                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        Var<A2> p2 = lambdaParameter(sam.param2(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2), b -> body.apply(b, p1, p2));
-    }
-
-    /// A lambda with a block body, `(A1 a1, A2 a2, A3 a3) -> { ... }`, of the functional
-    /// interface whose `void` method `sam` is. The block ends as the body of
-    /// a `void` method does.
-    ///
-    /// @param sam the single abstract method of the functional interface
-    /// @param body builds the block, given the parameters
-    /// @param <F> the functional interface
-    /// @param <A1> the type of the first parameter
-    /// @param <A2> the type of the second parameter
-    /// @param <A3> the type of the third parameter
-    /// @return the lambda
-    /// @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture
-    ///     or can throw a checked exception the method does not declare, where it is built; if the block
-    ///     ends with the token of another block
-    public static <F, A1, A2, A3> Expr<F> lambdaBlock(
-            VoidSam3<F, A1, A2, A3> sam,
-            Function4<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, Terminated<Void>> body) {
-        VoidBody block =
-                VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
-        Var<A1> p1 = lambdaParameter(sam.param1(), block);
-        Var<A2> p2 = lambdaParameter(sam.param2(), block);
-        Var<A3> p3 = lambdaParameter(sam.param3(), block);
-        return blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), b -> body.apply(b, p1, p2, p3));
-    }
-
     /// The parameters and the body of an expression lambda.
-    private record LambdaValue(List<Var<?>> params, Node value) {}
+    record LambdaValue(List<Var<?>> params, Node value) {}
 
     /// The value of an expression lambda of `sam`, which has a result: no primitive one of a reference
     /// result, which Java would box.
-    private static Node returned(Expr<?> value, Invocable sam) {
+    static Node returned(Expr<?> value, Invocable sam) {
         sam.resultType().ifPresent(result -> Tokens.requireNoBoxing(value.type(), result, "the lambda of " + sam));
         return value.node();
     }
 
-    private static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
+    static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
         return new Var<>(type, Var.Role.Fixed.LAMBDA_PARAMETER, scope);
     }
 
@@ -1281,7 +725,7 @@ public final class Expressions {
     /// `body` runs with the lambda's own scope innermost, so a builder of
     /// the block around it cannot be used inside, and what it gives is
     /// checked against that scope right here.
-    private static <F> Expr<F> expressionLambda(
+    static <F> Expr<F> expressionLambda(
             InterfaceToken<F> type, Invocable sam, Function<? super Block<?, ?>, LambdaValue> body) {
         Body<Object> scope = Body.lambdaBody(Scopes.enclosing(), sam.traits().throwsTypes());
         LambdaValue made = Scopes.within(scope, () -> body.apply(scope));
@@ -1290,7 +734,7 @@ public final class Expressions {
         return Expr.of(new Node.Lambda(sam, made.params(), new Node.LambdaBody.Value(scope, made.value())), type);
     }
 
-    private static <F, R, B extends Block<R, B>> Expr<F> blockLambda(
+    static <F, R, B extends Block<R, B>> Expr<F> blockLambda(
             InterfaceToken<F> type,
             Invocable sam,
             B block,
@@ -1355,7 +799,7 @@ public final class Expressions {
     /// A primitive has no members: `5.toString()` is not Java. A marker is a
     /// subtype of `Object`, so javac lets an `Expr<Prim.Int>` through where
     /// the owner is `Object`; this is where it is caught (§6.1, §9).
-    private static Node.Operand receiver(Expr<?> target, Object member) {
+    static Node.Operand receiver(Expr<?> target, Object member) {
         if (target.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
             throw new IllegalArgumentException("cannot access " + member + " on an expression of the primitive type "
                     + primitive + ": a primitive has no members; box it first, e.g. box(PrimitiveToken."
@@ -1382,7 +826,7 @@ public final class Expressions {
         return Stream.of(args).map(Expressions::operand).toList();
     }
 
-    private static Node instantiate(Invocable ctor, List<Node.Operand> args, Node.Passing passing) {
+    static Node instantiate(Invocable ctor, List<Node.Operand> args, Node.Passing passing) {
         if (ctor.owner().typeRef() instanceof ParameterizedTypeRef parameterized
                 && !parameterized.args().stream().allMatch(ExactTypeArg.class::isInstance)) {
             throw new IllegalArgumentException("cannot instantiate " + ctor.owner()

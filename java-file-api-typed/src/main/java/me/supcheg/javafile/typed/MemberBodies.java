@@ -7,28 +7,13 @@ import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.facts.Arity;
-import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.CtorRef1;
-import me.supcheg.javafile.facts.CtorRef2;
-import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberFact;
-import me.supcheg.javafile.facts.MethodRef0;
-import me.supcheg.javafile.facts.MethodRef1;
-import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.Protected;
-import me.supcheg.javafile.facts.StaticMethodRef0;
-import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.TargetClasspath;
-import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeToken;
-import me.supcheg.javafile.facts.VoidMethodRef0;
-import me.supcheg.javafile.facts.VoidMethodRef1;
-import me.supcheg.javafile.facts.VoidMethodRef2;
-import me.supcheg.javafile.facts.VoidStaticMethodRef0;
-import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
@@ -44,7 +29,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,7 +70,8 @@ import java.util.stream.Stream;
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, TypedSubclassBodies {
+public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Self, S>
+        permits TypedClassBodyArities, TypedSubclassBodyArities {
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
     private static final ClassDesc SAFE_VARARGS = ClassDesc.of("java.lang", "SafeVarargs");
 
@@ -187,217 +172,19 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     }
 
     // ------------------------------------------------------------------
-    // Definitions
+    // Definitions: `define` of a method or constructor of every arity, and `superCall`, are generated into the
+    // superclass of this class (MemberBodyArities, see TypedCodegen) and, for the constructors, into those of
+    // the classes below (TypedClassBodyArities, TypedSubclassBodyArities). They call the hooks below.
     // ------------------------------------------------------------------
 
-    /// Defines a declared method; the body gets `this`.
-    ///
-    /// The body is built and lowered by this call: what is wrong with it is rejected here.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block and `this`
-    /// @param <R> the result type
-    /// @throws IllegalStateException if the method is defined already or was not declared by this
-    ///     class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names
-    ///     a type parameter of the class out of its scope, or a type the file of the class cannot write
-    /// @throws TargetClasspathMismatchException if a metamodel the body uses does not hold on the target classpath
-    /// @throws FactLookupException if a member the body uses has an overload on the target classpath
-    ///     that no argument tells it from
-    public final <R> void define(MethodRef0<Self, R> method, InstanceBody0<Self, Body<R>, R> body) {
-        Slot.Awaiting slot = definable(method);
-        Body<R> root = Body.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        define(slot, root, List.of(), b -> body.build(b, self));
+    /// The place of `super(...)` in the body `root` of a constructor.
+    final SuperSite<Self, S> superSite(VoidBody root) {
+        return new SuperSite<>(superclass, root, thisOf(root));
     }
 
-    /// Defines a declared method; the body gets `this` and the parameter.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <R, A1> void define(MethodRef1<Self, R, A1> method, InstanceBody1<Self, Body<R>, R, A1> body) {
-        Slot.Awaiting slot = definable(method);
-        Body<R> root = Body.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
-        define(slot, root, List.of(p1), b -> body.build(b, self, p1));
-    }
-
-    /// Defines a declared method; the body gets `this` and the parameters.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <R, A1, A2> void define(
-            MethodRef2<Self, R, A1, A2> method, InstanceBody2<Self, Body<R>, R, A1, A2> body) {
-        Slot.Awaiting slot = definable(method);
-        Body<R> root = Body.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(method.param1(), root);
-        Var<A2> p2 = lastParameter(slot, method.param2(), root);
-        define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
-    }
-
-    /// Defines a declared `void` method; the body gets `this`.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block and `this`
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final void define(VoidMethodRef0<Self> method, InstanceBody0<Self, VoidBody, Void> body) {
-        Slot.Awaiting slot = definable(method);
-        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        define(slot, root, List.of(), b -> body.build(b, self));
-    }
-
-    /// Defines a declared `void` method; the body gets `this` and the parameter.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <A1> void define(VoidMethodRef1<Self, A1> method, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        Slot.Awaiting slot = definable(method);
-        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
-        define(slot, root, List.of(p1), b -> body.build(b, self, p1));
-    }
-
-    /// Defines a declared `void` method; the body gets `this` and the parameters.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <A1, A2> void define(
-            VoidMethodRef2<Self, A1, A2> method, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        Slot.Awaiting slot = definable(method);
-        VoidBody root = VoidBody.root("body of method " + method.name(), declares(method));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(method.param1(), root);
-        Var<A2> p2 = lastParameter(slot, method.param2(), root);
-        define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
-    }
-
-    /// Defines a declared static method; the body gets no `this`.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block
-    /// @param <R> the result type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <R> void define(StaticMethodRef0<R> method, Function<Body<R>, Terminated<R>> body) {
-        Slot.Awaiting slot = definable(method);
-        Body<R> root = Body.root("body of static method " + method.name(), declares(method));
-        define(slot, root, List.of(), body);
-    }
-
-    /// Defines a declared static method; the body gets the parameter, no `this`.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block and the parameter
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <R, A1> void define(StaticMethodRef1<R, A1> method, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
-        Slot.Awaiting slot = definable(method);
-        Body<R> root = Body.root("body of static method " + method.name(), declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
-        define(slot, root, List.of(p1), b -> body.apply(b, p1));
-    }
-
-    /// Defines a declared static `void` method; the body gets no `this`.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final void define(VoidStaticMethodRef0 method, Function<VoidBody, Terminated<Void>> body) {
-        Slot.Awaiting slot = definable(method);
-        VoidBody root = VoidBody.root("body of static method " + method.name(), declares(method));
-        define(slot, root, List.of(), body);
-    }
-
-    /// Defines a declared static `void` method; the body gets the parameter, no `this`.
-    ///
-    /// @param method the declared method
-    /// @param body the body, given its block and the parameter
-    /// @param <A1> the parameter type
-    /// @throws IllegalStateException as [#define(MethodRef0, InstanceBody0)]
-    public final <A1> void define(
-            VoidStaticMethodRef1<A1> method, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
-        Slot.Awaiting slot = definable(method);
-        VoidBody root = VoidBody.root("body of static method " + method.name(), declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
-        define(slot, root, List.of(p1), b -> body.apply(b, p1));
-    }
-
-    /// Defines a declared constructor; the body gets `this`.
-    final void defineConstructor(CtorRef0<Self> ctor, InstanceBody0<Self, VoidBody, Void> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        This<Self> self = thisOf(root);
-        define(slot, root, List.of(), b -> body.build(b, self));
-    }
-
-    /// Defines a declared constructor; the body gets `this` and the parameter.
-    final <A1> void defineConstructor(CtorRef1<Self, A1> ctor, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, ctor.param1(), root);
-        define(slot, root, List.of(p1), b -> body.build(b, self, p1));
-    }
-
-    /// Defines a declared constructor; the body gets `this` and the parameters.
-    final <A1, A2> void defineConstructor(
-            CtorRef2<Self, A1, A2> ctor, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        This<Self> self = thisOf(root);
-        Var<A1> p1 = Var.param(ctor.param1(), root);
-        Var<A2> p2 = lastParameter(slot, ctor.param2(), root);
-        define(slot, root, List.of(p1, p2), b -> body.build(b, self, p1, p2));
-    }
-
-    // ------------------------------------------------------------------
-    // What a class has of its superclass
-    // ------------------------------------------------------------------
-
-    /// Defines a declared constructor that begins with `super(...)`.
-    final void defineWithSuper(CtorRef0<Self> ctor, TypedSubclassBodies.CtorBody0<Self, S> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
-        built(root, b -> body.build(site));
-        defined(slot, root, List.of(), new Start.Super(site.invocation()));
-    }
-
-    /// Defines a declared constructor with a parameter that begins with `super(...)`.
-    final <A1> void defineWithSuper(CtorRef1<Self, A1> ctor, TypedSubclassBodies.CtorBody1<Self, S, A1> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
-        Var<A1> p1 = lastParameter(slot, ctor.param1(), root);
-        built(root, b -> body.build(site, p1));
-        defined(slot, root, List.of(p1), new Start.Super(site.invocation()));
-    }
-
-    /// Defines a declared constructor with two parameters that begins with `super(...)`.
-    final <A1, A2> void defineWithSuper(
-            CtorRef2<Self, A1, A2> ctor, TypedSubclassBodies.CtorBody2<Self, S, A1, A2> body) {
-        Slot.Awaiting slot = definable(ctor);
-        VoidBody root = VoidBody.root("body of constructor", declares(ctor));
-        SuperSite<Self, S> site = new SuperSite<>(superclass, root, thisOf(root));
-        Var<A1> p1 = Var.param(ctor.param1(), root);
-        Var<A2> p2 = lastParameter(slot, ctor.param2(), root);
-        built(root, b -> body.build(site, p1, p2));
-        defined(slot, root, List.of(p1, p2), new Start.Super(site.invocation()));
+    /// The constructor of `slot` is there whole: its body `root` began with `super(...)` at `site`.
+    final void definedWithSuper(Slot.Awaiting slot, VoidBody root, SuperSite<Self, S> site, List<Var<?>> params) {
+        defined(slot, root, params, new Start.Super(site.invocation()));
     }
 
     /// The fact of a `protected` member of the superclass or of a class above it, taken out of
@@ -417,169 +204,9 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         return MemberBuilder.opened(self, described, held);
     }
 
-    /// `super.method()`: the method as the superclass has it, whatever the class being declared
-    /// overrides it with. `self` is `this` of the body the call stands in; the method is one of
-    /// the superclass or of a class above it that has a body there.
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param <R> the result type
-    /// @return the call
-    /// @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no
-    ///     such method with a body on the target classpath
-    public final <R> Invocation<R> superCall(This<Self> self, MethodRef0<? super S, R> method) {
-        return new Invocation<>(
-                superCallNode(self, method, Expressions.arguments(), Node.Passing.EACH), method.result());
-    }
-
-    /// `super.method(a1)`, see [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the argument
-    /// @param <R> the result type
-    /// @param <A1> the parameter type
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
-    public final <R, A1> Invocation<R> superCall(
-            This<Self> self, MethodRef1<? super S, R, A1> method, Expr<? extends A1> a1) {
-        return new Invocation<>(
-                superCallNode(self, method, Expressions.arguments(a1), Node.Passing.EACH), method.result());
-    }
-
-    /// `super.method(a1, a2)`, see [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the first argument
-    /// @param a2 the second argument
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
-    public final <R, A1, A2> Invocation<R> superCall(
-            This<Self> self, MethodRef2<? super S, R, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new Invocation<>(
-                superCallNode(self, method, Expressions.arguments(a1, a2), Node.Passing.EACH), method.result());
-    }
-
-    /// `super.method()` of a `void` method, see [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
-    public final VoidInvocation superCall(This<Self> self, VoidMethodRef0<? super S> method) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(), Node.Passing.EACH));
-    }
-
-    /// `super.method(a1)` of a `void` method, see [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the argument
-    /// @param <A1> the parameter type
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
-    public final <A1> VoidInvocation superCall(
-            This<Self> self, VoidMethodRef1<? super S, A1> method, Expr<? extends A1> a1) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1), Node.Passing.EACH));
-    }
-
-    /// `super.method(a1, a2)` of a `void` method, see [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the first argument
-    /// @param a2 the second argument
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)]
-    public final <A1, A2> VoidInvocation superCall(
-            This<Self> self, VoidMethodRef2<? super S, A1, A2> method, Expr<? extends A1> a1, Expr<? extends A2> a2) {
-        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2), Node.Passing.EACH));
-    }
-
-    /// `super.method(a1, ...)`, the arguments of the last parameter of variable arity one by one, see
-    /// [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])] and [#superCall(This, MethodRef0)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param rest the arguments of the last parameter
-    /// @param <R> the result type
-    /// @param <A1> the type of the array of the parameter
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef0)] and
-    ///     [Expressions#varargs(me.supcheg.javafile.facts.ArrayToken, Expr[])]
-    public final <R, A1> Invocation<R> superCall(
-            This<Self> self, MethodRef1<? super S, R, A1> method, Varargs<A1> rest) {
-        return new Invocation<>(
-                superCallNode(self, method, Expressions.spread(method, rest, List.of()), Expressions.spreading(rest)),
-                method.result());
-    }
-
-    /// `super.method(a1, a2, ...)`, the arguments of the last parameter of variable arity one by one, see
-    /// [#superCall(This, MethodRef1, Varargs)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the first argument
-    /// @param rest the arguments of the last parameter
-    /// @param <R> the result type
-    /// @param <A1> the first parameter type
-    /// @param <A2> the type of the array of the last parameter
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
-    public final <R, A1, A2> Invocation<R> superCall(
-            This<Self> self, MethodRef2<? super S, R, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new Invocation<>(
-                superCallNode(
-                        self,
-                        method,
-                        Expressions.spread(method, rest, Expressions.arguments(a1)),
-                        Expressions.spreading(rest)),
-                method.result());
-    }
-
-    /// `super.method(a1, ...)` of a `void` method, the arguments of the last parameter of variable arity one by
-    /// one, see [#superCall(This, MethodRef1, Varargs)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param rest the arguments of the last parameter
-    /// @param <A1> the type of the array of the parameter
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
-    public final <A1> VoidInvocation superCall(
-            This<Self> self, VoidMethodRef1<? super S, A1> method, Varargs<A1> rest) {
-        return new VoidInvocation(
-                superCallNode(self, method, Expressions.spread(method, rest, List.of()), Expressions.spreading(rest)));
-    }
-
-    /// `super.method(a1, a2, ...)` of a `void` method, the arguments of the last parameter of variable arity one by
-    /// one, see [#superCall(This, MethodRef1, Varargs)].
-    ///
-    /// @param self `this`
-    /// @param method the fact of the method
-    /// @param a1 the first argument
-    /// @param rest the arguments of the last parameter
-    /// @param <A1> the first parameter type
-    /// @param <A2> the type of the array of the last parameter
-    /// @return the call
-    /// @throws IllegalArgumentException as [#superCall(This, MethodRef1, Varargs)]
-    public final <A1, A2> VoidInvocation superCall(
-            This<Self> self, VoidMethodRef2<? super S, A1, A2> method, Expr<? extends A1> a1, Varargs<A2> rest) {
-        return new VoidInvocation(superCallNode(
-                self,
-                method,
-                Expressions.spread(method, rest, Expressions.arguments(a1)),
-                Expressions.spreading(rest)));
-    }
-
     /// `super.method(args)`, on `this` of this class.
-    private Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args, Node.Passing passing) {
+    @Override
+    Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args, Node.Passing passing) {
         if (receiver.type() != self) {
             throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
                     + ", got this of " + receiver.type());
@@ -690,7 +317,8 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
 
     /// The slot of a method or constructor that is declared and not defined yet. A member is known
     /// by its fact itself: two facts that tell the same are two members.
-    private Slot.Awaiting definable(Invocable member) {
+    @Override
+    Slot.Awaiting definable(Invocable member) {
         String what = member.toString();
         owner.requireDefining(what);
         return slots.stream()
@@ -733,14 +361,15 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
                 + described + "; define only the members declared through its declare* methods");
     }
 
-    private This<Self> thisOf(Block<?, ?> root) {
+    @Override
+    This<Self> thisOf(Block<?, ?> root) {
         return new This<>(root, self);
     }
 
     /// The last parameter of a declared member, of `type`: that of a member of variable arity declared `@SafeVarargs`
     /// is
     /// one the body may read and store into and loop over, and may not let the array out of the member.
-    private static <T> Var<T> lastParameter(Slot.Awaiting slot, TypeToken<T> type, Block<?, ?> root) {
+    static <T> Var<T> lastParameter(Slot.Awaiting slot, TypeToken<T> type, Block<?, ?> root) {
         Var.Role.Fixed role =
                 switch (slot.declared().arity()) {
                     case Arity.Fixed _ -> Var.Role.Fixed.PARAMETER;
@@ -754,13 +383,14 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     }
 
     /// Builds `root` — the root of its scope tree — from `bodyFn`.
-    private static <R, B extends Block<R, B>> void built(B root, Function<? super B, Terminated<R>> bodyFn) {
+    static <R, B extends Block<R, B>> void built(B root, Function<? super B, Terminated<R>> bodyFn) {
         Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
         Block.requireIssuedBy(terminated, root);
     }
 
     /// The declared member gets the body `bodyFn` builds: built and lowered here.
-    private <R, B extends Block<R, B>> void define(
+    @Override
+    <R, B extends Block<R, B>> void defineIn(
             Slot.Awaiting slot, B root, List<Var<?>> params, Function<? super B, Terminated<R>> bodyFn) {
         built(root, bodyFn);
         defined(slot, root, params);
@@ -902,7 +532,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     }
 
     /// The `throws` clause of a member, as the scope of its body.
-    private static ExceptionScope.Declares declares(Invocable member) {
+    static ExceptionScope.Declares declares(Invocable member) {
         return new ExceptionScope.Declares(
                 switch (member.kind()) {
                     case CONSTRUCTOR -> ExceptionScope.Boundary.CONSTRUCTOR;
@@ -912,7 +542,7 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
     }
 
     /// A member of the class, in the order it was declared.
-    private sealed interface Slot {
+    sealed interface Slot {
         /// A slot that waits for what defines it.
         sealed interface Open extends Slot {
             /// The member as it is declared.
@@ -934,60 +564,5 @@ public abstract sealed class MemberBodies<Self, S> permits TypedClassBodies, Typ
         /// @param declared the member as it was declared
         /// @param member the member as it is rendered
         record Defined(Member declared, ClassMember member) implements Slot {}
-    }
-
-    // ------------------------------------------------------------------
-    // Bodies of instance members (§6.5 HOAS: the block, `this`, the parameters)
-    // ------------------------------------------------------------------
-
-    /// The body of an instance method or constructor without parameters.
-    ///
-    /// @param <Self> the class
-    /// @param <B> the body block
-    /// @param <R> the result type, [Void] for `void`
-    @FunctionalInterface
-    public interface InstanceBody0<Self, B, R> {
-        /// Builds the body.
-        ///
-        /// @param body the body block
-        /// @param self `this`
-        /// @return the proof that the body ended
-        Terminated<R> build(B body, This<Self> self);
-    }
-
-    /// The body of an instance method or constructor with one parameter.
-    ///
-    /// @param <Self> the class
-    /// @param <B> the body block
-    /// @param <R> the result type, [Void] for `void`
-    /// @param <A1> the parameter type
-    @FunctionalInterface
-    public interface InstanceBody1<Self, B, R, A1> {
-        /// Builds the body.
-        ///
-        /// @param body the body block
-        /// @param self `this`
-        /// @param p1 the parameter
-        /// @return the proof that the body ended
-        Terminated<R> build(B body, This<Self> self, Var<A1> p1);
-    }
-
-    /// The body of an instance method or constructor with two parameters.
-    ///
-    /// @param <Self> the class
-    /// @param <B> the body block
-    /// @param <R> the result type, [Void] for `void`
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    @FunctionalInterface
-    public interface InstanceBody2<Self, B, R, A1, A2> {
-        /// Builds the body.
-        ///
-        /// @param body the body block
-        /// @param self `this`
-        /// @param p1 the first parameter
-        /// @param p2 the second parameter
-        /// @return the proof that the body ended
-        Terminated<R> build(B body, This<Self> self, Var<A1> p1, Var<A2> p2);
     }
 }
