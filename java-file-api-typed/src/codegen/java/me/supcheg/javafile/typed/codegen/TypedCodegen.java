@@ -83,27 +83,28 @@ public final class TypedCodegen {
             int definedStatic,
             int variableArity,
             int variableArityStatic) {
-        static final Reach TODAY = new Reach(3, 3, 2, 1, 2, 1, 2, 1);
+        static final Reach FULL =
+                new Reach(MAX_ARITY, MAX_ARITY, MAX_ARITY, MAX_ARITY, MAX_ARITY, MAX_ARITY, MAX_ARITY, MAX_ARITY);
     }
 
-    private static final Reach REACH = Reach.TODAY;
+    private static final Reach REACH = Reach.FULL;
 
     private static final String TYPED = "me.supcheg.javafile.typed";
     private static final String FACTS = "me.supcheg.javafile.facts";
 
     private static final ClassDesc GENERATED = ClassDesc.of("javax.annotation.processing.Generated");
     private static final ClassDesc FUNCTIONAL_INTERFACE = ClassDesc.of("java.lang", "FunctionalInterface");
-    private static final ClassDesc LIST = ClassDesc.of("java.util", "List");
+    static final ClassDesc LIST = ClassDesc.of("java.util", "List");
     private static final ClassDesc SUPPLIER = ClassDesc.of("java.util.function", "Supplier");
     private static final ClassDesc FUNCTION = ClassDesc.of("java.util.function", "Function");
     private static final ClassDesc BI_FUNCTION = ClassDesc.of("java.util.function", "BiFunction");
     private static final ClassDesc ILLEGAL_ARGUMENT = ClassDesc.of("java.lang", "IllegalArgumentException");
     private static final ClassDesc ILLEGAL_STATE = ClassDesc.of("java.lang", "IllegalStateException");
-    private static final ClassDesc VOID = ClassDesc.of("java.lang", "Void");
+    static final ClassDesc VOID = ClassDesc.of("java.lang", "Void");
     private static final ClassDesc THROWABLE = ClassDesc.of("java.lang", "Throwable");
 
     private static final ClassDesc EXPR = typed("Expr");
-    private static final ClassDesc EXPRESSIONS = typed("Expressions");
+    static final ClassDesc EXPRESSIONS = typed("Expressions");
     private static final ClassDesc INVOCATION = typed("Invocation");
     private static final ClassDesc VOID_INVOCATION = typed("VoidInvocation");
     private static final ClassDesc VARARGS = typed("Varargs");
@@ -112,20 +113,20 @@ public final class TypedCodegen {
     private static final ClassDesc NODE_STATIC_CALL = NODE.nested("StaticCall");
     private static final ClassDesc NODE_PASSING = NODE.nested("Passing");
     private static final ClassDesc NODE_OPERAND = NODE.nested("Operand");
-    private static final ClassDesc VAR = typed("Var");
-    private static final ClassDesc BODY = typed("Body");
-    private static final ClassDesc VOID_BODY = typed("VoidBody");
+    static final ClassDesc VAR = typed("Var");
+    static final ClassDesc BODY = typed("Body");
+    static final ClassDesc VOID_BODY = typed("VoidBody");
     private static final ClassDesc BLOCK = typed("Block");
-    private static final ClassDesc TERMINATED = typed("Terminated");
+    static final ClassDesc TERMINATED = typed("Terminated");
     private static final ClassDesc EFFECT = typed("Effect");
     private static final ClassDesc ASSIGNMENT = typed("Assignment");
     private static final ClassDesc SCOPES = typed("Scopes");
-    private static final ClassDesc UPCAST = typed("Upcast");
-    private static final ClassDesc THIS = typed("This");
+    static final ClassDesc UPCAST = typed("Upcast");
+    static final ClassDesc THIS = typed("This");
     private static final ClassDesc OVERRIDES = typed("Overrides");
     private static final ClassDesc DECLARATIONS = typed("Declarations");
     private static final ClassDesc MEMBER_BUILDER = typed("MemberBuilder");
-    private static final ClassDesc MEMBER_BODIES = typed("MemberBodies");
+    static final ClassDesc MEMBER_BODIES = typed("MemberBodies");
     private static final ClassDesc MEMBER_BODY_ARITIES = typed("MemberBodyArities");
     private static final ClassDesc SLOT_AWAITING = MEMBER_BODIES.nested("Slot", "Awaiting");
     private static final ClassDesc DECLARED = MEMBER_BODIES.nested("Declared");
@@ -154,11 +155,11 @@ public final class TypedCodegen {
 
     private TypedCodegen() {}
 
-    private static ClassDesc typed(String name) {
+    static ClassDesc typed(String name) {
         return ClassDesc.of(TYPED, name);
     }
 
-    private static ClassDesc facts(String name) {
+    static ClassDesc facts(String name) {
         return ClassDesc.of(FACTS, name);
     }
 
@@ -213,13 +214,14 @@ public final class TypedCodegen {
     ///
     /// @return the files
     public static List<JavaFile> generateTests() {
-        return List.of(staticFormsTest());
+        return Stream.concat(Stream.of(staticFormsTest()), ArityTests.files(MAX_ARITY).stream())
+                .toList();
     }
 
-    private static final ClassDesc TEST = ClassDesc.of("org.junit.jupiter.api", "Test");
-    private static final ClassDesc ASSERTJ_ASSERTIONS = ClassDesc.of("org.assertj.core.api", "Assertions");
-    private static final ClassDesc CLASS = ClassDesc.of("java.lang", "Class");
-    private static final ClassDesc CONSTRUCTOR = ClassDesc.of("java.lang.reflect", "Constructor");
+    static final ClassDesc TEST = ClassDesc.of("org.junit.jupiter.api", "Test");
+    static final ClassDesc ASSERTJ_ASSERTIONS = ClassDesc.of("org.assertj.core.api", "Assertions");
+    static final ClassDesc CLASS = ClassDesc.of("java.lang", "Class");
+    static final ClassDesc CONSTRUCTOR = ClassDesc.of("java.lang.reflect", "Constructor");
     private static final ClassDesc REFLECTIVE_OPERATION = ClassDesc.of("java.lang", "ReflectiveOperationException");
 
     /// The classes whose forms are all static, and are never constructed: `Expressions` and `Overrides`.
@@ -322,16 +324,16 @@ public final class TypedCodegen {
             "thirteenth");
 
     /// The type variables of the parameters of a member of `n` parameters: `A1` to `An`.
-    private static List<String> as(int n) {
+    static List<String> as(int n) {
         return IntStream.rangeClosed(1, n).mapToObj(i -> "A" + i).toList();
     }
 
-    private static List<String> concat(List<String> first, List<String> second) {
+    static List<String> concat(List<String> first, List<String> second) {
         return Stream.concat(first.stream(), second.stream()).toList();
     }
 
     /// The ordinal of the `i`-th of `n` things, with its space: none where there is one.
-    private static String ordinal(int i, int n) {
+    static String ordinal(int i, int n) {
         return n == 1 ? "" : ORDINALS.get(i - 1) + " ";
     }
 
@@ -339,52 +341,52 @@ public final class TypedCodegen {
         return n + " " + what + (n == 1 ? "" : "s");
     }
 
-    private static TypeRef tv(String name) {
+    static TypeRef tv(String name) {
         return Types.typeVar(name);
     }
 
-    private static TypeArg exact(String variable) {
+    static TypeArg exact(String variable) {
         return Types.exact(tv(variable));
     }
 
-    private static TypeArg exactType(TypeRef type) {
+    static TypeArg exactType(TypeRef type) {
         return Types.exact(type);
     }
 
-    private static TypeArg extending(TypeRef bound) {
+    static TypeArg extending(TypeRef bound) {
         return Types.extendsBound(bound);
     }
 
-    private static TypeArg extending(String variable) {
+    static TypeArg extending(String variable) {
         return Types.extendsBound(tv(variable));
     }
 
-    private static TypeArg supering(TypeRef bound) {
+    static TypeArg supering(TypeRef bound) {
         return Types.superBound(bound);
     }
 
-    private static TypeArg supering(String variable) {
+    static TypeArg supering(String variable) {
         return Types.superBound(tv(variable));
     }
 
-    private static TypeArg unbounded() {
+    static TypeArg unbounded() {
         return Types.unbounded();
     }
 
-    private static TypeRef applied(ClassDesc raw, List<? extends TypeArg> args) {
+    static TypeRef applied(ClassDesc raw, List<? extends TypeArg> args) {
         return args.isEmpty() ? Types.of(raw) : Types.parameterized(raw, args, new AnnotationUse[0]);
     }
 
-    private static TypeRef applied(ClassDesc raw, TypeArg... args) {
+    static TypeRef applied(ClassDesc raw, TypeArg... args) {
         return applied(raw, List.of(args));
     }
 
     /// The type applied to type variables.
-    private static TypeRef appliedTo(ClassDesc raw, String... variables) {
+    static TypeRef appliedTo(ClassDesc raw, String... variables) {
         return applied(raw, exacts(List.of(variables)));
     }
 
-    private static List<TypeArg> exacts(List<String> variables) {
+    static List<TypeArg> exacts(List<String> variables) {
         return variables.stream().map(TypedCodegen::exact).toList();
     }
 
@@ -497,12 +499,12 @@ public final class TypedCodegen {
     // Declaring classes and members
     // ------------------------------------------------------------------
 
-    private static void generated(ClassBuilder cb) {
+    static void generated(ClassBuilder cb) {
         cb.withAnnotation(
                 GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(TypedCodegen.class.getName())));
     }
 
-    private static void generated(InterfaceBuilder ib) {
+    static void generated(InterfaceBuilder ib) {
         ib.withAnnotation(
                 GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(TypedCodegen.class.getName())));
     }
@@ -609,12 +611,12 @@ public final class TypedCodegen {
                 Optional.empty()));
     }
 
-    private static Param param(String name, TypeRef type) {
+    static Param param(String name, TypeRef type) {
         return new Param(name, type);
     }
 
     /// `a1` to `an`, or `p1` to `pn`.
-    private static List<Expr> names(String prefix, int n) {
+    static List<Expr> names(String prefix, int n) {
         return IntStream.rangeClosed(1, n)
                 .mapToObj(i -> (Expr) field(prefix + i))
                 .toList();
@@ -1033,10 +1035,9 @@ public final class TypedCodegen {
         }
 
         Doc doc() {
-            return Doc.of("Declares " + summary() + ", to be defined by the bodies of the class.")
-                    .param("name", "the method name")
-                    .param("result", "the result type")
-                    .typeParam("R", "the result type");
+            Doc base = Doc.of("Declares " + summary() + ", to be defined by the bodies of the class.");
+            Doc named = this.named ? base.param("name", "the method name") : base;
+            return hasResult ? named.param("result", "the result type").typeParam("R", "the result type") : named;
         }
     }
 

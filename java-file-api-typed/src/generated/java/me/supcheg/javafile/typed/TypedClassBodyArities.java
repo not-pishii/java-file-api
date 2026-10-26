@@ -4,12 +4,32 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef10;
+import me.supcheg.javafile.facts.CtorRef11;
+import me.supcheg.javafile.facts.CtorRef12;
 import me.supcheg.javafile.facts.CtorRef2;
+import me.supcheg.javafile.facts.CtorRef3;
+import me.supcheg.javafile.facts.CtorRef4;
+import me.supcheg.javafile.facts.CtorRef5;
+import me.supcheg.javafile.facts.CtorRef6;
+import me.supcheg.javafile.facts.CtorRef7;
+import me.supcheg.javafile.facts.CtorRef8;
+import me.supcheg.javafile.facts.CtorRef9;
 import me.supcheg.javafile.typed.MemberBodies.Declared;
 import me.supcheg.javafile.typed.MemberBodies.Slot.Awaiting;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody11;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody12;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody2;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody3;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody4;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody5;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody6;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody7;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody8;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody9;
 
 @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
 abstract sealed class TypedClassBodyArities<Self> extends MemberBodies<Self, Object> permits TypedClassBodies {
@@ -63,5 +83,295 @@ abstract sealed class TypedClassBodyArities<Self> extends MemberBodies<Self, Obj
         Var<A1> p1 = Var.param(ctor.param1(), root);
         Var<A2> p2 = MemberBodies.lastParameter(slot, ctor.param2(), root);
         defineIn(slot, root, List.of(p1, p2), (b) -> body.build(b, self, p1, p2));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3> void define(CtorRef3<Self, A1, A2, A3> ctor, InstanceBody3<Self, VoidBody, Void, A1, A2, A3> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = MemberBodies.lastParameter(slot, ctor.param3(), root);
+        defineIn(slot, root, List.of(p1, p2, p3), (b) -> body.build(b, self, p1, p2, p3));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4> void define(CtorRef4<Self, A1, A2, A3, A4> ctor, InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = MemberBodies.lastParameter(slot, ctor.param4(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4), (b) -> body.build(b, self, p1, p2, p3, p4));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5> void define(CtorRef5<Self, A1, A2, A3, A4, A5> ctor, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = MemberBodies.lastParameter(slot, ctor.param5(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5), (b) -> body.build(b, self, p1, p2, p3, p4, p5));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6> void define(CtorRef6<Self, A1, A2, A3, A4, A5, A6> ctor, InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = MemberBodies.lastParameter(slot, ctor.param6(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7> void define(CtorRef7<Self, A1, A2, A3, A4, A5, A6, A7> ctor, InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = MemberBodies.lastParameter(slot, ctor.param7(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8> void define(CtorRef8<Self, A1, A2, A3, A4, A5, A6, A7, A8> ctor, InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = MemberBodies.lastParameter(slot, ctor.param8(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9> void define(CtorRef9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor, InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = MemberBodies.lastParameter(slot, ctor.param9(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void define(CtorRef10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor, InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = MemberBodies.lastParameter(slot, ctor.param10(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void define(CtorRef11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor, InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = MemberBodies.lastParameter(slot, ctor.param11(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11));
+    }
+
+    /**
+     * Defines a declared constructor; the body gets `this` and the parameters.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @throws IllegalStateException as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void define(CtorRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = Var.param(ctor.param11(), root);
+        Var<A12> p12 = MemberBodies.lastParameter(slot, ctor.param12(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
     }
 }

@@ -32,16 +32,28 @@ public record CompiledClasses(String source, ClassLoader loader, Class<?> genera
     /// @param fixtures the fixture classes, as `{binary name, source}` pairs
     /// @return the loaded classes
     public static CompiledClasses of(JavaFile file, String... fixtures) {
-        String source = file.render();
+        return ofAll(List.of(file), fixtures).getFirst();
+    }
+
+    /// Renders the `files` and compiles them together, in one run of javac, and loads each.
+    ///
+    /// @param files the generated classes
+    /// @param fixtures the fixture classes, as `{binary name, source}` pairs
+    /// @return the loaded classes, one for each of the `files`, in their order
+    public static List<CompiledClasses> ofAll(List<JavaFile> files, String... fixtures) {
         List<JavaFileObject> companions = new ArrayList<>();
         for (int i = 0; i < fixtures.length; i += 2) {
             companions.add(JavaFileObjects.forSourceString(fixtures[i], fixtures[i + 1]));
         }
-        Compilation compilation = RenderedJava.compile(file, companions.toArray(JavaFileObject[]::new));
+        Compilation compilation = RenderedJava.compile(files, companions.toArray(JavaFileObject[]::new));
         assertThat(compilation).succeededWithoutWarnings();
         ClassLoader loader = new GeneratedClassLoader(compilation);
         try {
-            return new CompiledClasses(source, loader, loader.loadClass(file.qualifiedName()));
+            List<CompiledClasses> loaded = new ArrayList<>();
+            for (JavaFile file : files) {
+                loaded.add(new CompiledClasses(file.render(), loader, loader.loadClass(file.qualifiedName())));
+            }
+            return List.copyOf(loaded);
         } catch (ClassNotFoundException e) {
             throw new AssertionError(e);
         }

@@ -7,32 +7,95 @@ import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef10;
+import me.supcheg.javafile.facts.CtorRef11;
+import me.supcheg.javafile.facts.CtorRef12;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
+import me.supcheg.javafile.facts.CtorRef4;
+import me.supcheg.javafile.facts.CtorRef5;
+import me.supcheg.javafile.facts.CtorRef6;
+import me.supcheg.javafile.facts.CtorRef7;
+import me.supcheg.javafile.facts.CtorRef8;
+import me.supcheg.javafile.facts.CtorRef9;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodRef10;
+import me.supcheg.javafile.facts.MethodRef11;
+import me.supcheg.javafile.facts.MethodRef12;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
+import me.supcheg.javafile.facts.MethodRef4;
+import me.supcheg.javafile.facts.MethodRef5;
+import me.supcheg.javafile.facts.MethodRef6;
+import me.supcheg.javafile.facts.MethodRef7;
+import me.supcheg.javafile.facts.MethodRef8;
+import me.supcheg.javafile.facts.MethodRef9;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.Sam1;
+import me.supcheg.javafile.facts.Sam10;
+import me.supcheg.javafile.facts.Sam11;
+import me.supcheg.javafile.facts.Sam12;
 import me.supcheg.javafile.facts.Sam2;
 import me.supcheg.javafile.facts.Sam3;
+import me.supcheg.javafile.facts.Sam4;
+import me.supcheg.javafile.facts.Sam5;
+import me.supcheg.javafile.facts.Sam6;
+import me.supcheg.javafile.facts.Sam7;
+import me.supcheg.javafile.facts.Sam8;
+import me.supcheg.javafile.facts.Sam9;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
+import me.supcheg.javafile.facts.StaticMethodRef10;
+import me.supcheg.javafile.facts.StaticMethodRef11;
+import me.supcheg.javafile.facts.StaticMethodRef12;
 import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.StaticMethodRef3;
+import me.supcheg.javafile.facts.StaticMethodRef4;
+import me.supcheg.javafile.facts.StaticMethodRef5;
+import me.supcheg.javafile.facts.StaticMethodRef6;
+import me.supcheg.javafile.facts.StaticMethodRef7;
+import me.supcheg.javafile.facts.StaticMethodRef8;
+import me.supcheg.javafile.facts.StaticMethodRef9;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.facts.VoidMethodRef10;
+import me.supcheg.javafile.facts.VoidMethodRef11;
+import me.supcheg.javafile.facts.VoidMethodRef12;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
+import me.supcheg.javafile.facts.VoidMethodRef4;
+import me.supcheg.javafile.facts.VoidMethodRef5;
+import me.supcheg.javafile.facts.VoidMethodRef6;
+import me.supcheg.javafile.facts.VoidMethodRef7;
+import me.supcheg.javafile.facts.VoidMethodRef8;
+import me.supcheg.javafile.facts.VoidMethodRef9;
 import me.supcheg.javafile.facts.VoidSam0;
 import me.supcheg.javafile.facts.VoidSam1;
+import me.supcheg.javafile.facts.VoidSam10;
+import me.supcheg.javafile.facts.VoidSam11;
+import me.supcheg.javafile.facts.VoidSam12;
 import me.supcheg.javafile.facts.VoidSam2;
 import me.supcheg.javafile.facts.VoidSam3;
+import me.supcheg.javafile.facts.VoidSam4;
+import me.supcheg.javafile.facts.VoidSam5;
+import me.supcheg.javafile.facts.VoidSam6;
+import me.supcheg.javafile.facts.VoidSam7;
+import me.supcheg.javafile.facts.VoidSam8;
+import me.supcheg.javafile.facts.VoidSam9;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
+import me.supcheg.javafile.facts.VoidStaticMethodRef10;
+import me.supcheg.javafile.facts.VoidStaticMethodRef11;
+import me.supcheg.javafile.facts.VoidStaticMethodRef12;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
+import me.supcheg.javafile.facts.VoidStaticMethodRef4;
+import me.supcheg.javafile.facts.VoidStaticMethodRef5;
+import me.supcheg.javafile.facts.VoidStaticMethodRef6;
+import me.supcheg.javafile.facts.VoidStaticMethodRef7;
+import me.supcheg.javafile.facts.VoidStaticMethodRef8;
+import me.supcheg.javafile.facts.VoidStaticMethodRef9;
 import me.supcheg.javafile.typed.Expressions.LambdaValue;
 import me.supcheg.javafile.typed.Node.Call;
 import me.supcheg.javafile.typed.Node.Passing;
@@ -142,6 +205,492 @@ abstract sealed class ExpressionArities permits Expressions {
     }
 
     /**
+     * Calls an instance method of 4 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4> Invocation<R> call(Expr<? extends O> target, MethodRef4<O, R, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 4 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4> Invocation<R> call(Expr<? extends O> target, MethodRef4<O, R, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Varargs<A4> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 5 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5> Invocation<R> call(Expr<? extends O> target, MethodRef5<O, R, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 5 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5> Invocation<R> call(Expr<? extends O> target, MethodRef5<O, R, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Varargs<A5> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 6 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6> Invocation<R> call(Expr<? extends O> target, MethodRef6<O, R, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 6 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6> Invocation<R> call(Expr<? extends O> target, MethodRef6<O, R, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Varargs<A6> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 7 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7> Invocation<R> call(Expr<? extends O> target, MethodRef7<O, R, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 7 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7> Invocation<R> call(Expr<? extends O> target, MethodRef7<O, R, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Varargs<A7> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 8 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<R> call(Expr<? extends O> target, MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 8 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<R> call(Expr<? extends O> target, MethodRef8<O, R, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Varargs<A8> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 9 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<R> call(Expr<? extends O> target, MethodRef9<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 9 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<R> call(Expr<? extends O> target, MethodRef9<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Varargs<A9> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 10 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<R> call(Expr<? extends O> target, MethodRef10<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 10 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<R> call(Expr<? extends O> target, MethodRef10<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Varargs<A10> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 11 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<R> call(Expr<? extends O> target, MethodRef11<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 11 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<R> call(Expr<? extends O> target, MethodRef11<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Varargs<A11> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)), method.result());
+    }
+
+    /**
+     * Calls an instance method of 12 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<R> call(Expr<? extends O> target, MethodRef12<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12) {
+        return new Invocation<>(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls an instance method of 12 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<R> call(Expr<? extends O> target, MethodRef12<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
+        return new Invocation<>(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)), method.result());
+    }
+
+    /**
      * Calls an instance `void` method of 0 parameters.
      *
      * @param method the fact of the method
@@ -243,6 +792,492 @@ abstract sealed class ExpressionArities permits Expressions {
     }
 
     /**
+     * Calls an instance `void` method of 4 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef4<O, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 4 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef4<O, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Varargs<A4> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3)));
+    }
+
+    /**
+     * Calls an instance `void` method of 5 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef5<O, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 5 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef5<O, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Varargs<A5> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4)));
+    }
+
+    /**
+     * Calls an instance `void` method of 6 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef6<O, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 6 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef6<O, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Varargs<A6> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5)));
+    }
+
+    /**
+     * Calls an instance `void` method of 7 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 7 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef7<O, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Varargs<A7> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6)));
+    }
+
+    /**
+     * Calls an instance `void` method of 8 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 8 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Varargs<A8> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7)));
+    }
+
+    /**
+     * Calls an instance `void` method of 9 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 9 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Varargs<A9> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8)));
+    }
+
+    /**
+     * Calls an instance `void` method of 10 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 10 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Varargs<A10> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9)));
+    }
+
+    /**
+     * Calls an instance `void` method of 11 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 11 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Varargs<A11> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)));
+    }
+
+    /**
+     * Calls an instance `void` method of 12 parameters.
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12) {
+        return new VoidInvocation(new Call(Expressions.receiver(target, method), method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12), Passing.EACH));
+    }
+
+    /**
+     * Calls an instance `void` method of 12 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param target the receiver
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInvocation voidCall(Expr<? extends O> target, VoidMethodRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
+        return new VoidInvocation(Expressions.callNode(target, method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)));
+    }
+
+    /**
      * Calls a static method of 0 parameters.
      *
      * @param method the fact of the method
@@ -334,6 +1369,474 @@ abstract sealed class ExpressionArities permits Expressions {
      */
     public static <R, A1, A2, A3> Invocation<R> staticCall(StaticMethodRef3<R, A1, A2, A3> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
         return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2)), method.result());
+    }
+
+    /**
+     * Calls a static method of 4 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4> Invocation<R> staticCall(StaticMethodRef4<R, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 4 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4> Invocation<R> staticCall(StaticMethodRef4<R, A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Varargs<A4> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3)), method.result());
+    }
+
+    /**
+     * Calls a static method of 5 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5> Invocation<R> staticCall(StaticMethodRef5<R, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 5 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5> Invocation<R> staticCall(StaticMethodRef5<R, A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Varargs<A5> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4)), method.result());
+    }
+
+    /**
+     * Calls a static method of 6 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6> Invocation<R> staticCall(StaticMethodRef6<R, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 6 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6> Invocation<R> staticCall(StaticMethodRef6<R, A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Varargs<A6> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5)), method.result());
+    }
+
+    /**
+     * Calls a static method of 7 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7> Invocation<R> staticCall(StaticMethodRef7<R, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 7 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7> Invocation<R> staticCall(StaticMethodRef7<R, A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Varargs<A7> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6)), method.result());
+    }
+
+    /**
+     * Calls a static method of 8 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<R> staticCall(StaticMethodRef8<R, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 8 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<R> staticCall(StaticMethodRef8<R, A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Varargs<A8> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7)), method.result());
+    }
+
+    /**
+     * Calls a static method of 9 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<R> staticCall(StaticMethodRef9<R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 9 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<R> staticCall(StaticMethodRef9<R, A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Varargs<A9> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8)), method.result());
+    }
+
+    /**
+     * Calls a static method of 10 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<R> staticCall(StaticMethodRef10<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 10 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<R> staticCall(StaticMethodRef10<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Varargs<A10> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9)), method.result());
+    }
+
+    /**
+     * Calls a static method of 11 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<R> staticCall(StaticMethodRef11<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 11 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<R> staticCall(StaticMethodRef11<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Varargs<A11> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)), method.result());
+    }
+
+    /**
+     * Calls a static method of 12 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<R> staticCall(StaticMethodRef12<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12) {
+        return new Invocation<>(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12), Passing.EACH), method.result());
+    }
+
+    /**
+     * Calls a static method of 12 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<R> staticCall(StaticMethodRef12<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
+        return new Invocation<>(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)), method.result());
     }
 
     /**
@@ -431,6 +1934,474 @@ abstract sealed class ExpressionArities permits Expressions {
     }
 
     /**
+     * Calls a static `void` method of 4 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4> VoidInvocation voidStaticCall(VoidStaticMethodRef4<A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 4 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4> VoidInvocation voidStaticCall(VoidStaticMethodRef4<A1, A2, A3, A4> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Varargs<A4> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3)));
+    }
+
+    /**
+     * Calls a static `void` method of 5 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5> VoidInvocation voidStaticCall(VoidStaticMethodRef5<A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 5 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5> VoidInvocation voidStaticCall(VoidStaticMethodRef5<A1, A2, A3, A4, A5> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Varargs<A5> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4)));
+    }
+
+    /**
+     * Calls a static `void` method of 6 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6> VoidInvocation voidStaticCall(VoidStaticMethodRef6<A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 6 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6> VoidInvocation voidStaticCall(VoidStaticMethodRef6<A1, A2, A3, A4, A5, A6> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Varargs<A6> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5)));
+    }
+
+    /**
+     * Calls a static `void` method of 7 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7> VoidInvocation voidStaticCall(VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 7 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7> VoidInvocation voidStaticCall(VoidStaticMethodRef7<A1, A2, A3, A4, A5, A6, A7> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Varargs<A7> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6)));
+    }
+
+    /**
+     * Calls a static `void` method of 8 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8> VoidInvocation voidStaticCall(VoidStaticMethodRef8<A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 8 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8> VoidInvocation voidStaticCall(VoidStaticMethodRef8<A1, A2, A3, A4, A5, A6, A7, A8> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Varargs<A8> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7)));
+    }
+
+    /**
+     * Calls a static `void` method of 9 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidInvocation voidStaticCall(VoidStaticMethodRef9<A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 9 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9> VoidInvocation voidStaticCall(VoidStaticMethodRef9<A1, A2, A3, A4, A5, A6, A7, A8, A9> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Varargs<A9> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8)));
+    }
+
+    /**
+     * Calls a static `void` method of 10 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidInvocation voidStaticCall(VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 10 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> VoidInvocation voidStaticCall(VoidStaticMethodRef10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Varargs<A10> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9)));
+    }
+
+    /**
+     * Calls a static `void` method of 11 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidInvocation voidStaticCall(VoidStaticMethodRef11<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 11 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> VoidInvocation voidStaticCall(VoidStaticMethodRef11<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Varargs<A11> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)));
+    }
+
+    /**
+     * Calls a static `void` method of 12 parameters.
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInvocation voidStaticCall(VoidStaticMethodRef12<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12) {
+        return new VoidInvocation(new StaticCall(method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12), Passing.EACH));
+    }
+
+    /**
+     * Calls a static `void` method of 12 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInvocation voidStaticCall(VoidStaticMethodRef12<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
+        return new VoidInvocation(Expressions.staticCallNode(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)));
+    }
+
+    /**
      * Calls a constructor of 0 parameters.
      *
      * @param ctor the fact of the constructor
@@ -522,6 +2493,474 @@ abstract sealed class ExpressionArities permits Expressions {
      */
     public static <O, A1, A2, A3> Invocation<O> new_(CtorRef3<O, A1, A2, A3> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Varargs<A3> rest) {
         return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 4 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4> Invocation<O> new_(CtorRef4<O, A1, A2, A3, A4> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 4 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4> Invocation<O> new_(CtorRef4<O, A1, A2, A3, A4> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Varargs<A4> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 5 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5> Invocation<O> new_(CtorRef5<O, A1, A2, A3, A4, A5> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 5 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5> Invocation<O> new_(CtorRef5<O, A1, A2, A3, A4, A5> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Varargs<A5> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 6 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6> Invocation<O> new_(CtorRef6<O, A1, A2, A3, A4, A5, A6> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 6 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6> Invocation<O> new_(CtorRef6<O, A1, A2, A3, A4, A5, A6> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Varargs<A6> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 7 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7> Invocation<O> new_(CtorRef7<O, A1, A2, A3, A4, A5, A6, A7> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 7 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7> Invocation<O> new_(CtorRef7<O, A1, A2, A3, A4, A5, A6, A7> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Varargs<A7> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 8 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<O> new_(CtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 8 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8> Invocation<O> new_(CtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Varargs<A8> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 9 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<O> new_(CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 9 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9> Invocation<O> new_(CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Varargs<A9> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 10 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<O> new_(CtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 10 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Invocation<O> new_(CtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Varargs<A10> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 11 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<O> new_(CtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 11 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Invocation<O> new_(CtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Varargs<A11> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 12 parameters.
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<O> new_(CtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12) {
+        return new Invocation<>(Expressions.instantiate(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12), Passing.EACH), ctor.owner());
+    }
+
+    /**
+     * Calls a constructor of 12 parameters, the arguments of its last parameter, which is of variable arity, one by one (see [#varargs]).
+     *
+     * @param ctor the fact of the constructor
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the call
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<O> new_(CtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
+        return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)), ctor.owner());
     }
 
     /**
@@ -673,6 +3112,573 @@ abstract sealed class ExpressionArities permits Expressions {
     }
 
     /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4> Expr<F> lambda(Sam4<F, R, A1, A2, A3, A4> sam, Function4<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4), Expressions.returned(body.apply(p1, p2, p3, p4), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4> Expr<F> lambda(VoidSam4<F, A1, A2, A3, A4> sam, Function4<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4), Assignment.nodeOf(body.apply(p1, p2, p3, p4)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5> Expr<F> lambda(Sam5<F, R, A1, A2, A3, A4, A5> sam, Function5<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5), Expressions.returned(body.apply(p1, p2, p3, p4, p5), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5> Expr<F> lambda(VoidSam5<F, A1, A2, A3, A4, A5> sam, Function5<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6> Expr<F> lambda(Sam6<F, R, A1, A2, A3, A4, A5, A6> sam, Function6<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6> Expr<F> lambda(VoidSam6<F, A1, A2, A3, A4, A5, A6> sam, Function6<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7> Expr<F> lambda(Sam7<F, R, A1, A2, A3, A4, A5, A6, A7> sam, Function7<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7> Expr<F> lambda(VoidSam7<F, A1, A2, A3, A4, A5, A6, A7> sam, Function7<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8> Expr<F> lambda(Sam8<F, R, A1, A2, A3, A4, A5, A6, A7, A8> sam, Function8<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7, p8), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8> Expr<F> lambda(VoidSam8<F, A1, A2, A3, A4, A5, A6, A7, A8> sam, Function8<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7, p8)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Expr<F> lambda(Sam9<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> sam, Function9<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9> Expr<F> lambda(VoidSam9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> sam, Function9<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Expr<F> lambda(Sam10<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam, Function10<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Expr<F> lambda(VoidSam10<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam, Function10<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Expr<F> lambda(Sam11<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> sam, Function11<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Expr<F> lambda(VoidSam11<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> sam, Function11<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11, A12 a12) -&gt; value`, of the functional interface `sam` is the method of.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the value, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Expr<F> lambda(Sam12<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> sam, Function12<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? super Var<A12>, ? extends Expr<? extends R>> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), scope);
+            Var<A12> p12 = Expressions.lambdaParameter(sam.param12(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), Expressions.returned(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), sam.method()));
+        });
+    }
+
+    /**
+     * A lambda with an expression body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11, A12 a12) -&gt; effect`, of the functional interface whose `void` method `sam` is.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body gives the effect, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the lambda
+     * @throws IllegalStateException if the body uses a variable a lambda cannot capture, or can throw a checked exception the method does not declare
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Expr<F> lambda(VoidSam12<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> sam, Function12<? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? super Var<A12>, ? extends Effect> body) {
+        return Expressions.expressionLambda(sam.owner(), sam.method(), (scope) -> {
+            Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), scope);
+            Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), scope);
+            Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), scope);
+            Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), scope);
+            Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), scope);
+            Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), scope);
+            Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), scope);
+            Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), scope);
+            Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), scope);
+            Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), scope);
+            Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), scope);
+            Var<A12> p12 = Expressions.lambdaParameter(sam.param12(), scope);
+            return new LambdaValue(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), Assignment.nodeOf(body.apply(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12)));
+        });
+    }
+
+    /**
      * A lambda with a block body, `() -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
      *
      * @param sam the single abstract method of the functional interface
@@ -810,5 +3816,554 @@ abstract sealed class ExpressionArities permits Expressions {
         Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
         Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
         return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3), (b) -> body.apply(b, p1, p2, p3));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4> Expr<F> lambdaBlock(Sam4<F, R, A1, A2, A3, A4> sam, Function5<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4), (b) -> body.apply(b, p1, p2, p3, p4));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4> Expr<F> lambdaBlock(VoidSam4<F, A1, A2, A3, A4> sam, Function5<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4), (b) -> body.apply(b, p1, p2, p3, p4));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5> Expr<F> lambdaBlock(Sam5<F, R, A1, A2, A3, A4, A5> sam, Function6<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5), (b) -> body.apply(b, p1, p2, p3, p4, p5));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5> Expr<F> lambdaBlock(VoidSam5<F, A1, A2, A3, A4, A5> sam, Function6<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5), (b) -> body.apply(b, p1, p2, p3, p4, p5));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6> Expr<F> lambdaBlock(Sam6<F, R, A1, A2, A3, A4, A5, A6> sam, Function7<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6> Expr<F> lambdaBlock(VoidSam6<F, A1, A2, A3, A4, A5, A6> sam, Function7<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7> Expr<F> lambdaBlock(Sam7<F, R, A1, A2, A3, A4, A5, A6, A7> sam, Function8<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7> Expr<F> lambdaBlock(VoidSam7<F, A1, A2, A3, A4, A5, A6, A7> sam, Function8<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8> Expr<F> lambdaBlock(Sam8<F, R, A1, A2, A3, A4, A5, A6, A7, A8> sam, Function9<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8> Expr<F> lambdaBlock(VoidSam8<F, A1, A2, A3, A4, A5, A6, A7, A8> sam, Function9<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> Expr<F> lambdaBlock(Sam9<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> sam, Function10<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9> Expr<F> lambdaBlock(VoidSam9<F, A1, A2, A3, A4, A5, A6, A7, A8, A9> sam, Function10<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Expr<F> lambdaBlock(Sam10<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam, Function11<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> Expr<F> lambdaBlock(VoidSam10<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> sam, Function11<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Expr<F> lambdaBlock(Sam11<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> sam, Function12<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> Expr<F> lambdaBlock(VoidSam11<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> sam, Function12<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11, A12 a12) -&gt; { ... }`, of the functional interface `sam` is the method of. The block ends as the body of a method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <R> the result type of its method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Expr<F> lambdaBlock(Sam12<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> sam, Function13<? super Body<R>, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? super Var<A12>, Terminated<R>> body) {
+        Body<R> block = Body.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), block);
+        Var<A12> p12 = Expressions.lambdaParameter(sam.param12(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
+    }
+
+    /**
+     * A lambda with a block body, `(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10, A11 a11, A12 a12) -&gt; { ... }`, of the functional interface whose `void` method `sam` is. The block ends as the body of a `void` method does.
+     *
+     * @param sam the single abstract method of the functional interface
+     * @param body builds the block, given the parameters
+     * @param <F> the functional interface
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the lambda
+     * @throws IllegalStateException if a statement of the block uses a variable a lambda cannot capture or can throw a checked exception the method does not declare, where it is built; if the block ends with the token of another block
+     */
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Expr<F> lambdaBlock(VoidSam12<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> sam, Function13<? super VoidBody, ? super Var<A1>, ? super Var<A2>, ? super Var<A3>, ? super Var<A4>, ? super Var<A5>, ? super Var<A6>, ? super Var<A7>, ? super Var<A8>, ? super Var<A9>, ? super Var<A10>, ? super Var<A11>, ? super Var<A12>, Terminated<Void>> body) {
+        VoidBody block = VoidBody.lambdaBody(Scopes.enclosing(), sam.method().traits().throwsTypes());
+        Var<A1> p1 = Expressions.lambdaParameter(sam.param1(), block);
+        Var<A2> p2 = Expressions.lambdaParameter(sam.param2(), block);
+        Var<A3> p3 = Expressions.lambdaParameter(sam.param3(), block);
+        Var<A4> p4 = Expressions.lambdaParameter(sam.param4(), block);
+        Var<A5> p5 = Expressions.lambdaParameter(sam.param5(), block);
+        Var<A6> p6 = Expressions.lambdaParameter(sam.param6(), block);
+        Var<A7> p7 = Expressions.lambdaParameter(sam.param7(), block);
+        Var<A8> p8 = Expressions.lambdaParameter(sam.param8(), block);
+        Var<A9> p9 = Expressions.lambdaParameter(sam.param9(), block);
+        Var<A10> p10 = Expressions.lambdaParameter(sam.param10(), block);
+        Var<A11> p11 = Expressions.lambdaParameter(sam.param11(), block);
+        Var<A12> p12 = Expressions.lambdaParameter(sam.param12(), block);
+        return Expressions.blockLambda(sam.owner(), sam.method(), block, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
     }
 }
