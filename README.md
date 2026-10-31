@@ -1118,6 +1118,198 @@ A use of a required element is not expressible without it:
 `Author_.annotation().build()` has no `build()` before `name` is given. The facts of the annotated type, its members and
 its parameters carry their annotations too, so a generator compiled against a library sees them.
 
+### Typed interfaces, records, enums and annotation types
+
+The typed layer declares every top-level kind the core does: `TypedJavaFile.interface_`, `record`, `enum_` and
+`annotationType` take the `TargetClasspath`, the name and a specification, and return an ordinary core file. The
+declaration is in the same two stages as a class: the builder declares each member and gives its fact, and `bodies()`
+ends the declarations and gives the stage that defines them. The forms of these kinds reach arity 4; the class
+builder's reach arity 12.
+
+An interface has abstract, default, static and private methods, constants, `extends` of several interfaces and, with
+`permits`, `sealed`. It has no constructor, and `extends_` takes an interface token alone:
+
+```java
+JavaFile file = TypedJavaFile.interface_(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Shape"),
+        new TypedJavaFile.TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                var area = ib.declareAbstractMethod("area", PrimitiveToken.DOUBLE);
+                var describe = ib.declareDefaultMethod("describe", String_.TOKEN);
+                var twice = ib.declarePrivateMethod("twice", PrimitiveToken.INT, PrimitiveToken.INT);
+                var unit = ib.declareStaticMethod("unit", PrimitiveToken.DOUBLE);
+                var radius = ib.declareConstant("RADIUS", PrimitiveToken.DOUBLE);
+                var bodies = ib.bodies();
+                bodies.initialize(radius, literal(1.5));
+                bodies.define(twice, (b, self, x) -> b.return_(mulInt(x, literal(2))));
+                bodies.define(describe, (b, self) -> b.return_(literal("shape")));
+                bodies.define(unit, b -> b.return_(literal(1.0)));
+                return bodies;
+            }
+        });
+```
+
+```java
+public interface Shape {
+    double area();
+
+    default String describe() {
+        return "shape";
+    }
+
+    private int twice(int v0) {
+        return v0 * 2;
+    }
+
+    static double unit() {
+        return 1.0;
+    }
+
+    double RADIUS = 1.5;
+}
+```
+
+A record has components, a canonical constructor (compact or explicit), additional constructors that begin with
+`this(...)`, accessors, methods and interfaces; it is final, so `extends` is not expressible. A component gives the fact
+of its accessor and of its private field:
+
+```java
+JavaFile file = TypedJavaFile.record(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Point"),
+        new TypedJavaFile.TypedRecordSpec() {
+            @Override
+            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
+                var x = rb.component("x", PrimitiveToken.INT);
+                var y = rb.component("y", PrimitiveToken.INT);
+                var compact = rb.declareCompactConstructor(PrimitiveToken.INT, PrimitiveToken.INT);
+                var empty = rb.declareConstructor();
+                var sum = rb.declareMethod("sum", PrimitiveToken.INT);
+                var bodies = rb.bodies();
+                bodies.define(compact, (b, self, x0, y0) -> b.end());
+                bodies.defineDelegating(empty, List.of(literal(0), literal(0)), (b, self) -> b.end());
+                bodies.define(sum, (b, self) -> b.return_(addInt(call(self, x.accessor()), call(self, y.accessor()))));
+                return bodies;
+            }
+        });
+```
+
+```java
+public record Point(int x, int y) {
+    public Point {
+    }
+
+    public Point() {
+        this(0, 0);
+    }
+
+    public int sum() {
+        return this.x() + this.y();
+    }
+}
+```
+
+An enum has constants without arguments, with arguments, and with a class body that overrides the abstract methods;
+interfaces, instance and static methods and fields; and constructors that are `private` and have no `CtorRef`, so
+`new_` does not take one:
+
+```java
+JavaFile file = TypedJavaFile.enum_(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Op"),
+        new TypedJavaFile.TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                var apply = eb.declareAbstractMethod("apply", PrimitiveToken.INT, PrimitiveToken.INT);
+                eb.constructor(PrimitiveToken.INT, (b, self, value) -> b.end());
+                eb.constant("ONE", List.of(literal(1)), cb -> cb.override(apply, (b, self, x) -> b.return_(x)));
+                eb.constant("DOUBLE", List.of(literal(2)),
+                        cb -> cb.override(apply, (b, self, x) -> b.return_(mulInt(x, literal(2)))));
+                var twice = eb.declareMethod("twice", PrimitiveToken.INT, PrimitiveToken.INT);
+                var bodies = eb.bodies();
+                bodies.define(twice, (b, self, x) -> b.return_(mulInt(x, literal(2))));
+                return bodies;
+            }
+        });
+```
+
+```java
+public enum Op {
+    ONE(1) {
+        @Override
+        public int apply(int v0) {
+            return v0;
+        }
+    }, DOUBLE(2) {
+        @Override
+        public int apply(int v0) {
+            return v0 * 2;
+        }
+    };
+
+    public abstract int apply(int v0);
+
+    public int twice(int v0) {
+        return v0 * 2;
+    }
+
+    Op(int v0) {
+    }
+}
+```
+
+An annotation type has elements of the types JLS 9.6.1 allows, optional defaults, and meta-annotations through the
+same annotation API: `@Retention`, `@Target`, `@Repeatable` and user annotations.
+
+```java
+JavaFile file = TypedJavaFile.annotationType(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Route"),
+        new TypedJavaFile.TypedAnnotationTypeSpec() {
+            @Override
+            public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                ab.withAnnotation(Retention_.annotation()
+                        .value(AnnotationValues.enum_(RetentionPolicy_.RUNTIME)).build());
+                ab.withAnnotation(Target_.annotation()
+                        .value(AnnotationValues.array(AnnotationValues.enum_(ElementType_.TYPE))).build());
+                ab.element("value", String_.TOKEN);
+                ab.element("priority", PrimitiveToken.INT, AnnotationValues.int_(0));
+                return ab;
+            }
+        });
+```
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({
+    ElementType.TYPE
+})
+public @interface Route {
+    String value();
+    int priority() default 0;
+}
+```
+
+`TypedJavaFile.packageInfo` declares a `package-info.java` with annotations checked against their targets, and
+`TypedJavaFile.module` declares a `module-info.java` with every directive the core supports: `requires` (plain,
+`transitive`, `static`), `exports` and `opens` (plain or `to`), `uses` and `provides ... with ...`.
+
+```java
+PackageInfoFile info = TypedJavaFile.packageInfo(
+        UnsafeFacts.unverifiedClasspath(), "com.example",
+        pb -> pb.withAnnotation(PackageTag_.annotation().value(AnnotationValues.string("api")).build()));
+
+ModuleFile module = TypedJavaFile.module(
+        UnsafeFacts.unverifiedClasspath(), "com.example.app",
+        mb -> mb.requires("java.base")
+                .exports("com.example.api")
+                .uses(ClassDesc.of("com.example.api.Plugin"))
+                .provides(ClassDesc.of("com.example.api.Plugin"),
+                        ClassDesc.of("com.example.impl.PluginImpl")));
+```
+
 ### Refusals at generation time
 
 Java that javac accepts with a warning is not generated: the call that would produce it is refused, with a message that
@@ -1157,12 +1349,12 @@ java.lang.IllegalArgumentException: the method void com.example.Handlers.handle(
 
 ### What stays in the core API
 
-The typed layer declares `public final` top-level classes, with fields and methods of their own, a superclass and
-interfaces. [Records and sealed interfaces](#records-and-sealed-interfaces),
-[Enums with constant bodies](#enums-with-constant-bodies),
-[Annotation type declarations](#annotations-and-annotation-types),
-[Transforming an existing declaration](#transforming-an-existing-declaration) and
-[package-info.java and module-info.java](#package-infojava-and-module-infojava) have no typed counterpart: they are
-declared with the core API, which the typed layer does not replace. A typed class uses an enum of the JDK or of your own
-through its facts, as it does `Signal` above, but does not declare one; a use of an annotation type is typed, as
-[Annotations](#annotations) tells, while the type itself is declared with the core API.
+The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, and the
+`package-info.java` and `module-info.java` files. What stays in the core API is what the typed layer does not model:
+[Transforming an existing declaration](#transforming-an-existing-declaration), documentation comments, nested types,
+initializer blocks, and the `Unsafe*` escape hatches. A generator may still use the core API for a declaration the typed
+layer does not express; the typed layer does not replace it.
+
+The typed declarations of §6.5 have forms of arity 4 for their members; the class builder's forms reach arity 12. A
+record or enum that implements an interface names it with `implements_`, which gives a witness, and declares each
+abstract method with `declareOverride(witness, fact)`, as a class does.
