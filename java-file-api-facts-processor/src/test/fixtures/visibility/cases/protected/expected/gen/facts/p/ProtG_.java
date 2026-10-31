@@ -56,7 +56,7 @@ import p.ProtG;
 ///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "929a1ce440a4134f10e3ae4dc04e52ea3022ab18694788d7dc35cc58035e7a54", complete = true, format = 16)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "143113ccd56bd3fd7d701835b4a5ac1535208e0a83bec8910dd4b32cb61d2b64", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -67,7 +67,7 @@ public final class ProtG_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtG] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "929a1ce440a4134f10e3ae4dc04e52ea3022ab18694788d7dc35cc58035e7a54", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG")), Set.of()), false, new ProtG_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "143113ccd56bd3fd7d701835b4a5ac1535208e0a83bec8910dd4b32cb61d2b64", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG")), Set.of()), false, List.of(), new ProtG_Heritage());
 
         private Data() {
         }
@@ -78,8 +78,10 @@ public final class ProtG_<T> {
     static final class Canonical {
         /// The canonical form of [ProtG].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.ProtG open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams #0
         superclasses p.ProtBase; java.lang.Object
         interfaces -

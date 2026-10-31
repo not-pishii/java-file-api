@@ -38,7 +38,7 @@ import p.Rec;
 ///
 /// No generated class extends or implements [Rec]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Rec.class, fingerprint = "cce3626b1abf8088f064111d371f56047036cf3428c979ff7c1c93f660a9f086", complete = true, format = 16)
+@GeneratedMetamodel(of = Rec.class, fingerprint = "3fcb6a500aae53902f4eab248450e801395f2fde807faea308a06e7fe5d651b0", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Rec_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Rec] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Rec_"), "cce3626b1abf8088f064111d371f56047036cf3428c979ff7c1c93f660a9f086", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Rec"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(Signature.of("of")), Set.of(Signature.of("Rec", Param.fixed(ConstantDescs.CD_int)), Signature.of("Rec", Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Rec_"), "3fcb6a500aae53902f4eab248450e801395f2fde807faea308a06e7fe5d651b0", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Rec"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(Signature.of("of")), Set.of(Signature.of("Rec", Param.fixed(ConstantDescs.CD_int)), Signature.of("Rec", Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -60,8 +60,10 @@ public final class Rec_ {
     static final class Canonical {
         /// The canonical form of [Rec].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Rec final-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Record; java.lang.Object
         interfaces -

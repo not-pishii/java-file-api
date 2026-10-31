@@ -79,8 +79,10 @@ class CanonicalTest {
                                 + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 10
+                        javafile-facts-canonical 11
                         type p.T open-class sealed=no nesting=top
+                        annotations -
+                        annotation -
                         tparams #0 extends java.lang.Number
                         superclasses p.Base; java.lang.Object
                         interfaces java.lang.Comparable; java.lang.Runnable
@@ -126,11 +128,13 @@ class CanonicalTest {
                 .filteredOn(line -> line.startsWith("member "))
                 .containsExactly(
                         "member ctor public (int...) throws -",
-                        "member ctor public <^0>(^0... @SafeVarargs) throws -",
-                        "member method public final <^0> sure(int, ^0... @SafeVarargs) -> void throws -",
+                        "member ctor public <^0>(^0... @SafeVarargs) throws - annotations @java.lang.SafeVarargs",
+                        "member method public final <^0> sure(int, ^0... @SafeVarargs) -> void throws - annotations"
+                                + " @java.lang.SafeVarargs",
                         "member method public overridable fixed(java.lang.String[]) -> void throws -",
                         "member method public overridable variable(java.lang.String...) -> void throws -",
-                        "member method public static <^0> safe(^0... @SafeVarargs) -> java.util.List<^0> throws -");
+                        "member method public static <^0> safe(^0... @SafeVarargs) -> java.util.List<^0> throws -"
+                                + " annotations @java.lang.SafeVarargs");
     }
 
     @Test
@@ -183,8 +187,10 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 10
+                        javafile-facts-canonical 11
                         type p.Day enum sealed=no nesting=top
+                        annotations -
+                        annotation -
                         tparams -
                         superclasses java.lang.Enum; java.lang.Object
                         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable; \
@@ -430,8 +436,10 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 10
+                        javafile-facts-canonical 11
                         type p.T interface sealed=no nesting=top
+                        annotations -
+                        annotation -
                         tparams -
                         superclasses -
                         interfaces p.A; p.B

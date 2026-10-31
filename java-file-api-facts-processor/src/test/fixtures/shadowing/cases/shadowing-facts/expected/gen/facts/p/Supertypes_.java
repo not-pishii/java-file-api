@@ -42,7 +42,7 @@ import p.Supertypes;
 ///
 /// A generated class extends or implements [Supertypes] by the proof its metamodel starts, with the stages of `Supertypes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Supertypes.class, fingerprint = "87890e2c4dbc622264525be42fc655298420b26653d3367d6936cddfe86a3f3a", complete = true, format = 16)
+@GeneratedMetamodel(of = Supertypes.class, fingerprint = "01e9add2361ba3d6af3bb4c9cff6f443bf24f8a0c0494b0840da1a115c8ff94d", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class Supertypes_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Supertypes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "87890e2c4dbc622264525be42fc655298420b26653d3367d6936cddfe86a3f3a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes")), Set.of()), false, new Supertypes_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Supertypes_"), "01e9add2361ba3d6af3bb4c9cff6f443bf24f8a0c0494b0840da1a115c8ff94d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Supertypes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), me.supcheg.javafile.facts.Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other", Param.fixed(ClassDesc.of("java.awt.List")), Param.fixed(ClassDesc.ofDescriptor("[I")), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/String;"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Supertypes")), Set.of()), false, List.of(), new Supertypes_Heritage());
 
         private Data() {
         }
@@ -64,8 +64,10 @@ public final class Supertypes_ {
     static final class Canonical {
         /// The canonical form of [Supertypes].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Supertypes open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

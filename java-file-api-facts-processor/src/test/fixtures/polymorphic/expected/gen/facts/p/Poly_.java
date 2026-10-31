@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Complete;
@@ -51,7 +52,7 @@ import p.Poly;
 ///
 /// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "7c86d0e997d8e8f8a5f706fbc8ee17c7a1e16160d484065bed1226ee81605bd6", complete = true, format = 16)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "0b8e7d3288775a785dc9ace14e08c83166fe3406e0c0df79d545807a7ca0f551", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -62,7 +63,7 @@ public final class Poly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Poly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "7c86d0e997d8e8f8a5f706fbc8ee17c7a1e16160d484065bed1226ee81605bd6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))))), false, new Poly_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "0b8e7d3288775a785dc9ace14e08c83166fe3406e0c0df79d545807a7ca0f551", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))))), false, List.of(), new Poly_Heritage());
 
         private Data() {
         }
@@ -73,8 +74,10 @@ public final class Poly_ {
     static final class Canonical {
         /// The canonical form of [Poly].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Poly open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -92,7 +95,7 @@ public final class Poly_ {
         member method public overridable <^0> id(^0) -> ^0 throws -
         member method public overridable <^0> none() -> void throws -
         member method public static <^0 extends java.lang.Comparable<? super ^0>> max(java.util.Collection<? extends ^0>) -> ^0 throws -
-        member method public static <^0> listOf(^0... @SafeVarargs) -> java.util.List<^0> throws -
+        member method public static <^0> listOf(^0... @SafeVarargs) -> java.util.List<^0> throws - annotations @java.lang.SafeVarargs
         inherit ctor Poly() public () throws -
         inherit ctor Poly(java.lang.Object) public <^0> (^0) throws -
         inherit field public p.Poly T
@@ -165,7 +168,7 @@ public final class Poly_ {
     /// @param t the token of the type argument `T`
     /// @return the fact
     public static <T> StaticMethodRef1<List<T>, T[]> listOf_TArray(RefToken<T> t) {
-        return UnsafeInvocables.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t).with(Arity.SAFE_VARARGS));
+        return UnsafeInvocables.staticMethod(TOKEN, "listOf", UnsafeFacts.<List<T>>interfaceToken(gen.facts.java.util.List_.Data.SHAPE, TokenArg.exact(t)), UnsafeFacts.param(ArrayToken.of(t), Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), MemberTraits.FINAL.withTypeArgs(t).with(Arity.SAFE_VARARGS).annotated(new AnnotationUse(ClassDesc.of("java.lang.SafeVarargs"), List.of())));
     }
 
     /// The fact of [Poly#max(Collection)], for the type arguments the tokens give.

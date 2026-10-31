@@ -123,6 +123,7 @@ public final class TargetClasspath {
     private static Stream<TypeShape<?>> shapes(TypeToken<?> type) {
         return switch (type) {
             case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
+            case AnnotatedRefToken<?> annotated -> shapes(annotated.token());
             case ArrayToken<?, ?> array -> shapes(array.component());
             case DeclaredToken<?> declared ->
                 Stream.concat(

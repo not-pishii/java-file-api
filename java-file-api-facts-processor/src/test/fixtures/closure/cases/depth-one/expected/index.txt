@@ -15,6 +15,7 @@ META-INF/javafile/metamodel/token/p.Field1 -> gen.facts.p.Field1_
 META-INF/javafile/metamodel/token/p.Holder -> gen.facts.p.Holder_
 META-INF/javafile/metamodel/token/p.Lower -> gen.facts.p.Lower_
 META-INF/javafile/metamodel/token/p.MBound -> gen.facts.p.MBound_
+META-INF/javafile/metamodel/token/p.Marker -> gen.facts.p.Marker_
 META-INF/javafile/metamodel/token/p.Param1 -> gen.facts.p.Param1_
 META-INF/javafile/metamodel/token/p.Prot -> gen.facts.p.Prot_
 META-INF/javafile/metamodel/token/p.Result -> gen.facts.p.Result_

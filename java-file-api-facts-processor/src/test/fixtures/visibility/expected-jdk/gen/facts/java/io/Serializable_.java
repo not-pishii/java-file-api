@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Serializable] by the proof its metamodel starts, with the stages of `Serializable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Serializable.class, fingerprint = "02296eee2a854fcbbb12644ecd4c14e577b801c8b331506b80b27edd20ffa66b", complete = true, format = 16)
+@GeneratedMetamodel(of = Serializable.class, fingerprint = "c43a7c22795a019dd93fe7b233f83648319384998b6584419da423ae7939725c", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Serializable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Serializable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "02296eee2a854fcbbb12644ecd4c14e577b801c8b331506b80b27edd20ffa66b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Serializable_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.io.Serializable_"), "c43a7c22795a019dd93fe7b233f83648319384998b6584419da423ae7939725c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.io.Serializable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Serializable_Heritage());
 
         private Data() {
         }
@@ -54,8 +54,10 @@ public final class Serializable_ {
     static final class Canonical {
         /// The canonical form of [Serializable].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.io.Serializable interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

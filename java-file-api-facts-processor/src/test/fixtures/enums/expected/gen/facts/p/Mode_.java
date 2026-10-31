@@ -28,7 +28,7 @@ import p.Mode;
 ///
 /// `@Facts` does not ask for [Mode]: it is only mentioned in the signatures of [p.Plan]. For the facts of its members add `Mode.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mode.class, fingerprint = "8c813a78f59a067f70dd6de639a700e7f9a95c727e3152d6518b78e9f0191f83", complete = false, format = 16)
+@GeneratedMetamodel(of = Mode.class, fingerprint = "478bb5b271c6a48235057c56616588318862e45ed26ce9774ec647cb5d021e8b", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Mode_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mode] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mode_"), "8c813a78f59a067f70dd6de639a700e7f9a95c727e3152d6518b78e9f0191f83", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Mode"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Mode"))))), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Mode"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Mode"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of(), Set.of()), List.of("FAST", "SLOW"), false);
+        public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mode_"), "478bb5b271c6a48235057c56616588318862e45ed26ce9774ec647cb5d021e8b", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Mode"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Mode")))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Mode")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Mode"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of(), Set.of()), List.of("FAST", "SLOW"), false, List.of());
 
         private Data() {
         }
@@ -50,8 +50,10 @@ public final class Mode_ {
     static final class Canonical {
         /// The canonical form of [Mode].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Mode enum sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Enum; java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable

@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.Noted_.Canonical;
 import gen.facts.p.Noted_.Data;
+import gen.facts.p.Noted_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -10,13 +11,18 @@ import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
+import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.facts.VoidSam1;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
@@ -26,13 +32,9 @@ import p.Noted;
 ///
 /// A member [Noted] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// These members have no fact:
-///
-/// - `method note(java.lang.Deprecated)`, which mentions java.lang.Deprecated, which has no metamodel: annotation interface java.lang.Deprecated is not supported yet
-///
-/// No generated class extends or implements [Noted]: its abstract method note(java.lang.Deprecated) has no fact in the metamodel of the type, so no class says it overrides it.
+/// A generated class extends or implements [Noted] by the proof its metamodel starts, with the stages of `Noted_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Noted.class, fingerprint = "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", complete = true, format = 16)
+@GeneratedMetamodel(of = Noted.class, fingerprint = "800098b90f1146a4aed1f8409fecdb2e53b79e7df656d0cae3a4c7c67b6921a2", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +45,7 @@ public final class Noted_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Noted] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Noted_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "800098b90f1146a4aed1f8409fecdb2e53b79e7df656d0cae3a4c7c67b6921a2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Noted_Heritage());
 
         private Data() {
         }
@@ -54,8 +56,10 @@ public final class Noted_ {
     static final class Canonical {
         /// The canonical form of [Noted].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Noted interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -
@@ -78,6 +82,21 @@ public final class Noted_ {
     /// The token of [Noted].
     public static final InterfaceToken<Noted> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
+    /// The fact of [Noted#note(Deprecated)].
+    public static final VoidMethodRef1<Noted, Deprecated> note_Deprecated = UnsafeInvocables.voidMethod(TOKEN, "note", UnsafeFacts.<Deprecated>interfaceToken(gen.facts.java.lang.Deprecated_.Data.SHAPE), MemberTraits.ABSTRACT);
+
+    /// The fact of the single abstract method [Noted#note(Deprecated)], which a lambda implements.
+    public static final VoidSam1<Noted, Deprecated> sam = UnsafeInvocables.voidSam(note_Deprecated);
+
     private Noted_() {
+    }
+
+    /// Starts the proof that a class being declared implements [Noted]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new Noted_Heritage().implement(TOKEN, self);
     }
 }

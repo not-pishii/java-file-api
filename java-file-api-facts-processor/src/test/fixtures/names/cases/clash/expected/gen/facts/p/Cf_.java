@@ -41,7 +41,7 @@ import p.Cf;
 ///
 /// A generated class extends or implements [Cf] by the proof its metamodel starts, with the stages of `Cf_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Cf.class, fingerprint = "825af994d6bdf6c239c083fcffb5d69a3d7eb78c5b548091213acef6cb11a002", complete = true, format = 16)
+@GeneratedMetamodel(of = Cf.class, fingerprint = "1cf1fe0b54a0fb9b4f86677897896b62fc9bf4619f2dd19f455ee2034bca08b2", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Cf_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Cf] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Cf_"), "825af994d6bdf6c239c083fcffb5d69a3d7eb78c5b548091213acef6cb11a002", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Cf"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("x_")), Set.of(), Set.of(Signature.of("Cf")), Set.of()), false, new Cf_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Cf_"), "1cf1fe0b54a0fb9b4f86677897896b62fc9bf4619f2dd19f455ee2034bca08b2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Cf"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("x_")), Set.of(), Set.of(Signature.of("Cf")), Set.of()), false, List.of(), new Cf_Heritage());
 
         private Data() {
         }
@@ -63,8 +63,10 @@ public final class Cf_ {
     static final class Canonical {
         /// The canonical form of [Cf].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Cf open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

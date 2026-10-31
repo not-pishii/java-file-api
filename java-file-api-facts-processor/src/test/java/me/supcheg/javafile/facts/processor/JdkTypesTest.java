@@ -543,7 +543,11 @@ class JdkTypesTest {
                 .isEqualTo(applied(ConstantDescs.CD_List, Types.exact(integer.typeRef())));
         // List.of(E...) is @SafeVarargs: the fact tells how a call may pass its arguments
         assertThat(of.traits())
-                .isEqualTo(MemberTraits.FINAL.withTypeArgs(integer).with(Arity.SAFE_VARARGS));
+                .isEqualTo(MemberTraits.FINAL
+                        .withTypeArgs(integer)
+                        .with(Arity.SAFE_VARARGS)
+                        .annotated(new me.supcheg.javafile.annotation.AnnotationUse(
+                                ClassDesc.of("java.lang", "SafeVarargs"), java.util.List.of())));
         assertThat(of.arity()).isEqualTo(new Arity.Variable(Arity.Safety.SAFE_VARARGS));
         assertThat(get.arity()).isEqualTo(Arity.FIXED);
 

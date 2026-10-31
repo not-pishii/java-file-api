@@ -36,7 +36,7 @@ import p.PubOver;
 ///
 /// A generated class extends or implements [PubOver] by the proof its metamodel starts, with the stages of `PubOver_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubOver.class, fingerprint = "4c1d38470869e3f6008869c025359e84999a0296f2a2f876d924b889aa793966", complete = true, format = 16)
+@GeneratedMetamodel(of = PubOver.class, fingerprint = "504767f469085f289182706f3fd75ff12b0084f316c0efea074a0706cf6ce883", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class PubOver_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubOver] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubOver_"), "4c1d38470869e3f6008869c025359e84999a0296f2a2f876d924b889aa793966", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubOver"), List.of(), List.of(ClassDesc.of("p.HOver"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubOver")), Set.of()), false, new PubOver_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubOver_"), "504767f469085f289182706f3fd75ff12b0084f316c0efea074a0706cf6ce883", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubOver"), List.of(), List.of(ClassDesc.of("p.HOver"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubOver")), Set.of()), false, List.of(), new PubOver_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,10 @@ public final class PubOver_ {
     static final class Canonical {
         /// The canonical form of [PubOver].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.PubOver open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses p.HOver; java.lang.Object
         interfaces -

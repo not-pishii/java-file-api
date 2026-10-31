@@ -35,7 +35,7 @@ import p.StrOp;
 ///
 /// A generated class extends or implements [StrOp] by the proof its metamodel starts, with the stages of `StrOp_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrOp.class, fingerprint = "9407ccc3da66d7405591157c14ea3a51479f2e0371b3dccf5ace8879d08366f5", complete = true, format = 16)
+@GeneratedMetamodel(of = StrOp.class, fingerprint = "92fa1cfc83f8a692d791566529d2b675d72f1c5138959257979defc7a2df1521", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class StrOp_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [StrOp] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrOp_"), "9407ccc3da66d7405591157c14ea3a51479f2e0371b3dccf5ace8879d08366f5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrOp"), List.of(), List.of(), List.of(ClassDesc.of("java.util.function.Function"), ClassDesc.of("p.StrFn")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new StrOp_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.StrOp_"), "92fa1cfc83f8a692d791566529d2b675d72f1c5138959257979defc7a2df1521", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.StrOp"), List.of(), List.of(), List.of(ClassDesc.of("java.util.function.Function"), ClassDesc.of("p.StrFn")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))), Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new StrOp_Heritage());
 
         private Data() {
         }
@@ -57,8 +57,10 @@ public final class StrOp_ {
     static final class Canonical {
         /// The canonical form of [StrOp].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.StrOp interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces java.util.function.Function; p.StrFn

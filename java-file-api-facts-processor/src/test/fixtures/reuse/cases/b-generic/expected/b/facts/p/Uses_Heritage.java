@@ -61,7 +61,7 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("any", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Integer"))))))), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded())))), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
+            return new Method<>(Signature.of("any", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Integer")))), List.of()))), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
         }
 
         private static Method<Declaration> m1() {
@@ -77,7 +77,7 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m4() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m5() {
@@ -93,7 +93,7 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m8() {
-            return new Method<>(Signature.of("strings"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("strings"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m9() {

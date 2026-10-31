@@ -1,13 +1,28 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.annotation.AnnotationValue;
 import me.supcheg.javafile.annotation.AnnotationValues;
+import me.supcheg.javafile.annotation.ArrayValue;
+import me.supcheg.javafile.annotation.ClassValue;
+import me.supcheg.javafile.annotation.EnumValue;
+import me.supcheg.javafile.annotation.LiteralValue;
+import me.supcheg.javafile.annotation.NestedAnnotationValue;
 import me.supcheg.javafile.annotation.SingleAnnotationValue;
 import me.supcheg.javafile.builder.ClassBuilder;
+import me.supcheg.javafile.code.BooleanLiteral;
+import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LongLiteral;
+import me.supcheg.javafile.code.StringLiteral;
+import me.supcheg.javafile.doc.DocBlock;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocStyle;
+import me.supcheg.javafile.doc.DocTag;
+import me.supcheg.javafile.doc.DocText;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -15,6 +30,8 @@ import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
+import me.supcheg.javafile.langmodel.mirror.AnnotationElementModel;
+import me.supcheg.javafile.langmodel.mirror.AnnotationModel;
 import me.supcheg.javafile.langmodel.mirror.Canonical;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.javafile.model.Modifier;
@@ -154,6 +171,19 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_TYPE_PARAM = ClassDesc.of(CORE_TYPE, "TypeParam");
     private static final ClassDesc CD_PARAMETERIZED = ClassDesc.of(CORE_TYPE, "ParameterizedTypeRef");
     private static final ClassDesc CD_PRIMITIVE = ClassDesc.of(CORE_TYPE, "PrimitiveTypeRef");
+    private static final ClassDesc CD_ANNOTATION_USE = ClassDesc.of("me.supcheg.javafile.annotation.AnnotationUse");
+    private static final ClassDesc CD_ANNOTATION_MEMBER =
+            ClassDesc.of("me.supcheg.javafile.annotation.AnnotationMember");
+    private static final ClassDesc CD_ANNOTATION_VALUES =
+            ClassDesc.of("me.supcheg.javafile.annotation.AnnotationValues");
+    private static final ClassDesc CD_ANNOTATION_TYPE = ClassDesc.of(FACTS, "AnnotationType");
+    private static final ClassDesc CD_ANNOTATION_ELEMENT = ClassDesc.of(FACTS, "AnnotationElement");
+    private static final ClassDesc CD_FACT_ANNOTATION_MEMBER = ClassDesc.of(FACTS, "AnnotationMember");
+    private static final ClassDesc CD_ANNOTATION_REF = ClassDesc.of(FACTS, "AnnotationRef");
+    private static final ClassDesc CD_ANNOTATION_VALUE = ClassDesc.of(FACTS, "AnnotationValue");
+    private static final ClassDesc CD_OPTIONAL = ClassDesc.of("java.util.Optional");
+    private static final ClassDesc CD_RETENTION_POLICY = ClassDesc.of("java.lang.annotation.RetentionPolicy");
+    private static final ClassDesc CD_ELEMENT_TYPE = ClassDesc.of("java.lang.annotation.ElementType");
 
     /// The longest part of the canonical form written as one string
     /// literal, in bytes of the modified UTF-8 a class file holds a constant
@@ -466,6 +496,7 @@ final class MetamodelEmitter {
             } else {
                 any(cb, model, token, names, shape);
             }
+            model.annotation().ifPresent(annotation -> annotation(cb, model, annotation, metamodel));
             for (MemberFacts.Spec spec : specs) {
                 if (spec instanceof MemberFacts.Spec.Constant(String name, TypeRef type, Expr init, DocComment doc)) {
                     cb.withField(
@@ -607,6 +638,126 @@ final class MetamodelEmitter {
         });
     }
 
+    /// The fact of an annotation type and the type-state builder of a use of
+    /// it: `ANNOTATION`, the elements and their defaults, and the stages that
+    /// take the value of every element without a default before `build()`.
+    private static void annotation(ClassBuilder cb, TypeModel model, AnnotationModel annotation, ClassDesc metamodel) {
+        TypeRef annotationToken = Types.parameterized(CD_ANNOTATION_TYPE, Types.of(model.desc()));
+        cb.withField(
+                MetamodelNames.ANNOTATION,
+                annotationToken,
+                fb -> fb.withDoc(DocComment.of("The elements of the annotation type, their defaults, its retention,"
+                                + " its targets and whether it is repeatable."))
+                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        .withInitializer(Exprs.staticCall(
+                                CD_UNSAFE_FACTS,
+                                "annotationType",
+                                Exprs.field(MetamodelNames.TOKEN),
+                                list(annotation.elements().stream()
+                                        .map(element -> Exprs.staticCall(
+                                                CD_UNSAFE_FACTS,
+                                                "annotationElement",
+                                                classDesc(model.desc()),
+                                                Exprs.literal(element.name()),
+                                                typeRef(element.type()),
+                                                element.defaultValue()
+                                                        .map(value -> Exprs.staticCall(
+                                                                CD_OPTIONAL, "of", annotationValue(value)))
+                                                        .orElseGet(() -> Exprs.staticCall(CD_OPTIONAL, "empty"))))
+                                        .toList()),
+                                Exprs.staticField(
+                                        CD_RETENTION_POLICY,
+                                        annotation.retention().name()),
+                                Exprs.staticCall(
+                                        CD_SET,
+                                        "of",
+                                        annotation.targets().stream()
+                                                .sorted()
+                                                .map(target -> Exprs.staticField(CD_ELEMENT_TYPE, target.name()))
+                                                .toList()),
+                                Exprs.literal(annotation.repeatable()))));
+        builder(cb, model, annotation, metamodel);
+    }
+
+    private static void builder(ClassBuilder cb, TypeModel model, AnnotationModel annotation, ClassDesc metamodel) {
+        List<AnnotationElementModel> required = annotation.required();
+        for (int stage = 0; stage <= required.size(); stage++) {
+            ClassDesc stageClass = annotationStage(metamodel, stage);
+            int taken = stage;
+            boolean last = stage == required.size();
+            cb.withNestedClass(stageClass, sc -> {
+                sc.withDoc(DocComment.of(
+                                taken == 0
+                                        ? "Starts a use of the annotation type."
+                                        : "A use of the annotation type that has given the first " + taken
+                                                + " required element(s)."))
+                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        .withField(
+                                "members",
+                                Types.parameterized(CD_LIST, Types.of(CD_FACT_ANNOTATION_MEMBER)),
+                                fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.FINAL))
+                        .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)
+                                .withParam("members", Types.parameterized(CD_LIST, Types.of(CD_FACT_ANNOTATION_MEMBER)))
+                                .withBody(b -> b.assign(Exprs.this_().field("members"), Exprs.field("members"))));
+                for (AnnotationElementModel element : annotation.elements()) {
+                    boolean advances =
+                            taken < required.size() && required.get(taken).equals(element);
+                    ClassDesc next = annotationStage(metamodel, advances ? taken + 1 : taken);
+                    sc.withMethod(
+                            element.name(),
+                            Types.of(next),
+                            mb -> mb.withDoc(tagged(
+                                            "Gives the element `" + element.name() + "` a value.",
+                                            new DocTag.Param("value", DocText.of("the value")),
+                                            new DocTag.Return(DocText.of("the stage after the element is given"))))
+                                    .withModifiers(Modifier.PUBLIC)
+                                    .withParam(
+                                            "value", Types.parameterized(CD_ANNOTATION_VALUE, phantom(element.type())))
+                                    .withBody(b -> b.return_(Exprs.new_(
+                                            next,
+                                            Exprs.staticCall(
+                                                    CD_UNSAFE_FACTS,
+                                                    "annotationMembers",
+                                                    Exprs.field("members"),
+                                                    Exprs.literal(element.name()),
+                                                    Exprs.field("value"))))));
+                }
+                if (last) {
+                    sc.withMethod(
+                            "build",
+                            Types.parameterized(CD_ANNOTATION_REF, Types.of(model.desc())),
+                            mb -> mb.withDoc(tagged(
+                                            "The use of the annotation type, every required element given a value.",
+                                            new DocTag.Return(DocText.of("the use"))))
+                                    .withModifiers(Modifier.PUBLIC)
+                                    .withBody(b -> b.return_(Exprs.staticCall(
+                                            CD_UNSAFE_FACTS,
+                                            "annotationRef",
+                                            Exprs.field(MetamodelNames.ANNOTATION),
+                                            Exprs.field("members")))));
+                }
+            });
+        }
+        cb.withMethod(
+                MetamodelNames.ANNOTATION_BUILDER,
+                Types.of(annotationStage(metamodel, 0)),
+                mb -> mb.withDoc(tagged(
+                                "Starts a use of the annotation type: a value for every element without a default"
+                                        + " before `build()`.",
+                                new DocTag.Return(DocText.of("the first stage of the builder"))))
+                        .withModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                        .withBody(b ->
+                                b.return_(Exprs.new_(annotationStage(metamodel, 0), Exprs.staticCall(CD_LIST, "of")))));
+    }
+
+    private static DocComment tagged(String description, DocTag... tags) {
+        return new DocComment(List.of(new DocBlock.Paragraph(DocText.of(description))), List.of(tags));
+    }
+
+    private static ClassDesc annotationStage(ClassDesc metamodel, int stage) {
+        return metamodel.nested(stage == 0 ? MetamodelNames.BUILDER : MetamodelNames.BUILDER + (stage + 1));
+    }
+
     /// The shape of the type: with its heritage, which an object of the class `inherited` supplies, if the
     /// model tells one — a type that tells one is no enum, so it has no constants.
     private static Expr shape(
@@ -640,13 +791,18 @@ final class MetamodelEmitter {
                 switch (model.heritage()) {
                     // a new object, not a lambda that names the class: a class is named in an expression
                     // where a field of its name would be meant, and after `new` only a class is
-                    case Heritage.Told _ -> Stream.of(Exprs.literal(model.sealed()), Exprs.new_(inherited));
+                    case Heritage.Told _ ->
+                        Stream.of(
+                                Exprs.literal(model.sealed()),
+                                annotationUses(model.annotations()),
+                                Exprs.new_(inherited));
                     case Heritage.Untold _ ->
                         Stream.of(
                                 list(model.enumConstants().stream()
                                         .map(Exprs::literal)
                                         .toList()),
-                                Exprs.literal(model.sealed()));
+                                Exprs.literal(model.sealed()),
+                                annotationUses(model.annotations()));
                 };
         return Exprs.staticCall(
                 CD_UNSAFE_FACTS, "shape", Stream.concat(type, rest).toList());
@@ -887,11 +1043,14 @@ final class MetamodelEmitter {
                         .toList());
     }
 
-    /// The type a fact is typed by: the marker of a primitive, the type itself otherwise.
+    /// The type a fact is typed by: the marker of a primitive, an array of
+    /// them, the type itself otherwise.
     private static TypeRef phantom(TypeRef type) {
-        return type instanceof PrimitiveTypeRef primitive
-                ? Types.of(ClassDesc.of(FACTS, "Prim$" + MemberFacts.marker(primitive)))
-                : type;
+        return switch (type) {
+            case PrimitiveTypeRef primitive -> Types.of(ClassDesc.of(FACTS, "Prim$" + MemberFacts.marker(primitive)));
+            case ArrayTypeRef array -> Types.array(phantom(array.component()));
+            case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _ -> type;
+        };
     }
 
     private static void held(ClassBuilder hc, Heritage.Told heritage, ClassDesc type) {
@@ -1139,20 +1298,92 @@ final class MetamodelEmitter {
         };
     }
 
+    /// A list of annotation uses as an expression that makes it.
+    static Expr annotationUses(List<AnnotationUse> annotations) {
+        return list(annotations.stream().map(MetamodelEmitter::annotationUse).toList());
+    }
+
+    static Expr annotationUse(AnnotationUse use) {
+        return Exprs.new_(
+                CD_ANNOTATION_USE,
+                classDesc(use.type()),
+                Exprs.staticCall(
+                        CD_LIST,
+                        "of",
+                        use.members().stream()
+                                .map(member -> Exprs.new_(
+                                        CD_ANNOTATION_MEMBER,
+                                        Exprs.literal(member.name()),
+                                        annotationValue(member.value())))
+                                .toList()));
+    }
+
+    private static Expr annotationValue(AnnotationValue value) {
+        return switch (value) {
+            case LiteralValue(var literal) -> annotationLiteral(literal);
+            case ClassValue(ClassDesc type) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "classValue", classDesc(type));
+            case EnumValue(ClassDesc type, String constant) ->
+                Exprs.staticCall(CD_ANNOTATION_VALUES, "enumValue", classDesc(type), Exprs.literal(constant));
+            case NestedAnnotationValue(AnnotationUse nested) ->
+                Exprs.staticCall(CD_ANNOTATION_VALUES, "nested", annotationUse(nested));
+            case ArrayValue(var elements) ->
+                Exprs.staticCall(
+                        CD_ANNOTATION_VALUES,
+                        "array",
+                        elements.stream().map(MetamodelEmitter::annotationValue).toList());
+        };
+    }
+
+    private static Expr annotationLiteral(me.supcheg.javafile.code.ConstantLiteral literal) {
+        return switch (literal) {
+            case StringLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+            case IntLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+            case LongLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+            case me.supcheg.javafile.code.FloatLiteral(var value) ->
+                Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+            case DoubleLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+            case BooleanLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+        };
+    }
+
     /// A type reference as an expression that makes it.
     private static Expr typeRef(TypeRef type) {
         return switch (type) {
             case PrimitiveTypeRef primitive -> Exprs.staticField(CD_PRIMITIVE, primitive.name());
-            case ArrayTypeRef array -> Exprs.staticCall(CD_TYPES, "array", typeRef(array.component()));
-            case ClassTypeRef cls -> Exprs.staticCall(CD_TYPES, "of", classDesc(cls.desc()));
+            case ArrayTypeRef array ->
+                Exprs.staticCall(
+                        CD_TYPES,
+                        "array",
+                        Stream.concat(
+                                        Stream.of(typeRef(array.component())),
+                                        array.annotations().stream().map(MetamodelEmitter::annotationUse))
+                                .toList());
+            case ClassTypeRef cls ->
+                Exprs.staticCall(
+                        CD_TYPES,
+                        "of",
+                        Stream.concat(
+                                        Stream.of(classDesc(cls.desc())),
+                                        cls.annotations().stream().map(MetamodelEmitter::annotationUse))
+                                .toList());
             case ParameterizedTypeRef parameterized ->
                 Exprs.new_(
                         CD_PARAMETERIZED,
                         classDesc(parameterized.raw()),
                         list(parameterized.args().stream()
                                 .map(MetamodelEmitter::typeArg)
+                                .toList()),
+                        list(parameterized.annotations().stream()
+                                .map(MetamodelEmitter::annotationUse)
                                 .toList()));
-            case TypeVarRef variable -> Exprs.staticCall(CD_TYPES, "typeVar", Exprs.literal(variable.name()));
+            case TypeVarRef variable ->
+                Exprs.staticCall(
+                        CD_TYPES,
+                        "typeVar",
+                        Stream.concat(
+                                        Stream.of(Exprs.literal(variable.name())),
+                                        variable.annotations().stream().map(MetamodelEmitter::annotationUse))
+                                .toList());
         };
     }
 
@@ -1312,6 +1543,9 @@ final class MetamodelEmitter {
                 CD_TYPE_PARAM,
                 CD_PARAMETERIZED,
                 CD_PRIMITIVE,
+                CD_ANNOTATION_USE,
+                CD_ANNOTATION_MEMBER,
+                CD_ANNOTATION_VALUES,
                 ConstantDescs.CD_String);
     }
 

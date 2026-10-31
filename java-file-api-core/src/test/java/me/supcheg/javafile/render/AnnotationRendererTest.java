@@ -72,6 +72,29 @@ class AnnotationRendererTest {
     }
 
     @Test
+    void floatAndClassLiteralValuesAreWrittenAsJavaAcceptsThem() {
+        AnnotationUse use = new AnnotationBuilder(MESSAGE_META)
+                .withMember("decimal", AnnotationValues.literal(1.5f))
+                .withMember("negative", AnnotationValues.literal(-1.5f))
+                .withMember("nan", AnnotationValues.literal(Float.NaN))
+                .withMember("infinite", AnnotationValues.literal(Float.POSITIVE_INFINITY))
+                .withMember("negated", AnnotationValues.literal(Float.NEGATIVE_INFINITY))
+                .withMember("primitive", AnnotationValues.classValue(ClassDesc.ofDescriptor("I")))
+                .withMember("array", AnnotationValues.classValue(ClassDesc.ofDescriptor("[Ljava/lang/String;")))
+                .build();
+        Context ctx = Context.of(standardFormat(), new ImportManager("p"));
+
+        assertThat(AnnotationRenderer.renderAnnotations(List.of(use), ctx))
+                .contains("decimal = 1.5f")
+                .contains("negative = -1.5f")
+                .contains("nan = 0.0f / 0.0f")
+                .contains("infinite = 1.0f / 0.0f")
+                .contains("negated = -1.0f / 0.0f")
+                .contains("primitive = int.class")
+                .contains("array = String[].class");
+    }
+
+    @Test
     void emptyArrayValueRendersEmptyBraces() {
         AnnotationUse use = new AnnotationBuilder(MESSAGE_META)
                 .withMember("params", AnnotationValues.array())

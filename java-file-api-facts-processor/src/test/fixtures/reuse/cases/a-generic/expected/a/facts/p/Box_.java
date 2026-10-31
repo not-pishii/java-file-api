@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Complete;
@@ -43,7 +44,7 @@ import p.Box;
 ///
 /// @param <T> a type argument of [Box]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Box.class, fingerprint = "bb5f6a543a89003f5c34c55b6f58c81649fde9dffebb93bb3542e64b8a4548e0", complete = true, format = 16)
+@GeneratedMetamodel(of = Box.class, fingerprint = "9103cddd6f3fb0bc8312d14619109c19a0fd0bb7ee360ac48a94015d6aa3b89a", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -54,7 +55,7 @@ public final class Box_<T extends Comparable<T>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Box] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("a.facts.p.Box_"), "bb5f6a543a89003f5c34c55b6f58c81649fde9dffebb93bb3542e64b8a4548e0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(0, 1)), Signature.of("as", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Box", Param.var(0))), Set.of(Signature.of("all", Param.var(0, 1)))), false, new Box_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("a.facts.p.Box_"), "9103cddd6f3fb0bc8312d14619109c19a0fd0bb7ee360ac48a94015d6aa3b89a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Box"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))), List.of())))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.var(0, 1)), Signature.of("as", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Box", Param.var(0))), Set.of(Signature.of("all", Param.var(0, 1)))), false, List.of(), new Box_Heritage());
 
         private Data() {
         }
@@ -65,8 +66,10 @@ public final class Box_<T extends Comparable<T>> {
     static final class Canonical {
         /// The canonical form of [Box].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Box open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams #0 extends java.lang.Comparable<#0>
         superclasses java.lang.Object
         interfaces -
@@ -75,7 +78,7 @@ public final class Box_<T extends Comparable<T>> {
         members declared-accessible
         member ctor public (#0) throws -
         member field public instance mutable #0 value
-        member method public final all(#0... @SafeVarargs) -> #0[] throws -
+        member method public final all(#0... @SafeVarargs) -> #0[] throws - annotations @java.lang.SafeVarargs
         member method public overridable <^0> as(^0) -> ^0 throws -
         inherit ctor Box(#0) public (#0) throws -
         inherit field public p.Box value
@@ -127,7 +130,7 @@ public final class Box_<T extends Comparable<T>> {
         this.token = UnsafeFacts.openClassToken(Data.SHAPE, TokenArg.exact(t));
         this.value = UnsafeFacts.mutableField(token, "value", t);
         this.new_T = UnsafeInvocables.ctor(token, UnsafeFacts.param(t, Param.var(0)), MemberTraits.FINAL);
-        this.all_TArray = UnsafeInvocables.method(token, "all", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.FINAL.with(Arity.SAFE_VARARGS));
+        this.all_TArray = UnsafeInvocables.method(token, "all", ArrayToken.of(t), UnsafeFacts.param(ArrayToken.of(t), Param.var(0, 1)), MemberTraits.FINAL.with(Arity.SAFE_VARARGS).annotated(new AnnotationUse(ClassDesc.of("java.lang.SafeVarargs"), List.of())));
     }
 
     /// The fact of [Box#as(Object)], for the type arguments the tokens give.

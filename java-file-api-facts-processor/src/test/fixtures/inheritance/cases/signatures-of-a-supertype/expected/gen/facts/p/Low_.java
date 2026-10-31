@@ -33,7 +33,7 @@ import p.Low;
 ///
 /// A generated class extends or implements [Low] by the proof its metamodel starts, with the stages of `Low_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "07ae77c929f590bf29084249a0a702d50548e41fe78ee89416cc409057d94fad", complete = true, format = 16)
+@GeneratedMetamodel(of = Low.class, fingerprint = "5c368205fe893f430fa876d245045007ababb6c53178bae3183c395b88f04444", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Low_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Low] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Low_"), "07ae77c929f590bf29084249a0a702d50548e41fe78ee89416cc409057d94fad", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Low"), List.of(), List.of(ClassDesc.of("p.High"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Low")), Set.of()), false, new Low_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Low_"), "5c368205fe893f430fa876d245045007ababb6c53178bae3183c395b88f04444", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Low"), List.of(), List.of(ClassDesc.of("p.High"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("seen"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Low")), Set.of()), false, List.of(), new Low_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,10 @@ public final class Low_ {
     static final class Canonical {
         /// The canonical form of [Low].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Low open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses p.High; java.lang.Object
         interfaces -

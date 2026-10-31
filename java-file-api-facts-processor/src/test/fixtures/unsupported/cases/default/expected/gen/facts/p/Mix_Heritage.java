@@ -65,7 +65,7 @@ public final class Mix_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("array"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.array(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("array"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.array(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of())))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m1() {
@@ -85,7 +85,7 @@ public final class Mix_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m5() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m6() {
@@ -105,11 +105,11 @@ public final class Mix_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m10() {
-            return new Method<>(Signature.of("markers"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Marker"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("markers"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Marker")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m11() {
-            return new Method<>(Signature.of("names"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("names"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m12() {
@@ -145,7 +145,7 @@ public final class Mix_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m20() {
-            return new Method<>(Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Map"), List.of(Types.unbounded(), Types.extendsBound(Types.of(ClassDesc.of("java.lang.Number"))))))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("java.util.Map"))), List.of());
+            return new Method<>(Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Mix"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Map"), List.of(Types.unbounded(), Types.extendsBound(Types.of(ClassDesc.of("java.lang.Number")))), List.of()))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("java.util.Map"))), List.of());
         }
 
         private static Constructor c0() {
@@ -153,7 +153,7 @@ public final class Mix_Heritage implements Supplier<Told> {
         }
 
         private static Constructor c1() {
-            return new Constructor(Visibility.PUBLIC, Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Set"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), List.of());
+            return new Constructor(Visibility.PUBLIC, Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set"))), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Set"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), List.of());
         }
 
         private static List<Named> n0() {

@@ -1,9 +1,21 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.Invariants;
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.annotation.AnnotationValue;
+import me.supcheg.javafile.annotation.ArrayValue;
+import me.supcheg.javafile.annotation.ClassValue;
+import me.supcheg.javafile.annotation.EnumValue;
+import me.supcheg.javafile.annotation.LiteralValue;
+import me.supcheg.javafile.annotation.NestedAnnotationValue;
+import me.supcheg.javafile.code.BooleanLiteral;
+import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
+import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.Arity;
@@ -87,6 +99,14 @@ final class MemberFacts {
     private static final ClassDesc CD_REF_TOKEN = ClassDesc.of(FACTS, "RefToken");
     private static final ClassDesc CD_FLOAT = ClassDesc.of("java.lang.Float");
     private static final ClassDesc CD_DOUBLE = ClassDesc.of("java.lang.Double");
+    private static final ClassDesc CD_ANNOTATION_USE = ClassDesc.of("me.supcheg.javafile.annotation.AnnotationUse");
+    private static final ClassDesc CD_ANNOTATION_MEMBER =
+            ClassDesc.of("me.supcheg.javafile.annotation.AnnotationMember");
+    private static final ClassDesc CD_ANNOTATION_VALUES =
+            ClassDesc.of("me.supcheg.javafile.annotation.AnnotationValues");
+    private static final ClassDesc CD_CLASS_DESC = ClassDesc.of("java.lang.constant.ClassDesc");
+    private static final ClassDesc CD_CONSTANT_DESCS = ClassDesc.of("java.lang.constant.ConstantDescs");
+    private static final ClassDesc CD_LIST = ClassDesc.of("java.util.List");
 
     /// The greatest number of parameters of a member with a fact.
     private static final int MAX_ARITY = 12;
@@ -476,6 +496,8 @@ final class MemberFacts {
                                 List.of(),
                                 ctor.access(),
                                 ctor.arity(),
+                                ctor.annotations(),
+                                ctor.parameterAnnotations(),
                                 scope)))
                 .flatMap(Function.identity())
                 .toList();
@@ -594,6 +616,8 @@ final class MemberFacts {
                                 witnesses,
                                 method.access(),
                                 method.arity(),
+                                method.annotations(),
+                                method.parameterAnnotations(),
                                 scope)))
                 .flatMap(Function.identity())
                 .toList();
@@ -657,6 +681,8 @@ final class MemberFacts {
             List<Expr> witnesses,
             Access access,
             Arity arity,
+            List<AnnotationUse> annotations,
+            List<List<AnnotationUse>> parameterAnnotations,
             Scope scope) {
         Expr named = Exprs.staticField(use(CD_MEMBER_TRAITS), overridability.name());
         Expr thrown = throwsTypes.isEmpty()
@@ -669,10 +695,91 @@ final class MemberFacts {
                 .findFirst()
                 .<Expr>map(of -> applied.call("with", of))
                 .orElse(applied);
-        return switch (arity) {
-            case Arity.Fixed _ -> accessed;
-            case Arity.Variable _ -> accessed.call("with", Exprs.staticField(use(CD_ARITY), constant(arity)));
+        Expr aritied =
+                switch (arity) {
+                    case Arity.Fixed _ -> accessed;
+                    case Arity.Variable _ -> accessed.call("with", Exprs.staticField(use(CD_ARITY), constant(arity)));
+                };
+        Expr annotated = annotations.isEmpty()
+                ? aritied
+                : aritied.call(
+                        "annotated",
+                        annotations.stream().map(this::annotationUse).toList());
+        return parameterAnnotations.stream().allMatch(List::isEmpty)
+                ? annotated
+                : annotated.call(
+                        "annotatedParameters",
+                        Exprs.staticCall(
+                                use(CD_LIST),
+                                "of",
+                                parameterAnnotations.stream()
+                                        .map(parameters -> Exprs.staticCall(
+                                                use(CD_LIST),
+                                                "of",
+                                                parameters.stream()
+                                                        .map(this::annotationUse)
+                                                        .toList()))
+                                        .toList()));
+    }
+
+    /// An annotation use as an expression that makes it, for the traits of a
+    /// member, which carry every annotation the member and its parameters
+    /// declare.
+    private Expr annotationUse(AnnotationUse use) {
+        return Exprs.new_(
+                use(CD_ANNOTATION_USE),
+                classDesc(use.type()),
+                Exprs.staticCall(
+                        use(CD_LIST),
+                        "of",
+                        use.members().stream()
+                                .map(member -> Exprs.new_(
+                                        use(CD_ANNOTATION_MEMBER),
+                                        Exprs.literal(member.name()),
+                                        annotationValue(member.value())))
+                                .toList()));
+    }
+
+    private Expr annotationValue(AnnotationValue value) {
+        return switch (value) {
+            case LiteralValue(var literal) -> annotationLiteral(literal);
+            case ClassValue(ClassDesc type) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "classValue", classDesc(type));
+            case EnumValue(ClassDesc type, String constant) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "enumValue", classDesc(type), Exprs.literal(constant));
+            case NestedAnnotationValue(AnnotationUse nested) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "nested", annotationUse(nested));
+            case ArrayValue(var elements) ->
+                Exprs.staticCall(
+                        use(CD_ANNOTATION_VALUES),
+                        "array",
+                        elements.stream().map(this::annotationValue).toList());
         };
+    }
+
+    private Expr annotationLiteral(me.supcheg.javafile.code.ConstantLiteral literal) {
+        return switch (literal) {
+            case StringLiteral(var value) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+            case IntLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+            case LongLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+            case me.supcheg.javafile.code.FloatLiteral(var value) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+            case DoubleLiteral(var value) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+            case BooleanLiteral(var value) ->
+                Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+        };
+    }
+
+    private static Expr classDesc(ClassDesc desc) {
+        if (desc.isPrimitive()) {
+            return Exprs.staticField(CD_CONSTANT_DESCS, "CD_" + desc.displayName());
+        }
+        if (desc.isArray()) {
+            return Exprs.staticCall(CD_CLASS_DESC, "ofDescriptor", Exprs.literal(desc.descriptorString()));
+        }
+        return Exprs.staticCall(CD_CLASS_DESC, "of", Exprs.literal(Models.binaryName(desc)));
     }
 
     /// The constant of `Arity` an arity is.

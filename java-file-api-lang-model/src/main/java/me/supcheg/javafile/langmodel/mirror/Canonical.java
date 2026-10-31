@@ -1,6 +1,19 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.Invariants;
+import me.supcheg.javafile.annotation.AnnotationMember;
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.annotation.AnnotationValue;
+import me.supcheg.javafile.annotation.ArrayValue;
+import me.supcheg.javafile.annotation.ClassValue;
+import me.supcheg.javafile.annotation.EnumValue;
+import me.supcheg.javafile.annotation.LiteralValue;
+import me.supcheg.javafile.annotation.NestedAnnotationValue;
+import me.supcheg.javafile.code.BooleanLiteral;
+import me.supcheg.javafile.code.DoubleLiteral;
+import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.code.LongLiteral;
+import me.supcheg.javafile.code.StringLiteral;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -20,6 +33,7 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
+import java.lang.annotation.ElementType;
 import java.lang.constant.ClassDesc;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -120,7 +134,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 10";
+    public static final String HEADER = "javafile-facts-canonical 11";
 
     private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 
@@ -149,6 +163,11 @@ public final class Canonical {
                                             case STATIC_MEMBER -> "static";
                                             case INNER -> "inner";
                                         },
+                                "annotations "
+                                        + items(model.annotations().stream()
+                                                .map(use -> annotation(use))
+                                                .toList()),
+                                "annotation " + annotationModel(model),
                                 "tparams " + items(typeParams(model.typeParams(), "#", scope)),
                                 "superclasses "
                                         + items(model.superclasses().stream()
@@ -417,28 +436,104 @@ public final class Canonical {
                         : method.overridability().name().toLowerCase(Locale.ROOT);
                 yield "member method " + access(method.access()) + " " + mode + " "
                         + typeParamsPrefix(method.typeParams(), scope) + method.name()
-                        + variable(params(method.params(), scope), method.arity()) + " -> "
-                        + method.result().map(scope::type).orElse("void") + throwsClause(method.throwsTypes(), scope);
+                        + variable(params(method.params(), method.parameterAnnotations(), scope), method.arity())
+                        + " -> " + method.result().map(scope::type).orElse("void")
+                        + throwsClause(method.throwsTypes(), scope) + annotations(method.annotations());
             }
             case CtorModel ctor -> {
                 Scope scope = new Scope(typeTypeParams, ctor.typeParams());
                 yield "member ctor " + access(ctor.access()) + " "
                         + typeParamsPrefix(ctor.typeParams(), scope).strip()
-                        + variable(params(ctor.params(), scope), ctor.arity())
-                        + throwsClause(ctor.throwsTypes(), scope);
+                        + variable(params(ctor.params(), ctor.parameterAnnotations(), scope), ctor.arity())
+                        + throwsClause(ctor.throwsTypes(), scope) + annotations(ctor.annotations());
             }
             case FieldModel field -> {
                 String prefix =
                         "member field " + access(field.access()) + (field.isStatic() ? " static " : " instance ");
                 String declaration = new Scope(typeTypeParams, List.of()).type(field.type()) + " " + field.name();
-                yield switch (field.mutability()) {
-                    case Mutability.Mutable _ -> prefix + "mutable " + declaration;
-                    case Mutability.Final _ -> prefix + "final " + declaration;
-                    case Mutability.Constant(ConstantValue value) ->
-                        prefix + "constant " + declaration + " = " + literal(value);
-                };
+                String declared =
+                        switch (field.mutability()) {
+                            case Mutability.Mutable _ -> prefix + "mutable " + declaration;
+                            case Mutability.Final _ -> prefix + "final " + declaration;
+                            case Mutability.Constant(ConstantValue value) ->
+                                prefix + "constant " + declaration + " = " + literal(value);
+                        };
+                yield declared + annotations(field.annotations());
             }
         };
+    }
+
+    /// The annotations of a declaration, as a suffix, or nothing if it has none.
+    private static String annotations(List<AnnotationUse> annotations) {
+        return annotations.isEmpty()
+                ? ""
+                : " annotations "
+                        + items(annotations.stream().map(Canonical::annotation).toList());
+    }
+
+    private static String annotation(AnnotationUse use) {
+        String name = "@" + binaryName(use.type());
+        List<AnnotationMember> members = use.members();
+        if (members.isEmpty()) {
+            return name;
+        }
+        if (members.size() == 1 && members.getFirst().name().equals("value")) {
+            return name + "(" + annotationValue(members.getFirst().value()) + ")";
+        }
+        return name + "("
+                + members.stream()
+                        .map(member -> member.name() + " = " + annotationValue(member.value()))
+                        .collect(Collectors.joining(", "))
+                + ")";
+    }
+
+    private static String annotationValue(AnnotationValue value) {
+        return switch (value) {
+            case LiteralValue(var literal) -> literal(literal);
+            case ClassValue(var type) -> classLiteral(type) + ".class";
+            case EnumValue(var type, var constant) -> binaryName(type) + "." + constant;
+            case NestedAnnotationValue(var nested) -> annotation(nested);
+            case ArrayValue(var elements) ->
+                elements.stream().map(Canonical::annotationValue).collect(Collectors.joining("; ", "{", "}"));
+        };
+    }
+
+    private static String classLiteral(ClassDesc type) {
+        if (type.isArray()) {
+            return classLiteral(type.componentType()) + "[]";
+        }
+        return type.isPrimitive() ? type.displayName() : binaryName(type);
+    }
+
+    private static String literal(me.supcheg.javafile.code.ConstantLiteral literal) {
+        return switch (literal) {
+            case StringLiteral(var value) -> literal(new ConstantValue.OfString(value));
+            case IntLiteral(var value) -> Integer.toString(value);
+            case LongLiteral(var value) -> value + "L";
+            case me.supcheg.javafile.code.FloatLiteral(var value) -> value + "f";
+            case DoubleLiteral(var value) -> Double.toString(value);
+            case BooleanLiteral(var value) -> Boolean.toString(value);
+        };
+    }
+
+    /// The elements and metadata of an annotation type, or `-` for a type
+    /// that is no annotation type.
+    private static String annotationModel(TypeModel model) {
+        return model.annotation()
+                .map(annotation -> items(annotation.elements().stream()
+                                .map(element -> element.name() + ": " + NO_VARIABLES.type(element.type())
+                                        + element.defaultValue()
+                                                .map(value -> " = " + annotationValue(value))
+                                                .orElse(""))
+                                .toList())
+                        + "; retention " + annotation.retention()
+                        + "; targets "
+                        + items(annotation.targets().stream()
+                                .map(ElementType::name)
+                                .sorted()
+                                .toList())
+                        + "; repeatable " + (annotation.repeatable() ? "yes" : "no"))
+                .orElse("-");
     }
 
     private static String typeParamsPrefix(List<TypeParam> typeParams, Scope scope) {
@@ -459,6 +554,20 @@ public final class Canonical {
 
     private static String params(List<TypeRef> params, Scope scope) {
         return params.stream().map(scope::type).collect(Collectors.joining(", ", "(", ")"));
+    }
+
+    /// The parameters of a member, each with the annotations it declares
+    /// before its type: `(@p.A java.lang.String, int)`.
+    private static String params(List<TypeRef> params, List<List<AnnotationUse>> annotations, Scope scope) {
+        return IntStream.range(0, params.size())
+                .mapToObj(i -> {
+                    List<AnnotationUse> declared = annotations.get(i);
+                    String prefix = declared.isEmpty()
+                            ? ""
+                            : declared.stream().map(Canonical::annotation).collect(Collectors.joining(" ", "", " "));
+                    return prefix + scope.type(params.get(i));
+                })
+                .collect(Collectors.joining(", ", "(", ")"));
     }
 
     private static String throwsClause(List<? extends TypeRef> throwsTypes, Scope scope) {
@@ -559,14 +668,21 @@ public final class Canonical {
         String type(TypeRef type) {
             return switch (type) {
                 case PrimitiveTypeRef primitive -> primitive.sourceName();
-                case ArrayTypeRef array -> type(array.component()) + "[]";
-                case ClassTypeRef cls -> binaryName(cls.desc());
+                case ArrayTypeRef array -> prefixed(array.annotations()) + type(array.component()) + "[]";
+                case ClassTypeRef cls -> prefixed(cls.annotations()) + binaryName(cls.desc());
                 case ParameterizedTypeRef parameterized ->
-                    parameterized.args().stream()
-                            .map(this::argument)
-                            .collect(Collectors.joining(", ", binaryName(parameterized.raw()) + "<", ">"));
-                case TypeVarRef variable -> variable(variable.name());
+                    prefixed(parameterized.annotations())
+                            + parameterized.args().stream()
+                                    .map(this::argument)
+                                    .collect(Collectors.joining(", ", binaryName(parameterized.raw()) + "<", ">"));
+                case TypeVarRef variable -> prefixed(variable.annotations()) + variable(variable.name());
             };
+        }
+
+        private static String prefixed(List<AnnotationUse> annotations) {
+            return annotations.isEmpty()
+                    ? ""
+                    : annotations.stream().map(Canonical::annotation).collect(Collectors.joining(" ", "", " "));
         }
 
         private String argument(TypeArg argument) {

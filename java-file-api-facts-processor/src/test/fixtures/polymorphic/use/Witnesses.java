@@ -50,7 +50,12 @@ public final class Witnesses {
     public static void aStaticGenericMethodIsAStaticFact() {
         StaticMethodRef1<List<String>, String[]> listOf = Poly_.listOf_TArray(String_.TOKEN);
 
-        assertThat(listOf.traits()).isEqualTo(MemberTraits.FINAL.withTypeArgs(String_.TOKEN).with(Arity.SAFE_VARARGS));
+        assertThat(listOf.traits())
+                .isEqualTo(MemberTraits.FINAL
+                        .withTypeArgs(String_.TOKEN)
+                        .with(Arity.SAFE_VARARGS)
+                        .annotated(new me.supcheg.javafile.annotation.AnnotationUse(
+                                ClassDesc.of("java.lang", "SafeVarargs"), List.of())));
         assertThat(listOf.resultType().orElseThrow().typeRef())
                 .isEqualTo(new ParameterizedTypeRef(ConstantDescs.CD_List, List.of(Types.exact(Types.STRING))));
         // a variable-arity parameter is its array

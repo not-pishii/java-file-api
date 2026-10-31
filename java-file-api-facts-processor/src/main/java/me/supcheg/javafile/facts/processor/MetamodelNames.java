@@ -83,13 +83,35 @@ final class MetamodelNames {
     /// The method of a metamodel that starts the proof that a class implements the type.
     static final String IMPLEMENT = "implement";
 
+    /// The field of a metamodel of an annotation type that holds its
+    /// elements and metadata.
+    static final String ANNOTATION = "ANNOTATION";
+
+    /// The method of a metamodel of an annotation type that starts building a
+    /// use of it.
+    static final String ANNOTATION_BUILDER = "annotation";
+
+    /// The start of the names of the stages of a use builder.
+    static final String BUILDER = "Builder";
+
     /// The names a member fact may not have: those of the tokens, the
     /// functional interface's `sam`, the reserve for an exhaustive switch, the
     /// nested classes and the entry of the type. Every member a metamodel has
     /// besides the facts is named by one of them, which a test holds the
     /// metamodels the processor writes to.
-    static final Set<String> RESERVED =
-            Set.of(TOKEN, INSTANCE_TOKEN, ANY, SAM, "switch_", DATA, CANONICAL, EXTEND, IMPLEMENT);
+    static final Set<String> RESERVED = Set.of(
+            TOKEN,
+            INSTANCE_TOKEN,
+            ANY,
+            SAM,
+            "switch_",
+            DATA,
+            CANONICAL,
+            EXTEND,
+            IMPLEMENT,
+            ANNOTATION,
+            ANNOTATION_BUILDER,
+            BUILDER);
 
     private MetamodelNames() {}
 

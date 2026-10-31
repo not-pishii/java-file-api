@@ -6,4 +6,5 @@ package me.supcheg.javafile.facts;
 /// cast targets, because Java allows only reference types there.
 ///
 /// @param <T> the Java type this token stands for
-public sealed interface RefToken<T> extends TypeToken<T> permits DeclaredToken, ArrayToken, TypeVarToken {}
+public sealed interface RefToken<T> extends TypeToken<T>
+        permits DeclaredToken, ArrayToken, TypeVarToken, AnnotatedRefToken {}

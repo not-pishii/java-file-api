@@ -51,11 +51,20 @@ final class AnnotationRenderer {
     static String renderValue(AnnotationValue value, Context ctx) {
         return switch (value) {
             case LiteralValue(var literal) -> ExprRenderer.renderExpr(literal, ctx);
-            case ClassValue(var type) -> ctx.reference(type) + ".class";
+            case ClassValue(var type) -> classLiteral(type, ctx) + ".class";
             case EnumValue(var enumType, var constant) -> ctx.qualifier(enumType) + "." + constant;
             case NestedAnnotationValue(var annotation) -> renderUse(annotation, ctx);
             case ArrayValue(var elements) -> renderArray(elements, ctx);
         };
+    }
+
+    /// A class literal names a type as source does: a primitive or an array
+    /// of one is not a name an import reaches.
+    private static String classLiteral(java.lang.constant.ClassDesc type, Context ctx) {
+        if (type.isArray()) {
+            return classLiteral(type.componentType(), ctx) + "[]";
+        }
+        return type.isPrimitive() ? type.displayName() : ctx.reference(type);
     }
 
     private static String renderArray(List<SingleAnnotationValue> elements, Context ctx) {

@@ -305,7 +305,7 @@ final class Closure {
     }
 
     /// A type a signature mentions, or the type it is not read for yet.
-    private static Either<String, Mention> mention(String name, Models models) {
+    static Either<String, Mention> mention(String name, Models models) {
         // of a named package: a type of the unnamed one has no metamodel, and no other type mentions it
         ClassDesc desc = ClassDesc.of(name);
         return models.element(desc)

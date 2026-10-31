@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.FinalClass;
 import me.supcheg.javafile.facts.FinalClassToken;
@@ -27,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Byte]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Byte.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Byte.class, fingerprint = "cf4ff457b72596e8326a6f238ddc73ed51c536039164d77d55a89175ce7d664e", complete = false, format = 16)
+@GeneratedMetamodel(of = Byte.class, fingerprint = "79d67cc643f971cd53c41003611f6d0977d51950d6913e7eaa9b89c16906e8d4", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -38,7 +39,7 @@ public final class Byte_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Byte] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Byte_"), "cf4ff457b72596e8326a6f238ddc73ed51c536039164d77d55a89175ce7d664e", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Byte"), List.of(), List.of(ClassDesc.of("java.lang.Number"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Byte"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Byte"))), Signature.of("describeConstable"), Signature.of("doubleValue"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("floatValue"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("intValue"), Signature.of("longValue"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_byte), Param.fixed(ConstantDescs.CD_byte)), Signature.of("compareUnsigned", Param.fixed(ConstantDescs.CD_byte), Param.fixed(ConstantDescs.CD_byte)), Signature.of("decode", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_byte)), Signature.of("parseByte", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("parseByte", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString", Param.fixed(ConstantDescs.CD_byte)), Signature.of("toUnsignedInt", Param.fixed(ConstantDescs.CD_byte)), Signature.of("toUnsignedLong", Param.fixed(ConstantDescs.CD_byte)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_byte)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("Byte", Param.fixed(ConstantDescs.CD_byte)), Signature.of("Byte", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Byte_"), "79d67cc643f971cd53c41003611f6d0977d51950d6913e7eaa9b89c16906e8d4", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Byte"), List.of(), List.of(ClassDesc.of("java.lang.Number"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Byte")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Byte"))), Signature.of("describeConstable"), Signature.of("doubleValue"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("floatValue"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("intValue"), Signature.of("longValue"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_byte), Param.fixed(ConstantDescs.CD_byte)), Signature.of("compareUnsigned", Param.fixed(ConstantDescs.CD_byte), Param.fixed(ConstantDescs.CD_byte)), Signature.of("decode", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_byte)), Signature.of("parseByte", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("parseByte", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString", Param.fixed(ConstantDescs.CD_byte)), Signature.of("toUnsignedInt", Param.fixed(ConstantDescs.CD_byte)), Signature.of("toUnsignedLong", Param.fixed(ConstantDescs.CD_byte)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_byte)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("Byte", Param.fixed(ConstantDescs.CD_byte)), Signature.of("Byte", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false, List.of(new AnnotationUse(ClassDesc.of("jdk.internal.ValueBased"), List.of())));
 
         private Data() {
         }
@@ -49,8 +50,10 @@ public final class Byte_ {
     static final class Canonical {
         /// The canonical form of [Byte].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.Byte final-class sealed=no nesting=top
+        annotations @jdk.internal.ValueBased
+        annotation -
         tparams -
         superclasses java.lang.Number; java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable

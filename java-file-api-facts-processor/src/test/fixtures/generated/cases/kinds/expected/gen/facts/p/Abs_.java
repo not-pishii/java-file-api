@@ -33,7 +33,7 @@ import p.Abs;
 ///
 /// A generated class extends or implements [Abs] by the proof its metamodel starts, with the stages of `Abs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abs.class, fingerprint = "5a84987defa7c3c7c81b8af181c3311111295d70e47a3418dcbf3579098b4428", complete = true, format = 16)
+@GeneratedMetamodel(of = Abs.class, fingerprint = "bf7ecd1c92b714975bd88aebb9c295dbb91dd195fb817172325fa03503cc46de", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Abs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Abs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "5a84987defa7c3c7c81b8af181c3311111295d70e47a3418dcbf3579098b4428", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Abs")), Set.of()), false, new Abs_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "bf7ecd1c92b714975bd88aebb9c295dbb91dd195fb817172325fa03503cc46de", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Abs")), Set.of()), false, List.of(), new Abs_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,10 @@ public final class Abs_ {
     static final class Canonical {
         /// The canonical form of [Abs].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Abs abstract-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

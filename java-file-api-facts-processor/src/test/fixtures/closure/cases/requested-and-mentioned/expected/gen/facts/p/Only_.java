@@ -26,7 +26,7 @@ import p.Only;
 ///
 /// `@Facts` does not ask for [Only]: it is only mentioned in the signatures of [p.B]. For the facts of its members add `Only.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Only.class, fingerprint = "e723b190c1e1c0c74a4e2bd6bbe20ec640a6684a1df17c17cf838f5b6689ec5e", complete = false, format = 16)
+@GeneratedMetamodel(of = Only.class, fingerprint = "5b907ba3475dbdf6fdeb66d032950974d8636c3bc8616721a043cee36f2408f3", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Only_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Only] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Only_"), "e723b190c1e1c0c74a4e2bd6bbe20ec640a6684a1df17c17cf838f5b6689ec5e", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Only"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Only")), Set.of()), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Only_"), "5b907ba3475dbdf6fdeb66d032950974d8636c3bc8616721a043cee36f2408f3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Only"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Only")), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -48,8 +48,10 @@ public final class Only_ {
     static final class Canonical {
         /// The canonical form of [Only].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Only open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

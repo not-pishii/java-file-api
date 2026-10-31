@@ -40,7 +40,7 @@ import p.Source;
 ///
 /// @param <T> a type argument of [Source]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Source.class, fingerprint = "b967fc6899dd8939411a611a478b3dc3aebe9931db139ed268b456b0b45248cd", complete = true, format = 16)
+@GeneratedMetamodel(of = Source.class, fingerprint = "2efe56068ab28f2602ae1644aa8d71b003e7504249e3802947763169e6393dec", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Source_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Source] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Source_"), "b967fc6899dd8939411a611a478b3dc3aebe9931db139ed268b456b0b45248cd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Source"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("next")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Source_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Source_"), "2efe56068ab28f2602ae1644aa8d71b003e7504249e3802947763169e6393dec", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Source"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("next")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Source_Heritage());
 
         private Data() {
         }
@@ -62,8 +62,10 @@ public final class Source_<T> {
     static final class Canonical {
         /// The canonical form of [Source].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Source interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams #0
         superclasses -
         interfaces -

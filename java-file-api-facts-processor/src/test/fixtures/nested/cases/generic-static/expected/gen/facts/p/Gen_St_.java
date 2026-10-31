@@ -33,7 +33,7 @@ import p.Gen.St;
 ///
 /// A generated class extends or implements [St] by the proof its metamodel starts, with the stages of `Gen_St_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = St.class, fingerprint = "23801d1813017840af1451fc0750fc683f0486990efd557ed97cea0bf56400be", complete = true, format = 16)
+@GeneratedMetamodel(of = St.class, fingerprint = "6eccdb5f49190c8ad2962503358d4db608ea92e5eca635e388e4b5e681da7a03", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Gen_St_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [St] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_St_"), "23801d1813017840af1451fc0750fc683f0486990efd557ed97cea0bf56400be", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Gen$St"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Gen$St")), Set.of()), false, new Gen_St_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_St_"), "6eccdb5f49190c8ad2962503358d4db608ea92e5eca635e388e4b5e681da7a03", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Gen$St"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Gen$St")), Set.of()), false, List.of(), new Gen_St_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,10 @@ public final class Gen_St_ {
     static final class Canonical {
         /// The canonical form of [St].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Gen$St open-class sealed=no nesting=static
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

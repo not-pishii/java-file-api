@@ -59,7 +59,7 @@ public final class Api_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("raw"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Api"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Raw"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("raw"), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Api"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Raw"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
     }
 

@@ -214,10 +214,8 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
                 .map(declaration -> declaration.applied(model.typeParams().stream()
                         .<TypeRef>map(param -> Types.typeVar(param.name()))
                         .toList()))
-                .map(inherited -> switch (inherited) {
-                    case Heritage.Plain told -> told;
-                    case Heritage.Generic _ -> throw new IllegalStateException("a generic method was refused");
-                })
+                // a generic method is refused above, so every declaration is plain
+                .map(Heritage.Plain.class::cast)
                 .toList();
         Heritage.Plain first = plain.getFirst();
         if (plain.stream().anyMatch(other -> !other.params().equals(first.params()))) {

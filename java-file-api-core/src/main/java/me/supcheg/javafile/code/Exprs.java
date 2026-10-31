@@ -61,6 +61,14 @@ public final class Exprs {
         return new LongLiteral(value);
     }
 
+    /// Creates a `float` literal.
+    ///
+    /// @param value the literal value
+    /// @return a literal expression
+    public static LiteralExpr literal(float value) {
+        return new FloatLiteral(value);
+    }
+
     /// Creates a `double` literal.
     ///
     /// @param value the literal value

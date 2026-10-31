@@ -34,7 +34,7 @@ import p.Run;
 ///
 /// A generated class extends or implements [Run] by the proof its metamodel starts, with the stages of `Run_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Run.class, fingerprint = "7b600c4049635540ace16debdb7e5f62b7ba0b6977adb512bff1c5fb2ccd3838", complete = true, format = 16)
+@GeneratedMetamodel(of = Run.class, fingerprint = "57d1e49ef584c65449c794a02a62bffae9f6a242dfda038bb307641bf0d2381e", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Run_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Run] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Run_"), "7b600c4049635540ace16debdb7e5f62b7ba0b6977adb512bff1c5fb2ccd3838", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Run"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Run_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Run_"), "57d1e49ef584c65449c794a02a62bffae9f6a242dfda038bb307641bf0d2381e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Run"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Run_Heritage());
 
         private Data() {
         }
@@ -56,8 +56,10 @@ public final class Run_ {
     static final class Canonical {
         /// The canonical form of [Run].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Run interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

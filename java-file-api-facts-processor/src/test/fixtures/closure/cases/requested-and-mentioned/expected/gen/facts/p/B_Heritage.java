@@ -61,7 +61,7 @@ public final class B_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("a"), List.of(new Declaration(new OfClass(ClassDesc.of("p.B"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.A"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("a"), List.of(new Declaration(new OfClass(ClassDesc.of("p.B"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.A"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m1() {
@@ -77,7 +77,7 @@ public final class B_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m4() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m5() {

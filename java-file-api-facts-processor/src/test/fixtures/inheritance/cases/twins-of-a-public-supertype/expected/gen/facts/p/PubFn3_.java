@@ -36,7 +36,7 @@ import p.PubFn3;
 ///
 /// A generated class extends or implements [PubFn3] by the proof its metamodel starts, with the stages of `PubFn3_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn3.class, fingerprint = "b2a197ba32bb9479b88e85b38d1cd799c2a8fedae2f8beb68e21d7bfedf79359", complete = true, format = 16)
+@GeneratedMetamodel(of = PubFn3.class, fingerprint = "b1375b6a6a7dbb98d6be141f25cae61a0f223d2a6794164fc77c905f6b5ff89e", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class PubFn3_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubFn3] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn3_"), "b2a197ba32bb9479b88e85b38d1cd799c2a8fedae2f8beb68e21d7bfedf79359", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn3"), List.of(), List.of(), List.of(ClassDesc.of("p.HStr"), ClassDesc.of("p.PObj")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new PubFn3_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn3_"), "b1375b6a6a7dbb98d6be141f25cae61a0f223d2a6794164fc77c905f6b5ff89e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn3"), List.of(), List.of(), List.of(ClassDesc.of("p.HStr"), ClassDesc.of("p.PObj")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new PubFn3_Heritage());
 
         private Data() {
         }
@@ -58,8 +58,10 @@ public final class PubFn3_ {
     static final class Canonical {
         /// The canonical form of [PubFn3].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.PubFn3 interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces p.HStr; p.PObj

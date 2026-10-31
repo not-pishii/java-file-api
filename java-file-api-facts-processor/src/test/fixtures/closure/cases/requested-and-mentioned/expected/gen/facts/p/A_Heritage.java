@@ -89,11 +89,11 @@ public final class A_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m6() {
-            return new Method<>(Signature.of("g", Param.fixed(ClassDesc.of("java.util.List"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.A"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(new Variable(List.of(new Fixed(Types.of(ClassDesc.of("p.MBound")))))), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.superBound(Types.of(ClassDesc.of("p.Lower"))))))), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Holder"), List.of(Types.exact(Types.of(ClassDesc.of("p.Elem"))))))), List.of())), Set.of(List.of(ClassDesc.of("java.util.List"))), List.of());
+            return new Method<>(Signature.of("g", Param.fixed(ClassDesc.of("java.util.List"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.A"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(new Variable(List.of(new Fixed(Types.of(ClassDesc.of("p.MBound")))))), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.superBound(Types.of(ClassDesc.of("p.Lower")))), List.of()))), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Holder"), List.of(Types.exact(Types.of(ClassDesc.of("p.Elem")))), List.of()))), List.of())), Set.of(List.of(ClassDesc.of("java.util.List"))), List.of());
         }
 
         private static Method<Declaration> m7() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m8() {

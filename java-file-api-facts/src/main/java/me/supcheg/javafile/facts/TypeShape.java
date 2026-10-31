@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.DeclaredTypeRef;
@@ -54,6 +55,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final Supplier<MethodTableTemplate> methods;
     private final List<String> enumConstants;
     private final boolean sealed;
+    private final List<AnnotationUse> annotations;
     private final Supplier<? extends Heritage> heritage;
 
     TypeShape(
@@ -109,6 +111,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 enumConstants,
                 sealed,
+                List.of(),
                 () -> Heritage.UNTOLD);
     }
 
@@ -123,6 +126,7 @@ public final class TypeShape<K extends DeclaredKind> {
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
             boolean sealed,
+            List<AnnotationUse> annotations,
             Supplier<? extends Heritage> heritage) {
         this(
                 origin,
@@ -135,6 +139,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 enumConstants,
                 sealed,
+                annotations,
                 heritage);
     }
 
@@ -149,6 +154,7 @@ public final class TypeShape<K extends DeclaredKind> {
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
             boolean sealed,
+            List<AnnotationUse> annotations,
             Supplier<? extends Heritage> heritage) {
         this.origin = origin;
         this.kind = kind;
@@ -164,6 +170,7 @@ public final class TypeShape<K extends DeclaredKind> {
         this.methods = methods;
         this.enumConstants = List.copyOf(enumConstants);
         this.sealed = sealed;
+        this.annotations = List.copyOf(annotations);
         this.heritage = heritage;
         requireSupertypesOfTheTypeParameters();
         switch (superclasses) {
@@ -243,6 +250,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 List.of(),
                 false,
+                List.of(),
                 () -> Heritage.UNTOLD);
     }
 
@@ -343,6 +351,13 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @return `true` for a sealed class or interface
     public boolean sealed() {
         return sealed;
+    }
+
+    /// The annotations the type declares, in declaration order.
+    ///
+    /// @return the annotations
+    public List<AnnotationUse> annotations() {
+        return annotations;
     }
 
     /// What a class that extends or implements the type has to know of it:

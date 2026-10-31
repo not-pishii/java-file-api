@@ -8,6 +8,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.Interface;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -35,7 +36,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Runnable] by the proof its metamodel starts, with the stages of `Runnable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Runnable.class, fingerprint = "5f6b4a282a6b076a32543c56155fd3af88a4f58f6bbb6c26ec6ffb70fb0c232d", complete = true, format = 16)
+@GeneratedMetamodel(of = Runnable.class, fingerprint = "10c060b34b99b184e8f33e628a800c6edde0e1f44c77ea66fd50d14e831f14ef", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +47,7 @@ public final class Runnable_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Runnable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Runnable_"), "5f6b4a282a6b076a32543c56155fd3af88a4f58f6bbb6c26ec6ffb70fb0c232d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Runnable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Runnable_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Runnable_"), "10c060b34b99b184e8f33e628a800c6edde0e1f44c77ea66fd50d14e831f14ef", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Runnable"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(new AnnotationUse(ClassDesc.of("java.lang.FunctionalInterface"), List.of())), new Runnable_Heritage());
 
         private Data() {
         }
@@ -57,8 +58,10 @@ public final class Runnable_ {
     static final class Canonical {
         /// The canonical form of [Runnable].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.Runnable interface sealed=no nesting=top
+        annotations @java.lang.FunctionalInterface
+        annotation -
         tparams -
         superclasses -
         interfaces -

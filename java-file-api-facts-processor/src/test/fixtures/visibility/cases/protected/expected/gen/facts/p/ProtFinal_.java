@@ -33,7 +33,7 @@ import p.ProtFinal;
 ///
 /// No generated class extends or implements [ProtFinal]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "ee235e7ff49d90688330505165bb591e9cbed058b4efc08806e3bd7526d945ab", complete = true, format = 16)
+@GeneratedMetamodel(of = ProtFinal.class, fingerprint = "bc53e282b3bb8629d3733ca6b68fbe7eff6a050e394f23ba0e67265a8ce07609", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class ProtFinal_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtFinal] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtFinal_"), "ee235e7ff49d90688330505165bb591e9cbed058b4efc08806e3bd7526d945ab", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.ProtFinal"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("method"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ProtFinal"), Signature.of("ProtFinal", Param.fixed(ConstantDescs.CD_int))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtFinal_"), "bc53e282b3bb8629d3733ca6b68fbe7eff6a050e394f23ba0e67265a8ce07609", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.ProtFinal"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("method"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ProtFinal"), Signature.of("ProtFinal", Param.fixed(ConstantDescs.CD_int))), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -55,8 +55,10 @@ public final class ProtFinal_ {
     static final class Canonical {
         /// The canonical form of [ProtFinal].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.ProtFinal final-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

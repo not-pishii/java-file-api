@@ -60,7 +60,7 @@ public final class Constable_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("describeConstable"), List.of(new Declaration(new OfInterface(ClassDesc.of("java.lang.constant.Constable"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Optional"), List.of(Types.extendsBound(Types.of(ClassDesc.of("java.lang.constant.ConstantDesc"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("describeConstable"), List.of(new Declaration(new OfInterface(ClassDesc.of("java.lang.constant.Constable"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.Optional"), List.of(Types.extendsBound(Types.of(ClassDesc.of("java.lang.constant.ConstantDesc")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
     }
 

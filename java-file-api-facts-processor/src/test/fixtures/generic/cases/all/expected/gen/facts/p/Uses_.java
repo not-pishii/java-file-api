@@ -43,7 +43,7 @@ import p.Uses;
 ///
 /// A generated class extends or implements [Uses] by the proof its metamodel starts, with the stages of `Uses_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "b55357b3eeee37f3792816be8889e4661da9f2c35363f4a20942b890d6b002d3", complete = true, format = 16)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "0eb4df89f47990c13abf86b87ad570570b4ebdd31d5e98e55435c3cbb16a7df7", complete = true, format = 17)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -55,7 +55,7 @@ public final class Uses_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Uses] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "b55357b3eeee37f3792816be8889e4661da9f2c35363f4a20942b890d6b002d3", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("any"), Signature.of("arrays"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lists"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw"), Signature.of("strings"), Signature.of("take", Param.fixed(ClassDesc.of("p.Sorted"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses")), Set.of()), false, new Uses_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "0eb4df89f47990c13abf86b87ad570570b4ebdd31d5e98e55435c3cbb16a7df7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("any"), Signature.of("arrays"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lists"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("raw"), Signature.of("strings"), Signature.of("take", Param.fixed(ClassDesc.of("p.Sorted"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses")), Set.of()), false, List.of(), new Uses_Heritage());
 
         private Data() {
         }
@@ -66,8 +66,10 @@ public final class Uses_ {
     static final class Canonical {
         /// The canonical form of [Uses].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Uses open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

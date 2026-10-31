@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
@@ -31,7 +32,7 @@ class MirrorTranslatorTypeRefTest {
                 List<int[]> arrays;
                 T t; List<T> ts2;
                 Outer<String>.Inner inner; Outer.Inner rawInner; Outer.Nested<String> nested; Plain.Inner plainInner;
-                @Use String annotated;
+                @Use @Other String annotated;
                 void run() {}
             }
             """;
@@ -56,6 +57,14 @@ class MirrorTranslatorTypeRefTest {
             public @interface Use {}
             """;
 
+    private static final String OTHER = """
+            package p;
+            import java.lang.annotation.ElementType;
+            import java.lang.annotation.Target;
+            @Target(ElementType.TYPE_USE)
+            public @interface Other {}
+            """;
+
     private static Map<String, Translation<TypeRef>> fields(String... names) {
         return Harness.run(
                 env -> {
@@ -68,7 +77,8 @@ class MirrorTranslatorTypeRefTest {
                 KINDS,
                 OUTER,
                 PLAIN,
-                USE);
+                USE,
+                OTHER);
     }
 
     private static Translation<TypeRef> ok(TypeRef type) {
@@ -133,7 +143,8 @@ class MirrorTranslatorTypeRefTest {
                 KINDS,
                 OUTER,
                 PLAIN,
-                USE);
+                USE,
+                OTHER);
 
         assertThat(translation)
                 .isEqualTo(new Translation.Unrepresentable<>("type variable T of Kinds is out of scope"));
@@ -153,8 +164,14 @@ class MirrorTranslatorTypeRefTest {
     }
 
     @Test
-    void typeUseAnnotationsAreLeftOut() {
-        assertThat(fields("annotated")).containsExactly(Map.entry("annotated", ok(Types.STRING)));
+    void typeUseAnnotationsAreKept() {
+        assertThat(fields("annotated"))
+                .containsExactly(Map.entry(
+                        "annotated",
+                        ok(Types.of(
+                                ClassDesc.of("java.lang", "String"),
+                                new AnnotationUse(ClassDesc.of("p", "Other"), List.of()),
+                                new AnnotationUse(ClassDesc.of("p", "Use"), List.of())))));
     }
 
     @Test
@@ -194,7 +211,8 @@ class MirrorTranslatorTypeRefTest {
                 KINDS,
                 OUTER,
                 PLAIN,
-                USE);
+                USE,
+                OTHER);
 
         assertThat(translations)
                 .map(t -> ((Translation.Unrepresentable<TypeRef>) t).reason())

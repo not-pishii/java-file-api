@@ -38,7 +38,7 @@ import p.Over;
 ///
 /// A generated class extends or implements [Over] by the proof its metamodel starts, with the stages of `Over_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Over.class, fingerprint = "3efc5732f40cb08854d09790cd2f75fc144a918e51865df6d4d5d7dcb209c18d", complete = true, format = 16)
+@GeneratedMetamodel(of = Over.class, fingerprint = "1f9e4d5da5ac8b4babf71a7ec95cef77bc1ca27071b989537f6af5dadd2f34d6", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Over_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Over] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Over_"), "3efc5732f40cb08854d09790cd2f75fc144a918e51865df6d4d5d7dcb209c18d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Over"), List.of(), List.of(ClassDesc.of("p.Bounded"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Bounded"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("same"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Over")), Set.of()), false, new Over_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Over_"), "1f9e4d5da5ac8b4babf71a7ec95cef77bc1ca27071b989537f6af5dadd2f34d6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Over"), List.of(), List.of(ClassDesc.of("p.Bounded"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Bounded"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("lost"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("same"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Over")), Set.of()), false, List.of(), new Over_Heritage());
 
         private Data() {
         }
@@ -60,8 +60,10 @@ public final class Over_ {
     static final class Canonical {
         /// The canonical form of [Over].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Over open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses p.Bounded; java.lang.Object
         interfaces -

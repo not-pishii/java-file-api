@@ -86,7 +86,7 @@ public final class Names_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m5() {
-            return new Method<>(Signature.of("getClass"), java.util.List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, java.util.List.of(), java.util.List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), java.util.List.of(Types.unbounded())))), java.util.List.of())), Set.of(java.util.List.of()), java.util.List.of());
+            return new Method<>(Signature.of("getClass"), java.util.List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, java.util.List.of(), java.util.List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), java.util.List.of(Types.unbounded()), java.util.List.of()))), java.util.List.of())), Set.of(java.util.List.of()), java.util.List.of());
         }
 
         private static Method<Declaration> m6() {

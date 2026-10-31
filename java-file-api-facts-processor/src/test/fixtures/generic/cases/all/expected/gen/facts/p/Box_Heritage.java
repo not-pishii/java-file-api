@@ -97,7 +97,7 @@ public final class Box_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m7() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m8() {
@@ -121,7 +121,7 @@ public final class Box_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m13() {
-            return new Method<>(Signature.of("ofString"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("ofString"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m14() {
@@ -133,7 +133,7 @@ public final class Box_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m16() {
-            return new Method<>(Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded())))), new Of<>(new Fixed(PrimitiveTypeRef.BOOLEAN)), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
+            return new Method<>(Signature.of("sameAs", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded()), List.of()))), new Of<>(new Fixed(PrimitiveTypeRef.BOOLEAN)), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
         }
 
         private static Method<Declaration> m17() {
@@ -145,7 +145,7 @@ public final class Box_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m19() {
-            return new Method<>(Signature.of("size", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded())))), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
+            return new Method<>(Signature.of("size", Param.fixed(ClassDesc.of("p.Box"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Box"), Visibility.PUBLIC, ClassMethod.STATIC), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.unbounded()), List.of()))), new Of<>(new Fixed(PrimitiveTypeRef.INT)), List.of())), Set.of(List.of(ClassDesc.of("p.Box"))), List.of());
         }
 
         private static Method<Declaration> m20() {

@@ -40,7 +40,7 @@ import p.PubSame;
 ///
 /// A generated class extends or implements [PubSame] by the proof its metamodel starts, with the stages of `PubSame_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubSame.class, fingerprint = "fd33e2cb7463d60f19f20a526f209d22887fba241bab56e449fd4d386048794b", complete = true, format = 16)
+@GeneratedMetamodel(of = PubSame.class, fingerprint = "6582db5c99ba6cc99552bddfd036b830228a897ccf962a34a969f863465c4dba", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class PubSame_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubSame] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubSame_"), "fd33e2cb7463d60f19f20a526f209d22887fba241bab56e449fd4d386048794b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubSame"), List.of(), List.of(ClassDesc.of("p.HSame"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("tag"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("tag", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("PubSame")), Set.of()), false, new PubSame_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubSame_"), "6582db5c99ba6cc99552bddfd036b830228a897ccf962a34a969f863465c4dba", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubSame"), List.of(), List.of(ClassDesc.of("p.HSame"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("tag"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("tag", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("PubSame")), Set.of()), false, List.of(), new PubSame_Heritage());
 
         private Data() {
         }
@@ -62,8 +62,10 @@ public final class PubSame_ {
     static final class Canonical {
         /// The canonical form of [PubSame].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.PubSame open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses p.HSame; java.lang.Object
         interfaces -

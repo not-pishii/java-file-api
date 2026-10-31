@@ -13,6 +13,7 @@ import me.supcheg.javafile.code.ConstructorRefExpr;
 import me.supcheg.javafile.code.DoubleLiteral;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.FieldAccessExpr;
+import me.supcheg.javafile.code.FloatLiteral;
 import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
@@ -70,6 +71,7 @@ final class Precedence {
             // a literal has no sign (JLS 3.10.1): a negative number is written as the negation of one
             case IntLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
             case LongLiteral(var value) -> value < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+            case FloatLiteral(var value) -> floatLevel(value);
             case DoubleLiteral(var value) -> doubleLevel(value);
             case BooleanLiteral ignored -> PRIMARY_LEVEL;
             case NullLiteral ignored -> PRIMARY_LEVEL;
@@ -115,6 +117,13 @@ final class Precedence {
 
     // What is not a number and the infinities are written as quotients, the rest as a literal, negated if
     // it has the sign — negative zero too, which no comparison with zero tells.
+    private static int floatLevel(float value) {
+        if (Float.isNaN(value) || Float.isInfinite(value)) {
+            return MULTIPLICATIVE_LEVEL;
+        }
+        return Float.floatToRawIntBits(value) < 0 ? UNARY_LEVEL : PRIMARY_LEVEL;
+    }
+
     private static int doubleLevel(double value) {
         if (Double.isNaN(value) || Double.isInfinite(value)) {
             return MULTIPLICATIVE_LEVEL;

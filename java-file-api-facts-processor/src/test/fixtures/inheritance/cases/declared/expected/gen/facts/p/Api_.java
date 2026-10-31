@@ -37,7 +37,7 @@ import p.Api;
 ///
 /// A generated class extends or implements [Api] by the proof its metamodel starts, with the stages of `Api_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Api.class, fingerprint = "1b3d00aa6cfed70221264a171ceca3bd235fbc3a59e2716f514e9f5753c5f77e", complete = true, format = 16)
+@GeneratedMetamodel(of = Api.class, fingerprint = "33be5ca3d8363596e0869d40600b74e9e3a09fc5ab81030d9bae477feecd0035", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Api_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Api] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Api_"), "1b3d00aa6cfed70221264a171ceca3bd235fbc3a59e2716f514e9f5753c5f77e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Api"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("abs")), Set.of(Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("iface")), Set.of(), Set.of()), false, new Api_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Api_"), "33be5ca3d8363596e0869d40600b74e9e3a09fc5ab81030d9bae477feecd0035", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Api"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("abs")), Set.of(Signature.of("dflt"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("iface")), Set.of(), Set.of()), false, List.of(), new Api_Heritage());
 
         private Data() {
         }
@@ -59,8 +59,10 @@ public final class Api_ {
     static final class Canonical {
         /// The canonical form of [Api].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Api interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

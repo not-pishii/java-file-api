@@ -34,7 +34,7 @@ import p.Nested;
 ///
 /// A generated class extends or implements [Nested] by the proof its metamodel starts, with the stages of `Nested_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Nested.class, fingerprint = "ac53cba1551efb912630c6e1d2c7b0c3cc83fb56bc9be070d02efe6e8e9aa252", complete = true, format = 16)
+@GeneratedMetamodel(of = Nested.class, fingerprint = "d5a59f225cf60e7ffb247e95647324db031623215822cd0b1a842992ac6e39f5", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Nested_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Nested] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Nested_"), "ac53cba1551efb912630c6e1d2c7b0c3cc83fb56bc9be070d02efe6e8e9aa252", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Nested"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.NotFoundB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Nested_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Nested_"), "d5a59f225cf60e7ffb247e95647324db031623215822cd0b1a842992ac6e39f5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Nested"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.NotFoundB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Nested_Heritage());
 
         private Data() {
         }
@@ -56,8 +56,10 @@ public final class Nested_ {
     static final class Canonical {
         /// The canonical form of [Nested].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Nested interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces p.IoA; p.NotFoundB

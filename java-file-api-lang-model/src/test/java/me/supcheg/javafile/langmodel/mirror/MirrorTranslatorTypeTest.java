@@ -136,12 +136,20 @@ class MirrorTranslatorTypeTest {
     }
 
     @Test
-    void annotationInterfacesAreUnrepresentable() {
-        assertThat(translate("p.Ann", """
-                        package p;
-                        public @interface Ann {}
-                        """))
-                .isEqualTo(new Translation.Unrepresentable<>("annotation interface p.Ann is not supported yet"));
+    void annotationInterfacesAreReadAsInterfacesWithTheirElements() {
+        TypeModel model = Harness.ok(translate("p.Ann", """
+                package p;
+                public @interface Ann {
+                    String value();
+                    int rank() default 1;
+                }
+                """));
+
+        assertThat(model.kind()).isSameAs(DeclaredKind.INTERFACE);
+        assertThat(model.annotation()).isPresent();
+        assertThat(model.annotation().orElseThrow().elements())
+                .extracting(element -> element.name())
+                .containsExactly("value", "rank");
     }
 
     @Test
@@ -1627,5 +1635,23 @@ class MirrorTranslatorTypeTest {
                 .contains(Signature.of("equals", fixed(ConstantDescs.CD_Object)), Signature.of("toString"));
         assertThat(models.get("c").methods().abstractMethods())
                 .containsExactlyInAnyOrder(Signature.of("toString"), Signature.of("m"));
+    }
+
+    @Test
+    void onlyAClassThatIsNeitherFinalNorAbstractIsNoExtendableClass() {
+        List<Boolean> extendable = Harness.run(
+                env -> List.of(
+                        MirrorTranslator.extendable(env.element("p.Open")),
+                        MirrorTranslator.extendable(env.element("p.Abstract")),
+                        MirrorTranslator.extendable(env.element("p.Final")),
+                        MirrorTranslator.extendable(env.element("p.Interface")),
+                        MirrorTranslator.extendable(env.element("p.Enum"))),
+                "package p; public class Open {}",
+                "package p; public abstract class Abstract {}",
+                "package p; public final class Final {}",
+                "package p; public interface Interface {}",
+                "package p; public enum Enum { A }");
+
+        assertThat(extendable).containsExactly(true, true, false, false, false);
     }
 }

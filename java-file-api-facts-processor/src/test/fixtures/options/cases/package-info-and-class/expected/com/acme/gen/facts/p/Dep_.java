@@ -33,7 +33,7 @@ import p.Dep;
 ///
 /// A generated class extends or implements [Dep] by the proof its metamodel starts, with the stages of `Dep_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Dep.class, fingerprint = "e0be2a516452acabff9036ef4cb180e4d174c5342b4bde747ea705b2bb69c77a", complete = true, format = 16)
+@GeneratedMetamodel(of = Dep.class, fingerprint = "9ef55d92230b76c56f7a26c808141eda66afe7aa528eb5ee4f27b12abb41e4e7", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Dep_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Dep] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.gen.facts.p.Dep_"), "e0be2a516452acabff9036ef4cb180e4d174c5342b4bde747ea705b2bb69c77a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Dep"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Dep")), Set.of()), false, new Dep_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("com.acme.gen.facts.p.Dep_"), "9ef55d92230b76c56f7a26c808141eda66afe7aa528eb5ee4f27b12abb41e4e7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Dep"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Dep")), Set.of()), false, List.of(), new Dep_Heritage());
 
         private Data() {
         }
@@ -55,8 +55,10 @@ public final class Dep_ {
     static final class Canonical {
         /// The canonical form of [Dep].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Dep open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

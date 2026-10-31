@@ -36,7 +36,7 @@ import p.Day;
 ///
 /// No generated class extends or implements [Day]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Day.class, fingerprint = "cb5790c7ab036493f3575936962239c605e69775f6366c600d42fc0602ae2df7", complete = true, format = 16)
+@GeneratedMetamodel(of = Day.class, fingerprint = "9905ad461b788722c6c746f575a690c68395bb1d6bbb66ba24aef91a8a1e54d4", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Day_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Day] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Day_"), "cb5790c7ab036493f3575936962239c605e69775f6366c600d42fc0602ae2df7", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Day"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Day"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of(), Set.of()), List.of("MON", "TUE"), false);
+        public static final TypeShape<EnumClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Day_"), "9905ad461b788722c6c746f575a690c68395bb1d6bbb66ba24aef91a8a1e54d4", () -> Canonical.TEXT), DeclaredKind.ENUM_CLASS, ClassDesc.of("p.Day"), List.of(), List.of(ClassDesc.of("java.lang.Enum"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day")))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.lang.Enum"), List.of(Types.exact(Types.of(ClassDesc.of("p.Day")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Day"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("getDeclaringClass"), Signature.of("hashCode"), Signature.of("name"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ordinal"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.Class")), Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("values")), Set.of(), Set.of()), List.of("MON", "TUE"), false, List.of());
 
         private Data() {
         }
@@ -58,8 +58,10 @@ public final class Day_ {
     static final class Canonical {
         /// The canonical form of [Day].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Day enum sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Enum; java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable

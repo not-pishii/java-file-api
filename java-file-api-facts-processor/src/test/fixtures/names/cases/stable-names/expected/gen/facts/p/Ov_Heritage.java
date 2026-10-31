@@ -77,7 +77,7 @@ public final class Ov_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m3() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m4() {
@@ -97,7 +97,7 @@ public final class Ov_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m8() {
-            return new Method<>(Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Ov"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Hidden"))))))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("java.util.List"))), List.of());
+            return new Method<>(Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Ov"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Hidden")))), List.of()))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("java.util.List"))), List.of());
         }
 
         private static Method<Declaration> m9() {
@@ -137,7 +137,7 @@ public final class Ov_Heritage implements Supplier<Told> {
         }
 
         private static Constructor c1() {
-            return new Constructor(Visibility.PUBLIC, Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Hidden"))))))), List.of());
+            return new Constructor(Visibility.PUBLIC, Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.exact(Types.of(ClassDesc.of("p.Hidden")))), List.of()))), List.of());
         }
 
         private static List<Named> n0() {

@@ -53,7 +53,7 @@ import p.Vis;
 ///
 /// A generated class extends or implements [Vis] by the proof its metamodel starts, with the stages of `Vis_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Vis.class, fingerprint = "d44a2265df0d2fb49e505b0281cb82f636ff54b69ea4467ffc3e9c2f943ac329", complete = true, format = 16)
+@GeneratedMetamodel(of = Vis.class, fingerprint = "cc8283dc86f73a1049698184a590e7a4be6d582df04df6ab6884f2cf5fd09b9d", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -64,7 +64,7 @@ public final class Vis_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Vis] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Vis_"), "d44a2265df0d2fb49e505b0281cb82f636ff54b69ea4467ffc3e9c2f943ac329", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Vis"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("nested", Param.fixed(ClassDesc.of("p.Outer$PkgNested"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ok"), Signature.of("pkgM"), Signature.of("protM"), Signature.of("pubM"), Signature.of("takes", Param.fixed(ClassDesc.of("p.Hidden"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sPub")), Set.of(Signature.of("Vis"), Signature.of("Vis", Param.fixed(ConstantDescs.CD_int)), Signature.of("Vis", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Vis", Param.fixed(ClassDesc.of("p.Hidden")))), Set.of()), false, new Vis_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Vis_"), "cc8283dc86f73a1049698184a590e7a4be6d582df04df6ab6884f2cf5fd09b9d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Vis"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("arr"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("nested", Param.fixed(ClassDesc.of("p.Outer$PkgNested"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("ok"), Signature.of("pkgM"), Signature.of("protM"), Signature.of("pubM"), Signature.of("takes", Param.fixed(ClassDesc.of("p.Hidden"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("sPub")), Set.of(Signature.of("Vis"), Signature.of("Vis", Param.fixed(ConstantDescs.CD_int)), Signature.of("Vis", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Vis", Param.fixed(ClassDesc.of("p.Hidden")))), Set.of()), false, List.of(), new Vis_Heritage());
 
         private Data() {
         }
@@ -75,8 +75,10 @@ public final class Vis_ {
     static final class Canonical {
         /// The canonical form of [Vis].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Vis open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

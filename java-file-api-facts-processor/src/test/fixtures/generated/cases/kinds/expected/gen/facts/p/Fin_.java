@@ -31,7 +31,7 @@ import p.Fin;
 ///
 /// No generated class extends or implements [Fin]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fin.class, fingerprint = "4bfc6c938e557cc3978636b5e70133ff15f4eb95c407fca5b6b4924d72eb66bc", complete = true, format = 16)
+@GeneratedMetamodel(of = Fin.class, fingerprint = "60e2e23ed85380e706249df88171148791f6818786f54c074e2ae928519cfeb2", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Fin_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fin] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fin_"), "4bfc6c938e557cc3978636b5e70133ff15f4eb95c407fca5b6b4924d72eb66bc", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Fin"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Fin")), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fin_"), "60e2e23ed85380e706249df88171148791f6818786f54c074e2ae928519cfeb2", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Fin"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Fin")), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -53,8 +53,10 @@ public final class Fin_ {
     static final class Canonical {
         /// The canonical form of [Fin].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Fin final-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

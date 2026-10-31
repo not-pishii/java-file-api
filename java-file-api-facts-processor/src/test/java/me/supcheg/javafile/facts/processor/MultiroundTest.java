@@ -1189,7 +1189,8 @@ class MultiroundTest {
                 """,
                         "package p; public class A { public B b() { return null; } }",
                         "package p; public class B extends gen.Missing {}",
-                        "package p; public class Ready { public void take(Deprecated deprecated) {} }")
+                        "package p; public class Ready { public void take(Hidden hidden) {} }",
+                        "package p; class Hidden {}")
                 .orFail();
 
         // the shape of B is not known before gen.Missing is there, so nor is the token A takes of it
@@ -1198,9 +1199,8 @@ class MultiroundTest {
                 .doesNotContain("gen.facts.gen.Missing_");
         assertThat(compilation.sources().get("gen.facts.p.B_")).contains("complete = false");
         assertThat(compilation.warnings())
-                .containsExactly("p.Ready: no fact of method take(java.lang.Deprecated), which mentions"
-                        + " java.lang.Deprecated, which has no metamodel: annotation interface java.lang.Deprecated is"
-                        + " not supported yet");
+                .containsExactly("p.Ready: no fact of method take(p.Hidden), which mentions types that are not"
+                        + " public: p.Hidden");
     }
 
     @Test

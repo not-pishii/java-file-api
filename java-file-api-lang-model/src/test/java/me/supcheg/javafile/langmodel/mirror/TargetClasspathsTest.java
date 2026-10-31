@@ -151,8 +151,6 @@ class TargetClasspathsTest {
         assertThat(read(svc, SVC.replace("public class", "class"))).isEqualTo(absent("p.Svc is not public"));
         assertThat(read(inner, "package p; class Outer { public static class Inner {} }"))
                 .isEqualTo(absent("p.Outer.Inner is nested in p.Outer, which is not public"));
-        assertThat(read(svc, "package p; public @interface Svc {}"))
-                .isEqualTo(absent("annotation interface p.Svc is not supported yet"));
     }
 
     @Test

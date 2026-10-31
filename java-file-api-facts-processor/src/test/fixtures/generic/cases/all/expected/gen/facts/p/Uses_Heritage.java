@@ -63,11 +63,11 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m0() {
-            return new Method<>(Signature.of("any"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("any"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m1() {
-            return new Method<>(Signature.of("arrays"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Pair"), List.of(Types.exact(Types.array(PrimitiveTypeRef.INT)), Types.exact(Types.array(Types.of(ClassDesc.of("java.lang.String")))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("arrays"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Pair"), List.of(Types.exact(Types.array(PrimitiveTypeRef.INT)), Types.exact(Types.array(Types.of(ClassDesc.of("java.lang.String"))))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m2() {
@@ -83,7 +83,7 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m5() {
-            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded())))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("getClass"), List.of(new Declaration(new OfClass(ClassDesc.of("java.lang.Object"), Visibility.PUBLIC, ClassMethod.FINAL), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("java.lang.Class"), List.of(Types.unbounded()), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m6() {
@@ -91,7 +91,7 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m7() {
-            return new Method<>(Signature.of("lists"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.array(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.superBound(Types.of(ClassDesc.of("java.lang.Integer")))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("lists"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(Types.array(new ParameterizedTypeRef(ClassDesc.of("java.util.List"), List.of(Types.superBound(Types.of(ClassDesc.of("java.lang.Integer")))), List.of())))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m8() {
@@ -107,11 +107,11 @@ public final class Uses_Heritage implements Supplier<Told> {
         }
 
         private static Method<Declaration> m11() {
-            return new Method<>(Signature.of("strings"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String"))))))), List.of())), Set.of(List.of()), List.of());
+            return new Method<>(Signature.of("strings"), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(), new Of<>(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Box"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.String")))), List.of()))), List.of())), Set.of(List.of()), List.of());
         }
 
         private static Method<Declaration> m12() {
-            return new Method<>(Signature.of("take", Param.fixed(ClassDesc.of("p.Sorted"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Sorted"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Integer"))))))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("p.Sorted"))), List.of());
+            return new Method<>(Signature.of("take", Param.fixed(ClassDesc.of("p.Sorted"))), List.of(new Declaration(new OfClass(ClassDesc.of("p.Uses"), Visibility.PUBLIC, ClassMethod.CONCRETE), Arity.FIXED, List.of(), List.of(new Fixed(new ParameterizedTypeRef(ClassDesc.of("p.Sorted"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Integer")))), List.of()))), Result.nothing(), List.of())), Set.of(List.of(ClassDesc.of("p.Sorted"))), List.of());
         }
 
         private static Method<Declaration> m13() {

@@ -26,7 +26,7 @@ import p.MBound;
 ///
 /// `@Facts` does not ask for [MBound]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `MBound.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = MBound.class, fingerprint = "a96439bbf6dd0158cc5b9e95489bb28e637e683d142910847bf2bef4b6c8714a", complete = false, format = 16)
+@GeneratedMetamodel(of = MBound.class, fingerprint = "2d85f75a73b28095c15957d85549681b1db43dd9c633f3e777ed19d259b91d0b", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class MBound_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [MBound] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.MBound_"), "a96439bbf6dd0158cc5b9e95489bb28e637e683d142910847bf2bef4b6c8714a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.MBound"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.MBound_"), "2d85f75a73b28095c15957d85549681b1db43dd9c633f3e777ed19d259b91d0b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.MBound"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -48,8 +48,10 @@ public final class MBound_ {
     static final class Canonical {
         /// The canonical form of [MBound].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.MBound interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

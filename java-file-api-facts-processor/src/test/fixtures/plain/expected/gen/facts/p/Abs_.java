@@ -41,7 +41,7 @@ import p.Abs;
 ///
 /// A generated class extends or implements [Abs] by the proof its metamodel starts, with the stages of `Abs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abs.class, fingerprint = "b48fbb3fc8b136ac80dd846aae802376746d3012b3eb56233f1dacebc944ab31", complete = true, format = 16)
+@GeneratedMetamodel(of = Abs.class, fingerprint = "7a06d9c78950b511561e6c01c16964bae59924d810699b7f659e9a6e760a338f", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Abs_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Abs] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "b48fbb3fc8b136ac80dd846aae802376746d3012b3eb56233f1dacebc944ab31", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("clone"), Signature.of("done"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("make")), Set.of(Signature.of("Abs"), Signature.of("Abs", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Abs", Param.fixed(ConstantDescs.CD_long))), Set.of()), false, new Abs_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Abs_"), "7a06d9c78950b511561e6c01c16964bae59924d810699b7f659e9a6e760a338f", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Abs"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("clone"), Signature.of("done"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("make")), Set.of(Signature.of("Abs"), Signature.of("Abs", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Abs", Param.fixed(ConstantDescs.CD_long))), Set.of()), false, List.of(), new Abs_Heritage());
 
         private Data() {
         }
@@ -63,8 +63,10 @@ public final class Abs_ {
     static final class Canonical {
         /// The canonical form of [Abs].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Abs abstract-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

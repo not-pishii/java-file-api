@@ -1,8 +1,11 @@
 package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.Identifiers;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.type.TypeRef;
+
+import java.util.List;
 
 /// A field.
 ///
@@ -11,13 +14,32 @@ import me.supcheg.javafile.type.TypeRef;
 /// @param type the field type
 /// @param access the access of the field: `public`, or `protected`
 /// @param mutability whether the field can be assigned, and its value if it is a constant
-public record FieldModel(String name, boolean isStatic, TypeRef type, Mutability mutability, Access access)
+/// @param annotations the annotations the field declares, in declaration order
+public record FieldModel(
+        String name,
+        boolean isStatic,
+        TypeRef type,
+        Mutability mutability,
+        Access access,
+        List<AnnotationUse> annotations)
         implements MemberModel {
+
+    /// A field that declares no annotation.
+    ///
+    /// @param name the field name
+    /// @param isStatic whether the field is `static`
+    /// @param type the field type
+    /// @param mutability whether the field can be assigned
+    /// @param access the access of the field
+    public FieldModel(String name, boolean isStatic, TypeRef type, Mutability mutability, Access access) {
+        this(name, isStatic, type, mutability, access, List.of());
+    }
 
     /// @throws IllegalArgumentException if `name` is not a Java identifier, or the field is a
     ///                                  [Mutability.Constant] but not `static`
     public FieldModel {
         Identifiers.requireValid(name);
+        annotations = List.copyOf(annotations);
         if (mutability instanceof Mutability.Constant && !isStatic) {
             throw new IllegalArgumentException("instance field " + name + " cannot be a constant");
         }

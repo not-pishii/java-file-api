@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
+
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 
@@ -23,16 +25,37 @@ import java.util.List;
 /// @param access the access of the member
 /// @param arity whether the last parameter of the method or constructor is of variable arity, and whether
 ///              its declaration is `@SafeVarargs`
+/// @param annotations the annotations the member declares, in declaration order
+/// @param parameterAnnotations the annotations of each parameter, in parameter order; an empty list for a
+///                             parameter without one
 public record MemberTraits(
         List<RefToken<? extends Throwable>> throwsTypes,
         Overridability overridability,
         List<RefToken<?>> typeArgs,
         Access access,
-        Arity arity) {
+        Arity arity,
+        List<AnnotationUse> annotations,
+        List<List<AnnotationUse>> parameterAnnotations) {
 
     /// No `throws` clause, overridable, not generic, `public`, of fixed arity.
-    public static final MemberTraits DEFAULT =
-            new MemberTraits(List.of(), Overridability.OVERRIDABLE, List.of(), Access.PUBLIC, Arity.FIXED);
+    public static final MemberTraits DEFAULT = new MemberTraits(
+            List.of(), Overridability.OVERRIDABLE, List.of(), Access.PUBLIC, Arity.FIXED, List.of(), List.of());
+
+    /// The traits of a member that declares no annotation.
+    ///
+    /// @param throwsTypes the exception types in the `throws` clause
+    /// @param overridability whether the method can be overridden
+    /// @param typeArgs the explicit type arguments of a generic method
+    /// @param access the access of the member
+    /// @param arity whether the last parameter is of variable arity
+    public MemberTraits(
+            List<RefToken<? extends Throwable>> throwsTypes,
+            Overridability overridability,
+            List<RefToken<?>> typeArgs,
+            Access access,
+            Arity arity) {
+        this(throwsTypes, overridability, typeArgs, access, arity, List.of(), List.of());
+    }
 
     /// No `throws` clause, overridable, not generic, `public`; the same as [#DEFAULT].
     public static final MemberTraits OVERRIDABLE = DEFAULT;
@@ -46,6 +69,8 @@ public record MemberTraits(
     public MemberTraits {
         throwsTypes = List.copyOf(throwsTypes);
         typeArgs = List.copyOf(typeArgs);
+        annotations = List.copyOf(annotations);
+        parameterAnnotations = parameterAnnotations.stream().map(List::copyOf).toList();
         for (RefToken<? extends Throwable> type : throwsTypes) {
             if (type instanceof ClassToken<?> cls && !cls.isSubclassOf(ConstantDescs.CD_Throwable)) {
                 throw new IllegalArgumentException("not a Throwable: " + type);
@@ -60,7 +85,8 @@ public record MemberTraits(
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final MemberTraits throwing(RefToken<? extends Throwable>... types) {
-        return new MemberTraits(List.of(types), overridability, typeArgs, access, arity);
+        return new MemberTraits(
+                List.of(types), overridability, typeArgs, access, arity, annotations, parameterAnnotations);
     }
 
     /// Returns these traits with the given overridability.
@@ -68,7 +94,8 @@ public record MemberTraits(
     /// @param overridability the overridability
     /// @return the new traits
     public MemberTraits with(Overridability overridability) {
-        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
+        return new MemberTraits(
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
     }
 
     /// Returns these traits with the given access.
@@ -76,7 +103,8 @@ public record MemberTraits(
     /// @param access the access
     /// @return the new traits
     public MemberTraits with(Access access) {
-        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
+        return new MemberTraits(
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
     }
 
     /// Returns these traits with the given arity.
@@ -84,7 +112,8 @@ public record MemberTraits(
     /// @param arity the arity
     /// @return the new traits
     public MemberTraits with(Arity arity) {
-        return new MemberTraits(throwsTypes, overridability, typeArgs, access, arity);
+        return new MemberTraits(
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
     }
 
     /// Returns these traits with explicit type arguments.
@@ -92,6 +121,25 @@ public record MemberTraits(
     /// @param typeArgs the type arguments, in order
     /// @return the new traits
     public MemberTraits withTypeArgs(RefToken<?>... typeArgs) {
-        return new MemberTraits(throwsTypes, overridability, List.of(typeArgs), access, arity);
+        return new MemberTraits(
+                throwsTypes, overridability, List.of(typeArgs), access, arity, annotations, parameterAnnotations);
+    }
+
+    /// Returns these traits with the annotations the member declares.
+    ///
+    /// @param annotations the annotations, in declaration order
+    /// @return the new traits
+    public MemberTraits annotated(AnnotationUse... annotations) {
+        return new MemberTraits(
+                throwsTypes, overridability, typeArgs, access, arity, List.of(annotations), parameterAnnotations);
+    }
+
+    /// Returns these traits with the annotations of each parameter.
+    ///
+    /// @param parameterAnnotations the annotations of each parameter, in order
+    /// @return the new traits
+    public MemberTraits annotatedParameters(List<List<AnnotationUse>> parameterAnnotations) {
+        return new MemberTraits(
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
     }
 }

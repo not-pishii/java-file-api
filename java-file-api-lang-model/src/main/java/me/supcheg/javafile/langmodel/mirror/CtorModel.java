@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -19,14 +20,36 @@ import java.util.List;
 /// @param declared the parameters as the method table of the type lists them, one per parameter of `params`
 /// @param throwsTypes the declared exceptions, in declaration order: classes and type variables
 /// @param access the access of the constructor: `public`, or `protected`
+/// @param annotations the annotations the constructor declares, in declaration order
+/// @param parameterAnnotations the annotations of each parameter, in parameter order
 public record CtorModel(
         List<TypeParam> typeParams,
         List<TypeRef> params,
         List<MethodTableTemplate.Param> declared,
         Arity arity,
         List<ClassOrInterfaceTypeRef> throwsTypes,
-        Access access)
+        Access access,
+        List<AnnotationUse> annotations,
+        List<List<AnnotationUse>> parameterAnnotations)
         implements MemberModel {
+
+    /// A constructor that declares no annotation.
+    ///
+    /// @param typeParams the type parameters of the constructor
+    /// @param params the parameter types
+    /// @param declared the parameters as the method table lists them
+    /// @param arity whether the last parameter is of variable arity
+    /// @param throwsTypes the declared exceptions
+    /// @param access the access of the constructor
+    public CtorModel(
+            List<TypeParam> typeParams,
+            List<TypeRef> params,
+            List<MethodTableTemplate.Param> declared,
+            Arity arity,
+            List<ClassOrInterfaceTypeRef> throwsTypes,
+            Access access) {
+        this(typeParams, params, declared, arity, throwsTypes, access, List.of(), List.of());
+    }
 
     /// @throws IllegalArgumentException if the constructor has more than [#MAX_ARITY] parameters, or
     ///                                  `declared` is not one per parameter
@@ -35,6 +58,12 @@ public record CtorModel(
         params = List.copyOf(params);
         declared = List.copyOf(declared);
         throwsTypes = List.copyOf(throwsTypes);
+        annotations = List.copyOf(annotations);
+        List<List<AnnotationUse>> byParameter = new java.util.ArrayList<>(parameterAnnotations);
+        while (byParameter.size() < params.size()) {
+            byParameter.add(List.of());
+        }
+        parameterAnnotations = byParameter.stream().map(List::copyOf).toList();
         if (params.size() > MAX_ARITY) {
             throw new IllegalArgumentException(
                     "a constructor has " + params.size() + " parameters, more than " + MAX_ARITY);

@@ -38,7 +38,7 @@ import p.Text;
 ///
 /// A generated class extends or implements [Text] by the proof its metamodel starts, with the stages of `Text_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "362e829404a769830bb5ed2aabac8c179ccac7411a2bcaa0eac483f3eac9004d", complete = true, format = 16)
+@GeneratedMetamodel(of = Text.class, fingerprint = "fec552298214f6963121dfaa9fd8dfeb311623a6ae7c744bbdbfcbea2402e47b", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Text_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Text] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "362e829404a769830bb5ed2aabac8c179ccac7411a2bcaa0eac483f3eac9004d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text")), Set.of()), false, new Text_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Text_"), "fec552298214f6963121dfaa9fd8dfeb311623a6ae7c744bbdbfcbea2402e47b", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Text"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Text")), Set.of()), false, List.of(), new Text_Heritage());
 
         private Data() {
         }
@@ -60,8 +60,10 @@ public final class Text_ {
     static final class Canonical {
         /// The canonical form of [Text].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Text open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -

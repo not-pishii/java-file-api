@@ -36,6 +36,7 @@ import me.supcheg.javafile.code.ExprLambdaBody;
 import me.supcheg.javafile.code.ExprMethodRefTarget;
 import me.supcheg.javafile.code.ExprStmt;
 import me.supcheg.javafile.code.FieldAccessExpr;
+import me.supcheg.javafile.code.FloatLiteral;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
 import me.supcheg.javafile.code.IncDecExpr;
@@ -127,6 +128,7 @@ final class ExprRenderer {
                     case StringLiteral(var value) -> "\"" + JavaStrings.escape(value) + "\"";
                     case IntLiteral(var value) -> Integer.toString(value);
                     case LongLiteral(var value) -> value + "L";
+                    case FloatLiteral(var value) -> renderFloat(value);
                     case DoubleLiteral(var value) -> renderDouble(value);
                     case BooleanLiteral(var value) -> Boolean.toString(value);
                     case NullLiteral ignored -> "null";
@@ -255,6 +257,16 @@ final class ExprRenderer {
     // A floating-point literal has a finite value (JLS 3.10.2): what is not a number and the infinities are
     // written as the constant expressions that have them (JLS 15.29), which name nothing a declaration of
     // the file could hide.
+    private static String renderFloat(float value) {
+        if (Float.isNaN(value)) {
+            return "0.0f / 0.0f";
+        }
+        if (Float.isInfinite(value)) {
+            return value > 0 ? "1.0f / 0.0f" : "-1.0f / 0.0f";
+        }
+        return value + "f";
+    }
+
     private static String renderDouble(double value) {
         if (Double.isNaN(value)) {
             return "0.0 / 0.0";

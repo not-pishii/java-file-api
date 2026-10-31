@@ -43,13 +43,13 @@ import p.Mix;
 ///
 /// - `constructor <T>Mix(T,int)`, which is a generic constructor, whose type arguments a fact cannot give explicitly
 /// - `method dollar()`, which mentions p.Dol$lar, which has no metamodel: a class with $ in its simple name is not supported yet
-/// - `method marker()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
-/// - `method markers()`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
-/// - `method <T>marked(T)`, which mentions p.Marker, which has no metamodel: annotation interface p.Marker is not supported yet
+/// - `method marker()`, which mentions types that are not public: p.Marker
+/// - `method markers()`, which mentions types that are not public: p.Marker
+/// - `method <T>marked(T)`, which mentions types that are not public: p.Marker
 ///
 /// A generated class extends or implements [Mix] by the proof its metamodel starts, with the stages of `Mix_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "0a2141356269f7741854cfb717db9ecf54eb3fed569e95f73ce2c8fd6ed4b284", complete = true, format = 16)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "63f41c3500b40705d5764f77300c200d9d3b68b2ca87db30b5bec3958a557fed", complete = true, format = 17)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -61,7 +61,7 @@ public final class Mix_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mix] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "0a2141356269f7741854cfb717db9ecf54eb3fed569e95f73ce2c8fd6ed4b284", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set")))), Set.of()), false, new Mix_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mix_"), "63f41c3500b40705d5764f77300c200d9d3b68b2ca87db30b5bec3958a557fed", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mix"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("array"), Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("marked", Param.fixed(ClassDesc.of("p.Marker"))), Signature.of("marker"), Signature.of("markers"), Signature.of("names"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("plain"), Signature.of("raw"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("wild", Param.fixed(ClassDesc.of("java.util.Map")))), Set.of(), Set.of(Signature.of("Mix", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("Mix", Param.fixed(ClassDesc.of("java.util.Set")))), Set.of()), false, List.of(), new Mix_Heritage());
 
         private Data() {
         }
@@ -72,8 +72,10 @@ public final class Mix_ {
     static final class Canonical {
         /// The canonical form of [Mix].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type p.Mix open-class sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces -
@@ -83,12 +85,9 @@ public final class Mix_ {
         member ctor public (java.util.Set<java.lang.String>) throws -
         member ctor public <^0>(^0, int) throws -
         member field public instance mutable java.util.function.Function<java.lang.String, java.lang.String> field
-        member method public overridable <^0 extends p.Marker> marked(^0) -> void throws -
         member method public overridable <^0> id(^0) -> ^0 throws -
         member method public overridable array() -> java.util.List<java.lang.String>[] throws -
         member method public overridable dollar() -> p.Dol$lar throws -
-        member method public overridable marker() -> p.Marker throws -
-        member method public overridable markers() -> java.util.List<p.Marker> throws -
         member method public overridable names() -> java.util.List<java.lang.String> throws -
         member method public overridable plain() -> java.lang.String throws -
         member method public overridable raw() -> java.util.List throws -

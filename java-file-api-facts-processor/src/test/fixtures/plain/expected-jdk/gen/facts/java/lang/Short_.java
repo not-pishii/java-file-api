@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.FinalClass;
 import me.supcheg.javafile.facts.FinalClassToken;
@@ -27,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Short]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Short.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Short.class, fingerprint = "649f76dda60145d437054c3869d84aa33f57472101946784b40133d474583e22", complete = false, format = 16)
+@GeneratedMetamodel(of = Short.class, fingerprint = "6837c79c078bcb203aa1c371a1a3cb14f361ef08cb687480aceb1621a50a20ba", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -38,7 +39,7 @@ public final class Short_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Short] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Short_"), "649f76dda60145d437054c3869d84aa33f57472101946784b40133d474583e22", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Short"), List.of(), List.of(ClassDesc.of("java.lang.Number"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Short"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Short"))), Signature.of("describeConstable"), Signature.of("doubleValue"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("floatValue"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("intValue"), Signature.of("longValue"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_short), Param.fixed(ConstantDescs.CD_short)), Signature.of("compareUnsigned", Param.fixed(ConstantDescs.CD_short), Param.fixed(ConstantDescs.CD_short)), Signature.of("decode", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_short)), Signature.of("parseShort", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("parseShort", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("reverseBytes", Param.fixed(ConstantDescs.CD_short)), Signature.of("toString", Param.fixed(ConstantDescs.CD_short)), Signature.of("toUnsignedInt", Param.fixed(ConstantDescs.CD_short)), Signature.of("toUnsignedLong", Param.fixed(ConstantDescs.CD_short)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_short))), Set.of(Signature.of("Short", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Short", Param.fixed(ConstantDescs.CD_short))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Short_"), "6837c79c078bcb203aa1c371a1a3cb14f361ef08cb687480aceb1621a50a20ba", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Short"), List.of(), List.of(ClassDesc.of("java.lang.Number"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Short")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("byteValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Short"))), Signature.of("describeConstable"), Signature.of("doubleValue"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("floatValue"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("intValue"), Signature.of("longValue"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("shortValue"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_short), Param.fixed(ConstantDescs.CD_short)), Signature.of("compareUnsigned", Param.fixed(ConstantDescs.CD_short), Param.fixed(ConstantDescs.CD_short)), Signature.of("decode", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_short)), Signature.of("parseShort", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("parseShort", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("reverseBytes", Param.fixed(ConstantDescs.CD_short)), Signature.of("toString", Param.fixed(ConstantDescs.CD_short)), Signature.of("toUnsignedInt", Param.fixed(ConstantDescs.CD_short)), Signature.of("toUnsignedLong", Param.fixed(ConstantDescs.CD_short)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")), Param.fixed(ConstantDescs.CD_int)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_short))), Set.of(Signature.of("Short", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("Short", Param.fixed(ConstantDescs.CD_short))), Set.of()), List.of(), false, List.of(new AnnotationUse(ClassDesc.of("jdk.internal.ValueBased"), List.of())));
 
         private Data() {
         }
@@ -49,8 +50,10 @@ public final class Short_ {
     static final class Canonical {
         /// The canonical form of [Short].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.Short final-class sealed=no nesting=top
+        annotations @jdk.internal.ValueBased
+        annotation -
         tparams -
         superclasses java.lang.Number; java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable

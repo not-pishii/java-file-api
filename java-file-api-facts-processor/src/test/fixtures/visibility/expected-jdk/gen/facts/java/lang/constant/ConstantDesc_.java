@@ -34,7 +34,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [ConstantDesc]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "111f4aba446667d368b38b458f1b7c6e5d1409ef9e58d8e21cd2ccfb1f837d2b", complete = true, format = 16)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "ccc9868a3b13a7f0181ea9880015ca1774a1ef9f28facd646e6b6b44880367e6", complete = true, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class ConstantDesc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "111f4aba446667d368b38b458f1b7c6e5d1409ef9e58d8e21cd2ccfb1f837d2b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, new ConstantDesc_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "ccc9868a3b13a7f0181ea9880015ca1774a1ef9f28facd646e6b6b44880367e6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(), new ConstantDesc_Heritage());
 
         private Data() {
         }
@@ -56,8 +56,10 @@ public final class ConstantDesc_ {
     static final class Canonical {
         /// The canonical form of [ConstantDesc].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.constant.ConstantDesc interface sealed=yes nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

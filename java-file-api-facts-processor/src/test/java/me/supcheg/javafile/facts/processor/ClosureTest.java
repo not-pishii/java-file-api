@@ -79,8 +79,9 @@ class ClosureTest {
                         Node.Mentioned.class,
                         mentioned -> assertThat(mentioned.mentioned()).isInstanceOf(Token.Planned.class));
         assertThat(graph.nodes().get("p.Marker"))
-                .isEqualTo(new Node.Mentioned(
-                        "p.Marker", new Token.Unavailable("annotation interface p.Marker is not supported yet")));
+                .isInstanceOfSatisfying(
+                        Node.Mentioned.class,
+                        mentioned -> assertThat(mentioned.mentioned()).isInstanceOf(Token.Planned.class));
         assertThat(graph.nodes().get("p.Dol$lar"))
                 .isEqualTo(new Node.Mentioned(
                         "p.Dol$lar", new Token.Unavailable("a class with $ in its simple name is not supported yet")));

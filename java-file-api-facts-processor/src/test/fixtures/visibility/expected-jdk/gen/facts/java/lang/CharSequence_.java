@@ -25,7 +25,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [CharSequence]: it is only mentioned in the signatures of [Integer]. For the facts of its members add `CharSequence.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CharSequence.class, fingerprint = "39adddd1639f2dcb76701c8d7044af3b84ba79e91d1091d0f0438c57d0729576", complete = false, format = 16)
+@GeneratedMetamodel(of = CharSequence.class, fingerprint = "2760126b29dfc0994343494436f25555c823836f2059efa4f553b456091dbea5", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -36,7 +36,7 @@ public final class CharSequence_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [CharSequence] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.CharSequence_"), "39adddd1639f2dcb76701c8d7044af3b84ba79e91d1091d0f0438c57d0729576", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.CharSequence"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("charAt", Param.fixed(ConstantDescs.CD_int)), Signature.of("length"), Signature.of("subSequence", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("chars"), Signature.of("codePoints"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getChars", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.ofDescriptor("[C")), Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("isEmpty"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ClassDesc.of("java.lang.CharSequence")), Param.fixed(ClassDesc.of("java.lang.CharSequence")))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.CharSequence_"), "2760126b29dfc0994343494436f25555c823836f2059efa4f553b456091dbea5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.CharSequence"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("charAt", Param.fixed(ConstantDescs.CD_int)), Signature.of("length"), Signature.of("subSequence", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("chars"), Signature.of("codePoints"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getChars", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.ofDescriptor("[C")), Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("isEmpty"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ClassDesc.of("java.lang.CharSequence")), Param.fixed(ClassDesc.of("java.lang.CharSequence")))), Set.of(), Set.of()), List.of(), false, List.of());
 
         private Data() {
         }
@@ -47,8 +47,10 @@ public final class CharSequence_ {
     static final class Canonical {
         /// The canonical form of [CharSequence].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.CharSequence interface sealed=no nesting=top
+        annotations -
+        annotation -
         tparams -
         superclasses -
         interfaces -

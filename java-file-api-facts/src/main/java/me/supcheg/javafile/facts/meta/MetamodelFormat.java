@@ -60,12 +60,17 @@ package me.supcheg.javafile.facts.meta;
 /// - 16: a method table tells which of its signatures are of variable arity,
 ///   `T...` and not `T[]`, as the fact of the member does; the canonical form
 ///   tells it too, so two types that differ by it fingerprint differently.
+/// - 17: a metamodel tells the annotations a type, a member, a parameter and
+///   a type use carry; an annotation type has its elements, their defaults,
+///   its retention, its targets and whether it is repeatable, and the
+///   type-state builder a generator makes a use of it with. The canonical
+///   form tells them, so an annotation change changes the fingerprint.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 16;
+    public static final int VERSION = 17;
 
     private MetamodelFormat() {}
 }

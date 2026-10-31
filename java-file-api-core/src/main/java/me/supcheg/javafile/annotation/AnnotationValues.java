@@ -2,6 +2,7 @@ package me.supcheg.javafile.annotation;
 
 import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.DoubleLiteral;
+import me.supcheg.javafile.code.FloatLiteral;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LongLiteral;
 import me.supcheg.javafile.code.StringLiteral;
@@ -46,6 +47,14 @@ public final class AnnotationValues {
     /// @return an annotation value
     public static SingleAnnotationValue literal(long value) {
         return new LiteralValue(new LongLiteral(value));
+    }
+
+    /// Creates a `float` literal value.
+    ///
+    /// @param value the literal value
+    /// @return an annotation value
+    public static SingleAnnotationValue literal(float value) {
+        return new LiteralValue(new FloatLiteral(value));
     }
 
     /// Creates a `double` literal value.

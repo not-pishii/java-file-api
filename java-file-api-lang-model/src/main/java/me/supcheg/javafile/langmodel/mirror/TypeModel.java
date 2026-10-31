@@ -1,5 +1,6 @@
 package me.supcheg.javafile.langmodel.mirror;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
@@ -47,6 +48,8 @@ import java.util.Optional;
 /// @param filter which members are in `members`
 /// @param members the members `filter` selects that have facts, in declaration order
 /// @param skipped the members `filter` selects that have no facts, in declaration order
+/// @param annotations the annotations the type declares, in declaration order
+/// @param annotation the annotation type's elements and metadata; empty unless the type is an annotation
 public record TypeModel(
         ClassDesc desc,
         DeclaredKind kind,
@@ -63,7 +66,65 @@ public record TypeModel(
         Heritage heritage,
         MemberFilter filter,
         List<MemberModel> members,
-        List<SkippedMember> skipped) {
+        List<SkippedMember> skipped,
+        List<AnnotationUse> annotations,
+        Optional<AnnotationModel> annotation) {
+
+    /// A model of a type that declares no annotation and is no annotation type.
+    ///
+    /// @param desc the class or interface
+    /// @param kind the kind of the type
+    /// @param nesting where the type is declared
+    /// @param typeParams the type parameters
+    /// @param nonPublicBoundTypes the types that are not `public` mentioned by the bounds
+    /// @param superclasses the erased superclass chain
+    /// @param interfaces every interface the type implements or extends
+    /// @param supertypes every parameterized supertype
+    /// @param methods the method table
+    /// @param enumConstants the enum constants
+    /// @param sealed whether the type is `sealed`
+    /// @param sam the single abstract method of a functional interface
+    /// @param heritage what a class that extends or implements the type inherits
+    /// @param filter which members are in `members`
+    /// @param members the members that have facts
+    /// @param skipped the members that have no facts
+    public TypeModel(
+            ClassDesc desc,
+            DeclaredKind kind,
+            Nesting nesting,
+            List<TypeParam> typeParams,
+            List<String> nonPublicBoundTypes,
+            List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
+            Supertypes supertypes,
+            MethodTableTemplate methods,
+            List<String> enumConstants,
+            boolean sealed,
+            Optional<MethodModel> sam,
+            Heritage heritage,
+            MemberFilter filter,
+            List<MemberModel> members,
+            List<SkippedMember> skipped) {
+        this(
+                desc,
+                kind,
+                nesting,
+                typeParams,
+                nonPublicBoundTypes,
+                superclasses,
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed,
+                sam,
+                heritage,
+                filter,
+                members,
+                skipped,
+                List.of(),
+                Optional.empty());
+    }
 
     /// @throws IllegalArgumentException if `desc` is not a class or interface, `filter` is
     ///                                  [MemberFilter#NONE] but there are members or a heritage, the
@@ -81,6 +142,7 @@ public record TypeModel(
         enumConstants = List.copyOf(enumConstants);
         members = List.copyOf(members);
         skipped = List.copyOf(skipped);
+        annotations = List.copyOf(annotations);
         if (sam.isPresent()) {
             MethodModel method = sam.get();
             if (!(kind instanceof DeclaredKind.Interface) || sealed) {
@@ -131,6 +193,8 @@ public record TypeModel(
                 Heritage.UNTOLD,
                 MemberFilter.NONE,
                 List.of(),
-                List.of());
+                List.of(),
+                annotations,
+                annotation);
     }
 }

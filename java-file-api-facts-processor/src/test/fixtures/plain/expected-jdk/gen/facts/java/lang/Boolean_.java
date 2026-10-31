@@ -7,6 +7,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.DeclaredKind.FinalClass;
 import me.supcheg.javafile.facts.FinalClassToken;
@@ -27,7 +28,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Boolean]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Boolean.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Boolean.class, fingerprint = "01011e5ae72e1d203fe258ed67c4246d905f57d36394fc07599f1c133e49cd8d", complete = false, format = 16)
+@GeneratedMetamodel(of = Boolean.class, fingerprint = "8699de5bfff2892c481c21548319dd7de24a0e9f6d540b62cbd95b2a84609d7a", complete = false, format = 17)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -38,7 +39,7 @@ public final class Boolean_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Boolean] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Boolean_"), "01011e5ae72e1d203fe258ed67c4246d905f57d36394fc07599f1c133e49cd8d", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Boolean"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Boolean"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("booleanValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Boolean"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("getBoolean", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalAnd", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalOr", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalXor", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("parseBoolean", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Boolean", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("Boolean", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Boolean_"), "8699de5bfff2892c481c21548319dd7de24a0e9f6d540b62cbd95b2a84609d7a", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("java.lang.Boolean"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("java.io.Serializable"), ClassDesc.of("java.lang.Comparable"), ClassDesc.of("java.lang.constant.Constable")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.of(ClassDesc.of("java.lang.Boolean")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("booleanValue"), Signature.of("clone"), Signature.of("compareTo", Param.fixed(ClassDesc.of("java.lang.Boolean"))), Signature.of("describeConstable"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("getBoolean", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("hashCode", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalAnd", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalOr", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("logicalXor", Param.fixed(ConstantDescs.CD_boolean), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("parseBoolean", Param.fixed(ClassDesc.of("java.lang.String"))), Signature.of("toString", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("valueOf", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("valueOf", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("Boolean", Param.fixed(ConstantDescs.CD_boolean)), Signature.of("Boolean", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false, List.of(new AnnotationUse(ClassDesc.of("jdk.internal.ValueBased"), List.of())));
 
         private Data() {
         }
@@ -49,8 +50,10 @@ public final class Boolean_ {
     static final class Canonical {
         /// The canonical form of [Boolean].
         static final String TEXT = """
-        javafile-facts-canonical 10
+        javafile-facts-canonical 11
         type java.lang.Boolean final-class sealed=no nesting=top
+        annotations @jdk.internal.ValueBased
+        annotation -
         tparams -
         superclasses java.lang.Object
         interfaces java.io.Serializable; java.lang.Comparable; java.lang.constant.Constable

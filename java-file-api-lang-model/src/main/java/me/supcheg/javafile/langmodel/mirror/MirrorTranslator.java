@@ -2,6 +2,7 @@ package me.supcheg.javafile.langmodel.mirror;
 
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.Invariants;
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -21,6 +22,8 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -41,6 +44,10 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import java.io.Serial;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
@@ -86,7 +93,11 @@ import java.util.stream.Stream;
 /// | `ERROR` | deferred |
 /// | others | unrepresentable |
 ///
-/// Type-use annotations are left out.
+/// Annotations are not left out: a type, a member, a parameter and a type
+/// use carry theirs into the model, and [Canonical] tells them, so a change
+/// of an annotation changes the fingerprint of the type. An annotation type
+/// is read as an interface, with its elements and their defaults in
+/// [TypeModel#annotation()].
 public final class MirrorTranslator {
     /// The public methods of `Object` that an interface may redeclare
     /// abstract without asking its implementations for them, and without
@@ -169,10 +180,6 @@ public final class MirrorTranslator {
     ///         not generated yet, or unrepresentable for an annotation interface, an inner
     ///         class of a generic class, or a type whose shape cannot be expressed
     public Translation<TypeModel> type(TypeElement element, MemberFilter filter) {
-        if (element.getKind() == ElementKind.ANNOTATION_TYPE) {
-            return new Translation.Unrepresentable<>(
-                    "annotation interface " + element.getQualifiedName() + " is not supported yet");
-        }
         Optional<TypeElement> genericOuter = genericOuter(element);
         if (genericOuter.isPresent()) {
             return new Translation.Unrepresentable<>("inner class " + element.getQualifiedName()
@@ -374,16 +381,13 @@ public final class MirrorTranslator {
     }
 
     /// Why no metamodel can be made of a type, whatever it declares: it is
-    /// an annotation interface, it is not `public` or is nested in a type
-    /// that is not, its simple name or that of a type it is nested in has a
-    /// `$`, or it is in the unnamed package.
+    /// not `public` or is nested in a type that is not, its simple name or
+    /// that of a type it is nested in has a `$`, or it is in the unnamed
+    /// package.
     ///
     /// @param type a class, interface, enum, record or annotation interface
     /// @return the reason, a sentence about the type; empty if a metamodel can be asked for
     public static Optional<String> refusal(TypeElement type) {
-        if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
-            return Optional.of("annotation interface " + type.getQualifiedName() + " is not supported yet");
-        }
         Optional<TypeElement> hidden = enclosing(type)
                 .filter(element -> !element.getModifiers().contains(Modifier.PUBLIC))
                 .findFirst();
@@ -738,6 +742,8 @@ public final class MirrorTranslator {
                 .filter(e -> e.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(e -> e.getSimpleName().toString())
                 .toList();
+        List<AnnotationUse> annotations = annotations(element);
+        Optional<AnnotationModel> annotation = annotationModel(element, shape);
         // a model with members reads what the type adopts once, for the members and for the sam
         Supplier<List<Element>> adopted =
                 switch (filter) {
@@ -787,7 +793,120 @@ public final class MirrorTranslator {
                 },
                 filter,
                 reads.stream().flatMap(Read::models).toList(),
-                reads.stream().flatMap(Read::skips).toList()));
+                reads.stream().flatMap(Read::skips).toList(),
+                annotations,
+                annotation));
+    }
+
+    /// The annotations a type, a member or a parameter declares, in a
+    /// deterministic order: by annotation type, and among the uses of one
+    /// type in declaration order, as a repeatable annotation may have.
+    ///
+    /// @param element the type, member or parameter
+    /// @return the annotations
+    private List<AnnotationUse> annotations(Element element) {
+        return element.getAnnotationMirrors().stream()
+                .filter(this::nameable)
+                .map(this::annotation)
+                .sorted(Comparator.comparing(use -> use.type().descriptorString()))
+                .toList();
+    }
+
+    /// The annotations of a type use, in declaration order.
+    private List<AnnotationUse> annotations(TypeMirror type) {
+        return type.getAnnotationMirrors().stream()
+                .filter(this::nameable)
+                .map(this::annotation)
+                .sorted(Comparator.comparing(use -> use.type().descriptorString()))
+                .toList();
+    }
+
+    /// Whether an annotation is part of the API of the type: not one of the
+    /// annotations of the JDK implementation, which code of another package
+    /// does not name and which a `--release` does not have in the same place.
+    private boolean nameable(AnnotationMirror mirror) {
+        TypeElement type = (TypeElement) mirror.getAnnotationType().asElement();
+        String packageName = elements.getPackageOf(type).getQualifiedName().toString();
+        return !(packageName.startsWith("jdk.internal.")
+                || packageName.startsWith("sun.")
+                || packageName.startsWith("com.sun."));
+    }
+
+    private AnnotationUse annotation(AnnotationMirror mirror) {
+        TypeElement type = (TypeElement) mirror.getAnnotationType().asElement();
+        if (!isPublic(type)) {
+            throw new Unresolved(mirror.getAnnotationType());
+        }
+        List<me.supcheg.javafile.annotation.AnnotationMember> members = mirror.getElementValues().entrySet().stream()
+                .sorted(Comparator.comparing(
+                        entry -> entry.getKey().getSimpleName().toString()))
+                .map(entry -> new me.supcheg.javafile.annotation.AnnotationMember(
+                        entry.getKey().getSimpleName().toString(), value(entry.getValue())))
+                .toList();
+        return new AnnotationUse(desc(type), members);
+    }
+
+    /// The value of an annotation element (JLS 9.6.1).
+    private me.supcheg.javafile.annotation.AnnotationValue value(AnnotationValue value) {
+        Object given = value.getValue();
+        if (given instanceof VariableElement constant) {
+            return me.supcheg.javafile.annotation.AnnotationValues.enumValue(
+                    desc((TypeElement) constant.getEnclosingElement()),
+                    constant.getSimpleName().toString());
+        }
+        if (given instanceof TypeMirror type) {
+            requireResolved(type);
+            return me.supcheg.javafile.annotation.AnnotationValues.classValue(erasure(types.erasure(type)));
+        }
+        if (given instanceof AnnotationMirror nested) {
+            return me.supcheg.javafile.annotation.AnnotationValues.nested(annotation(nested));
+        }
+        if (given instanceof List<?> elements) {
+            return me.supcheg.javafile.annotation.AnnotationValues.array(elements.stream()
+                    .map(element ->
+                            (me.supcheg.javafile.annotation.SingleAnnotationValue) value((AnnotationValue) element))
+                    .toList());
+        }
+        return literal(ConstantValue.of(given));
+    }
+
+    private static me.supcheg.javafile.annotation.AnnotationValue literal(ConstantValue value) {
+        return switch (value) {
+            case ConstantValue.OfString(String string) ->
+                me.supcheg.javafile.annotation.AnnotationValues.literal(string);
+            case ConstantValue.OfBoolean(boolean bool) -> me.supcheg.javafile.annotation.AnnotationValues.literal(bool);
+            case ConstantValue.OfByte(byte number) ->
+                me.supcheg.javafile.annotation.AnnotationValues.literal((int) number);
+            case ConstantValue.OfShort(short number) ->
+                me.supcheg.javafile.annotation.AnnotationValues.literal((int) number);
+            case ConstantValue.OfChar(char character) ->
+                me.supcheg.javafile.annotation.AnnotationValues.literal((int) character);
+            case ConstantValue.OfInt(int number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+            case ConstantValue.OfLong(long number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+            case ConstantValue.OfFloat(float number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+            case ConstantValue.OfDouble(double number) ->
+                me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+        };
+    }
+
+    /// The elements and the metadata of an annotation type (JLS 9.6).
+    private Optional<AnnotationModel> annotationModel(TypeElement element, Reading reading) {
+        if (element.getKind() != ElementKind.ANNOTATION_TYPE) {
+            return Optional.empty();
+        }
+        List<AnnotationElementModel> elements = ElementFilter.methodsIn(element.getEnclosedElements()).stream()
+                .map(method -> new AnnotationElementModel(
+                        method.getSimpleName().toString(),
+                        type(method.getReturnType(), reading),
+                        Optional.ofNullable(method.getDefaultValue()).map(this::value)))
+                .toList();
+        Retention retention = element.getAnnotation(Retention.class);
+        Target target = element.getAnnotation(Target.class);
+        return Optional.of(new AnnotationModel(
+                elements,
+                retention == null ? RetentionPolicy.CLASS : retention.value(),
+                target == null ? Set.of() : Set.of(target.value()),
+                element.getAnnotation(Repeatable.class) != null));
     }
 
     private static Optional<TypeElement> genericOuter(TypeElement element) {
@@ -815,7 +934,7 @@ public final class MirrorTranslator {
     private static DeclaredKind kind(TypeElement element) {
         return switch (element.getKind()) {
             case ENUM -> DeclaredKind.ENUM_CLASS;
-            case INTERFACE -> DeclaredKind.INTERFACE;
+            case INTERFACE, ANNOTATION_TYPE -> DeclaredKind.INTERFACE;
             case RECORD -> DeclaredKind.FINAL_CLASS;
             default -> {
                 Set<Modifier> modifiers = element.getModifiers();
@@ -1490,7 +1609,7 @@ public final class MirrorTranslator {
                         reading,
                         0,
                         "field " + name,
-                        () -> new FieldModel(name, isStatic, type, mutability, accessOf(field))));
+                        () -> new FieldModel(name, isStatic, type, mutability, accessOf(field), annotations(field))));
     }
 
     /// Another field of a type under the name of a field of it, which the
@@ -1522,7 +1641,9 @@ public final class MirrorTranslator {
                         declared(constructor, owner, self),
                         arity(constructor),
                         throwsTypes,
-                        accessOf(constructor)));
+                        accessOf(constructor),
+                        annotations(constructor),
+                        parameterAnnotations(constructor)));
     }
 
     private Read method(TypeElement owner, DeclaredType self, ExecutableElement method) {
@@ -1565,7 +1686,14 @@ public final class MirrorTranslator {
                         arity(method),
                         throwsTypes,
                         overridability,
-                        accessOf(method)));
+                        accessOf(method),
+                        annotations(method),
+                        parameterAnnotations(method)));
+    }
+
+    /// The annotations of the parameters of a member, in parameter order.
+    private List<List<AnnotationUse>> parameterAnnotations(ExecutableElement member) {
+        return member.getParameters().stream().map(this::annotations).toList();
     }
 
     /// The access of a member that is read: only an accessible one is ([#access]), so one that is not
@@ -1609,7 +1737,7 @@ public final class MirrorTranslator {
             case CHAR -> PrimitiveTypeRef.CHAR;
             case FLOAT -> PrimitiveTypeRef.FLOAT;
             case DOUBLE -> PrimitiveTypeRef.DOUBLE;
-            case ARRAY -> new ArrayTypeRef(type(((ArrayType) mirror).getComponentType(), reading));
+            case ARRAY -> new ArrayTypeRef(type(((ArrayType) mirror).getComponentType(), reading), annotations(mirror));
             default -> reference(mirror, reading);
         };
     }
@@ -1645,7 +1773,8 @@ public final class MirrorTranslator {
                     + parameterizedOuter.get());
         }
         ClassDesc desc = desc(element);
-        return args.isEmpty() ? new ClassTypeRef(desc) : new ParameterizedTypeRef(desc, args);
+        List<AnnotationUse> annotations = annotations(type);
+        return args.isEmpty() ? new ClassTypeRef(desc, annotations) : new ParameterizedTypeRef(desc, args, annotations);
     }
 
     private TypeArg argument(TypeMirror argument, Reading reading) {
@@ -1668,7 +1797,7 @@ public final class MirrorTranslator {
             return reading.unrepresentable("type variable " + variable + " of "
                     + element.getEnclosingElement().getSimpleName() + " is out of scope");
         }
-        return new TypeVarRef(element.getSimpleName().toString());
+        return new TypeVarRef(element.getSimpleName().toString(), annotations(variable));
     }
 
     /// Whether a type and every type that encloses it are `public`: only
