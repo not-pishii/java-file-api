@@ -107,7 +107,17 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final ThrowingDeclarations<Self, S> throwing(ClassToken<? extends Throwable>... exceptions) {
-        return new ThrowingDeclarations<>(this, List.of(exceptions));
+        return throwing(List.of(exceptions));
+    }
+
+    /// The declarations of the members that declare the exceptions of a list in their `throws` clause,
+    /// which an element of a stream gives: [#throwing(ClassToken[])] renders the same. An empty list is no
+    /// exception.
+    ///
+    /// @param exceptions the exception types of the `throws` clause, in order
+    /// @return the declarations of the members that declare `exceptions`
+    public final ThrowingDeclarations<Self, S> throwing(List<? extends ClassToken<? extends Throwable>> exceptions) {
+        return new ThrowingDeclarations<>(this, List.copyOf(exceptions));
     }
 
     // ------------------------------------------------------------------

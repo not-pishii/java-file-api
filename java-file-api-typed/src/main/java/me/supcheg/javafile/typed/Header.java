@@ -56,7 +56,17 @@ public abstract sealed class Header<Self> extends Overriding<Self> permits Class
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final ThrowingOverriding<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
-        return new ThrowingOverriding<>(declaration, List.of(exceptions));
+        return throwing(List.of(exceptions));
+    }
+
+    /// The intentions to override methods with a method that declares the exceptions of a list in its
+    /// `throws` clause, which an element of a stream gives: [#throwing(ClassToken[])] renders the same. An
+    /// empty list is no exception.
+    ///
+    /// @param exceptions the exception types of the `throws` clause, in order
+    /// @return the intentions that declare `exceptions`
+    public final ThrowingOverriding<Self> throwing(List<? extends ClassToken<? extends Throwable>> exceptions) {
+        return new ThrowingOverriding<>(declaration, List.copyOf(exceptions));
     }
 
     @Override

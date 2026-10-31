@@ -988,7 +988,9 @@ public final class Signals {
 A member whose last parameter is of variable arity is declared with `variableArity()`, and its arguments are given one
 by one with `varargs(...)`. They are written one by one where javac resolves the call to that method, `count("a")`;
 where another method of the name could be taken for them (`count(String, String)` below), they are written as the
-array. `newArrayOf` renders `{...}` where a variable tells the type, and `new String[] {...}` elsewhere.
+array. `newArrayOf` renders `{...}` where a variable tells the type, and `new String[] {...}` elsewhere. `varargs`,
+`newArray`, `newArrayOf` and `throwing` also take their arguments as a `List` — one a stream gives — and render
+exactly what the enumerated form does; an empty list is no argument.
 
 ```java
 JavaFile file = TypedJavaFile.class_(

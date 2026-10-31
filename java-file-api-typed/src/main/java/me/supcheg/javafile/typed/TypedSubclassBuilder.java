@@ -3,7 +3,8 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 /// Declares the members of a typed `final` class that extends `S` (§6.5),
 /// branded with `Self`: everything a [TypedClassBuilder] declares
@@ -67,10 +68,27 @@ public final class TypedSubclassBuilder<Self, S> extends TypedSubclassBuilderAri
             Upcast<E, ? extends Throwable> witness,
             ClassToken<E> exception,
             ClassToken<? extends Throwable>... others) {
-        return new ThrowingDeclarations<>(
-                this,
-                Stream.concat(Stream.of(Upcast.throwable(witness, exception)), Stream.of(others))
-                        .toList());
+        return throwing(witness, exception, List.of(others));
+    }
+
+    /// The declarations of the members whose `throws` clause names the others of a list, which an element
+    /// of a stream gives: [#throwing(Upcast, ClassToken, ClassToken[])] renders the same. An empty list is
+    /// no other exception.
+    ///
+    /// @param witness the witness that `exception` is a `Throwable`
+    /// @param exception the class the witness is of
+    /// @param others the other exception types of the clause, after it
+    /// @param <E> the class the witness is of
+    /// @return the declarations of the members that declare the exceptions
+    /// @throws IllegalArgumentException if the witness is of another class than `exception`
+    public final <E> ThrowingDeclarations<Self, S> throwing(
+            Upcast<E, ? extends Throwable> witness,
+            ClassToken<E> exception,
+            List<? extends ClassToken<? extends Throwable>> others) {
+        List<ClassToken<? extends Throwable>> declared = new ArrayList<>(others.size() + 1);
+        declared.add(Upcast.throwable(witness, exception));
+        declared.addAll(others);
+        return new ThrowingDeclarations<>(this, List.copyOf(declared));
     }
 
     /// The declarations of the class end and its bodies begin: what the `bodies` of a constructor does first.

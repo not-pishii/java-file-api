@@ -6,8 +6,8 @@ import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /// The stage of the header of a class that extends `S`, from
 /// [ClassHeader#extends_]: the class names its superinterfaces, says which
@@ -85,7 +85,16 @@ public final class SubclassHeader<Self, S> extends SubclassHeaderArities<Self, S
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final ThrowingOverriding<Self> throwing(ClassToken<? extends Throwable>... exceptions) {
-        return new ThrowingOverriding<>(declaration(), List.of(exceptions));
+        return throwing(List.of(exceptions));
+    }
+
+    /// The stage with a `throws` clause that declares the exceptions of a list, which an element of a
+    /// stream gives: [#throwing(ClassToken[])] renders the same. An empty list is no exception.
+    ///
+    /// @param exceptions the exception types of the `throws` clause, in order
+    /// @return the stage that declares `exceptions`
+    public final ThrowingOverriding<Self> throwing(List<? extends ClassToken<? extends Throwable>> exceptions) {
+        return new ThrowingOverriding<>(declaration(), List.copyOf(exceptions));
     }
 
     /// The stage with a `throws` clause that names a class known to be an exception by a witness
@@ -104,10 +113,26 @@ public final class SubclassHeader<Self, S> extends SubclassHeaderArities<Self, S
             Upcast<E, ? extends Throwable> witness,
             ClassToken<E> exception,
             ClassToken<? extends Throwable>... others) {
-        return new ThrowingOverriding<>(
-                declaration(),
-                Stream.concat(Stream.of(Upcast.throwable(witness, exception)), Stream.of(others))
-                        .toList());
+        return throwing(witness, exception, List.of(others));
+    }
+
+    /// The stage with a `throws` clause of the others of a list, which an element of a stream gives:
+    /// [#throwing(Upcast, ClassToken, ClassToken[])] renders the same. An empty list is no other exception.
+    ///
+    /// @param witness the witness that `exception` is a `Throwable`
+    /// @param exception the class the witness is of
+    /// @param others the other exception types of the clause, after it
+    /// @param <E> the class the witness is of
+    /// @return the stage that declares the exceptions
+    /// @throws IllegalArgumentException if the witness is of another class than `exception`
+    public final <E> ThrowingOverriding<Self> throwing(
+            Upcast<E, ? extends Throwable> witness,
+            ClassToken<E> exception,
+            List<? extends ClassToken<? extends Throwable>> others) {
+        List<ClassToken<? extends Throwable>> declared = new ArrayList<>(others.size() + 1);
+        declared.add(Upcast.throwable(witness, exception));
+        declared.addAll(others);
+        return new ThrowingOverriding<>(declaration(), List.copyOf(declared));
     }
 
     /// The class implements an interface, by the proof that it has every abstract method of it;

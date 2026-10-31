@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
@@ -73,6 +71,7 @@ import java.util.stream.Stream;
 ///
 /// **Variable arity.** The last parameter of a member of variable arity is given an array the code has, as an
 /// argument of its array type, or its elements one by one, `varargs(type, e1, e2)` as the last argument of a call.
+/// The elements of a list are given by the same form, `varargs(type, elements)`.
 ///
 /// **Arrays.** `newArrayOf(type, e1, e2)` creates an array with its elements, `{e1, e2}` where a declaration of
 /// exactly its type tells the type; `newArray(type, length, ...)` one by its lengths, `cloneArray` copies an array
@@ -231,8 +230,22 @@ public final class Expressions extends ExpressionArities {
     /// @return the arguments
     /// @throws IllegalArgumentException if an element is of a primitive type where the element type is not
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <A, E> Varargs<A> varargs(ArrayToken<A, E> type, Expr<? extends E>... elements) {
-        List<Expr<? extends E>> given = listed(elements.length, i -> elements[i]);
+        return varargs(type, List.of(elements));
+    }
+
+    /// The arguments of a parameter of variable arity as a list, which an element of a stream gives:
+    /// [#varargs(ArrayToken, Expr[])] renders the same. An empty list is no element, `m()`.
+    ///
+    /// @param type the array type of the parameter
+    /// @param elements the elements, in order
+    /// @param <A> the array type of the parameter
+    /// @param <E> the element type
+    /// @return the arguments
+    /// @throws IllegalArgumentException if an element is of a primitive type where the element type is not
+    public static <A, E> Varargs<A> varargs(ArrayToken<A, E> type, List<? extends Expr<? extends E>> elements) {
+        List<Expr<? extends E>> given = List.copyOf(elements);
         given.forEach(element -> Tokens.requireNoBoxing(element.type(), type.component(), "varargs"));
         return new Varargs<>(type, List.copyOf(given));
     }
@@ -323,11 +336,26 @@ public final class Expressions extends ExpressionArities {
     /// @throws IllegalArgumentException if the element type is not reifiable, or there are more lengths than
     ///     the array type has dimensions
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length, Expr<Prim.Int>... inner) {
-        int given = 1 + inner.length;
-        NonEmptyList<Node> lengths = new NonEmptyList<>(
-                length.node(),
-                listed(inner.length, i -> inner[i]).stream().map(Expr::node).toList());
+        return newArray(type, length, List.of(inner));
+    }
+
+    /// Creates an array with the lengths of its inside dimensions as a list, which an element of a stream
+    /// gives: [#newArray(ArrayToken, Expr, Expr[])] renders the same. An empty list is no inside dimension,
+    /// `new T[length]`.
+    ///
+    /// @param type the array type
+    /// @param length the length of the outer dimension
+    /// @param inner the lengths of the dimensions inside it, in order
+    /// @param <A> the array type
+    /// @return the new array
+    /// @throws IllegalArgumentException if the element type is not reifiable, or there are more lengths than
+    ///     the array type has dimensions
+    public static <A> Expr<A> newArray(ArrayToken<A, ?> type, Expr<Prim.Int> length, List<Expr<Prim.Int>> inner) {
+        int given = 1 + inner.size();
+        NonEmptyList<Node> lengths =
+                new NonEmptyList<>(length.node(), inner.stream().map(Expr::node).toList());
         TypeToken<?> component = Tokens.peeled(type, given)
                 .orElseThrow(() -> new IllegalArgumentException("newArray of " + type + " takes at most "
                         + Tokens.dimensions(type) + " length" + (Tokens.dimensions(type) == 1 ? "" : "s")
@@ -363,17 +391,26 @@ public final class Expressions extends ExpressionArities {
     /// @throws IllegalArgumentException if the element type is not reifiable, or an element is of a
     ///     primitive type where the element type is not
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <A, E> Expr<A> newArrayOf(ArrayToken<A, E> type, Expr<? extends E>... elements) {
-        Tokens.requireReifiableComponent(type.component(), "newArrayOf");
-        List<Expr<? extends E>> given = listed(elements.length, i -> elements[i]);
-        given.forEach(element -> Tokens.requireNoBoxing(element.type(), type.component(), "newArrayOf"));
-        return Expr.of(new Node.NewArrayOf(type, given.stream().map(Expr::node).toList()), type);
+        return newArrayOf(type, List.of(elements));
     }
 
-    /// The elements of a parameter of variable arity of a `@SafeVarargs` method, read one by one: the
-    /// array itself is passed nowhere, which javac would warn of as possible heap pollution.
-    private static <T> List<T> listed(int length, IntFunction<T> at) {
-        return IntStream.range(0, length).mapToObj(at).toList();
+    /// Creates an array with the elements of a list, which an element of a stream gives:
+    /// [#newArrayOf(ArrayToken, Expr[])] renders the same. An empty list is an empty array, `new E[] {}`.
+    ///
+    /// @param type the array type
+    /// @param elements the elements
+    /// @param <A> the array type
+    /// @param <E> the element type
+    /// @return the new array
+    /// @throws IllegalArgumentException if the element type is not reifiable, or an element is of a
+    ///     primitive type where the element type is not
+    public static <A, E> Expr<A> newArrayOf(ArrayToken<A, E> type, List<? extends Expr<? extends E>> elements) {
+        Tokens.requireReifiableComponent(type.component(), "newArrayOf");
+        List<Expr<? extends E>> given = List.copyOf(elements);
+        given.forEach(element -> Tokens.requireNoBoxing(element.type(), type.component(), "newArrayOf"));
+        return Expr.of(new Node.NewArrayOf(type, given.stream().map(Expr::node).toList()), type);
     }
 
     // ------------------------------------------------------------------

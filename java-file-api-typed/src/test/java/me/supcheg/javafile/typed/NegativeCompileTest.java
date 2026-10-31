@@ -845,7 +845,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ThrowsAString",
                 inClass("cb.throwing(String_.TOKEN);"),
-                "method throwing in class me.supcheg.javafile.typed.MemberBuilder<Self,S> cannot be applied to given types",
+                "no suitable method found for throwing(",
                 "cannot be converted to me.supcheg.javafile.facts.ClassToken<? extends java.lang.Throwable>");
     }
 
