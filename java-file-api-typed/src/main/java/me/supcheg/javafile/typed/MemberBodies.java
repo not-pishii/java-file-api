@@ -438,12 +438,10 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
         List<Param> named = java.util.stream.IntStream.range(0, params.size())
                 .mapToObj(index -> {
                     Var<?> param = params.get(index);
-                    List<AnnotationUse> annotations =
-                            index < declared.parameterAnnotations().size()
-                                    ? declared.parameterAnnotations().get(index).stream()
-                                            .map(AnnotationRef::toUse)
-                                            .toList()
-                                    : List.of();
+                    // the callable holds one list of annotations per parameter, as its builder makes it
+                    List<AnnotationUse> annotations = declared.parameterAnnotations().get(index).stream()
+                            .map(AnnotationRef::toUse)
+                            .toList();
                     return new Param(
                             lowering.declareUpfront(param), param.type().typeRef(), annotations);
                 })

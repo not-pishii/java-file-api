@@ -40,11 +40,8 @@ public final class AnnotatedRefToken<T> implements RefToken<T> {
         if (type instanceof ArrayTypeRef array) {
             return new ArrayTypeRef(array.component(), annotations);
         }
-        if (type instanceof TypeVarRef variable) {
-            return new TypeVarRef(variable.name(), annotations);
-        }
-        // a primitive is no reference type, and no RefToken is one: the branch is not reached
-        return type;
+        // a primitive is no reference type, and no RefToken is one: the false arm is not reached
+        return type instanceof TypeVarRef variable ? new TypeVarRef(variable.name(), annotations) : type;
     }
 
     /// The token the annotations are on.

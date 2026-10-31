@@ -893,7 +893,7 @@ class MultiroundTest {
 
     @Test
     void theGraphOfARoundHasAnEdgeToWhatEachTypeWaitsFor() {
-        GraphProbe probe = new GraphProbe("p.E", "p.D", "p.C", "p.B", "p.A");
+        GraphProbe probe = new GraphProbe("p.E", "p.D", "p.C", "p.B", "p.A", "p.F");
         Javac.facts()
                 .with(new Generating(), probe)
                 .compile(
@@ -902,7 +902,10 @@ class MultiroundTest {
                         "package p; public class B { public gen.Missing missing() { return null; } }",
                         "package p; public class C { public D d() { return null; } }",
                         "package p; public class D { public C c() { return null; } }",
-                        "package p; public class E { public A a() { return null; } public <T> E(T t, B b) {} }")
+                        "package p; public class E { public A a() { return null; } public <T> E(T t, B b) {} }",
+                        // what a ready type mentions may be unavailable: a class with `$` in its simple name
+                        "package p; public class Dol$lar {}",
+                        "package p; public class F { public Dol$lar dollar() { return null; } }")
                 .orFail();
         TypeGraph graph = probe.graph();
 

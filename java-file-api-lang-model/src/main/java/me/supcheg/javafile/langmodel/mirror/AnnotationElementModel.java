@@ -15,7 +15,6 @@ import java.util.Optional;
 public record AnnotationElementModel(String name, TypeRef type, Optional<AnnotationValue> defaultValue) {
     public AnnotationElementModel {
         name = Identifiers.requireValid(name);
-        defaultValue = defaultValue == null ? Optional.empty() : defaultValue;
     }
 
     /// Whether every use of the annotation gives the element a value: it

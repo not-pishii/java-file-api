@@ -93,6 +93,7 @@ class AnnotationsTest {
         AnnotationRef<me.supcheg.javafile.typed.fixtures.Tag> tagged = tag("field");
         RefToken<String> annotated = TypeUses.annotated(String_.TOKEN, List.of(tagged));
         assertThat(Tokens.annotated(annotated)).isSameAs(String_.TOKEN);
+        assertThat(Tokens.annotated(String_.TOKEN)).isSameAs(String_.TOKEN);
         assertThat(Tokens.isReifiable(annotated)).isTrue();
         assertThat(Rivals.mayConvert(annotated, ConstantDescs.CD_String)).isTrue();
         assertThat(
@@ -110,6 +111,11 @@ class AnnotationsTest {
 
         Subtyping.Declaring declaring = new Subtyping.Declaring(ClassDesc.of("p", "Out"), List.of(), List.of());
         assertThat(Subtyping.prove(declaring, annotated, me.supcheg.javafile.type.Types.OBJECT))
+                .isInstanceOf(Subtyping.Verdict.Proven.class);
+        assertThat(Subtyping.prove(
+                        declaring,
+                        annotated,
+                        me.supcheg.javafile.type.Types.of(ClassDesc.of("java.lang", "CharSequence"))))
                 .isInstanceOf(Subtyping.Verdict.Proven.class);
         assertThat(Subtyping.prove(
                         declaring,
@@ -140,5 +146,46 @@ class AnnotationsTest {
 
         assertThat(compiled.source()).contains("@Tag(\"field\")").contains("public String word = \"x\";");
         assertThat(compiled.invoke("getClass")).isNotNull();
+    }
+
+    @Test
+    void onlyTheParametersGivenAnnotationsAreRenderedWithThem() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var cb = h.extendsObject().members();
+                var greet = cb.annotatedParameter(0, tag("first"))
+                        .declareStaticMethod("greet", String_.TOKEN, String_.TOKEN, String_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(greet, (b, first, second) -> b.return_(first));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source())
+                .contains("public static String greet(@Tag(\"first\") String v0, String v1) {")
+                .doesNotContain("@Tag(\"first\") String v1");
+        assertThat(compiled.invoke("greet", "a", "b")).isEqualTo("a");
+    }
+
+    @Test
+    void theAnnotationsOfAParameterAddToThoseAlreadyGiven() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var cb = h.extendsObject().members();
+                var greet = cb.annotatedParameter(0, tag("first"))
+                        .annotatedParameter(0, author())
+                        .declareStaticMethod("greet", String_.TOKEN, String_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(greet, (b, who) -> b.return_(who));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source())
+                .contains("@Tag(\"first\") @Author(name = \"Ada\", year = 1815, tags = {")
+                .contains("String v0)");
+        assertThat(compiled.invoke("greet", "a")).isEqualTo("a");
     }
 }

@@ -638,6 +638,14 @@ class EntryTest {
                         .reason())
                 .isEqualTo("its abstract method m(java.util.List) is declared with other parameter types by p.Typed"
                         + " and p.Erased, so no one method of a generated class implements each");
+        // a deprecated method has no fact, and code that names it is code javac warns of
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Aged",
+                                        "package p; public abstract class Aged { @Deprecated public abstract void old(); }")
+                                .entry())
+                        .reason())
+                .isEqualTo("its abstract method old() has no fact in the metamodel of the type, so no class says it"
+                        + " overrides it");
     }
 
     @Test

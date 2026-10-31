@@ -27,9 +27,17 @@ me/supcheg/javafile/facts/TargetClasspath.java :: case PrimitiveToken<?, ?, ?> _
 me/supcheg/javafile/facts/TargetClasspath.java :: case ShapeOrigin.Unsafe _, ShapeOrigin.Builtin _ -> TargetType.UNCHANGED;
     a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/facts/processor/Closure.java :: case Done.ReusedToken _, Done.Held _ -> look(type, models, index);
+    a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/facts/processor/Closure.java :: case Kin.Declined _, Kin.Hidden _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/facts/processor/Entry.java :: case PrimitiveTypeRef _, ClassTypeRef _ -> true;
+    a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/facts/processor/Entry.java :: case PrimitiveTypeRef _, TypeVarRef _ -> Stream.empty();
+    a case of several type patterns: javac tests each label once more after it matched
 
 me/supcheg/javafile/facts/processor/FactsProcessor.java :: case Done.Failed _, Done.RefusedFull _ ->
     a case of several type patterns: javac tests each label once more after it matched; the second label is reached only in the last round, after the error of a late request, when no source the round writes is kept
@@ -121,7 +129,11 @@ me/supcheg/javafile/langmodel/mirror/Canonical.java :: case Heritage.Type.OfType
 me/supcheg/javafile/langmodel/mirror/Canonical.java :: case MethodTableTemplate.Var(int index, int dimensions) ->
     a record pattern with a primitive component: javac tests the component, and no value fails the test
 
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case DeclaredKind.FinalClass _, DeclaredKind.Interface _, DeclaredKind.EnumClass _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case DeclaredKind.OpenClass _, DeclaredKind.AbstractClass _ -> true;
+    a case of several type patterns: javac tests each label once more after it matched
 
 me/supcheg/javafile/render/ExprRenderer.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
     a record pattern with a primitive component: javac tests the component, and no value fails the test
@@ -180,6 +192,84 @@ me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
 me/supcheg/javafile/facts/processor/SourceNames.java :: switch (place) {
     a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
 
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case IntLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case LongLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case me.supcheg.javafile.code.FloatLiteral(var value) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case DoubleLiteral(var value) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MemberFacts.java :: case BooleanLiteral(var value) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _ -> type;
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case IntLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case LongLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case me.supcheg.javafile.code.FloatLiteral(var value) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case DoubleLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case BooleanLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case IntLiteral(var value) -> Integer.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case LongLiteral(var value) -> value + "L";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case me.supcheg.javafile.code.FloatLiteral(var value) -> value + "f";
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case DoubleLiteral(var value) -> Double.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/Canonical.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfBoolean(boolean bool) -> me.supcheg.javafile.annotation.AnnotationValues.literal(bool);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfByte(byte number) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfShort(short number) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfChar(char character) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfInt(int number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfLong(long number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfFloat(float number) -> me.supcheg.javafile.annotation.AnnotationValues.literal(number);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: case ConstantValue.OfDouble(double number) ->
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/ExprRenderer.java :: case FloatLiteral(var value) -> renderFloat(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
+me/supcheg/javafile/render/Precedence.java :: case FloatLiteral(var value) -> floatLevel(value);
+    a record pattern with a primitive component: javac tests the component, and no value fails the test
+
 # ---- what cannot happen: worded checks neither a test nor a type removes ----
 
 me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
@@ -188,6 +278,11 @@ me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
 me/supcheg/javafile/typed/Constants.java :: Invariants.require(divisor != 0, "a constant divisor is no zero: divInt and modInt refuse one");
     divInt and modInt refuse a divisor that folds to zero, so no constant division by zero is folded
 
+me/supcheg/javafile/facts/AnnotatedRefToken.java :: return type instanceof TypeVarRef variable ? new TypeVarRef(variable.name(), annotations) : type;
+    a token of a reference type is that of a class, a parameterization, an array or a type variable (RefToken permits no PrimitiveToken), so the arm for a primitive is not reached
+
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && element.getEnclosingElement() instanceof TypeElement owner
+    a method is enclosed by the class or interface that declares it (javax.lang.model.element.ExecutableElement#getEnclosingElement)
 
 me/supcheg/javafile/typed/SuperSite.java :: phase instanceof Phase.Invoked(var invocation) ? Optional.of(invocation) : Optional.empty(),
     the body of a constructor ends by what follows super(...) alone, and a body ended by the token of another block is refused (Block.build): once the body is built, super(...) was called
@@ -201,7 +296,8 @@ me/supcheg/javafile/typed/Tokens.java :: && target.typeRef() instanceof Paramete
 me/supcheg/javafile/typed/Tokens.java :: && var.name().equals(parameter.name()));
     the type arguments of a supertype in the facts are types and never wildcards (JLS 8.1.4), so each is tested as an exact one
 
-
+me/supcheg/javafile/facts/processor/Entry.java :: first.params().getLast() instanceof ArrayTypeRef array && !reifiable(array.component());
+    the last parameter of a method of variable arity is an array (Heritage.Plain requires it): the test only binds it
 
 me/supcheg/javafile/facts/processor/MetamodelNames.java :: Element outer = chain.isEmpty() ? type : chain.getLast().getEnclosingElement();
     the element of a declared type is a type, and the types enclosing a type start with it: the chain is not empty
@@ -215,80 +311,11 @@ me/supcheg/javafile/facts/processor/Requests.java :: Stream<?> items = value.get
 me/supcheg/javafile/facts/processor/Requests.java :: if (!(value instanceof TypeMirror type) || type.getKind() == TypeKind.ERROR) {
     the value of a class literal is a type mirror: javac rejects a value of another type (incompatible types), and the processor reads no annotation it rejected
 
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: return result.getKind() == otherResult.getKind();
+    javac accepts the methods of one signature in one type only when their primitive or void results are the same
 
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && type.asElement().equals(otherType.asElement());
+    a set of Supertype asks equals only of two with one hash, which is that of the element, and only a Supertype is put in it: the same element is the only answer
 
-
-# ---- annotation facts: the defensive cases and the literal kinds no fixture reaches ----
-
-me/supcheg/javafile/facts/AnnotationRef.java :: && type.token().equals(other.type.token())
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/AnnotationValue.java :: case LiteralValue _, ClassValue _, EnumValue _, NestedAnnotationValue _ -> (SingleAnnotationValue) value;
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MemberFacts.java :: case BooleanLiteral(var value) ->
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MemberFacts.java :: case DoubleLiteral(var value) ->
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MemberFacts.java :: case IntLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MemberFacts.java :: case LongLiteral(var value) -> Exprs.staticCall(use(CD_ANNOTATION_VALUES), "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MemberFacts.java :: case me.supcheg.javafile.code.FloatLiteral(var value) ->
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case BooleanLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case ClassTypeRef _, ParameterizedTypeRef _, TypeVarRef _ -> type;
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case DoubleLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case IntLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case LongLiteral(var value) -> Exprs.staticCall(CD_ANNOTATION_VALUES, "literal", Exprs.literal(value));
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/facts/processor/MetamodelEmitter.java :: case me.supcheg.javafile.code.FloatLiteral(var value) ->
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/AnnotationElementModel.java :: defaultValue = defaultValue == null ? Optional.empty() : defaultValue;
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/Canonical.java :: case BooleanLiteral(var value) -> Boolean.toString(value);
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/Canonical.java :: case DoubleLiteral(var value) -> Double.toString(value);
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/Canonical.java :: case IntLiteral(var value) -> Integer.toString(value);
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/Canonical.java :: case LongLiteral(var value) -> value + "L";
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/langmodel/mirror/Canonical.java :: case me.supcheg.javafile.code.FloatLiteral(var value) -> value + "f";
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/render/ExprRenderer.java :: case FloatLiteral(var value) -> renderFloat(value);
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/render/Precedence.java :: case FloatLiteral(var value) -> floatLevel(value);
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/typed/AnnotatedDeclarations.java :: index < before.size() ? before.get(index).stream() : Stream.empty(),
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/typed/MemberBodies.java :: index < declared.parameterAnnotations().size()
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
-me/supcheg/javafile/typed/Tokens.java :: return type instanceof me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated ? annotated.token() : type;
-    a defensive case of the annotation facts, or a literal kind no fixture of theirs reaches: see aggregation/build.gradle.kts
-
+me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: yield arguments.isEmpty() || outerArguments || !(raw instanceof ClassTypeRef(ClassDesc desc, var _))
+    the erasure of a declared type is read as a class type: the test only binds it

@@ -116,6 +116,15 @@ class AnnotationFactsTest {
         assertThat(same)
                 .isNotEqualTo(UnsafeFacts.annotationRef(
                         type, List.of(new AnnotationMember("name", AnnotationValues.string("Grace")))));
+        AnnotationType<Tag> otherType = UnsafeFacts.annotationType(
+                UnsafeFacts.interfaceToken(Types.of(TAG), MethodTable.EMPTY),
+                List.of(UnsafeFacts.annotationElement(TAG, "name", Types.STRING, Optional.empty())),
+                RetentionPolicy.CLASS,
+                Set.of(),
+                false);
+        assertThat(same)
+                .isNotEqualTo(UnsafeFacts.annotationRef(
+                        otherType, List.of(new AnnotationMember("name", AnnotationValues.string("Ada")))));
         assertThat(type.requireElement("name").toString()).contains("Author.name");
         assertThat(type.requireElement("year").toString()).isNotNull();
 
@@ -213,6 +222,7 @@ class AnnotationFactsTest {
         RefToken<List<String>> listUse = UnsafeFacts.annotated(list, tag);
         assertThat(((me.supcheg.javafile.type.ParameterizedTypeRef) listUse.typeRef()).annotations())
                 .containsExactly(tag);
+        assertThat(annotated).isNotEqualTo(UnsafeFacts.annotated(list, tag));
         ArrayToken<String[], String> array = ArrayToken.of(string);
         assertThat(((me.supcheg.javafile.type.ArrayTypeRef)
                                 UnsafeFacts.annotated(array, tag).typeRef())

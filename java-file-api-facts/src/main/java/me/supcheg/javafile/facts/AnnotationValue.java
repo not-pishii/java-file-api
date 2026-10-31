@@ -1,10 +1,6 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.annotation.ArrayValue;
-import me.supcheg.javafile.annotation.ClassValue;
-import me.supcheg.javafile.annotation.EnumValue;
-import me.supcheg.javafile.annotation.LiteralValue;
-import me.supcheg.javafile.annotation.NestedAnnotationValue;
 import me.supcheg.javafile.annotation.SingleAnnotationValue;
 
 /// The value of an element of an annotation (§3.6), typed by the Java type
@@ -40,12 +36,11 @@ public final class AnnotationValue<V> {
     /// @return the value
     /// @throws IllegalArgumentException if the value is an array
     SingleAnnotationValue single() {
-        return switch (value) {
-            case LiteralValue _, ClassValue _, EnumValue _, NestedAnnotationValue _ -> (SingleAnnotationValue) value;
-            case ArrayValue _ ->
-                throw new IllegalArgumentException("an annotation value that is an array is no element of another"
-                        + " array: the element type of an annotation element is no array of arrays (JLS 9.6.1)");
-        };
+        if (value instanceof ArrayValue) {
+            throw new IllegalArgumentException("an annotation value that is an array is no element of another"
+                    + " array: the element type of an annotation element is no array of arrays (JLS 9.6.1)");
+        }
+        return (SingleAnnotationValue) value;
     }
 
     @Override
