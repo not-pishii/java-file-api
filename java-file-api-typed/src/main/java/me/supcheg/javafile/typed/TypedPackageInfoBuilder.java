@@ -1,0 +1,64 @@
+package me.supcheg.javafile.typed;
+
+import me.supcheg.javafile.PackageInfoFile;
+import me.supcheg.javafile.PackageName;
+import me.supcheg.javafile.facts.AnnotationRef;
+import me.supcheg.javafile.facts.TargetClasspath;
+
+import java.lang.annotation.ElementType;
+import java.util.ArrayList;
+import java.util.List;
+
+/// Declares a `package-info.java` (§6.5): the annotations of a package.
+/// An annotation the annotation type does not allow on a package is rejected
+/// where it is added.
+public final class TypedPackageInfoBuilder {
+    private final TargetClasspath target;
+    private final String packageName;
+    private final List<AnnotationRef<?>> annotations = new ArrayList<>();
+    private boolean complete;
+
+    TypedPackageInfoBuilder(TargetClasspath target, String packageName) {
+        this.target = target;
+        this.packageName = packageName;
+    }
+
+    /// Adds an annotation to the package declaration.
+    ///
+    /// @param annotation the annotation
+    /// @return this builder
+    /// @throws IllegalArgumentException if the annotation type cannot annotate a package
+    /// @throws IllegalStateException if the declaration is complete
+    public TypedPackageInfoBuilder withAnnotation(AnnotationRef<?> annotation) {
+        if (complete) {
+            throw new IllegalStateException("the declaration of package " + packageName + " is already complete");
+        }
+        if (!annotation.type().targets().isEmpty()
+                && !annotation.type().targets().contains(ElementType.PACKAGE)) {
+            throw new IllegalArgumentException(
+                    "the annotation @" + annotation.type().token()
+                            + " cannot annotate a package: its targets are "
+                            + annotation.type().targets()
+                            + " (JLS 9.6.4.1)");
+        }
+        target.verify(annotation.type().token());
+        annotations.add(annotation);
+        return this;
+    }
+
+    /// The declaration of the package is complete.
+    ///
+    /// @return the package-info file
+    /// @throws IllegalStateException if the declaration is complete already
+    PackageInfoFile complete() {
+        if (complete) {
+            throw new IllegalStateException("the declaration of package " + packageName + " is already complete");
+        }
+        complete = true;
+        return PackageInfoFile.of(
+                new PackageName.Named(packageName),
+                annotations.stream()
+                        .map(AnnotationRef::toUse)
+                        .toArray(me.supcheg.javafile.annotation.AnnotationUse[]::new));
+    }
+}

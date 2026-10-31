@@ -55,6 +55,7 @@ import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.FieldRef;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
@@ -310,6 +311,13 @@ final class Lowering {
     /// reference it before lowering the body itself.
     String declareUpfront(Var<?> var) {
         return declare(var);
+    }
+
+    /// Declares a variable up front under a name the declaration gives it, as
+    /// the components of a compact constructor are named.
+    String declareUpfront(Var<?> var, String name) {
+        mentions(var.type());
+        return names.declare(var, name);
     }
 
     /// Declares a variable in the innermost scope: its type is one the
@@ -848,14 +856,28 @@ final class Lowering {
                                 + " subclass of " + owner + " alone (JLS 6.6.2), and this code is in the body of"
                                 + " no class");
                     case Place.InClass(var self, var _, var _) -> {
-                        if (!self.isSubclassOf(owner.erasure())) {
+                        if (!isSubclassOf(self, owner.erasure())) {
                             throw new IllegalStateException(member + " is protected: it is reached in the body"
                                     + " of a subclass of " + owner + " alone (JLS 6.6.2), and " + self
                                     + " is none — the fact was taken out for another class");
                         }
-                        yield Optional.of(self);
+                        if (!(self instanceof ClassToken<?> cls)) {
+                            throw new IllegalStateException(member + " is protected: it is reached in the body"
+                                    + " of a class, and " + self + " is an interface");
+                        }
+                        yield Optional.of(cls);
                     }
                 };
+        };
+    }
+
+    /// Whether a type is `type` or a subtype of it: a class by its superclass chain, an interface by
+    /// the interfaces it extends.
+    private static boolean isSubclassOf(DeclaredToken<?> self, ClassDesc type) {
+        return switch (self) {
+            case ClassToken<?> cls -> cls.isSubclassOf(type);
+            case InterfaceToken<?> iface ->
+                iface.erasure().equals(type) || iface.shape().interfaces().contains(type);
         };
     }
 
@@ -1406,7 +1428,7 @@ final class Lowering {
         /// @param self the class
         /// @param scope the type parameters of the class that are in scope there
         /// @param variables the type parameters of the class, each with its bounds
-        record InClass(ClassToken<?> self, TypeScope scope, List<Subtyping.Bounded> variables) implements Place {
+        record InClass(DeclaredToken<?> self, TypeScope scope, List<Subtyping.Bounded> variables) implements Place {
             public InClass {
                 variables = List.copyOf(variables);
             }

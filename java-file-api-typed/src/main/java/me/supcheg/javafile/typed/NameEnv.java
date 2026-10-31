@@ -2,8 +2,10 @@ package me.supcheg.javafile.typed;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /// Assigns deterministic, collision-free names to [Var]s during lowering
 /// (§6.2), in a stack of lexical scopes that mirrors the rendered blocks. A
@@ -19,6 +21,7 @@ import java.util.Map;
 /// dangling reference.
 final class NameEnv {
     private final Deque<Map<Var<?>, String>> scopes = new ArrayDeque<>();
+    private final Set<String> taken = new HashSet<>();
     private int counter;
 
     NameEnv() {
@@ -37,8 +40,22 @@ final class NameEnv {
 
     /// Declares a variable in the innermost scope and returns its assigned name.
     String declare(Var<?> var) {
-        String name = "v" + (counter++);
+        String name;
+        do {
+            name = "v" + (counter++);
+        } while (taken.contains(name));
+        return declare(var, name);
+    }
+
+    /// Declares a variable in the innermost scope under a name the declaration gives it, as the
+    /// components of a compact constructor are named.
+    ///
+    /// @param var the variable
+    /// @param name the name
+    /// @return the name
+    String declare(Var<?> var, String name) {
         scopes.element().put(var, name);
+        taken.add(name);
         return name;
     }
 

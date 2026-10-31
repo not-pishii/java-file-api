@@ -30,6 +30,7 @@
     InterruptedException.class,
     IntBinaryOperator.class,
     IntSupplier.class,
+    IntUnaryOperator.class,
     List.class,
     Math.class,
     NumberFormatException.class,
@@ -118,7 +119,12 @@
     VarargsBase.class,
     VarargsArray.class,
     Tag.class,
-    Author.class
+    Author.class,
+    PackageTag.class,
+    Retention.class,
+    RetentionPolicy.class,
+    Target.class,
+    ElementType.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -204,7 +210,12 @@ import me.supcheg.javafile.typed.fixtures.VarargsArray;
 import me.supcheg.javafile.typed.fixtures.VarargsBase;
 import me.supcheg.javafile.typed.fixtures.Tag;
 import me.supcheg.javafile.typed.fixtures.Author;
+import me.supcheg.javafile.typed.fixtures.PackageTag;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -221,6 +232,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;

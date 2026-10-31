@@ -77,6 +77,15 @@ final class Inheritance {
         this.groups = merged(heir, this.supertypes);
     }
 
+    /// The inheritance of a type that names no supertype yet: an interface with no `extends`, or a
+    /// record or enum before it names an interface.
+    ///
+    /// @param heir who inherits
+    /// @return the inheritance
+    static Inheritance none(Heir heir) {
+        return new Inheritance(heir, List.of());
+    }
+
     /// The inheritance of a class that extends `superclass` and implements nothing yet.
     ///
     /// @param heir who inherits

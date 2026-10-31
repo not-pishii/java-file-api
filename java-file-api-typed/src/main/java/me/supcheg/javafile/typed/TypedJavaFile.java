@@ -2,6 +2,8 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.ModuleFile;
+import me.supcheg.javafile.PackageInfoFile;
 import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FactLookupException;
@@ -117,6 +119,189 @@ public final class TypedJavaFile {
                 return spec.build(new ClassHeader<>(declaration));
             }
         });
+    }
+
+    /// Declares a `public` interface, from its members: abstract, default, static and private methods,
+    /// constants, the interfaces it extends, and the subtypes it permits if it is `sealed`.
+    ///
+    /// ```java
+    /// JavaFile file = TypedJavaFile.interface_(target, desc, new TypedJavaFile.TypedInterfaceSpec() {
+    ///     public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+    ///         var area = ib.declareAbstractMethod("area", PrimitiveToken.DOUBLE);
+    ///         return ib.bodies();
+    ///     }
+    /// });
+    /// ```
+    ///
+    /// @param target the classpath the interface is compiled against
+    /// @param desc the interface's binary name
+    /// @param spec declares the interface, given its self-branded builder
+    /// @return the rendered interface
+    /// @throws IllegalArgumentException if `desc` describes a nested type, or its package or simple name cannot
+    ///     be written in Java
+    /// @throws IllegalStateException if a member `spec` declared is not defined
+    public static JavaFile interface_(TargetClasspath target, ClassDesc desc, TypedInterfaceSpec spec) {
+        Scopes.requireNoneOpen(
+                "interface " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
+        return declaredInterface(target, declarable(desc, "interface"), spec);
+    }
+
+    private static <Self> JavaFile declaredInterface(TargetClasspath target, ClassDesc desc, TypedInterfaceSpec spec) {
+        TypedInterfaceBuilder<Self> builder = new TypedInterfaceBuilder<>(target, desc);
+        return builder.complete(Objects.requireNonNull(
+                spec.build(builder), "a specification returns the bodies of the members of the interface"));
+    }
+
+    /// The specification of an interface (§6.5).
+    public interface TypedInterfaceSpec {
+        /// Declares the interface through `ib`, branded with a fresh `Self`.
+        ///
+        /// @param ib the self-branded interface builder
+        /// @param <Self> the brand of the interface being declared
+        /// @return the bodies of the members: the stage the declaration ends in
+        <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib);
+    }
+
+    /// Declares a `public` record, from its components and members.
+    ///
+    /// @param target the classpath the record is compiled against
+    /// @param desc the record's binary name
+    /// @param spec declares the record, given its self-branded builder
+    /// @return the rendered record
+    /// @throws IllegalArgumentException if `desc` describes a nested type, or its package or simple name cannot
+    ///     be written in Java
+    /// @throws IllegalStateException if a member `spec` declared is not defined
+    public static JavaFile record(TargetClasspath target, ClassDesc desc, TypedRecordSpec spec) {
+        Scopes.requireNoneOpen(
+                "record " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
+        return declaredRecord(target, declarable(desc, "record"), spec);
+    }
+
+    private static <Self> JavaFile declaredRecord(TargetClasspath target, ClassDesc desc, TypedRecordSpec spec) {
+        TypedRecordBuilder<Self> builder = new TypedRecordBuilder<>(target, desc);
+        return builder.complete(Objects.requireNonNull(
+                spec.build(builder), "a specification returns the bodies of the members of the record"));
+    }
+
+    /// The specification of a record (§6.5).
+    public interface TypedRecordSpec {
+        /// Declares the record through `rb`, branded with a fresh `Self`.
+        ///
+        /// @param rb the self-branded record builder
+        /// @param <Self> the brand of the record being declared
+        /// @return the bodies of the members: the stage the declaration ends in
+        <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb);
+    }
+
+    /// Declares a `public` enum, from its constants and members.
+    ///
+    /// @param target the classpath the enum is compiled against
+    /// @param desc the enum's binary name
+    /// @param spec declares the enum, given its self-branded builder
+    /// @return the rendered enum
+    /// @throws IllegalArgumentException if `desc` describes a nested type, or its package or simple name cannot
+    ///     be written in Java
+    /// @throws IllegalStateException if a member `spec` declared is not defined
+    public static JavaFile enum_(TargetClasspath target, ClassDesc desc, TypedEnumSpec spec) {
+        Scopes.requireNoneOpen(
+                "enum " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
+        return declaredEnum(target, declarable(desc, "enum"), spec);
+    }
+
+    private static <Self> JavaFile declaredEnum(TargetClasspath target, ClassDesc desc, TypedEnumSpec spec) {
+        TypedEnumBuilder<Self> builder = new TypedEnumBuilder<>(target, desc);
+        return builder.complete(Objects.requireNonNull(
+                spec.build(builder), "a specification returns the bodies of the members of the enum"));
+    }
+
+    /// The specification of an enum (§6.5).
+    public interface TypedEnumSpec {
+        /// Declares the enum through `eb`, branded with a fresh `Self`.
+        ///
+        /// @param eb the self-branded enum builder
+        /// @param <Self> the brand of the enum being declared
+        /// @return the bodies of the members: the stage the declaration ends in
+        <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb);
+    }
+
+    /// Declares a `public` annotation type, from its elements and meta-annotations.
+    ///
+    /// @param target the classpath the annotation type is compiled against
+    /// @param desc the annotation type's binary name
+    /// @param spec declares the annotation type, given its self-branded builder
+    /// @return the rendered annotation type
+    /// @throws IllegalArgumentException if `desc` describes a nested type, or its package or simple name cannot
+    ///     be written in Java
+    public static JavaFile annotationType(TargetClasspath target, ClassDesc desc, TypedAnnotationTypeSpec spec) {
+        Scopes.requireNoneOpen("annotation type " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".")
+                + desc.displayName());
+        return declaredAnnotationType(target, declarable(desc, "annotation type"), spec);
+    }
+
+    private static <Self> JavaFile declaredAnnotationType(
+            TargetClasspath target, ClassDesc desc, TypedAnnotationTypeSpec spec) {
+        TypedAnnotationTypeBuilder<Self> builder = new TypedAnnotationTypeBuilder<>(target, desc);
+        Objects.requireNonNull(spec.build(builder), "a specification returns the builder of the annotation type");
+        return builder.complete();
+    }
+
+    /// The specification of an annotation type (§6.5).
+    public interface TypedAnnotationTypeSpec {
+        /// Declares the annotation type through `ab`, branded with a fresh `Self`.
+        ///
+        /// @param ab the self-branded annotation type builder
+        /// @param <Self> the brand of the annotation type being declared
+        /// @return the builder, complete
+        <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab);
+    }
+
+    /// Declares a `package-info.java` for a package, from its annotations.
+    ///
+    /// @param target the classpath the package annotations are checked against
+    /// @param packageName the annotated package
+    /// @param spec populates the annotations
+    /// @return the package-info file
+    /// @throws IllegalArgumentException if the package is unnamed, or an annotation type cannot annotate a
+    ///     package
+    public static PackageInfoFile packageInfo(TargetClasspath target, String packageName, TypedPackageInfoSpec spec) {
+        if (packageName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "the unnamed package has no package declaration, so no package-info.java");
+        }
+        Scopes.requireNoneOpen("package " + packageName);
+        TypedPackageInfoBuilder builder = new TypedPackageInfoBuilder(target, packageName);
+        spec.build(builder);
+        return builder.complete();
+    }
+
+    /// The specification of a `package-info.java` (§6.5).
+    public interface TypedPackageInfoSpec {
+        /// Adds the annotations of the package.
+        ///
+        /// @param pb the builder
+        void build(TypedPackageInfoBuilder pb);
+    }
+
+    /// Declares a `module-info.java`, from its directives.
+    ///
+    /// @param target the classpath the module is checked against
+    /// @param moduleName the declared module
+    /// @param spec populates the directives
+    /// @return the module-info file
+    /// @throws IllegalArgumentException if a directive is one the core rejects
+    public static ModuleFile module(TargetClasspath target, String moduleName, TypedModuleSpec spec) {
+        Scopes.requireNoneOpen("module " + moduleName);
+        TypedModuleBuilder builder = new TypedModuleBuilder(moduleName);
+        spec.build(builder);
+        return builder.complete();
+    }
+
+    /// The specification of a `module-info.java` (§6.5).
+    public interface TypedModuleSpec {
+        /// Adds the directives of the module.
+        ///
+        /// @param mb the builder
+        void build(TypedModuleBuilder mb);
     }
 
     /// A type parameter without a bound, `<T>`.
@@ -283,22 +468,32 @@ public final class TypedJavaFile {
     ///
     /// @throws IllegalArgumentException if `desc` describes a nested class, or a name of it cannot be written
     private static ClassDesc declarable(ClassDesc desc) {
+        return declarable(desc, "class");
+    }
+
+    /// The type `desc` describes, if the typed layer declares it: a top-level type of the kind `kind`,
+    /// whose package and simple name Java source writes as they are (JLS 3.8, 7.4.1), and of no package
+    /// of the platform.
+    ///
+    /// @throws IllegalArgumentException if `desc` describes a nested type, or a name of it cannot be written
+    private static ClassDesc declarable(ClassDesc desc, String kind) {
         String described =
                 desc.packageName().isEmpty() ? desc.displayName() : desc.packageName() + "." + desc.displayName();
         if (ClassDescNames.nestingChain(desc).size() != 1) {
-            throw new IllegalArgumentException("cannot declare the class " + described + ": its name is that of a"
-                    + " nested class, and the typed layer declares a top-level class alone");
+            throw new IllegalArgumentException("cannot declare the " + kind + " " + described + ": its name is"
+                    + " that of a nested " + kind + ", and the typed layer declares a top-level type alone");
         }
         try {
             Identifiers.requireTypeIdentifier(desc.displayName());
             PackageName.of(desc);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("cannot declare the class " + described + ": " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "cannot declare the " + kind + " " + described + ": " + e.getMessage(), e);
         }
         if (desc.packageName().equals("java") || desc.packageName().startsWith("java.")) {
-            throw new IllegalArgumentException("cannot declare the class " + described + ": a package of java is"
-                    + " one of the platform, which javac refuses to add to where the module java.base has it and"
-                    + " no class loader but the platform's defines a class of");
+            throw new IllegalArgumentException("cannot declare the " + kind + " " + described + ": a package of"
+                    + " java is one of the platform, which javac refuses to add to where the module java.base has"
+                    + " it and no class loader but the platform's defines a class of");
         }
         return desc;
     }

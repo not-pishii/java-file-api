@@ -37,6 +37,13 @@ public final class Upcast<Self, X> {
         return supertype;
     }
 
+    /// The type the witness is that of a supertype.
+    ///
+    /// @return the token of the type
+    RefToken<Self> self() {
+        return self;
+    }
+
     /// A class that is an exception by a witness alone, as the exception class a `throws`
     /// clause, a `catch` or a `throw` takes: the class being declared, whose brand has no bound
     /// `extends Throwable` to tell it.
