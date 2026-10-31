@@ -1,6 +1,12 @@
 package me.supcheg.javafile.model;
 
 /// Anything that can go inside a record body: compact and canonical
-/// constructors, methods, static fields, and nested types.
+/// constructors, additional constructors, methods, static fields, and nested
+/// types.
 public sealed interface RecordMember
-        permits CompactConstructorDecl, CanonicalConstructorDecl, MethodDecl, StaticFieldDecl, TypeDecl {}
+        permits CompactConstructorDecl,
+                CanonicalConstructorDecl,
+                ConstructorDecl,
+                MethodDecl,
+                StaticFieldDecl,
+                TypeDecl {}

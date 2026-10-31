@@ -42,6 +42,18 @@ public final class ModuleFile implements RenderableFile {
     public static ModuleFile of(String moduleName, Consumer<? super ModuleBuilder> spec) {
         ModuleBuilder builder = new ModuleBuilder();
         spec.accept(builder);
+        return of(moduleName, builder);
+    }
+
+    /// Builds a `module-info.java` file declaring `moduleName`, with the directives of a builder that is
+    /// already populated.
+    ///
+    /// @param moduleName the declared module's name, dot-separated
+    /// @param builder the populated builder
+    /// @return the finished file
+    /// @throws IllegalArgumentException if an `open` module has `opens` directives, or the same module is
+    ///     required twice
+    public static ModuleFile of(String moduleName, ModuleBuilder builder) {
         return new ModuleFile(moduleName, builder.isOpen(), builder.build(), builder.doc());
     }
 

@@ -8,6 +8,7 @@ import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.CanonicalConstructorDecl;
 import me.supcheg.javafile.model.CompactConstructorDecl;
+import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -233,6 +234,16 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         spec.accept(cb);
         members.add(new CanonicalConstructorDecl(
                 List.of(), Set.of(Modifier.PUBLIC), List.copyOf(params), cb.build(), List.of(), Optional.empty()));
+        return this;
+    }
+
+    /// Adds an additional constructor, which must delegate to the canonical
+    /// one with `this(...)`.
+    ///
+    /// @param constructor the constructor to add
+    /// @return this builder
+    public RecordBuilder withConstructor(ConstructorDecl constructor) {
+        members.add(constructor);
         return this;
     }
 

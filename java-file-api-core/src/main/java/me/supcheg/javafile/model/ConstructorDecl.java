@@ -26,7 +26,7 @@ public record ConstructorDecl(
         ConstructorBody body,
         List<ClassOrInterfaceTypeRef> throwsTypes,
         Optional<DocComment> doc)
-        implements ClassMember {
+        implements ClassMember, RecordMember {
     public ConstructorDecl {
         annotations = List.copyOf(annotations);
         modifiers = ModifierValidation.requireValidMember(

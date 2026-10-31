@@ -11,6 +11,7 @@ import me.supcheg.javafile.model.DefaultMethodDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.PrivateMethodDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
@@ -278,6 +279,62 @@ public final class InterfaceBuilder implements Consumer<InterfaceMember> {
                 mb.typeParams(),
                 mb.params(),
                 mb.body(),
+                mb.throwsTypes(),
+                mb.doc()));
+        return this;
+    }
+
+    /// Adds a `private` method.
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withPrivateMethod(String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
+        return withPrivateMethod(name, returnType, false, spec);
+    }
+
+    /// Adds a `private void` method.
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withVoidPrivateMethod(String name, Consumer<? super MethodBuilder> spec) {
+        return withPrivateMethod(name, null, false, spec);
+    }
+
+    /// Adds a `private static` method.
+    ///
+    /// @param name the method name
+    /// @param returnType the method's return type
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withPrivateStaticMethod(
+            String name, TypeRef returnType, Consumer<? super MethodBuilder> spec) {
+        return withPrivateMethod(name, returnType, true, spec);
+    }
+
+    /// Adds a `private static void` method.
+    ///
+    /// @param name the method name
+    /// @param spec receives the builder to populate the method
+    /// @return this builder
+    public InterfaceBuilder withVoidPrivateStaticMethod(String name, Consumer<? super MethodBuilder> spec) {
+        return withPrivateMethod(name, null, true, spec);
+    }
+
+    private InterfaceBuilder withPrivateMethod(
+            String name, @Nullable TypeRef returnType, boolean isStatic, Consumer<? super MethodBuilder> spec) {
+        MethodBuilder mb = new MethodBuilder(name, Optional.ofNullable(returnType));
+        spec.accept(mb);
+        members.add(new PrivateMethodDecl(
+                mb.name(),
+                mb.returnType(),
+                mb.annotations(),
+                mb.typeParams(),
+                mb.params(),
+                mb.body(),
+                isStatic,
                 mb.throwsTypes(),
                 mb.doc()));
         return this;

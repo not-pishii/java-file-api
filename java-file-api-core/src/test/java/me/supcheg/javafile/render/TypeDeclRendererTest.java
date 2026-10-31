@@ -1114,6 +1114,57 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersPrivateAndPrivateStaticInterfaceMethods() {
+        InterfaceBuilder builder = new InterfaceBuilder(ClassDesc.of("me.supcheg.example", "Helper"));
+        builder.withPrivateMethod(
+                        "twice",
+                        PrimitiveTypeRef.INT,
+                        mb -> mb.withParam("x", PrimitiveTypeRef.INT).withBody(b -> b.return_(literal(1))))
+                .withVoidPrivateStaticMethod("touch", mb -> mb.withBody(b -> {}));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public interface Helper {
+                            private int twice(int x) {
+                                return 1;
+                            }
+
+                            private static void touch() {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnAdditionalRecordConstructorThatDelegatesToTheCanonicalOne() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("me.supcheg.example", "Point"));
+        builder.withComponent("x", PrimitiveTypeRef.INT)
+                .withConstructor(new me.supcheg.javafile.model.ConstructorDecl(
+                        List.of(),
+                        Set.of(Modifier.PUBLIC),
+                        List.of(),
+                        new me.supcheg.javafile.code.ConstructorBody.Explicit(
+                                me.supcheg.javafile.code.CodeBody.EMPTY,
+                                new me.supcheg.javafile.code.ConstructorInvocation.This(List.of(literal(0))),
+                                me.supcheg.javafile.code.CodeBody.EMPTY),
+                        List.of(),
+                        Optional.empty()));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public record Point(int x) {
+                            public Point() {
+                                this(0);
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void rendersStaticNestedAnnotationTypeUsingTheLeafSimpleNameOfARealNestedClassDesc() {
         ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
         var nested = new me.supcheg.javafile.model.AnnotationTypeDecl(

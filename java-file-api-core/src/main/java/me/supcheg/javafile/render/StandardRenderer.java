@@ -15,6 +15,7 @@ import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.ModuleDirective;
+import me.supcheg.javafile.model.PrivateMethodDecl;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
 import me.supcheg.javafile.model.TypeDecl;
@@ -173,6 +174,7 @@ public final class StandardRenderer implements SourceRenderer {
             case AbstractMethodDecl method -> method.typeParams().stream();
             case DefaultMethodDecl method -> method.typeParams().stream();
             case StaticMethodDecl method -> method.typeParams().stream();
+            case PrivateMethodDecl method -> method.typeParams().stream();
             default -> Stream.<TypeParam>empty();
         }));
     }

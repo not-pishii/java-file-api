@@ -25,6 +25,7 @@ import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.model.PrivateMethodDecl;
 import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.RecordMember;
@@ -252,6 +253,18 @@ final class TypeDeclRenderer {
                                 s.doc(),
                                 "static",
                                 ctx);
+                    case PrivateMethodDecl p ->
+                        renderDefaultOrStaticMethod(
+                                p.name(),
+                                p.returnType(),
+                                p.annotations(),
+                                p.typeParams(),
+                                p.params(),
+                                p.body(),
+                                p.throwsTypes(),
+                                p.doc(),
+                                p.isStatic() ? "private static" : "private",
+                                ctx);
                     case ConstantDecl c -> renderConstant(c, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
@@ -369,6 +382,7 @@ final class TypeDeclRenderer {
                     case CompactConstructorDecl cc -> renderCompactConstructor(cc, ctx, ownerSimpleName);
                     case CanonicalConstructorDecl cc ->
                         renderCanonicalConstructor(cc, ctx, ownerSimpleName, components);
+                    case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case MethodDecl m -> renderMethod(m, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
