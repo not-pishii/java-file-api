@@ -27,7 +27,7 @@ import java.util.List;
 /// });
 /// ```
 ///
-/// An interface has no constructor and extends no class: [#declareConstructor]
+/// An interface has no constructor and extends no class: `declareConstructor`
 /// is not there, and [TypedInterfaceBuilder#extends_] takes an interface token
 /// alone. A method declared by name that has the signature of one a
 /// superinterface declares overrides it and is rendered `@Override`; the
