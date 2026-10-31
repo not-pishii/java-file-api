@@ -254,6 +254,56 @@ public final class TypeShape<K extends DeclaredKind> {
                 () -> Heritage.UNTOLD);
     }
 
+    /// The shape of an interface that is being declared: its superinterfaces are known when it names
+    /// them, and its methods once its members are all declared. The supplier may throw while it has no
+    /// answer yet.
+    ///
+    /// @param desc the interface
+    /// @param typeParameters the type parameters of the interface, in order
+    /// @param interfaces the erased interfaces the interface extends
+    /// @param methods supplies the methods of the interface, declared and inherited
+    /// @return the shape
+    static TypeShape<DeclaredKind.Interface> declaredInterface(
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<ClassDesc> interfaces,
+            Supplier<MethodTableTemplate> methods) {
+        return new TypeShape<>(
+                ShapeOrigin.UNSAFE,
+                DeclaredKind.INTERFACE,
+                desc,
+                typeParameters,
+                List.of(),
+                interfaces,
+                Supertypes.NONE,
+                methods,
+                List.of(),
+                false);
+    }
+
+    /// The shape of an enum class that is being declared: its constants are known when it declares
+    /// them, and its methods once its members are all declared. The supplier may throw while it has no
+    /// answer yet.
+    ///
+    /// @param desc the enum
+    /// @param constants the constant names, in declaration order
+    /// @param methods supplies the methods of the enum, declared and inherited
+    /// @return the shape
+    static TypeShape<DeclaredKind.EnumClass> declaredEnum(
+            ClassDesc desc, List<String> constants, Supplier<MethodTableTemplate> methods) {
+        return new TypeShape<>(
+                ShapeOrigin.UNSAFE,
+                DeclaredKind.ENUM_CLASS,
+                desc,
+                List.of(),
+                List.of(CD_ENUM, ConstantDescs.CD_Object),
+                List.of(),
+                Supertypes.NONE,
+                methods,
+                constants,
+                false);
+    }
+
     /// The shape of a type this module knows by definition.
     static TypeShape<DeclaredKind.FinalClass> builtin(ClassDesc desc, List<ClassDesc> superclasses) {
         return new TypeShape<>(

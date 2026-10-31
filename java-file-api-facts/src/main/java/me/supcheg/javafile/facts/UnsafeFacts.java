@@ -537,6 +537,63 @@ public final class UnsafeFacts {
         return new InterfaceToken<>(shape, typeRef, shape.boundErasures());
     }
 
+    /// Vouches that an interface is being declared by the typed layer (§6.5): its methods are known
+    /// once its members are all declared. `methods` is asked until it answers once, and may throw
+    /// while the table is not known yet.
+    ///
+    /// @param type the interface
+    /// @param methods supplies the interface's methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    public static <T> InterfaceToken<T> declaredInterfaceToken(
+            ClassTypeRef type, Supplier<MethodTableTemplate> methods) {
+        TypeShape<DeclaredKind.Interface> shape =
+                TypeShape.declaredInterface(type.desc(), List.of(), List.of(), methods);
+        return new InterfaceToken<>(shape, type, shape.boundErasures());
+    }
+
+    /// Vouches that a generic interface is being declared by the typed layer (§6.5), as
+    /// [#declaredClassToken(ClassDesc, List, List, Supplier, Supplier)] does of a class: the token is of
+    /// the interface with its own type parameters for its type arguments.
+    ///
+    /// @param desc the interface
+    /// @param typeParameters its type parameters, each with its leftmost bound
+    /// @param variables the tokens of the type parameters, in order: the type arguments of the token
+    /// @param interfaces the erased interfaces the interface extends
+    /// @param methods supplies the interface's methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    /// @throws IllegalArgumentException if there is not one variable per type parameter
+    public static <T> InterfaceToken<T> declaredInterfaceToken(
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<? extends TypeVarToken<?>> variables,
+            List<ClassDesc> interfaces,
+            Supplier<MethodTableTemplate> methods) {
+        if (variables.isEmpty() || variables.size() != typeParameters.size()) {
+            throw new IllegalArgumentException("a generic interface has a token for each of its type parameters: "
+                    + typeParameters + " and " + variables);
+        }
+        TypeShape<DeclaredKind.Interface> shape =
+                TypeShape.declaredInterface(desc, typeParameters, interfaces, methods);
+        return new InterfaceToken<>(
+                shape, variables.stream().map(TokenArg::exact).toList());
+    }
+
+    /// Vouches that an enum is being declared by the typed layer (§6.5): its constants are declared,
+    /// and its methods are known once its members are all declared. `methods` is asked until it answers
+    /// once, and may throw while the table is not known yet.
+    ///
+    /// @param type the enum
+    /// @param constants the constant names, in declaration order
+    /// @param methods supplies the enum's methods, declared and inherited
+    /// @param <T> the Java type the token stands for
+    /// @return the token
+    public static <T> EnumToken<T> declaredEnumToken(
+            ClassTypeRef type, List<String> constants, Supplier<MethodTableTemplate> methods) {
+        return new EnumToken<>(TypeShape.declaredEnum(type.desc(), constants, methods));
+    }
+
     /// Vouches that an enum exists with the given constants.
     ///
     /// @param typeRef the enum type
