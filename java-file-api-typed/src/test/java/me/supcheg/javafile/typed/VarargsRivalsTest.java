@@ -8,12 +8,16 @@ import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Overloads_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.VarargsArray_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.VarargsBase_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.box;
+import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
+import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.varargs;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// which the rendered class makes: it is compiled under every lint and run.
 class VarargsRivalsTest {
     private static final ArrayToken<Object[], Object> OBJECTS = ArrayToken.of(Object_.TOKEN);
+    private static final ArrayToken<String[], String> STRINGS = ArrayToken.of(String_.TOKEN);
     private static final ArrayToken<int[], me.supcheg.javafile.facts.Prim.Int> INTS = PrimitiveToken.INT.array();
     private static final ArrayToken<Integer[], Integer> INTEGERS = ArrayToken.of(PrimitiveToken.INT.boxed());
 
@@ -98,5 +103,42 @@ class VarargsRivalsTest {
         assertThat(compiled.invoke("intsTwo")).isEqualTo("var");
         assertThat(compiled.invoke("objs")).isEqualTo("var");
         assertThat(compiled.invoke("objsTwo")).isEqualTo("var");
+    }
+
+    @Test
+    void whereTheTypeDeclaresTheArrayForTheVariableArityTheArgumentsAreTheArray() throws Throwable {
+        VarargsBase_<String> base = new VarargsBase_<>(String_.TOKEN);
+        CompiledClasses compiled = CompiledClasses.of(file("Arrayed", new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                var ctor = cb.declareConstructor();
+                var m = cb.declareMethod("m", String_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.define(ctor, (b, self) -> b.end());
+                bodies.define(
+                        m,
+                        (b, self) -> b.return_(call(
+                                new_(VarargsArray_.new_),
+                                base.join_TArray,
+                                varargs(STRINGS, literal("a"), literal("b")))));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        import me.supcheg.javafile.typed.fixtures.VarargsArray;
+
+                        public final class Arrayed {
+                            public Arrayed() {
+                            }
+
+                            public String m() {
+                                return new VarargsArray().join(new String[] {"a", "b"});
+                            }
+                        }
+                        """);
+        assertThat(compiled.invoke("m")).isEqualTo("array:a+b");
     }
 }

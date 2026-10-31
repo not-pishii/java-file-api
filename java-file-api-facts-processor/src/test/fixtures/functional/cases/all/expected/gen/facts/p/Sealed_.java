@@ -31,7 +31,7 @@ import p.Sealed;
 ///
 /// No generated class extends or implements [Sealed]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sealed.class, fingerprint = "c881531340fc7699e315707afa47b2011b603a2dfb019fe1ef9620936d02e388", complete = true, format = 15)
+@GeneratedMetamodel(of = Sealed.class, fingerprint = "c881531340fc7699e315707afa47b2011b603a2dfb019fe1ef9620936d02e388", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Sealed_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sealed] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sealed_"), "c881531340fc7699e315707afa47b2011b603a2dfb019fe1ef9620936d02e388", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sealed"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Sealed_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sealed_"), "c881531340fc7699e315707afa47b2011b603a2dfb019fe1ef9620936d02e388", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Sealed"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, new Sealed_Heritage());
 
         private Data() {
         }

@@ -900,15 +900,30 @@ public final class MirrorTranslator {
                 .collect(Collectors.groupingBy(
                         e -> Category.of(e.getKey(), e.getValue()),
                         Collectors.mapping(Map.Entry::getKey, Collectors.toUnmodifiableSet())));
-        return new MethodTableTemplate(
-                parts.getOrDefault(Category.ABSTRACT, Set.of()),
-                parts.getOrDefault(Category.CONCRETE, Set.of()),
-                parts.getOrDefault(Category.STATIC, Set.of()),
+        Set<MethodTableTemplate.Signature> constructors =
                 ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
                         .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
                         .map(constructor -> new MethodTableTemplate.Signature(
                                 desc(element).displayName(), declared(constructor, element, self)))
-                        .collect(Collectors.toUnmodifiableSet()));
+                        .collect(Collectors.toUnmodifiableSet());
+        Set<MethodTableTemplate.Signature> variableArity = Stream.concat(
+                        table.entrySet().stream()
+                                .filter(entry -> entry.getValue().stream()
+                                        .allMatch(method -> arity(method) instanceof Arity.Variable))
+                                .map(Map.Entry::getKey),
+                        ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
+                                .filter(constructor ->
+                                        !constructor.getModifiers().contains(Modifier.PRIVATE))
+                                .filter(constructor -> arity(constructor) instanceof Arity.Variable)
+                                .map(constructor -> new MethodTableTemplate.Signature(
+                                        desc(element).displayName(), declared(constructor, element, self))))
+                .collect(Collectors.toUnmodifiableSet());
+        return new MethodTableTemplate(
+                parts.getOrDefault(Category.ABSTRACT, Set.of()),
+                parts.getOrDefault(Category.CONCRETE, Set.of()),
+                parts.getOrDefault(Category.STATIC, Set.of()),
+                constructors,
+                variableArity);
     }
 
     /// What a class that extends or implements a type inherits of it

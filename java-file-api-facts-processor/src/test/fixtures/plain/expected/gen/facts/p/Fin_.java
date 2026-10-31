@@ -35,7 +35,7 @@ import p.Fin;
 ///
 /// No generated class extends or implements [Fin]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fin.class, fingerprint = "7cdde426e910bb91e3f95b2a92a7b05f1fd2439c9eb473a5b1de2d228fd6114a", complete = true, format = 15)
+@GeneratedMetamodel(of = Fin.class, fingerprint = "7cdde426e910bb91e3f95b2a92a7b05f1fd2439c9eb473a5b1de2d228fd6114a", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Fin_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fin] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fin_"), "7cdde426e910bb91e3f95b2a92a7b05f1fd2439c9eb473a5b1de2d228fd6114a", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Fin"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Fin"), Signature.of("Fin", Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fin_"), "7cdde426e910bb91e3f95b2a92a7b05f1fd2439c9eb473a5b1de2d228fd6114a", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Fin"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Fin"), Signature.of("Fin", Param.fixed(ConstantDescs.CD_int))), Set.of()), List.of(), false);
 
         private Data() {
         }

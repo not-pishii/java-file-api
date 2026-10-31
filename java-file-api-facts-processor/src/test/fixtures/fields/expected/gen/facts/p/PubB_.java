@@ -33,7 +33,7 @@ import p.PubB;
 ///
 /// A generated class extends or implements [PubB] by the proof its metamodel starts, with the stages of `PubB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubB.class, fingerprint = "f66f0f3c4be7b8933449c8f5933c9726a4dd353a53d30e7a5319af26d2e36c54", complete = true, format = 15)
+@GeneratedMetamodel(of = PubB.class, fingerprint = "f66f0f3c4be7b8933449c8f5933c9726a4dd353a53d30e7a5319af26d2e36c54", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class PubB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubB_"), "f66f0f3c4be7b8933449c8f5933c9726a4dd353a53d30e7a5319af26d2e36c54", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubB_"), "f66f0f3c4be7b8933449c8f5933c9726a4dd353a53d30e7a5319af26d2e36c54", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new PubB_Heritage());
 
         private Data() {
         }

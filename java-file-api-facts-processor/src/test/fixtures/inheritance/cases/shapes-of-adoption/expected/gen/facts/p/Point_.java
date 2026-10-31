@@ -39,7 +39,7 @@ import p.Point;
 ///
 /// No generated class extends or implements [Point]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Point.class, fingerprint = "0febd5e9a07a42aeab5bc8c467c54723307747278243a7e003a6e4136a76ef25", complete = true, format = 15)
+@GeneratedMetamodel(of = Point.class, fingerprint = "0febd5e9a07a42aeab5bc8c467c54723307747278243a7e003a6e4136a76ef25", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Point_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Point] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Point_"), "0febd5e9a07a42aeab5bc8c467c54723307747278243a7e003a6e4136a76ef25", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Point"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HLabel")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Point", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int)))), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Point_"), "0febd5e9a07a42aeab5bc8c467c54723307747278243a7e003a6e4136a76ef25", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Point"), List.of(), List.of(ClassDesc.of("java.lang.Record"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HLabel")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("label"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("y")), Set.of(), Set.of(Signature.of("Point", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int))), Set.of()), List.of(), false);
 
         private Data() {
         }

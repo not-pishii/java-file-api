@@ -26,7 +26,7 @@ import p.Self;
 ///
 /// `@Facts` does not ask for [Self]: it is only mentioned in the signatures of [p.Selfish]. For the facts of its members add `Self.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Self.class, fingerprint = "3f625892708a59ae2ed4ad3d539480b3255811e9922b21adbc9be8a914d223fa", complete = false, format = 15)
+@GeneratedMetamodel(of = Self.class, fingerprint = "3f625892708a59ae2ed4ad3d539480b3255811e9922b21adbc9be8a914d223fa", complete = false, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class Self_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Self] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "3f625892708a59ae2ed4ad3d539480b3255811e9922b21adbc9be8a914d223fa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Self"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self"))), List.of(), false);
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Self_"), "3f625892708a59ae2ed4ad3d539480b3255811e9922b21adbc9be8a914d223fa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Self"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Self")), Set.of()), List.of(), false);
 
         private Data() {
         }

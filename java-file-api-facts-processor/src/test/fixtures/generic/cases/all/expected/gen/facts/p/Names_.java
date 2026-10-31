@@ -43,7 +43,7 @@ import p.Names;
 /// @param <UnsafeFacts_> a type argument of [Names]
 /// @param <Token> a type argument of [Names]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Names.class, fingerprint = "7de4bd07e6aef9a4abb1d39843fb0d494ba0b140a4dd4f8615c8859cb02c1462", complete = true, format = 15)
+@GeneratedMetamodel(of = Names.class, fingerprint = "7de4bd07e6aef9a4abb1d39843fb0d494ba0b140a4dd4f8615c8859cb02c1462", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -54,7 +54,7 @@ public final class Names_<List__, UnsafeFacts_, Token> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Names] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Names_"), "7de4bd07e6aef9a4abb1d39843fb0d494ba0b140a4dd4f8615c8859cb02c1462", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Names"), List.of(new TypeParam("List", List.of()), new TypeParam("UnsafeFacts", List.of()), new TypeParam("Token", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("List"), Types.typeVar("UnsafeFacts"), Types.typeVar("Token")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("data", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Names"))), false, new Names_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Names_"), "7de4bd07e6aef9a4abb1d39843fb0d494ba0b140a4dd4f8615c8859cb02c1462", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Names"), List.of(new TypeParam("List", List.of()), new TypeParam("UnsafeFacts", List.of()), new TypeParam("Token", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("List"), Types.typeVar("UnsafeFacts"), Types.typeVar("Token")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("data", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Names")), Set.of()), false, new Names_Heritage());
 
         private Data() {
         }

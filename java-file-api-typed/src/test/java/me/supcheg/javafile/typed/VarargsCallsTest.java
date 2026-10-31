@@ -12,6 +12,7 @@ import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.typed.fixtures.Gathered;
+import me.supcheg.javafile.typed.fixtures.Origin;
 import me.supcheg.javafile.typed.fixtures.Spreads;
 import me.supcheg.javafile.typed.testfacts.java.io.StringReader_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
@@ -22,6 +23,7 @@ import me.supcheg.javafile.typed.testfacts.java.util.stream.IntStream_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Gathered_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Lined_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Numbering_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Origin_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Packed_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Pairing_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Scattering_;
@@ -406,12 +408,15 @@ class VarargsCallsTest {
                 var mix = cb.declareStaticMethod("mix", String_.TOKEN);
                 var rows = cb.declareStaticMethod("rows", PrimitiveToken.INT);
                 var pick = cb.declareStaticMethod("pick", String_.TOKEN);
+                var none = cb.declareStaticMethod("none", String_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(
                         mix, b -> b.return_(staticCall(Spreads_.mix_StringArray, varargs(STRINGS, literal("a")))));
                 // pick(int, String...) takes the arguments of its arity, and no String for its int
                 bodies.define(
                         pick, b -> b.return_(staticCall(Spreads_.pick_StringArray, varargs(STRINGS, literal("a")))));
+                // pick(int, String...) takes an int, and takes none
+                bodies.define(none, b -> b.return_(staticCall(Spreads_.pick_StringArray, varargs(STRINGS))));
                 bodies.define(
                         rows,
                         b -> b.let(
@@ -424,10 +429,12 @@ class VarargsCallsTest {
 
         assertThat(compiled.source())
                 .contains("Spreads.pick(\"a\")")
+                .contains("Spreads.pick()")
                 .contains("Spreads.mix(\"a\")")
                 .contains("Spreads.rows(v0)");
         assertThat(compiled.invoke("mix")).isEqualTo("parts:a");
         assertThat(compiled.invoke("pick")).isEqualTo("parts:a");
+        assertThat(compiled.invoke("none")).isEqualTo("parts:");
         assertThat(compiled.invoke("rows")).isEqualTo(1);
     }
 
@@ -565,6 +572,58 @@ class VarargsCallsTest {
                 () -> varargs(OBJECTS, literal(1)),
                 "varargs takes a java.lang.Object and is given a value of the primitive type int",
                 "int m(" + FIXTURES + "Gathered g) { return g.count(1); }");
+    }
+
+    @Test
+    void aLoneElementJavacWouldTypeAsTheArrayOfTheElementTypeIsPinnedToOneElement() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(declared("Lone", new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                // Origin.get() is instanceof of the class as String[], and the fact of the interface as Object:
+                // javac types the call by the narrower result, an array of the element type
+                var get = h.overriding(Origin_.get, STRINGS);
+                var oh = h.extendsObject();
+                Upcast<Self, Origin> asOrigin =
+                        oh.implements_(Origin_.implement(h.self()).get(get));
+                var cb = oh.members();
+                var ctor = cb.declareConstructor();
+                var m = cb.declareMethod("m", PrimitiveToken.INT);
+                var bodies = cb.bodies();
+                bodies.define(ctor, (b, self) -> b.end());
+                bodies.define(
+                        get.method(),
+                        (b, self) -> b.return_(Expressions.newArrayOf(STRINGS, literal("mine"), literal("yours"))));
+                bodies.define(
+                        m,
+                        (b, self) -> b.return_(call(
+                                new_(Gathered_.new_),
+                                Gathered_.count_ObjectArray,
+                                varargs(OBJECTS, call(asOrigin.apply(self), Origin_.get)))));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        import me.supcheg.javafile.typed.fixtures.Gathered;
+                        import me.supcheg.javafile.typed.fixtures.Origin;
+
+                        public final class Lone implements Origin {
+                            @Override
+                            public String[] get() {
+                                return new String[] {"mine", "yours"};
+                            }
+
+                            public Lone() {
+                            }
+
+                            public int m() {
+                                return new Gathered().count(((Origin) this).get());
+                            }
+                        }
+                        """);
+        assertThat(compiled.invoke("m")).isEqualTo(1);
     }
 
     @Test

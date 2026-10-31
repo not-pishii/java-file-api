@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <T> a type argument of [Iterable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iterable.class, fingerprint = "4350bedff20e5c7a93fd3501d9b0f919dc4a09ef6fe35013959a378eafa7a064", complete = false, format = 15)
+@GeneratedMetamodel(of = Iterable.class, fingerprint = "4350bedff20e5c7a93fd3501d9b0f919dc4a09ef6fe35013959a378eafa7a064", complete = false, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Iterable_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Iterable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Iterable_"), "4350bedff20e5c7a93fd3501d9b0f919dc4a09ef6fe35013959a378eafa7a064", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Iterable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("iterator")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("spliterator"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Iterable_"), "4350bedff20e5c7a93fd3501d9b0f919dc4a09ef6fe35013959a378eafa7a064", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Iterable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("iterator")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("spliterator"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }

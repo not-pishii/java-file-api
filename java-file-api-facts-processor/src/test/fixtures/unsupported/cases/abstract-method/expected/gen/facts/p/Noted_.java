@@ -32,7 +32,7 @@ import p.Noted;
 ///
 /// No generated class extends or implements [Noted]: its abstract method note(java.lang.Deprecated) has no fact in the metamodel of the type, so no class says it overrides it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Noted.class, fingerprint = "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", complete = true, format = 15)
+@GeneratedMetamodel(of = Noted.class, fingerprint = "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Noted_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Noted] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Noted_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "eff4293128d116412dc8e953383b53a55722928fa883b97fab33361e786b1f7a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Noted_Heritage());
 
         private Data() {
         }

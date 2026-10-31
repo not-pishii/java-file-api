@@ -23,11 +23,13 @@ import me.supcheg.javafile.type.UnboundedTypeArg;
 import java.lang.constant.ClassDesc;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -181,10 +183,22 @@ public final class Canonical {
                             case Heritage.Untold _ -> Stream.<String>empty();
                         },
                         Stream.of(
-                                "table abstract " + items(table(model.methods().abstractMethods())),
-                                "table concrete " + items(table(model.methods().concreteMethods())),
-                                "table static " + items(table(model.methods().staticMethods())),
-                                "table ctor " + items(table(model.methods().constructors()))))
+                                "table abstract "
+                                        + items(table(
+                                                model.methods().abstractMethods(),
+                                                model.methods().variableArity())),
+                                "table concrete "
+                                        + items(table(
+                                                model.methods().concreteMethods(),
+                                                model.methods().variableArity())),
+                                "table static "
+                                        + items(table(
+                                                model.methods().staticMethods(),
+                                                model.methods().variableArity())),
+                                "table ctor "
+                                        + items(table(
+                                                model.methods().constructors(),
+                                                model.methods().variableArity()))))
                 .flatMap(lines -> lines)
                 .collect(Collectors.joining("\n", "", "\n"));
         return new Canonical(text);
@@ -391,7 +405,7 @@ public final class Canonical {
     }
 
     private static String signature(MethodTableTemplate.Signature signature) {
-        return table(List.of(signature)).getFirst();
+        return table(List.of(signature), Set.of()).getFirst();
     }
 
     private static String member(MemberModel member, List<TypeParam> typeTypeParams) {
@@ -454,15 +468,23 @@ public final class Canonical {
                         : throwsTypes.stream().map(scope::type).sorted().collect(Collectors.joining(", ")));
     }
 
-    private static List<String> table(Collection<MethodTableTemplate.Signature> signatures) {
+    private static List<String> table(
+            Collection<MethodTableTemplate.Signature> signatures, Set<MethodTableTemplate.Signature> variableArity) {
         return signatures.stream()
-                .map(s -> s.params().stream()
-                        .map(p -> switch (p) {
-                            case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
-                            case MethodTableTemplate.Var(int index, int dimensions) ->
-                                "#" + index + "[]".repeat(dimensions);
-                        })
-                        .collect(Collectors.joining(", ", s.name() + "(", ")")))
+                .map(s -> {
+                    List<String> params = s.params().stream()
+                            .map(p -> switch (p) {
+                                case MethodTableTemplate.Fixed(ClassDesc erasure) -> erasure(erasure);
+                                case MethodTableTemplate.Var(int index, int dimensions) ->
+                                    "#" + index + "[]".repeat(dimensions);
+                            })
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    if (variableArity.contains(s)) {
+                        int last = params.size() - 1;
+                        params.set(last, params.get(last) + "...");
+                    }
+                    return s.name() + "(" + String.join(", ", params) + ")";
+                })
                 .sorted()
                 .toList();
     }

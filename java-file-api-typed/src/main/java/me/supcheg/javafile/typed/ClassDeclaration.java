@@ -15,7 +15,6 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.MethodSignature;
-import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Protected;
@@ -281,7 +280,7 @@ final class ClassDeclaration<Self> {
         };
     }
 
-    private MethodTable methodTable() {
+    private MethodTableTemplate methodTable() {
         return switch (phase) {
             case Phase.Named<Self> _ ->
                 throw new IllegalStateException("the methods of " + described + " are known only once its"
@@ -752,9 +751,11 @@ final class ClassDeclaration<Self> {
     /// @return the stage of the bodies
     /// @throws IllegalStateException if the class is not declaring its members
     <B extends MemberBodies<Self, ?>> B bodies(
-            String what, Supplier<MethodTable> methods, Function<Function<List<ClassMember>, JavaFile>, B> make) {
+            String what,
+            Supplier<MethodTableTemplate> methods,
+            Function<Function<List<ClassMember>, JavaFile>, B> make) {
         Extended extended = requireDeclaring(what);
-        MethodTable table = methods.get();
+        MethodTableTemplate table = methods.get();
         B bodies = make.apply(members -> file(extended, members));
         phase = new Phase.Bodies<>(bodies, table, extended);
         return bodies;
@@ -944,13 +945,13 @@ final class ClassDeclaration<Self> {
         /// @param bodies the bodies of the members
         /// @param methods the methods of the class
         /// @param extended what its header said of its supertypes
-        record Bodies<Self>(MemberBodies<Self, ?> bodies, MethodTable methods, Extended extended)
+        record Bodies<Self>(MemberBodies<Self, ?> bodies, MethodTableTemplate methods, Extended extended)
                 implements Phase<Self> {}
 
         /// The declaration is complete.
         ///
         /// @param methods the methods of the class
         /// @param superclass its superclass
-        record Complete<Self>(MethodTable methods, Superclass superclass) implements Phase<Self> {}
+        record Complete<Self>(MethodTableTemplate methods, Superclass superclass) implements Phase<Self> {}
     }
 }

@@ -40,7 +40,7 @@ import p.Lists;
 ///
 /// @param <T> a type argument of [Lists]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lists.class, fingerprint = "34734ef8665d877bdced162f2efdcf4dab5feb4c53c2054b329985b0c9af2732", complete = true, format = 15)
+@GeneratedMetamodel(of = Lists.class, fingerprint = "34734ef8665d877bdced162f2efdcf4dab5feb4c53c2054b329985b0c9af2732", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Lists_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Lists] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lists_"), "34734ef8665d877bdced162f2efdcf4dab5feb4c53c2054b329985b0c9af2732", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Lists"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;")), Param.var(0, 1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Lists"))), false, new Lists_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Lists_"), "34734ef8665d877bdced162f2efdcf4dab5feb4c53c2054b329985b0c9af2732", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Lists"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("all", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Number;")), Param.var(0, 1)), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Lists")), Set.of()), false, new Lists_Heritage());
 
         private Data() {
         }

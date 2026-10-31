@@ -34,7 +34,7 @@ import p.Outer.Api;
 ///
 /// A generated class extends or implements [Api] by the proof its metamodel starts, with the stages of `Outer_Api_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Api.class, fingerprint = "e8604ee97321a22255d6d3c0ae12e062a15f647bf93ac37221c0c58a0033dabd", complete = true, format = 15)
+@GeneratedMetamodel(of = Api.class, fingerprint = "e8604ee97321a22255d6d3c0ae12e062a15f647bf93ac37221c0c58a0033dabd", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Outer_Api_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Api] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Api_"), "e8604ee97321a22255d6d3c0ae12e062a15f647bf93ac37221c0c58a0033dabd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Outer$Api"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Outer_Api_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Api_"), "e8604ee97321a22255d6d3c0ae12e062a15f647bf93ac37221c0c58a0033dabd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Outer$Api"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Outer_Api_Heritage());
 
         private Data() {
         }

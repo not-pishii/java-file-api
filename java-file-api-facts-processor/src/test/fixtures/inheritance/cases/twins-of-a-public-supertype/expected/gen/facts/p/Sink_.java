@@ -31,7 +31,7 @@ import p.Sink;
 ///
 /// No generated class extends or implements [Sink]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sink.class, fingerprint = "b18635e54d4f51e5bb47b840c7ada2c53b7186adb862ee5c5de9e5200134bb5c", complete = true, format = 15)
+@GeneratedMetamodel(of = Sink.class, fingerprint = "b18635e54d4f51e5bb47b840c7ada2c53b7186adb862ee5c5de9e5200134bb5c", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Sink_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sink] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sink_"), "b18635e54d4f51e5bb47b840c7ada2c53b7186adb862ee5c5de9e5200134bb5c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Sink"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sink_"), "b18635e54d4f51e5bb47b840c7ada2c53b7186adb862ee5c5de9e5200134bb5c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Sink"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("take", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("take", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }

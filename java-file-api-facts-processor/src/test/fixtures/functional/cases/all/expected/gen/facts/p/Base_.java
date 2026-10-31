@@ -36,7 +36,7 @@ import p.Base;
 ///
 /// A generated class extends or implements [Base] by the proof its metamodel starts, with the stages of `Base_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Base.class, fingerprint = "4a231392c84e745e3ee143788e07607311bc54d5d3e27c4bc5aa2a760e1fdc78", complete = true, format = 15)
+@GeneratedMetamodel(of = Base.class, fingerprint = "4a231392c84e745e3ee143788e07607311bc54d5d3e27c4bc5aa2a760e1fdc78", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Base_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Base] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Base_"), "4a231392c84e745e3ee143788e07607311bc54d5d3e27c4bc5aa2a760e1fdc78", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Base"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Base_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Base_"), "4a231392c84e745e3ee143788e07607311bc54d5d3e27c4bc5aa2a760e1fdc78", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Base"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Base_Heritage());
 
         private Data() {
         }

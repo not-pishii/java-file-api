@@ -36,7 +36,7 @@ import p.Fn;
 ///
 /// A generated class extends or implements [Fn] by the proof its metamodel starts, with the stages of `Fn_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fn.class, fingerprint = "3e81b46d56e38a9b9016025a4b6b9c82e98cb9d9ec2edd58b2dd574eac50596e", complete = true, format = 15)
+@GeneratedMetamodel(of = Fn.class, fingerprint = "3e81b46d56e38a9b9016025a4b6b9c82e98cb9d9ec2edd58b2dd574eac50596e", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Fn_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fn] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn_"), "3e81b46d56e38a9b9016025a4b6b9c82e98cb9d9ec2edd58b2dd574eac50596e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn"), List.of(), List.of(), List.of(ClassDesc.of("p.HiddenFn")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Fn_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fn_"), "3e81b46d56e38a9b9016025a4b6b9c82e98cb9d9ec2edd58b2dd574eac50596e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Fn"), List.of(), List.of(), List.of(ClassDesc.of("p.HiddenFn")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Fn_Heritage());
 
         private Data() {
         }

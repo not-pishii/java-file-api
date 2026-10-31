@@ -33,7 +33,7 @@ import p.Open;
 ///
 /// A generated class extends or implements [Open] by the proof its metamodel starts, with the stages of `Open_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Open.class, fingerprint = "07d8f3a301d89b3512a3ecbfdde46a895484feea8075e07e0c0c175739dc0660", complete = true, format = 15)
+@GeneratedMetamodel(of = Open.class, fingerprint = "07d8f3a301d89b3512a3ecbfdde46a895484feea8075e07e0c0c175739dc0660", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Open_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Open] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "07d8f3a301d89b3512a3ecbfdde46a895484feea8075e07e0c0c175739dc0660", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open", Param.fixed(ClassDesc.of("java.lang.String"))))), false, new Open_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "07d8f3a301d89b3512a3ecbfdde46a895484feea8075e07e0c0c175739dc0660", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), false, new Open_Heritage());
 
         private Data() {
         }

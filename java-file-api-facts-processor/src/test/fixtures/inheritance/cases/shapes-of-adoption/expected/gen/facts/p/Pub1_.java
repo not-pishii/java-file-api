@@ -38,7 +38,7 @@ import p.Pub1;
 ///
 /// A generated class extends or implements [Pub1] by the proof its metamodel starts, with the stages of `Pub1_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pub1.class, fingerprint = "abcd6dcb1decf1c02c1f95e6c4ef5cbfb944c5360c8f954405085fd4efb0f2bb", complete = true, format = 15)
+@GeneratedMetamodel(of = Pub1.class, fingerprint = "abcd6dcb1decf1c02c1f95e6c4ef5cbfb944c5360c8f954405085fd4efb0f2bb", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Pub1_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Pub1] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub1_"), "abcd6dcb1decf1c02c1f95e6c4ef5cbfb944c5360c8f954405085fd4efb0f2bb", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub1"), List.of(), List.of(ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub1"))), false, new Pub1_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Pub1_"), "abcd6dcb1decf1c02c1f95e6c4ef5cbfb944c5360c8f954405085fd4efb0f2bb", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Pub1"), List.of(), List.of(ClassDesc.of("p.H0"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("one"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("zero")), Set.of(), Set.of(Signature.of("Pub1")), Set.of()), false, new Pub1_Heritage());
 
         private Data() {
         }

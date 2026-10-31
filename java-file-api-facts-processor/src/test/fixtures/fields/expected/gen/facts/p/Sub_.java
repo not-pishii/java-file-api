@@ -35,7 +35,7 @@ import p.Sub;
 ///
 /// A generated class extends or implements [Sub] by the proof its metamodel starts, with the stages of `Sub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sub.class, fingerprint = "c5e614aceb78f0dae7b538b6d5b6ec718bbc2e9d8465de3aecf755c99b8c25ac", complete = true, format = 15)
+@GeneratedMetamodel(of = Sub.class, fingerprint = "c5e614aceb78f0dae7b538b6d5b6ec718bbc2e9d8465de3aecf755c99b8c25ac", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class Sub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub_"), "c5e614aceb78f0dae7b538b6d5b6ec718bbc2e9d8465de3aecf755c99b8c25ac", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sub"), List.of(), List.of(ClassDesc.of("p.Super"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Sub"))), false, new Sub_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sub_"), "c5e614aceb78f0dae7b538b6d5b6ec718bbc2e9d8465de3aecf755c99b8c25ac", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sub"), List.of(), List.of(ClassDesc.of("p.Super"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Sub")), Set.of()), false, new Sub_Heritage());
 
         private Data() {
         }

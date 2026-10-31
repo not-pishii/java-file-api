@@ -43,7 +43,7 @@ import p.Ov;
 ///
 /// A generated class extends or implements [Ov] by the proof its metamodel starts, with the stages of `Ov_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Ov.class, fingerprint = "272748d6258de0bffaf5eec276af65472162b789e9a6201159c5b79e83abe78a", complete = true, format = 15)
+@GeneratedMetamodel(of = Ov.class, fingerprint = "272748d6258de0bffaf5eec276af65472162b789e9a6201159c5b79e83abe78a", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -54,7 +54,7 @@ public final class Ov_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Ov] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov_"), "272748d6258de0bffaf5eec276af65472162b789e9a6201159c5b79e83abe78a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("k", Param.fixed(ConstantDescs.CD_int)), Signature.of("k", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("m", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("n", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Ov", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List"))))), false, new Ov_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Ov_"), "272748d6258de0bffaf5eec276af65472162b789e9a6201159c5b79e83abe78a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Ov"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("k", Param.fixed(ConstantDescs.CD_int)), Signature.of("k", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("m", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("m", Param.fixed(ClassDesc.of("java.util.List"))), Signature.of("n", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Ov", Param.fixed(ClassDesc.of("java.awt.List"))), Signature.of("Ov", Param.fixed(ClassDesc.of("java.util.List")))), Set.of()), false, new Ov_Heritage());
 
         private Data() {
         }

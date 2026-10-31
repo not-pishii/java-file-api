@@ -32,7 +32,7 @@ import p.Gen;
 ///
 /// No generated class extends or implements [Gen]: its abstract method id(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "c851504db4d278e32f6b81ee74eda9a7b2a4b0a76a859bd0b68d71eabecb773b", complete = true, format = 15)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "c851504db4d278e32f6b81ee74eda9a7b2a4b0a76a859bd0b68d71eabecb773b", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Gen_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Gen] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "c851504db4d278e32f6b81ee74eda9a7b2a4b0a76a859bd0b68d71eabecb773b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Gen"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Gen_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "c851504db4d278e32f6b81ee74eda9a7b2a4b0a76a859bd0b68d71eabecb773b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Gen"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Gen_Heritage());
 
         private Data() {
         }

@@ -39,7 +39,7 @@ import p.RawBound;
 ///
 /// @param <T> a type argument of [RawBound]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = RawBound.class, fingerprint = "ba66f7a33fe1262bb8b234aac26374a11a978305ddbadde6975543344773c931", complete = true, format = 15)
+@GeneratedMetamodel(of = RawBound.class, fingerprint = "ba66f7a33fe1262bb8b234aac26374a11a978305ddbadde6975543344773c931", complete = true, format = 16)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -51,7 +51,7 @@ public final class RawBound_<T extends Comparable> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [RawBound] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.RawBound_"), "ba66f7a33fe1262bb8b234aac26374a11a978305ddbadde6975543344773c931", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.RawBound"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Comparable"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("RawBound"))), false, new RawBound_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.RawBound_"), "ba66f7a33fe1262bb8b234aac26374a11a978305ddbadde6975543344773c931", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.RawBound"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("java.lang.Comparable"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("RawBound")), Set.of()), false, new RawBound_Heritage());
 
         private Data() {
         }

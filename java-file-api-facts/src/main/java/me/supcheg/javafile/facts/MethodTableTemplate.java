@@ -25,6 +25,13 @@ import java.util.stream.Stream;
 /// method or constructor fact names its own ([Invocable#declared()]), and
 /// lowering tells by them what else javac has to choose from.
 ///
+/// A signature also tells the form of the last parameter (JLS 8.4.1): `m(T...)`
+/// and `m(T[])` erase alike and are one method of a type, yet javac reads the
+/// arguments of a call to them differently. A subtype that declares the array
+/// where its supertype declares the variable arity has the method of fixed
+/// arity, and a spread call of the fact of the supertype is no call javac takes
+/// there.
+///
 /// The constructors are listed under the simple name of the class, as
 /// [Invocable#name()] of a constructor fact is; an instantiated
 /// [MethodTable] has none.
@@ -33,22 +40,27 @@ import java.util.stream.Stream;
 /// @param concreteMethods the instance methods with an implementation
 /// @param staticMethods the `static` methods
 /// @param constructors the constructors that are not `private`
+/// @param variableArity the signatures whose last parameter is of variable arity, `m(T...)`;
+///                       a signature absent from it is of fixed arity, `m(T[])`
 public record MethodTableTemplate(
         Set<Signature> abstractMethods,
         Set<Signature> concreteMethods,
         Set<Signature> staticMethods,
-        Set<Signature> constructors) {
+        Set<Signature> constructors,
+        Set<Signature> variableArity) {
 
     /// A template with no methods.
     public static final MethodTableTemplate EMPTY = new MethodTableTemplate(Set.of(), Set.of(), Set.of());
 
     /// @throws IllegalArgumentException if a method is both abstract and concrete, or
-    ///                                  both static and an instance method
+    ///                                  both static and an instance method, or a signature of variable
+    ///                                  arity is no signature of the template or has no parameter
     public MethodTableTemplate {
         abstractMethods = Set.copyOf(abstractMethods);
         concreteMethods = Set.copyOf(concreteMethods);
         staticMethods = Set.copyOf(staticMethods);
         constructors = Set.copyOf(constructors);
+        variableArity = Set.copyOf(variableArity);
         Set<Signature> both = new HashSet<>(abstractMethods);
         both.retainAll(concreteMethods);
         if (!both.isEmpty()) {
@@ -60,9 +72,25 @@ public record MethodTableTemplate(
         if (!instance.isEmpty()) {
             throw new IllegalArgumentException("methods both static and instance: " + instance);
         }
+        Set<Signature> signatures = new HashSet<>(abstractMethods);
+        signatures.addAll(concreteMethods);
+        signatures.addAll(staticMethods);
+        signatures.addAll(constructors);
+        Set<Signature> unknown = new HashSet<>(variableArity);
+        unknown.removeAll(signatures);
+        if (!unknown.isEmpty()) {
+            throw new IllegalArgumentException("signatures of variable arity that are no member: " + unknown);
+        }
+        variableArity.stream()
+                .filter(signature -> signature.params().isEmpty())
+                .findFirst()
+                .ifPresent(signature -> {
+                    throw new IllegalArgumentException(
+                            "a signature of variable arity has a last parameter: " + signature);
+                });
     }
 
-    /// A template that lists no constructors.
+    /// A template that lists no constructors and no signature of variable arity.
     ///
     /// @param abstractMethods the instance methods without an implementation
     /// @param concreteMethods the instance methods with an implementation
@@ -71,7 +99,32 @@ public record MethodTableTemplate(
     ///                                  both static and an instance method
     public MethodTableTemplate(
             Set<Signature> abstractMethods, Set<Signature> concreteMethods, Set<Signature> staticMethods) {
-        this(abstractMethods, concreteMethods, staticMethods, Set.of());
+        this(abstractMethods, concreteMethods, staticMethods, Set.of(), Set.of());
+    }
+
+    /// A template whose methods are all of fixed arity.
+    ///
+    /// @param abstractMethods the instance methods without an implementation
+    /// @param concreteMethods the instance methods with an implementation
+    /// @param staticMethods the `static` methods
+    /// @param constructors the constructors that are not `private`
+    /// @throws IllegalArgumentException if a method is both abstract and concrete, or
+    ///                                  both static and an instance method
+    public MethodTableTemplate(
+            Set<Signature> abstractMethods,
+            Set<Signature> concreteMethods,
+            Set<Signature> staticMethods,
+            Set<Signature> constructors) {
+        this(abstractMethods, concreteMethods, staticMethods, constructors, Set.of());
+    }
+
+    /// Whether the last parameter of the method of `signature` is of variable
+    /// arity, `m(T...)`, and not the array, `m(T[])`.
+    ///
+    /// @param signature the signature of the method
+    /// @return whether it is of variable arity
+    public boolean isVariableArity(Signature signature) {
+        return variableArity.contains(signature);
     }
 
     /// The template of a table that does not depend on type arguments: every
@@ -137,6 +190,10 @@ public record MethodTableTemplate(
 
     /// A method signature of the template: a name and a [Param] per
     /// parameter.
+    ///
+    /// The signature is the identity of the method: the form of its last
+    /// parameter is [MethodTableTemplate#variableArity()], apart, for `m(T...)`
+    /// and `m(T[])` are one signature and one method of a type.
     ///
     /// @param name the method name
     /// @param params the parameters, in order

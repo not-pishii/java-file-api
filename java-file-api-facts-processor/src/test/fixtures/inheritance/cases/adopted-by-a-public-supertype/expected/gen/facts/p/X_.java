@@ -40,7 +40,7 @@ import p.X;
 ///
 /// A generated class extends or implements [X] by the proof its metamodel starts, with the stages of `X_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = X.class, fingerprint = "c89e4a08ede653eb546cbd6721350a23330da882f97815ec7c3c8e2a8f2e2de4", complete = true, format = 15)
+@GeneratedMetamodel(of = X.class, fingerprint = "c89e4a08ede653eb546cbd6721350a23330da882f97815ec7c3c8e2a8f2e2de4", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class X_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [X] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.X_"), "c89e4a08ede653eb546cbd6721350a23330da882f97815ec7c3c8e2a8f2e2de4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.X"), List.of(), List.of(ClassDesc.of("p.Mid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI"), ClassDesc.of("p.Own")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("X"))), false, new X_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.X_"), "c89e4a08ede653eb546cbd6721350a23330da882f97815ec7c3c8e2a8f2e2de4", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.X"), List.of(), List.of(ClassDesc.of("p.Mid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI"), ClassDesc.of("p.Own")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("X")), Set.of()), false, new X_Heritage());
 
         private Data() {
         }

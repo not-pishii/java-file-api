@@ -28,7 +28,7 @@ import p.Shape;
 ///
 /// No generated class extends or implements [Shape]: it is sealed: only the classes it permits extend or implement it.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shape.class, fingerprint = "5a73541b64a821e07cf2a24cce761da3e5104c73d3b5824a6e236ff4a083d76f", complete = true, format = 15)
+@GeneratedMetamodel(of = Shape.class, fingerprint = "5a73541b64a821e07cf2a24cce761da3e5104c73d3b5824a6e236ff4a083d76f", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +39,7 @@ public final class Shape_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Shape] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shape_"), "5a73541b64a821e07cf2a24cce761da3e5104c73d3b5824a6e236ff4a083d76f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Shape"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), true, new Shape_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shape_"), "5a73541b64a821e07cf2a24cce761da3e5104c73d3b5824a6e236ff4a083d76f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Shape"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, new Shape_Heritage());
 
         private Data() {
         }

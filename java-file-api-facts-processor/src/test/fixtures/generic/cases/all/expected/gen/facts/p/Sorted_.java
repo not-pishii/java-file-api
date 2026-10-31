@@ -41,7 +41,7 @@ import p.Sorted;
 ///
 /// @param <T> a type argument of [Sorted]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sorted.class, fingerprint = "90997a6382969288fbaac4a70763d43cbd16a4aaed616c8937d31fe001f81d68", complete = true, format = 15)
+@GeneratedMetamodel(of = Sorted.class, fingerprint = "90997a6382969288fbaac4a70763d43cbd16a4aaed616c8937d31fe001f81d68", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Sorted_<T extends Comparable<T>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sorted] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sorted_"), "90997a6382969288fbaac4a70763d43cbd16a4aaed616c8937d31fe001f81d68", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sorted"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("max"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("with", Param.var(0))), Set.of(), Set.of(Signature.of("Sorted", Param.var(0)))), false, new Sorted_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sorted_"), "90997a6382969288fbaac4a70763d43cbd16a4aaed616c8937d31fe001f81d68", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sorted"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.exact(Types.typeVar("T"))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("max"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("with", Param.var(0))), Set.of(), Set.of(Signature.of("Sorted", Param.var(0))), Set.of()), false, new Sorted_Heritage());
 
         private Data() {
         }

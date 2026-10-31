@@ -42,7 +42,7 @@ import p.Seq;
 ///
 /// @param <E> a type argument of [Seq]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seq.class, fingerprint = "184eac558d86c5ecffdafe7478b294b3017c616641ff8730ba368388c09435d4", complete = true, format = 15)
+@GeneratedMetamodel(of = Seq.class, fingerprint = "184eac558d86c5ecffdafe7478b294b3017c616641ff8730ba368388c09435d4", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class Seq_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Seq] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seq_"), "184eac558d86c5ecffdafe7478b294b3017c616641ff8730ba368388c09435d4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Seq"), List.of(new TypeParam("E", List.of())), List.of(), List.of(ClassDesc.of("p.Coll")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Coll"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of")), Set.of()), false, new Seq_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Seq_"), "184eac558d86c5ecffdafe7478b294b3017c616641ff8730ba368388c09435d4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Seq"), List.of(new TypeParam("E", List.of())), List.of(), List.of(ClassDesc.of("p.Coll")), new Supertypes(List.of(Types.typeVar("E")), List.of(new ParameterizedTypeRef(ClassDesc.of("p.Coll"), List.of(Types.exact(Types.typeVar("E")))))), new MethodTableTemplate(Set.of(Signature.of("add", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("of")), Set.of(), Set.of()), false, new Seq_Heritage());
 
         private Data() {
         }

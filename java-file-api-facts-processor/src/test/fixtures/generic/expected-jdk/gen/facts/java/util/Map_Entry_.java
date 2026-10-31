@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 /// @param <K> a type argument of [Entry]
 /// @param <V> a type argument of [Entry]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Entry.class, fingerprint = "79c31c63c1c9998f1ca6f96fab03335407df297b5611df32b462134367c9f53c", complete = false, format = 15)
+@GeneratedMetamodel(of = Entry.class, fingerprint = "79c31c63c1c9998f1ca6f96fab03335407df297b5611df32b462134367c9f53c", complete = false, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Map_Entry_<K, V> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Entry] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Map_Entry_"), "79c31c63c1c9998f1ca6f96fab03335407df297b5611df32b462134367c9f53c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Map$Entry"), List.of(new TypeParam("K", List.of()), new TypeParam("V", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("K"), Types.typeVar("V")), List.of()), new MethodTableTemplate(Set.of(Signature.of("getKey"), Signature.of("getValue"), Signature.of("setValue", Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("comparingByKey"), Signature.of("comparingByKey", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("comparingByValue"), Signature.of("comparingByValue", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("copyOf", Param.fixed(ClassDesc.of("java.util.Map$Entry")))), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Map_Entry_"), "79c31c63c1c9998f1ca6f96fab03335407df297b5611df32b462134367c9f53c", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Map$Entry"), List.of(new TypeParam("K", List.of()), new TypeParam("V", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("K"), Types.typeVar("V")), List.of()), new MethodTableTemplate(Set.of(Signature.of("getKey"), Signature.of("getValue"), Signature.of("setValue", Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("comparingByKey"), Signature.of("comparingByKey", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("comparingByValue"), Signature.of("comparingByValue", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("copyOf", Param.fixed(ClassDesc.of("java.util.Map$Entry")))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }

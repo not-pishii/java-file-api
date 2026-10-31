@@ -39,7 +39,7 @@ import p.Fail;
 ///
 /// @param <X> a type argument of [Fail]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fail.class, fingerprint = "2ee56fa7f02fe99b015435d6a5d67249c7d9e78e47745fcf8601b916fec34c20", complete = true, format = 15)
+@GeneratedMetamodel(of = Fail.class, fingerprint = "2ee56fa7f02fe99b015435d6a5d67249c7d9e78e47745fcf8601b916fec34c20", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Fail_<X extends Exception> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Fail] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fail_"), "2ee56fa7f02fe99b015435d6a5d67249c7d9e78e47745fcf8601b916fec34c20", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Fail"), List.of(new TypeParam("X", List.of(Types.of(ClassDesc.of("java.lang.Exception"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("X")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Fail"))), false, new Fail_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Fail_"), "2ee56fa7f02fe99b015435d6a5d67249c7d9e78e47745fcf8601b916fec34c20", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Fail"), List.of(new TypeParam("X", List.of(Types.of(ClassDesc.of("java.lang.Exception"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("X")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Fail")), Set.of()), false, new Fail_Heritage());
 
         private Data() {
         }

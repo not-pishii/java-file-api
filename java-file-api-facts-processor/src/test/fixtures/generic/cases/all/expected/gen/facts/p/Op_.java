@@ -39,7 +39,7 @@ import p.Op;
 ///
 /// @param <T> a type argument of [Op]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Op.class, fingerprint = "16a25198fecc483dbebccf1436fa0c040a51c9a9803d4669fb0adae7de38d1a4", complete = true, format = 15)
+@GeneratedMetamodel(of = Op.class, fingerprint = "16a25198fecc483dbebccf1436fa0c040a51c9a9803d4669fb0adae7de38d1a4", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Op_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Op] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Op_"), "16a25198fecc483dbebccf1436fa0c040a51c9a9803d4669fb0adae7de38d1a4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Op"), List.of(new TypeParam("T", List.of())), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(Types.typeVar("T")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.typeVar("T")), Types.exact(Types.typeVar("T")))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.var(0))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Op_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Op_"), "16a25198fecc483dbebccf1436fa0c040a51c9a9803d4669fb0adae7de38d1a4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Op"), List.of(new TypeParam("T", List.of())), List.of(), List.of(ClassDesc.of("java.util.function.Function")), new Supertypes(List.of(Types.typeVar("T")), List.of(new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.exact(Types.typeVar("T")), Types.exact(Types.typeVar("T")))))), new MethodTableTemplate(Set.of(Signature.of("apply", Param.var(0))), Set.of(Signature.of("andThen", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("compose", Param.fixed(ClassDesc.of("java.util.function.Function"))), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Op_Heritage());
 
         private Data() {
         }

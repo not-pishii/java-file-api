@@ -37,7 +37,7 @@ import p.Named;
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "b9758e14299ff4b0ecfc1ca16e943fb7db809bb1fc2616b36411158b5e5e3a70", complete = true, format = 15)
+@GeneratedMetamodel(of = Named.class, fingerprint = "b9758e14299ff4b0ecfc1ca16e943fb7db809bb1fc2616b36411158b5e5e3a70", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Named_<Data_, String_, Int> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Named] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "b9758e14299ff4b0ecfc1ca16e943fb7db809bb1fc2616b36411158b5e5e3a70", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Named_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Named_"), "b9758e14299ff4b0ecfc1ca16e943fb7db809bb1fc2616b36411158b5e5e3a70", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Named"), List.of(new TypeParam("Data", List.of()), new TypeParam("String", List.of()), new TypeParam("Int", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("Data"), Types.typeVar("String"), Types.typeVar("Int")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Named_Heritage());
 
         private Data() {
         }

@@ -39,7 +39,7 @@ import p.Impl2;
 ///
 /// A generated class extends or implements [Impl2] by the proof its metamodel starts, with the stages of `Impl2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl2.class, fingerprint = "66db71cfb60e8a86171a08e6861f64514f1617063164f7f999d2c207920c12aa", complete = true, format = 15)
+@GeneratedMetamodel(of = Impl2.class, fingerprint = "66db71cfb60e8a86171a08e6861f64514f1617063164f7f999d2c207920c12aa", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Impl2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Impl2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Impl2_"), "66db71cfb60e8a86171a08e6861f64514f1617063164f7f999d2c207920c12aa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Impl2"), List.of(), List.of(ClassDesc.of("p.PubBase"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HIface")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Impl2"))), false, new Impl2_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Impl2_"), "66db71cfb60e8a86171a08e6861f64514f1617063164f7f999d2c207920c12aa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Impl2"), List.of(), List.of(ClassDesc.of("p.PubBase"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HIface")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Impl2")), Set.of()), false, new Impl2_Heritage());
 
         private Data() {
         }

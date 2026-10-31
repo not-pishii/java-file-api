@@ -48,6 +48,7 @@ import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.facts.Access;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclaredToken;
@@ -889,19 +890,22 @@ final class Lowering {
                 .<TypeToken<?>>mapToObj(i -> Node.parameter(member, passing, i))
                 .toList();
         return switch (rivalry(member, searched, types)) {
-            case Rivalry.Alone _ -> given(member, args, type, false);
-            case Rivalry.Outranked _ -> given(member, args, type, true);
+            case Rivalry.Alone _ -> given(member, args, type, Pinning.AS_THEY_ARE);
+            case Rivalry.Outranked _ -> given(member, args, type, Pinning.BY_CASTS);
             case Rivalry.Unproven(var why) -> explicit(member, searched, args, type, why);
         };
     }
 
     /// `m(a, e1, e2)`: javac takes the fact for these arguments, so they are given as they are, to the parameter, or
     /// the element type, they are passed to; where another method of the name takes as many arguments and none of
-    /// them applies to arguments of exactly those types, `pinned` makes every argument of another type a cast to
-    /// the type, so that no other is applicable to the arguments and javac takes the fact (JLS 15.12.2.5). A lone
-    /// element that is an array is cast to the element type either way, or javac would take it for the array of the
-    /// parameter (`m((Object) strings)` for `m(Object...)`).
-    private List<Expr> given(Invocable member, List<Node.Operand> args, ArrayToken<?, ?> type, boolean pinned) {
+    /// them applies to arguments of exactly those types, [Pinning#BY_CASTS] makes every argument of another type a
+    /// cast to the type, so that no other is applicable to the arguments and javac takes the fact (JLS 15.12.2.5).
+    ///
+    /// A lone element is pinned to its token either way. An element that is an array of the element type is one
+    /// element, which javac would take for the array of the parameter: `m((Object) strings)` for `m(Object...)`.
+    /// A lone element whose token is not an array may be of one to javac — a call of a method a subtype overrides
+    /// with an array result — and the pinning makes javac type it by its token, so it stays one element.
+    private List<Expr> given(Invocable member, List<Node.Operand> args, ArrayToken<?, ?> type, Pinning pinning) {
         args.forEach(arg -> mentions(arg.type()));
         requireDistinct(member);
         Node.Passing passing = new Node.Passing.Spread(type);
@@ -912,14 +916,16 @@ final class Lowering {
                     Node.Operand arg = args.get(i);
                     TypeToken<?> param = Node.parameter(member, passing, i);
                     requireNoBoxing(member, param, arg);
-                    boolean loneArray = args.size() == leading + 1
-                            && i == leading
-                            && arg.type() instanceof ArrayToken<?, ?>
-                            && !Tokens.sameType(arg.type(), component);
-                    if (loneArray || (pinned && !Tokens.sameType(arg.type(), param))) {
+                    boolean lone = args.size() == leading + 1 && i == leading;
+                    if (lone && arg.type() instanceof ArrayToken<?, ?> && !Tokens.sameType(arg.type(), component)) {
                         return cast(param, arg, member);
                     }
-                    return pinned ? expr(arg.node(), Typing.EXACT) : targeted(arg.node(), param);
+                    if (pinning == Pinning.BY_CASTS && !Tokens.sameType(arg.type(), param)) {
+                        return cast(param, arg, member);
+                    }
+                    return lone || pinning == Pinning.BY_CASTS
+                            ? expr(arg.node(), Typing.EXACT)
+                            : targeted(arg.node(), param);
                 })
                 .toList();
     }
@@ -961,22 +967,22 @@ final class Lowering {
     }
 
     /// Every other member of the name that javac may apply to `argc` arguments is a rival: one that takes that many
-    /// parameters, and one whose last parameter is an array, which the template does not tell is of variable arity
-    /// and is taken to be so. The facts of `searched` must list `member`, or its members are not known.
+    /// parameters, and one whose last parameter is of variable arity, which the template tells. The facts of
+    /// `searched` must list the method of `member`'s signature and form, or its members are not known: a type that
+    /// declares the array where the fact is of variable arity reads the arguments of a call differently, and the
+    /// call is written as the array of the arguments, or refused where no array can be written.
     private Rivalry rivalry(Invocable member, DeclaredToken<?> searched, List<TypeToken<?>> types) {
         List<ClassDesc> erasures = searched.argumentErasures();
-        List<MethodTableTemplate.Signature> named =
-                named(target.methods(searched.shape()), member).toList();
+        MethodTableTemplate template = target.methods(searched.shape());
+        List<MethodTableTemplate.Signature> named = named(template, member).toList();
         Predicate<MethodTableTemplate.Signature> isMember =
-                signature -> searched.shape() == member.owner().shape()
-                        ? signature.equals(member.declared())
-                        : signature.instantiate(erasures).equals(member.signature());
+                signature -> isMember(signature, member, searched, template, erasures);
         if (named.stream().noneMatch(isMember)) {
-            return new Rivalry.Unproven("the methods of " + searched + " do not list " + member);
+            return new Rivalry.Unproven(notListed(member, searched, named, erasures));
         }
         List<MethodTableTemplate.Signature> rivals = named.stream()
                 .filter(isMember.negate())
-                .filter(signature -> mayTake(signature.instantiate(erasures), types.size()))
+                .filter(signature -> mayTake(signature, template, erasures, types.size()))
                 .toList();
         if (rivals.isEmpty()) {
             return new Rivalry.Alone();
@@ -992,11 +998,54 @@ final class Lowering {
                 : new Rivalry.Unproven("javac may take " + String.join(", ", applicable) + " for the call");
     }
 
+    /// Whether `signature` is the signature of `member` in `searched`, of the same form.
+    private static boolean isMember(
+            MethodTableTemplate.Signature signature,
+            Invocable member,
+            DeclaredToken<?> searched,
+            MethodTableTemplate template,
+            List<ClassDesc> erasures) {
+        boolean same;
+        if (searched.shape() == member.owner().shape()) {
+            same = signature.equals(member.declared());
+        } else {
+            same = signature
+                    .instantiate(erasures)
+                    .params()
+                    .equals(member.signature().params());
+        }
+        return same && sameForm(template.isVariableArity(signature), member.arity());
+    }
+
+    /// Why the facts of `searched` do not list `member`: no method of its signature, or one of another form.
+    private static String notListed(
+            Invocable member,
+            DeclaredToken<?> searched,
+            List<MethodTableTemplate.Signature> named,
+            List<ClassDesc> erasures) {
+        return named.stream()
+                .filter(signature -> signature
+                        .instantiate(erasures)
+                        .params()
+                        .equals(member.signature().params()))
+                .findFirst()
+                .map(signature -> searched + " declares " + signature + " with the last parameter of fixed arity,"
+                        + " not of variable arity as " + member + " is: javac reads the arguments of such a call"
+                        + " as those of the parameters alone (JLS 15.12.2)")
+                .orElseGet(() -> "the methods of " + searched + " do not list " + member);
+    }
+
+    /// Whether the form of a signature — whether it is of variable arity — is that of `arity`.
+    private static boolean sameForm(boolean variable, Arity arity) {
+        return variable == (arity instanceof Arity.Variable);
+    }
+
     /// Whether javac may apply the method of `signature` to `argc` arguments: as one of that many parameters, or
-    /// as one of variable arity if its last parameter is an array.
-    private static boolean mayTake(MethodSignature signature, int argc) {
-        List<ClassDesc> params = signature.params();
-        return params.size() == argc || (!params.isEmpty() && params.getLast().isArray() && params.size() - 1 <= argc);
+    /// as one of variable arity if its last parameter is of variable arity.
+    private static boolean mayTake(
+            MethodTableTemplate.Signature signature, MethodTableTemplate template, List<ClassDesc> erasures, int argc) {
+        List<ClassDesc> params = signature.instantiate(erasures).params();
+        return params.size() == argc || (template.isVariableArity(signature) && params.size() - 1 <= argc);
     }
 
     /// Whether javac may take another method than the fact for a call that spreads its arguments.
@@ -1324,6 +1373,14 @@ final class Lowering {
         static Typing exactIf(boolean exact) {
             return exact ? EXACT : AS_IT_STANDS;
         }
+    }
+
+    /// How the arguments of a spread call are pinned to the fact: as they are, or, where another
+    /// method of the name takes as many arguments and none of them applies to arguments of exactly
+    /// those types, each of another type cast to its parameter's.
+    private enum Pinning {
+        AS_THEY_ARE,
+        BY_CASTS
     }
 
     /// Where javac searches for the member a call names.

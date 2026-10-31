@@ -33,7 +33,7 @@ import p.PubFn2;
 ///
 /// A generated class extends or implements [PubFn2] by the proof its metamodel starts, with the stages of `PubFn2_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubFn2.class, fingerprint = "1d779ae9417dcbd7e4c7a72b2b6d382716e4d4e6b41a3b4360ce8bc17fbce283", complete = true, format = 15)
+@GeneratedMetamodel(of = PubFn2.class, fingerprint = "1d779ae9417dcbd7e4c7a72b2b6d382716e4d4e6b41a3b4360ce8bc17fbce283", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class PubFn2_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubFn2] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn2_"), "1d779ae9417dcbd7e4c7a72b2b6d382716e4d4e6b41a3b4360ce8bc17fbce283", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn2"), List.of(), List.of(), List.of(ClassDesc.of("p.HObj"), ClassDesc.of("p.PStr")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new PubFn2_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubFn2_"), "1d779ae9417dcbd7e4c7a72b2b6d382716e4d4e6b41a3b4360ce8bc17fbce283", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubFn2"), List.of(), List.of(), List.of(ClassDesc.of("p.HObj"), ClassDesc.of("p.PStr")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("get")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new PubFn2_Heritage());
 
         private Data() {
         }

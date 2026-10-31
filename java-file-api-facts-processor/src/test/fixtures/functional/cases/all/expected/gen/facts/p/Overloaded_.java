@@ -38,7 +38,7 @@ import p.Overloaded;
 ///
 /// A generated class extends or implements [Overloaded] by the proof its metamodel starts, with the stages of `Overloaded_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Overloaded.class, fingerprint = "2d2a857f9351e88886693fb690ae89ce25cf6ecc6a5975beb23d971ca5becf08", complete = true, format = 15)
+@GeneratedMetamodel(of = Overloaded.class, fingerprint = "2d2a857f9351e88886693fb690ae89ce25cf6ecc6a5975beb23d971ca5becf08", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Overloaded_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Overloaded] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Overloaded_"), "2d2a857f9351e88886693fb690ae89ce25cf6ecc6a5975beb23d971ca5becf08", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Overloaded"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run", Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run", Param.fixed(ConstantDescs.CD_int)), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Overloaded_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Overloaded_"), "2d2a857f9351e88886693fb690ae89ce25cf6ecc6a5975beb23d971ca5becf08", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Overloaded"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run", Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run", Param.fixed(ConstantDescs.CD_int)), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new Overloaded_Heritage());
 
         private Data() {
         }

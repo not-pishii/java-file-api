@@ -7,7 +7,7 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
-import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -556,28 +556,59 @@ final class SignatureRegistry {
         }
     }
 
-    /// The methods of the class: the instance methods declared and those inherited, and the
-    /// `static` ones, declared and inherited from the superclass — javac takes both kinds for the
-    /// candidates of a call on a value of the class (JLS 15.12.2.1). The class is final, so no
-    /// method is abstract.
-    MethodTable table() {
-        Map<Boolean, Set<MethodSignature>> declared = members.methods().stream()
+    /// The methods and constructors of the class: the instance methods declared and those
+    /// inherited, the `static` ones, declared and inherited from the superclass — javac takes both
+    /// kinds for the candidates of a call on a value of the class (JLS 15.12.2.1) —, and the
+    /// constructors it declares. The class is final, so no method is abstract. Each signature tells
+    /// the form of its last parameter, which a call of a member of variable arity reads (JLS
+    /// 15.12.2.4): the class knows its own before any body is lowered.
+    MethodTableTemplate table() {
+        Map<Boolean, Set<MethodTableTemplate.Signature>> declared = members.methods().stream()
                 .collect(Collectors.partitioningBy(
                         method -> method.kind() == InvocableKind.INSTANCE_METHOD,
-                        Collectors.mapping(Invocable::signature, Collectors.toSet())));
-        Map<Boolean, Set<MethodSignature>> had = inherited
+                        Collectors.mapping(Invocable::declared, Collectors.toSet())));
+        Map<Boolean, List<Inheritance.Group>> had = inherited
                 .groups()
-                .collect(Collectors.partitioningBy(
-                        group -> switch (group.standing()) {
-                            case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
-                            case STATIC -> false;
-                        },
-                        Collectors.mapping(Inheritance.Group::signature, Collectors.toSet())));
-        return new MethodTable(
+                .collect(Collectors.partitioningBy(group -> switch (group.standing()) {
+                    case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
+                    case STATIC -> false;
+                }));
+        Set<MethodTableTemplate.Signature> constructors =
+                members.constructors().stream().map(Invocable::declared).collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> variableArity = Stream.concat(
+                        members.methods().stream()
+                                .filter(method -> method.arity() instanceof Arity.Variable)
+                                .map(Invocable::declared),
+                        members.constructors().stream()
+                                .filter(constructor -> constructor.arity() instanceof Arity.Variable)
+                                .map(Invocable::declared))
+                .collect(Collectors.toSet());
+        had.values().stream()
+                .flatMap(List::stream)
+                .filter(group -> group.arity() instanceof Arity.Variable)
+                .map(SignatureRegistry::inherited)
+                .forEach(variableArity::add);
+        return new MethodTableTemplate(
                 Set.of(),
-                Stream.concat(declared.get(true).stream(), had.get(true).stream())
+                Stream.concat(
+                                declared.get(true).stream(),
+                                had.get(true).stream().map(SignatureRegistry::inherited))
                         .collect(Collectors.toSet()),
-                Stream.concat(declared.get(false).stream(), had.get(false).stream())
-                        .collect(Collectors.toSet()));
+                Stream.concat(
+                                declared.get(false).stream(),
+                                had.get(false).stream().map(SignatureRegistry::inherited))
+                        .collect(Collectors.toSet()),
+                constructors,
+                variableArity);
+    }
+
+    /// A method the class inherits, as the method table template tells it: its erasures in the
+    /// class are fixed parameters.
+    private static MethodTableTemplate.Signature inherited(Inheritance.Group group) {
+        return new MethodTableTemplate.Signature(
+                group.signature().name(),
+                group.signature().params().stream()
+                        .<MethodTableTemplate.Param>map(MethodTableTemplate.Param::fixed)
+                        .toList());
     }
 }

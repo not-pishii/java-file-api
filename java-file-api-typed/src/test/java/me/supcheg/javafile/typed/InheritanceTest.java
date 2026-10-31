@@ -7,6 +7,7 @@ import me.supcheg.javafile.facts.Heritage.Dispatch;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.PrimitiveToken;
@@ -541,7 +542,7 @@ class InheritanceTest {
         // a class that is being declared tells none: it is final
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> real(UnsafeFacts.declaredClassToken(
-                        new ClassTypeRef(K), () -> List.of(ConstantDescs.CD_Object), () -> MethodTable.EMPTY)))
+                        new ClassTypeRef(K), () -> List.of(ConstantDescs.CD_Object), () -> MethodTableTemplate.EMPTY)))
                 .withMessageContaining("tells no heritage");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> real(String_.TOKEN))

@@ -87,6 +87,13 @@ class MethodTableTemplateTest {
                 .isThrownBy(() -> new MethodTableTemplate(Set.of(), Set.of(run), Set.of(run)))
                 .withMessage("methods both static and instance: [run()]");
         assertThatIllegalArgumentException()
+                .isThrownBy(() -> new MethodTableTemplate(
+                        Set.of(), Set.of(run), Set.of(), Set.of(), Set.of(Signature.of("other", Param.var(0)))))
+                .withMessage("signatures of variable arity that are no member: [other(#0)]");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new MethodTableTemplate(Set.of(), Set.of(run), Set.of(), Set.of(), Set.of(run)))
+                .withMessage("a signature of variable arity has a last parameter: run()");
+        assertThatIllegalArgumentException()
                 .isThrownBy(() -> Param.var(-1))
                 .withMessage("a type parameter index cannot be negative, got -1");
         assertThatIllegalArgumentException()

@@ -38,7 +38,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// No generated class extends or implements [Record]: no class extends java.lang.Record but an enum or a record does.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Record.class, fingerprint = "b5f956495edf117d83242b869ff4b9385dc00cb9314b5af80300349e4239485f", complete = true, format = 15)
+@GeneratedMetamodel(of = Record.class, fingerprint = "b5f956495edf117d83242b869ff4b9385dc00cb9314b5af80300349e4239485f", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Record_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Record] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Record_"), "b5f956495edf117d83242b869ff4b9385dc00cb9314b5af80300349e4239485f", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Record"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("hashCode"), Signature.of("toString")), Set.of(Signature.of("clone"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Record"))), false, new Record_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Record_"), "b5f956495edf117d83242b869ff4b9385dc00cb9314b5af80300349e4239485f", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("java.lang.Record"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("hashCode"), Signature.of("toString")), Set.of(Signature.of("clone"), Signature.of("finalize"), Signature.of("getClass"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Record")), Set.of()), false, new Record_Heritage());
 
         private Data() {
         }

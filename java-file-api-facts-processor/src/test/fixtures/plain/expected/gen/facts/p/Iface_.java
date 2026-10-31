@@ -39,7 +39,7 @@ import p.Iface;
 ///
 /// A generated class extends or implements [Iface] by the proof its metamodel starts, with the stages of `Iface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "c273941a1e896121d3e02c318ed57cbd7aa6a5f1ffe2baf65c87e835556d42e9", complete = true, format = 15)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "c273941a1e896121d3e02c318ed57cbd7aa6a5f1ffe2baf65c87e835556d42e9", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Iface_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Iface] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "c273941a1e896121d3e02c318ed57cbd7aa6a5f1ffe2baf65c87e835556d42e9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of()), false, new Iface_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Iface_"), "c273941a1e896121d3e02c318ed57cbd7aa6a5f1ffe2baf65c87e835556d42e9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Iface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("size"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("empty")), Set.of(), Set.of()), false, new Iface_Heritage());
 
         private Data() {
         }

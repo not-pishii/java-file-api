@@ -37,7 +37,7 @@ import p.SqlB;
 ///
 /// A generated class extends or implements [SqlB] by the proof its metamodel starts, with the stages of `SqlB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SqlB.class, fingerprint = "011adb416d64492617f2d2c3890349414d8e33985d3304522f301115b2c07b8f", complete = true, format = 15)
+@GeneratedMetamodel(of = SqlB.class, fingerprint = "011adb416d64492617f2d2c3890349414d8e33985d3304522f301115b2c07b8f", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class SqlB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SqlB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "011adb416d64492617f2d2c3890349414d8e33985d3304522f301115b2c07b8f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new SqlB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "011adb416d64492617f2d2c3890349414d8e33985d3304522f301115b2c07b8f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, new SqlB_Heritage());
 
         private Data() {
         }

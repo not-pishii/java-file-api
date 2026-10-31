@@ -1104,7 +1104,8 @@ final class MetamodelEmitter {
                 signatures(template.abstractMethods()),
                 signatures(template.concreteMethods()),
                 signatures(template.staticMethods()),
-                signatures(template.constructors()));
+                signatures(template.constructors()),
+                signatures(template.variableArity()));
     }
 
     private static Expr signatures(Collection<MethodTableTemplate.Signature> signatures) {

@@ -42,7 +42,7 @@ import p.HeirCf;
 ///
 /// A generated class extends or implements [HeirCf] by the proof its metamodel starts, with the stages of `HeirCf_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = HeirCf.class, fingerprint = "bee984293d7fb2e9de270b85292471b9b7a8c9f295d866751cc8bec676b1eaaf", complete = true, format = 15)
+@GeneratedMetamodel(of = HeirCf.class, fingerprint = "bee984293d7fb2e9de270b85292471b9b7a8c9f295d866751cc8bec676b1eaaf", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -53,7 +53,7 @@ public final class HeirCf_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [HeirCf] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.HeirCf_"), "bee984293d7fb2e9de270b85292471b9b7a8c9f295d866751cc8bec676b1eaaf", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.HeirCf"), List.of(), List.of(ClassDesc.of("p.HiddenCf"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("x_")), Set.of(), Set.of(Signature.of("HeirCf"))), false, new HeirCf_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.HeirCf_"), "bee984293d7fb2e9de270b85292471b9b7a8c9f295d866751cc8bec676b1eaaf", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.HeirCf"), List.of(), List.of(ClassDesc.of("p.HiddenCf"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x"), Signature.of("x_")), Set.of(), Set.of(Signature.of("HeirCf")), Set.of()), false, new HeirCf_Heritage());
 
         private Data() {
         }

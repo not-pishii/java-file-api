@@ -39,7 +39,7 @@ import p.Uses;
 ///
 /// @param <T> a type argument of [Uses]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Uses.class, fingerprint = "20309f4165459cebb4cb88ae609aae231a5698e53c86958569825bf3f7cdb254", complete = true, format = 15)
+@GeneratedMetamodel(of = Uses.class, fingerprint = "20309f4165459cebb4cb88ae609aae231a5698e53c86958569825bf3f7cdb254", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -50,7 +50,7 @@ public final class Uses_<T extends p.Data & p.Canonical<p.Data>> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Uses] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "20309f4165459cebb4cb88ae609aae231a5698e53c86958569825bf3f7cdb254", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Data")), new ParameterizedTypeRef(ClassDesc.of("p.Canonical"), List.of(Types.exact(Types.of(ClassDesc.of("p.Data")))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses"))), false, new Uses_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Uses_"), "20309f4165459cebb4cb88ae609aae231a5698e53c86958569825bf3f7cdb254", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Uses"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Data")), new ParameterizedTypeRef(ClassDesc.of("p.Canonical"), List.of(Types.exact(Types.of(ClassDesc.of("p.Data")))))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Uses")), Set.of()), false, new Uses_Heritage());
 
         private Data() {
         }

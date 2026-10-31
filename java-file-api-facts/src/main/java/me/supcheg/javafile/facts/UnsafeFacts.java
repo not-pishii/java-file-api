@@ -310,13 +310,16 @@ public final class UnsafeFacts {
     /// whenever the chain is, and `methods` until it answers once; either may
     /// throw while it has no answer yet.
     ///
+    /// The methods are a template, which tells the form of the last parameter
+    /// of each and lists the constructors, which a [MethodTable] does not.
+    ///
     /// @param type the class
     /// @param superclasses supplies the erased superclass chain, see [ClassToken#superclasses()]
-    /// @param methods supplies the class's instance methods, declared and inherited
+    /// @param methods supplies the class's methods and constructors, declared and inherited
     /// @param <T> the Java type the token stands for
     /// @return the token
     public static <T> FinalClassToken<T> declaredClassToken(
-            ClassTypeRef type, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTable> methods) {
+            ClassTypeRef type, Supplier<List<ClassDesc>> superclasses, Supplier<MethodTableTemplate> methods) {
         TypeShape<DeclaredKind.FinalClass> shape = TypeShape.declared(type.desc(), List.of(), superclasses, methods);
         return new FinalClassToken<>(shape, type, shape.boundErasures());
     }
@@ -330,7 +333,7 @@ public final class UnsafeFacts {
     /// @param typeParameters its type parameters, each with its leftmost bound
     /// @param variables the tokens of the type parameters, in order: the type arguments of the token
     /// @param superclasses supplies the erased superclass chain, see [ClassToken#superclasses()]
-    /// @param methods supplies the class's instance methods, declared and inherited
+    /// @param methods supplies the class's methods and constructors, declared and inherited
     /// @param <T> the Java type the token stands for
     /// @return the token
     /// @throws IllegalArgumentException if there is not one variable per type parameter, or none
@@ -339,7 +342,7 @@ public final class UnsafeFacts {
             List<TypeParam> typeParameters,
             List<? extends TypeVarToken<?>> variables,
             Supplier<List<ClassDesc>> superclasses,
-            Supplier<MethodTable> methods) {
+            Supplier<MethodTableTemplate> methods) {
         if (variables.isEmpty() || variables.size() != typeParameters.size()) {
             throw new IllegalArgumentException("a generic class has a token for each of its type parameters: "
                     + typeParameters + " and " + variables);

@@ -51,7 +51,7 @@ import p.Poly;
 ///
 /// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "45bb8cf64efe6859d643292a49b69841e86845c6d1aadff824556c754a0fbe0d", complete = true, format = 15)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "7c86d0e997d8e8f8a5f706fbc8ee17c7a1e16160d484065bed1226ee81605bd6", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -62,7 +62,7 @@ public final class Poly_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Poly] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "45bb8cf64efe6859d643292a49b69841e86845c6d1aadff824556c754a0fbe0d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object"))))), false, new Poly_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Poly_"), "7c86d0e997d8e8f8a5f706fbc8ee17c7a1e16160d484065bed1226ee81605bd6", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Poly"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clamp", Param.fixed(ClassDesc.of("java.lang.Number"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("none"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("odd", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Class"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("widen", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))), Signature.of("max", Param.fixed(ClassDesc.of("java.util.Collection")))), Set.of(Signature.of("Poly"), Signature.of("Poly", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("listOf", Param.fixed(ClassDesc.ofDescriptor("[Ljava/lang/Object;"))))), false, new Poly_Heritage());
 
         private Data() {
         }
@@ -118,7 +118,7 @@ public final class Poly_ {
         inherit method widen(java.lang.Object) erased (java.lang.Object) overrides - by class public concrete p.Poly <^0, ^1 extends ^0> (^1) -> ^0 throws -
         table abstract -
         table concrete clamp(java.lang.Number); clone(); equals(java.lang.Object); finalize(); getClass(); hashCode(); id(java.lang.Object); none(); notify(); notifyAll(); odd(java.lang.Object, java.lang.Object); run(java.lang.Class); toString(); wait(); wait(long); wait(long, int); widen(java.lang.Object)
-        table static listOf(java.lang.Object[]); max(java.util.Collection)
+        table static listOf(java.lang.Object[]...); max(java.util.Collection)
         table ctor Poly(); Poly(java.lang.Object)
         """;
 

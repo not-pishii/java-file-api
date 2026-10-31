@@ -182,15 +182,69 @@ class VariableArityDeclarationsTest {
             }
         }));
 
-        assertThat(compiled.source())
-                .contains("@SafeVarargs\n    public Constructed(List<String>... v0) {")
-                .contains("    public Constructed(int v0, String... v1) {")
-                .doesNotContain("@SafeVarargs\n    public Constructed(int");
+        assertThat(compiled.source()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        import java.util.List;
+
+                        public final class Constructed {
+                            @SafeVarargs
+                            public Constructed(List<String>... v0) {
+                            }
+
+                            public Constructed(int v0, String... v1) {
+                            }
+                        }
+                        """);
     }
 
     @Test
-    void theFactOfAMemberOfVariableArityTellsItsArity() {
-        JavaFile file = file("Arities", new TypedJavaFile.TypedClassSpec() {
+    void aConstructorOfTheClassOfVariableArityIsCalledWithItsArgumentsOneByOne() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(file("Invoked", new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                var texts = cb.variableArity().declareConstructor(STRINGS);
+                var lists = cb.variableArity().declareConstructor(LISTS);
+                var make = cb.declareStaticMethod("make", cb.self());
+                var makeGeneric = cb.declareStaticMethod("makeGeneric", cb.self());
+                var bodies = cb.bodies();
+                bodies.define(texts, (b, self, each) -> b.end());
+                bodies.define(lists, (b, self, each) -> b.end());
+                bodies.define(make, b -> b.return_(new_(texts, varargs(STRINGS, literal("a")))));
+                bodies.define(makeGeneric, b -> b.return_(new_(lists, varargs(LISTS, literalNull(STRING_LIST)))));
+                return bodies;
+            }
+        }));
+
+        assertThat(compiled.source()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        import java.util.List;
+
+                        public final class Invoked {
+                            public Invoked(String... v0) {
+                            }
+
+                            @SafeVarargs
+                            public Invoked(List<String>... v0) {
+                            }
+
+                            public static Invoked make() {
+                                return new Invoked("a");
+                            }
+
+                            public static Invoked makeGeneric() {
+                                return new Invoked((List<String>) null);
+                            }
+                        }
+                        """);
+        assertThat(compiled.invoke("make").getClass().getSimpleName()).isEqualTo("Invoked");
+        assertThat(compiled.invoke("makeGeneric").getClass().getSimpleName()).isEqualTo("Invoked");
+    }
+
+    @Test
+    void theFactOfAMemberOfVariableArityTellsItsArity() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(file("Arities", new TypedJavaFile.TypedClassSpec() {
             @Override
             public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 var safe = cb.variableArity().declareStaticMethod("safe", PrimitiveToken.INT, LISTS);
@@ -202,8 +256,26 @@ class VariableArityDeclarationsTest {
                 bodies.define(plain, (b, each) -> b.return_(literal(0)));
                 return bodies;
             }
-        });
-        assertThat(file.render()).contains("@SafeVarargs");
+        }));
+
+        assertThat(compiled.source()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        import java.util.List;
+
+                        public final class Arities {
+                            @SafeVarargs
+                            public static int safe(List<String>... v0) {
+                                return 0;
+                            }
+
+                            public static int plain(String... v0) {
+                                return 0;
+                            }
+                        }
+                        """);
+        assertThat(compiled.invoke("safe", (Object) new List<?>[] {List.of()})).isEqualTo(0);
+        assertThat(compiled.invoke("plain", (Object) new String[] {"a"})).isEqualTo(0);
     }
 
     @Test

@@ -41,7 +41,7 @@ import p.Kept;
 ///
 /// A generated class extends or implements [Kept] by the proof its metamodel starts, with the stages of `Kept_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Kept.class, fingerprint = "1ad07ca58014b830b07e12ff185cb73ad05c1668696f3e150c1b0788d3396db5", complete = true, format = 15)
+@GeneratedMetamodel(of = Kept.class, fingerprint = "1ad07ca58014b830b07e12ff185cb73ad05c1668696f3e150c1b0788d3396db5", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Kept_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Kept] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "1ad07ca58014b830b07e12ff185cb73ad05c1668696f3e150c1b0788d3396db5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept"))), false, new Kept_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "1ad07ca58014b830b07e12ff185cb73ad05c1668696f3e150c1b0788d3396db5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret"))))))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept")), Set.of()), false, new Kept_Heritage());
 
         private Data() {
         }

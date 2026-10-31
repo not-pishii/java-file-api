@@ -57,12 +57,15 @@ package me.supcheg.javafile.facts.meta;
 ///   member types take in a subclass; not the `static` methods of an
 ///   interface, which nothing inherits. A step reads its signature off the
 ///   heritage. The canonical form tells whether a class is an inner one.
+/// - 16: a method table tells which of its signatures are of variable arity,
+///   `T...` and not `T[]`, as the fact of the member does; the canonical form
+///   tells it too, so two types that differ by it fingerprint differently.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 15;
+    public static final int VERSION = 16;
 
     private MetamodelFormat() {}
 }

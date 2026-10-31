@@ -223,11 +223,15 @@ public final class TypeShape<K extends DeclaredKind> {
     /// The shape of a final class that is being declared: its superclass is known once the
     /// declaration names it, and its methods once its members are all declared. Either supplier
     /// may throw while it has no answer yet.
+    ///
+    /// The methods are a template, not a [MethodTable]: the class declares its own type variables
+    /// and its constructors, and each signature tells whether its last parameter is of variable
+    /// arity, which an erased table cannot.
     static TypeShape<DeclaredKind.FinalClass> declared(
             ClassDesc desc,
             List<TypeParam> typeParameters,
             Supplier<List<ClassDesc>> superclasses,
-            Supplier<MethodTable> methods) {
+            Supplier<MethodTableTemplate> methods) {
         return new TypeShape<>(
                 ShapeOrigin.UNSAFE,
                 DeclaredKind.FINAL_CLASS,
@@ -236,7 +240,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 new Superclasses.Awaited(superclasses),
                 List.of(),
                 Supertypes.NONE,
-                () -> MethodTableTemplate.of(methods.get()),
+                methods,
                 List.of(),
                 false,
                 () -> Heritage.UNTOLD);

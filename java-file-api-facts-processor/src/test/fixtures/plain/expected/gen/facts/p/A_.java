@@ -35,7 +35,7 @@ import p.B;
 ///
 /// A generated class extends or implements [A] by the proof its metamodel starts, with the stages of `A_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = A.class, fingerprint = "8a6c96ae92f7b712e2339f54f9359596dbfb4ac024293fcb0aacf488691ab3a8", complete = true, format = 15)
+@GeneratedMetamodel(of = A.class, fingerprint = "8a6c96ae92f7b712e2339f54f9359596dbfb4ac024293fcb0aacf488691ab3a8", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class A_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [A] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.A_"), "8a6c96ae92f7b712e2339f54f9359596dbfb4ac024293fcb0aacf488691ab3a8", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.A"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("b"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("self"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("A"))), false, new A_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.A_"), "8a6c96ae92f7b712e2339f54f9359596dbfb4ac024293fcb0aacf488691ab3a8", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.A"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("b"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("self"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("A")), Set.of()), false, new A_Heritage());
 
         private Data() {
         }

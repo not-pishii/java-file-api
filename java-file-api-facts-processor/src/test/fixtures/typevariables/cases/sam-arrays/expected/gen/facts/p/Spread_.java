@@ -40,7 +40,7 @@ import p.Spread;
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "82cea5d5019b15643073d5aeb89d1438a69f37e5bdb1bbaa2ba8612c237c6994", complete = true, format = 15)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "05b77c0fa52724eacc8c654014da530774fdb95825886ab160498ea7bdcb6715", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Spread_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Spread] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "82cea5d5019b15643073d5aeb89d1438a69f37e5bdb1bbaa2ba8612c237c6994", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), false, new Spread_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Spread_"), "05b77c0fa52724eacc8c654014da530774fdb95825886ab160498ea7bdcb6715", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Spread"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("accept", Param.var(0, 1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(Signature.of("accept", Param.var(0, 1)))), false, new Spread_Heritage());
 
         private Data() {
         }
@@ -73,7 +73,7 @@ public final class Spread_<T> {
         member method public abstract accept(#0...) -> void throws -
         sam accept(#0[]) -> void throws -
         inherit method accept(#0[]) erased (java.lang.Object[]) overrides - by interface abstract p.Spread (#0...) -> void throws -
-        table abstract accept(#0[])
+        table abstract accept(#0[]...)
         table concrete equals(java.lang.Object); getClass(); hashCode(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)
         table static -
         table ctor -

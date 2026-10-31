@@ -37,7 +37,7 @@ import p.WithDefault;
 ///
 /// A generated class extends or implements [WithDefault] by the proof its metamodel starts, with the stages of `WithDefault_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithDefault.class, fingerprint = "b5cbb9c85c29175cf29ac0500f6d2b993273ab2e74cd458983298871be1743a1", complete = true, format = 15)
+@GeneratedMetamodel(of = WithDefault.class, fingerprint = "b5cbb9c85c29175cf29ac0500f6d2b993273ab2e74cd458983298871be1743a1", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class WithDefault_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [WithDefault] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithDefault_"), "b5cbb9c85c29175cf29ac0500f6d2b993273ab2e74cd458983298871be1743a1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.WithDefault"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("f", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("g", Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("id")), Set.of()), false, new WithDefault_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.WithDefault_"), "b5cbb9c85c29175cf29ac0500f6d2b993273ab2e74cd458983298871be1743a1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.WithDefault"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("f", Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("g", Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("id")), Set.of(), Set.of()), false, new WithDefault_Heritage());
 
         private Data() {
         }

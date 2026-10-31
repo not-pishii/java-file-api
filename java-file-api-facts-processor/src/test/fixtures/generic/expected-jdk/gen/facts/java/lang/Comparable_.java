@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <T> a type argument of [Comparable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comparable.class, fingerprint = "05e30c2cdb95800f95e6573d762dfab66e33fb9dd6a8c85513d56aa45c5654d6", complete = false, format = 15)
+@GeneratedMetamodel(of = Comparable.class, fingerprint = "05e30c2cdb95800f95e6573d762dfab66e33fb9dd6a8c85513d56aa45c5654d6", complete = false, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Comparable_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Comparable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Comparable_"), "05e30c2cdb95800f95e6573d762dfab66e33fb9dd6a8c85513d56aa45c5654d6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Comparable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of()), List.of(), false);
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Comparable_"), "05e30c2cdb95800f95e6573d762dfab66e33fb9dd6a8c85513d56aa45c5654d6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Comparable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.var(0))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }

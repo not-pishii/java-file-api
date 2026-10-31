@@ -34,7 +34,7 @@ import p.Plan;
 ///
 /// No generated class extends or implements [Plan]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plan.class, fingerprint = "8a3c6c353a1dd7201c25924e9872a2b37f12cda863b1b8d05dfb18d0f2d1b46c", complete = true, format = 15)
+@GeneratedMetamodel(of = Plan.class, fingerprint = "8a3c6c353a1dd7201c25924e9872a2b37f12cda863b1b8d05dfb18d0f2d1b46c", complete = true, format = 16)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Plan_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Plan] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Plan_"), "8a3c6c353a1dd7201c25924e9872a2b37f12cda863b1b8d05dfb18d0f2d1b46c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Plan"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("mode", Param.fixed(ConstantDescs.CD_boolean))), Set.of()), List.of(), false);
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Plan_"), "8a3c6c353a1dd7201c25924e9872a2b37f12cda863b1b8d05dfb18d0f2d1b46c", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Plan"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("mode", Param.fixed(ConstantDescs.CD_boolean))), Set.of(), Set.of()), List.of(), false);
 
         private Data() {
         }
