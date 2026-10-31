@@ -22,6 +22,20 @@ class JavaStringsTest {
     }
 
     @Test
+    void escapesNextLineAndLineAndParagraphSeparatorsAsUnicode() {
+        assertThat(JavaStrings.escape("a\u0085b\u2028c\u2029d")).isEqualTo("a\\u0085b\\u2028c\\u2029d");
+    }
+
+    @Test
+    void textBlockFitsValuesWithoutTheLineTerminatorsOfTheWhiteSpaceCheck() {
+        assertThat(JavaStrings.fitsTextBlock("")).isTrue();
+        assertThat(JavaStrings.fitsTextBlock("a\nb\r\tc\u3000")).isTrue();
+        assertThat(JavaStrings.fitsTextBlock("a\u0085b")).isFalse();
+        assertThat(JavaStrings.fitsTextBlock("a\u2028b")).isFalse();
+        assertThat(JavaStrings.fitsTextBlock("a\u2029b")).isFalse();
+    }
+
+    @Test
     void escapesOtherControlCharactersAsUnicode() {
         assertThat(JavaStrings.escape("")).isEqualTo("\\u0001");
     }

@@ -189,6 +189,16 @@ class ExprRendererTest {
     }
 
     @Test
+    void textBlockOfAValueWithALineTerminatorOfTheWhiteSpaceCheckIsAnEscapedStringLiteral() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("p"));
+
+        assertThat(ExprRenderer.renderExpr(textBlock("\u2028"), ctx)).isEqualTo("\"\\u2028\"");
+        assertThat(ExprRenderer.renderExpr(textBlock("one\u2028two"), ctx)).isEqualTo("\"one\\u2028two\"");
+        assertThat(ExprRenderer.renderExpr(textBlock("one\u2029two"), ctx)).isEqualTo("\"one\\u2029two\"");
+        assertThat(ExprRenderer.renderExpr(textBlock("one\u0085two"), ctx)).isEqualTo("\"one\\u0085two\"");
+    }
+
+    @Test
     void numericAndBooleanAndNullLiteralsRenderVerbatim() {
         assertThat(ExprRenderer.renderExpr(literal(1), Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("1");

@@ -84,7 +84,8 @@ public final class Exprs {
         return new NullLiteral();
     }
 
-    /// Creates a text block literal, rendered with `"""` delimiters.
+    /// Creates a text block literal, rendered with `"""` delimiters, or as an escaped string
+    /// literal where the value cannot be written in a block.
     ///
     /// @param value the text block content
     /// @return an expression

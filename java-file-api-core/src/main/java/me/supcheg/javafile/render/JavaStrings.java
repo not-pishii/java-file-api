@@ -18,6 +18,10 @@ final class JavaStrings {
                 case '\n' -> sb.append("\\n");
                 case '\r' -> sb.append("\\r");
                 case '\t' -> sb.append("\\t");
+                // `\u0085`, `\u2028` and `\u2029` are no line terminators of the source, but
+                // they are ones of the white space check of a text block, so the escape keeps
+                // them out of the source text while the string keeps them in its value
+                case '\u0085', '\u2028', '\u2029' -> sb.append(String.format("\\u%04x", (int) c));
                 default -> {
                     // a surrogate without its pair is no character: no encoding writes it
                     boolean paired = Character.isHighSurrogate(c)
@@ -32,6 +36,28 @@ final class JavaStrings {
             }
         }
         return sb.toString();
+    }
+
+    /// Whether a text block can write `value` without a warning under `-Xlint:all`.
+    ///
+    /// javac tells where the white space of a text block is trailing by splitting its content on
+    /// `\R`, and `\R` matches `\u0085`, `\u2028` and `\u2029` even though the source does not
+    /// read them as line terminators. A block that holds one of them cuts a line of the source
+    /// in two: the content before it reads as ending in white space and the content after it
+    /// reads as unindented, so `checkWhitespace` reports both kinds of white space. No escape
+    /// writes such a character into a block, as a Unicode escape is translated to the character
+    /// before the check runs, so a value that holds one is rendered as a string literal.
+    ///
+    /// @param value any string
+    /// @return whether a text block can hold `value`
+    static boolean fitsTextBlock(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\u0085' || c == '\u2028' || c == '\u2029') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// Splits `value` into the content lines of a text block that evaluates to exactly `value`.

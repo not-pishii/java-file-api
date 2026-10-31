@@ -553,6 +553,9 @@ final class ExprRenderer {
     }
 
     private static String renderTextBlock(String value, Context ctx) {
+        if (!JavaStrings.fitsTextBlock(value)) {
+            return "\"" + JavaStrings.escape(value) + "\"";
+        }
         StringBuilder sb = new StringBuilder("\"\"\"" + ctx.newline());
         for (String line : JavaStrings.textBlockLines(value)) {
             if (!line.isEmpty()) {

@@ -80,10 +80,38 @@ class TextBlockProperties {
         assertThat(evaluate(value)).isEqualTo(value);
     }
 
+    @Example
+    void lineTerminatorsOfTheWhiteSpaceCheckAreEscapedInAStringLiteral() throws Throwable {
+        List<String> values = List.of("\u2028", "\u2029", "\u0085", "one\u2028two");
+        JavaFile file = JavaFile.class_(ClassDesc.of("me.supcheg.example", "LineTerminatorProbe"), cb -> {
+            for (int i = 0; i < values.size(); i++) {
+                String value = values.get(i);
+                cb.withMethod(
+                        "value" + i,
+                        Types.STRING,
+                        mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                .withBody(b -> b.return_(textBlock(value))));
+            }
+        });
+
+        CompiledClasses compiled = CompiledClasses.of(file);
+        assertThat(compiled.source())
+                .contains(
+                        "return \"\\u2028\";",
+                        "return \"\\u2029\";",
+                        "return \"\\u0085\";",
+                        "return \"one\\u2028two\";");
+        for (int i = 0; i < values.size(); i++) {
+            assertThat(compiled.invoke("value" + i)).isEqualTo(values.get(i));
+        }
+    }
+
     @Provide
     Arbitrary<String> textBlockValues() {
         Arbitrary<String> tricky = Arbitraries.strings()
-                .withChars('\\', '"', '\n', '\r', '\t', ' ', '\f', '\b', '\u000b', '\u0000', '\u001f', '\u3000')
+                .withChars(
+                        '\\', '"', '\n', '\r', '\t', ' ', '\f', '\b', '\u000b', '\u0000', '\u001f', '\u0085', '\u3000',
+                        '\u2028', '\u2029')
                 .withChars('a', 'u', '0', '4', '1', 's')
                 .ofMaxLength(40);
         return Arbitraries.oneOf(tricky, Arbitraries.strings().ofMaxLength(40));
