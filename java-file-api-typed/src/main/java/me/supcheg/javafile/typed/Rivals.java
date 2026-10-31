@@ -81,6 +81,7 @@ final class Rivals {
     /// @return `false` if the facts prove it cannot
     static boolean mayConvert(TypeToken<?> arg, ClassDesc param) {
         return switch (arg) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> mayConvert(annotated.token(), param);
             // boxing, then widening of the reference: any reference but an array
             case PrimitiveToken<?, ?, ?> primitive ->
                 param.isPrimitive()

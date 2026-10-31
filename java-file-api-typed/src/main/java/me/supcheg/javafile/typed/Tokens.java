@@ -29,12 +29,22 @@ final class Tokens {
         return a.typeRef().equals(b.typeRef());
     }
 
+    /// The token `type` is, without the type-use annotations it is written
+    /// with: a type and its annotated form are the same type to javac.
+    ///
+    /// @param type the type
+    /// @return the token the annotations are on
+    static TypeToken<?> annotated(TypeToken<?> type) {
+        return type instanceof me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated ? annotated.token() : type;
+    }
+
     /// Whether `type` is reifiable (JLS 4.7): a primitive, a non-generic or
     /// raw class or interface, a parameterization whose every type argument
     /// is the unbounded wildcard `?`, or an array of a reifiable type. A type
     /// variable and any other parameterization are not.
     static boolean isReifiable(TypeToken<?> type) {
         return switch (type) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> isReifiable(annotated.token());
             case PrimitiveToken<?, ?, ?> ignored -> true;
             case ArrayToken<?, ?> array -> isReifiable(array.component());
             case TypeVarToken<?> ignored -> false;
@@ -91,6 +101,7 @@ final class Tokens {
 
     private static Stream<TypeToken<?>> raw(TypeToken<?> type) {
         return switch (type) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> raw(annotated.token());
             case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
             case ArrayToken<?, ?> array -> raw(array.component());
             case DeclaredToken<?> declared ->

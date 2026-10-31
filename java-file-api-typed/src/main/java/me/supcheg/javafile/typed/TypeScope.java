@@ -69,6 +69,7 @@ sealed interface TypeScope {
     private static Stream<TypeVarToken<?>> variables(TypeToken<?> type) {
         return switch (type) {
             case PrimitiveToken<?, ?, ?> _ -> Stream.empty();
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> variables(annotated.token());
             case TypeVarToken<?> variable -> Stream.of(variable);
             case ArrayToken<?, ?> array -> variables(array.component());
             case DeclaredToken<?> declared ->

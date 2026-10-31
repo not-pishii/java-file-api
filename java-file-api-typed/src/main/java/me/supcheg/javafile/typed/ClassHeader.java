@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -14,6 +15,16 @@ public final class ClassHeader<Self> extends Header<Self> {
 
     ClassHeader(ClassDeclaration<Self> declaration) {
         super(declaration);
+    }
+
+    /// Annotates the class declaration, e.g. `@Deprecated`.
+    ///
+    /// @param annotation the annotation
+    /// @return this stage
+    /// @throws IllegalArgumentException if the annotation type cannot annotate a type
+    public ClassHeader<Self> withAnnotation(AnnotationRef<?> annotation) {
+        declaration().annotate(annotation);
+        return this;
     }
 
     /// The class extends `Object`: it inherits the methods of `Object`, as the target classpath

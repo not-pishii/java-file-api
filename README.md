@@ -97,6 +97,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Generic classes](#generic-classes)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
 - [Varargs and arrays](#varargs-and-arrays)
+- [Annotations](#annotations)
 - [Refusals at generation time](#refusals-at-generation-time)
 - [What stays in the core API](#what-stays-in-the-core-api)
 
@@ -1064,6 +1065,59 @@ public final class Arrays2 {
 }
 ```
 
+### Annotations
+
+An annotation type `@Facts` asks for has its elements and their defaults as a fact, and a type-state builder: a method
+per element, and `build()` only after every element without a default is given a value. An element takes an
+`AnnotationValue` of its type, so a value of another type does not compile; `AnnotationValues` makes literals, enum
+constants, class literals, nested annotations and arrays. A declaration, a member, a parameter and a type use take the
+use: `withAnnotation` on a header, `annotated` and `annotatedParameter` on declarations, the overload of
+`declareField`, and `TypeUses.annotated`.
+
+```java
+AnnotationRef<Author> author = Author_.annotation()
+        .name(AnnotationValues.string("Ada"))
+        .year(AnnotationValues.int_(1815))
+        .build();
+AnnotationRef<Tag> tagged = Tag_.annotation().value(AnnotationValues.string("api")).build();
+
+JavaFile file = TypedJavaFile.declareClass(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Annotated"),
+        new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var cb = h.withAnnotation(author).extendsObject().members();
+                var name = cb.declareField("name", TypeUses.annotated(String_.TOKEN, tagged));
+                var greet = cb.annotated(tagged)
+                        .annotatedParameter(0, tagged)
+                        .declareStaticMethod("greet", String_.TOKEN, String_.TOKEN);
+                var bodies = cb.bodies();
+                bodies.initialize(name, literal("Ada"));
+                bodies.define(greet, (b, who) -> b.return_(who));
+                return bodies;
+            }
+        });
+```
+
+```java
+package com.example;
+
+@Author(name = "Ada", year = 1815)
+public final class Annotated {
+    public final @Tag("api") String name = "Ada";
+
+    @Tag("api")
+    public static String greet(@Tag("api") String v0) {
+        return v0;
+    }
+}
+```
+
+A use of a required element is not expressible without it:
+`Author_.annotation().build()` has no `build()` before `name` is given. The facts of the annotated type, its members and
+its parameters carry their annotations too, so a generator compiled against a library sees them.
+
 ### Refusals at generation time
 
 Java that javac accepts with a warning is not generated: the call that would produce it is refused, with a message that
@@ -1106,8 +1160,9 @@ java.lang.IllegalArgumentException: the method void com.example.Handlers.handle(
 The typed layer declares `public final` top-level classes, with fields and methods of their own, a superclass and
 interfaces. [Records and sealed interfaces](#records-and-sealed-interfaces),
 [Enums with constant bodies](#enums-with-constant-bodies),
-[Annotations and annotation types](#annotations-and-annotation-types),
+[Annotation type declarations](#annotations-and-annotation-types),
 [Transforming an existing declaration](#transforming-an-existing-declaration) and
 [package-info.java and module-info.java](#package-infojava-and-module-infojava) have no typed counterpart: they are
 declared with the core API, which the typed layer does not replace. A typed class uses an enum of the JDK or of your own
-through its facts, as it does `Signal` above, but does not declare one.
+through its facts, as it does `Signal` above, but does not declare one; a use of an annotation type is typed, as
+[Annotations](#annotations) tells, while the type itself is declared with the core API.

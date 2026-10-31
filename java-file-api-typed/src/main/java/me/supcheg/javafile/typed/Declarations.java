@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 
@@ -31,9 +32,24 @@ import java.util.List;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public abstract sealed class Declarations<Self, S> extends DeclarationArities<Self, S>
-        permits MemberBuilder, ThrowingDeclarations {
+        permits MemberBuilder, ThrowingDeclarations, AnnotatedDeclarations {
 
     Declarations() {}
+
+    /// The annotations a member declared here declares.
+    ///
+    /// @return the annotations, in order
+    List<AnnotationRef<?>> annotations() {
+        return List.of();
+    }
+
+    /// The annotations of the parameters of a member declared here, one list
+    /// per parameter of its arity.
+    ///
+    /// @return the annotations of each parameter
+    List<List<AnnotationRef<?>>> parameterAnnotations() {
+        return List.of();
+    }
 
     // The declarations of constructors, methods and static methods by name and types (`declareConstructor`,
     // `declareMethod`, `declareVoidMethod`, `declareStaticMethod`, `declareVoidStaticMethod`) and of the overrides
@@ -42,7 +58,37 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
 
     @Override
     <F extends Invocable> F declare(F member) {
-        return builder().declare(member, thrown());
+        return builder().declare(member, thrown(), annotations(), parameterAnnotations());
+    }
+
+    /// The declarations of the members that declare `annotations`, the
+    /// methods and constructors of any arity: a callable is rendered with
+    /// them, and a parameter with those [#annotatedParameter(int,
+    /// AnnotationRef...)] gives it.
+    ///
+    /// ```java
+    /// var read = cb.annotated(Deprecated_.annotation().build()).declareMethod("read", INT);
+    /// ```
+    ///
+    /// @param annotations the annotations, in order
+    /// @return the declarations that annotate the members they declare
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final AnnotatedDeclarations<Self, S> annotated(AnnotationRef<?>... annotations) {
+        return new AnnotatedDeclarations<>(this, List.of(annotations), java.util.Map.of());
+    }
+
+    /// The declarations of the members whose parameters declare the
+    /// annotations of a list: a parameter of an arity of the member is
+    /// rendered with those of its index.
+    ///
+    /// @param parameter the index of the parameter
+    /// @param annotations the annotations of the parameter, in order
+    /// @return the declarations that annotate the parameters of the members they declare
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final AnnotatedDeclarations<Self, S> annotatedParameter(int parameter, AnnotationRef<?>... annotations) {
+        return new AnnotatedDeclarations<>(this, List.of(), java.util.Map.of(parameter, List.of(annotations)));
     }
 
     @Override

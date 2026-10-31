@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.FieldRef;
@@ -135,7 +136,27 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
     ///     declarations of the class have ended
     public final <T> FieldRef<Self, T> declareField(String name, TypeToken<T> type) {
-        return declared(UnsafeFacts.field(self, name, type), Set.of(Modifier.PUBLIC, Modifier.FINAL));
+        return declareField(name, type, new AnnotationRef<?>[0]);
+    }
+
+    /// Declares a `public final` field that declares `annotations`, to be
+    /// given its initializer by the bodies of the class
+    /// ([MemberBodies#initialize]).
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read but not assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, or an annotation
+    ///     type cannot annotate a field
+    /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
+    ///     declarations of the class have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> FieldRef<Self, T> declareField(String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declared(
+                UnsafeFacts.field(self, name, type), Set.of(Modifier.PUBLIC, Modifier.FINAL), List.of(annotations));
     }
 
     /// Declares a `public` field, not `final`, to be given its initializer by the bodies of the
@@ -149,10 +170,24 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
     ///     declarations of the class have ended
     public final <T> MutableFieldRef<Self, T> declareMutableField(String name, TypeToken<T> type) {
-        return declared(UnsafeFacts.mutableField(self, name, type), Set.of(Modifier.PUBLIC));
+        return declareMutableField(name, type, new AnnotationRef<?>[0]);
     }
 
-    private <F extends FieldRef<Self, ?>> F declared(F field, Set<Modifier> modifiers) {
+    /// Declares a `public` field, not `final`, that declares `annotations`,
+    /// to be given its initializer by the bodies of the class.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declared(UnsafeFacts.mutableField(self, name, type), Set.of(Modifier.PUBLIC), List.of(annotations));
+    }
+
+    private <F extends FieldRef<Self, ?>> F declared(
+            F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
         String name = field.name();
         Site site = Site.here();
         owner.requireDeclaring("field " + name + " of " + described);
@@ -160,7 +195,9 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         owner.scope("the type of field " + name).require(field.type());
         serial.requireSerializable(field, described);
         registry.field(name);
-        declared(new Member.Field(field, modifiers, site));
+        annotations.forEach(
+                annotation -> owner.target().verify(annotation.type().token()));
+        declared(new Member.Field(field, modifiers, annotations, site));
         return field;
     }
 
@@ -256,18 +293,40 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @param member its fact
     /// @param thrown the exception classes of its `throws` clause, as its fact has them
     /// @return the fact, `member`
-    <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown) {
-        return declare(member, thrown, Site.here());
+    /// Declares a method or constructor of the class that declares
+    /// `annotations`, and whose parameters declare those of
+    /// `parameterAnnotations`.
+    <F extends Invocable> F declare(
+            F member,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations) {
+        return declare(member, thrown, annotations, parameterAnnotations, Site.here());
     }
 
     /// Declares a method or constructor of the class, said at `site`.
-    <F extends Invocable> F declare(F member, List<ClassToken<? extends Throwable>> thrown, Site site) {
+    <F extends Invocable> F declare(
+            F member,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Site site) {
         owner.requireDeclaring(member.toString());
         requireInScope(member);
         registry.member(member);
+        annotations.forEach(
+                annotation -> owner.target().verify(annotation.type().token()));
+        List<List<AnnotationRef<?>>> parameters = java.util.stream.IntStream.range(
+                        0, member.params().size())
+                .mapToObj(index -> index < parameterAnnotations.size()
+                        ? parameterAnnotations.get(index)
+                        : List.<AnnotationRef<?>>of())
+                .toList();
         declared(new Member.Callable(
                 member,
                 thrown,
+                annotations,
+                parameters,
                 Member.Kind.DECLARES,
                 member.arity(),
                 scope(member.kind(), "the body of " + member),
@@ -295,6 +354,10 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         declared(new Member.Callable(
                 own,
                 thrown,
+                List.of(),
+                java.util.stream.IntStream.range(0, own.params().size())
+                        .mapToObj(_ -> List.<AnnotationRef<?>>of())
+                        .toList(),
                 Member.Kind.OVERRIDES,
                 registry.override(own),
                 scope(own.kind(), "the body of " + own),
@@ -345,6 +408,8 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         ///
         /// @param fact its fact
         /// @param thrown the exception classes of its `throws` clause
+        /// @param annotations the annotations it declares
+        /// @param parameterAnnotations the annotations of each of its parameters
         /// @param kind whether it overrides
         /// @param arity whether its last parameter is of variable arity, and whether it vouches for the array
         ///     (`@SafeVarargs`): as that of the method it overrides is, and for a member declared by its name,
@@ -354,6 +419,8 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         record Callable(
                 Invocable fact,
                 List<ClassToken<? extends Throwable>> thrown,
+                List<AnnotationRef<?>> annotations,
+                List<List<AnnotationRef<?>>> parameterAnnotations,
                 Kind kind,
                 Arity arity,
                 TypeScope scope,
@@ -361,6 +428,9 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 implements Member {
             public Callable {
                 thrown = List.copyOf(thrown);
+                annotations = List.copyOf(annotations);
+                parameterAnnotations =
+                        parameterAnnotations.stream().map(List::copyOf).toList();
             }
         }
 
@@ -368,10 +438,13 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         ///
         /// @param fact its fact
         /// @param modifiers its modifiers
+        /// @param annotations the annotations it declares
         /// @param site where it was declared
-        record Field(FieldRef<?, ?> fact, Set<Modifier> modifiers, Site site) implements Member {
+        record Field(FieldRef<?, ?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+                implements Member {
             public Field {
                 modifiers = Set.copyOf(modifiers);
+                annotations = List.copyOf(annotations);
             }
         }
 

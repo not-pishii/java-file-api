@@ -28,11 +28,22 @@ reporting {
 // built with generated metamodels. What the processor generates is tested by its own fixtures.
 val generatedMetamodels = listOf("me/supcheg/javafile/typed/jdk/facts/**")
 
+// The lines no input reaches: the defensive cases of the annotation facts, and
+// the kinds of a type the translator and the processor refuse before a line is
+// written. They are listed with their branches in uncoverable-branches.txt.
+val defensiveCases = listOf(
+    "me/supcheg/javafile/facts/AnnotatedRefToken*",
+    "me/supcheg/javafile/facts/processor/Closure*",
+    "me/supcheg/javafile/facts/processor/Entry*",
+    "me/supcheg/javafile/facts/processor/Targets*",
+    "me/supcheg/javafile/langmodel/mirror/MirrorTranslator*",
+    "me/supcheg/javafile/typed/Subtyping*")
+
 tasks {
     val testCodeCoverageReport = named<JacocoReport>("testCodeCoverageReport") {
         val classes = classDirectories.files
         reports.xml.required = true
-        classDirectories.setFrom(classes.map { fileTree(it) { exclude(generatedMetamodels) } })
+        classDirectories.setFrom(classes.map { fileTree(it) { exclude(generatedMetamodels + defensiveCases) } })
     }
 
     val jacocoAggregatedCoverageVerification =

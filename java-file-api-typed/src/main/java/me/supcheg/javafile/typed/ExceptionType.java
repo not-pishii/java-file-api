@@ -102,6 +102,7 @@ sealed interface ExceptionType {
     ///     `Unsafe` or a fact vouched for by hand gives such a token for a `Throwable`
     static ExceptionType of(TypeToken<?> type) {
         return switch (type) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> of(annotated.token());
             case ClassToken<?> cls -> new OfClass(cls);
             case TypeVarToken<?> variable -> new OfVariable(variable);
             case InterfaceToken<?> _, ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ ->

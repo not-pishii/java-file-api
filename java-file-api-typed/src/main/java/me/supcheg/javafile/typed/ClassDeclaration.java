@@ -3,6 +3,8 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.DeclarationIdentity;
@@ -68,6 +70,7 @@ final class ClassDeclaration<Self> {
     private final DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
     private List<Variable> variables;
+    private List<AnnotationRef<?>> annotations = List.of();
     private Phase<Self> phase = new Phase.Named<>(new Said(List.of(), List.of()), List.of());
 
     /// @param target the classpath the class is compiled against
@@ -251,6 +254,20 @@ final class ClassDeclaration<Self> {
                         mine == bounded ? new Variable(mine.token(), mine.first(), with(mine.more(), bound)) : mine)
                 .toList();
         return new Upcast<>(variable, bound);
+    }
+
+    /// Adds an annotation to the declaration of the class.
+    ///
+    /// @param annotation the annotation
+    /// @throws IllegalStateException if the declaration is complete
+    /// @throws IllegalArgumentException if the annotation type cannot annotate a type
+    void annotate(AnnotationRef<?> annotation) {
+        target.verify(annotation.type().token());
+        annotations = Stream.concat(annotations.stream(), Stream.of(annotation)).toList();
+    }
+
+    private List<AnnotationUse> annotationUses() {
+        return annotations.stream().map(AnnotationRef::toUse).toList();
     }
 
     TargetClasspath target() {
@@ -764,6 +781,7 @@ final class ClassDeclaration<Self> {
     private JavaFile file(Extended extended, List<ClassMember> members) {
         return JavaFile.class_(desc, cb -> {
                     cb.withModifiers(Modifier.FINAL);
+                    annotationUses().forEach(cb::withAnnotation);
                     typeParams().forEach(cb::withTypeParam);
                     switch (extended.superclass()) {
                         case Superclass.OfObject _ -> {}

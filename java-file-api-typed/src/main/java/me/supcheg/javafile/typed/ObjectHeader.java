@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 
@@ -11,6 +12,16 @@ public final class ObjectHeader<Self> extends Header<Self> {
 
     ObjectHeader(ClassDeclaration<Self> declaration) {
         super(declaration);
+    }
+
+    /// Annotates the class declaration, e.g. `@Deprecated`.
+    ///
+    /// @param annotation the annotation
+    /// @return this stage
+    /// @throws IllegalArgumentException if the annotation type cannot annotate a type
+    public ObjectHeader<Self> withAnnotation(AnnotationRef<?> annotation) {
+        declaration().annotate(annotation);
+        return this;
     }
 
     /// The class implements an interface, by the proof that it has every abstract method of it —

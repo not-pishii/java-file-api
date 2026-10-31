@@ -6,6 +6,7 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
@@ -159,7 +160,9 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                 new FieldDecl(
                         name,
                         field.type().typeRef(),
-                        List.of(),
+                        slot.declared().annotations().stream()
+                                .map(AnnotationRef::toUse)
+                                .toList(),
                         slot.declared().modifiers(),
                         Optional.of(new Lowering(
                                         target,
@@ -284,7 +287,9 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Stream.of(new FieldDecl(
                                 declared.fact().name(),
                                 declared.fact().type().typeRef(),
-                                List.of(),
+                                declared.annotations().stream()
+                                        .map(AnnotationRef::toUse)
+                                        .toList(),
                                 declared.modifiers(),
                                 Optional.empty(),
                                 Optional.empty()));
@@ -430,9 +435,18 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
         Invocable fact = declared.fact();
         Lowering lowering = new Lowering(
                 target, new Lowering.Place.InClass(self, declared.scope(), owner.bounded()), fact.resultType());
-        List<Param> named = params.stream()
-                .map(param ->
-                        new Param(lowering.declareUpfront(param), param.type().typeRef()))
+        List<Param> named = java.util.stream.IntStream.range(0, params.size())
+                .mapToObj(index -> {
+                    Var<?> param = params.get(index);
+                    List<AnnotationUse> annotations =
+                            index < declared.parameterAnnotations().size()
+                                    ? declared.parameterAnnotations().get(index).stream()
+                                            .map(AnnotationRef::toUse)
+                                            .toList()
+                                    : List.of();
+                    return new Param(
+                            lowering.declareUpfront(param), param.type().typeRef(), annotations);
+                })
                 .toList();
         List<Param> coreParams =
                 switch (declared.arity()) {
@@ -441,12 +455,14 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
                                 .toList();
                 };
-        List<AnnotationUse> annotations = Stream.concat(
+        List<AnnotationUse> annotations = Stream.of(
+                        declared.annotations().stream().map(AnnotationRef::toUse),
                         switch (declared.kind()) {
                             case OVERRIDES -> Stream.of(new AnnotationUse(OVERRIDE, List.of()));
                             case DECLARES -> Stream.<AnnotationUse>empty();
                         },
                         safeVarargs(declared.arity()))
+                .flatMap(Function.identity())
                 .toList();
         return switch (fact.kind()) {
             case CONSTRUCTOR -> {

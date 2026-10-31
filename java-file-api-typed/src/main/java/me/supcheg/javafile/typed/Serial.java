@@ -101,9 +101,11 @@ sealed interface Serial {
 
     /// Whether a value of `type` is serializable: a primitive, an array of what is, a class or interface
     /// that is `Serializable`, a type parameter of the class one of whose bounds is.
-    private static boolean isSerializable(TypeToken<?> type, List<Subtyping.Bounded> variables) {
+    static boolean isSerializable(TypeToken<?> type, List<Subtyping.Bounded> variables) {
         return switch (type) {
             case PrimitiveToken<?, ?, ?> _ -> true;
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated ->
+                isSerializable(annotated.token(), variables);
             case ArrayToken<?, ?> array -> isSerializable(array.component(), variables);
             case DeclaredToken<?> declared -> isSerializable(declared.shape());
             // a variable the generator vouched for has bounds no one knows

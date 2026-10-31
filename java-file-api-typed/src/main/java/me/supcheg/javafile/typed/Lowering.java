@@ -1151,9 +1151,10 @@ final class Lowering {
     /// A type variable has the methods of its bounds (JLS 4.9): a twin is one a bound has. One the
     /// generator vouched for does not say what its bounds add: it may have such an overload of any
     /// method that takes arguments.
-    private boolean hasTwin(TypeToken<?> searched, Invocable method) {
+    boolean hasTwin(TypeToken<?> searched, Invocable method) {
         DeclaredToken<?> owner = method.owner();
         return switch (searched) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> hasTwin(annotated.token(), method);
             case DeclaredToken<?> declared when declared.shape() == owner.shape() -> false;
             case DeclaredToken<?> declared -> {
                 MethodSignature erased = method.signature();

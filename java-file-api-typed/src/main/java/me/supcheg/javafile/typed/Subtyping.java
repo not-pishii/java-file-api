@@ -119,6 +119,7 @@ final class Subtyping {
 
     private static Verdict ofClass(Declaring declaring, RefToken<?> sub, ClassTypeRef sup) {
         return switch (sub) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> ofClass(declaring, annotated.token(), sup);
             case DeclaredToken<?> declared when declaring.is(declared) -> bySupertype(declaring, sup);
             case DeclaredToken<?> declared ->
                 declared.shape().desc().equals(sup.desc())
@@ -137,6 +138,8 @@ final class Subtyping {
 
     private static Verdict ofParameterized(Declaring declaring, RefToken<?> sub, ParameterizedTypeRef sup) {
         return switch (sub) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated ->
+                ofParameterized(declaring, annotated.token(), sup);
             case DeclaredToken<?> declared when declaring.is(declared) -> bySupertype(declaring, sup);
             case DeclaredToken<?> declared ->
                 parameterization(declared, sup.raw())
@@ -155,6 +158,7 @@ final class Subtyping {
 
     private static Verdict ofArray(Declaring declaring, RefToken<?> sub, ArrayTypeRef sup) {
         return switch (sub) {
+            case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> ofArray(declaring, annotated.token(), sup);
             case ArrayToken<?, ?> array ->
                 switch (array.component()) {
                     case RefToken<?> component ->

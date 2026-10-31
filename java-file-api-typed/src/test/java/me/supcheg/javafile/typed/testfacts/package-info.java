@@ -116,7 +116,9 @@
     IntStream.class,
     Overloads.class,
     VarargsBase.class,
-    VarargsArray.class
+    VarargsArray.class,
+    Tag.class,
+    Author.class
 })
 package me.supcheg.javafile.typed.testfacts;
 
@@ -200,6 +202,8 @@ import me.supcheg.javafile.typed.fixtures.Taking;
 import me.supcheg.javafile.typed.fixtures.Gathered;
 import me.supcheg.javafile.typed.fixtures.VarargsArray;
 import me.supcheg.javafile.typed.fixtures.VarargsBase;
+import me.supcheg.javafile.typed.fixtures.Tag;
+import me.supcheg.javafile.typed.fixtures.Author;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

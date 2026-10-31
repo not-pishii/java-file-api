@@ -66,6 +66,7 @@ final class Constants {
                 switch (literal) {
                     case IntLiteral value -> new Folded.OfInt(value.value());
                     case LongLiteral value -> new Folded.OfLong(value.value());
+                    case me.supcheg.javafile.code.FloatLiteral value -> new Folded.OfDouble(value.value());
                     case DoubleLiteral value -> new Folded.OfDouble(value.value());
                     case BooleanLiteral value -> new Folded.OfBoolean(value.value());
                     case StringLiteral value -> new Folded.OfString(value.value());
